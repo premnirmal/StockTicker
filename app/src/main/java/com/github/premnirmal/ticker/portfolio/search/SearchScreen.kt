@@ -121,7 +121,7 @@ fun SearchScreen(
     ) { padding ->
         if (contentType == SINGLE_PANE) {
             PullToRefreshBox(
-                modifier = modifier.fillMaxSize().padding(padding),
+                modifier = Modifier.fillMaxSize().padding(padding),
                 isRefreshing = isRefreshing,
                 onRefresh = {
                     searchViewModel.fetchTrending()
@@ -137,32 +137,26 @@ fun SearchScreen(
                 )
             }
         } else {
-            TwoPane(
-                modifier = Modifier.padding(padding),
-                strategy = HorizontalTwoPaneStrategy(
-                    splitFraction = 1f / 2f,
-                ),
-                displayFeatures = displayFeatures,
-                foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
-                first = {
-                    PullToRefreshBox(
-                        modifier = modifier.fillMaxSize(),
-                        isRefreshing = isRefreshing,
-                        onRefresh = {
-                            searchViewModel.fetchTrending()
-                        },
-                    ) {
-                        SearchAndTrending(
-                            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-                            trendingStocks = trendingStocks,
-                            onQuoteClick = onQuoteClick,
-                            searchResults = searchResults,
-                            onSuggestionClick = onSuggestionClick,
-                            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
-                        )
-                    }
+            PullToRefreshBox(
+                modifier = Modifier.padding(padding).fillMaxSize(),
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    searchViewModel.fetchTrending()
                 },
-                second = {
+            ) {
+                TwoPane(
+                    modifier = Modifier, strategy = HorizontalTwoPaneStrategy(
+                    splitFraction = 1f / 2f,
+                ), displayFeatures = displayFeatures, foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly, first = {
+                    SearchAndTrending(
+                        columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+                        trendingStocks = trendingStocks,
+                        onQuoteClick = onQuoteClick,
+                        searchResults = searchResults,
+                        onSuggestionClick = onSuggestionClick,
+                        onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                    )
+                }, second = {
                     val fetchResult by newsViewModel.newsFeed.observeAsState()
                     LaunchedEffect(fetchResult?.dataSafe.isNullOrEmpty()) {
                         if (fetchResult?.dataSafe.isNullOrEmpty()) {
@@ -173,9 +167,7 @@ fun SearchScreen(
                         val data = it.dataSafe
                         if (data.isNullOrEmpty()) {
                             ErrorState(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 8.dp),
+                                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
                                 text = stringResource(id = R.string.no_data)
                             )
                         } else {
@@ -186,21 +178,18 @@ fun SearchScreen(
                             }
                             LazyColumn(
                                 modifier = Modifier.padding(horizontal = 8.dp),
-                                contentPadding = padding,
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 state = state,
                             ) {
                                 items(
-                                    count = news.size,
-                                    key = { i -> news[i].article.url }
-                                ) { i ->
+                                    count = news.size, key = { i -> news[i].article.url }) { i ->
                                     NewsCard(item = news[i].article)
                                 }
                             }
                         }
                     }
-                }
-            )
+                })
+            }
         }
     }
     showAddRemoveForSuggestion?.let { suggestion ->
