@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.model.IStocksProvider;
+import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.google.common.eventbus.Subscribe;
 

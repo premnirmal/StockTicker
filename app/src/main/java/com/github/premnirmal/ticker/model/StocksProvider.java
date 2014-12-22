@@ -24,6 +24,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -136,6 +137,14 @@ public class StocksProvider implements IStocksProvider {
     }
 
     @Override
+    public Collection<String> addStocks(Collection<String> tickers) {
+        tickerList.addAll(tickers);
+        save();
+        fetch();
+        return tickerList;
+    }
+
+    @Override
     public Collection<String> removeStock(String ticker) {
         tickerList.remove(ticker);
         save();
@@ -148,6 +157,11 @@ public class StocksProvider implements IStocksProvider {
             Collections.sort(stockList);
         }
         return stockList;
+    }
+
+    @Override
+    public List<String> getTickers() {
+        return new ArrayList<>(tickerList);
     }
 
     @Override

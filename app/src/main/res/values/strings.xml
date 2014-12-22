@@ -15,6 +15,9 @@
     <string name="text_size">Text Size</string>
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>
+    <string name="error_exporting">Error exporting file</string>
+    <string name="ticker_import_success">Tickers imported successfully</string>
+    <string name="ticker_import_fail">Error importing tickers</string>
 
     <string-array name="font_sizes">
         <item>Small</item>

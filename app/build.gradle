@@ -27,4 +27,5 @@ dependencies {
     compile 'io.reactivex:rxandroid:0.23.+'
     compile 'joda-time:joda-time:2.6'
     compile 'de.greenrobot:eventbus:2.4.0'
+    compile 'com.github.developerpaul123.filepickerlibrary:library:1.+'
 }

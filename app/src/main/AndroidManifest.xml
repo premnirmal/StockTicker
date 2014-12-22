@@ -3,6 +3,8 @@
     package="com.github.premnirmal.ticker">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name="com.github.premnirmal.ticker.StocksApp"
@@ -25,7 +27,7 @@
             android:name="com.github.premnirmal.ticker.ui.TickerSelectorActivity"
             android:label="@string/add_ticker" />
 
-        <activity android:name=".ui.SettingsActivity"
+        <activity android:name=".settings.SettingsActivity"
             android:label="@string/action_Settings"/>
 
         <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget">

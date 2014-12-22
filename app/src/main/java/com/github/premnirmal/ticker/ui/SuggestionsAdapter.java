@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.ui;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -47,7 +46,6 @@ class SuggestionsAdapter extends BaseAdapter {
 
         final Suggestion item = getItem(position);
         ((TextView)convertView).setText(item.symbol + " (" + item.name + ")");
-        ((TextView)convertView).setTextColor(Color.WHITE);
         final int padding = (int) context.getResources().getDimension(R.dimen.text_padding);
         convertView.setPadding(padding,padding,padding,padding);
 

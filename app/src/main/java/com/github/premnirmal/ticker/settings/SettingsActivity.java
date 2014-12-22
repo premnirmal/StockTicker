@@ -1,6 +1,7 @@
-package com.github.premnirmal.ticker.ui;
+package com.github.premnirmal.ticker.settings;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.devpaul.filepickerlibrary.FilePickerActivity;
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
@@ -33,14 +35,26 @@ public class SettingsActivity extends ActionBarActivity {
         findViewById(R.id.action_export).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                new FileExportTask() {
+                    @Override
+                    protected void onPostExecute(String result) {
+                        if (result == null) {
+                            Toast.makeText(SettingsActivity.this, R.string.error_exporting, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(SettingsActivity.this, "Exported to " + result, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }.execute(stocksProvider.getTickers().toArray());
             }
         });
 
         findViewById(R.id.action_import).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                final Intent filePickerIntent = new Intent(SettingsActivity.this, FilePickerActivity.class);
+                filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
+                filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
+                startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
             }
         });
 
@@ -81,6 +95,28 @@ public class SettingsActivity extends ActionBarActivity {
 
             }
         });
+    }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == FilePickerActivity.REQUEST_FILE
+                && resultCode == RESULT_OK) {
+            final String filePath = data.
+                    getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH);
+            if (filePath != null) {
+                new FileImportTask(stocksProvider) {
+                    @Override
+                    protected void onPostExecute(Boolean result) {
+                        if (result) {
+                            Toast.makeText(SettingsActivity.this, R.string.ticker_import_success, Toast.LENGTH_SHORT).show();
+                            finish();
+                        } else {
+                            Toast.makeText(SettingsActivity.this, R.string.ticker_import_fail, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }.execute(filePath);
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
