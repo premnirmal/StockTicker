@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="orange">#FF8000</color>
+    <color name="turqoise">#00FFEF</color>
+    <color name="maroon">#800000</color>
+    <color name="divider">#70000000</color>
+</resources>

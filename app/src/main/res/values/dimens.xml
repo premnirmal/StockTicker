@@ -1,0 +1,16 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">15dp</dimen>
+    <dimen name="activity_vertical_margin">15dp</dimen>
+
+    <!--3 seconds-->
+    <integer name="flip_time">30000</integer>
+    <dimen name="text_padding">5dp</dimen>
+
+    <dimen name="text_size">18sp</dimen>
+
+
+    <integer name="text_size_small">10</integer>
+    <integer name="text_size_medium">12</integer>
+    <integer name="text_size_large">14</integer>
+</resources>

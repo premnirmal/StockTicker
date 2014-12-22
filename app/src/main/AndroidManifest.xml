@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.premnirmal.ticker">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name="com.github.premnirmal.ticker.StocksApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.github.premnirmal.ticker.ui.ParanormalActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.github.premnirmal.ticker.ui.TickerSelectorActivity"
+            android:label="@string/add_ticker" />
+
+        <activity android:name=".ui.SettingsActivity"
+            android:label="@string/action_Settings"/>
+
+        <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget" />
+        </receiver>
+
+        <service
+            android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+    </application>
+
+</manifest>
