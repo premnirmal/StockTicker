@@ -13,6 +13,7 @@
     <string name="add_ticker">Add Ticker</string>
     <string name="dotdotdot">...</string>
     <string name="text_size">Text Size</string>
+    <string name="checkout_open_source">Checkout\nhttps://github.com/premnirmal/StockTicker</string>
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>
     <string name="error_exporting">Error exporting file</string>

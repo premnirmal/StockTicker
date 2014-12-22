@@ -1,5 +1,7 @@
 # StockTicker
 
+[Google play link]()
+
 - A homescreen widget that shows your stock portolio in a resizable grid.
 
 - Based off the [ministocks widget](https://github.com/niteshpatel/ministocks) but allowing unlimited tickers in a grid so you don't have to worry about sizing.
@@ -14,6 +16,10 @@
 
 - You can set the font size in Settings
 
+
+## Note
+
+The main purpose of me building this app is to practice usage of Square's Dagger library and Netflix's RxJava library.
 
 ## Future versions
 
