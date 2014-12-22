@@ -36,4 +36,4 @@ MIT
 
 **Author**
 
-> Prem Nirmal | [illegalstate.com](http://illegalstate.com/) | [twitter](https://twitter.com/premnirmal88)
+> Prem Nirmal | [premnirmal.github.io](http://premnirmal.github.io/) | [twitter](https://twitter.com/premnirmal88)
