@@ -26,4 +26,14 @@ public class Stock implements Comparable<Stock> {
         }
         return Double.valueOf(percentString.replace('%','\0').trim());
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(o instanceof Stock) {
+            if(symbol != null) {
+                return symbol.equalsIgnoreCase(((Stock)o).symbol);
+            }
+        }
+        return false;
+    }
 }

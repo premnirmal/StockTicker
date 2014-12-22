@@ -152,7 +152,11 @@ public class StocksProvider implements IStocksProvider {
     @Override
     public Collection<String> removeStock(String ticker) {
         tickerList.remove(ticker);
+        final Stock dummy = new Stock();
+        dummy.symbol = ticker;
+        stockList.remove(dummy);
         save();
+        sendBroadcast();
         return tickerList;
     }
 
