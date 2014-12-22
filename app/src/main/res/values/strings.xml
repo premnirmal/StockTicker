@@ -19,6 +19,7 @@
     <string name="error_exporting">Error exporting file</string>
     <string name="ticker_import_success">Tickers imported successfully</string>
     <string name="ticker_import_fail">Error importing tickers</string>
+    <string name="no_network_message">No network connection, check your connection settings</string>
 
     <string-array name="font_sizes">
         <item>Small</item>

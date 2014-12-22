@@ -17,6 +17,8 @@ import android.widget.AdapterView;
 
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Tools;
+import com.github.premnirmal.ticker.events.NoNetworkEvent;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
@@ -42,6 +44,9 @@ public class ParanormalActivity extends ActionBarActivity {
         ((StocksApp) getApplicationContext()).inject(this);
         setContentView(R.layout.activity_paranormal);
         bus.register(this);
+        if(!Tools.isNetworkOnline(getApplicationContext())) {
+            onEvent(new NoNetworkEvent());
+        }
     }
 
     @Override
@@ -111,6 +116,25 @@ public class ParanormalActivity extends ActionBarActivity {
     @Subscribe
     public void onEvent(StockUpdatedEvent event) {
         update();
+    }
+
+
+    boolean showing = false;
+    @Subscribe
+    public void onEvent(NoNetworkEvent event) {
+        if(!showing) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.no_network_message)
+                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            showing = false;
+                        }
+                    })
+                    .show();
+            showing = true;
+        }
     }
 
     @Override

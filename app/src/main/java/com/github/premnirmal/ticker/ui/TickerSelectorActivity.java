@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Suggestion;
 import com.github.premnirmal.ticker.network.SuggestionApi;
@@ -66,23 +67,27 @@ public class TickerSelectorActivity extends ActionBarActivity {
                     if (subscription != null) {
                         subscription.unsubscribe();
                     }
-                    subscription = suggestionApi.getSuggestions(query)
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .doOnError(new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-                                    Toast.makeText(TickerSelectorActivity.this,
-                                            throwable.getMessage(), Toast.LENGTH_SHORT);
-                                }
-                            })
-                            .subscribe(new Action1<Suggestions>() {
-                                @Override
-                                public void call(Suggestions suggestions) {
-                                    final List<Suggestion> suggestionList = suggestions.ResultSet.Result;
-                                    listView.setAdapter(new SuggestionsAdapter(suggestionList));
-                                }
-                            });
+                    if(Tools.isNetworkOnline(getApplicationContext())) {
+                        subscription = suggestionApi.getSuggestions(query)
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
+                                .doOnError(new Action1<Throwable>() {
+                                    @Override
+                                    public void call(Throwable throwable) {
+                                        Toast.makeText(TickerSelectorActivity.this,
+                                                throwable.getMessage(), Toast.LENGTH_SHORT);
+                                    }
+                                })
+                                .subscribe(new Action1<Suggestions>() {
+                                    @Override
+                                    public void call(Suggestions suggestions) {
+                                        final List<Suggestion> suggestionList = suggestions.ResultSet.Result;
+                                        listView.setAdapter(new SuggestionsAdapter(suggestionList));
+                                    }
+                                });
+                    } else {
+                        Toast.makeText(TickerSelectorActivity.this,R.string.no_network_message,Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });

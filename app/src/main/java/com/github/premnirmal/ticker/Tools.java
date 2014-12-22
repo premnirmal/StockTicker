@@ -1,6 +1,8 @@
 package com.github.premnirmal.ticker;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Environment;
 
 import java.io.File;
@@ -16,7 +18,7 @@ public final class Tools {
     public static String buildQuery(Object[] objects) {
         final StringBuilder commaSeparator = new StringBuilder();
         for (Object object : objects) {
-            commaSeparator.append(object.toString().replace("^", "").replaceAll(" ","").trim());
+            commaSeparator.append(object.toString().replace("^", "").replaceAll(" ", "").trim());
             commaSeparator.append(',');
         }
         if (objects.length > 0) {
@@ -27,7 +29,7 @@ public final class Tools {
     }
 
     public static float getFontSize(Context context) {
-        return context.getSharedPreferences(PREFS_NAME,Context.MODE_PRIVATE)
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .getInt(FONT_SIZE, context.getResources().getInteger(R.integer.text_size_medium));
     }
 
@@ -39,5 +41,23 @@ public final class Tools {
         final String fileName = "Tickers.txt";
         final File file = new File(dir, fileName);
         return file;
+    }
+
+    public static boolean isNetworkOnline(Context context) {
+        try {
+            final ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo i = connectivityManager.getActiveNetworkInfo();
+            if (i == null)
+                return false;
+            if (!i.isConnected())
+                return false;
+            if (!i.isAvailable())
+                return false;
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 }

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.Tools;
+import com.github.premnirmal.ticker.events.NoNetworkEvent;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.network.StockQuery;
@@ -84,27 +85,31 @@ public class StocksProvider implements IStocksProvider {
     }
 
     private void fetch() {
-        api.getStocks(Tools.buildQuery(tickerList.toArray()))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .subscribe(new Action1<StockQuery>() {
-                    @Override
-                    public void call(StockQuery response) {
-                        try {
-                            stockList = response.query.results.quote;
-                            lastFetched = response.query.created;
-                            sendBroadcast();
-                        } catch (NullPointerException e) {
-                            fetch();
+        if(Tools.isNetworkOnline(context)) {
+            api.getStocks(Tools.buildQuery(tickerList.toArray()))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .doOnError(new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    })
+                    .subscribe(new Action1<StockQuery>() {
+                        @Override
+                        public void call(StockQuery response) {
+                            try {
+                                stockList = response.query.results.quote;
+                                lastFetched = response.query.created;
+                                sendBroadcast();
+                            } catch (NullPointerException e) {
+                                fetch();
+                            }
+                        }
+                    });
+        } else {
+            bus.post(new NoNetworkEvent());
+        }
     }
 
     private void sendBroadcast() {
