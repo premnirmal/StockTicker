@@ -8,7 +8,7 @@
 
 ## Importing and exporting
 
-*Are you tired of re-entering your tickers ever time you install a new finance app, or when you get a new phone? Fuggedaboutit! *
+*Are you tired of re-entering your tickers ever time you install a new finance app, or when you get a new phone? Fuggedaboutit!*
 
 - You can import a list of tickers by selecting **import tickers** from the settings menu. All you need is a textfile with your tickers in *comma-separated* format.
 
