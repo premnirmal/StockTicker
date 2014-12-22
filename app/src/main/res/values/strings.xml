@@ -4,8 +4,8 @@
     <string name="app_name">Ticker</string>
     <string name="hello_world">Portfolio</string>
     <string name="action_add">Add</string>
-    <string name="action_export">Export</string>
-    <string name="action_import">Import</string>
+    <string name="action_export">Export Tickers</string>
+    <string name="action_import">Import Tickers</string>
     <string name="action_Settings">Settings</string>
 
     <string name="endpoint">http://query.yahooapis.com/v1/public</string>

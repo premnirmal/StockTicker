@@ -3,5 +3,5 @@
     <color name="orange">#FF8000</color>
     <color name="turqoise">#00FFEF</color>
     <color name="maroon">#800000</color>
-    <color name="divider">#70000000</color>
+    <color name="divider">#AAAA</color>
 </resources>

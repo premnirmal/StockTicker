@@ -50,9 +50,10 @@ public class StocksProvider implements IStocksProvider {
 
     private static final Set<String> DEFAULT_LIST = new HashSet<String>() {
         {
-            add("^DJI");
-            add("^NDX");
             add("^SPY");
+            add("GOOG");
+            add("AAPL");
+            add("MSFT");
         }
     };
 
@@ -72,9 +73,7 @@ public class StocksProvider implements IStocksProvider {
         preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
         tickerList = preferences.getStringSet(STOCK_LIST, DEFAULT_LIST);
         lastFetched = preferences.getString(LAST_FETCHED, null);
-        if (tickerList.size() < DEFAULT_LIST.size()) {
-            tickerList.addAll(DEFAULT_LIST);
-        }
+        tickerList.addAll(DEFAULT_LIST);
         fetch();
     }
 
@@ -166,7 +165,7 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public String lastFetched() {
-        if(!TextUtils.isEmpty(lastFetched)) {
+        if (!TextUtils.isEmpty(lastFetched)) {
             return DateTime.parse(lastFetched)
                     .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
                     .toString(ISODateTimeFormat.hourMinute());
