@@ -37,8 +37,16 @@ public class StockWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         ((StocksApp)context.getApplicationContext()).inject(this);
         for (final Integer widgetId : appWidgetIds) {
-            final RemoteViews remoteViews = new RemoteViews(context.getPackageName(),
-                    R.layout.widget_4x1);
+            final Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
+            final int min_width = getMinWidgetWidth(options);
+            final RemoteViews remoteViews;
+            if (min_width > 250) {
+                remoteViews = new RemoteViews(context.getPackageName(),
+                        R.layout.widget_4x1);
+            } else {
+                remoteViews = new RemoteViews(context.getPackageName(),
+                        R.layout.widget_2x1);
+            }
             updateWidget(context, appWidgetManager, widgetId, remoteViews);
             appWidgetManager.updateAppWidget(widgetId, remoteViews);
         }
@@ -46,10 +54,14 @@ public class StockWidget extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
+    private int getMinWidgetWidth(Bundle options) {
+        return (int) options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+    }
+
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
         ((StocksApp)context.getApplicationContext()).inject(this);
-        final int min_width = (int) newOptions.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        final int min_width = getMinWidgetWidth(newOptions);
         final RemoteViews remoteViews;
         if (min_width > 250) {
             remoteViews = new RemoteViews(context.getPackageName(),

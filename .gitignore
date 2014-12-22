@@ -53,3 +53,7 @@ profile
 .gradle/*
 .gradle*
 build/
+
+# ignore keystore
+*.jks
+keystore.*

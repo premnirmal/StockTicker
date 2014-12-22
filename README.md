@@ -12,12 +12,15 @@
 
 - You can also export your tickers to a file by selecting **export tickers**.
 
+- You can set the font size in Settings
+
 
 ## Future versions
 
 *Future versions will include:*
 - Ability to set a custom refresh interval
 - Ability to pick indices such as **^DJI**.
+- Ability to change the app theme and colors
 
 ## License
 
