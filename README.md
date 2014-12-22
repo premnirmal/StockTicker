@@ -14,8 +14,9 @@
 
 - You can also export your tickers to a file by selecting **export tickers**.
 
-- You can set the font size in Settings
+- You can set the font size in Settings.
 
+- Stocks are sorted by change in percent (descending).
 
 ## Note
 
@@ -27,6 +28,7 @@ The main purpose of me building this app is to practice usage of Square's Dagger
 - Ability to set a custom refresh interval
 - Ability to pick indices such as **^DJI**.
 - Ability to change the app theme and colors
+- Ability to change the way the stocks are sorted or to drag and drop the sort order.
 
 ## License
 
