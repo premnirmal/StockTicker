@@ -21,4 +21,6 @@ public interface IStocksProvider {
     List<String> getTickers();
 
     String lastFetched();
+
+    void fetch();
 }

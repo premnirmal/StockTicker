@@ -84,7 +84,8 @@ public class StocksProvider implements IStocksProvider {
         preferences.edit().putString(LAST_FETCHED, lastFetched).commit();
     }
 
-    private void fetch() {
+    @Override
+    public void fetch() {
         if(Tools.isNetworkOnline(context)) {
             api.getStocks(Tools.buildQuery(tickerList.toArray()))
                     .observeOn(AndroidSchedulers.mainThread())

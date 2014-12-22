@@ -46,6 +46,8 @@ public class ParanormalActivity extends ActionBarActivity {
         bus.register(this);
         if(!Tools.isNetworkOnline(getApplicationContext())) {
             onEvent(new NoNetworkEvent());
+        } else {
+            stocksProvider.fetch();
         }
     }
 
