@@ -1,6 +1,6 @@
 # StockTicker
 
-[Google play link]()
+[Google play link](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
 
 - A homescreen widget that shows your stock portolio in a resizable grid.
 
