@@ -69,7 +69,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
         final double change;
         if (stock != null && stock.Change != null) {
-            change = Double.parseDouble(stock.Change.replace("+", "").replace("-", ""));
+            change = Double.parseDouble(stock.Change.replace("+", ""));
         } else {
             change = 0d;
         }

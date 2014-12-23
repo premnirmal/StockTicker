@@ -31,9 +31,14 @@ public class Stock implements Comparable<Stock> {
     public boolean equals(Object o) {
         if(o instanceof Stock) {
             if(symbol != null) {
-                return symbol.equalsIgnoreCase(((Stock)o).symbol);
+                return symbol.replace("^","").equalsIgnoreCase(((Stock)o).symbol);
             }
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return symbol;
     }
 }

@@ -54,7 +54,7 @@ class StocksAdapter extends BaseAdapter {
 
         final double change;
         if (stock != null && stock.Change != null) {
-            change = Double.parseDouble(stock.Change.replace("+", "").replace("-", ""));
+            change = Double.parseDouble(stock.Change.replace("+", ""));
         } else {
             change = 0d;
         }
