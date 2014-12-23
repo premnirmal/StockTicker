@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.settings;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +36,9 @@ public class SettingsActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((StocksApp) getApplicationContext()).inject(this);
+
+        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+
         setContentView(R.layout.activity_settings);
         findViewById(R.id.action_export).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -57,6 +63,15 @@ public class SettingsActivity extends ActionBarActivity {
                 filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
                 filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
                 startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
+            }
+        });
+
+        final CheckBox autoSortCheckbox = (CheckBox) findViewById(R.id.autosort_checkbox);
+        autoSortCheckbox.setChecked(preferences.getBoolean(Tools.SETTING_AUTOSORT, false));
+        autoSortCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, isChecked).commit();
             }
         });
 
@@ -98,7 +113,7 @@ public class SettingsActivity extends ActionBarActivity {
             }
         });
 
-        ((TextView)findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
+        ((TextView) findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
     }
 
     @Override

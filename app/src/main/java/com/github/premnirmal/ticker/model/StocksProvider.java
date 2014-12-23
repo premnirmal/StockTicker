@@ -199,13 +199,17 @@ public class StocksProvider implements IStocksProvider {
     }
 
     private void sortStockList() {
-        Collections.sort(stockList, new Comparator<Stock>() {
-            @Override
-            public int compare(Stock lhs, Stock rhs) {
-                return ((Integer) stockList.indexOf(lhs.symbol))
-                        .compareTo(stockList.indexOf(rhs.symbol));
-            }
-        });
+        if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
+            Collections.sort(stockList);
+        } else {
+            Collections.sort(stockList, new Comparator<Stock>() {
+                @Override
+                public int compare(Stock lhs, Stock rhs) {
+                    return ((Integer) stockList.indexOf(lhs.symbol))
+                            .compareTo(stockList.indexOf(rhs.symbol));
+                }
+            });
+        }
     }
 
     @Override

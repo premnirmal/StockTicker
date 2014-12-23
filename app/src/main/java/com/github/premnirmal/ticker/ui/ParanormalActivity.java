@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,7 +44,12 @@ public class ParanormalActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((StocksApp) getApplicationContext()).inject(this);
-        setContentView(R.layout.activity_paranormal);
+        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME,MODE_PRIVATE);
+        if(preferences.getBoolean(Tools.SETTING_AUTOSORT,false)) {
+            setContentView(R.layout.activity_paranormal);
+        } else {
+            setContentView(R.layout.activity_paranormal_draggable);
+        }
         bus.register(this);
         if(!Tools.isNetworkOnline(getApplicationContext())) {
             onEvent(new NoNetworkEvent());
@@ -88,10 +94,22 @@ public class ParanormalActivity extends ActionBarActivity {
                 }
             }, 600);
         }
+        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME,MODE_PRIVATE);
+        if(preferences.getBoolean(Tools.SETTING_AUTOSORT,false)) {
+            setContentView(R.layout.activity_paranormal);
+        } else {
+            setContentView(R.layout.activity_paranormal_draggable);
+        }
 
-        final DragNDropListView adapterView = (DragNDropListView) findViewById(R.id.stockList);
-        final StocksAdapter adapter = new StocksAdapter(stocksProvider);
-        adapterView.setDragNDropAdapter(adapter);
+        final AdapterView adapterView = (AdapterView) findViewById(R.id.stockList);
+        final StocksAdapter adapter = new StocksAdapter(stocksProvider,
+                preferences.getBoolean(Tools.SETTING_AUTOSORT,false));
+        if(!preferences.getBoolean(Tools.SETTING_AUTOSORT,false)
+                && adapterView instanceof DragNDropListView) {
+            ((DragNDropListView) adapterView).setDragNDropAdapter(adapter);
+        } else {
+            adapterView.setAdapter(adapter);
+        }
         adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {

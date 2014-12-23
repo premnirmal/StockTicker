@@ -22,6 +22,7 @@ public final class Tools {
 
     public static final String PREFS_NAME = "com.github.premnirmal.ticker";
     public static final String FONT_SIZE = "com.github.premnirmal.ticker.fontsize";
+    public static final String SETTING_AUTOSORT = "SETTING_AUTOSORT";
 
     public static String buildQuery(Object[] objects) {
         final StringBuilder commaSeparator = new StringBuilder();

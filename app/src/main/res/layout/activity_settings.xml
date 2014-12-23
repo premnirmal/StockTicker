@@ -11,30 +11,48 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:text="@string/action_export"
-        android:id="@+id/action_export"
-        />
+        android:id="@+id/action_export" />
 
-    <include layout="@layout/divider"/>
+    <include layout="@layout/divider" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:text="@string/action_import"
-        android:id="@+id/action_import"
-        />
+        android:id="@+id/action_import" />
 
-    <include layout="@layout/divider"/>
+    <include layout="@layout/divider" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:text="@string/text_size"
-        android:id="@+id/change_text_size"
-        />
+        android:id="@+id/change_text_size" />
 
-    <include layout="@layout/divider"/>
+    <include layout="@layout/divider" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="@string/auto_sort" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/abc_btn_check_material"
+            android:layout_alignParentRight="true"
+            android:id="@+id/autosort_checkbox"
+            />
+    </RelativeLayout>
+
+    <include layout="@layout/divider" />
 
     <TextView
         android:layout_width="match_parent"
@@ -43,10 +61,9 @@
         android:text="@string/checkout_open_source"
         android:id="@+id/github_link"
         android:linksClickable="true"
-        android:autoLink="all"
-        />
+        android:autoLink="all" />
 
-    <include layout="@layout/divider"/>
+    <include layout="@layout/divider" />
 
     <TextView
         android:layout_width="match_parent"
@@ -54,9 +71,8 @@
         android:layout_margin="5dp"
         android:id="@+id/version"
         android:linksClickable="true"
-        android:autoLink="all"
-        />
+        android:autoLink="all" />
 
-    <include layout="@layout/divider"/>
+    <include layout="@layout/divider" />
 
 </LinearLayout>

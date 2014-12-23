@@ -24,9 +24,11 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
 
     private final List<Stock> stockList;
     private final IStocksProvider stocksProvider;
+    private final boolean autoSort;
 
-    StocksAdapter(IStocksProvider stocksProvider) {
+    StocksAdapter(IStocksProvider stocksProvider, boolean autoSort) {
         this.stocksProvider = stocksProvider;
+        this.autoSort = autoSort;
         stockList = stocksProvider.getStocks() == null ? new ArrayList<Stock>()
                 : new ArrayList<>(stocksProvider.getStocks());
     }
@@ -82,6 +84,9 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
 
         final int padding = (int) context.getResources().getDimension(R.dimen.text_padding);
         convertView.setPadding(0, padding, 0, padding);
+
+        final View dragHandler = convertView.findViewById(R.id.dragHandler);
+        dragHandler.setVisibility(autoSort ? View.GONE : View.VISIBLE);
 
         return convertView;
     }
