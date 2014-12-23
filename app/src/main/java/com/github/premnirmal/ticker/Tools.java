@@ -1,9 +1,15 @@
 package com.github.premnirmal.ticker;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.os.SystemClock;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.MutableDateTime;
 
 import java.io.File;
 
@@ -58,6 +64,33 @@ public final class Tools {
             e.printStackTrace();
             return false;
         }
+    }
 
+    /**
+     * Takes care of weekends and afterhours
+     * @return
+     */
+    public static long getMsToNextAlarm() {
+        final int hourOfDay = DateTime.now().hourOfDay().get();
+        if(hourOfDay >= 17) { // 5pm
+            final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
+            mutableDateTime.addDays(1);
+            mutableDateTime.setHourOfDay(9); // 9am
+            mutableDateTime.setMinuteOfHour(5); // update at 9:05am
+            if(mutableDateTime.getDayOfWeek() > DateTimeConstants.FRIDAY) {
+                switch (mutableDateTime.getDayOfWeek()) {
+                    case DateTimeConstants.SATURDAY:
+                        mutableDateTime.addDays(2);
+                        break;
+                    case DateTimeConstants.SUNDAY:
+                        mutableDateTime.addDays(1);
+                        break;
+                }
+            }
+            final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
+            return SystemClock.elapsedRealtime() + msToNextSchedule;
+        } else {
+            return SystemClock.elapsedRealtime() + (AlarmManager.INTERVAL_FIFTEEN_MINUTES * 2);
+        }
     }
 }

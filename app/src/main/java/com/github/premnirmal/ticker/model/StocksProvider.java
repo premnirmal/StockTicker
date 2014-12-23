@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -86,7 +85,7 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public void fetch() {
-        if(Tools.isNetworkOnline(context)) {
+        if (Tools.isNetworkOnline(context)) {
             api.getStocks(Tools.buildQuery(tickerList.toArray()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
@@ -129,8 +128,7 @@ public class StocksProvider implements IStocksProvider {
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
         alarmManager.cancel(pendingIntent);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES, pendingIntent);
-
+                Tools.getMsToNextAlarm(), pendingIntent);
     }
 
     @Override
