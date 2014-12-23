@@ -21,18 +21,20 @@ public class Stock implements Comparable<Stock> {
     }
 
     static double getChangeFromPercentString(String percentString) {
-        if(percentString == null) {
+        if (percentString == null) {
             return -1000000.0d;
         }
-        return Double.valueOf(percentString.replace('%','\0').trim());
+        return Double.valueOf(percentString.replace('%', '\0').trim());
     }
 
     @Override
     public boolean equals(Object o) {
-        if(o instanceof Stock) {
-            if(symbol != null) {
-                return symbol.replace("^","").equalsIgnoreCase(((Stock)o).symbol);
+        if (o instanceof Stock) {
+            if (symbol != null) {
+                return symbol.replace("^", "").equalsIgnoreCase(((Stock) o).symbol.replace("^", ""));
             }
+        } else if (o instanceof String) {
+            return ((String) o).replace("^","").equalsIgnoreCase(symbol.replace("^", ""));
         }
         return false;
     }

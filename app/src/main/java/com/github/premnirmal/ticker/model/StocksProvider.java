@@ -8,12 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.Tools;
-import com.github.premnirmal.ticker.events.NoNetworkEvent;
+import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.network.StockQuery;
@@ -25,8 +26,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,9 +49,12 @@ import rx.schedulers.Schedulers;
 public class StocksProvider implements IStocksProvider {
 
     public static final String STOCK_LIST = "STOCK_LIST";
+    public static final String SORTED_STOCK_LIST = "SORTED_STOCK_LIST";
     public static final String LAST_FETCHED = "LAST_FETCHED";
 
-    private static final Set<String> DEFAULT_LIST = new HashSet<String>() {
+    public static final String UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE";
+
+    private static final Set<String> DEFAULT_SET = new HashSet<String>() {
         {
             add("^SPY");
             add("GOOG");
@@ -57,7 +63,10 @@ public class StocksProvider implements IStocksProvider {
         }
     };
 
-    private Set<String> tickerList;
+    private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT";
+
+    private Set<String> deprecatedTickerSet;
+    private List<String> tickerList;
     private List<Stock> stockList;
     private String lastFetched;
     private final SharedPreferences preferences;
@@ -71,16 +80,26 @@ public class StocksProvider implements IStocksProvider {
         this.api = api;
         this.context = context;
         preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
-        tickerList = preferences.getStringSet(STOCK_LIST, DEFAULT_LIST);
+        final String tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS);
+        tickerList = new ArrayList<>(Arrays.asList(tickerListVars.split(",")));
+        if (preferences.contains(STOCK_LIST)) { // for users using older versions
+            deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET);
+            preferences.edit().remove(STOCK_LIST).commit();
+            for (String ticker : deprecatedTickerSet) {
+                if (!tickerList.contains(ticker)) {
+                    tickerList.add(ticker);
+                }
+            }
+            preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).commit();
+        }
         lastFetched = preferences.getString(LAST_FETCHED, null);
-        tickerList.addAll(DEFAULT_LIST);
         fetch();
     }
 
     private void save() {
-        preferences.edit().remove(STOCK_LIST).commit();
-        preferences.edit().putStringSet(STOCK_LIST, tickerList).commit();
-        preferences.edit().putString(LAST_FETCHED, lastFetched).commit();
+        preferences.edit().remove(STOCK_LIST)
+                .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
+                .putString(LAST_FETCHED, lastFetched).commit();
     }
 
     @Override
@@ -108,7 +127,7 @@ public class StocksProvider implements IStocksProvider {
                         }
                     });
         } else {
-            bus.post(new NoNetworkEvent());
+            scheduleUpdate(SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES);
         }
     }
 
@@ -123,16 +142,23 @@ public class StocksProvider implements IStocksProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         context.sendBroadcast(intent);
         bus.post(new StockUpdatedEvent());
+        scheduleUpdate(Tools.getMsToNextAlarm());
+    }
 
+    private void scheduleUpdate(long msToNextAlarm) {
+        final Intent updateReceiverIntent = new Intent(context, UpdateReceiver.class);
+        updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intent, 0);
-        alarmManager.cancel(pendingIntent);
+        final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, updateReceiverIntent, 0);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                Tools.getMsToNextAlarm(), pendingIntent);
+                msToNextAlarm, pendingIntent);
     }
 
     @Override
     public Collection<String> addStock(String ticker) {
+        if (tickerList.contains(ticker)) {
+            return tickerList;
+        }
         tickerList.add(ticker);
         save();
         fetch();
@@ -141,7 +167,11 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public Collection<String> addStocks(Collection<String> tickers) {
-        tickerList.addAll(tickers);
+        for (String ticker : tickers) {
+            if (!tickerList.contains(ticker)) {
+                tickerList.add(ticker);
+            }
+        }
         save();
         fetch();
         return tickerList;
@@ -163,9 +193,26 @@ public class StocksProvider implements IStocksProvider {
     @Override
     public Collection<Stock> getStocks() {
         if (stockList != null) {
-            Collections.sort(stockList);
+            sortStockList();
         }
         return stockList;
+    }
+
+    private void sortStockList() {
+        Collections.sort(stockList, new Comparator<Stock>() {
+            @Override
+            public int compare(Stock lhs, Stock rhs) {
+                return ((Integer) stockList.indexOf(lhs.symbol))
+                        .compareTo(stockList.indexOf(rhs.symbol));
+            }
+        });
+    }
+
+    @Override
+    public Collection<Stock> rearrange(List<String> tickers) {
+        tickerList = new ArrayList<>(tickers);
+        save();
+        return getStocks();
     }
 
     @Override

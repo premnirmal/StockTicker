@@ -2,7 +2,7 @@
 [Google play link](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
 - A homescreen widget that shows your stock portolio in a resizable grid.
 - Based off the [ministocks widget](https://github.com/niteshpatel/ministocks) but allowing unlimited tickers in a grid so you don't have to worry about sizing.
-- Stocks are sorted by change in percent (descending).
+- Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours and weekdays.
 
 ## Importing and exporting
@@ -19,7 +19,6 @@ The main purpose of me building this app is to practice usage of Square's Dagger
 - Ability to set a custom refresh interval
 - Ability to pick indices such as **^DJI**.
 - Ability to change the app theme and colors
-- Ability to change the way the stocks are sorted or to drag and drop the sort order.
 
 ## License
 

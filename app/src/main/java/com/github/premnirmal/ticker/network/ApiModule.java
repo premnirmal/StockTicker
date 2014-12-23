@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.network;
 import android.content.Context;
 
 import com.github.premnirmal.ticker.R;
+import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
@@ -28,6 +29,7 @@ import retrofit.RestAdapter;
                 RemoteStockViewAdapter.class,
                 SettingsActivity.class,
                 StockWidget.class,
+                UpdateReceiver.class,
                 ParanormalActivity.class
         },
         complete = false,

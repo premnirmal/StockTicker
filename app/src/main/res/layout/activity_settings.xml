@@ -48,4 +48,15 @@
 
     <include layout="@layout/divider"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:id="@+id/version"
+        android:linksClickable="true"
+        android:autoLink="all"
+        />
+
+    <include layout="@layout/divider"/>
+
 </LinearLayout>

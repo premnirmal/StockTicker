@@ -13,7 +13,7 @@ import java.util.Arrays;
 /**
  * Created by premnirmal on 12/22/14.
  */
-public class FileImportTask extends AsyncTask<String, Void, Boolean> {
+class FileImportTask extends AsyncTask<String, Void, Boolean> {
 
     private final IStocksProvider stocksProvider;
 

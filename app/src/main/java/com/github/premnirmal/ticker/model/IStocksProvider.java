@@ -18,6 +18,8 @@ public interface IStocksProvider {
 
     Collection<Stock> getStocks();
 
+    Collection<Stock> rearrange(List<String> tickers);
+
     List<String> getTickers();
 
     String lastFetched();

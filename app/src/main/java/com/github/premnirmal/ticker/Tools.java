@@ -9,9 +9,11 @@ import android.os.SystemClock;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by premnirmal on 12/22/14.
@@ -74,9 +76,10 @@ public final class Tools {
         final int hourOfDay = DateTime.now().hourOfDay().get();
         if(hourOfDay >= 17) { // 5pm
             final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
+            mutableDateTime.setZone(DateTimeZone.getDefault());
             mutableDateTime.addDays(1);
             mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(5); // update at 9:05am
+            mutableDateTime.setMinuteOfHour(15); // update at 9:15am
             if(mutableDateTime.getDayOfWeek() > DateTimeConstants.FRIDAY) {
                 switch (mutableDateTime.getDayOfWeek()) {
                     case DateTimeConstants.SATURDAY:
@@ -92,5 +95,15 @@ public final class Tools {
         } else {
             return SystemClock.elapsedRealtime() + (AlarmManager.INTERVAL_FIFTEEN_MINUTES * 2);
         }
+    }
+
+    public static String toCommaSeparatedString(List<String> list) {
+        final StringBuilder builder = new StringBuilder();
+        for(String string : list) {
+            builder.append(string);
+            builder.append(",");
+        }
+        builder.deleteCharAt(builder.length()-1);
+        return builder.toString();
     }
 }

@@ -11,6 +11,8 @@ import android.widget.TextView;
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
+import com.terlici.dragndroplist.DragNDropAdapter;
+import com.terlici.dragndroplist.DragNDropListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,11 +20,13 @@ import java.util.List;
 /**
  * Created by premnirmal on 12/21/14.
  */
-class StocksAdapter extends BaseAdapter {
+class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
 
-    final List<Stock> stockList;
+    private final List<Stock> stockList;
+    private final IStocksProvider stocksProvider;
 
     StocksAdapter(IStocksProvider stocksProvider) {
+        this.stocksProvider = stocksProvider;
         stockList = stocksProvider.getStocks() == null ? new ArrayList<Stock>()
                 : new ArrayList<>(stocksProvider.getStocks());
     }
@@ -39,7 +43,7 @@ class StocksAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return 0;
     }
 
     @Override
@@ -80,5 +84,26 @@ class StocksAdapter extends BaseAdapter {
         convertView.setPadding(0, padding, 0, padding);
 
         return convertView;
+    }
+
+    @Override
+    public int getDragHandler() {
+        return R.id.dragHandler;
+    }
+
+    @Override
+    public void onItemDrag(DragNDropListView parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
+        stockList.add(endPosition, stockList.remove(startPosition));
+        final List<String> newTickerList = new ArrayList<>();
+        for(Stock stock : stockList) {
+            newTickerList.add(stock.symbol);
+        }
+        stocksProvider.rearrange(newTickerList);
+        notifyDataSetChanged();
     }
 }

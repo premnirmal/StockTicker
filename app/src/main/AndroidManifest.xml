@@ -31,6 +31,12 @@
         <activity android:name=".settings.SettingsActivity"
             android:label="@string/action_Settings"/>
 
+        <receiver android:name=".UpdateReceiver" android:enabled="true">
+            <intent-filter>
+                <action android:name="com.github.premnirmal.ticker.UPDATE"></action>
+            </intent-filter>
+        </receiver>
+
         <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

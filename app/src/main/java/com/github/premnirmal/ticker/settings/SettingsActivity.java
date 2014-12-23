@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devpaul.filepickerlibrary.FilePickerActivity;
+import com.github.premnirmal.ticker.BuildConfig;
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
@@ -95,6 +97,8 @@ public class SettingsActivity extends ActionBarActivity {
 
             }
         });
+
+        ((TextView)findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
     }
 
     @Override

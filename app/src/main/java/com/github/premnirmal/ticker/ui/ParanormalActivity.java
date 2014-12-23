@@ -24,6 +24,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.google.common.eventbus.Subscribe;
+import com.terlici.dragndroplist.DragNDropListView;
 
 import javax.inject.Inject;
 
@@ -88,9 +89,9 @@ public class ParanormalActivity extends ActionBarActivity {
             }, 600);
         }
 
-        final AdapterView adapterView = (AdapterView) findViewById(R.id.stockList);
+        final DragNDropListView adapterView = (DragNDropListView) findViewById(R.id.stockList);
         final StocksAdapter adapter = new StocksAdapter(stocksProvider);
-        adapterView.setAdapter(adapter);
+        adapterView.setDragNDropAdapter(adapter);
         adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
