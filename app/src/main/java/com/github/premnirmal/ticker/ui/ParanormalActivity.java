@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.R;
@@ -108,6 +109,8 @@ public class ParanormalActivity extends BaseActivity {
         } else {
             setContentView(R.layout.activity_paranormal_draggable);
         }
+
+        ((TextView)findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
         final AdapterView adapterView = (AdapterView) findViewById(R.id.stockList);
         final StocksAdapter adapter = new StocksAdapter(stocksProvider,
