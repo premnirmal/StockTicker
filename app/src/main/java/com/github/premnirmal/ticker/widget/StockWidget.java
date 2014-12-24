@@ -55,7 +55,11 @@ public class StockWidget extends AppWidgetProvider {
     }
 
     private int getMinWidgetWidth(Bundle options) {
-        return (int) options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        if(options == null || !options.containsKey(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
+            return 0; // 2x1
+        } else {
+            return (int) options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
+        }
     }
 
     @Override

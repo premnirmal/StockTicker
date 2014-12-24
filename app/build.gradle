@@ -8,13 +8,13 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 16
         targetSdkVersion 21
-        versionCode 7
-        versionName "2.20.00"
+        versionCode 8
+        versionName "2.30.00"
     }
 
     signingConfigs {
         release {
-            storeFile file("XXXXX")
+            storeFile file("file:XXXXX")
             storePassword "XXXXX"
             keyAlias "XXXXX"
             keyPassword "XXXXX"

@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.ui;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -10,6 +9,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
@@ -18,6 +18,7 @@ import com.github.premnirmal.ticker.network.Suggestion;
 import com.github.premnirmal.ticker.network.SuggestionApi;
 import com.github.premnirmal.ticker.network.Suggestions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -30,7 +31,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by premnirmal on 12/21/14.
  */
-public class TickerSelectorActivity extends ActionBarActivity {
+public class TickerSelectorActivity extends BaseActivity {
 
     @Inject
     SuggestionApi suggestionApi;
@@ -67,7 +68,7 @@ public class TickerSelectorActivity extends ActionBarActivity {
                     if (subscription != null) {
                         subscription.unsubscribe();
                     }
-                    if(Tools.isNetworkOnline(getApplicationContext())) {
+                    if (Tools.isNetworkOnline(getApplicationContext())) {
                         subscription = suggestionApi.getSuggestions(query)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.io())
@@ -86,7 +87,7 @@ public class TickerSelectorActivity extends ActionBarActivity {
                                     }
                                 });
                     } else {
-                        Toast.makeText(TickerSelectorActivity.this,R.string.no_network_message,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TickerSelectorActivity.this, R.string.no_network_message, Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -100,7 +101,9 @@ public class TickerSelectorActivity extends ActionBarActivity {
                 final String ticker = suggestion.isStock() ? suggestion.symbol
                         : ("^" + suggestion.symbol);
                 stocksProvider.addStock(ticker);
-                finish();
+                Toast.makeText(TickerSelectorActivity.this, ticker + " added to list",Toast.LENGTH_SHORT).show();
+                searchView.setText("");
+                listView.setAdapter(new SuggestionsAdapter(new ArrayList<Suggestion>()));
             }
         });
 

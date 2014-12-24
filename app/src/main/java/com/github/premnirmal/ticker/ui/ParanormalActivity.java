@@ -9,13 +9,14 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ProgressBar;
 
+import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
@@ -31,7 +32,7 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 
-public class ParanormalActivity extends ActionBarActivity {
+public class ParanormalActivity extends BaseActivity {
 
     @Inject
     IStocksProvider stocksProvider;
@@ -53,14 +54,12 @@ public class ParanormalActivity extends ActionBarActivity {
         bus.register(this);
         if(!Tools.isNetworkOnline(getApplicationContext())) {
             onEvent(new NoNetworkEvent());
-        } else {
-            stocksProvider.fetch();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        final MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_paranormal, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -75,6 +74,14 @@ public class ParanormalActivity extends ActionBarActivity {
             final Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
+        } else if(item.getItemId() == R.id.action_update) {
+            if(!Tools.isNetworkOnline(getApplicationContext())) {
+                onEvent(new NoNetworkEvent());
+            } else {
+                stocksProvider.fetch();
+                item.setActionView(new ProgressBar(this));
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -86,6 +93,7 @@ public class ParanormalActivity extends ActionBarActivity {
     }
 
     private void update() {
+        supportInvalidateOptionsMenu();
         if (stocksProvider.getStocks() == null) {
             handler.postDelayed(new Runnable() {
                 @Override

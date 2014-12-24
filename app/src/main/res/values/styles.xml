@@ -1,15 +1,14 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-      <item name="colorPrimary">@color/orange</item>
-      <item name="colorPrimaryDark">@color/turqoise</item>
-      <item name="colorAccent">@color/maroon</item>
+  <style name="AppTheme" parent="Theme.AppCompat">
+      <item name="colorPrimary">@color/turqoise</item>
+      <item name="colorPrimaryDark">@color/maroon</item>
+      <item name="colorAccent">@color/grass</item>
       <item name="actionBarStyle">@style/ActionBarStyle</item>
 
-      <item name="android:textViewStyle">@style/TextViewStyle</item>
-      <item name="android:editTextStyle">@style/EditTextStyle</item>
-      <item name="android:windowBackground">@android:color/background_light</item>
+      <!--<item name="android:textViewStyle">@style/TextViewStyle</item>-->
+      <!--<item name="android:editTextStyle">@style/EditTextStyle</item>-->
   </style>
 
     <style name="TextViewStyle" parent="android:Widget.TextView">
@@ -24,7 +23,7 @@
 
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
-
+        <item name="actionModeBackground">@android:color/background_light</item>
         <!-- Support library compatibility -->
         <item name="titleTextStyle">@style/ActionBarTitleText</item>
     </style>

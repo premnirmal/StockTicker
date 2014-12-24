@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Ticker</string>
+    <string name="app_name">StockTicker</string>
     <string name="hello_world">Portfolio</string>
     <string name="action_add">Add</string>
     <string name="action_export">Export Tickers</string>
     <string name="action_import">Import Tickers</string>
     <string name="action_Settings">Settings</string>
+    <string name="action_update">Refresh Now</string>
 
     <string name="endpoint">http://query.yahooapis.com/v1/public</string>
     <string name="suggestions_endpoint">http://d.yimg.com/autoc.finance.yahoo.com</string>
@@ -22,6 +23,7 @@
     <string name="ticker_import_fail">Error importing tickers</string>
     <string name="no_network_message">No network connection, check your connection settings</string>
     <string name="bold_font">Bold font?</string>
+    <string name="widget_label">BestStockWidget</string>
 
     <string-array name="font_sizes">
         <item>Small</item>

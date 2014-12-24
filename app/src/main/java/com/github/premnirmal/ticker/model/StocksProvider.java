@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -99,7 +98,8 @@ public class StocksProvider implements IStocksProvider {
     private void save() {
         preferences.edit().remove(STOCK_LIST)
                 .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
-                .putString(LAST_FETCHED, lastFetched).commit();
+                .putString(LAST_FETCHED, lastFetched)
+                .commit();
     }
 
     @Override
@@ -136,9 +136,7 @@ public class StocksProvider implements IStocksProvider {
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         final AppWidgetManager widgetManager = AppWidgetManager.getInstance(context);
         final int[] ids = widgetManager.getAppWidgetIds(new ComponentName(context, StockWidget.class));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            widgetManager.notifyAppWidgetViewDataChanged(ids, R.id.list);
-        }
+        widgetManager.notifyAppWidgetViewDataChanged(ids, R.id.list);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         context.sendBroadcast(intent);
         bus.post(new StockUpdatedEvent());

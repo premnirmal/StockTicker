@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devpaul.filepickerlibrary.FilePickerActivity;
+import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.BuildConfig;
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 /**
  * Created by premnirmal on 12/22/14.
  */
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends BaseActivity {
 
     @Inject
     IStocksProvider stocksProvider;

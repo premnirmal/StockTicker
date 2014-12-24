@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="orange">#FF8000</color>
-    <color name="turqoise">#00FFEF</color>
-    <color name="maroon">#800000</color>
+    <color name="sea">#00AADD</color>
+    <color name="turqoise">#40E0D0</color>
+    <color name="maroon">#9C2A00</color>
+    <color name="grass">#00AA8C</color>
     <color name="divider">#AAAA</color>
 </resources>
