@@ -1,9 +1,11 @@
 package com.github.premnirmal.ticker.network;
 
+import java.io.Serializable;
+
 /**
  * Created by premnirmal on 12/21/14.
  */
-public class Stock implements Comparable<Stock> {
+public class Stock implements Comparable<Stock>, Serializable {
 
     public String symbol;
 

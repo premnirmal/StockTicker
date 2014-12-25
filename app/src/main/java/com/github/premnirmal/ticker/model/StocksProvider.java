@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -75,6 +76,7 @@ public class StocksProvider implements IStocksProvider {
     private final StocksApi api;
     private final Context context;
     private final EventBus bus;
+    private final StocksStorage storage = new StocksStorage();
 
     public StocksProvider(StocksApi api, EventBus bus, Context context) {
         this.bus = bus;
@@ -94,7 +96,27 @@ public class StocksProvider implements IStocksProvider {
             preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).commit();
         }
         lastFetched = preferences.getString(LAST_FETCHED, null);
-        fetch();
+        fetchLocal();
+    }
+
+    private void fetchLocal() {
+        storage.read()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        fetch();
+                    }
+                })
+                .subscribe(new Action1<List<Stock>>() {
+                    @Override
+                    public void call(List<Stock> stocks) {
+                        stockList = stocks;
+                        sortStockList();
+                        sendBroadcast();
+                    }
+                });
     }
 
     private void save() {
@@ -102,6 +124,7 @@ public class StocksProvider implements IStocksProvider {
                 .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
                 .putString(LAST_FETCHED, lastFetched)
                 .commit();
+        storage.save(stockList);
     }
 
     @Override
@@ -131,6 +154,7 @@ public class StocksProvider implements IStocksProvider {
                             try {
                                 stockList = response.results.quote;
                                 lastFetched = response.created;
+                                save();
                                 sendBroadcast();
                             } catch (NullPointerException e) {
                                 fetch();
@@ -159,8 +183,16 @@ public class StocksProvider implements IStocksProvider {
         updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, updateReceiverIntent, 0);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                msToNextAlarm, pendingIntent);
+        if (Build.VERSION.SDK_INT >= 19) {
+            alarmManager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    msToNextAlarm,
+                    AlarmManager.INTERVAL_FIFTEEN_MINUTES / 3, // 5 minute window
+                    pendingIntent);
+        } else {
+            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    msToNextAlarm,
+                    pendingIntent);
+        }
     }
 
     @Override

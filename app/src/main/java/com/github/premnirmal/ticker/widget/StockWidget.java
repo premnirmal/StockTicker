@@ -6,10 +6,12 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.ui.ParanormalActivity;
 
@@ -29,13 +31,13 @@ public class StockWidget extends AppWidgetProvider {
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
         if (intent.getAction().equals(ACTION_NAME)) {
-            context.startActivity(new Intent(context,ParanormalActivity.class));
+            context.startActivity(new Intent(context, ParanormalActivity.class));
         }
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        ((StocksApp)context.getApplicationContext()).inject(this);
+        ((StocksApp) context.getApplicationContext()).inject(this);
         for (final Integer widgetId : appWidgetIds) {
             final Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
             final int min_width = getMinWidgetWidth(options);
@@ -55,7 +57,7 @@ public class StockWidget extends AppWidgetProvider {
     }
 
     private int getMinWidgetWidth(Bundle options) {
-        if(options == null || !options.containsKey(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
+        if (options == null || !options.containsKey(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
             return 0; // 2x1
         } else {
             return (int) options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
@@ -64,7 +66,7 @@ public class StockWidget extends AppWidgetProvider {
 
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
-        ((StocksApp)context.getApplicationContext()).inject(this);
+        ((StocksApp) context.getApplicationContext()).inject(this);
         final int min_width = getMinWidgetWidth(newOptions);
         final RemoteViews remoteViews;
         if (min_width > 250) {
@@ -86,6 +88,8 @@ public class StockWidget extends AppWidgetProvider {
         remoteViews.setPendingIntentTemplate(R.id.list, startActivityPendingIntent);
         remoteViews.setOnClickPendingIntent(R.id.widget_layout, startActivityPendingIntent);
         remoteViews.setTextViewText(R.id.last_updated, "Last updated: " + stocksProvider.lastFetched());
+        final float fontSize = Tools.getFontSize(context);
+        remoteViews.setTextViewTextSize(R.id.last_updated, TypedValue.COMPLEX_UNIT_SP, fontSize);
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
     }

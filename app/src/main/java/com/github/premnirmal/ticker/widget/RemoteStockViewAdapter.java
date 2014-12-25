@@ -33,7 +33,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
     public RemoteStockViewAdapter(Context context) {
         ((StocksApp) context.getApplicationContext()).inject(this);
         Collection<Stock> stocks = stocksProvider.getStocks();
-        this.stocks = stocks == null ? new ArrayList<Stock>() : new ArrayList<Stock>(stocks);
+        this.stocks = stocks == null ? new ArrayList<Stock>() : new ArrayList<>(stocks);
         this.context = context;
     }
 
@@ -44,7 +44,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public void onDataSetChanged() {
-        Collection<Stock> stocks = stocksProvider.getStocks();
+        final Collection<Stock> stocks = stocksProvider.getStocks();
         this.stocks = stocks == null ? new ArrayList<Stock>() : new ArrayList<Stock>(stocks);
     }
 
