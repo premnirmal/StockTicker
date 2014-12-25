@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.R;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
+import com.github.premnirmal.ticker.network.Query;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.network.StockQuery;
 import com.github.premnirmal.ticker.network.StocksApi;
@@ -39,6 +40,7 @@ import javax.inject.Singleton;
 import de.greenrobot.event.EventBus;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -114,12 +116,21 @@ public class StocksProvider implements IStocksProvider {
                             Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                         }
                     })
-                    .subscribe(new Action1<StockQuery>() {
+                    .map(new Func1<StockQuery, Query>() {
                         @Override
-                        public void call(StockQuery response) {
+                        public Query call(StockQuery stockQuery) {
+                            if (stockQuery == null) {
+                                return null;
+                            }
+                            return stockQuery.query;
+                        }
+                    })
+                    .subscribe(new Action1<Query>() {
+                        @Override
+                        public void call(Query response) {
                             try {
-                                stockList = response.query.results.quote;
-                                lastFetched = response.query.created;
+                                stockList = response.results.quote;
+                                lastFetched = response.created;
                                 sendBroadcast();
                             } catch (NullPointerException e) {
                                 fetch();

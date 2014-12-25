@@ -26,6 +26,7 @@ import javax.inject.Inject;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -79,10 +80,16 @@ public class TickerSelectorActivity extends BaseActivity {
                                                 throwable.getMessage(), Toast.LENGTH_SHORT);
                                     }
                                 })
-                                .subscribe(new Action1<Suggestions>() {
+                                .map(new Func1<Suggestions, List<Suggestion>>() {
                                     @Override
-                                    public void call(Suggestions suggestions) {
-                                        final List<Suggestion> suggestionList = suggestions.ResultSet.Result;
+                                    public List<Suggestion> call(Suggestions suggestions) {
+                                        return suggestions.ResultSet.Result;
+                                    }
+                                })
+                                .subscribe(new Action1<List<Suggestion>>() {
+                                    @Override
+                                    public void call(List<Suggestion> suggestions) {
+                                        final List<Suggestion> suggestionList = suggestions;
                                         listView.setAdapter(new SuggestionsAdapter(suggestionList));
                                     }
                                 });
@@ -101,7 +108,7 @@ public class TickerSelectorActivity extends BaseActivity {
                 final String ticker = suggestion.isStock() ? suggestion.symbol
                         : ("^" + suggestion.symbol);
                 stocksProvider.addStock(ticker);
-                Toast.makeText(TickerSelectorActivity.this, ticker + " added to list",Toast.LENGTH_SHORT).show();
+                Toast.makeText(TickerSelectorActivity.this, ticker + " added to list", Toast.LENGTH_SHORT).show();
                 searchView.setText("");
                 listView.setAdapter(new SuggestionsAdapter(new ArrayList<Suggestion>()));
             }
