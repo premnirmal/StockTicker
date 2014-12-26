@@ -61,6 +61,15 @@ class StocksStorage {
         });
     }
 
+    List<Stock> readSynchronous() {
+        try {
+            return readInternal();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private boolean saveInternal(List<Stock> stocks) throws IOException {
         boolean success = false;
         final File stocksFile = new File(Environment.getExternalStorageDirectory(), STOCKS_FILE);

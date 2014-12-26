@@ -98,30 +98,15 @@ public class StocksProvider implements IStocksProvider {
         lastFetched = preferences.getString(LAST_FETCHED, null);
         if(lastFetched == null) {
             fetch();
+        } else {
+            fetchLocal();
         }
-        fetchLocal(true);
     }
 
-    private void fetchLocal(final boolean syncrhonous) {
-        storage.read()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(syncrhonous
-                        ? AndroidSchedulers.mainThread()
-                        : Schedulers.io())
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        fetch();
-                    }
-                })
-                .subscribe(new Action1<List<Stock>>() {
-                    @Override
-                    public void call(List<Stock> stocks) {
-                        stockList = stocks;
-                        sortStockList();
-                        sendBroadcast();
-                    }
-                });
+    private void fetchLocal() {
+        stockList = storage.readSynchronous();
+        sortStockList();
+        sendBroadcast();
     }
 
     private void save() {
