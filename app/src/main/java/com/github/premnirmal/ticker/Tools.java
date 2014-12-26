@@ -28,7 +28,6 @@ public final class Tools {
         final StringBuilder commaSeparator = new StringBuilder();
         for (Object object : objects) {
             final String ticker = object.toString().replace("^", "")
-                    .replaceAll("[\\\\p{P}\\\\p{S}]", "")
                     .replaceAll(" ", "").trim();
             if(ticker.length() < 10) {
                 commaSeparator.append(ticker);

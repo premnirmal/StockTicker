@@ -51,7 +51,6 @@ class FileImportTask extends AsyncTask<String, Void, Boolean> {
             }
             final String[] tickers = text.toString()
                     .replaceAll(" ", "")
-                    .replaceAll("[\\\\p{P}\\\\p{S}]", "")
                     .split(",");
             stocksProvider.addStocks(Arrays.asList(tickers));
             result = true;
