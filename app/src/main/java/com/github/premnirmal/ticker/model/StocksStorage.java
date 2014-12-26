@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.model;
 
+import android.content.Context;
 import android.os.Environment;
 
 import com.github.premnirmal.ticker.network.Stock;
@@ -27,6 +28,12 @@ import rx.schedulers.Schedulers;
 class StocksStorage {
 
     static final String STOCKS_FILE = "stocks.dat";
+
+    final Context context;
+
+    StocksStorage(Context context) {
+        this.context = context;
+    }
 
     Observable<Boolean> save(List<Stock> stocks) {
         return Observable.just(stocks)
@@ -72,7 +79,7 @@ class StocksStorage {
 
     private boolean saveInternal(List<Stock> stocks) throws IOException {
         boolean success = false;
-        final File stocksFile = new File(Environment.getExternalStorageDirectory(), STOCKS_FILE);
+        final File stocksFile = new File(context.getExternalCacheDir(), STOCKS_FILE);
         FileOutputStream fout = null;
         ObjectOutputStream oos = null;
         try {
@@ -94,7 +101,7 @@ class StocksStorage {
     }
 
     private List<Stock> readInternal() throws IOException {
-        final File stocksFile = new File(Environment.getExternalStorageDirectory(), STOCKS_FILE);
+        final File stocksFile = new File(context.getExternalCacheDir(), STOCKS_FILE);
         ObjectInputStream ois = null;
         FileInputStream fis = null;
         try {

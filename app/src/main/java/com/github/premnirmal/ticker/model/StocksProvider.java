@@ -76,12 +76,13 @@ public class StocksProvider implements IStocksProvider {
     private final StocksApi api;
     private final Context context;
     private final EventBus bus;
-    private final StocksStorage storage = new StocksStorage();
+    private final StocksStorage storage;
 
     public StocksProvider(StocksApi api, EventBus bus, Context context) {
         this.bus = bus;
         this.api = api;
         this.context = context;
+        storage = new StocksStorage(context);
         preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
         final String tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS);
         tickerList = new ArrayList<>(Arrays.asList(tickerListVars.split(",")));
