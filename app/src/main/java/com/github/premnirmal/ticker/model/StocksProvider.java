@@ -106,8 +106,12 @@ public class StocksProvider implements IStocksProvider {
 
     private void fetchLocal() {
         stockList = storage.readSynchronous();
-        sortStockList();
-        sendBroadcast();
+        if(stockList != null) {
+            sortStockList();
+            sendBroadcast();
+        } else {
+            fetch();
+        }
     }
 
     private void save() {
