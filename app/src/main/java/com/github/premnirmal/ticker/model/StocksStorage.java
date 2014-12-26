@@ -18,7 +18,6 @@ import java.util.List;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -29,16 +28,10 @@ class StocksStorage {
 
     static final String STOCKS_FILE = "stocks.dat";
 
-    void save(List<Stock> stocks) {
-        Observable.just(stocks)
+    Observable<Boolean> save(List<Stock> stocks) {
+        return Observable.just(stocks)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throw new RuntimeException(throwable);
-                    }
-                })
                 .map(new Func1<List<Stock>, Boolean>() {
                     @Override
                     public Boolean call(List<Stock> stocks) {
@@ -49,15 +42,8 @@ class StocksStorage {
                             return false;
                         }
                     }
-                })
-                .subscribe(new Action1<Boolean>() {
-                    @Override
-                    public void call(Boolean success) {
-                        if (!success) {
-                            throw new RuntimeException("Error saving stock list");
-                        }
-                    }
                 });
+
     }
 
     Observable<List<Stock>> read() {

@@ -22,6 +22,7 @@ public abstract class BaseActivity extends ActionBarActivity {
             add(R.color.maroon);
             add(R.color.turqoise);
             add(R.color.grass);
+            add(R.color.dark);
         }
     };
 

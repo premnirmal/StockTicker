@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.github.premnirmal.ticker.R;
@@ -53,8 +54,9 @@ public class StocksProvider implements IStocksProvider {
     public static final String STOCK_LIST = "STOCK_LIST";
     public static final String SORTED_STOCK_LIST = "SORTED_STOCK_LIST";
     public static final String LAST_FETCHED = "LAST_FETCHED";
-
     public static final String UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE";
+
+    private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT";
 
     private static final Set<String> DEFAULT_SET = new HashSet<String>() {
         {
@@ -64,8 +66,6 @@ public class StocksProvider implements IStocksProvider {
             add("MSFT");
         }
     };
-
-    private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT";
 
     private Set<String> deprecatedTickerSet;
     private List<String> tickerList;
@@ -120,11 +120,26 @@ public class StocksProvider implements IStocksProvider {
     }
 
     private void save() {
-        preferences.edit().remove(STOCK_LIST)
+        preferences.edit()
+                .remove(STOCK_LIST)
                 .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
                 .putString(LAST_FETCHED, lastFetched)
                 .commit();
-        storage.save(stockList);
+        storage.save(stockList)
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
+                })
+                .subscribe(new Action1<Boolean>() {
+                    @Override
+                    public void call(Boolean success) {
+                        if (!success) {
+                            Log.e(getClass().getSimpleName(), "Save failed");
+                        }
+                    }
+                });
     }
 
     @Override
@@ -246,8 +261,8 @@ public class StocksProvider implements IStocksProvider {
             Collections.sort(stockList, new Comparator<Stock>() {
                 @Override
                 public int compare(Stock lhs, Stock rhs) {
-                    return ((Integer) stockList.indexOf(lhs.symbol))
-                            .compareTo(stockList.indexOf(rhs.symbol));
+                    return ((Integer) tickerList.indexOf(lhs.symbol))
+                            .compareTo(tickerList.indexOf(rhs.symbol));
                 }
             });
         }

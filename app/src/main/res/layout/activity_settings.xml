@@ -9,7 +9,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp"
         android:text="@string/action_export"
         android:id="@+id/action_export" />
 
@@ -18,7 +19,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp"
         android:text="@string/action_import"
         android:id="@+id/action_import" />
 
@@ -27,7 +29,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp"
         android:text="@string/text_size"
         android:id="@+id/change_text_size" />
 
@@ -35,12 +38,13 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
             android:text="@string/auto_sort" />
 
         <CheckBox
@@ -57,7 +61,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp"
         android:text="@string/checkout_open_source"
         android:id="@+id/github_link"
         android:linksClickable="true"
@@ -68,7 +73,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp"
         android:id="@+id/version"
         android:linksClickable="true"
         android:autoLink="all" />
