@@ -96,13 +96,18 @@ public class StocksProvider implements IStocksProvider {
             preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).commit();
         }
         lastFetched = preferences.getString(LAST_FETCHED, null);
-        fetchLocal();
+        if(lastFetched == null) {
+            fetch();
+        }
+        fetchLocal(true);
     }
 
-    private void fetchLocal() {
+    private void fetchLocal(final boolean syncrhonous) {
         storage.read()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(syncrhonous
+                        ? AndroidSchedulers.mainThread()
+                        : Schedulers.io())
                 .doOnError(new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
