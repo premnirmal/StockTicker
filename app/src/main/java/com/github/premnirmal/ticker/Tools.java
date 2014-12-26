@@ -27,8 +27,13 @@ public final class Tools {
     public static String buildQuery(Object[] objects) {
         final StringBuilder commaSeparator = new StringBuilder();
         for (Object object : objects) {
-            commaSeparator.append(object.toString().replace("^", "").replaceAll(" ", "").trim());
-            commaSeparator.append(',');
+            final String ticker = object.toString().replace("^", "")
+                    .replaceAll("[\\\\p{P}\\\\p{S}]", "")
+                    .replaceAll(" ", "").trim();
+            if(ticker.length() < 10) {
+                commaSeparator.append(ticker);
+                commaSeparator.append(',');
+            }
         }
         if (objects.length > 0) {
             commaSeparator.deleteCharAt(commaSeparator.length() - 1);

@@ -64,6 +64,7 @@ public class StocksProvider implements IStocksProvider {
             add("GOOG");
             add("AAPL");
             add("MSFT");
+            add("YHOO");
         }
     };
 
@@ -267,6 +268,7 @@ public class StocksProvider implements IStocksProvider {
     public Collection<Stock> rearrange(List<String> tickers) {
         tickerList = new ArrayList<>(tickers);
         save();
+        sendBroadcast();
         return getStocks();
     }
 

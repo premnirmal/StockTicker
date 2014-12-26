@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.model;
 
 import android.content.Context;
-import android.os.Environment;
 
 import com.github.premnirmal.ticker.network.Stock;
 
@@ -17,8 +16,8 @@ import java.io.StreamCorruptedException;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -49,23 +48,14 @@ class StocksStorage {
                             return false;
                         }
                     }
+                })
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                    }
                 });
 
-    }
-
-    Observable<List<Stock>> read() {
-        return Observable.create(new Observable.OnSubscribe<List<Stock>>() {
-            @Override
-            public void call(Subscriber<? super List<Stock>> subscriber) {
-                try {
-                    final List<Stock> stocks = readInternal();
-                    subscriber.onNext(stocks);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    subscriber.onError(e);
-                }
-            }
-        });
     }
 
     List<Stock> readSynchronous() {

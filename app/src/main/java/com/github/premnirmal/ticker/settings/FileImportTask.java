@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 
 /**
@@ -23,6 +25,16 @@ class FileImportTask extends AsyncTask<String, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(String... params) {
+        URI uri;
+        try {
+            uri = new URI(params[0]);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return false;
+        }
+        if (uri == null || uri.getPath() == null || !uri.getPath().endsWith(".txt")) {
+            return false;
+        }
 
         final File tickersFile = new File(params[0]);
         boolean result = false;
@@ -37,7 +49,10 @@ class FileImportTask extends AsyncTask<String, Void, Boolean> {
             while ((line = br.readLine()) != null) {
                 text.append(line);
             }
-            final String[] tickers = text.toString().replaceAll(" ","").trim().split(",");
+            final String[] tickers = text.toString()
+                    .replaceAll(" ", "")
+                    .replaceAll("[\\\\p{P}\\\\p{S}]", "")
+                    .split(",");
             stocksProvider.addStocks(Arrays.asList(tickers));
             result = true;
         } catch (IOException e) {

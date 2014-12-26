@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -45,5 +47,19 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected void setRandomActionBarColor() {
         final Drawable drawable = new ColorDrawable(randomColor());
         getSupportActionBar().setBackgroundDrawable(drawable);
+    }
+
+
+
+    protected final AlertDialog showDialog(String message) {
+        return new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

@@ -41,6 +41,7 @@ public class ParanormalActivity extends BaseActivity {
     EventBus bus;
 
     private final Handler handler = new Handler();
+    private AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,22 +151,11 @@ public class ParanormalActivity extends BaseActivity {
         update();
     }
 
-
-    boolean showing = false;
     @Subscribe
     public void onEvent(NoNetworkEvent event) {
+        final boolean showing = alertDialog != null && !alertDialog.isShowing();
         if(!showing) {
-            new AlertDialog.Builder(this)
-                    .setMessage(R.string.no_network_message)
-                    .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            showing = false;
-                        }
-                    })
-                    .show();
-            showing = true;
+            alertDialog = showDialog(getString(R.string.no_network_message));
         }
     }
 

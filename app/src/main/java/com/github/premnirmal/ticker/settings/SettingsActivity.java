@@ -127,10 +127,10 @@ public class SettingsActivity extends BaseActivity {
                     @Override
                     protected void onPostExecute(Boolean result) {
                         if (result) {
-                            Toast.makeText(SettingsActivity.this, R.string.ticker_import_success, Toast.LENGTH_SHORT).show();
+                            showDialog(getString(R.string.ticker_import_success));
                             finish();
                         } else {
-                            Toast.makeText(SettingsActivity.this, R.string.ticker_import_fail, Toast.LENGTH_SHORT).show();
+                            showDialog(getString(R.string.ticker_import_fail));
                         }
                     }
                 }.execute(filePath);
