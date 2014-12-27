@@ -10,7 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.premnirmal.ticker.BaseActivity;
-import com.github.premnirmal.ticker.R;
+import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;

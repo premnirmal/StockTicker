@@ -7,6 +7,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import com.github.premnirmal.tickerwidget.R;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

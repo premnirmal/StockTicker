@@ -13,7 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.github.premnirmal.ticker.R;
+import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;

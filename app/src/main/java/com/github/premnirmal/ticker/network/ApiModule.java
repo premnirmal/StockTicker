@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.network;
 
 import android.content.Context;
 
-import com.github.premnirmal.ticker.R;
+import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.model.StocksProvider;

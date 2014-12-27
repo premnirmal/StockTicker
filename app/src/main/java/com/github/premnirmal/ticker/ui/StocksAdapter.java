@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.github.premnirmal.ticker.R;
+import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.terlici.dragndroplist.DragNDropAdapter;

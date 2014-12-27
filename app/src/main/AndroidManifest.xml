@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.premnirmal.ticker">
+    package="com.github.premnirmal.tickerwidget">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -28,12 +28,14 @@
             android:name="com.github.premnirmal.ticker.ui.TickerSelectorActivity"
             android:label="@string/add_ticker" />
 
-        <activity android:name=".settings.SettingsActivity"
+        <activity android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
             android:label="@string/action_Settings"/>
 
-        <receiver android:name=".UpdateReceiver" android:enabled="true">
+        <receiver android:name="com.github.premnirmal.ticker.UpdateReceiver" android:enabled="true">
             <intent-filter>
-                <action android:name="com.github.premnirmal.ticker.UPDATE"></action>
+                <action android:name="com.github.premnirmal.ticker.UPDATE"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <data android:scheme="package"/>
             </intent-filter>
         </receiver>
 

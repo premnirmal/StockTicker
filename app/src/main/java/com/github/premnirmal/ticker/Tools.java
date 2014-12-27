@@ -7,6 +7,8 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.os.SystemClock;
 
+import com.github.premnirmal.tickerwidget.R;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
@@ -29,7 +31,7 @@ public final class Tools {
         for (Object object : objects) {
             final String ticker = object.toString().replace("^", "")
                     .replaceAll(" ", "").trim();
-            if(ticker.length() < 10) {
+            if (ticker.length() < 10) {
                 commaSeparator.append(ticker);
                 commaSeparator.append(',');
             }
@@ -75,26 +77,36 @@ public final class Tools {
 
     /**
      * Takes care of weekends and afterhours
+     *
      * @return
      */
     public static long getMsToNextAlarm() {
         final int hourOfDay = DateTime.now().hourOfDay().get();
-        if(hourOfDay >= 17) { // 5pm
-            final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
-            mutableDateTime.setZone(DateTimeZone.getDefault());
+        final int dayOfWeek = DateTime.now().getDayOfWeek();
+        final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
+        mutableDateTime.setZone(DateTimeZone.getDefault());
+
+        boolean set = false;
+
+        if (hourOfDay >= 17) { // 5pm
             mutableDateTime.addDays(1);
             mutableDateTime.setHourOfDay(9); // 9am
             mutableDateTime.setMinuteOfHour(15); // update at 9:15am
-            if(mutableDateTime.getDayOfWeek() > DateTimeConstants.FRIDAY) {
-                switch (mutableDateTime.getDayOfWeek()) {
-                    case DateTimeConstants.SATURDAY:
-                        mutableDateTime.addDays(2);
-                        break;
-                    case DateTimeConstants.SUNDAY:
-                        mutableDateTime.addDays(1);
-                        break;
-                }
+            set = true;
+        }
+
+        if (dayOfWeek > DateTimeConstants.FRIDAY) {
+            set = true;
+            if (dayOfWeek == DateTimeConstants.SATURDAY) {
+                mutableDateTime.addDays(2);
+            } else if (dayOfWeek == DateTimeConstants.SUNDAY) {
+                mutableDateTime.addDays(1);
             }
+            mutableDateTime.setHourOfDay(9); // 9am
+            mutableDateTime.setMinuteOfHour(15); // update at 9:15am
+        }
+
+        if (set) {
             final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
             return SystemClock.elapsedRealtime() + msToNextSchedule;
         } else {
@@ -104,11 +116,11 @@ public final class Tools {
 
     public static String toCommaSeparatedString(List<String> list) {
         final StringBuilder builder = new StringBuilder();
-        for(String string : list) {
+        for (String string : list) {
             builder.append(string);
             builder.append(",");
         }
-        builder.deleteCharAt(builder.length()-1);
+        builder.deleteCharAt(builder.length() - 1);
         return builder.toString();
     }
 }

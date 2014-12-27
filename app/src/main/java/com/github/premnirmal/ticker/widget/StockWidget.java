@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
 
-import com.github.premnirmal.ticker.R;
+import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
