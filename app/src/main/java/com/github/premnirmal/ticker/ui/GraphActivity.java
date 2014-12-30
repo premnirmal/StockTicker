@@ -40,18 +40,26 @@ public class GraphActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        historyProvider.getDataPoints(ticker)
-                .subscribe(new Action1<DataPoint[]>() {
-                    @Override
-                    public void call(DataPoint[] data) {
-                        dataPoints = data;
-                        final GraphView graphView = new GraphView(GraphActivity.this);
-                        final LineGraphSeries<DataPoint> series = new LineGraphSeries(dataPoints);
-                        graphView.addSeries(series);
-                        graphView.getGridLabelRenderer()
-                                .setLabelFormatter(new DateAsXAxisLabelFormatter(GraphActivity.this));
-                        setContentView(graphView);
-                    }
-                });
+        if(dataPoints == null) {
+            historyProvider.getDataPoints(ticker)
+                    .subscribe(new Action1<DataPoint[]>() {
+                        @Override
+                        public void call(DataPoint[] data) {
+                            dataPoints = data;
+                            loadGraph();
+                        }
+                    });
+        } else {
+            loadGraph();
+        }
+    }
+
+    private void loadGraph() {
+        final GraphView graphView = new GraphView(this);
+        final LineGraphSeries<DataPoint> series = new LineGraphSeries(dataPoints);
+        graphView.addSeries(series);
+        graphView.getGridLabelRenderer()
+                .setLabelFormatter(new DateAsXAxisLabelFormatter(this));
+        setContentView(graphView);
     }
 }
