@@ -3,29 +3,18 @@ package com.github.premnirmal.ticker.network.historicaldata;
 import android.os.Parcelable;
 import android.os.Parcel;
 
-
-public class HistoricalData implements Parcelable{
-
-    private static final String FIELD_QUERY = "query";
+import com.github.premnirmal.ticker.network.Query;
 
 
-    private Query mQuery;
+public class HistoricalData implements Parcelable {
 
+    public Query query;
 
-    public HistoricalData(){
-
-    }
-
-    public void setQuery(Query query) {
-        mQuery = query;
-    }
-
-    public Query getQuery() {
-        return mQuery;
+    public HistoricalData() {
     }
 
     public HistoricalData(Parcel in) {
-        mQuery = in.readParcelable(Query.class.getClassLoader());
+        query = in.readParcelable(Query.class.getClassLoader());
     }
 
     @Override
@@ -39,13 +28,13 @@ public class HistoricalData implements Parcelable{
         }
 
         public HistoricalData[] newArray(int size) {
-        return new HistoricalData[size];
+            return new HistoricalData[size];
         }
     };
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(mQuery, flags);
+        dest.writeParcelable(query, flags);
     }
 
 
