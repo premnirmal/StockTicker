@@ -1,0 +1,3 @@
+[submodule "Libraries/GraphView"]
+	path = Libraries/GraphView
+	url = git@github.com:premnirmal/Animated-Android-GraphView.git

@@ -34,6 +34,9 @@ android {
 }
 
 dependencies {
+
+    compile project(':Libraries:GraphView')
+
     compile 'com.android.support:appcompat-v7:21.0.2'
     compile 'com.squareup.dagger:dagger-compiler:1.2.+'
     compile 'com.squareup.dagger:dagger:1.2.+'

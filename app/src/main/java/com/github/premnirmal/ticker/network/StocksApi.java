@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.network;
 
+import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
+
 import retrofit.http.GET;
 import rx.Observable;
 
@@ -14,19 +16,6 @@ public interface StocksApi {
 //            "&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json"
 
 
-//    http://query.yahooapis.com/v1/public/yql?q=select%20%2a%20from%20yahoo.finance.quotes%20where%20
-//          symbol%20=%20%22GOOG%22&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json
-
-
-    /**
-     * Returns a quote that provides a list of one stock quote
-     *
-     * @param ticker the ticker of the stock
-     * @return
-     */
-    @GET("/yql?env=http://datatables.org/alltables.env&format=json")
-    Observable<StockQuery> getStock(@retrofit.http.Query(value = "q", encodeValue = false) String ticker);
-
     /**
      * Returns a quote that provides a list of {@link com.github.premnirmal.ticker.network.Stock}s
      *
@@ -35,5 +24,13 @@ public interface StocksApi {
      */
     @GET("/yql?env=store://datatables.org/alltableswithkeys&format=json")
     Observable<StockQuery> getStocks(@retrofit.http.Query(value = "q", encodeValue = false) String query);
+
+
+//    https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where
+// %20symbol%20%3D%20%22YHOO%22%20and%20startDate%20%3D%20%222009-09-11%22%20and%20endDate%20%3D%20%222010-03-10%22
+// &format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=
+
+    @GET("/yql?env=store://datatables.org/alltableswithkeys&format=json")
+    Observable<HistoricalData> getHistory(@retrofit.http.Query(value = "q", encodeValue = false) String query);
 
 }

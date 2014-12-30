@@ -4,8 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.github.premnirmal.ticker.StocksApp"
@@ -28,18 +28,28 @@
             android:name="com.github.premnirmal.ticker.ui.TickerSelectorActivity"
             android:label="@string/add_ticker" />
 
-        <activity android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
-            android:label="@string/action_Settings"/>
+        <activity
+            android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
+            android:label="@string/action_Settings" />
 
-        <receiver android:name="com.github.premnirmal.ticker.UpdateReceiver" android:enabled="true">
+        <activity
+            android:name="com.github.premnirmal.ticker.ui.GraphActivity"
+            android:screenOrientation="landscape"
+            android:label="@string/action_Settings" />
+
+        <receiver
+            android:name="com.github.premnirmal.ticker.UpdateReceiver"
+            android:enabled="true">
             <intent-filter>
-                <action android:name="com.github.premnirmal.ticker.UPDATE"/>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-                <data android:scheme="package"/>
+                <action android:name="com.github.premnirmal.ticker.UPDATE" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+
+                <data android:scheme="package" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget"
+        <receiver
+            android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -51,7 +61,7 @@
 
         <service
             android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

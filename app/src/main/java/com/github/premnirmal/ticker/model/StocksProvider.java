@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.github.premnirmal.ticker.network.QueryCreator;
 import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.UpdateReceiver;
@@ -141,7 +142,7 @@ public class StocksProvider implements IStocksProvider {
     @Override
     public void fetch() {
         if (Tools.isNetworkOnline(context)) {
-            api.getStocks(Tools.buildQuery(tickerList.toArray()))
+            api.getStocks(QueryCreator.buildStocksQuery(tickerList.toArray()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .doOnError(new Action1<Throwable>() {
