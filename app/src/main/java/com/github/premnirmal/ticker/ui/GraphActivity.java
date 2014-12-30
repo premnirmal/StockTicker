@@ -23,6 +23,7 @@ public class GraphActivity extends BaseActivity {
     public static final String GRAPH_DATA = "GRAPH_DATA";
 
     private String ticker;
+    private DataPoint[] dataPoints;
 
     @Inject
     IHistoryProvider historyProvider;
@@ -34,10 +35,16 @@ public class GraphActivity extends BaseActivity {
         setContentView(R.layout.progress);
         ticker = getIntent().getStringExtra(GRAPH_DATA);
         getSupportActionBar().setTitle(ticker);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         historyProvider.getDataPoints(ticker)
                 .subscribe(new Action1<DataPoint[]>() {
                     @Override
-                    public void call(DataPoint[] dataPoints) {
+                    public void call(DataPoint[] data) {
+                        dataPoints = data;
                         final GraphView graphView = new GraphView(GraphActivity.this);
                         final LineGraphSeries<DataPoint> series = new LineGraphSeries(dataPoints);
                         graphView.addSeries(series);

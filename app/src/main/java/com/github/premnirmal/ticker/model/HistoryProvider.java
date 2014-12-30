@@ -1,8 +1,10 @@
 package com.github.premnirmal.ticker.model;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.network.QueryCreator;
 import com.github.premnirmal.ticker.network.StocksApi;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
@@ -41,47 +43,69 @@ public class HistoryProvider implements IHistoryProvider {
             public void call(final Subscriber<? super History> subscriber) {
                 final DateTime now = DateTime.now();
                 final String query = QueryCreator.buildHistoricalDataQuery(ticker, now.minusYears(1), now);
-                stocksApi.getHistory(query)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
-                        .doOnError(new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .map(new Func1<HistoricalData, HistoricalData>() {
-                            @Override
-                            public HistoricalData call(HistoricalData historicalData) {
-                                Collections.sort(historicalData.query.mResult.quote);
-                                return historicalData;
-                            }
-                        })
-                        .subscribe(new Action1<HistoricalData>() {
-                            @Override
-                            public void call(HistoricalData response) {
-                                subscriber.onNext(response.query.mResult);
-                                subscriber.onCompleted();
-                            }
-                        });
+                if (Tools.isNetworkOnline(context)) {
+                    stocksApi.getHistory(query)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
+                            .doOnError(new Action1<Throwable>() {
+                                @Override
+                                public void call(Throwable throwable) {
+                                    Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .map(new Func1<HistoricalData, HistoricalData>() {
+                                @Override
+                                public HistoricalData call(HistoricalData historicalData) {
+                                    Collections.sort(historicalData.query.mResult.quote);
+                                    return historicalData;
+                                }
+                            })
+                            .subscribe(new Action1<HistoricalData>() {
+                                @Override
+                                public void call(HistoricalData response) {
+                                    subscriber.onNext(response.query.mResult);
+                                    subscriber.onCompleted();
+                                }
+                            });
+                } else {
+                    subscriber.onError(new NetworkErrorException());
+                }
             }
         });
     }
 
     @Override
-    public Observable<DataPoint[]> getDataPoints(String ticker) {
-        return getHistory(ticker)
-                .map(new Func1<History, DataPoint[]>() {
-                    @Override
-                    public DataPoint[] call(History history) {
-                        final DataPoint[] dataPoints = new DataPoint[history.quote.size()];
-                        for(int i = 0; i < history.quote.size(); i++) {
-                            final Quote quote = history.quote.get(i);
-                            final DataPoint point = new DataPoint(quote.getDate().toDate(),quote.mClose);
-                            dataPoints[i] = point;
-                        }
-                        return dataPoints;
-                    }
-                });
+    public Observable<DataPoint[]> getDataPoints(final String ticker) {
+        return Observable.create(new Observable.OnSubscribe<DataPoint[]>() {
+            @Override
+            public void call(final Subscriber<? super DataPoint[]> subscriber) {
+                getHistory(ticker)
+                        .map(new Func1<History, DataPoint[]>() {
+                            @Override
+                            public DataPoint[] call(History history) {
+                                final DataPoint[] dataPoints = new DataPoint[history.quote.size()];
+                                for (int i = 0; i < history.quote.size(); i++) {
+                                    final Quote quote = history.quote.get(i);
+                                    final DataPoint point = new DataPoint(quote.getDate().toDate(), quote.mClose);
+                                    dataPoints[i] = point;
+                                }
+                                return dataPoints;
+                            }
+                        })
+                        .doOnError(new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                subscriber.onError(throwable);
+                            }
+                        })
+                        .subscribe(new Action1<DataPoint[]>() {
+                            @Override
+                            public void call(DataPoint[] dataPoints) {
+                                subscriber.onNext(dataPoints);
+                                subscriber.onCompleted();
+                            }
+                        });
+            }
+        });
     }
 }
