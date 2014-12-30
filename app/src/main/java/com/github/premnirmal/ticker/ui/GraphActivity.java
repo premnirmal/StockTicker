@@ -5,11 +5,11 @@ import android.os.Bundle;
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.model.IHistoryProvider;
-import com.github.premnirmal.ticker.network.historicaldata.History;
-import com.github.premnirmal.ticker.network.historicaldata.Quote;
 import com.github.premnirmal.tickerwidget.R;
-import com.jjoe64.graphview.GraphViewSeries;
-import com.jjoe64.graphview.LineGraphView;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import javax.inject.Inject;
 
@@ -23,7 +23,6 @@ public class GraphActivity extends BaseActivity {
     public static final String GRAPH_DATA = "GRAPH_DATA";
 
     private String ticker;
-    private History history;
 
     @Inject
     IHistoryProvider historyProvider;
@@ -35,16 +34,15 @@ public class GraphActivity extends BaseActivity {
         setContentView(R.layout.progress);
         ticker = getIntent().getStringExtra(GRAPH_DATA);
         getSupportActionBar().setTitle(ticker);
-        historyProvider.getHistory(ticker)
-                .subscribe(new Action1<History>() {
+        historyProvider.getDataPoints(ticker)
+                .subscribe(new Action1<DataPoint[]>() {
                     @Override
-                    public void call(History hist) {
-                        history = hist;
-                        final LineGraphView graphView = new LineGraphView(GraphActivity.this);
-                        final Quote[] quotes = new Quote[history.quote.size()];
-                        history.quote.toArray(quotes);
-                        final GraphViewSeries series = new GraphViewSeries(quotes);
+                    public void call(DataPoint[] dataPoints) {
+                        final GraphView graphView = new GraphView(GraphActivity.this);
+                        final LineGraphSeries<DataPoint> series = new LineGraphSeries(dataPoints);
                         graphView.addSeries(series);
+                        graphView.getGridLabelRenderer()
+                                .setLabelFormatter(new DateAsXAxisLabelFormatter(GraphActivity.this));
                         setContentView(graphView);
                     }
                 });

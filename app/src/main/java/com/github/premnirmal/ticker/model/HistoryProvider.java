@@ -7,6 +7,8 @@ import com.github.premnirmal.ticker.network.QueryCreator;
 import com.github.premnirmal.ticker.network.StocksApi;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
 import com.github.premnirmal.ticker.network.historicaldata.History;
+import com.github.premnirmal.ticker.network.historicaldata.Quote;
+import com.jjoe64.graphview.series.DataPoint;
 
 import org.joda.time.DateTime;
 
@@ -64,5 +66,22 @@ public class HistoryProvider implements IHistoryProvider {
                         });
             }
         });
+    }
+
+    @Override
+    public Observable<DataPoint[]> getDataPoints(String ticker) {
+        return getHistory(ticker)
+                .map(new Func1<History, DataPoint[]>() {
+                    @Override
+                    public DataPoint[] call(History history) {
+                        final DataPoint[] dataPoints = new DataPoint[history.quote.size()];
+                        for(int i = 0; i < history.quote.size(); i++) {
+                            final Quote quote = history.quote.get(i);
+                            final DataPoint point = new DataPoint(quote.getDate().toDate(),quote.mClose);
+                            dataPoints[i] = point;
+                        }
+                        return dataPoints;
+                    }
+                });
     }
 }

@@ -5,12 +5,12 @@ import android.os.Parcelable;
 
 import com.github.premnirmal.ticker.network.QueryCreator;
 import com.google.gson.annotations.SerializedName;
-import com.jjoe64.graphview.GraphViewDataInterface;
 
+import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 
 
-public class Quote implements Parcelable, GraphViewDataInterface, Comparable<Quote> {
+public class Quote implements Parcelable, Comparable<Quote> {
 
     public static final DateTimeFormatter formatter = QueryCreator.formatter;
 
@@ -44,6 +44,10 @@ public class Quote implements Parcelable, GraphViewDataInterface, Comparable<Quo
 
     public Quote(){
 
+    }
+
+    public DateTime getDate() {
+        return formatter.parseDateTime(mDate);
     }
 
     public Quote(Parcel in) {
@@ -82,16 +86,6 @@ public class Quote implements Parcelable, GraphViewDataInterface, Comparable<Quo
         dest.writeInt(mVolume);
         dest.writeString(mDate);
         dest.writeDouble(mLow);
-    }
-
-    @Override
-    public double getX() {
-        return formatter.parseDateTime(mDate).getMillis();
-    }
-
-    @Override
-    public double getY() {
-        return mClose;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.ui;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -47,14 +48,14 @@ public class ParanormalActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((StocksApp) getApplicationContext()).inject(this);
-        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME,MODE_PRIVATE);
-        if(preferences.getBoolean(Tools.SETTING_AUTOSORT,false)) {
+        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
+        if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
             setContentView(R.layout.activity_paranormal);
         } else {
             setContentView(R.layout.activity_paranormal_draggable);
         }
         bus.register(this);
-        if(!Tools.isNetworkOnline(getApplicationContext())) {
+        if (!Tools.isNetworkOnline(getApplicationContext())) {
             onEvent(new NoNetworkEvent());
         }
     }
@@ -76,8 +77,8 @@ public class ParanormalActivity extends BaseActivity {
             final Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
             return true;
-        } else if(item.getItemId() == R.id.action_update) {
-            if(!Tools.isNetworkOnline(getApplicationContext())) {
+        } else if (item.getItemId() == R.id.action_update) {
+            if (!Tools.isNetworkOnline(getApplicationContext())) {
                 onEvent(new NoNetworkEvent());
             } else {
                 stocksProvider.fetch();
@@ -104,19 +105,19 @@ public class ParanormalActivity extends BaseActivity {
                 }
             }, 600);
         }
-        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME,MODE_PRIVATE);
-        if(preferences.getBoolean(Tools.SETTING_AUTOSORT,false)) {
+        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
+        if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
             setContentView(R.layout.activity_paranormal);
         } else {
             setContentView(R.layout.activity_paranormal_draggable);
         }
 
-        ((TextView)findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
+        ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
         final AdapterView adapterView = (AdapterView) findViewById(R.id.stockList);
         final StocksAdapter adapter = new StocksAdapter(stocksProvider,
-                preferences.getBoolean(Tools.SETTING_AUTOSORT,false));
-        if(!preferences.getBoolean(Tools.SETTING_AUTOSORT,false)
+                preferences.getBoolean(Tools.SETTING_AUTOSORT, false));
+        if (!preferences.getBoolean(Tools.SETTING_AUTOSORT, false)
                 && adapterView instanceof DragNDropListView) {
             ((DragNDropListView) adapterView).setDragNDropAdapter(adapter);
         } else {
@@ -125,22 +126,27 @@ public class ParanormalActivity extends BaseActivity {
         adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-
-                final Intent intent = new Intent(ParanormalActivity.this,GraphActivity.class);
-                intent.putExtra(GraphActivity.GRAPH_DATA,adapter.getItem(position).symbol);
+                final Intent intent = new Intent(ParanormalActivity.this, GraphActivity.class);
+                intent.putExtra(GraphActivity.GRAPH_DATA, adapter.getItem(position).symbol);
                 startActivity(intent);
+            }
+        });
 
-//                new AlertDialog.Builder(ParanormalActivity.this)
-//                        .setMessage("Remove stock?")
-//                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                stocksProvider.removeStock(adapter.getItem(position).symbol);
-//                                update();
-//                            }
-//                        })
-//                        .show();
-//                update();
+        adapterView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                new AlertDialog.Builder(ParanormalActivity.this)
+                        .setMessage("Remove stock?")
+                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                stocksProvider.removeStock(adapter.getItem(position).symbol);
+                                update();
+                            }
+                        })
+                        .show();
+                update();
+                return true;
             }
         });
     }
@@ -159,7 +165,7 @@ public class ParanormalActivity extends BaseActivity {
     @Subscribe
     public void onEvent(NoNetworkEvent event) {
         final boolean showing = alertDialog != null && !alertDialog.isShowing();
-        if(!showing) {
+        if (!showing) {
             alertDialog = showDialog(getString(R.string.no_network_message));
         }
     }
