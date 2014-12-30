@@ -8,15 +8,15 @@ import java.util.List;
 /**
  * Created by premnirmal on 12/30/14.
  */
-public class Results implements Parcelable {
+public class History implements Parcelable {
 
     public List<Quote> quote;
 
-    public Results() {
+    public History() {
 
     }
 
-    public Results(Parcel in) {
+    public History(Parcel in) {
         in.readList(quote, Quote.class.getClassLoader());
     }
 
@@ -25,13 +25,13 @@ public class Results implements Parcelable {
         return 0;
     }
 
-    public static final Creator<Results> CREATOR = new Creator<Results>() {
-        public Results createFromParcel(Parcel in) {
-            return new Results(in);
+    public static final Creator<History> CREATOR = new Creator<History>() {
+        public History createFromParcel(Parcel in) {
+            return new History(in);
         }
 
-        public Results[] newArray(int size) {
-            return new Results[size];
+        public History[] newArray(int size) {
+            return new History[size];
         }
     };
 

@@ -2,6 +2,9 @@ package com.github.premnirmal.ticker.network;
 
 import android.content.Context;
 
+import com.github.premnirmal.ticker.model.HistoryProvider;
+import com.github.premnirmal.ticker.model.IHistoryProvider;
+import com.github.premnirmal.ticker.ui.GraphActivity;
 import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.IStocksProvider;
@@ -30,7 +33,8 @@ import retrofit.RestAdapter;
                 SettingsActivity.class,
                 StockWidget.class,
                 UpdateReceiver.class,
-                ParanormalActivity.class
+                ParanormalActivity.class,
+                GraphActivity.class
         },
         complete = false,
         library = true
@@ -80,6 +84,12 @@ public class ApiModule {
             eventBus = EventBus.getDefault();
         }
         return eventBus;
+    }
+
+    @Provides
+    @Singleton
+    IHistoryProvider provideHistoryProvider(Context context) {
+        return new HistoryProvider(provideStocksApi(context), context);
     }
 
 }

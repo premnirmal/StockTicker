@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.jjoe64.graphview.GraphView
+    <com.jjoe64.graphview.AnimatedLineGraphView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/graph" />

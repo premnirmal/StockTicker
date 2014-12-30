@@ -3,8 +3,6 @@ package com.github.premnirmal.ticker.network.historicaldata;
 import android.os.Parcelable;
 import android.os.Parcel;
 
-import com.github.premnirmal.ticker.network.Query;
-
 
 public class HistoricalData implements Parcelable {
 

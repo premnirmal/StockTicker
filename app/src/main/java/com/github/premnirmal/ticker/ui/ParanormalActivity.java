@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.ui;
 import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -18,7 +17,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.premnirmal.ticker.BaseActivity;
-import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.events.NoNetworkEvent;
@@ -26,6 +24,7 @@ import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.StockWidget;
+import com.github.premnirmal.tickerwidget.R;
 import com.google.common.eventbus.Subscribe;
 import com.terlici.dragndroplist.DragNDropListView;
 
@@ -37,6 +36,7 @@ public class ParanormalActivity extends BaseActivity {
 
     @Inject
     IStocksProvider stocksProvider;
+
     @Inject
     EventBus bus;
 
@@ -125,17 +125,22 @@ public class ParanormalActivity extends BaseActivity {
         adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                new AlertDialog.Builder(ParanormalActivity.this)
-                        .setMessage("Remove stock?")
-                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                stocksProvider.removeStock(adapter.getItem(position).symbol);
-                                update();
-                            }
-                        })
-                        .show();
-                update();
+
+                final Intent intent = new Intent(ParanormalActivity.this,GraphActivity.class);
+                intent.putExtra(GraphActivity.GRAPH_DATA,adapter.getItem(position).symbol);
+                startActivity(intent);
+
+//                new AlertDialog.Builder(ParanormalActivity.this)
+//                        .setMessage("Remove stock?")
+//                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                stocksProvider.removeStock(adapter.getItem(position).symbol);
+//                                update();
+//                            }
+//                        })
+//                        .show();
+//                update();
             }
         });
     }

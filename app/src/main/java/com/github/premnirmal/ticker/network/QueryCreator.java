@@ -37,7 +37,7 @@ public class QueryCreator {
         stringBuilder.append(formatter.print(start));
         stringBuilder.append("%22%20and%20endDate%20%3D%20%22");
         stringBuilder.append(formatter.print(end));
-
+        stringBuilder.append("%22");
         return stringBuilder.toString();
     }
 }
