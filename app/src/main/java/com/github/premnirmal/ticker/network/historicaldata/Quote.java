@@ -3,8 +3,15 @@ package com.github.premnirmal.ticker.network.historicaldata;
 import android.os.Parcelable;
 import android.os.Parcel;
 
+import com.github.premnirmal.ticker.network.QueryCreator;
+import com.jjoe64.graphview.GraphViewDataInterface;
 
-public class Quote implements Parcelable {
+import org.joda.time.format.DateTimeFormatter;
+
+
+public class Quote implements Parcelable, GraphViewDataInterface {
+
+    public static final DateTimeFormatter formatter = QueryCreator.formatter;
 
     public double high;
     public double open;
@@ -56,5 +63,13 @@ public class Quote implements Parcelable {
         dest.writeDouble(low);
     }
 
+    @Override
+    public double getX() {
+        return formatter.parseDateTime(date).getMillis();
+    }
 
+    @Override
+    public double getY() {
+        return close;
+    }
 }

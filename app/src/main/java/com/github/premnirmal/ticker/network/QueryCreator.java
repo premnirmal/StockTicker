@@ -10,7 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class QueryCreator {
 
 
-    final static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+    public final static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 
     public static String buildStocksQuery(Object[] objects) {
         final StringBuilder commaSeparator = new StringBuilder();
