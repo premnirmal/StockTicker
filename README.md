@@ -4,6 +4,7 @@
 - Based off the [ministocks widget](https://github.com/niteshpatel/ministocks) but allowing unlimited tickers in a grid so you don't have to worry about sizing.
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours and weekdays.
+- **Now has Graphs!** Using [android graphview] (http://www.android-graphview.org/)
 
 ## Importing and exporting
 *Are you tired of re-entering your tickers ever time you install a new finance app, or when you get a new phone? Fuggedaboutit!*
