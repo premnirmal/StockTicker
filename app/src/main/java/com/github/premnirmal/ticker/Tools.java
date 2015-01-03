@@ -78,6 +78,10 @@ public final class Tools {
             set = true;
         }
 
+        if (set && dayOfWeek == DateTimeConstants.FRIDAY) {
+            mutableDateTime.addDays(2);
+        }
+
         if (dayOfWeek > DateTimeConstants.FRIDAY) {
             set = true;
             if (dayOfWeek == DateTimeConstants.SATURDAY) {
