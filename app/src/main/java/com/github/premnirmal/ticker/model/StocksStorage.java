@@ -16,10 +16,8 @@ import java.io.StreamCorruptedException;
 import java.util.List;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.Subscriber;
 import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by premnirmal on 12/25/14.
@@ -34,28 +32,26 @@ class StocksStorage {
         this.context = context;
     }
 
-    Observable<Boolean> save(List<Stock> stocks) {
-        return Observable.just(stocks)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .map(new Func1<List<Stock>, Boolean>() {
-                    @Override
-                    public Boolean call(List<Stock> stocks) {
-                        try {
-                            return saveInternal(stocks);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            return false;
-                        }
-                    }
-                })
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                });
-
+    Observable<Boolean> save(final List<Stock> stocks) {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(final Subscriber<? super Boolean> subscriber) {
+                saveInternal(stocks)
+                        .doOnError(new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                subscriber.onError(throwable);
+                            }
+                        })
+                        .subscribe(new Action1<Boolean>() {
+                            @Override
+                            public void call(Boolean aBoolean) {
+                                subscriber.onNext(aBoolean);
+                                subscriber.onCompleted();
+                            }
+                        });
+            }
+        });
     }
 
     List<Stock> readSynchronous() {
@@ -67,27 +63,45 @@ class StocksStorage {
         }
     }
 
-    private boolean saveInternal(List<Stock> stocks) throws IOException {
-        boolean success = false;
-        final File stocksFile = new File(context.getExternalCacheDir(), STOCKS_FILE);
-        FileOutputStream fout = null;
-        ObjectOutputStream oos = null;
-        try {
-            fout = new FileOutputStream(stocksFile);
-            oos = new ObjectOutputStream(fout);
-            oos.writeObject(stocks);
-            success = true;
-        } finally {
-            if (oos != null) {
-                oos.flush();
-                oos.close();
+    private Observable<Boolean> saveInternal(final List<Stock> stocks) {
+        return Observable.create(new Observable.OnSubscribe<Boolean>() {
+            @Override
+            public void call(Subscriber<? super Boolean> subscriber) {
+                boolean success = false;
+                final File stocksFile = new File(context.getExternalCacheDir(), STOCKS_FILE);
+                FileOutputStream fout = null;
+                ObjectOutputStream oos = null;
+                try {
+                    fout = new FileOutputStream(stocksFile);
+                    oos = new ObjectOutputStream(fout);
+                    oos.writeObject(stocks);
+                    success = true;
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (oos != null) {
+                        try {
+                            oos.flush();
+                            oos.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (fout != null) {
+                        try {
+                            fout.flush();
+                            fout.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                subscriber.onNext(success);
+                subscriber.onCompleted();
             }
-            if (fout != null) {
-                fout.flush();
-                fout.close();
-            }
-        }
-        return success;
+        });
     }
 
     private List<Stock> readInternal() throws IOException {

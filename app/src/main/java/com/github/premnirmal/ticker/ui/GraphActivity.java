@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IHistoryProvider;
 import com.github.premnirmal.tickerwidget.R;
 import com.jjoe64.graphview.GraphView;
@@ -55,14 +56,24 @@ public class GraphActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (dataPoints == null) {
-            historyProvider.getDataPoints(ticker)
-                    .subscribe(new Action1<DataPoint[]>() {
-                        @Override
-                        public void call(DataPoint[] data) {
-                            dataPoints = data;
-                            loadGraph();
-                        }
-                    });
+            if (Tools.isNetworkOnline(this)) {
+                historyProvider.getDataPoints(ticker)
+                        .doOnError(new Action1<Throwable>() {
+                            @Override
+                            public void call(Throwable throwable) {
+                                showDialog(throwable.getMessage());
+                            }
+                        })
+                        .subscribe(new Action1<DataPoint[]>() {
+                            @Override
+                            public void call(DataPoint[] data) {
+                                dataPoints = data;
+                                loadGraph();
+                            }
+                        });
+            } else {
+                showDialog(getString(R.string.no_network_message));
+            }
         } else {
             loadGraph();
         }

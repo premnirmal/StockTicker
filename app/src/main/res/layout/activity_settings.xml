@@ -37,6 +37,16 @@
 
     <include layout="@layout/divider" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/widget_bg"
+        android:id="@+id/change_widget_background" />
+
+    <include layout="@layout/divider" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -25,6 +25,15 @@ public final class Tools {
     public static final String PREFS_NAME = "com.github.premnirmal.ticker";
     public static final String FONT_SIZE = "com.github.premnirmal.ticker.fontsize";
     public static final String SETTING_AUTOSORT = "SETTING_AUTOSORT";
+    public static final String WIDGET_BG = "WIDGET_BG";
+    public static final int TRANSPARENT = 0;
+    public static final int TRANSLUCENT = 1;
+
+    public static int getBackgroundColor(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? TRANSPARENT
+                : context.getResources().getColor(R.color.translucent);
+    }
 
     public static float getFontSize(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

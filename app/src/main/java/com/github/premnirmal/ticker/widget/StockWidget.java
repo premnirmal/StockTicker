@@ -92,5 +92,7 @@ public class StockWidget extends AppWidgetProvider {
         remoteViews.setTextViewTextSize(R.id.last_updated, TypedValue.COMPLEX_UNIT_SP, fontSize);
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
+
+        remoteViews.setInt(R.id.widget_layout, "setBackgroundColor", Tools.getBackgroundColor(context));
     }
 }

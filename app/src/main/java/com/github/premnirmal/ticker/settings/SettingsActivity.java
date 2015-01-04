@@ -1,6 +1,8 @@
 package com.github.premnirmal.ticker.settings;
 
 import android.app.AlertDialog;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,11 +18,12 @@ import android.widget.Toast;
 
 import com.devpaul.filepickerlibrary.FilePickerActivity;
 import com.github.premnirmal.ticker.BaseActivity;
-import com.github.premnirmal.tickerwidget.BuildConfig;
-import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
+import com.github.premnirmal.ticker.widget.StockWidget;
+import com.github.premnirmal.tickerwidget.BuildConfig;
+import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;
 
@@ -79,14 +82,8 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
-                final ListView view = new ListView(SettingsActivity.this);
-                final int padding = (int) getResources().getDimension(R.dimen.text_padding);
-                view.setPadding(padding, padding, padding, padding);
-                view.setAdapter(ArrayAdapter.createFromResource(SettingsActivity.this, R.array.font_sizes, R.layout.textview));
-                final AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this)
-                        .setView(view)
-                        .create();
-                view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                final ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(SettingsActivity.this, R.array.font_sizes, R.layout.textview);
+                final AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         final int fontSizeDimen;
@@ -104,16 +101,68 @@ public class SettingsActivity extends BaseActivity {
                         }
                         final int fontSize = getResources().getInteger(fontSizeDimen);
                         preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, fontSize).commit();
-                        dialog.dismiss();
+                        broadcastUpdateWidget();
                         Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
                     }
-                });
-                dialog.show();
+                };
+                createListDialog(arrayAdapter, onItemClickListener).show();
 
             }
         });
 
+        findViewById(R.id.change_widget_background).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
+                final ArrayAdapter<String> arrayAdapter =
+                        new ArrayAdapter<>(SettingsActivity.this, R.layout.textview, new String[]{"Transparent", "Translucent"});
+                final AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        if (position == 0) { // transparent
+                            preferences.edit().putInt(Tools.WIDGET_BG, Tools.TRANSPARENT).commit();
+                        } else { // translucent
+                            preferences.edit().putInt(Tools.WIDGET_BG, Tools.TRANSLUCENT).commit();
+                        }
+                        broadcastUpdateWidget();
+                        Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
+                    }
+                };
+                createListDialog(arrayAdapter, onItemClickListener).show();
+            }
+        });
+
         ((TextView) findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
+    }
+
+    private void broadcastUpdateWidget() {
+        final Intent intent = new Intent(getApplicationContext(), StockWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
+        // since it seems the onUpdate() is only fired on that:
+        AppWidgetManager widgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        int[] ids = widgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), StockWidget.class));
+        widgetManager.notifyAppWidgetViewDataChanged(ids, android.R.id.list);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
+    }
+
+    private AlertDialog createListDialog(ArrayAdapter arrayAdapter, final AdapterView.OnItemClickListener onItemClickListener) {
+        final ListView view = new ListView(SettingsActivity.this);
+        final int padding = (int) getResources().getDimension(R.dimen.text_padding);
+        view.setPadding(padding, padding, padding, padding);
+        view.setAdapter(arrayAdapter);
+        final AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this)
+                .setView(view)
+                .create();
+        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                onItemClickListener.onItemClick(parent, view, position, id);
+                dialog.dismiss();
+            }
+        });
+        return dialog;
     }
 
     @Override

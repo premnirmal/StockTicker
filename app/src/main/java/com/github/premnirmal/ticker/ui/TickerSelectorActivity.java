@@ -73,17 +73,17 @@ public class TickerSelectorActivity extends BaseActivity {
                         subscription = suggestionApi.getSuggestions(query)
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.io())
+                                .map(new Func1<Suggestions, List<Suggestion>>() {
+                                    @Override
+                                    public List<Suggestion> call(Suggestions suggestions) {
+                                        return suggestions.ResultSet.Result;
+                                    }
+                                })
                                 .doOnError(new Action1<Throwable>() {
                                     @Override
                                     public void call(Throwable throwable) {
                                         Toast.makeText(TickerSelectorActivity.this,
                                                 throwable.getMessage(), Toast.LENGTH_SHORT);
-                                    }
-                                })
-                                .map(new Func1<Suggestions, List<Suggestion>>() {
-                                    @Override
-                                    public List<Suggestion> call(Suggestions suggestions) {
-                                        return suggestions.ResultSet.Result;
                                     }
                                 })
                                 .subscribe(new Action1<List<Suggestion>>() {
