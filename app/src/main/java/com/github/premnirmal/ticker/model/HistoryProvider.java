@@ -18,7 +18,6 @@ import java.util.Collections;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -51,12 +50,6 @@ public class HistoryProvider implements IHistoryProvider {
                             public HistoricalData call(HistoricalData historicalData) {
                                 Collections.sort(historicalData.query.mResult.quote);
                                 return historicalData;
-                            }
-                        })
-                        .doOnError(new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                subscriber.onError(throwable);
                             }
                         })
                         .subscribe(new Subscriber<HistoricalData>() {
@@ -97,13 +90,6 @@ public class HistoryProvider implements IHistoryProvider {
                                         dataPoints[i] = point;
                                     }
                                     return dataPoints;
-                                }
-                            })
-                            .doOnError(new Action1<Throwable>() {
-                                @Override
-                                public void call(Throwable throwable) {
-                                    subscriber.onError(throwable);
-                                    subscriber.onCompleted();
                                 }
                             })
                             .subscribe(new Subscriber<DataPoint[]>() {

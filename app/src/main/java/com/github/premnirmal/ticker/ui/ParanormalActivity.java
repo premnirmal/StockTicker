@@ -127,7 +127,7 @@ public class ParanormalActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 final Intent intent = new Intent(ParanormalActivity.this, GraphActivity.class);
-                intent.putExtra(GraphActivity.GRAPH_DATA, adapter.getItem(position).symbol);
+                intent.putExtra(GraphActivity.GRAPH_DATA, adapter.getItem(position));
                 startActivity(intent);
             }
         });

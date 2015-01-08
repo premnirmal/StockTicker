@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.ui;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -8,6 +9,7 @@ import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IHistoryProvider;
+import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.tickerwidget.R;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
@@ -27,7 +29,6 @@ import org.joda.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 
 import rx.Subscriber;
-import rx.functions.Action1;
 
 /**
  * Created by premnirmal on 12/30/14.
@@ -38,7 +39,7 @@ public class GraphActivity extends BaseActivity {
 
     private final DateTimeFormatter formatter = DateTimeFormat.forPattern("MM/dd/YYYY");
 
-    private String ticker;
+    private Stock ticker;
     private DataPoint[] dataPoints;
 
     @Inject
@@ -49,7 +50,7 @@ public class GraphActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         ((StocksApp) getApplicationContext()).inject(this);
         setContentView(R.layout.progress);
-        ticker = getIntent().getStringExtra(GRAPH_DATA);
+        ticker = (Stock) getIntent().getSerializableExtra(GRAPH_DATA);
         getSupportActionBar().hide();
     }
 
@@ -58,13 +59,7 @@ public class GraphActivity extends BaseActivity {
         super.onResume();
         if (dataPoints == null) {
             if (Tools.isNetworkOnline(this)) {
-                historyProvider.getDataPoints(ticker)
-                        .doOnError(new Action1<Throwable>() {
-                            @Override
-                            public void call(Throwable throwable) {
-                                showDialog(throwable.getMessage());
-                            }
-                        })
+                historyProvider.getDataPoints(ticker.symbol)
                         .subscribe(new Subscriber<DataPoint[]>() {
                             @Override
                             public void onCompleted() {
@@ -73,7 +68,12 @@ public class GraphActivity extends BaseActivity {
 
                             @Override
                             public void onError(Throwable e) {
-                                showDialog("Error");
+                                showDialog("Error loading datapoints", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                });
                             }
 
                             @Override
@@ -94,7 +94,9 @@ public class GraphActivity extends BaseActivity {
         setContentView(R.layout.activity_graph);
         final GraphView graphView = (GraphView) findViewById(R.id.graph);
         final TextView tickerName = (TextView) findViewById(R.id.ticker);
-        tickerName.setText(ticker);
+        final TextView desc = (TextView) findViewById(R.id.desc);
+        tickerName.setText(ticker.symbol);
+        desc.setText(ticker.Name);
         final TextView dataPointValue = (TextView) findViewById(R.id.dataPointValue);
         final LineGraphSeries<DataPoint> series = new LineGraphSeries(dataPoints);
         graphView.addSeries(series);

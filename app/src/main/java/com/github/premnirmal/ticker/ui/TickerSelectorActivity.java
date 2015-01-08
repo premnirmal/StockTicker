@@ -10,13 +10,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.premnirmal.ticker.BaseActivity;
-import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Suggestion;
 import com.github.premnirmal.ticker.network.SuggestionApi;
 import com.github.premnirmal.ticker.network.Suggestions;
+import com.github.premnirmal.tickerwidget.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,6 @@ import javax.inject.Inject;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -78,13 +77,6 @@ public class TickerSelectorActivity extends BaseActivity {
                                     @Override
                                     public List<Suggestion> call(Suggestions suggestions) {
                                         return suggestions.ResultSet.Result;
-                                    }
-                                })
-                                .doOnError(new Action1<Throwable>() {
-                                    @Override
-                                    public void call(Throwable throwable) {
-                                        Toast.makeText(TickerSelectorActivity.this,
-                                                "Error", Toast.LENGTH_SHORT);
                                     }
                                 })
                                 .subscribe(new Subscriber<List<Suggestion>>() {

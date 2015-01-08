@@ -54,14 +54,18 @@ public abstract class BaseActivity extends ActionBarActivity {
 
 
     protected final AlertDialog showDialog(String message) {
+        return showDialog(message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    protected final AlertDialog showDialog(String message, DialogInterface.OnClickListener listener) {
         return new AlertDialog.Builder(this)
                 .setMessage(message)
-                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
+                .setNeutralButton("OK", listener)
                 .show();
     }
 }

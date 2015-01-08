@@ -17,7 +17,6 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action1;
 
 /**
  * Created by premnirmal on 12/25/14.
@@ -37,15 +36,19 @@ class StocksStorage {
             @Override
             public void call(final Subscriber<? super Boolean> subscriber) {
                 saveInternal(stocks)
-                        .doOnError(new Action1<Throwable>() {
+                        .subscribe(new Subscriber<Boolean>() {
                             @Override
-                            public void call(Throwable throwable) {
-                                subscriber.onError(throwable);
+                            public void onCompleted() {
+
                             }
-                        })
-                        .subscribe(new Action1<Boolean>() {
+
                             @Override
-                            public void call(Boolean aBoolean) {
+                            public void onError(Throwable e) {
+                                subscriber.onError(e);
+                            }
+
+                            @Override
+                            public void onNext(Boolean aBoolean) {
                                 subscriber.onNext(aBoolean);
                                 subscriber.onCompleted();
                             }

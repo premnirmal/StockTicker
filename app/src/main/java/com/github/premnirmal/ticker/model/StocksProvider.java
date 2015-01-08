@@ -11,18 +11,17 @@ import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.github.premnirmal.ticker.network.QueryCreator;
-import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.network.Query;
+import com.github.premnirmal.ticker.network.QueryCreator;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.network.StockQuery;
 import com.github.premnirmal.ticker.network.StocksApi;
 import com.github.premnirmal.ticker.widget.StockWidget;
+import com.github.premnirmal.tickerwidget.R;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -43,7 +42,6 @@ import javax.inject.Singleton;
 import de.greenrobot.event.EventBus;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -124,12 +122,6 @@ public class StocksProvider implements IStocksProvider {
                 .putString(LAST_FETCHED, lastFetched)
                 .commit();
         storage.save(stockList)
-                .doOnError(new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                })
                 .subscribe(new Subscriber<Boolean>() {
                     @Override
                     public void onCompleted() {
@@ -156,12 +148,6 @@ public class StocksProvider implements IStocksProvider {
             api.getStocks(QueryCreator.buildStocksQuery(tickerList.toArray()))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
-                    .doOnError(new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
-                        }
-                    })
                     .map(new Func1<StockQuery, Query>() {
                         @Override
                         public Query call(StockQuery stockQuery) {
