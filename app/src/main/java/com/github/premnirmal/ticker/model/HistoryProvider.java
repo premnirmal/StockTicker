@@ -59,11 +59,20 @@ public class HistoryProvider implements IHistoryProvider {
                                 subscriber.onError(throwable);
                             }
                         })
-                        .subscribe(new Action1<HistoricalData>() {
+                        .subscribe(new Subscriber<HistoricalData>() {
                             @Override
-                            public void call(HistoricalData response) {
-                                subscriber.onNext(response.query.mResult);
+                            public void onCompleted() {
                                 subscriber.onCompleted();
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                subscriber.onError(throwable);
+                            }
+
+                            @Override
+                            public void onNext(HistoricalData response) {
+                                subscriber.onNext(response.query.mResult);
                             }
                         });
             }
@@ -97,17 +106,25 @@ public class HistoryProvider implements IHistoryProvider {
                                     subscriber.onCompleted();
                                 }
                             })
-                            .subscribe(new Action1<DataPoint[]>() {
+                            .subscribe(new Subscriber<DataPoint[]>() {
                                 @Override
-                                public void call(DataPoint[] dataPoints) {
-                                    subscriber.onNext(dataPoints);
+                                public void onCompleted() {
                                     subscriber.onCompleted();
+                                }
+
+                                @Override
+                                public void onError(Throwable throwable) {
+                                    subscriber.onError(throwable);
+                                }
+
+                                @Override
+                                public void onNext(DataPoint[] dataPoints) {
+                                    subscriber.onNext(dataPoints);
                                 }
                             });
 
                 } else {
                     subscriber.onError(new NetworkErrorException());
-                    subscriber.onCompleted();
                 }
             }
         });

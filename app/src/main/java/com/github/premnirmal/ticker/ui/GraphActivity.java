@@ -26,6 +26,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import javax.inject.Inject;
 
+import rx.Subscriber;
 import rx.functions.Action1;
 
 /**
@@ -64,9 +65,19 @@ public class GraphActivity extends BaseActivity {
                                 showDialog(throwable.getMessage());
                             }
                         })
-                        .subscribe(new Action1<DataPoint[]>() {
+                        .subscribe(new Subscriber<DataPoint[]>() {
                             @Override
-                            public void call(DataPoint[] data) {
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                showDialog("Error");
+                            }
+
+                            @Override
+                            public void onNext(DataPoint[] data) {
                                 dataPoints = data;
                                 loadGraph();
                             }

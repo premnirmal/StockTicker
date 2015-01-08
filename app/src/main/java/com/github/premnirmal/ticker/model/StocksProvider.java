@@ -41,6 +41,7 @@ import java.util.TimeZone;
 import javax.inject.Singleton;
 
 import de.greenrobot.event.EventBus;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -99,7 +100,7 @@ public class StocksProvider implements IStocksProvider {
             preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).commit();
         }
         lastFetched = preferences.getString(LAST_FETCHED, null);
-        if(lastFetched == null) {
+        if (lastFetched == null) {
             fetch();
         } else {
             fetchLocal();
@@ -108,7 +109,7 @@ public class StocksProvider implements IStocksProvider {
 
     private void fetchLocal() {
         stockList = storage.readSynchronous();
-        if(stockList != null) {
+        if (stockList != null) {
             sortStockList();
             sendBroadcast();
         } else {
@@ -129,9 +130,19 @@ public class StocksProvider implements IStocksProvider {
                         throwable.printStackTrace();
                     }
                 })
-                .subscribe(new Action1<Boolean>() {
+                .subscribe(new Subscriber<Boolean>() {
                     @Override
-                    public void call(Boolean success) {
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Boolean success) {
                         if (!success) {
                             Log.e(getClass().getSimpleName(), "Save failed");
                         }
@@ -160,17 +171,22 @@ public class StocksProvider implements IStocksProvider {
                             return stockQuery.query;
                         }
                     })
-                    .subscribe(new Action1<Query>() {
+                    .subscribe(new Subscriber<Query>() {
                         @Override
-                        public void call(Query response) {
-                            try {
-                                stockList = response.results.quote;
-                                lastFetched = response.created;
-                                save();
-                                sendBroadcast();
-                            } catch (NullPointerException e) {
-                                fetch();
-                            }
+                        public void onCompleted() {
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            fetch();
+                        }
+
+                        @Override
+                        public void onNext(Query response) {
+                            stockList = response.results.quote;
+                            lastFetched = response.created;
+                            save();
+                            sendBroadcast();
                         }
                     });
         } else {

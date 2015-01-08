@@ -23,6 +23,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -83,12 +84,23 @@ public class TickerSelectorActivity extends BaseActivity {
                                     @Override
                                     public void call(Throwable throwable) {
                                         Toast.makeText(TickerSelectorActivity.this,
-                                                throwable.getMessage(), Toast.LENGTH_SHORT);
+                                                "Error", Toast.LENGTH_SHORT);
                                     }
                                 })
-                                .subscribe(new Action1<List<Suggestion>>() {
+                                .subscribe(new Subscriber<List<Suggestion>>() {
                                     @Override
-                                    public void call(List<Suggestion> suggestions) {
+                                    public void onCompleted() {
+
+                                    }
+
+                                    @Override
+                                    public void onError(Throwable throwable) {
+                                        Toast.makeText(TickerSelectorActivity.this,
+                                                "Error", Toast.LENGTH_SHORT);
+                                    }
+
+                                    @Override
+                                    public void onNext(List<Suggestion> suggestions) {
                                         final List<Suggestion> suggestionList = suggestions;
                                         listView.setAdapter(new SuggestionsAdapter(suggestionList));
                                     }
