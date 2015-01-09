@@ -4,20 +4,20 @@ import android.app.AlertDialog;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
+import android.preference.ListPreference;
+import android.preference.Preference;
+import android.preference.PreferenceActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devpaul.filepickerlibrary.FilePickerActivity;
-import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.StocksApp;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
@@ -28,9 +28,9 @@ import com.github.premnirmal.tickerwidget.R;
 import javax.inject.Inject;
 
 /**
- * Created by premnirmal on 12/22/14.
+ * Created by premnirmal on 01/09/15.
  */
-public class SettingsActivity extends BaseActivity {
+public class SettingsActivity extends PreferenceActivity {
 
     @Inject
     IStocksProvider stocksProvider;
@@ -39,10 +39,21 @@ public class SettingsActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((StocksApp) getApplicationContext()).inject(this);
+        setContentView(R.layout.activity_preferences);
+    }
 
-        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        final Toolbar bar = (Toolbar) findViewById(R.id.toolbar);
+        bar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        ((TextView) findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
 
-        setContentView(R.layout.activity_settings);
         findViewById(R.id.action_export).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,100 +80,99 @@ public class SettingsActivity extends BaseActivity {
             }
         });
 
-        final CheckBox autoSortCheckbox = (CheckBox) findViewById(R.id.autosort_checkbox);
-        autoSortCheckbox.setChecked(preferences.getBoolean(Tools.SETTING_AUTOSORT, false));
-        autoSortCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        setupSimplePreferencesScreen();
+    }
+
+    /**
+     * Shows the simplified settings UI if the device configuration if the
+     * device configuration dictates that a simplified, single-pane UI should be
+     * shown.
+     */
+    private void setupSimplePreferencesScreen() {
+        // In the simplified UI, fragments are not used at all and we instead
+        // use the older PreferenceActivity APIs.
+
+        // Add 'general' preferences.
+        addPreferencesFromResource(R.xml.prefs);
+
+        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+
+        final ListPreference fontSizePreference = (ListPreference) findPreference(Tools.FONT_SIZE);
+        final int size = preferences.getInt(Tools.FONT_SIZE, 1);
+        fontSizePreference.setValueIndex(size);
+        fontSizePreference.setSummary(fontSizePreference.getEntries()[size]);
+        fontSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, isChecked).commit();
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                final String stringValue = value.toString();
+                final ListPreference listPreference = (ListPreference) preference;
+                final int index = listPreference.findIndexOfValue(stringValue);
+                preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).commit();
+                broadcastUpdateWidget();
+                fontSizePreference.setSummary(fontSizePreference.getEntries()[index]);
+                Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
 
-        findViewById(R.id.change_text_size).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
-                final ArrayAdapter<CharSequence> arrayAdapter = ArrayAdapter.createFromResource(SettingsActivity.this, R.array.font_sizes, R.layout.textview);
-                final AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        final int fontSizeDimen;
-                        switch (position) {
-                            case 1:
-                                fontSizeDimen = R.integer.text_size_medium;
-                                break;
-                            case 2:
-                                fontSizeDimen = R.integer.text_size_large;
-                                break;
-                            case 0:
-                            default:
-                                fontSizeDimen = R.integer.text_size_small;
-                                break;
-                        }
-                        final int fontSize = getResources().getInteger(fontSizeDimen);
-                        preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, fontSize).commit();
-                        broadcastUpdateWidget();
-                        Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
-                    }
-                };
-                createListDialog(arrayAdapter, onItemClickListener).show();
 
+        final ListPreference bgPreference = (ListPreference) findPreference(Tools.WIDGET_BG);
+        final int bgIndex = preferences.getInt(Tools.WIDGET_BG, 0);
+        bgPreference.setValueIndex(bgIndex);
+        bgPreference.setSummary(bgPreference.getEntries()[bgIndex]);
+        bgPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                final String stringValue = value.toString();
+                final ListPreference listPreference = (ListPreference) preference;
+                final int index = listPreference.findIndexOfValue(stringValue);
+                preferences.edit().putInt(Tools.WIDGET_BG, index).commit();
+                broadcastUpdateWidget();
+                bgPreference.setSummary(bgPreference.getEntries()[index]);
+                Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
 
-        findViewById(R.id.change_widget_background).setOnClickListener(new View.OnClickListener() {
+        final ListPreference refreshPreference = (ListPreference) findPreference(Tools.UPDATE_INTERVAL);
+        final int refreshIndex = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
+        refreshPreference.setValueIndex(refreshIndex);
+        refreshPreference.setSummary(refreshPreference.getEntries()[refreshIndex]);
+        refreshPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
-            public void onClick(View v) {
-                final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
-                final ArrayAdapter<String> arrayAdapter =
-                        new ArrayAdapter<>(SettingsActivity.this, R.layout.textview, new String[]{"Transparent", "Translucent"});
-                final AdapterView.OnItemClickListener onItemClickListener = new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        if (position == 0) { // transparent
-                            preferences.edit().putInt(Tools.WIDGET_BG, Tools.TRANSPARENT).commit();
-                        } else { // translucent
-                            preferences.edit().putInt(Tools.WIDGET_BG, Tools.TRANSLUCENT).commit();
-                        }
-                        broadcastUpdateWidget();
-                        Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
-                    }
-                };
-                createListDialog(arrayAdapter, onItemClickListener).show();
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                final String stringValue = value.toString();
+                final ListPreference listPreference = (ListPreference) preference;
+                final int index = listPreference.findIndexOfValue(stringValue);
+                preferences.edit().putInt(Tools.UPDATE_INTERVAL, index).commit();
+                broadcastUpdateWidget();
+                refreshPreference.setSummary(refreshPreference.getEntries()[index]);
+                Toast.makeText(SettingsActivity.this, R.string.refresh_updated_message, Toast.LENGTH_SHORT).show();
+                return true;
             }
         });
 
-        ((TextView) findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
+        final CheckBoxPreference autoSortPreference = (CheckBoxPreference) findPreference(Tools.SETTING_AUTOSORT);
+        final boolean autoSort = preferences.getBoolean(Tools.SETTING_AUTOSORT, false);
+        autoSortPreference.setChecked(autoSort);
+        autoSortPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object value) {
+                final boolean checked = (boolean) value;
+                preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).commit();
+                return true;
+            }
+        });
     }
 
     private void broadcastUpdateWidget() {
         final Intent intent = new Intent(getApplicationContext(), StockWidget.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
-        // Use an array and EXTRA_APPWIDGET_IDS instead of AppWidgetManager.EXTRA_APPWIDGET_ID,
-        // since it seems the onUpdate() is only fired on that:
-        AppWidgetManager widgetManager = AppWidgetManager.getInstance(getApplicationContext());
-        int[] ids = widgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), StockWidget.class));
+        final AppWidgetManager widgetManager = AppWidgetManager.getInstance(getApplicationContext());
+        final int[] ids = widgetManager.getAppWidgetIds(new ComponentName(getApplicationContext(), StockWidget.class));
         widgetManager.notifyAppWidgetViewDataChanged(ids, android.R.id.list);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         sendBroadcast(intent);
-    }
-
-    private AlertDialog createListDialog(ArrayAdapter arrayAdapter, final AdapterView.OnItemClickListener onItemClickListener) {
-        final ListView view = new ListView(SettingsActivity.this);
-        final int padding = (int) getResources().getDimension(R.dimen.text_padding);
-        view.setPadding(padding, padding, padding, padding);
-        view.setAdapter(arrayAdapter);
-        final AlertDialog dialog = new AlertDialog.Builder(SettingsActivity.this)
-                .setView(view)
-                .create();
-        view.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                onItemClickListener.onItemClick(parent, view, position, id);
-                dialog.dismiss();
-            }
-        });
-        return dialog;
     }
 
     @Override
@@ -177,7 +187,6 @@ public class SettingsActivity extends BaseActivity {
                     protected void onPostExecute(Boolean result) {
                         if (result) {
                             showDialog(getString(R.string.ticker_import_success));
-                            finish();
                         } else {
                             showDialog(getString(R.string.ticker_import_fail));
                         }
@@ -186,5 +195,17 @@ public class SettingsActivity extends BaseActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void showDialog(String message) {
+       new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

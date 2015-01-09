@@ -17,7 +17,6 @@ The main purpose of me building this app is to practice usage of Square's Dagger
 
 ## Future versions
 *Future versions will include:*
-- Ability to set a custom refresh interval
 - Ability to pick indices such as **^DJI**.
 - Ability to change the app theme and colors
 

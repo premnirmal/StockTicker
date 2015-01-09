@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -23,9 +24,10 @@ import java.util.List;
 public final class Tools {
 
     public static final String PREFS_NAME = "com.github.premnirmal.ticker";
-    public static final String FONT_SIZE = "com.github.premnirmal.ticker.fontsize";
+    public static final String FONT_SIZE = "com.github.premnirmal.ticker.textsize";
     public static final String SETTING_AUTOSORT = "SETTING_AUTOSORT";
     public static final String WIDGET_BG = "WIDGET_BG";
+    public static final String UPDATE_INTERVAL = "UPDATE_INTERVAL";
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
 
@@ -36,8 +38,17 @@ public final class Tools {
     }
 
     public static float getFontSize(Context context) {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getInt(FONT_SIZE, context.getResources().getInteger(R.integer.text_size_medium));
+        final int size = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                .getInt(FONT_SIZE, 1);
+        switch (size) {
+            case 0:
+                return context.getResources().getInteger(R.integer.text_size_small);
+            case 2:
+                return context.getResources().getInteger(R.integer.text_size_large);
+            case 1:
+            default:
+                return context.getResources().getInteger(R.integer.text_size_medium);
+        }
     }
 
     public static File getTickersFile() {
@@ -72,7 +83,9 @@ public final class Tools {
      *
      * @return
      */
-    public static long getMsToNextAlarm() {
+    public static long getMsToNextAlarm(Context context) {
+        final SharedPreferences preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+
         final int hourOfDay = DateTime.now().hourOfDay().get();
         final int dayOfWeek = DateTime.now().getDayOfWeek();
         final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
@@ -101,12 +114,13 @@ public final class Tools {
             mutableDateTime.setHourOfDay(9); // 9am
             mutableDateTime.setMinuteOfHour(15); // update at 9:15am
         }
-
+        final int updatePref = preferences.getInt(UPDATE_INTERVAL,1);
+        final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
         if (set) {
             final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
             return SystemClock.elapsedRealtime() + msToNextSchedule;
         } else {
-            return SystemClock.elapsedRealtime() + (AlarmManager.INTERVAL_FIFTEEN_MINUTES * 2);
+            return SystemClock.elapsedRealtime() + time;
         }
     }
 

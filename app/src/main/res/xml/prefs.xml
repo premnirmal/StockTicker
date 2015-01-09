@@ -1,0 +1,36 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="com.github.premnirmal.ticker.textsize"
+        android:title="@string/choose_text_size"
+        android:defaultValue="1"
+        android:entries="@array/font_sizes"
+        android:entryValues="@array/font_sizes_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="WIDGET_BG"
+        android:title="@string/widget_bg"
+        android:defaultValue="0"
+        android:entries="@array/backgrounds"
+        android:entryValues="@array/backgrounds_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="UPDATE_INTERVAL"
+        android:title="@string/update_interval"
+        android:defaultValue="1"
+        android:entries="@array/sync_periods"
+        android:entryValues="@array/sync_periods_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <CheckBoxPreference
+        android:key="SETTING_AUTOSORT"
+        android:title="@string/auto_sort"
+        android:summary="@string/auto_sort_desc"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

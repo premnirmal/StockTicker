@@ -83,7 +83,12 @@ public class GraphActivity extends BaseActivity {
                             }
                         });
             } else {
-                showDialog(getString(R.string.no_network_message));
+                showDialog(getString(R.string.no_network_message), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                });
             }
         } else {
             loadGraph();

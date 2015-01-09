@@ -3,6 +3,7 @@
 
     <string name="app_name">StockTicker</string>
     <string name="hello_world">Portfolio</string>
+    <string name="version">Version</string>
     <string name="action_add">Add</string>
     <string name="action_export">Export Tickers</string>
     <string name="action_import">Import Tickers</string>
@@ -12,14 +13,17 @@
     <string name="endpoint">http://query.yahooapis.com/v1/public</string>
     <string name="suggestions_endpoint">http://d.yimg.com/autoc.finance.yahoo.com</string>
     <string name="add_ticker">Add Ticker</string>
-    <string name="dotdotdot">...</string>
+    <string name="dotdotdot">  ...  </string>
     <string name="text_size">Text Size</string>
     <string name="widget_bg">Widget Background</string>
+    <string name="update_interval">Update Interval</string>
     <string name="auto_sort">Sort by percent change?</string>
-    <string name="checkout_open_source">Checkout\nhttps://github.com/premnirmal/StockTicker</string>
+    <string name="auto_sort_desc">Stocks will be sorted by percent change in descending order.</string>
+    <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>
     <string name="bg_updated_message">Background updated</string>
+    <string name="refresh_updated_message">Refresh interval updated</string>
     <string name="error_exporting">Error exporting file</string>
     <string name="ticker_import_success">Tickers imported successfully</string>
     <string name="ticker_import_fail">Error importing tickers</string>
@@ -31,6 +35,33 @@
         <item>Small</item>
         <item>Medium</item>
         <item>Large</item>
+    </string-array>
+    <string-array name="font_sizes_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="backgrounds">
+        <item>Transparent</item>
+        <item>Translucent</item>
+    </string-array>
+    <string-array name="backgrounds_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="sync_periods">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>45 minutes</item>
+        <item>1 hour</item>
+    </string-array>
+    <string-array name="sync_periods_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 
 </resources>

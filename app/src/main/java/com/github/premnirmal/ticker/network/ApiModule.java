@@ -2,18 +2,18 @@ package com.github.premnirmal.ticker.network;
 
 import android.content.Context;
 
+import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.HistoryProvider;
 import com.github.premnirmal.ticker.model.IHistoryProvider;
-import com.github.premnirmal.ticker.ui.GraphActivity;
-import com.github.premnirmal.tickerwidget.R;
-import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
+import com.github.premnirmal.ticker.ui.GraphActivity;
 import com.github.premnirmal.ticker.ui.ParanormalActivity;
 import com.github.premnirmal.ticker.ui.TickerSelectorActivity;
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter;
 import com.github.premnirmal.ticker.widget.StockWidget;
+import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Singleton;
 

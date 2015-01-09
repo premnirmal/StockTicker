@@ -189,7 +189,7 @@ public class StocksProvider implements IStocksProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         context.sendBroadcast(intent);
         bus.post(new StockUpdatedEvent());
-        scheduleUpdate(Tools.getMsToNextAlarm());
+        scheduleUpdate(Tools.getMsToNextAlarm(context));
     }
 
     private void scheduleUpdate(long msToNextAlarm) {
