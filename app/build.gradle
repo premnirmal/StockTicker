@@ -14,10 +14,18 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("file:XXXXX")
-            storePassword "XXXXX"
-            keyAlias "XXXXX"
-            keyPassword "XXXXX"
+            storeFile file("file:keystore.jks")
+
+            final File propsFile = file("file:keystore.properties");
+            if (propsFile.exists()) {
+                final Properties props = new Properties();
+                props.load(new FileInputStream(propsFile));
+                storePassword props.getProperty('key.store.password')
+                keyPassword props.getProperty('key.alias.password')
+                keyAlias props.getProperty('key.alias.alias')
+            } else {
+                throw new GradleScriptException("cannot find keystore.properties file");
+            }
         }
     }
 

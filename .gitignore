@@ -54,6 +54,7 @@ profile
 .gradle*
 build/
 
-# ignore keystore
+# ignore keystore and keystore.properties
 *.jks
 keystore.*
+app/keystore.*
