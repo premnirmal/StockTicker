@@ -60,7 +60,7 @@
 
         <activity
             android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
-            android:label="@string/title_activity_settings_activity2"
+            android:label="@string/action_Settings"
             >
         </activity>
     </application>
