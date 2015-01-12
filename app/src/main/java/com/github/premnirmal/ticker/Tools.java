@@ -105,12 +105,14 @@ public final class Tools {
         }
 
         if (dayOfWeek > DateTimeConstants.FRIDAY) {
-            set = true;
             if (dayOfWeek == DateTimeConstants.SATURDAY) {
-                mutableDateTime.addDays(2);
+                mutableDateTime.addDays(set ? 1 : 2);
             } else if (dayOfWeek == DateTimeConstants.SUNDAY) {
-                mutableDateTime.addDays(1);
+                if(!set) {
+                    mutableDateTime.addDays(1);
+                }
             }
+            set = true;
             mutableDateTime.setHourOfDay(9); // 9am
             mutableDateTime.setMinuteOfHour(15); // update at 9:15am
         }

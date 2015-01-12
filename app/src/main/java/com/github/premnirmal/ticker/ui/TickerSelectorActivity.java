@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.ui;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -43,10 +44,21 @@ public class TickerSelectorActivity extends BaseActivity {
     Subscription subscription;
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((StocksApp) getApplicationContext()).inject(this);
         setContentView(R.layout.stock_search_layout);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         final EditText searchView = (EditText) findViewById(R.id.query);
         final ListView listView = (ListView) findViewById(R.id.resultList);
