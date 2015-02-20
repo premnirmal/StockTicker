@@ -6,7 +6,9 @@
     <string name="version">Version</string>
     <string name="action_add">Add</string>
     <string name="action_export">Export Tickers</string>
+    <string name="export_desc">Export tickers to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
     <string name="action_import">Import Tickers</string>
+    <string name="import_desc">Import tickers from a comma separated .txt file</string>
     <string name="action_Settings">Settings</string>
     <string name="action_update">Refresh Now</string>
 

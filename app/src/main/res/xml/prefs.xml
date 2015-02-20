@@ -1,5 +1,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <Preference
+        android:key="IMPORT"
+        android:title="@string/action_import"
+        android:selectable="true"
+        android:summary="@string/import_desc"/>
+
+    <Preference
+        android:key="EXPORT"
+        android:title="@string/action_export"
+        android:selectable="true"
+        android:summary="@string/export_desc"/>
+
     <ListPreference
         android:key="com.github.premnirmal.ticker.textsize"
         android:title="@string/choose_text_size"

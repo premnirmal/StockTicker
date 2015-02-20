@@ -53,33 +53,6 @@ public class SettingsActivity extends PreferenceActivity {
             }
         });
         ((TextView) findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
-
-        findViewById(R.id.action_export).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new FileExportTask() {
-                    @Override
-                    protected void onPostExecute(String result) {
-                        if (result == null) {
-                            Toast.makeText(SettingsActivity.this, R.string.error_exporting, Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(SettingsActivity.this, "Exported to " + result, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }.execute(stocksProvider.getTickers().toArray());
-            }
-        });
-
-        findViewById(R.id.action_import).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent filePickerIntent = new Intent(SettingsActivity.this, FilePickerActivity.class);
-                filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
-                filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
-                startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
-            }
-        });
-
         setupSimplePreferencesScreen();
     }
 
@@ -96,6 +69,36 @@ public class SettingsActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.prefs);
 
         final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+
+        final Preference exportPref = findPreference("EXPORT");
+        exportPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                new FileExportTask() {
+                    @Override
+                    protected void onPostExecute(String result) {
+                        if (result == null) {
+                            showDialog(getString(R.string.error_exporting));
+                        } else {
+                            showDialog("Exported to " + result);
+                        }
+                    }
+                }.execute(stocksProvider.getTickers().toArray());
+                return true;
+            }
+        });
+
+        final Preference importPref = findPreference("IMPORT");
+        importPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                final Intent filePickerIntent = new Intent(SettingsActivity.this, FilePickerActivity.class);
+                filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
+                filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
+                startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
+                return true;
+            }
+        });
 
         final ListPreference fontSizePreference = (ListPreference) findPreference(Tools.FONT_SIZE);
         final int size = preferences.getInt(Tools.FONT_SIZE, 1);
@@ -198,7 +201,7 @@ public class SettingsActivity extends PreferenceActivity {
     }
 
     private void showDialog(String message) {
-       new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setMessage(message)
                 .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
