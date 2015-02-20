@@ -87,16 +87,17 @@ public final class Tools {
         final SharedPreferences preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
 
         final int hourOfDay = DateTime.now().hourOfDay().get();
+        final int minuteOfHour = DateTime.now().minuteOfHour().get();
         final int dayOfWeek = DateTime.now().getDayOfWeek();
         final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
         mutableDateTime.setZone(DateTimeZone.getDefault());
 
         boolean set = false;
 
-        if (hourOfDay >= 17) { // 5pm
+        if (hourOfDay > 16 || (hourOfDay == 16 && minuteOfHour > 30)) { // 4:30pm
             mutableDateTime.addDays(1);
             mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(15); // update at 9:15am
+            mutableDateTime.setMinuteOfHour(35); // update at 9:45am
             set = true;
         }
 
@@ -108,15 +109,15 @@ public final class Tools {
             if (dayOfWeek == DateTimeConstants.SATURDAY) {
                 mutableDateTime.addDays(set ? 1 : 2);
             } else if (dayOfWeek == DateTimeConstants.SUNDAY) {
-                if(!set) {
+                if (!set) {
                     mutableDateTime.addDays(1);
                 }
             }
             set = true;
             mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(15); // update at 9:15am
+            mutableDateTime.setMinuteOfHour(35); // update at 9:35am
         }
-        final int updatePref = preferences.getInt(UPDATE_INTERVAL,1);
+        final int updatePref = preferences.getInt(UPDATE_INTERVAL, 1);
         final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
         if (set) {
             final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();

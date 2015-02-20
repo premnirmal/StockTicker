@@ -22,8 +22,9 @@ public class QueryCreator {
                 commaSeparator.append(',');
             }
         }
-        if (objects.length > 0) {
-            commaSeparator.deleteCharAt(commaSeparator.length() - 1);
+        final int length = commaSeparator.length();
+        if (length > 0) {
+            commaSeparator.deleteCharAt(length - 1);
         }
 
         return "select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(\"" + commaSeparator.toString() + "\")";
