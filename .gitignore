@@ -58,3 +58,6 @@ build/
 *.jks
 keystore.*
 app/keystore.*
+
+#crashlytics secret
+app/crashlytics.properties
