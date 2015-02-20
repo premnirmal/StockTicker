@@ -32,6 +32,9 @@
     <string name="no_network_message">No network connection, check your connection settings</string>
     <string name="bold_font">Bold font?</string>
     <string name="widget_label">BestStockWidget</string>
+    <string name="one_month">1 month</string>
+    <string name="three_month">3 month</string>
+    <string name="one_year">1 year</string>
 
     <string-array name="font_sizes">
         <item>Small</item>

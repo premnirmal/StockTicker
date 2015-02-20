@@ -13,12 +13,15 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.devpaul.filepickerlibrary.FilePickerActivity;
-import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.widget.StockWidget;
@@ -26,6 +29,10 @@ import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan;
+import uk.co.chrisjenx.calligraphy.TypefaceUtils;
 
 /**
  * Created by premnirmal on 01/09/15.
@@ -38,8 +45,13 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((StocksApp) getApplicationContext()).inject(this);
+        Injector.inject(this);
         setContentView(R.layout.activity_preferences);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override
@@ -52,7 +64,15 @@ public class SettingsActivity extends PreferenceActivity {
                 finish();
             }
         });
-        ((TextView) findViewById(R.id.version)).setText("Version " + BuildConfig.VERSION_NAME);
+
+        getListView().addFooterView(LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false));
+
+        final TextView versionView = (TextView) findViewById(R.id.version);
+        final SpannableStringBuilder sBuilder = new SpannableStringBuilder();
+        sBuilder.append("Version " + BuildConfig.VERSION_NAME);
+        final CalligraphyTypefaceSpan typefaceSpan = new CalligraphyTypefaceSpan(TypefaceUtils.load(getAssets(), "fonts/alegreya-black-italic.ttf"));
+        sBuilder.setSpan(typefaceSpan, 0, sBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        versionView.setText(sBuilder);
         setupSimplePreferencesScreen();
     }
 

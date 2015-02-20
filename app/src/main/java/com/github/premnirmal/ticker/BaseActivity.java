@@ -1,10 +1,10 @@
 package com.github.premnirmal.ticker;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
 import com.github.premnirmal.tickerwidget.R;
@@ -12,6 +12,8 @@ import com.github.premnirmal.tickerwidget.R;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by premnirmal on 12/24/14.
@@ -23,10 +25,8 @@ public abstract class BaseActivity extends ActionBarActivity {
     private static final List<Integer> colorResources = new ArrayList<Integer>() {
         {
             add(R.color.sea);
-            add(R.color.maroon);
             add(R.color.turqoise);
             add(R.color.grass);
-            add(R.color.dark);
         }
     };
 
@@ -35,9 +35,8 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTheme(R.style.Theme_AppCompat);
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     @Override

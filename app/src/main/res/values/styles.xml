@@ -1,24 +1,32 @@
 <resources>
 
-  <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat">
-      <item name="colorPrimary">@color/turqoise</item>
-      <item name="colorPrimaryDark">@color/maroon</item>
-      <item name="colorAccent">@color/grass</item>
-      <item name="actionBarStyle">@style/ActionBarStyle</item>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="colorPrimary">@color/turqoise</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorAccent">@color/grass</item>
+        <item name="actionBarStyle">@style/ActionBarStyle</item>
 
-      <!--<item name="android:textViewStyle">@style/TextViewStyle</item>-->
-      <!--<item name="android:editTextStyle">@style/EditTextStyle</item>-->
-  </style>
+        <item name="android:textViewStyle">@style/TextViewStyle</item>
+        <item name="android:editTextStyle">@style/EditTextStyle</item>
+        <item name="android:buttonStyle">@style/ButtonStyle</item>
+    </style>
 
     <style name="TextViewStyle" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/text_size</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+    </style>
+
+    <style name="ButtonStyle" parent="android:Widget.Button">
+        <item name="android:textSize">@dimen/button_text</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="fontPath">fonts/Avenir-Bold.otf</item>
+        <item name="android:background">@drawable/button_bg</item>
     </style>
 
     <style name="EditTextStyle" parent="android:Widget.EditText">
         <item name="android:textSize">@dimen/text_size</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
     </style>
 
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">

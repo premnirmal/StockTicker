@@ -28,38 +28,5 @@
         android:layout_height="wrap_content">
     </ListView>
 
-    <!-- Footer -->
-
-    <include layout="@layout/divider"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="16dp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:id="@+id/version"/>
-
-    <include layout="@layout/divider"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:textSize="16dp"
-        android:gravity="center"
-        android:text="@string/checkout_open_source"
-        android:id="@+id/github_link"
-        android:linksClickable="true"
-        android:autoLink="all"/>
-
-    <include layout="@layout/divider"/>
 
 </LinearLayout>

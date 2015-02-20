@@ -18,7 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.premnirmal.ticker.BaseActivity;
-import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.events.NoNetworkEvent;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
@@ -47,7 +47,7 @@ public class ParanormalActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((StocksApp) getApplicationContext()).inject(this);
+        Injector.inject(this);
         final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
         if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
             setContentView(R.layout.activity_paranormal);

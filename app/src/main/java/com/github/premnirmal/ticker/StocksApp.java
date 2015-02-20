@@ -2,27 +2,24 @@ package com.github.premnirmal.ticker;
 
 import android.app.Application;
 
-import dagger.ObjectGraph;
+import com.github.premnirmal.tickerwidget.R;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by premnirmal on 12/21/14.
  */
 public class StocksApp extends Application {
 
-    private ObjectGraph objectGraph;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        objectGraph = ObjectGraph.create(new AppModule(this));
-    }
-
-    public <T> T get(Class<T> clazz) {
-        return objectGraph.get(clazz);
-    }
-
-    public void inject(Object object) {
-        objectGraph.inject(object);
+        Injector.init(this);
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/Montserrat-Regular.otf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build()
+        );
     }
 
 }

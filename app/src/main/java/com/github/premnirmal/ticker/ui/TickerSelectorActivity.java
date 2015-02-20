@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.github.premnirmal.ticker.BaseActivity;
-import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Suggestion;
@@ -55,7 +55,7 @@ public class TickerSelectorActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((StocksApp) getApplicationContext()).inject(this);
+        Injector.inject(this);
         setContentView(R.layout.stock_search_layout);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

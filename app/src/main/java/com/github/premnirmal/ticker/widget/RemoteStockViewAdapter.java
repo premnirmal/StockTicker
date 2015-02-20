@@ -7,11 +7,11 @@ import android.util.TypedValue;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
-import com.github.premnirmal.tickerwidget.R;
-import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
+import com.github.premnirmal.tickerwidget.R;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +31,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
     IStocksProvider stocksProvider;
 
     public RemoteStockViewAdapter(Context context) {
-        ((StocksApp) context.getApplicationContext()).inject(this);
+        Injector.inject(this);
         Collection<Stock> stocks = stocksProvider.getStocks();
         this.stocks = stocks == null ? new ArrayList<Stock>() : new ArrayList<>(stocks);
         this.context = context;

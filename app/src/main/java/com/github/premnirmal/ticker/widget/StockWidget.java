@@ -9,11 +9,11 @@ import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
 
-import com.github.premnirmal.tickerwidget.R;
-import com.github.premnirmal.ticker.StocksApp;
+import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.ui.ParanormalActivity;
+import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;
 
@@ -37,7 +37,7 @@ public class StockWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        ((StocksApp) context.getApplicationContext()).inject(this);
+        Injector.inject(this);
         for (final Integer widgetId : appWidgetIds) {
             final Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
             final int min_width = getMinWidgetWidth(options);
@@ -66,7 +66,7 @@ public class StockWidget extends AppWidgetProvider {
 
     @Override
     public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
-        ((StocksApp) context.getApplicationContext()).inject(this);
+        Injector.inject(this);
         final int min_width = getMinWidgetWidth(newOptions);
         final RemoteViews remoteViews;
         if (min_width > 250) {

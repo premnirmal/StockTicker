@@ -1,9 +1,6 @@
 package com.github.premnirmal.ticker.model;
 
 import com.github.premnirmal.ticker.network.historicaldata.History;
-import com.jjoe64.graphview.series.DataPoint;
-
-import java.util.List;
 
 import rx.Observable;
 
@@ -12,8 +9,10 @@ import rx.Observable;
  */
 public interface IHistoryProvider {
 
-    Observable<History> getHistory(String ticker);
+    Observable<History> getHistory(String ticker, Range range);
 
-    Observable<DataPoint[]> getDataPoints(String ticker);
+    @Deprecated
+    Observable<SerializableDataPoint[]> getDataPoints(String ticker);
 
+    Observable<SerializableDataPoint[]> getDataPoints(String ticker, Range range);
 }

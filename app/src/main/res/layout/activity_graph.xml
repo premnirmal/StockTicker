@@ -1,48 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <com.jjoe64.graphview.GraphView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/graph" />
+        android:layout_height="0dp"
+        android:layout_weight="0.88">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:id="@+id/ticker"
-        tools:text="GOOG"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true"
-        />
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:id="@+id/progress" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:textSize="14dp"
-        android:textStyle="bold"
-        android:id="@+id/desc"
-        tools:text="GOOG"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/ticker"
-        />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/graph_holder"
+            android:visibility="gone">
 
-    <TextView
+            <com.jjoe64.graphview.GraphView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/graph" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:id="@+id/ticker"
+                tools:text="GOOG"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentTop="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textSize="14dp"
+                android:textStyle="bold"
+                android:id="@+id/desc"
+                tools:text="GOOG"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/ticker" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:textSize="12dp"
+                android:textStyle="bold"
+                android:id="@+id/dataPointValue"
+                android:gravity="center"
+                tools:text="GOOG"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/desc" />
+        </RelativeLayout>
+    </FrameLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:textSize="12dp"
-        android:textStyle="bold"
-        android:id="@+id/dataPointValue"
-        android:gravity="center"
-        tools:text="GOOG"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/desc"
-        />
-</RelativeLayout>
+        android:layout_height="0dp"
+        android:layout_weight="0.12"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="100dp"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:text="@string/one_month"
+            android:id="@+id/one_month"
+            android:layout_margin="5dp"
+            android:onClick="updateRange" />
+
+        <Button
+            android:layout_width="100dp"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:text="@string/three_month"
+            android:id="@+id/three_month"
+            android:layout_margin="5dp"
+            android:onClick="updateRange" />
+
+        <Button
+            android:layout_width="100dp"
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:text="@string/one_year"
+            android:id="@+id/one_year"
+            android:layout_margin="5dp"
+            android:onClick="updateRange" />
+
+    </LinearLayout>
+
+</LinearLayout>

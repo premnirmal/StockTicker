@@ -18,7 +18,7 @@ public class UpdateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        ((StocksApp)context.getApplicationContext()).inject(this);
+        Injector.inject(this);
         stocksProvider.fetch();
     }
 }

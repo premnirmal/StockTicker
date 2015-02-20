@@ -52,4 +52,5 @@ dependencies {
     compile 'com.github.developerpaul123.filepickerlibrary:library:1.+'
     compile 'com.jjoe64:graphview:4.0.0'
     compile 'com.android.support:support-v4:21.0.2'
+    compile 'uk.co.chrisjenx:calligraphy:2.0.1'
 }

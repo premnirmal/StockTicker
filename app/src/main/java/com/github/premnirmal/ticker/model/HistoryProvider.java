@@ -35,13 +35,27 @@ public class HistoryProvider implements IHistoryProvider {
     }
 
     @Override
-    public Observable<History> getHistory(final String ticker) {
+    public Observable<History> getHistory(final String ticker, final Range range) {
+        final DateTime now = DateTime.now();
+        final DateTime from;
+        switch (range) {
+            case ONE_MONTH:
+                from = now.minusMonths(1);
+                break;
+            case THREE_MONTH:
+                from = now.minusMonths(3);
+                break;
+            case ONE_YEAR:
+            default:
+                from = now.minusYears(1);
+                break;
+        }
+
         return Observable.create(new Observable.OnSubscribe<History>() {
             @Override
             public void call(final Subscriber<? super History> subscriber) {
                 subscriber.onStart();
-                final DateTime now = DateTime.now();
-                final String query = QueryCreator.buildHistoricalDataQuery(ticker, now.minusYears(1), now);
+                final String query = QueryCreator.buildHistoricalDataQuery(ticker, from, now);
                 stocksApi.getHistory(query)
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeOn(Schedulers.io())
@@ -73,26 +87,31 @@ public class HistoryProvider implements IHistoryProvider {
     }
 
     @Override
-    public Observable<DataPoint[]> getDataPoints(final String ticker) {
-        return Observable.create(new Observable.OnSubscribe<DataPoint[]>() {
+    public Observable<SerializableDataPoint[]> getDataPoints(final String ticker) {
+        return getDataPoints(ticker, Range.ONE_YEAR);
+    }
+
+    @Override
+    public Observable<SerializableDataPoint[]> getDataPoints(final String ticker, final Range range) {
+        return Observable.create(new Observable.OnSubscribe<SerializableDataPoint[]>() {
             @Override
-            public void call(final Subscriber<? super DataPoint[]> subscriber) {
+            public void call(final Subscriber<? super SerializableDataPoint[]> subscriber) {
                 subscriber.onStart();
                 if (Tools.isNetworkOnline(context)) {
-                    getHistory(ticker)
-                            .map(new Func1<History, DataPoint[]>() {
+                    getHistory(ticker, range)
+                            .map(new Func1<History, SerializableDataPoint[]>() {
                                 @Override
-                                public DataPoint[] call(History history) {
-                                    final DataPoint[] dataPoints = new DataPoint[history.quote.size()];
+                                public SerializableDataPoint[] call(History history) {
+                                    final SerializableDataPoint[] dataPoints = new SerializableDataPoint[history.quote.size()];
                                     for (int i = 0; i < history.quote.size(); i++) {
                                         final Quote quote = history.quote.get(i);
-                                        final DataPoint point = new DataPoint(quote.getDate().toDate(), quote.mClose);
+                                        final SerializableDataPoint point = new SerializableDataPoint(quote.getDate().toDate(), quote.mClose);
                                         dataPoints[i] = point;
                                     }
                                     return dataPoints;
                                 }
                             })
-                            .subscribe(new Subscriber<DataPoint[]>() {
+                            .subscribe(new Subscriber<SerializableDataPoint[]>() {
                                 @Override
                                 public void onCompleted() {
                                     subscriber.onCompleted();
@@ -104,7 +123,7 @@ public class HistoryProvider implements IHistoryProvider {
                                 }
 
                                 @Override
-                                public void onNext(DataPoint[] dataPoints) {
+                                public void onNext(SerializableDataPoint[] dataPoints) {
                                     subscriber.onNext(dataPoints);
                                 }
                             });
