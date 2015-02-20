@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
@@ -39,8 +40,13 @@ public class StockWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Injector.inject(this);
         for (final Integer widgetId : appWidgetIds) {
-            final Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
-            final int min_width = getMinWidgetWidth(options);
+            final int min_width;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                final Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
+                min_width = getMinWidgetWidth(options);
+            } else { // TODO not sure if this works
+                min_width = appWidgetManager.getAppWidgetInfo(widgetId).minWidth;
+            }
             final RemoteViews remoteViews;
             if (min_width > 250) {
                 remoteViews = new RemoteViews(context.getPackageName(),

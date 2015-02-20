@@ -9,7 +9,6 @@ import com.github.premnirmal.ticker.network.StocksApi;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
 import com.github.premnirmal.ticker.network.historicaldata.History;
 import com.github.premnirmal.ticker.network.historicaldata.Quote;
-import com.jjoe64.graphview.series.DataPoint;
 
 import org.joda.time.DateTime;
 
@@ -84,11 +83,6 @@ public class HistoryProvider implements IHistoryProvider {
                         });
             }
         });
-    }
-
-    @Override
-    public Observable<SerializableDataPoint[]> getDataPoints(final String ticker) {
-        return getDataPoints(ticker, Range.ONE_YEAR);
     }
 
     @Override

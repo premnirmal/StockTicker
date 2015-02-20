@@ -116,15 +116,7 @@ class StocksStorage {
             ois = new ObjectInputStream(fis);
             final List<Stock> stocks = (List<Stock>) ois.readObject();
             return stocks;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (OptionalDataException e) {
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (StreamCorruptedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (ClassNotFoundException | OptionalDataException | FileNotFoundException | StreamCorruptedException e) {
             e.printStackTrace();
         } finally {
             if (ois != null) {

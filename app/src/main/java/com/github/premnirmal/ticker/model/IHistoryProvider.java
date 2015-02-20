@@ -11,8 +11,5 @@ public interface IHistoryProvider {
 
     Observable<History> getHistory(String ticker, Range range);
 
-    @Deprecated
-    Observable<SerializableDataPoint[]> getDataPoints(String ticker);
-
     Observable<SerializableDataPoint[]> getDataPoints(String ticker, Range range);
 }
