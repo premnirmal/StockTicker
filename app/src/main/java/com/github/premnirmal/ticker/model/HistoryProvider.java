@@ -56,8 +56,6 @@ public class HistoryProvider implements IHistoryProvider {
                 subscriber.onStart();
                 final String query = QueryCreator.buildHistoricalDataQuery(ticker, from, now);
                 stocksApi.getHistory(query)
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribeOn(Schedulers.io())
                         .map(new Func1<HistoricalData, HistoricalData>() {
                             @Override
                             public HistoricalData call(HistoricalData historicalData) {
@@ -105,6 +103,8 @@ public class HistoryProvider implements IHistoryProvider {
                                     return dataPoints;
                                 }
                             })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribeOn(Schedulers.io())
                             .subscribe(new Subscriber<SerializableDataPoint[]>() {
                                 @Override
                                 public void onCompleted() {

@@ -32,6 +32,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 
 /**
@@ -102,7 +103,8 @@ public class GraphActivity extends BaseActivity {
         if (Tools.isNetworkOnline(this)) {
             findViewById(R.id.graph_holder).setVisibility(View.GONE);
             findViewById(R.id.progress).setVisibility(View.VISIBLE);
-            historyProvider.getDataPoints(ticker.symbol, range)
+            final Observable<SerializableDataPoint[]> observable = historyProvider.getDataPoints(ticker.symbol, range);
+            bind(observable)
                     .subscribe(new Subscriber<SerializableDataPoint[]>() {
                         @Override
                         public void onCompleted() {

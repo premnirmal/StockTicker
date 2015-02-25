@@ -146,17 +146,21 @@ public class StocksProvider implements IStocksProvider {
     public void fetch() {
         if (Tools.isNetworkOnline(context)) {
             api.getStocks(QueryCreator.buildStocksQuery(tickerList.toArray()))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
                     .map(new Func1<StockQuery, Query>() {
                         @Override
                         public Query call(StockQuery stockQuery) {
                             if (stockQuery == null) {
                                 return null;
                             }
-                            return stockQuery.query;
+                            final Query query = stockQuery.query;
+                            stockList = query.results.quote;
+                            lastFetched = query.created;
+                            save();
+                            return query;
                         }
                     })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
                     .subscribe(new Subscriber<Query>() {
                         @Override
                         public void onCompleted() {
@@ -169,9 +173,6 @@ public class StocksProvider implements IStocksProvider {
 
                         @Override
                         public void onNext(Query response) {
-                            stockList = response.results.quote;
-                            lastFetched = response.created;
-                            save();
                             sendBroadcast();
                         }
                     });

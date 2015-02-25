@@ -24,8 +24,8 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 30
-        versionName "4.70.00"
+        versionCode 31
+        versionName "4.80.00"
     }
 
     signingConfigs {
@@ -62,7 +62,7 @@ dependencies {
     compile 'com.squareup.dagger:dagger-compiler:1.2.+'
     compile 'com.squareup.dagger:dagger:1.2.+'
     compile 'com.squareup.retrofit:retrofit:1.8.+'
-    compile 'io.reactivex:rxandroid:0.23.+'
+    compile 'io.reactivex:rxandroid:0.24.+'
     compile 'joda-time:joda-time:2.6'
     compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.github.developerpaul123.filepickerlibrary:library:1.+'

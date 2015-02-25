@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -45,7 +46,7 @@ public class TickerSelectorActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
             return true;
         }
@@ -82,15 +83,16 @@ public class TickerSelectorActivity extends BaseActivity {
                         subscription.unsubscribe();
                     }
                     if (Tools.isNetworkOnline(getApplicationContext())) {
-                        subscription = suggestionApi.getSuggestions(query)
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribeOn(Schedulers.io())
+                        final Observable<Suggestions> observable = suggestionApi.getSuggestions(query);
+                        subscription = bind(observable)
                                 .map(new Func1<Suggestions, List<Suggestion>>() {
                                     @Override
                                     public List<Suggestion> call(Suggestions suggestions) {
                                         return suggestions.ResultSet.Result;
                                     }
                                 })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribeOn(Schedulers.io())
                                 .subscribe(new Subscriber<List<Suggestion>>() {
                                     @Override
                                     public void onCompleted() {
