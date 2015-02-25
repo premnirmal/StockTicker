@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
@@ -26,7 +27,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.github.premnirmal.tickerwidget.R;
-import com.google.common.eventbus.Subscribe;
 import com.terlici.dragndroplist.DragNDropListView;
 
 import javax.inject.Inject;
@@ -54,7 +54,13 @@ public class ParanormalActivity extends BaseActivity {
         } else {
             setContentView(R.layout.activity_paranormal_draggable);
         }
-        bus.register(this);
+        try {
+            bus.register(this);
+        } catch (NoClassDefFoundError e) {
+            // https://github.com/greenrobot/EventBus/issues/149
+            // pre lollipop https://github.com/square/otto/issues/139
+            Crashlytics.logException(e);
+        }
         if (!Tools.isNetworkOnline(getApplicationContext())) {
             onEvent(new NoNetworkEvent());
         }
@@ -157,12 +163,10 @@ public class ParanormalActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    @Subscribe
     public void onEvent(StockUpdatedEvent event) {
         update();
     }
 
-    @Subscribe
     public void onEvent(NoNetworkEvent event) {
         final boolean showing = alertDialog != null && !alertDialog.isShowing();
         if (!showing) {

@@ -95,7 +95,9 @@ public class StockWidget extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(R.id.widget_layout, startActivityPendingIntent);
         remoteViews.setTextViewText(R.id.last_updated, "Last updated: " + stocksProvider.lastFetched());
         final float fontSize = Tools.getFontSize(context);
-        remoteViews.setTextViewTextSize(R.id.last_updated, TypedValue.COMPLEX_UNIT_SP, fontSize);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            remoteViews.setTextViewTextSize(R.id.last_updated, TypedValue.COMPLEX_UNIT_SP, fontSize);
+        }
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
 

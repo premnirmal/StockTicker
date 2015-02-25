@@ -133,7 +133,10 @@ public final class Tools {
             builder.append(string);
             builder.append(",");
         }
-        builder.deleteCharAt(builder.length() - 1);
+        final int length = builder.length();
+        if(length > 1) {
+            builder.deleteCharAt(length - 1);
+        }
         return builder.toString();
     }
 }

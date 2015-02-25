@@ -10,6 +10,8 @@ import java.util.Date;
  */
 public class SerializableDataPoint extends DataPoint implements Serializable {
 
+    private static final long serialVersionUID = 42L;
+
     public SerializableDataPoint(double x, double y) {
         super(x, y);
     }
