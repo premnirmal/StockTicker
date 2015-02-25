@@ -24,8 +24,8 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 32
-        versionName "4.90.00"
+        versionCode 33
+        versionName "5.00.00"
     }
 
     signingConfigs {
@@ -64,7 +64,6 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.8.+'
     compile 'io.reactivex:rxandroid:0.24.+'
     compile 'joda-time:joda-time:2.6'
-    compile 'de.greenrobot:eventbus:2.4.0'
     compile 'com.github.developerpaul123.filepickerlibrary:library:1.+'
     compile 'com.jjoe64:graphview:4.0.0'
     compile 'com.android.support:support-v4:21.0.2'

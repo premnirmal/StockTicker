@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.Injector;
+import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.events.NoNetworkEvent;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
@@ -31,7 +32,7 @@ import com.terlici.dragndroplist.DragNDropListView;
 
 import javax.inject.Inject;
 
-import de.greenrobot.event.EventBus;
+import rx.functions.Action1;
 
 public class ParanormalActivity extends BaseActivity {
 
@@ -39,7 +40,7 @@ public class ParanormalActivity extends BaseActivity {
     IStocksProvider stocksProvider;
 
     @Inject
-    EventBus bus;
+    RxBus bus;
 
     private final Handler handler = new Handler();
     private AlertDialog alertDialog;
@@ -55,14 +56,23 @@ public class ParanormalActivity extends BaseActivity {
             setContentView(R.layout.activity_paranormal_draggable);
         }
         try {
-            bus.register(this);
+            bind(bus.toObserverable()).subscribe(new Action1<Object>() {
+                @Override
+                public void call(Object event) {
+                    if (event instanceof NoNetworkEvent) {
+                        noNetwork((NoNetworkEvent) event);
+                    } else if (event instanceof StockUpdatedEvent) {
+                        update();
+                    }
+                }
+            });
         } catch (NoClassDefFoundError e) {
             // https://github.com/greenrobot/EventBus/issues/149
             // pre lollipop https://github.com/square/otto/issues/139
             Crashlytics.logException(e);
         }
         if (!Tools.isNetworkOnline(getApplicationContext())) {
-            onEvent(new NoNetworkEvent());
+            noNetwork(new NoNetworkEvent());
         }
     }
 
@@ -85,7 +95,7 @@ public class ParanormalActivity extends BaseActivity {
             return true;
         } else if (item.getItemId() == R.id.action_update) {
             if (!Tools.isNetworkOnline(getApplicationContext())) {
-                onEvent(new NoNetworkEvent());
+                noNetwork(new NoNetworkEvent());
             } else {
                 stocksProvider.fetch();
                 item.setActionView(new ProgressBar(this));
@@ -157,17 +167,7 @@ public class ParanormalActivity extends BaseActivity {
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        bus.unregister(this);
-        super.onDestroy();
-    }
-
-    public void onEvent(StockUpdatedEvent event) {
-        update();
-    }
-
-    public void onEvent(NoNetworkEvent event) {
+    private void noNetwork(NoNetworkEvent event) {
         final boolean showing = alertDialog != null && !alertDialog.isShowing();
         if (!showing) {
             alertDialog = showDialog(getString(R.string.no_network_message));

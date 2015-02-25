@@ -3,6 +3,9 @@ package com.github.premnirmal.ticker;
 import android.content.Context;
 
 import com.github.premnirmal.ticker.network.ApiModule;
+import com.github.premnirmal.ticker.ui.ParanormalActivity;
+
+import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
@@ -13,6 +16,9 @@ import dagger.Provides;
 @Module(
         includes = {
                 ApiModule.class
+        },
+        injects = {
+                ParanormalActivity.class
         },
         complete = true,
         library = false
@@ -28,5 +34,11 @@ public class AppModule {
     @Provides
     Context provideApplicationContext() {
         return app;
+    }
+
+    @Provides
+    @Singleton
+    RxBus provideEventBus() {
+        return new RxBus();
     }
 }

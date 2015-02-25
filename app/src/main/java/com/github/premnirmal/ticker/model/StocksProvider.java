@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
@@ -39,7 +40,6 @@ import java.util.TimeZone;
 
 import javax.inject.Singleton;
 
-import de.greenrobot.event.EventBus;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -76,10 +76,10 @@ public class StocksProvider implements IStocksProvider {
 
     private final StocksApi api;
     private final Context context;
-    private final EventBus bus;
+    private final RxBus bus;
     private final StocksStorage storage;
 
-    public StocksProvider(StocksApi api, EventBus bus, Context context) {
+    public StocksProvider(StocksApi api, RxBus bus, Context context) {
         this.bus = bus;
         this.api = api;
         this.context = context;

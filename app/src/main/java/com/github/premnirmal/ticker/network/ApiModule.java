@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.network;
 
 import android.content.Context;
 
+import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.HistoryProvider;
 import com.github.premnirmal.ticker.model.IHistoryProvider;
@@ -19,7 +20,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import de.greenrobot.event.EventBus;
 import retrofit.RestAdapter;
 
 /**
@@ -43,7 +43,6 @@ public class ApiModule {
 
     private StocksApi stocksApi;
     private SuggestionApi suggestionApi;
-    private EventBus eventBus;
 
     @Provides
     @Singleton
@@ -72,18 +71,8 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    IStocksProvider provideStocksProvider(Context context) {
-        return new StocksProvider(provideStocksApi(context), provideEventBus(), context);
-    }
-
-
-    @Provides
-    @Singleton
-    EventBus provideEventBus() {
-        if (eventBus == null) {
-            eventBus = EventBus.getDefault();
-        }
-        return eventBus;
+    IStocksProvider provideStocksProvider(Context context, RxBus bus) {
+        return new StocksProvider(provideStocksApi(context), bus, context);
     }
 
     @Provides
