@@ -24,8 +24,8 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 33
-        versionName "5.00.00"
+        versionCode 34
+        versionName "5.01.00"
     }
 
     signingConfigs {

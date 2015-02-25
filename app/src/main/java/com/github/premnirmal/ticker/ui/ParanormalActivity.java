@@ -32,6 +32,7 @@ import com.terlici.dragndroplist.DragNDropListView;
 
 import javax.inject.Inject;
 
+import io.fabric.sdk.android.Fabric;
 import rx.functions.Action1;
 
 public class ParanormalActivity extends BaseActivity {
@@ -48,6 +49,7 @@ public class ParanormalActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         Injector.inject(this);
         final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE);
         if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
