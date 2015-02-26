@@ -101,8 +101,7 @@ public class TickerSelectorActivity extends BaseActivity {
 
                                     @Override
                                     public void onError(Throwable throwable) {
-                                        Toast.makeText(TickerSelectorActivity.this,
-                                                "Error", Toast.LENGTH_SHORT);
+                                        showDialog(getString(R.string.adblock));
                                     }
 
                                     @Override

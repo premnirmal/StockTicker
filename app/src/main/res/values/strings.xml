@@ -35,6 +35,7 @@
     <string name="one_month">1 month</string>
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>
+    <string name="adblock">Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
 
     <string-array name="font_sizes">
         <item>Small</item>
