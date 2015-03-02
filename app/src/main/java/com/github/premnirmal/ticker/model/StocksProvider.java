@@ -28,6 +28,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,6 +36,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -284,11 +286,19 @@ public class StocksProvider implements IStocksProvider {
     @Override
     public String lastFetched() {
         if (!TextUtils.isEmpty(lastFetched)) {
-            return DateTime.parse(lastFetched)
-                    .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()))
-                    .toString(ISODateTimeFormat.hourMinute());
+            final DateTime time = DateTime.parse(lastFetched)
+                    .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
+            final DateFormatSymbols dfs = DateFormatSymbols.getInstance(Locale.ENGLISH);
+            final int fetchedDay = time.dayOfYear().get();
+            final int fetchedDayOfWeek = time.dayOfWeek().get();
+            final int today = DateTime.now().dayOfYear().get();
+            final String fetched = (time
+                    .toString(ISODateTimeFormat.hourMinute()))
+                    + (fetchedDay == today ? "" : (" " + dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1]));
+            return fetched;
+        } else {
+            return "Unavailable";
         }
-        return lastFetched;
     }
 
 }
