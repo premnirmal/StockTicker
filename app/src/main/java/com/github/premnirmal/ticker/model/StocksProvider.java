@@ -292,7 +292,7 @@ public class StocksProvider implements IStocksProvider {
             final int fetchedDay = time.dayOfYear().get();
             final int fetchedDayOfWeek = time.dayOfWeek().get();
             final int today = DateTime.now().dayOfYear().get();
-            final String fetched = (fetchedDay == today ? "" : (" " + dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1]))
+            final String fetched = (fetchedDay == today ? "" : (dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1]) + " ")
                             + (time.toString(ISODateTimeFormat.hourMinute()));
             return fetched;
         } else {
