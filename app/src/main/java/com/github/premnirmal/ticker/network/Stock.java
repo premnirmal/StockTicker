@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 public class Stock implements Comparable<Stock>, Serializable {
 
+    private static final long serialVersionUID = -425355L;
+
     public String symbol;
 
     public String Name;
@@ -15,6 +17,30 @@ public class Stock implements Comparable<Stock>, Serializable {
     public String LastTradeDate;
     public String ChangeinPercent;
     public String Change;
+    public String AverageDailyVolume;
+    public String DaysLow;
+    public String DaysHigh;
+    public String YearLow;
+    public String YearHigh;
+    public String MarketCapitalization;
+    public String DaysRange;
+    public String Volume;
+    public String StockExchange;
+
+//    "symbol": "YHOO",
+//            "AverageDailyVolume": "18131200",
+//            "Change": "+1.37",
+//            "DaysLow": "41.97",
+//            "DaysHigh": "44.38",
+//            "YearLow": "32.15",
+//            "YearHigh": "52.62",
+//            "MarketCapitalization": "41.18B",
+//            "LastTradePriceOnly": "43.99",
+//            "DaysRange": "41.97 - 44.38",
+//            "Name": "Yahoo! Inc.",
+//            "Symbol": "YHOO",
+//            "Volume": "30098498",
+//            "StockExchange": "NMS"
 
     @Override
     public int compareTo(Stock another) {

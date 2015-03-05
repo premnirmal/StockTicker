@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.ui;
+package com.github.premnirmal.ticker.portfolio;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.github.premnirmal.ticker.ui.StockFieldView;
 import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
@@ -53,10 +54,10 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
         final Context context = parent.getContext();
         final Stock stock = getItem(position);
         if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.stockview_activity, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.portfolio_item_view, null);
         }
-        final TextView symbol = (TextView) convertView.findViewById(R.id.ticker);
-        symbol.setText(stock.symbol);
+
+        setText(convertView, R.id.ticker, stock.symbol);
 
         final double change;
         if (stock != null && stock.Change != null) {
@@ -65,12 +66,17 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
             change = 0d;
         }
 
-        final TextView changeInPercent = (TextView) convertView.findViewById(R.id.changePercent);
+        setText(convertView, R.id.name, stock.Name);
+
+        final StockFieldView changeInPercent = (StockFieldView) convertView.findViewById(R.id.changePercent);
         changeInPercent.setText(stock.ChangeinPercent);
-        final TextView changeValue = (TextView) convertView.findViewById(R.id.changeValue);
+        final StockFieldView changeValue = (StockFieldView) convertView.findViewById(R.id.changeValue);
         changeValue.setText(stock.Change);
-        final TextView totalValue = (TextView) convertView.findViewById(R.id.totalValue);
-        totalValue.setText(String.valueOf(stock.LastTradePriceOnly));
+        setStockFieldText(convertView, R.id.totalValue, String.valueOf(stock.LastTradePriceOnly));
+        setStockFieldText(convertView, R.id.averageDailyVolume, String.valueOf(stock.AverageDailyVolume));
+        setStockFieldText(convertView, R.id.exchange, String.valueOf(stock.StockExchange));
+        setStockFieldText(convertView, R.id.yearHigh, String.valueOf(stock.YearHigh));
+        setStockFieldText(convertView, R.id.yearLow, String.valueOf(stock.YearLow));
 
         final int color;
         if (change >= 0) {
@@ -105,10 +111,20 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
     public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
         stockList.add(endPosition, stockList.remove(startPosition));
         final List<String> newTickerList = new ArrayList<>();
-        for(Stock stock : stockList) {
+        for (Stock stock : stockList) {
             newTickerList.add(stock.symbol);
         }
         stocksProvider.rearrange(newTickerList);
         notifyDataSetChanged();
+    }
+
+    static void setText(View parent, int textViewId, CharSequence text) {
+        final TextView textView = (TextView) parent.findViewById(textViewId);
+        textView.setText(text);
+    }
+
+    static void setStockFieldText(View parent, int textViewId, CharSequence text) {
+        final StockFieldView textView = (StockFieldView) parent.findViewById(textViewId);
+        textView.setText(text);
     }
 }

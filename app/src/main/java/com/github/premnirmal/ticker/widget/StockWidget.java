@@ -13,7 +13,7 @@ import android.widget.RemoteViews;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
-import com.github.premnirmal.ticker.ui.ParanormalActivity;
+import com.github.premnirmal.ticker.ParanormalActivity;
 import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;

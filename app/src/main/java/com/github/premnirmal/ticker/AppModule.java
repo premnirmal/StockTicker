@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker;
 import android.content.Context;
 
 import com.github.premnirmal.ticker.network.ApiModule;
-import com.github.premnirmal.ticker.ui.ParanormalActivity;
+import com.github.premnirmal.ticker.portfolio.PortfolioFragment;
 
 import javax.inject.Singleton;
 
@@ -18,7 +18,7 @@ import dagger.Provides;
                 ApiModule.class
         },
         injects = {
-                ParanormalActivity.class
+                PortfolioFragment.class
         },
         complete = true,
         library = false

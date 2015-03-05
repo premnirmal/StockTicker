@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.ui;
+package com.github.premnirmal.ticker.portfolio;
 
 import android.content.DialogInterface;
 import android.graphics.Color;

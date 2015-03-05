@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.ui;
+package com.github.premnirmal.ticker.portfolio;
 
 import android.os.Bundle;
 import android.text.Editable;
