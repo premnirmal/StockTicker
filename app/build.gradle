@@ -24,8 +24,8 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 38
-        versionName "5.11.00"
+        versionCode 39
+        versionName "5.12.00"
     }
 
     signingConfigs {
@@ -68,6 +68,7 @@ dependencies {
     compile 'com.jjoe64:graphview:4.0.0'
     compile 'com.android.support:support-v4:21.0.2'
     compile 'uk.co.chrisjenx:calligraphy:2.0.1'
+    compile "com.daimajia.swipelayout:library:1.0.3@aar"
 
     compile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
         transitive = true;

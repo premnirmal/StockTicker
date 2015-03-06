@@ -8,10 +8,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.github.premnirmal.ticker.ui.StockFieldView;
-import com.github.premnirmal.tickerwidget.R;
+import com.daimajia.swipe.SwipeLayout;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
+import com.github.premnirmal.ticker.ui.StockFieldView;
+import com.github.premnirmal.tickerwidget.R;
 import com.terlici.dragndroplist.DragNDropAdapter;
 import com.terlici.dragndroplist.DragNDropListView;
 
@@ -26,10 +27,16 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
     private final List<Stock> stockList;
     private final IStocksProvider stocksProvider;
     private final boolean autoSort;
+    private final OnRemoveClickListener listener;
 
-    StocksAdapter(IStocksProvider stocksProvider, boolean autoSort) {
+    interface OnRemoveClickListener {
+        void onRemoveClick(View view, Stock stock, int position);
+    }
+
+    StocksAdapter(IStocksProvider stocksProvider, boolean autoSort, OnRemoveClickListener listener) {
         this.stocksProvider = stocksProvider;
         this.autoSort = autoSort;
+        this.listener = listener;
         stockList = stocksProvider.getStocks() == null ? new ArrayList<Stock>()
                 : new ArrayList<>(stocksProvider.getStocks());
     }
@@ -46,16 +53,27 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         final Context context = parent.getContext();
         final Stock stock = getItem(position);
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.portfolio_item_view, null);
         }
+
+        convertView.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onRemoveClick(v, stock, position);
+            }
+        });
+
+        final SwipeLayout swipeLayout = (SwipeLayout) convertView;
+        swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+        swipeLayout.setDragEdge(SwipeLayout.DragEdge.Left);
 
         setText(convertView, R.id.ticker, stock.symbol);
 

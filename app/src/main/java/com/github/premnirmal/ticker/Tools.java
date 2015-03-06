@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
@@ -30,10 +31,18 @@ public final class Tools {
     public static final String UPDATE_INTERVAL = "UPDATE_INTERVAL";
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
+    public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
+
+    public static boolean firstTimeViewingSwipeLayout(Context context) {
+        final SharedPreferences preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        final boolean firstTime = preferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
+        preferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).commit();
+        return firstTime;
+    }
 
     public static int getBackgroundColor(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? TRANSPARENT
+                .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? Color.TRANSPARENT
                 : context.getResources().getColor(R.color.translucent);
     }
 
@@ -134,7 +143,7 @@ public final class Tools {
             builder.append(",");
         }
         final int length = builder.length();
-        if(length > 1) {
+        if (length > 1) {
             builder.deleteCharAt(length - 1);
         }
         return builder.toString();

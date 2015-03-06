@@ -20,12 +20,14 @@ import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.daimajia.swipe.SwipeLayout;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.events.NoNetworkEvent;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.model.IStocksProvider;
+import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.tickerwidget.R;
 import com.terlici.dragndroplist.DragNDropListView;
@@ -105,7 +107,12 @@ public class PortfolioFragment extends BaseFragment {
 
         final AdapterView adapterView = (AdapterView) findViewById(R.id.stockList);
         final StocksAdapter adapter = new StocksAdapter(stocksProvider,
-                preferences.getBoolean(Tools.SETTING_AUTOSORT, false));
+                preferences.getBoolean(Tools.SETTING_AUTOSORT, false), new StocksAdapter.OnRemoveClickListener() {
+            @Override
+            public void onRemoveClick(View view, Stock stock, int position) {
+                promptRemove(stock);
+            }
+        });
         if (!preferences.getBoolean(Tools.SETTING_AUTOSORT, false)
                 && adapterView instanceof DragNDropListView) {
             ((DragNDropListView) adapterView).setDragNDropAdapter(adapter);
@@ -124,20 +131,53 @@ public class PortfolioFragment extends BaseFragment {
         adapterView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                new AlertDialog.Builder(activity)
-                        .setMessage("Remove stock?")
-                        .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                stocksProvider.removeStock(adapter.getItem(position).symbol);
-                                update();
-                            }
-                        })
-                        .show();
-                update();
+                promptRemove(adapter.getItem(position));
                 return true;
             }
         });
+
+        if (adapter.getCount() > 1) {
+            if (Tools.firstTimeViewingSwipeLayout(activity)) {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        final SwipeLayout layout = (SwipeLayout) adapterView.getChildAt(0);
+                        if (layout != null) {
+                            layout.open(true);
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    layout.close();
+                                    final SwipeLayout layout = (SwipeLayout) adapterView.getChildAt(1);
+                                    if (layout != null) {
+                                        layout.open(true);
+                                        handler.postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                layout.close();
+                                           }
+                                        }, 600);
+                                    }
+                                }
+                            }, 600);
+                        }
+                    }
+                }, 1000);
+            }
+        }
+    }
+
+    private void promptRemove(final Stock stock) {
+        new AlertDialog.Builder(getActivity())
+                .setMessage("Remove stock?")
+                .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        stocksProvider.removeStock(stock.symbol);
+                        update();
+                    }
+                })
+                .show();
     }
 
     @Override
