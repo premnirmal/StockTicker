@@ -14,7 +14,9 @@
         android:id="@+id/fieldname"
         android:textColor="@android:color/darker_gray"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentLeft="true"
+        android:gravity="left"
+        />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,5 +27,6 @@
         android:textColor="@android:color/white"
         tools:text="GOOG"
         android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"/>
+        android:gravity="right"
+        />
 </merge>

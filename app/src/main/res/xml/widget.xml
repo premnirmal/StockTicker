@@ -6,5 +6,6 @@
     android:previewImage="@drawable/widget_preview"
     android:resizeMode="horizontal|vertical"
     android:configure="com.github.premnirmal.ticker.ParanormalActivity"
+    android:initialLayout="@layout/initial_widget_layout"
     android:widgetCategory="home_screen">
 </appwidget-provider>
