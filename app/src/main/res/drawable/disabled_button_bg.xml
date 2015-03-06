@@ -4,7 +4,10 @@
         <shape android:shape="rectangle">
             <padding android:bottom="5dp" android:left="5dp" android:right="5dp" android:top="5dp" />
             <corners android:radius="4dp" />
-            <solid android:color="@android:color/darker_gray" />
+            <gradient android:startColor="#FFFF0000"
+                android:type="linear"
+                android:endColor="#80FF00FF"
+                android:angle="225" />
         </shape>
     </item>
 </selector>

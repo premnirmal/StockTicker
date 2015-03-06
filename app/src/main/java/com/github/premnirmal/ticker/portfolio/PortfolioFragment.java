@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -41,6 +43,8 @@ import rx.functions.Action1;
  */
 public class PortfolioFragment extends BaseFragment {
 
+    private static final String LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE";
+
     @Inject
     IStocksProvider stocksProvider;
 
@@ -49,6 +53,7 @@ public class PortfolioFragment extends BaseFragment {
 
     private final Handler handler = new Handler(Looper.getMainLooper());
     private AlertDialog alertDialog;
+    private Parcelable listViewState;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,6 +91,9 @@ public class PortfolioFragment extends BaseFragment {
         if (!Tools.isNetworkOnline(context.getApplicationContext())) {
             noNetwork(new NoNetworkEvent());
         }
+        if (savedInstanceState != null) {
+            listViewState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
+        }
         return view;
     }
 
@@ -105,7 +113,7 @@ public class PortfolioFragment extends BaseFragment {
 
         ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
-        final AdapterView adapterView = (AdapterView) findViewById(R.id.stockList);
+        final ListView adapterView = (ListView) findViewById(R.id.stockList);
         final StocksAdapter adapter = new StocksAdapter(stocksProvider,
                 preferences.getBoolean(Tools.SETTING_AUTOSORT, false), new StocksAdapter.OnRemoveClickListener() {
             @Override
@@ -119,6 +127,11 @@ public class PortfolioFragment extends BaseFragment {
         } else {
             adapterView.setAdapter(adapter);
         }
+
+        if (listViewState != null) {
+            adapterView.onRestoreInstanceState(listViewState);
+        }
+
         adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
@@ -147,15 +160,15 @@ public class PortfolioFragment extends BaseFragment {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    layout.close();
-                                    final SwipeLayout layout = (SwipeLayout) adapterView.getChildAt(1);
-                                    if (layout != null) {
-                                        layout.open(true);
+                                    if (layout != null) layout.close();
+                                    final SwipeLayout secondLayout = (SwipeLayout) adapterView.getChildAt(1);
+                                    if (secondLayout != null) {
+                                        secondLayout.open(true);
                                         handler.postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
-                                                layout.close();
-                                           }
+                                                if (secondLayout != null) secondLayout.close();
+                                            }
                                         }, 600);
                                     }
                                 }
@@ -215,5 +228,12 @@ public class PortfolioFragment extends BaseFragment {
         if (!showing) {
             alertDialog = showDialog(getString(R.string.no_network_message));
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        listViewState = ((ListView) findViewById(R.id.stockList)).onSaveInstanceState();
+        outState.putParcelable(LIST_INSTANCE_STATE, listViewState);
     }
 }

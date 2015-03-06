@@ -48,7 +48,7 @@ public class GraphActivity extends BaseActivity {
 
     private Stock ticker;
     private SerializableDataPoint[] dataPoints;
-    private Range range = Range.ONE_YEAR;
+    private Range range = Range.THREE_MONTH;
 
     @Inject
     IHistoryProvider historyProvider;
