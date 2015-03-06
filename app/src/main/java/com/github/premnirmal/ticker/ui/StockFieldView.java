@@ -34,8 +34,8 @@ public class StockFieldView extends LinearLayout {
             final int orientation = array.getInt(R.styleable.StockFieldView_or, 0);
             if (orientation == 0) {
                 setOrientation(HORIZONTAL);
-                fieldName.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.7f));
-                fieldValue.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.3f));
+                fieldName.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
+                fieldValue.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f));
                 fieldValue.setGravity(Gravity.RIGHT);
             } else {
                 setOrientation(VERTICAL);
