@@ -5,6 +5,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.widget.StockWidget;
@@ -19,6 +20,12 @@ public class ParanormalActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_paranormal);
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                setRandomActionBarColor();
+            }
+        });
     }
 
     @Override

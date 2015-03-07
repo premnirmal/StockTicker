@@ -16,6 +16,7 @@ public class Injector {
     }
 
     private Injector(StocksApp app) {
+        Tools.init(app);
         objectGraph = ObjectGraph.create(new AppModule(app));
         instance = this;
     }

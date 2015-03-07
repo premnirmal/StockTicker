@@ -32,22 +32,31 @@ public final class Tools {
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
     public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
+    public static SharedPreferences sharedPreferences;
 
-    public static boolean firstTimeViewingSwipeLayout(Context context) {
-        final SharedPreferences preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        final boolean firstTime = preferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
-        preferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).commit();
+
+    public static boolean autoSortEnabled() {
+        return sharedPreferences.getBoolean(SETTING_AUTOSORT, false);
+    }
+
+    static void init(Context context) {
+        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    public static boolean firstTimeViewingSwipeLayout() {
+        final boolean firstTime = sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
+        sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply();
         return firstTime;
     }
 
     public static int getBackgroundColor(Context context) {
-        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return sharedPreferences
                 .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? Color.TRANSPARENT
                 : context.getResources().getColor(R.color.translucent);
     }
 
     public static float getFontSize(Context context) {
-        final int size = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        final int size = sharedPreferences
                 .getInt(FONT_SIZE, 1);
         switch (size) {
             case 0:
@@ -93,8 +102,6 @@ public final class Tools {
      * @return
      */
     public static long getMsToNextAlarm(Context context) {
-        final SharedPreferences preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
-
         final int hourOfDay = DateTime.now().hourOfDay().get();
         final int minuteOfHour = DateTime.now().minuteOfHour().get();
         final int dayOfWeek = DateTime.now().getDayOfWeek();
@@ -126,7 +133,7 @@ public final class Tools {
             mutableDateTime.setHourOfDay(9); // 9am
             mutableDateTime.setMinuteOfHour(35); // update at 9:35am
         }
-        final int updatePref = preferences.getInt(UPDATE_INTERVAL, 1);
+        final int updatePref = sharedPreferences.getInt(UPDATE_INTERVAL, 1);
         final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
         if (set) {
             final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();

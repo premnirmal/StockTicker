@@ -86,18 +86,18 @@ public class StocksProvider implements IStocksProvider {
         this.api = api;
         this.context = context;
         storage = new StocksStorage(context);
-        preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+        preferences = Tools.sharedPreferences;
         final String tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS);
         tickerList = new ArrayList<>(Arrays.asList(tickerListVars.split(",")));
         if (preferences.contains(STOCK_LIST)) { // for users using older versions
             deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET);
-            preferences.edit().remove(STOCK_LIST).commit();
+            preferences.edit().remove(STOCK_LIST).apply();
             for (String ticker : deprecatedTickerSet) {
                 if (!tickerList.contains(ticker)) {
                     tickerList.add(ticker);
                 }
             }
-            preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).commit();
+            preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).apply();
         }
         lastFetched = preferences.getString(LAST_FETCHED, null);
         if (lastFetched == null) {
@@ -122,7 +122,7 @@ public class StocksProvider implements IStocksProvider {
                 .remove(STOCK_LIST)
                 .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
                 .putString(LAST_FETCHED, lastFetched)
-                .commit();
+                .apply();
         storage.save(stockList)
                 .subscribe(new Subscriber<Boolean>() {
                     @Override
@@ -257,7 +257,7 @@ public class StocksProvider implements IStocksProvider {
     }
 
     private void sortStockList() {
-        if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
+        if (Tools.autoSortEnabled()) {
             Collections.sort(stockList);
         } else {
             Collections.sort(stockList, new Comparator<Stock>() {
@@ -293,7 +293,7 @@ public class StocksProvider implements IStocksProvider {
             final int fetchedDayOfWeek = time.dayOfWeek().get();
             final int today = DateTime.now().dayOfYear().get();
             final String fetched = (fetchedDay == today ? "" : (dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1]) + " ")
-                            + (time.toString(ISODateTimeFormat.hourMinute()));
+                    + (time.toString(ISODateTimeFormat.hourMinute()));
             return fetched;
         } else {
             return "Unavailable";

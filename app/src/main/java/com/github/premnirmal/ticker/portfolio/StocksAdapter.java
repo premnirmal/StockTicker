@@ -13,8 +13,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.ui.StockFieldView;
 import com.github.premnirmal.tickerwidget.R;
-import com.terlici.dragndroplist.DragNDropAdapter;
-import com.terlici.dragndroplist.DragNDropListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +20,18 @@ import java.util.List;
 /**
  * Created by premnirmal on 12/21/14.
  */
-class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
+class StocksAdapter extends BaseAdapter {
 
     private final List<Stock> stockList;
     private final IStocksProvider stocksProvider;
-    private final boolean autoSort;
     private final OnRemoveClickListener listener;
 
     interface OnRemoveClickListener {
         void onRemoveClick(View view, Stock stock, int position);
     }
 
-    StocksAdapter(IStocksProvider stocksProvider, boolean autoSort, OnRemoveClickListener listener) {
+    StocksAdapter(IStocksProvider stocksProvider, OnRemoveClickListener listener) {
         this.stocksProvider = stocksProvider;
-        this.autoSort = autoSort;
         this.listener = listener;
         stockList = stocksProvider.getStocks() == null ? new ArrayList<Stock>()
                 : new ArrayList<>(stocksProvider.getStocks());
@@ -73,7 +69,7 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
 
         final SwipeLayout swipeLayout = (SwipeLayout) convertView;
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
-        swipeLayout.setDragEdge(SwipeLayout.DragEdge.Left);
+        swipeLayout.setDragEdge(SwipeLayout.DragEdge.Right);
 
         setText(convertView, R.id.ticker, stock.symbol);
 
@@ -109,31 +105,7 @@ class StocksAdapter extends BaseAdapter implements DragNDropAdapter {
         final int padding = (int) context.getResources().getDimension(R.dimen.text_padding);
         convertView.setPadding(0, padding, 0, padding);
 
-        final View dragHandler = convertView.findViewById(R.id.dragHandler);
-        dragHandler.setVisibility(autoSort ? View.GONE : View.VISIBLE);
-
         return convertView;
-    }
-
-    @Override
-    public int getDragHandler() {
-        return R.id.dragHandler;
-    }
-
-    @Override
-    public void onItemDrag(DragNDropListView parent, View view, int position, long id) {
-
-    }
-
-    @Override
-    public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
-        stockList.add(endPosition, stockList.remove(startPosition));
-        final List<String> newTickerList = new ArrayList<>();
-        for (Stock stock : stockList) {
-            newTickerList.add(stock.symbol);
-        }
-        stocksProvider.rearrange(newTickerList);
-        notifyDataSetChanged();
     }
 
     static void setText(View parent, int textViewId, CharSequence text) {

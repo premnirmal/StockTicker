@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">StockTicker</string>
-    <string name="hello_world">Portfolio</string>
+    <string name="portfolio">Portfolio</string>
     <string name="version">Version</string>
     <string name="action_add">Add</string>
     <string name="action_export">Export Tickers</string>
@@ -10,6 +10,7 @@
     <string name="action_import">Import Tickers</string>
     <string name="import_desc">Import tickers from a comma separated .txt file</string>
     <string name="action_Settings">Settings</string>
+    <string name="action_rearrage">Rearrange Stocks</string>
     <string name="action_update">Refresh Now</string>
 
     <string name="endpoint">http://query.yahooapis.com/v1/public</string>
@@ -19,8 +20,8 @@
     <string name="text_size">Text Size</string>
     <string name="widget_bg">Widget Background</string>
     <string name="update_interval">Update Interval</string>
-    <string name="auto_sort">Sort by percent change?</string>
-    <string name="auto_sort_desc">Stocks will be sorted by percent change in descending order.</string>
+    <string name="auto_sort">Autosort?</string>
+    <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
     <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>

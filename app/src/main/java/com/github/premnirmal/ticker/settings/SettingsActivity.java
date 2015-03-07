@@ -42,6 +42,9 @@ public class SettingsActivity extends PreferenceActivity {
     @Inject
     IStocksProvider stocksProvider;
 
+    @Inject
+    SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +91,6 @@ public class SettingsActivity extends PreferenceActivity {
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.prefs);
 
-        final SharedPreferences preferences = getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
-
         final Preference exportPref = findPreference("EXPORT");
         exportPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
@@ -130,7 +131,7 @@ public class SettingsActivity extends PreferenceActivity {
                 final String stringValue = value.toString();
                 final ListPreference listPreference = (ListPreference) preference;
                 final int index = listPreference.findIndexOfValue(stringValue);
-                preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).commit();
+                preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply();
                 broadcastUpdateWidget();
                 fontSizePreference.setSummary(fontSizePreference.getEntries()[index]);
                 Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
@@ -149,7 +150,7 @@ public class SettingsActivity extends PreferenceActivity {
                 final String stringValue = value.toString();
                 final ListPreference listPreference = (ListPreference) preference;
                 final int index = listPreference.findIndexOfValue(stringValue);
-                preferences.edit().putInt(Tools.WIDGET_BG, index).commit();
+                preferences.edit().putInt(Tools.WIDGET_BG, index).apply();
                 broadcastUpdateWidget();
                 bgPreference.setSummary(bgPreference.getEntries()[index]);
                 Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
@@ -167,7 +168,7 @@ public class SettingsActivity extends PreferenceActivity {
                 final String stringValue = value.toString();
                 final ListPreference listPreference = (ListPreference) preference;
                 final int index = listPreference.findIndexOfValue(stringValue);
-                preferences.edit().putInt(Tools.UPDATE_INTERVAL, index).commit();
+                preferences.edit().putInt(Tools.UPDATE_INTERVAL, index).apply();
                 broadcastUpdateWidget();
                 refreshPreference.setSummary(refreshPreference.getEntries()[index]);
                 Toast.makeText(SettingsActivity.this, R.string.refresh_updated_message, Toast.LENGTH_SHORT).show();
@@ -176,13 +177,13 @@ public class SettingsActivity extends PreferenceActivity {
         });
 
         final CheckBoxPreference autoSortPreference = (CheckBoxPreference) findPreference(Tools.SETTING_AUTOSORT);
-        final boolean autoSort = preferences.getBoolean(Tools.SETTING_AUTOSORT, false);
+        final boolean autoSort = Tools.autoSortEnabled();
         autoSortPreference.setChecked(autoSort);
         autoSortPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object value) {
                 final boolean checked = (boolean) value;
-                preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).commit();
+                preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply();
                 return true;
             }
         });

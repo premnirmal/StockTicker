@@ -10,6 +10,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.portfolio.GraphActivity;
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment;
+import com.github.premnirmal.ticker.portfolio.RearrangeActivity;
 import com.github.premnirmal.ticker.portfolio.TickerSelectorActivity;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter;
@@ -34,7 +35,8 @@ import retrofit.RestAdapter;
                 StockWidget.class,
                 UpdateReceiver.class,
                 GraphActivity.class,
-                PortfolioFragment.class
+                PortfolioFragment.class,
+                RearrangeActivity.class
         },
         complete = false,
         library = true

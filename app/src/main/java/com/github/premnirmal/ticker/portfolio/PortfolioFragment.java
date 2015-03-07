@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -32,7 +31,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.tickerwidget.R;
-import com.terlici.dragndroplist.DragNDropListView;
 
 import javax.inject.Inject;
 
@@ -71,13 +69,7 @@ public class PortfolioFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final Context context = inflater.getContext();
-        final SharedPreferences preferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
-        final View view;
-        if (preferences.getBoolean(Tools.SETTING_AUTOSORT, false)) {
-            view = inflater.inflate(R.layout.portfolio_fragment, null);
-        } else {
-            view = inflater.inflate(R.layout.portfolio_fragment_draggable, null);
-        }
+        final View view = inflater.inflate(R.layout.portfolio_fragment, null);
         bind(bus.toObserverable()).subscribe(new Action1<Object>() {
             @Override
             public void call(Object event) {
@@ -109,24 +101,19 @@ public class PortfolioFragment extends BaseFragment {
                 }
             }, 600);
         }
-        final SharedPreferences preferences = activity.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
 
         ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
         final ListView adapterView = (ListView) findViewById(R.id.stockList);
         final StocksAdapter adapter = new StocksAdapter(stocksProvider,
-                preferences.getBoolean(Tools.SETTING_AUTOSORT, false), new StocksAdapter.OnRemoveClickListener() {
-            @Override
-            public void onRemoveClick(View view, Stock stock, int position) {
-                promptRemove(stock);
-            }
-        });
-        if (!preferences.getBoolean(Tools.SETTING_AUTOSORT, false)
-                && adapterView instanceof DragNDropListView) {
-            ((DragNDropListView) adapterView).setDragNDropAdapter(adapter);
-        } else {
-            adapterView.setAdapter(adapter);
-        }
+                new StocksAdapter.OnRemoveClickListener() {
+                    @Override
+                    public void onRemoveClick(View view, Stock stock, int position) {
+                        promptRemove(stock);
+                    }
+                });
+
+        adapterView.setAdapter(adapter);
 
         if (listViewState != null) {
             adapterView.onRestoreInstanceState(listViewState);
@@ -141,16 +128,8 @@ public class PortfolioFragment extends BaseFragment {
             }
         });
 
-        adapterView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                promptRemove(adapter.getItem(position));
-                return true;
-            }
-        });
-
         if (adapter.getCount() > 1) {
-            if (Tools.firstTimeViewingSwipeLayout(activity)) {
+            if (Tools.firstTimeViewingSwipeLayout()) {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -198,26 +177,32 @@ public class PortfolioFragment extends BaseFragment {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
         inflater.inflate(R.menu.menu_paranormal, menu);
+        final MenuItem rearrangeItem = menu.findItem(R.id.action_rearrange);
+        rearrangeItem.setEnabled(!Tools.autoSortEnabled());
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         final FragmentActivity activity = getActivity();
-        if (item.getItemId() == R.id.action_add_ticker) {
+        final int itemId = item.getItemId();
+        if (itemId == R.id.action_add_ticker) {
             final Intent intent = new Intent(activity, TickerSelectorActivity.class);
             startActivity(intent);
             return true;
-        } else if (item.getItemId() == R.id.action_settings) {
+        } else if (itemId == R.id.action_settings) {
             final Intent intent = new Intent(activity, SettingsActivity.class);
             startActivity(intent);
             return true;
-        } else if (item.getItemId() == R.id.action_update) {
+        } else if (itemId == R.id.action_update) {
             if (!Tools.isNetworkOnline(activity.getApplicationContext())) {
                 noNetwork(new NoNetworkEvent());
             } else {
                 stocksProvider.fetch();
                 item.setActionView(new ProgressBar(activity));
             }
+            return true;
+        } else if (itemId == R.id.action_rearrange) {
+            startActivity(new Intent(getActivity(), RearrangeActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

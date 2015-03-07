@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MenuItem;
 
 import com.github.premnirmal.tickerwidget.R;
 
@@ -113,5 +114,14 @@ public abstract class BaseActivity extends ActionBarActivity {
                 .setMessage(message)
                 .setNeutralButton("OK", listener)
                 .show();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

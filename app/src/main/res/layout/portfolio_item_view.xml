@@ -127,30 +127,6 @@
 
         </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="0.05"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center_vertical"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="5dp"
-            android:id="@+id/dragHandler">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:src="@android:drawable/arrow_up_float" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:src="@android:drawable/arrow_down_float" />
-        </LinearLayout>
     </LinearLayout>
     <!-- Surface View End -->
 </com.daimajia.swipe.SwipeLayout>

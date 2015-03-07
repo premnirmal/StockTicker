@@ -1,9 +1,11 @@
 package com.github.premnirmal.ticker;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.github.premnirmal.ticker.network.ApiModule;
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment;
+import com.github.premnirmal.ticker.settings.SettingsActivity;
 
 import javax.inject.Singleton;
 
@@ -18,7 +20,7 @@ import dagger.Provides;
                 ApiModule.class
         },
         injects = {
-                PortfolioFragment.class
+                PortfolioFragment.class, SettingsActivity.class
         },
         complete = true,
         library = false
@@ -40,5 +42,10 @@ public class AppModule {
     @Singleton
     RxBus provideEventBus() {
         return new RxBus();
+    }
+
+    @Provides @Singleton
+    SharedPreferences provideSharedPreferences(Context context) {
+        return Tools.sharedPreferences;
     }
 }

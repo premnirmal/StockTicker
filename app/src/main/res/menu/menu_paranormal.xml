@@ -16,6 +16,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_rearrange"
+        android:title="@string/action_rearrage"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_settings"
         android:title="@string/action_Settings"
         app:showAsAction="never" />
