@@ -15,25 +15,25 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.github.premnirmal.ticker.ParanormalActivity"
-            android:label="@string/portfolio"
+            android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.RearrangeActivity"
             android:label="@string/portfolio"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity"
             android:label="@string/add_ticker"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.GraphActivity"
+            android:label="@string/portfolio"
             android:screenOrientation="landscape" />
 
         <receiver
@@ -64,7 +64,7 @@
 
         <activity
             android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
-            android:label="@string/action_Settings"></activity>
+            android:label="@string/action_Settings"/>
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

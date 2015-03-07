@@ -23,7 +23,7 @@
 
     <ListPreference
         android:key="WIDGET_BG"
-        android:title="@string/widget_bg"
+        android:title="@string/bg"
         android:defaultValue="0"
         android:entries="@array/backgrounds"
         android:entryValues="@array/backgrounds_values"

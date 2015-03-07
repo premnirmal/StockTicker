@@ -3,7 +3,9 @@
 
     <string name="app_name">StockTicker</string>
     <string name="portfolio">Portfolio</string>
+    <string name="widget_label">BestStockWidget</string>
     <string name="version">Version</string>
+
     <string name="action_add">Add</string>
     <string name="action_export">Export Tickers</string>
     <string name="export_desc">Export tickers to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
@@ -18,7 +20,7 @@
     <string name="add_ticker">Add Ticker</string>
     <string name="dotdotdot">  ...  </string>
     <string name="text_size">Text Size</string>
-    <string name="widget_bg">Widget Background</string>
+    <string name="bg">Widget Background</string>
     <string name="update_interval">Update Interval</string>
     <string name="auto_sort">Autosort?</string>
     <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
@@ -32,7 +34,6 @@
     <string name="ticker_import_fail">Error importing tickers</string>
     <string name="no_network_message">No network connection, check your connection settings</string>
     <string name="bold_font">Bold font?</string>
-    <string name="widget_label">BestStockWidget</string>
     <string name="one_month">1 month</string>
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>
