@@ -23,7 +23,6 @@ import java.util.List;
 class StocksAdapter extends BaseAdapter {
 
     private final List<Stock> stockList;
-    private final IStocksProvider stocksProvider;
     private final OnRemoveClickListener listener;
 
     interface OnRemoveClickListener {
@@ -31,7 +30,6 @@ class StocksAdapter extends BaseAdapter {
     }
 
     StocksAdapter(IStocksProvider stocksProvider, OnRemoveClickListener listener) {
-        this.stocksProvider = stocksProvider;
         this.listener = listener;
         stockList = stocksProvider.getStocks() == null ? new ArrayList<Stock>()
                 : new ArrayList<>(stocksProvider.getStocks());

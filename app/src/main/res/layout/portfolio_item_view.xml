@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_bg">
     <!-- Bottom View Start-->
     <FrameLayout
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:background="#FF5534">
+        android:padding="15dp">
 
         <ImageButton
             android:id="@+id/trash"
@@ -14,7 +15,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="15dp"
             android:src="@android:drawable/ic_menu_delete" />
 
     </FrameLayout>
@@ -51,7 +51,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:textSize="12sp"
                 tools:text="Google Inc"
                 android:singleLine="true"
                 android:ellipsize="end"

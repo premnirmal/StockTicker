@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp">
+    android:background="@drawable/card_bg"
+    android:padding="5dp">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:id="@+id/tickerName" />
 
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentRight="true"
-        android:padding="10dp"
-        android:background="@color/transparent"
-        android:src="@drawable/ic_updown"
-        android:id="@+id/dragHandler" />
-
-</RelativeLayout>
+</FrameLayout>

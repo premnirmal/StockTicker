@@ -25,7 +25,9 @@ import com.github.premnirmal.ticker.widget.StockWidget;
 import com.github.premnirmal.tickerwidget.R;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
+import org.joda.time.MutableDateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.text.DateFormatSymbols;
@@ -81,12 +83,12 @@ public class StocksProvider implements IStocksProvider {
     private final RxBus bus;
     private final StocksStorage storage;
 
-    public StocksProvider(StocksApi api, RxBus bus, Context context) {
+    public StocksProvider(StocksApi api, RxBus bus, Context context, SharedPreferences sharedPreferences) {
         this.bus = bus;
         this.api = api;
         this.context = context;
         storage = new StocksStorage(context);
-        preferences = Tools.sharedPreferences;
+        this.preferences = sharedPreferences;
         final String tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS);
         tickerList = new ArrayList<>(Arrays.asList(tickerListVars.split(",")));
         if (preferences.contains(STOCK_LIST)) { // for users using older versions
@@ -192,7 +194,54 @@ public class StocksProvider implements IStocksProvider {
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
         context.sendBroadcast(intent);
         bus.post(new StockUpdatedEvent());
-        scheduleUpdate(Tools.getMsToNextAlarm(context));
+        scheduleUpdate(getMsToNextAlarm());
+    }
+
+    /**
+     * Takes care of weekends and afterhours
+     *
+     * @return
+     */
+    private long getMsToNextAlarm() {
+        final int hourOfDay = DateTime.now().hourOfDay().get();
+        final int minuteOfHour = DateTime.now().minuteOfHour().get();
+        final int dayOfWeek = DateTime.now().getDayOfWeek();
+        final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
+        mutableDateTime.setZone(DateTimeZone.getDefault());
+
+        boolean set = false;
+
+        if (hourOfDay > 16 || (hourOfDay == 16 && minuteOfHour > 30)) { // 4:30pm
+            mutableDateTime.addDays(1);
+            mutableDateTime.setHourOfDay(9); // 9am
+            mutableDateTime.setMinuteOfHour(35); // update at 9:45am
+            set = true;
+        }
+
+        if (set && dayOfWeek == DateTimeConstants.FRIDAY) {
+            mutableDateTime.addDays(2);
+        }
+
+        if (dayOfWeek > DateTimeConstants.FRIDAY) {
+            if (dayOfWeek == DateTimeConstants.SATURDAY) {
+                mutableDateTime.addDays(set ? 1 : 2);
+            } else if (dayOfWeek == DateTimeConstants.SUNDAY) {
+                if (!set) {
+                    mutableDateTime.addDays(1);
+                }
+            }
+            set = true;
+            mutableDateTime.setHourOfDay(9); // 9am
+            mutableDateTime.setMinuteOfHour(35); // update at 9:35am
+        }
+        final int updatePref = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
+        final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
+        if (set) {
+            final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
+            return SystemClock.elapsedRealtime() + msToNextSchedule;
+        } else {
+            return SystemClock.elapsedRealtime() + time;
+        }
     }
 
     private void scheduleUpdate(long msToNextAlarm) {

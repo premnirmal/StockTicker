@@ -1,20 +1,13 @@
 package com.github.premnirmal.ticker;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
-import android.os.SystemClock;
 
 import com.github.premnirmal.tickerwidget.R;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
-import org.joda.time.MutableDateTime;
 
 import java.io.File;
 import java.util.List;
@@ -32,31 +25,37 @@ public final class Tools {
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
     public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
-    public static SharedPreferences sharedPreferences;
 
+    private final SharedPreferences sharedPreferences;
 
-    public static boolean autoSortEnabled() {
-        return sharedPreferences.getBoolean(SETTING_AUTOSORT, false);
+    private static Tools INSTANCE;
+
+    static void init(SharedPreferences sharedPreferences) {
+        INSTANCE = new Tools(sharedPreferences);
     }
 
-    static void init(Context context) {
-        sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    private Tools(SharedPreferences sharedPreferences) {
+        this.sharedPreferences = sharedPreferences;
+    }
+
+    public static boolean autoSortEnabled() {
+        return INSTANCE.sharedPreferences.getBoolean(SETTING_AUTOSORT, false);
     }
 
     public static boolean firstTimeViewingSwipeLayout() {
-        final boolean firstTime = sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
-        sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply();
+        final boolean firstTime = INSTANCE.sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
+        INSTANCE.sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply();
         return firstTime;
     }
 
     public static int getBackgroundColor(Context context) {
-        return sharedPreferences
+        return INSTANCE.sharedPreferences
                 .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? Color.TRANSPARENT
                 : context.getResources().getColor(R.color.translucent);
     }
 
     public static float getFontSize(Context context) {
-        final int size = sharedPreferences
+        final int size = INSTANCE.sharedPreferences
                 .getInt(FONT_SIZE, 1);
         switch (size) {
             case 0:
@@ -93,53 +92,6 @@ public final class Tools {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-    /**
-     * Takes care of weekends and afterhours
-     *
-     * @return
-     */
-    public static long getMsToNextAlarm(Context context) {
-        final int hourOfDay = DateTime.now().hourOfDay().get();
-        final int minuteOfHour = DateTime.now().minuteOfHour().get();
-        final int dayOfWeek = DateTime.now().getDayOfWeek();
-        final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
-        mutableDateTime.setZone(DateTimeZone.getDefault());
-
-        boolean set = false;
-
-        if (hourOfDay > 16 || (hourOfDay == 16 && minuteOfHour > 30)) { // 4:30pm
-            mutableDateTime.addDays(1);
-            mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(35); // update at 9:45am
-            set = true;
-        }
-
-        if (set && dayOfWeek == DateTimeConstants.FRIDAY) {
-            mutableDateTime.addDays(2);
-        }
-
-        if (dayOfWeek > DateTimeConstants.FRIDAY) {
-            if (dayOfWeek == DateTimeConstants.SATURDAY) {
-                mutableDateTime.addDays(set ? 1 : 2);
-            } else if (dayOfWeek == DateTimeConstants.SUNDAY) {
-                if (!set) {
-                    mutableDateTime.addDays(1);
-                }
-            }
-            set = true;
-            mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(35); // update at 9:35am
-        }
-        final int updatePref = sharedPreferences.getInt(UPDATE_INTERVAL, 1);
-        final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
-        if (set) {
-            final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
-            return SystemClock.elapsedRealtime() + msToNextSchedule;
-        } else {
-            return SystemClock.elapsedRealtime() + time;
         }
     }
 

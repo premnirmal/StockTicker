@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.network;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.UpdateReceiver;
@@ -73,8 +74,8 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    IStocksProvider provideStocksProvider(Context context, RxBus bus) {
-        return new StocksProvider(provideStocksApi(context), bus, context);
+    IStocksProvider provideStocksProvider(Context context, RxBus bus, SharedPreferences sharedPreferences) {
+        return new StocksProvider(provideStocksApi(context), bus, context, sharedPreferences);
     }
 
     @Provides

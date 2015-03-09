@@ -20,13 +20,14 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.RearrangeActivity"
             android:label="@string/portfolio"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity"
             android:label="@string/add_ticker"
@@ -38,14 +39,17 @@
 
         <receiver
             android:name="com.github.premnirmal.ticker.UpdateReceiver"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.github.premnirmal.ticker.UPDATE" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-
+                <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <data android:scheme="package" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
         </receiver>
+
         <receiver
             android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:label="@string/widget_label">
@@ -64,7 +68,7 @@
 
         <activity
             android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
-            android:label="@string/action_Settings"/>
+            android:label="@string/action_Settings" />
 
         <meta-data
             android:name="com.crashlytics.ApiKey"
