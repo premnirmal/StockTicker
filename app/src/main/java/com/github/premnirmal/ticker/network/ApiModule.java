@@ -49,14 +49,31 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    StocksApi provideStocksApi(Context context) {
+    StocksApi provideStocksApi(YahooFinance yahooFinance, GoogleFinance googleFinance) {
         if (stocksApi == null) {
-            final RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setEndpoint(context.getString(R.string.endpoint))
-                    .build();
-            stocksApi = restAdapter.create(StocksApi.class);
+            stocksApi = new StocksApi(yahooFinance, googleFinance);
         }
         return stocksApi;
+    }
+
+    @Provides
+    @Singleton
+    YahooFinance provideYahooFinance(Context context) {
+        final RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(context.getString(R.string.yahoo_endpoint))
+                .build();
+        final YahooFinance yahooFinance = restAdapter.create(YahooFinance.class);
+        return yahooFinance;
+    }
+
+    @Provides
+    @Singleton
+    GoogleFinance provideGoogleFinance(Context context) {
+        final RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(context.getString(R.string.google_endpoint))
+                .build();
+        final GoogleFinance googleFinance = restAdapter.create(GoogleFinance.class);
+        return googleFinance;
     }
 
     @Provides
@@ -74,14 +91,14 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    IStocksProvider provideStocksProvider(Context context, RxBus bus, SharedPreferences sharedPreferences) {
-        return new StocksProvider(provideStocksApi(context), bus, context, sharedPreferences);
+    IStocksProvider provideStocksProvider(Context context, StocksApi stocksApi, RxBus bus, SharedPreferences sharedPreferences) {
+        return new StocksProvider(stocksApi, bus, context, sharedPreferences);
     }
 
     @Provides
     @Singleton
-    IHistoryProvider provideHistoryProvider(Context context) {
-        return new HistoryProvider(provideStocksApi(context), context);
+    IHistoryProvider provideHistoryProvider(Context context, StocksApi stocksApi) {
+        return new HistoryProvider(stocksApi, context);
     }
 
 }
