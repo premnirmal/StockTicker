@@ -30,7 +30,7 @@ public class ParanormalActivity extends BaseActivity {
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_paranormal);
         if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
-            preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply();
+            preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply();
             final StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("What\'s new in Version " + BuildConfig.VERSION_NAME + ":\n\n");
             final String[] whatsNew = getResources().getStringArray(R.array.whats_new);

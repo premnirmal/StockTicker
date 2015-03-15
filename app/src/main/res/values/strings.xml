@@ -42,6 +42,7 @@
 
     <string-array name="whats_new">
         <item>- Updated portfolio view with cards</item>
+        <item>- Fixed bug with this dialog showing up all the time</item>
         <item>- Fixed auto-update interval bug related to daylight savings time</item>
         <item>- Added day to last updated</item>
     </string-array>
