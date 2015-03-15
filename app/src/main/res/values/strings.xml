@@ -38,6 +38,13 @@
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>
     <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
+    <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
+
+    <string-array name="whats_new">
+        <item>- Updated portfolio view with cards</item>
+        <item>- Fixed auto-update interval bug related to daylight savings time</item>
+        <item>- Added day to last updated</item>
+    </string-array>
 
     <string-array name="font_sizes">
         <item>Small</item>

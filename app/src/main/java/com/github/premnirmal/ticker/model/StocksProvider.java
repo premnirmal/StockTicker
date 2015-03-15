@@ -334,19 +334,18 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public String lastFetched() {
+        final String fetched;
         if (!TextUtils.isEmpty(lastFetched)) {
             final DateTime time = DateTime.parse(lastFetched)
                     .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
             final DateFormatSymbols dfs = DateFormatSymbols.getInstance(Locale.ENGLISH);
-            final int fetchedDay = time.dayOfYear().get();
             final int fetchedDayOfWeek = time.dayOfWeek().get();
-            final int today = DateTime.now().dayOfYear().get();
-            final String fetched = (fetchedDay == today ? "" : (dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1]) + " ")
+            fetched = dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1] + " "
                     + (time.toString(ISODateTimeFormat.hourMinute()));
-            return fetched;
         } else {
-            return "Unavailable";
+            fetched = "Unavailable";
         }
+        return fetched;
     }
 
 }

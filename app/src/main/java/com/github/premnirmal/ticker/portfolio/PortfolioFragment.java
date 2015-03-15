@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.portfolio;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -52,6 +51,7 @@ public class PortfolioFragment extends BaseFragment {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private AlertDialog alertDialog;
     private Parcelable listViewState;
+    private StocksAdapter stocksAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,16 +104,20 @@ public class PortfolioFragment extends BaseFragment {
 
         ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
-        final ListView adapterView = (ListView) findViewById(R.id.stockList);
-        final StocksAdapter adapter = new StocksAdapter(stocksProvider,
-                new StocksAdapter.OnRemoveClickListener() {
-                    @Override
-                    public void onRemoveClick(View view, Stock stock, int position) {
-                        promptRemove(stock);
-                    }
-                });
+        final GridView adapterView = (GridView) findViewById(R.id.stockList);
+        if(stocksAdapter == null) {
+            stocksAdapter = new StocksAdapter(stocksProvider,
+                    new StocksAdapter.OnRemoveClickListener() {
+                        @Override
+                        public void onRemoveClick(View view, Stock stock, int position) {
+                            promptRemove(stock);
+                        }
+                    });
+        } else {
+            stocksAdapter.refresh(stocksProvider);
+        }
 
-        adapterView.setAdapter(adapter);
+        adapterView.setAdapter(stocksAdapter);
 
         if (listViewState != null) {
             adapterView.onRestoreInstanceState(listViewState);
@@ -123,12 +127,12 @@ public class PortfolioFragment extends BaseFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 final Intent intent = new Intent(activity, GraphActivity.class);
-                intent.putExtra(GraphActivity.GRAPH_DATA, adapter.getItem(position));
+                intent.putExtra(GraphActivity.GRAPH_DATA, stocksAdapter.getItem(position));
                 startActivity(intent);
             }
         });
 
-        if (adapter.getCount() > 1) {
+        if (stocksAdapter.getCount() > 1) {
             if (Tools.firstTimeViewingSwipeLayout()) {
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -160,16 +164,10 @@ public class PortfolioFragment extends BaseFragment {
     }
 
     private void promptRemove(final Stock stock) {
-        new AlertDialog.Builder(getActivity())
-                .setMessage("Remove stock?")
-                .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        stocksProvider.removeStock(stock.symbol);
-                        update();
-                    }
-                })
-                .show();
+        stocksProvider.removeStock(stock.symbol);
+        if (stocksAdapter.remove(stock)) {
+            stocksAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -218,7 +216,7 @@ public class PortfolioFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        listViewState = ((ListView) findViewById(R.id.stockList)).onSaveInstanceState();
+        listViewState = ((GridView) findViewById(R.id.stockList)).onSaveInstanceState();
         outState.putParcelable(LIST_INSTANCE_STATE, listViewState);
     }
 }

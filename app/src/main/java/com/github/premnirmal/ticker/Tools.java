@@ -25,6 +25,7 @@ public final class Tools {
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
     public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
+    public static final String WHATS_NEW = "WHATS_NEW";
 
     private final SharedPreferences sharedPreferences;
 

@@ -5,7 +5,7 @@
     android:background="@drawable/card_bg">
     <!-- Bottom View Start-->
     <FrameLayout
-        android:layout_width="80dp"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:padding="15dp">
 
@@ -39,7 +39,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="26sp"
+                android:textSize="@dimen/large_text"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textStyle="bold"
@@ -51,7 +51,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="@dimen/small_text"
                 tools:text="Google Inc"
                 android:singleLine="true"
                 android:ellipsize="end"
@@ -63,8 +63,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                sfw:name="Av Daily Volume"
-                sfw:size="14sp"
+                sfw:name="Daily Volume"
+                sfw:size="@dimen/small_text"
                 sfw:or="vertical"
                 android:id="@+id/averageDailyVolume" />
 
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Exchange"
-                sfw:size="14sp"
+                sfw:size="@dimen/small_text"
                 sfw:or="vertical"
                 android:id="@+id/exchange" />
 
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Price"
-                sfw:size="24sp"
+                sfw:size="@dimen/large_text"
                 android:id="@+id/totalValue" />
 
             <com.github.premnirmal.ticker.ui.StockFieldView
@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Change %"
-                sfw:size="14sp"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/changePercent" />
 
             <com.github.premnirmal.ticker.ui.StockFieldView
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Change"
-                sfw:size="14sp"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/changeValue" />
 
 
@@ -115,14 +115,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Year High"
-                sfw:size="14sp"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/yearHigh" />
 
             <com.github.premnirmal.ticker.ui.StockFieldView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 sfw:name="Year Low"
-                sfw:size="14sp"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/yearLow" />
 
         </LinearLayout>

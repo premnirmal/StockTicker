@@ -20,7 +20,7 @@ import dagger.Provides;
                 ApiModule.class
         },
         injects = {
-                PortfolioFragment.class, SettingsActivity.class, Tools.class
+                ParanormalActivity.class, PortfolioFragment.class, SettingsActivity.class, Tools.class
         },
         complete = true,
         library = false

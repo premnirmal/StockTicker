@@ -11,13 +11,14 @@
         android:gravity="center"
         android:layout_margin="5dp" />
 
-    <ListView
+    <GridView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@drawable/list_divider"
+        android:numColumns="2"
         android:paddingLeft="@dimen/list_spacing"
         android:paddingRight="@dimen/list_spacing"
-        android:dividerHeight="@dimen/list_spacing"
+        android:horizontalSpacing="@dimen/list_spacing"
+        android:verticalSpacing="@dimen/list_spacing"
         android:id="@+id/stockList" />
 
 </LinearLayout>

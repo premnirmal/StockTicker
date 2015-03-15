@@ -31,8 +31,21 @@ class StocksAdapter extends BaseAdapter {
 
     StocksAdapter(IStocksProvider stocksProvider, OnRemoveClickListener listener) {
         this.listener = listener;
-        stockList = stocksProvider.getStocks() == null ? new ArrayList<Stock>()
+        stockList = stocksProvider.getStocks() == null
+                ? new ArrayList<Stock>()
                 : new ArrayList<>(stocksProvider.getStocks());
+    }
+
+    boolean remove(final Stock stock) {
+        return stockList.remove(stock);
+    }
+
+    void refresh(IStocksProvider stocksProvider) {
+        stockList.clear();
+        stockList.addAll(stocksProvider.getStocks() == null
+                ? new ArrayList<Stock>()
+                : stocksProvider.getStocks());
+        notifyDataSetChanged();
     }
 
     @Override
@@ -67,7 +80,7 @@ class StocksAdapter extends BaseAdapter {
 
         final SwipeLayout swipeLayout = (SwipeLayout) convertView;
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
-        swipeLayout.setDragEdge(SwipeLayout.DragEdge.Right);
+        swipeLayout.setDragEdge(position % 2 == 0 ? SwipeLayout.DragEdge.Left : SwipeLayout.DragEdge.Right);
 
         setText(convertView, R.id.ticker, stock.symbol);
 
