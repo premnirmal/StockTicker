@@ -12,9 +12,9 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.github.premnirmal.ticker.RefreshReceiver;
 import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.Tools;
-import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.network.Query;
 import com.github.premnirmal.ticker.network.QueryCreator;
@@ -245,7 +245,7 @@ public class StocksProvider implements IStocksProvider {
     }
 
     private void scheduleUpdate(long msToNextAlarm) {
-        final Intent updateReceiverIntent = new Intent(context, UpdateReceiver.class);
+        final Intent updateReceiverIntent = new Intent(context, RefreshReceiver.class);
         updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, updateReceiverIntent, 0);

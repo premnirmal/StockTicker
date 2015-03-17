@@ -55,6 +55,10 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name="com.github.premnirmal.ticker.RefreshReceiver"
+            android:enabled="true"
+            android:exported="false"/>
+
         <receiver
             android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:label="@string/widget_label">
