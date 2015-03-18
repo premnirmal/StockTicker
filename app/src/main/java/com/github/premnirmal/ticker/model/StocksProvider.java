@@ -214,7 +214,7 @@ public class StocksProvider implements IStocksProvider {
         if (hourOfDay > 16 || (hourOfDay == 16 && minuteOfHour > 30)) { // 4:30pm
             mutableDateTime.addDays(1);
             mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(35); // update at 9:45am
+            mutableDateTime.setMinuteOfHour(45); // update at 9:45am
             set = true;
         }
 
