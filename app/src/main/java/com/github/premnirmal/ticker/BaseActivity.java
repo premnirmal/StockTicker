@@ -32,7 +32,10 @@ public abstract class BaseActivity extends ActionBarActivity {
         {
             add(R.color.sea);
             add(R.color.turqoise);
-            add(R.color.grass);
+            add(R.color.salmon);
+            add(R.color.spicy_salmon);
+            add(R.color.seagull);
+            add(R.color.dead_seagull);
         }
     };
 
