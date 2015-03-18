@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.network;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.github.premnirmal.ticker.RefreshReceiver;
 import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.UpdateReceiver;
 import com.github.premnirmal.ticker.model.HistoryProvider;
@@ -35,6 +36,7 @@ import retrofit.RestAdapter;
                 SettingsActivity.class,
                 StockWidget.class,
                 UpdateReceiver.class,
+                RefreshReceiver.class,
                 GraphActivity.class,
                 PortfolioFragment.class,
                 RearrangeActivity.class
