@@ -340,8 +340,13 @@ public class StocksProvider implements IStocksProvider {
                     .withZone(DateTimeZone.forTimeZone(TimeZone.getDefault()));
             final DateFormatSymbols dfs = DateFormatSymbols.getInstance(Locale.ENGLISH);
             final int fetchedDayOfWeek = time.dayOfWeek().get();
-            fetched = dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1] + " "
-                    + (time.toString(ISODateTimeFormat.hourMinute()));
+            final int today = DateTime.now().dayOfWeek().get();
+            if(today == fetchedDayOfWeek) {
+                fetched = "Today " + (time.toString(ISODateTimeFormat.hourMinute()));
+            } else {
+                fetched = dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1] + " "
+                        + (time.toString(ISODateTimeFormat.hourMinute()));
+            }
         } else {
             fetched = "Unavailable";
         }
