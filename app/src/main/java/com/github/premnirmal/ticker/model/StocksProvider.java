@@ -230,16 +230,18 @@ public class StocksProvider implements IStocksProvider {
                     mutableDateTime.addDays(1);
                 }
             }
-            set = true;
-            mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(35); // update at 9:35am
+            if(!set) {
+                set = true;
+                mutableDateTime.setHourOfDay(9); // 9am
+                mutableDateTime.setMinuteOfHour(45); // update at 9:45am
+            }
         }
-        final int updatePref = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
-        final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
         if (set) {
             final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
             return SystemClock.elapsedRealtime() + msToNextSchedule;
         } else {
+            final int updatePref = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
+            final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
             return SystemClock.elapsedRealtime() + time;
         }
     }
