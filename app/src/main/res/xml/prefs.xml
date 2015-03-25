@@ -30,6 +30,16 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <com.github.premnirmal.ticker.settings.TimePreference
+        android:key="START_TIME"
+        android:title="@string/start_time"
+        android:defaultValue="09:30" />
+
+    <com.github.premnirmal.ticker.settings.TimePreference
+        android:key="END_TIME"
+        android:title="@string/end_time"
+        android:defaultValue="16:30" />
+
     <ListPreference
         android:key="UPDATE_INTERVAL"
         android:title="@string/update_interval"

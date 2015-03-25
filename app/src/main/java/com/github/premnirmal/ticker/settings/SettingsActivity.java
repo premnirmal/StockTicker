@@ -187,6 +187,30 @@ public class SettingsActivity extends PreferenceActivity {
                 return true;
             }
         });
+
+        final TimePreference startTimePref = (TimePreference) findPreference(Tools.START_TIME);
+        startTimePref.setSummary(preferences.getString(Tools.START_TIME, "09:30"));
+        startTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply();
+                startTimePref.setSummary(newValue.toString());
+                Toast.makeText(SettingsActivity.this, R.string.start_time_updated, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        final TimePreference endTimePref = (TimePreference) findPreference(Tools.END_TIME);
+        endTimePref.setSummary(preferences.getString(Tools.END_TIME, "16:30"));
+        endTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply();
+                endTimePref.setSummary(newValue.toString());
+                Toast.makeText(SettingsActivity.this, R.string.end_time_updated, Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
     }
 
     private void broadcastUpdateWidget() {

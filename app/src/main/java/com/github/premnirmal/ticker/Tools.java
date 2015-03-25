@@ -19,6 +19,8 @@ public final class Tools {
 
     public static final String PREFS_NAME = "com.github.premnirmal.ticker";
     public static final String FONT_SIZE = "com.github.premnirmal.ticker.textsize";
+    public static final String START_TIME = "START_TIME";
+    public static final String END_TIME = "END_TIME";
     public static final String SETTING_AUTOSORT = "SETTING_AUTOSORT";
     public static final String WIDGET_BG = "WIDGET_BG";
     public static final String UPDATE_INTERVAL = "UPDATE_INTERVAL";
@@ -37,6 +39,20 @@ public final class Tools {
 
     private Tools(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+    }
+
+    public static int[] startTime() {
+        final String startTimeString = INSTANCE.sharedPreferences.getString(START_TIME, "09:30");
+        final String[] split = startTimeString.split(":");
+        final int[] times = new int[]{Integer.valueOf(split[0]), Integer.valueOf(split[1])};
+        return times;
+    }
+
+    public static int[] endTime() {
+        final String endTimeString = INSTANCE.sharedPreferences.getString(END_TIME, "16:30");
+        final String[] split = endTimeString.split(":");
+        final int[] times = new int[]{Integer.valueOf(split[0]), Integer.valueOf(split[1])};
+        return times;
     }
 
     public static boolean autoSortEnabled() {

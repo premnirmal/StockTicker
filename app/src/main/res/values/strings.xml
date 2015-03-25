@@ -21,6 +21,8 @@
     <string name="dotdotdot">  ...  </string>
     <string name="text_size">Text Size</string>
     <string name="bg">Widget Background</string>
+    <string name="start_time">Start Time</string>
+    <string name="end_time">End Time</string>
     <string name="update_interval">Update Interval</string>
     <string name="auto_sort">Autosort?</string>
     <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
@@ -39,9 +41,15 @@
     <string name="one_year">1 year</string>
     <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
     <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
+    <string name="drag_instructions">Long click a stock to drag</string>
+    <string name="rearrange">Rearrange</string>
+    <string name="only_updates_on_weekdays">Only updates on weekdays</string>
+    <string name="end_time_updated">End time updated</string>
+    <string name="start_time_updated">Start time updated</string>
 
     <string-array name="whats_new">
-        <item>- Optimized fetching and refresh intervals</item>
+        <item>- Updated re-arrange view, now you can re-arrange your stocks more easily!</item>
+        <item>- Added custom start/end time setting. Now you can set custom start/end times in settings!</item>
     </string-array>
 
     <string-array name="font_sizes">

@@ -1,67 +1,66 @@
 package com.github.premnirmal.ticker.portfolio;
 
-import android.graphics.Point;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.tickerwidget.R;
-import com.makeramen.dragsortadapter.DragSortAdapter;
-import com.makeramen.dragsortadapter.NoForegroundShadowBuilder;
+import com.nhaarman.listviewanimations.util.Swappable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by premnirmal on 3/8/15.
+ * Created by premnirmal on 3/24/15.
  */
-class RearrangeAdapter extends DragSortAdapter<RearrangeAdapter.VH> {
+public class RearrangeAdapter extends BaseAdapter implements Swappable {
 
     private final List<Stock> stockList;
     private final IStocksProvider stocksProvider;
 
-    RearrangeAdapter(RecyclerView recyclerView, IStocksProvider stocksProvider) {
-        super(recyclerView);
+    RearrangeAdapter(IStocksProvider stocksProvider) {
         this.stocksProvider = stocksProvider;
         stockList = new ArrayList<>(this.stocksProvider.getStocks());
     }
 
     @Override
-    public VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new VH(LayoutInflater.from(parent.getContext()).inflate(R.layout.rearrange_view, null));
+    public int getCount() {
+        return stockList.size();
     }
 
     @Override
-    public void onBindViewHolder(VH holder, int position) {
-        holder.update(position);
-    }
-
-    Stock getItem(int position) {
+    public Stock getItem(int position) {
         return stockList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return getItem(position).symbol.hashCode();
     }
 
     @Override
-    public int getItemCount() {
-        return stockList.size();
+    public boolean hasStableIds() {
+        return true;
     }
 
     @Override
-    public int getPositionForId(long l) {
-        return (int) l;
+    public View getView(int position, View convertView, ViewGroup parent) {
+        final Context context = parent.getContext();
+        if(convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.rearrange_view,null);
+        }
+        final Stock stock = getItem(position);
+        ((TextView) convertView.findViewById(R.id.tickerName)).setText(stock.symbol + "\n(" + stock.Name + ")");
+        return convertView;
     }
 
     @Override
-    public boolean move(int from, int to) {
+    public void swapItems(int from, int to) {
         stockList.add(to, stockList.remove(from));
         final List<String> newTickerList = new ArrayList<>();
         for (Stock stock : stockList) {
@@ -69,30 +68,5 @@ class RearrangeAdapter extends DragSortAdapter<RearrangeAdapter.VH> {
         }
         notifyDataSetChanged();
         stocksProvider.rearrange(newTickerList);
-        return true;
-    }
-
-    public class VH extends DragSortAdapter.ViewHolder implements View.OnLongClickListener {
-
-        public VH(View itemView) {
-            super(itemView);
-            itemView.setOnLongClickListener(this);
-        }
-
-        void update(int position) {
-            final Stock stock = getItem(position);
-            ((TextView) itemView.findViewById(R.id.tickerName)).setText(stock.symbol + "\n(" + stock.Name + ")");
-        }
-
-        @Override
-        public boolean onLongClick(@NonNull View v) {
-            startDrag();
-            return true;
-        }
-
-        @Override
-        public View.DragShadowBuilder getShadowBuilder(View itemView, Point touchPoint) {
-            return new NoForegroundShadowBuilder(itemView, touchPoint);
-        }
     }
 }

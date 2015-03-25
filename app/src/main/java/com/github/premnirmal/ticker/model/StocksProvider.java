@@ -7,7 +7,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -181,7 +180,7 @@ public class StocksProvider implements IStocksProvider {
                         }
                     });
         } else {
-            scheduleUpdate(SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_FIFTEEN_MINUTES);
+            scheduleUpdate(SystemClock.elapsedRealtime() + (AlarmManager.INTERVAL_FIFTEEN_MINUTES / 3)); // 5 minutes
         }
     }
 
@@ -206,15 +205,19 @@ public class StocksProvider implements IStocksProvider {
         final int hourOfDay = DateTime.now().hourOfDay().get();
         final int minuteOfHour = DateTime.now().minuteOfHour().get();
         final int dayOfWeek = DateTime.now().getDayOfWeek();
+
+        final int[] startTimez = Tools.startTime();
+        final int[] endTimez = Tools.endTime();
+
         final MutableDateTime mutableDateTime = new MutableDateTime(DateTime.now());
         mutableDateTime.setZone(DateTimeZone.getDefault());
 
         boolean set = false;
 
-        if (hourOfDay > 16 || (hourOfDay == 16 && minuteOfHour > 30)) { // 4:30pm
+        if (hourOfDay > endTimez[0] || (hourOfDay == endTimez[0] && minuteOfHour > endTimez[1])) {
             mutableDateTime.addDays(1);
-            mutableDateTime.setHourOfDay(9); // 9am
-            mutableDateTime.setMinuteOfHour(45); // update at 9:45am
+            mutableDateTime.setHourOfDay(startTimez[0]);
+            mutableDateTime.setMinuteOfHour(startTimez[1]);
             set = true;
         }
 
@@ -230,10 +233,10 @@ public class StocksProvider implements IStocksProvider {
                     mutableDateTime.addDays(1);
                 }
             }
-            if(!set) {
+            if (!set) {
                 set = true;
-                mutableDateTime.setHourOfDay(9); // 9am
-                mutableDateTime.setMinuteOfHour(45); // update at 9:45am
+                mutableDateTime.setHourOfDay(startTimez[0]);
+                mutableDateTime.setMinuteOfHour(startTimez[1]);
             }
         }
         if (set) {
@@ -251,16 +254,7 @@ public class StocksProvider implements IStocksProvider {
         updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, updateReceiverIntent, 0);
-        if (Build.VERSION.SDK_INT >= 19) {
-            alarmManager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    msToNextAlarm,
-                    AlarmManager.INTERVAL_FIFTEEN_MINUTES / 3, // 5 minute window
-                    pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    msToNextAlarm,
-                    pendingIntent);
-        }
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent);
     }
 
     @Override
@@ -343,7 +337,7 @@ public class StocksProvider implements IStocksProvider {
             final DateFormatSymbols dfs = DateFormatSymbols.getInstance(Locale.ENGLISH);
             final int fetchedDayOfWeek = time.dayOfWeek().get();
             final int today = DateTime.now().dayOfWeek().get();
-            if(today == fetchedDayOfWeek) {
+            if (today == fetchedDayOfWeek) {
                 fetched = "Today " + (time.toString(ISODateTimeFormat.hourMinute()));
             } else {
                 fetched = dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1] + " "
