@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 
 import com.github.premnirmal.tickerwidget.R;
+import com.tapjoy.Tapjoy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,10 +33,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         {
             add(R.color.sea);
             add(R.color.turqoise);
-            add(R.color.salmon);
             add(R.color.spicy_salmon);
-            add(R.color.seagull);
-            add(R.color.dead_seagull);
         }
     };
 
@@ -76,11 +74,13 @@ public abstract class BaseActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Tapjoy.onActivityStart(this);
         lifecycleSubject.onNext(LifecycleEvent.START);
     }
 
     @Override
     protected void onStop() {
+        Tapjoy.onActivityStop(this);
         super.onStop();
         lifecycleSubject.onNext(LifecycleEvent.STOP);
     }
@@ -95,7 +95,6 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         lifecycleSubject.onNext(LifecycleEvent.RESUME);
-        setRandomActionBarColor();
     }
 
     protected void setRandomActionBarColor() {

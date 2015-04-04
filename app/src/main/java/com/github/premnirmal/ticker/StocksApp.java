@@ -1,15 +1,18 @@
 package com.github.premnirmal.ticker;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
+import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
+import com.tapjoy.Tapjoy;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
  * Created by premnirmal on 12/21/14.
  */
-public class StocksApp extends Application {
+public class StocksApp extends MultiDexApplication {
 
     @Override
     public void onCreate() {

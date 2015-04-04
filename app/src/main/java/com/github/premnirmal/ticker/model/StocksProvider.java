@@ -338,7 +338,7 @@ public class StocksProvider implements IStocksProvider {
             final int fetchedDayOfWeek = time.dayOfWeek().get();
             final int today = DateTime.now().dayOfWeek().get();
             if (today == fetchedDayOfWeek) {
-                fetched = "Today " + (time.toString(ISODateTimeFormat.hourMinute()));
+                fetched = time.toString(ISODateTimeFormat.hourMinute());
             } else {
                 fetched = dfs.getWeekdays()[fetchedDayOfWeek % 7 + 1] + " "
                         + (time.toString(ISODateTimeFormat.hourMinute()));

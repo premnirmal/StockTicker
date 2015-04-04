@@ -56,7 +56,7 @@ public final class Tools {
     }
 
     public static boolean autoSortEnabled() {
-        return INSTANCE.sharedPreferences.getBoolean(SETTING_AUTOSORT, false);
+        return INSTANCE.sharedPreferences.getBoolean(SETTING_AUTOSORT, true);
     }
 
     public static boolean firstTimeViewingSwipeLayout() {

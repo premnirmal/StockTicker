@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
@@ -70,13 +70,30 @@ public class PortfolioFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final Context context = inflater.getContext();
         final View view = inflater.inflate(R.layout.portfolio_fragment, null);
+
+        final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        swipeRefreshLayout.setColorSchemeResources(R.color.sea, R.color.spicy_salmon, R.color.grass);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (!Tools.isNetworkOnline(getActivity().getApplicationContext())) {
+                    noNetwork(new NoNetworkEvent());
+                    swipeRefreshLayout.setRefreshing(false);
+                } else {
+                    stocksProvider.fetch();
+                }
+            }
+        });
+
         bind(bus.toObserverable()).subscribe(new Action1<Object>() {
             @Override
             public void call(Object event) {
                 if (event instanceof NoNetworkEvent) {
                     noNetwork((NoNetworkEvent) event);
+                    swipeRefreshLayout.setRefreshing(false);
                 } else if (event instanceof StockUpdatedEvent) {
                     update();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         });
@@ -86,13 +103,22 @@ public class PortfolioFragment extends BaseFragment {
         if (savedInstanceState != null) {
             listViewState = savedInstanceState.getParcelable(LIST_INSTANCE_STATE);
         }
+
+        final View addButton = view.findViewById(R.id.add_ticker_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent intent = new Intent(v.getContext(), TickerSelectorActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return view;
     }
 
 
     private void update() {
         final FragmentActivity activity = getActivity();
-        activity.supportInvalidateOptionsMenu();
         if (stocksProvider.getStocks() == null) {
             handler.postDelayed(new Runnable() {
                 @Override
@@ -105,7 +131,7 @@ public class PortfolioFragment extends BaseFragment {
         ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
         final GridView adapterView = (GridView) findViewById(R.id.stockList);
-        if(stocksAdapter == null) {
+        if (stocksAdapter == null) {
             stocksAdapter = new StocksAdapter(stocksProvider,
                     new StocksAdapter.OnRemoveClickListener() {
                         @Override
@@ -183,21 +209,9 @@ public class PortfolioFragment extends BaseFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         final FragmentActivity activity = getActivity();
         final int itemId = item.getItemId();
-        if (itemId == R.id.action_add_ticker) {
-            final Intent intent = new Intent(activity, TickerSelectorActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (itemId == R.id.action_settings) {
+        if (itemId == R.id.action_settings) {
             final Intent intent = new Intent(activity, SettingsActivity.class);
             startActivity(intent);
-            return true;
-        } else if (itemId == R.id.action_update) {
-            if (!Tools.isNetworkOnline(activity.getApplicationContext())) {
-                noNetwork(new NoNetworkEvent());
-            } else {
-                stocksProvider.fetch();
-                item.setActionView(new ProgressBar(activity));
-            }
             return true;
         } else if (itemId == R.id.action_rearrange) {
             startActivity(new Intent(getActivity(), RearrangeActivity.class));

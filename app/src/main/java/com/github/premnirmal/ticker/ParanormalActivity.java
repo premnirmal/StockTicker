@@ -13,6 +13,7 @@ import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
+import com.tapjoy.Tapjoy;
 
 import javax.inject.Inject;
 
@@ -26,6 +27,8 @@ public class ParanormalActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Tapjoy.connect(this, BuildConfig.KEY);
+        Tapjoy.setDebugEnabled(BuildConfig.DEBUG);
         Injector.inject(this);
         Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_paranormal);

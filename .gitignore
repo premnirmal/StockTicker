@@ -55,9 +55,9 @@ profile
 build/
 
 # ignore keystore and keystore.properties
-*.jks
-keystore.*
-app/keystore.*
+# *.jks
+# keystore.*
+# app/keystore.*
 
 #crashlytics secret
-app/crashlytics.properties
+# app/crashlytics.properties

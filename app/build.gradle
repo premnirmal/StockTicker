@@ -24,8 +24,18 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 48
-        versionName "5.30.34"
+        versionCode 50
+        versionName "5.30.36"
+        multiDexEnabled true
+        final File propsFile = file("file:keystore.properties");
+        if (propsFile.exists()) {
+            final Properties props = new Properties();
+            props.load(new FileInputStream(propsFile));
+            def akey = props.getProperty('analyticsKey')
+            buildConfigField "String", "KEY", akey
+        } else {
+            buildConfigField "String", "KEY", ""
+        }
     }
 
     signingConfigs {
@@ -39,8 +49,6 @@ android {
                 storePassword props.getProperty('key.store.password')
                 keyPassword props.getProperty('key.alias.password')
                 keyAlias props.getProperty('key.alias.alias')
-            } else {
-                throw new GradleScriptException("cannot find keystore.properties file");
             }
         }
     }
@@ -74,4 +82,8 @@ dependencies {
     }
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
+
+    compile 'com.android.support:multidex:1.0.0'
+    compile files('libs/tapjoyconnectlibrary.jar')
+    compile 'com.google.android.gms:play-services:7.0.0'
 }
