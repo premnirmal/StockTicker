@@ -77,25 +77,25 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
 
         final int color;
-        if (change > 0) {
+        if (change >= 0) {
             color = Color.GREEN;
-        } else if (change < 0) {
-            color = Color.RED;
         } else {
-            color = Color.WHITE;
+            color = Color.RED;
         }
-
         remoteViews.setTextColor(R.id.changePercent, color);
         remoteViews.setTextColor(R.id.changeValue, color);
 
+        remoteViews.setTextColor(R.id.ticker, Tools.getTextColor());
+        remoteViews.setTextColor(R.id.totalValue, Tools.getTextColor());
+
         final float fontSize = Tools.getFontSize(context);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             remoteViews.setTextViewTextSize(R.id.ticker, TypedValue.COMPLEX_UNIT_SP, fontSize);
             remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_SP, fontSize);
             remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_SP, fontSize);
             remoteViews.setTextViewTextSize(R.id.totalValue, TypedValue.COMPLEX_UNIT_SP, fontSize);
         }
-            
+
         final Intent fillInIntent = new Intent();
         remoteViews.setOnClickFillInIntent(R.id.row, fillInIntent);
 

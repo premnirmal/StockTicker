@@ -30,6 +30,15 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <ListPreference
+        android:key="TEXT_COLOR"
+        android:title="@string/text_color"
+        android:defaultValue="0"
+        android:entries="@array/text_colors"
+        android:entryValues="@array/backgrounds_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
     <com.github.premnirmal.ticker.settings.TimePreference
         android:key="START_TIME"
         android:title="@string/start_time"

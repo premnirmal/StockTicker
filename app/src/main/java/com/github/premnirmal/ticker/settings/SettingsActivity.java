@@ -91,126 +91,162 @@ public class SettingsActivity extends PreferenceActivity {
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.prefs);
 
-        final Preference exportPref = findPreference("EXPORT");
-        exportPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                new FileExportTask() {
-                    @Override
-                    protected void onPostExecute(String result) {
-                        if (result == null) {
-                            showDialog(getString(R.string.error_exporting));
-                        } else {
-                            showDialog("Exported to " + result);
+        {
+            final Preference exportPref = findPreference("EXPORT");
+            exportPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    new FileExportTask() {
+                        @Override
+                        protected void onPostExecute(String result) {
+                            if (result == null) {
+                                showDialog(getString(R.string.error_exporting));
+                            } else {
+                                showDialog("Exported to " + result);
+                            }
                         }
-                    }
-                }.execute(stocksProvider.getTickers().toArray());
-                return true;
-            }
-        });
+                    }.execute(stocksProvider.getTickers().toArray());
+                    return true;
+                }
+            });
+        }
 
-        final Preference importPref = findPreference("IMPORT");
-        importPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                final Intent filePickerIntent = new Intent(SettingsActivity.this, FilePickerActivity.class);
-                filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
-                filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
-                startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
-                return true;
-            }
-        });
+        {
+            final Preference importPref = findPreference("IMPORT");
+            importPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    final Intent filePickerIntent = new Intent(SettingsActivity.this, FilePickerActivity.class);
+                    filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
+                    filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
+                    startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
+                    return true;
+                }
+            });
+        }
 
-        final ListPreference fontSizePreference = (ListPreference) findPreference(Tools.FONT_SIZE);
-        final int size = preferences.getInt(Tools.FONT_SIZE, 1);
-        fontSizePreference.setValueIndex(size);
-        fontSizePreference.setSummary(fontSizePreference.getEntries()[size]);
-        fontSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object value) {
-                final String stringValue = value.toString();
-                final ListPreference listPreference = (ListPreference) preference;
-                final int index = listPreference.findIndexOfValue(stringValue);
-                preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply();
-                broadcastUpdateWidget();
-                fontSizePreference.setSummary(fontSizePreference.getEntries()[index]);
-                Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+        {
+            final ListPreference fontSizePreference = (ListPreference) findPreference(Tools.FONT_SIZE);
+            final int size = preferences.getInt(Tools.FONT_SIZE, 1);
+            fontSizePreference.setValueIndex(size);
+            fontSizePreference.setSummary(fontSizePreference.getEntries()[size]);
+            fontSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final String stringValue = value.toString();
+                    final ListPreference listPreference = (ListPreference) preference;
+                    final int index = listPreference.findIndexOfValue(stringValue);
+                    preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply();
+                    broadcastUpdateWidget();
+                    fontSizePreference.setSummary(fontSizePreference.getEntries()[index]);
+                    Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
 
+        {
+            final ListPreference bgPreference = (ListPreference) findPreference(Tools.WIDGET_BG);
+            final int bgIndex = preferences.getInt(Tools.WIDGET_BG, 0);
+            bgPreference.setValueIndex(bgIndex);
+            bgPreference.setSummary(bgPreference.getEntries()[bgIndex]);
+            bgPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final String stringValue = value.toString();
+                    final ListPreference listPreference = (ListPreference) preference;
+                    final int index = listPreference.findIndexOfValue(stringValue);
+                    preferences.edit().putInt(Tools.WIDGET_BG, index).apply();
+                    broadcastUpdateWidget();
+                    bgPreference.setSummary(bgPreference.getEntries()[index]);
+                    Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
 
-        final ListPreference bgPreference = (ListPreference) findPreference(Tools.WIDGET_BG);
-        final int bgIndex = preferences.getInt(Tools.WIDGET_BG, 0);
-        bgPreference.setValueIndex(bgIndex);
-        bgPreference.setSummary(bgPreference.getEntries()[bgIndex]);
-        bgPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object value) {
-                final String stringValue = value.toString();
-                final ListPreference listPreference = (ListPreference) preference;
-                final int index = listPreference.findIndexOfValue(stringValue);
-                preferences.edit().putInt(Tools.WIDGET_BG, index).apply();
-                broadcastUpdateWidget();
-                bgPreference.setSummary(bgPreference.getEntries()[index]);
-                Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+        {
+            final ListPreference textColorPreference = (ListPreference) findPreference(Tools.TEXT_COLOR);
+            final int colorIndex = preferences.getInt(Tools.TEXT_COLOR, 0);
+            textColorPreference.setValueIndex(colorIndex);
+            textColorPreference.setSummary(textColorPreference.getEntries()[colorIndex]);
+            textColorPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final String stringValue = value.toString();
+                    final ListPreference listPreference = (ListPreference) preference;
+                    final int index = listPreference.findIndexOfValue(stringValue);
+                    preferences.edit().putInt(Tools.TEXT_COLOR, index).apply();
+                    broadcastUpdateWidget();
+                    CharSequence color = textColorPreference.getEntries()[index];
+                    textColorPreference.setSummary(color);
+                    Toast.makeText(SettingsActivity.this, R.string.text_coor_updated_message, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
 
-        final ListPreference refreshPreference = (ListPreference) findPreference(Tools.UPDATE_INTERVAL);
-        final int refreshIndex = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
-        refreshPreference.setValueIndex(refreshIndex);
-        refreshPreference.setSummary(refreshPreference.getEntries()[refreshIndex]);
-        refreshPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object value) {
-                final String stringValue = value.toString();
-                final ListPreference listPreference = (ListPreference) preference;
-                final int index = listPreference.findIndexOfValue(stringValue);
-                preferences.edit().putInt(Tools.UPDATE_INTERVAL, index).apply();
-                broadcastUpdateWidget();
-                refreshPreference.setSummary(refreshPreference.getEntries()[index]);
-                Toast.makeText(SettingsActivity.this, R.string.refresh_updated_message, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+        {
+            final ListPreference refreshPreference = (ListPreference) findPreference(Tools.UPDATE_INTERVAL);
+            final int refreshIndex = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
+            refreshPreference.setValueIndex(refreshIndex);
+            refreshPreference.setSummary(refreshPreference.getEntries()[refreshIndex]);
+            refreshPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final String stringValue = value.toString();
+                    final ListPreference listPreference = (ListPreference) preference;
+                    final int index = listPreference.findIndexOfValue(stringValue);
+                    preferences.edit().putInt(Tools.UPDATE_INTERVAL, index).apply();
+                    broadcastUpdateWidget();
+                    refreshPreference.setSummary(refreshPreference.getEntries()[index]);
+                    Toast.makeText(SettingsActivity.this, R.string.refresh_updated_message, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
 
-        final CheckBoxPreference autoSortPreference = (CheckBoxPreference) findPreference(Tools.SETTING_AUTOSORT);
-        final boolean autoSort = Tools.autoSortEnabled();
-        autoSortPreference.setChecked(autoSort);
-        autoSortPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object value) {
-                final boolean checked = (boolean) value;
-                preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply();
-                return true;
-            }
-        });
+        {
+            final CheckBoxPreference autoSortPreference = (CheckBoxPreference) findPreference(Tools.SETTING_AUTOSORT);
+            final boolean autoSort = Tools.autoSortEnabled();
+            autoSortPreference.setChecked(autoSort);
+            autoSortPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final boolean checked = (boolean) value;
+                    preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply();
+                    return true;
+                }
+            });
+        }
 
-        final TimePreference startTimePref = (TimePreference) findPreference(Tools.START_TIME);
-        startTimePref.setSummary(preferences.getString(Tools.START_TIME, "09:30"));
-        startTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply();
-                startTimePref.setSummary(newValue.toString());
-                Toast.makeText(SettingsActivity.this, R.string.start_time_updated, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+        {
+            final TimePreference startTimePref = (TimePreference) findPreference(Tools.START_TIME);
+            startTimePref.setSummary(preferences.getString(Tools.START_TIME, "09:30"));
+            startTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply();
+                    startTimePref.setSummary(newValue.toString());
+                    Toast.makeText(SettingsActivity.this, R.string.start_time_updated, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
 
-        final TimePreference endTimePref = (TimePreference) findPreference(Tools.END_TIME);
-        endTimePref.setSummary(preferences.getString(Tools.END_TIME, "16:30"));
-        endTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply();
-                endTimePref.setSummary(newValue.toString());
-                Toast.makeText(SettingsActivity.this, R.string.end_time_updated, Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+        {
+            final TimePreference endTimePref = (TimePreference) findPreference(Tools.END_TIME);
+            endTimePref.setSummary(preferences.getString(Tools.END_TIME, "16:30"));
+            endTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply();
+                    endTimePref.setSummary(newValue.toString());
+                    Toast.makeText(SettingsActivity.this, R.string.end_time_updated, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
     }
 
     private void broadcastUpdateWidget() {

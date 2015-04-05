@@ -24,8 +24,8 @@ android {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 50
-        versionName "5.30.36"
+        versionCode 51
+        versionName "5.30.37"
         multiDexEnabled true
         final File propsFile = file("file:keystore.properties");
         if (propsFile.exists()) {

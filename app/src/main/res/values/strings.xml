@@ -18,9 +18,10 @@
     <string name="endpoint">http://query.yahooapis.com/v1/public</string>
     <string name="suggestions_endpoint">http://d.yimg.com/autoc.finance.yahoo.com</string>
     <string name="add_ticker">Add Ticker</string>
-    <string name="dotdotdot">  ...  </string>
+    <string name="dotdotdot">…</string>
     <string name="text_size">Text Size</string>
     <string name="bg">Widget Background</string>
+    <string name="text_color">Text Color</string>
     <string name="start_time">Start Time</string>
     <string name="end_time">End Time</string>
     <string name="update_interval">Update Interval</string>
@@ -30,6 +31,7 @@
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>
     <string name="bg_updated_message">Background updated</string>
+    <string name="text_coor_updated_message">Text color updated</string>
     <string name="refresh_updated_message">Refresh interval updated</string>
     <string name="error_exporting">Error exporting file</string>
     <string name="ticker_import_success">Tickers imported successfully</string>
@@ -48,8 +50,8 @@
     <string name="start_time_updated">Start time updated</string>
 
     <string-array name="whats_new">
-        <item>- Updated re-arrange view, now you can re-arrange your stocks more easily!</item>
-        <item>- Added custom start/end time setting. Now you can set custom start/end times in settings!</item>
+        <item>- Pull to refresh</item>
+        <item>- You can now change your widget text color to white or black</item>
     </string-array>
 
     <string-array name="font_sizes">
@@ -67,6 +69,12 @@
         <item>Transparent</item>
         <item>Translucent</item>
     </string-array>
+
+    <string-array name="text_colors">
+        <item>White</item>
+        <item>Black</item>
+    </string-array>
+
     <string-array name="backgrounds_values">
         <item>0</item>
         <item>1</item>

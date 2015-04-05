@@ -23,6 +23,7 @@ public final class Tools {
     public static final String END_TIME = "END_TIME";
     public static final String SETTING_AUTOSORT = "SETTING_AUTOSORT";
     public static final String WIDGET_BG = "WIDGET_BG";
+    public static final String TEXT_COLOR = "TEXT_COLOR";
     public static final String UPDATE_INTERVAL = "UPDATE_INTERVAL";
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
@@ -39,6 +40,11 @@ public final class Tools {
 
     private Tools(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+    }
+
+    public static int getTextColor() {
+        final int pref = INSTANCE.sharedPreferences.getInt(TEXT_COLOR, 0);
+        return pref == 0 ? Color.WHITE : Color.BLACK;
     }
 
     public static int[] startTime() {

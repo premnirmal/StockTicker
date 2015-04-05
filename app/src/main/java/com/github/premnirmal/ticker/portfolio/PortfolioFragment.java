@@ -16,8 +16,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.OvershootInterpolator;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
@@ -29,6 +32,7 @@ import com.github.premnirmal.ticker.events.StockUpdatedEvent;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
+import com.github.premnirmal.ticker.ui.ScrollDetector;
 import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;
@@ -52,6 +56,17 @@ public class PortfolioFragment extends BaseFragment {
     private AlertDialog alertDialog;
     private Parcelable listViewState;
     private StocksAdapter stocksAdapter;
+    private final ScrollDetector scrollListener = new ScrollDetector() {
+        @Override
+        public void onScrollUp() {
+            animateButton(false);
+        }
+
+        @Override
+        public void onScrollDown() {
+            animateButton(true);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -116,7 +131,6 @@ public class PortfolioFragment extends BaseFragment {
         return view;
     }
 
-
     private void update() {
         final FragmentActivity activity = getActivity();
         if (stocksProvider.getStocks() == null) {
@@ -131,6 +145,9 @@ public class PortfolioFragment extends BaseFragment {
         ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
 
         final GridView adapterView = (GridView) findViewById(R.id.stockList);
+        scrollListener.setListView(adapterView);
+        adapterView.setOnScrollListener(scrollListener);
+
         if (stocksAdapter == null) {
             stocksAdapter = new StocksAdapter(stocksProvider,
                     new StocksAdapter.OnRemoveClickListener() {
@@ -187,6 +204,17 @@ public class PortfolioFragment extends BaseFragment {
                 }, 1000);
             }
         }
+    }
+
+    private final Interpolator interp = new OvershootInterpolator();
+
+    private void animateButton(boolean show) {
+        final View button = findViewById(R.id.add_ticker_button);
+        final RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) button.getLayoutParams();
+        final int translationY = show ? 0 : (button.getHeight() + layoutParams.topMargin);
+        button.animate().setInterpolator(interp)
+                .setDuration(400)
+                .translationY(translationY);
     }
 
     private void promptRemove(final Stock stock) {

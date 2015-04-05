@@ -102,5 +102,6 @@ public class StockWidget extends AppWidgetProvider {
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
 
         remoteViews.setInt(R.id.widget_layout, "setBackgroundColor", Tools.getBackgroundColor(context));
+        remoteViews.setTextColor(R.id.last_updated, Tools.getTextColor());
     }
 }

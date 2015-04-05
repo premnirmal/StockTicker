@@ -40,7 +40,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/holo_green_dark"
             android:textSize="12sp"
             android:singleLine="true"
             android:id="@+id/changePercent"
@@ -49,7 +49,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/holo_green_dark"
             android:textSize="12sp"
             android:singleLine="true"
             android:id="@+id/changeValue"
