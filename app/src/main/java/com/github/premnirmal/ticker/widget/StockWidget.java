@@ -11,9 +11,9 @@ import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import com.github.premnirmal.ticker.Injector;
+import com.github.premnirmal.ticker.ParanormalActivity;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
-import com.github.premnirmal.ticker.ParanormalActivity;
 import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;
@@ -39,7 +39,7 @@ public class StockWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Injector.inject(this);
-        for (final Integer widgetId : appWidgetIds) {
+        for (final int widgetId : appWidgetIds) {
             final int min_width;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 final Bundle options = appWidgetManager.getAppWidgetOptions(widgetId);
@@ -56,7 +56,7 @@ public class StockWidget extends AppWidgetProvider {
                         R.layout.widget_2x1);
             }
             updateWidget(context, appWidgetManager, widgetId, remoteViews);
-            appWidgetManager.updateAppWidget(widgetId, remoteViews);
+            appWidgetManager.partiallyUpdateAppWidget(widgetId, remoteViews);
         }
 
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -101,7 +101,7 @@ public class StockWidget extends AppWidgetProvider {
         appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
 
-        remoteViews.setInt(R.id.widget_layout, "setBackgroundColor", Tools.getBackgroundColor(context));
+        remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", Tools.getBackgroundResource(context));
         remoteViews.setTextColor(R.id.last_updated, Tools.getTextColor());
     }
 }

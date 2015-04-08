@@ -12,5 +12,6 @@
     <color name="divider">#AAAA</color>
     <color name="grey_bg">#262b2b</color>
 
-    <color name="translucent">#80000000</color>
+    <color name="translucent">#60000000</color>
+    <color name="translucent2">#90000000</color>
 </resources>

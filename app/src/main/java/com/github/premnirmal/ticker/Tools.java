@@ -71,10 +71,10 @@ public final class Tools {
         return firstTime;
     }
 
-    public static int getBackgroundColor(Context context) {
+    public static int getBackgroundResource(Context context) {
         return INSTANCE.sharedPreferences
-                .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? Color.TRANSPARENT
-                : context.getResources().getColor(R.color.translucent);
+                .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? R.drawable.translucent_bg
+                : R.drawable.translucent_bg;
     }
 
     public static float getFontSize(Context context) {
