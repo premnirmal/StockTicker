@@ -3,11 +3,12 @@
 
     <string name="app_name">StockTicker</string>
     <string name="portfolio">Portfolio</string>
-    <string name="widget_label">BestStockWidget</string>
+    <string name="widget_label">A StockWidget</string>
     <string name="version">Version</string>
 
     <string name="action_add">Add</string>
     <string name="action_export">Export Tickers</string>
+    <string name="action_share">Share Portfolio</string>
     <string name="export_desc">Export tickers to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
     <string name="action_import">Import Tickers</string>
     <string name="import_desc">Import tickers from a comma separated .txt file</string>
@@ -34,6 +35,7 @@
     <string name="text_coor_updated_message">Text color updated</string>
     <string name="refresh_updated_message">Refresh interval updated</string>
     <string name="error_exporting">Error exporting file</string>
+    <string name="error_sharing">Error sharing tickers</string>
     <string name="ticker_import_success">Tickers imported successfully</string>
     <string name="ticker_import_fail">Error importing tickers</string>
     <string name="no_network_message">No network connection, check your connection settings</string>
@@ -48,10 +50,15 @@
     <string name="only_updates_on_weekdays">Only updates on weekdays</string>
     <string name="end_time_updated">End time updated</string>
     <string name="start_time_updated">Start time updated</string>
+    <string name="share_email_subject">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
+    <string name="my_stock_portfolio">My Stock Portfolio</string>
+    <string name="send_tickers">Send Portfolio</string>
 
     <string-array name="whats_new">
-        <item>- Pull to refresh</item>
-        <item>- You can now change your widget text color to white or black</item>
+        <item>- More backgrounds</item>
+        <item>- You can now share your portfolio by going into Settings and clicking \"Share\"</item>
+        <item>- Widget design updates</item>
+        <item>- Bug fixes</item>
     </string-array>
 
     <string-array name="font_sizes">
@@ -68,6 +75,7 @@
     <string-array name="backgrounds">
         <item>Transparent</item>
         <item>Translucent</item>
+        <item>Solid</item>
     </string-array>
 
     <string-array name="text_colors">
@@ -78,6 +86,7 @@
     <string-array name="backgrounds_values">
         <item>0</item>
         <item>1</item>
+        <item>2</item>
     </string-array>
 
     <string-array name="sync_periods">

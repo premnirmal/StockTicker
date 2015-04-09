@@ -37,6 +37,7 @@
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.GraphActivity"
             android:label="@string/portfolio"
+            android:theme="@style/GraphActivityTheme"
             android:screenOrientation="landscape" />
         <activity
             android:name="com.github.premnirmal.ticker.settings.SettingsActivity"

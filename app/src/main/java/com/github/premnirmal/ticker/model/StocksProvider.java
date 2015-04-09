@@ -59,7 +59,7 @@ public class StocksProvider implements IStocksProvider {
     public static final String LAST_FETCHED = "LAST_FETCHED";
     public static final String UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE";
 
-    private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT";
+    private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA";
 
     private static final Set<String> DEFAULT_SET = new HashSet<String>() {
         {
@@ -68,6 +68,7 @@ public class StocksProvider implements IStocksProvider {
             add("AAPL");
             add("MSFT");
             add("YHOO");
+            add("TSLA");
         }
     };
 
@@ -344,7 +345,7 @@ public class StocksProvider implements IStocksProvider {
                         + (time.toString(ISODateTimeFormat.hourMinute()));
             }
         } else {
-            fetched = "Unavailable";
+            fetched = "";
         }
         return fetched;
     }

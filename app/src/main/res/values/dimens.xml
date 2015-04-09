@@ -3,8 +3,7 @@
     <dimen name="activity_horizontal_margin">15dp</dimen>
     <dimen name="activity_vertical_margin">15dp</dimen>
 
-    <!--5 seconds-->
-    <integer name="flip_time">5000</integer>
+    <integer name="flip_time">8000</integer>
     <dimen name="text_padding">5dp</dimen>
 
     <dimen name="text_size">15sp</dimen>

@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.devpaul.filepickerlibrary.FilePickerActivity;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
@@ -27,6 +29,8 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
+
+import java.io.File;
 
 import javax.inject.Inject;
 
@@ -101,11 +105,38 @@ public class SettingsActivity extends PreferenceActivity {
                         protected void onPostExecute(String result) {
                             if (result == null) {
                                 showDialog(getString(R.string.error_exporting));
+                                Crashlytics.logException(new Throwable("Error exporting tickers"));
                             } else {
-                                showDialog("Exported to " + result);
+                               showDialog("Exported to " + result);
                             }
                         }
                     }.execute(stocksProvider.getTickers().toArray());
+                    return true;
+                }
+            });
+        }
+
+        {
+            final Preference sharePref = findPreference("SHARE");
+            sharePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    final File file = Tools.getTickersFile();
+                    if(file.exists()) {
+                        shareTickers();
+                    } else {
+                        new FileExportTask() {
+                            @Override
+                            protected void onPostExecute(String result) {
+                                if (result == null) {
+                                    showDialog(getString(R.string.error_sharing));
+                                    Crashlytics.logException(new Throwable("Error sharing tickers"));
+                                } else {
+                                    shareTickers();
+                                }
+                            }
+                        }.execute(stocksProvider.getTickers().toArray());
+                    }
                     return true;
                 }
             });
@@ -247,6 +278,23 @@ public class SettingsActivity extends PreferenceActivity {
                 }
             });
         }
+    }
+
+    private void shareTickers() {
+        final Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{});
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.my_stock_portfolio));
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_email_subject));
+        final File file = Tools.getTickersFile();
+        if (!file.exists() || !file.canRead()) {
+            showDialog(getString(R.string.error_sharing));
+            Crashlytics.logException(new Throwable("Error sharing tickers"));
+            return;
+        }
+        final Uri uri = Uri.fromFile(file);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+        startActivity(Intent.createChooser(intent, getString(R.string.send_tickers)));
     }
 
     private void broadcastUpdateWidget() {

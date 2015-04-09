@@ -27,6 +27,7 @@ public final class Tools {
     public static final String UPDATE_INTERVAL = "UPDATE_INTERVAL";
     public static final int TRANSPARENT = 0;
     public static final int TRANSLUCENT = 1;
+    public static final int SOLID = 2;
     public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
     public static final String WHATS_NEW = "WHATS_NEW";
 
@@ -72,9 +73,17 @@ public final class Tools {
     }
 
     public static int getBackgroundResource(Context context) {
-        return INSTANCE.sharedPreferences
-                .getInt(WIDGET_BG, TRANSPARENT) == TRANSPARENT ? R.drawable.translucent_bg
-                : R.drawable.translucent_bg;
+        final int bgPref = INSTANCE.sharedPreferences
+                .getInt(WIDGET_BG, TRANSPARENT);
+        final int bg_resource;
+        if(bgPref == TRANSPARENT) {
+            bg_resource = R.drawable.transparent_widget_bg;
+        } else if(bgPref == TRANSLUCENT) {
+            bg_resource = R.drawable.translucent_widget_bg;
+        } else {
+            bg_resource = R.drawable.solid_widget_bg;
+        }
+        return bg_resource;
     }
 
     public static float getFontSize(Context context) {

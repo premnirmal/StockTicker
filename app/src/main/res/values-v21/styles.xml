@@ -2,6 +2,7 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="android:alertDialogTheme">@style/Theme.AlertDialog</item>
         <item name="colorPrimary">@color/turqoise</item>
         <item name="colorPrimaryDark">@color/grass</item>
         <item name="colorAccent">@color/grass</item>
@@ -10,6 +11,12 @@
         <item name="android:textViewStyle">@style/TextViewStyle</item>
         <item name="android:editTextStyle">@style/EditTextStyle</item>
         <item name="android:buttonStyle">@style/ButtonStyle</item>
+    </style>
+
+    <style name="Theme.AlertDialog" parent="android:Theme.Material.Dialog.Alert">
+        <item name="android:colorPrimary">@color/turqoise</item>
+        <item name="android:colorPrimaryDark">@color/grass</item>
+        <item name="android:colorAccent">@color/grass</item>
     </style>
 
     <style name="GraphActivityTheme" parent="AppTheme">

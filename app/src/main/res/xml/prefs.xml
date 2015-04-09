@@ -12,6 +12,11 @@
         android:selectable="true"
         android:summary="@string/export_desc"/>
 
+    <Preference
+        android:key="SHARE"
+        android:title="@string/action_share"
+        android:selectable="true"/>
+
     <ListPreference
         android:key="com.github.premnirmal.ticker.textsize"
         android:title="@string/choose_text_size"
