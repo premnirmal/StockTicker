@@ -16,7 +16,8 @@
     <string name="action_rearrage">Rearrange Stocks</string>
     <string name="action_update">Refresh Now</string>
 
-    <string name="endpoint">http://query.yahooapis.com/v1/public</string>
+    <string name="yahoo_endpoint">http://query.yahooapis.com/v1/public</string>
+    <string name="google_endpoint">http://finance.google.com/finance</string>
     <string name="suggestions_endpoint">http://d.yimg.com/autoc.finance.yahoo.com</string>
     <string name="add_ticker">Add Ticker</string>
     <string name="dotdotdot">…</string>

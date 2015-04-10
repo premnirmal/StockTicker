@@ -65,6 +65,8 @@ public class StocksProvider implements IStocksProvider {
     private static final Set<String> DEFAULT_SET = new HashSet<String>() {
         {
             add("^SPY");
+            add("^DJI");
+            add("^IXIC");
             add("GOOG");
             add("AAPL");
             add("MSFT");
@@ -150,7 +152,7 @@ public class StocksProvider implements IStocksProvider {
     @Override
     public void fetch() {
         if (Tools.isNetworkOnline(context)) {
-            api.getStocks(QueryCreator.buildStocksQuery(tickerList.toArray()))
+            api.getYahooFinanceStocks(QueryCreator.buildStocksQuery(tickerList.toArray()))
                     .map(new Func1<StockQuery, Query>() {
                         @Override
                         public Query call(StockQuery stockQuery) {
