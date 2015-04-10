@@ -31,7 +31,7 @@ public class QueryCreator {
     public static String buildStocksQuery(Object[] objects) {
         final StringBuilder commaSeparator = new StringBuilder();
         for (Object object : objects) {
-            final String ticker = object.toString().replace("^", "")
+            final String ticker = object.toString()
                     .replaceAll(" ", "").trim();
             if (ticker.length() < 10) { // not sure why I have this
                 commaSeparator.append(ticker);

@@ -59,10 +59,10 @@ public class Stock implements Comparable<Stock>, Serializable {
     public boolean equals(Object o) {
         if (o instanceof Stock) {
             if (symbol != null) {
-                return symbol.replace("^", "").equalsIgnoreCase(((Stock) o).symbol.replace("^", ""));
+                return symbol.equalsIgnoreCase(((Stock) o).symbol);
             }
         } else if (o instanceof String) {
-            return ((String) o).replace("^","").equalsIgnoreCase(symbol.replace("^", ""));
+            return ((String) o).equalsIgnoreCase(symbol);
         }
         return false;
     }

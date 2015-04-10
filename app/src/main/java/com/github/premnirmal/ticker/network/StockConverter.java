@@ -44,7 +44,10 @@ class StockConverter {
         for (String symbol : symbols) {
             newSymbols.add(symbol
                     .replace("^DJI", ".DJI")
-                    .replace("^IXIC", ".IXIC"));
+                    .replace("^IXIC", ".IXIC")
+                    .replace("^","") // for symbols like ^SPY for yahoo
+            );
+
         }
         return newSymbols;
     }

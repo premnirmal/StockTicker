@@ -218,11 +218,9 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public Collection<String> removeStock(String ticker) {
-        final String sanitizedTicker = ticker.replace("^", "");
-        tickerList.remove(sanitizedTicker);
-        tickerList.remove("^" + sanitizedTicker);
+        tickerList.remove(ticker);
         final Stock dummy = new Stock();
-        dummy.symbol = sanitizedTicker;
+        dummy.symbol = ticker;
         stockList.remove(dummy);
         save();
         sendBroadcast();
