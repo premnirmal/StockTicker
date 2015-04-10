@@ -152,7 +152,7 @@ public class GraphActivity extends BaseActivity {
 
         final PointsGraphSeries disposableSeries = new PointsGraphSeries(new DataPointInterface[]{dataPoints[dataPoints.length - 1]});
         graphView.addSeries(disposableSeries);
-        disposableSeries.setColor(getResources().getColor(R.color.color_dark));
+        disposableSeries.setColor(getResources().getColor(R.color.spicy_salmon));
         disposableSeries.setShape(PointsGraphSeries.Shape.POINT);
         disposableSeries.setSize(10f);
 
