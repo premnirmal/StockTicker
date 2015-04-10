@@ -26,9 +26,8 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:layout_marginRight="2dp"
         android:singleLine="true"
-        android:ellipsize="end"
+        android:ellipsize="none"
         android:id="@+id/totalValue" />
 
     <ViewFlipper
@@ -45,7 +44,7 @@
             android:textColor="@android:color/holo_green_dark"
             android:textSize="12sp"
             android:singleLine="true"
-            android:ellipsize="end"
+            android:ellipsize="none"
             android:id="@+id/changePercent"
             android:gravity="end" />
 
@@ -55,7 +54,7 @@
             android:textColor="@android:color/holo_green_dark"
             android:textSize="12sp"
             android:singleLine="true"
-            android:ellipsize="end"
+            android:ellipsize="none"
             android:id="@+id/changeValue"
             android:gravity="end" />
 

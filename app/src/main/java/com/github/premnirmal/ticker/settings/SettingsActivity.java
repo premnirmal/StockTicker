@@ -328,7 +328,7 @@ public class SettingsActivity extends PreferenceActivity {
         }
         final Uri uri = Uri.fromFile(file);
         intent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(intent, getString(R.string.send_tickers)));
+        startActivity(Intent.createChooser(intent, getString(R.string.action_share)));
     }
 
     private void broadcastUpdateWidget() {

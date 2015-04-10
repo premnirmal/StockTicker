@@ -27,10 +27,10 @@
     <string name="start_time">Start Time</string>
     <string name="end_time">End Time</string>
     <string name="update_interval">Update Interval</string>
-    <string name="auto_sort">Autosort?</string>
+    <string name="auto_sort">Autosort</string>
     <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
     <string name="bold_change">Bold text</string>
-    <string name="bold_change_desc">Show change in bold?</string>
+    <string name="bold_change_desc">Show changes and market value in bold</string>
     <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>
@@ -43,7 +43,6 @@
     <string name="ticker_import_success">Tickers imported successfully</string>
     <string name="ticker_import_fail">Error importing tickers</string>
     <string name="no_network_message">No network connection, check your connection settings</string>
-    <string name="bold_font">Bold font?</string>
     <string name="one_month">1 month</string>
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>
@@ -56,6 +55,5 @@
     <string name="start_time_updated">Start time updated</string>
     <string name="share_email_subject">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
     <string name="my_stock_portfolio">My Stock Portfolio</string>
-    <string name="send_tickers">Send Portfolio</string>
 
 </resources>

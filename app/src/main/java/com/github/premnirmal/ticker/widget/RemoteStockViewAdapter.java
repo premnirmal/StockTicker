@@ -17,6 +17,8 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.tickerwidget.R;
 
+import java.text.DecimalFormat;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +32,8 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     private List<Stock> stocks;
     private Context context;
+
+    private final Format format = new DecimalFormat("0.00#");
 
     @Inject
     IStocksProvider stocksProvider;
@@ -68,24 +72,37 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
         final Stock stock = stocks.get(position);
         remoteViews.setTextViewText(R.id.ticker, stock.symbol);
 
-        final SpannableString changePercentString = new SpannableString(stock.ChangeinPercent);
-        final SpannableString changeValueString = new SpannableString(stock.Change);
+        final double change;
+        final SpannableString changePercentString, changeValueString, priceString;
+        {
+            final double changePercent;
+            if (stock.Change != null) {
+                change = Double.parseDouble(stock.Change.replace("+", ""));
+                changePercent = Double.parseDouble(stock.ChangeinPercent.replace("+", "").replace("%", ""));
+            } else {
+                change = 0d;
+                changePercent = 0d;
+            }
+            final String prefix = change > 0 ? "+" : "";
+            final String changeValueFormatted = format.format(change);
+            final String changePercentFormatted = format.format(changePercent);
+            final String priceFormatted = format.format(stock.LastTradePriceOnly);
 
-        if (Tools.boldEnabled()) {
-            changePercentString.setSpan(new StyleSpan(Typeface.BOLD), 0, changePercentString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            changeValueString.setSpan(new StyleSpan(Typeface.BOLD), 0, changeValueString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            changePercentString = new SpannableString(prefix + changePercentFormatted + "%");
+            changeValueString = new SpannableString(prefix + changeValueFormatted + "%");
+            priceString = new SpannableString(priceFormatted);
+
+            if (Tools.boldEnabled() && stock.ChangeinPercent != null && stock.Change != null) {
+                changePercentString.setSpan(new StyleSpan(Typeface.BOLD), 0, changePercentString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                changeValueString.setSpan(new StyleSpan(Typeface.BOLD), 0, changeValueString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                priceString.setSpan(new StyleSpan(Typeface.BOLD), 0, priceString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
         }
+
 
         remoteViews.setTextViewText(R.id.changePercent, changePercentString);
         remoteViews.setTextViewText(R.id.changeValue, changeValueString);
-        remoteViews.setTextViewText(R.id.totalValue, String.valueOf(stock.LastTradePriceOnly));
-
-        final double change;
-        if (stock != null && stock.Change != null) {
-            change = Double.parseDouble(stock.Change.replace("+", ""));
-        } else {
-            change = 0d;
-        }
+        remoteViews.setTextViewText(R.id.totalValue, priceString);
 
 
         final int color;

@@ -20,13 +20,22 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
 
+    final File versionFile = file("file:version.properties")
+    final Properties versionProps = new Properties();
+    versionProps.load(new FileInputStream(versionFile));
+    def code = versionProps.getProperty('versionCode').toInteger();
+    def name = versionProps.getProperty('versionName').toString();
+
     defaultConfig {
         applicationId "com.github.premnirmal.tickerwidget"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 54
-        versionName "5.30.40"
+
+        versionCode = code
+        versionName = name
+
         multiDexEnabled true
+
         final File propsFile = file("file:keystore.properties");
         if (propsFile.exists()) {
             final Properties props = new Properties();

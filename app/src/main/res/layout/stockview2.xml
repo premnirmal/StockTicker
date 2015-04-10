@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:layout_marginRight="2dp"
+        android:ellipsize="none"
         android:singleLine="true"
         android:id="@+id/totalValue" />
 
@@ -36,6 +36,8 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="12sp"
+        android:ellipsize="none"
+        android:layout_marginRight="2dp"
         android:singleLine="true"
         android:id="@+id/changeValue"
         android:gravity="end" />
@@ -46,6 +48,7 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/holo_green_dark"
         android:textSize="12sp"
+        android:ellipsize="none"
         android:singleLine="true"
         android:id="@+id/changePercent"
         android:gravity="end" />
