@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.portfolio;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -153,12 +152,15 @@ public class GraphActivity extends BaseActivity {
 
         final PointsGraphSeries disposableSeries = new PointsGraphSeries(new DataPointInterface[]{dataPoints[dataPoints.length - 1]});
         graphView.addSeries(disposableSeries);
-        disposableSeries.setColor(Color.GREEN);
+
+        final int graph_color = getResources().getColor(R.color.color_dark);
+
+        disposableSeries.setColor(graph_color);
         disposableSeries.setShape(PointsGraphSeries.Shape.POINT);
         disposableSeries.setSize(10f);
 
         series.setDrawBackground(true);
-        series.setBackgroundColor(getResources().getColor(R.color.maroon));
+        series.setBackgroundColor(graph_color);
         series.setOnDataPointTapListener(new OnDataPointTapListener() {
             @Override
             public void onTap(Series series, DataPointInterface dataPointInterface) {

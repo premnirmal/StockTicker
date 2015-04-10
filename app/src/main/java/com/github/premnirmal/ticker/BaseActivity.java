@@ -32,7 +32,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     private static final List<Integer> colorResources = new ArrayList<Integer>() {
         {
             add(R.color.sea);
-            add(R.color.turqoise);
+            add(R.color.color_primary);
             add(R.color.spicy_salmon);
         }
     };

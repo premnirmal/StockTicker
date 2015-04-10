@@ -149,7 +149,7 @@ public class SettingsActivity extends PreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     final Intent filePickerIntent = new Intent(SettingsActivity.this, FilePickerActivity.class);
                     filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE);
-                    filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.maroon);
+                    filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.color_primary);
                     startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE);
                     return true;
                 }
@@ -191,6 +191,26 @@ public class SettingsActivity extends PreferenceActivity {
                     broadcastUpdateWidget();
                     bgPreference.setSummary(bgPreference.getEntries()[index]);
                     Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+            });
+        }
+
+        {
+            final ListPreference layoutTypePref = (ListPreference) findPreference(Tools.LAYOUT_TYPE);
+            final int typeIndex = preferences.getInt(Tools.LAYOUT_TYPE, 0);
+            layoutTypePref.setValueIndex(typeIndex);
+            layoutTypePref.setSummary(layoutTypePref.getEntries()[typeIndex]);
+            layoutTypePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final String stringValue = value.toString();
+                    final ListPreference listPreference = (ListPreference) preference;
+                    final int index = listPreference.findIndexOfValue(stringValue);
+                    preferences.edit().putInt(Tools.LAYOUT_TYPE, index).apply();
+                    broadcastUpdateWidget();
+                    layoutTypePref.setSummary(layoutTypePref.getEntries()[index]);
+                    Toast.makeText(SettingsActivity.this, R.string.layout_updated_message, Toast.LENGTH_SHORT).show();
                     return true;
                 }
             });
@@ -246,6 +266,20 @@ public class SettingsActivity extends PreferenceActivity {
                 public boolean onPreferenceChange(Preference preference, Object value) {
                     final boolean checked = (boolean) value;
                     preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply();
+                    return true;
+                }
+            });
+        }
+
+        {
+            final CheckBoxPreference boldChangePreference = (CheckBoxPreference) findPreference(Tools.BOLD_CHANGE);
+            final boolean bold = Tools.boldEnabled();
+            boldChangePreference.setChecked(bold);
+            boldChangePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object value) {
+                    final boolean checked = (boolean) value;
+                    preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply();
                     return true;
                 }
             });

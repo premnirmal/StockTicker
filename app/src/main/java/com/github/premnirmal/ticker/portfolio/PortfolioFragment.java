@@ -87,7 +87,7 @@ public class PortfolioFragment extends BaseFragment {
         final View view = inflater.inflate(R.layout.portfolio_fragment, null);
 
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
-        swipeRefreshLayout.setColorSchemeResources(R.color.grass, R.color.spicy_salmon, R.color.sea);
+        swipeRefreshLayout.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon, R.color.sea);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

@@ -2,8 +2,11 @@ package com.github.premnirmal.ticker.widget;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.StyleSpan;
 import android.util.TypedValue;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -61,11 +64,20 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public RemoteViews getViewAt(int position) {
-        final RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.stockview);
+        final RemoteViews remoteViews = new RemoteViews(context.getPackageName(), Tools.stockViewLayout());
         final Stock stock = stocks.get(position);
         remoteViews.setTextViewText(R.id.ticker, stock.symbol);
-        remoteViews.setTextViewText(R.id.changePercent, stock.ChangeinPercent);
-        remoteViews.setTextViewText(R.id.changeValue, stock.Change);
+
+        final SpannableString changePercentString = new SpannableString(stock.ChangeinPercent);
+        final SpannableString changeValueString = new SpannableString(stock.Change);
+
+        if (Tools.boldEnabled()) {
+            changePercentString.setSpan(new StyleSpan(Typeface.BOLD), 0, changePercentString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            changeValueString.setSpan(new StyleSpan(Typeface.BOLD), 0, changeValueString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        remoteViews.setTextViewText(R.id.changePercent, changePercentString);
+        remoteViews.setTextViewText(R.id.changeValue, changeValueString);
         remoteViews.setTextViewText(R.id.totalValue, String.valueOf(stock.LastTradePriceOnly));
 
         final double change;
@@ -78,15 +90,15 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
         final int color;
         if (change >= 0) {
-            color = Color.GREEN;
+            color = context.getResources().getColor(R.color.positive_green);
         } else {
-            color = Color.RED;
+            color = context.getResources().getColor(R.color.negative_red);
         }
         remoteViews.setTextColor(R.id.changePercent, color);
         remoteViews.setTextColor(R.id.changeValue, color);
 
-        remoteViews.setTextColor(R.id.ticker, Tools.getTextColor());
-        remoteViews.setTextColor(R.id.totalValue, Tools.getTextColor());
+        remoteViews.setTextColor(R.id.ticker, Tools.getTextColor(context));
+        remoteViews.setTextColor(R.id.totalValue, Tools.getTextColor(context));
 
         final float fontSize = Tools.getFontSize(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

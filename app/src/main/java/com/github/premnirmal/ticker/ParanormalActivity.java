@@ -35,7 +35,6 @@ public class ParanormalActivity extends BaseActivity {
         if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
             preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply();
             final StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("What\'s new in Version " + BuildConfig.VERSION_NAME + ":\n\n");
             final String[] whatsNew = getResources().getStringArray(R.array.whats_new);
             for (int i = 0; i < whatsNew.length; i++) {
                 stringBuilder.append("\t");
@@ -45,6 +44,7 @@ public class ParanormalActivity extends BaseActivity {
                 }
             }
             new AlertDialog.Builder(this)
+                    .setTitle("What\'s new in Version " + BuildConfig.VERSION_NAME)
                     .setMessage(stringBuilder.toString())
                     .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                         @Override

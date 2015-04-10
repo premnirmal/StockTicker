@@ -2,9 +2,9 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/turqoise</item>
-        <item name="colorPrimaryDark">@color/grass</item>
-        <item name="colorAccent">@color/grass</item>
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryDark">@color/color_secondary</item>
+        <item name="colorAccent">@color/color_secondary</item>
         <item name="actionBarStyle">@style/ActionBarStyle</item>
 
         <item name="android:textViewStyle">@style/TextViewStyle</item>
@@ -34,7 +34,7 @@
     </style>
 
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@color/turqoise</item>
+        <item name="android:background">@color/color_primary</item>
         <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
         <item name="actionModeBackground">@android:color/background_light</item>
         <!-- Support library compatibility -->

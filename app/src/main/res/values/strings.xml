@@ -12,7 +12,7 @@
     <string name="export_desc">Export tickers to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
     <string name="action_import">Import Tickers</string>
     <string name="import_desc">Import tickers from a comma separated .txt file</string>
-    <string name="action_Settings">Settings</string>
+    <string name="action_Settings">Widget Settings</string>
     <string name="action_rearrage">Rearrange Stocks</string>
     <string name="action_update">Refresh Now</string>
 
@@ -22,16 +22,20 @@
     <string name="dotdotdot">…</string>
     <string name="text_size">Text Size</string>
     <string name="bg">Widget Background</string>
+    <string name="layout_type">Widget Type</string>
     <string name="text_color">Text Color</string>
     <string name="start_time">Start Time</string>
     <string name="end_time">End Time</string>
     <string name="update_interval">Update Interval</string>
     <string name="auto_sort">Autosort?</string>
     <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
+    <string name="bold_change">Bold text</string>
+    <string name="bold_change_desc">Show change in bold?</string>
     <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
     <string name="choose_text_size">Choose a text size</string>
     <string name="text_size_updated_message">Text size updated</string>
     <string name="bg_updated_message">Background updated</string>
+    <string name="layout_updated_message">Layout type updated</string>
     <string name="text_coor_updated_message">Text color updated</string>
     <string name="refresh_updated_message">Refresh interval updated</string>
     <string name="error_exporting">Error exporting file</string>
@@ -53,53 +57,5 @@
     <string name="share_email_subject">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
     <string name="my_stock_portfolio">My Stock Portfolio</string>
     <string name="send_tickers">Send Portfolio</string>
-
-    <string-array name="whats_new">
-        <item>- More backgrounds</item>
-        <item>- You can now share your portfolio by going into Settings and clicking \"Share\"</item>
-        <item>- Widget design updates</item>
-        <item>- Bug fixes</item>
-    </string-array>
-
-    <string-array name="font_sizes">
-        <item>Small</item>
-        <item>Medium</item>
-        <item>Large</item>
-    </string-array>
-    <string-array name="font_sizes_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string-array name="backgrounds">
-        <item>Transparent</item>
-        <item>Translucent</item>
-        <item>Solid</item>
-    </string-array>
-
-    <string-array name="text_colors">
-        <item>White</item>
-        <item>Black</item>
-    </string-array>
-
-    <string-array name="backgrounds_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string-array name="sync_periods">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>45 minutes</item>
-        <item>1 hour</item>
-    </string-array>
-    <string-array name="sync_periods_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
 
 </resources>
