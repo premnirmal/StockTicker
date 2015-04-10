@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.network;
 
+import java.util.List;
+
 import retrofit.http.GET;
 import rx.Observable;
 
@@ -9,5 +11,5 @@ import rx.Observable;
 public interface GoogleFinance {
 
     @GET("/info?client=ig")
-    Observable<GStock> getStock(@retrofit.http.Query(value = "q", encodeValue = false) String query);
+    Observable<List<GStock>> getStock(@retrofit.http.Query(value = "q", encodeValue = false) String query);
 }

@@ -73,6 +73,7 @@ public class ApiModule {
     GoogleFinance provideGoogleFinance(Context context) {
         final RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(context.getString(R.string.google_endpoint))
+                .setConverter(new GStockConverter())
                 .build();
         final GoogleFinance googleFinance = restAdapter.create(GoogleFinance.class);
         return googleFinance;

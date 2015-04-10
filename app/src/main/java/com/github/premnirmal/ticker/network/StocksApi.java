@@ -1,9 +1,14 @@
 package com.github.premnirmal.ticker.network;
 
+import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Created by premnirmal on 12/21/14.
@@ -12,6 +17,8 @@ public class StocksApi {
 
     final YahooFinance yahooApi;
     final GoogleFinance googleApi;
+
+    public String lastFetched;
 
     public StocksApi(YahooFinance yahooApi, GoogleFinance googleApi) {
         this.yahooApi = yahooApi;
@@ -22,20 +29,56 @@ public class StocksApi {
         return yahooApi.getStocks(query);
     }
 
-    public Observable<Stock> getGoogleFinanceStocks(String query) {
+    public Observable<List<Stock>> getGoogleFinanceStocks(String query) {
         return googleApi.getStock(query)
-                .map(new Func1<GStock, Stock>() {
+                .map(new Func1<List<GStock>, List<Stock>>() {
                     @Override
-                    public Stock call(GStock gStock) {
-
-                        return null;
+                    public List<Stock> call(List<GStock> gStocks) {
+                        final List<Stock> stocks = new ArrayList<Stock>();
+                        for (GStock gStock : gStocks) {
+                            stocks.add(StockConverter.convert(gStock));
+                        }
+                        final List<Stock> updatedStocks = StockConverter.convertResponseQuotes(stocks);
+                        return updatedStocks;
                     }
                 });
     }
 
-
     public Observable<HistoricalData> getHistory(String query) {
         return yahooApi.getHistory(query);
+    }
+
+    public Observable<List<Stock>> getStocks(List<String> tickerList) {
+        final List<String> symbols = StockConverter.convertRequestSymbols(tickerList);
+        final List<String> yahooSymbols = new ArrayList<>(symbols);
+        final List<String> googleSymbols = new ArrayList<>(symbols);
+        yahooSymbols.removeAll(StocksProvider.GOOGLE_SYMBOLS);
+        googleSymbols.retainAll(StocksProvider.GOOGLE_SYMBOLS);
+
+        final Observable<List<Stock>> yahooObservable = getYahooFinanceStocks(QueryCreator.buildStocksQuery(yahooSymbols.toArray()))
+                .map(new Func1<StockQuery, List<Stock>>() {
+                    @Override
+                    public List<Stock> call(StockQuery stockQuery) {
+                        if (stockQuery == null) {
+                            return new ArrayList<>();
+                        } else {
+                            final Query query = stockQuery.query;
+                            lastFetched = query.created;
+                            return query.results.quote;
+                        }
+                    }
+                });
+        final Observable<List<Stock>> googleObservable = getGoogleFinanceStocks(QueryCreator.googleStocksQuery(googleSymbols.toArray()));
+
+        final Observable<List<Stock>> allStocks = yahooObservable.zipWith(googleObservable, new Func2<List<Stock>, List<Stock>, List<Stock>>() {
+            @Override
+            public List<Stock> call(List<Stock> stocks, List<Stock> stocks2) {
+                stocks.addAll(stocks2);
+                return stocks;
+            }
+        });
+
+        return allStocks;
     }
 
 }

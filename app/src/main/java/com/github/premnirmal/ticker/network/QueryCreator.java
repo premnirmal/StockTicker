@@ -12,12 +12,28 @@ public class QueryCreator {
 
     public final static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
 
+    public static String googleStocksQuery(Object[] tickers) {
+        final StringBuilder commaSeparator = new StringBuilder();
+        for (Object o : tickers) {
+            final String ticker = o.toString();
+            if (ticker.length() < 10) { // not sure why I have this
+                commaSeparator.append(ticker);
+                commaSeparator.append(',');
+            }
+        }
+        final int length = commaSeparator.length();
+        if (length > 0) {
+            commaSeparator.deleteCharAt(length - 1);
+        }
+        return commaSeparator.toString();
+    }
+
     public static String buildStocksQuery(Object[] objects) {
         final StringBuilder commaSeparator = new StringBuilder();
         for (Object object : objects) {
             final String ticker = object.toString().replace("^", "")
                     .replaceAll(" ", "").trim();
-            if (ticker.length() < 10) {
+            if (ticker.length() < 10) { // not sure why I have this
                 commaSeparator.append(ticker);
                 commaSeparator.append(',');
             }
