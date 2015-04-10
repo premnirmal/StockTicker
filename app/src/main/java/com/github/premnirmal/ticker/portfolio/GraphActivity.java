@@ -152,15 +152,12 @@ public class GraphActivity extends BaseActivity {
 
         final PointsGraphSeries disposableSeries = new PointsGraphSeries(new DataPointInterface[]{dataPoints[dataPoints.length - 1]});
         graphView.addSeries(disposableSeries);
-
-        final int graph_color = getResources().getColor(R.color.color_dark);
-
-        disposableSeries.setColor(graph_color);
+        disposableSeries.setColor(getResources().getColor(R.color.color_dark));
         disposableSeries.setShape(PointsGraphSeries.Shape.POINT);
         disposableSeries.setSize(10f);
 
         series.setDrawBackground(true);
-        series.setBackgroundColor(graph_color);
+        series.setBackgroundColor(getResources().getColor(R.color.color_accent));
         series.setOnDataPointTapListener(new OnDataPointTapListener() {
             @Override
             public void onTap(Series series, DataPointInterface dataPointInterface) {
