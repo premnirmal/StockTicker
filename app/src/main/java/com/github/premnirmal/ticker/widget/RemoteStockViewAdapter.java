@@ -121,7 +121,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public int getViewTypeCount() {
-        return 1;
+        return 2; // stockview or stockview2 (layout from Tools.stockViewLayout())
     }
 
     @Override
