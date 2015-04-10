@@ -19,7 +19,4 @@ public class Suggestion {
     public String exchDisp;
     public String typeDisp;
 
-    public boolean isStock() {
-        return "S".equalsIgnoreCase(type);
-    }
 }

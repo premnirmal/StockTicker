@@ -122,8 +122,7 @@ public class TickerSelectorActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final SuggestionsAdapter suggestionsAdapter = (SuggestionsAdapter) parent.getAdapter();
                 final Suggestion suggestion = suggestionsAdapter.getItem(position);
-                final String ticker = suggestion.isStock() ? suggestion.symbol
-                        : ("^" + suggestion.symbol);
+                final String ticker = suggestion.symbol;
                 stocksProvider.addStock(ticker);
                 Toast.makeText(TickerSelectorActivity.this, ticker + " added to list", Toast.LENGTH_SHORT).show();
                 searchView.setText("");
