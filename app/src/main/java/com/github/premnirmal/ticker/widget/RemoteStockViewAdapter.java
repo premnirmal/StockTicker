@@ -89,7 +89,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
             final String priceFormatted = format.format(stock.LastTradePriceOnly);
 
             changePercentString = new SpannableString(prefix + changePercentFormatted + "%");
-            changeValueString = new SpannableString(prefix + changeValueFormatted + "%");
+            changeValueString = new SpannableString(prefix + changeValueFormatted);
             priceString = new SpannableString(priceFormatted);
 
             if (Tools.boldEnabled() && stock.ChangeinPercent != null && stock.Change != null) {
