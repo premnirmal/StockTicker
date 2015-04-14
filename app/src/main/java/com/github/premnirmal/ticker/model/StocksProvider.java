@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.model;
 
-import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
@@ -157,9 +156,9 @@ public class StocksProvider implements IStocksProvider {
 
                         @Override
                         public void onError(Throwable e) {
-                            Crashlytics.logException(e);
+                            Crashlytics.logException(e); // why?
                             e.printStackTrace();
-                            fetch();
+                            scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)); // 1 minute
                         }
 
                         @Override
@@ -170,7 +169,7 @@ public class StocksProvider implements IStocksProvider {
                         }
                     });
         } else {
-            scheduleUpdate(SystemClock.elapsedRealtime() + (AlarmManager.INTERVAL_FIFTEEN_MINUTES / 3)); // 5 minutes
+            scheduleUpdate(SystemClock.elapsedRealtime() + (5 * 60 * 1000)); // 5 minutes
         }
     }
 

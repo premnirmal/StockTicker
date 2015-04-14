@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">StockTicker</string>
     <string name="portfolio">Portfolio</string>
     <string name="widget_label">A StockWidget</string>
     <string name="version">Version</string>

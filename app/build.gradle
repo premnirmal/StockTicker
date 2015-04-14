@@ -23,11 +23,11 @@ android {
     final File versionFile = file("file:version.properties")
     final Properties versionProps = new Properties();
     versionProps.load(new FileInputStream(versionFile));
-    def code = versionProps.getProperty('versionCode').toInteger();
-    def name = versionProps.getProperty('versionName').toString();
-
+    def final code = versionProps.getProperty('versionCode').toInteger();
+    def final name = versionProps.getProperty('versionName').toString();
+    def final appIdBase = 'com.github.premnirmal.tickerwidget'
     defaultConfig {
-        applicationId "com.github.premnirmal.tickerwidget"
+        applicationId appIdBase
         minSdkVersion 14
         targetSdkVersion 21
 
@@ -40,7 +40,7 @@ android {
         if (propsFile.exists()) {
             final Properties props = new Properties();
             props.load(new FileInputStream(propsFile));
-            def akey = props.getProperty('analyticsKey')
+            def final akey = props.getProperty('analyticsKey')
             buildConfigField "String", "KEY", akey
         } else {
             buildConfigField "String", "KEY", ""
@@ -59,6 +59,15 @@ android {
                 keyPassword props.getProperty('key.alias.password')
                 keyAlias props.getProperty('key.alias.alias')
             }
+        }
+    }
+
+    productFlavors {
+        dev {
+            applicationId = appIdBase + ".dev"
+        }
+        prod {
+            applicationId = appIdBase
         }
     }
 

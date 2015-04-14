@@ -10,6 +10,6 @@ import rx.Observable;
  */
 public interface GoogleFinance {
 
-    @GET("/info?client=ig")
+    @GET("/info")
     Observable<List<GStock>> getStock(@retrofit.http.Query(value = "q", encodeValue = false) String query);
 }
