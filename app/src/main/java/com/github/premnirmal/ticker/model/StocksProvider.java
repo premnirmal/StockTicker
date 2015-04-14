@@ -156,7 +156,7 @@ public class StocksProvider implements IStocksProvider {
 
                         @Override
                         public void onError(Throwable e) {
-                            Crashlytics.logException(e); // why?
+                            Crashlytics.logException(new Throwable(e)); // why does this happen?
                             e.printStackTrace();
                             scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)); // 1 minute
                         }
