@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>Added a new widget type, see settings!</item>
-        <item>You can now set a bold font, see settings!</item>
-        <item>More backgrounds</item>
-        <item>You can now share your portfolio by going into Settings and clicking \"Share\" !</item>
-        <item>Widget design updates</item>
         <item>Bug fixes</item>
+        <item>If your portfolio doesn\'t update, go into your devices Settings -> apps -> StockTicker, and select Clear Data.</item>
     </string-array>
 </resources>

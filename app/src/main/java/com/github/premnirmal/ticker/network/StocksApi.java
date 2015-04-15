@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.network;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
 
@@ -41,6 +42,12 @@ public class StocksApi {
                         final List<Stock> updatedStocks = StockConverter.convertResponseQuotes(stocks);
                         return updatedStocks;
                     }
+                }).onErrorResumeNext(new Func1<Throwable, Observable<? extends List<Stock>>>() {
+                    @Override
+                    public Observable<? extends List<Stock>> call(Throwable throwable) {
+                        Crashlytics.logException(new RuntimeException("Encountered onErrorResumeNext", throwable));
+                        return Observable.empty();
+                    }
                 });
     }
 
@@ -55,6 +62,7 @@ public class StocksApi {
         yahooSymbols.removeAll(StocksProvider.GOOGLE_SYMBOLS);
         googleSymbols.retainAll(StocksProvider.GOOGLE_SYMBOLS);
 
+        final Observable<List<Stock>> googleObservable = getGoogleFinanceStocks(QueryCreator.googleStocksQuery(googleSymbols.toArray()));
         final Observable<List<Stock>> yahooObservable = getYahooFinanceStocks(QueryCreator.buildStocksQuery(yahooSymbols.toArray()))
                 .map(new Func1<StockQuery, List<Stock>>() {
                     @Override
@@ -68,7 +76,6 @@ public class StocksApi {
                         }
                     }
                 });
-        final Observable<List<Stock>> googleObservable = getGoogleFinanceStocks(QueryCreator.googleStocksQuery(googleSymbols.toArray()));
 
         final Observable<List<Stock>> allStocks = yahooObservable.zipWith(googleObservable, new Func2<List<Stock>, List<Stock>, List<Stock>>() {
             @Override

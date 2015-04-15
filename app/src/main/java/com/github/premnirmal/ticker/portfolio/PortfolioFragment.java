@@ -133,75 +133,83 @@ public class PortfolioFragment extends BaseFragment {
 
     private void update() {
         final FragmentActivity activity = getActivity();
-        if (stocksProvider.getStocks() == null) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    update();
-                }
-            }, 600);
-        }
-
-        ((TextView) findViewById(R.id.last_updated)).setText("Last updated: " + stocksProvider.lastFetched());
-
-        final GridView adapterView = (GridView) findViewById(R.id.stockList);
-        scrollListener.setListView(adapterView);
-        adapterView.setOnScrollListener(scrollListener);
-
-        if (stocksAdapter == null) {
-            stocksAdapter = new StocksAdapter(stocksProvider,
-                    new StocksAdapter.OnRemoveClickListener() {
-                        @Override
-                        public void onRemoveClick(View view, Stock stock, int position) {
-                            promptRemove(stock);
-                        }
-                    });
-        } else {
-            stocksAdapter.refresh(stocksProvider);
-        }
-
-        adapterView.setAdapter(stocksAdapter);
-
-        if (listViewState != null) {
-            adapterView.onRestoreInstanceState(listViewState);
-        }
-
-        adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                final Intent intent = new Intent(activity, GraphActivity.class);
-                intent.putExtra(GraphActivity.GRAPH_DATA, stocksAdapter.getItem(position));
-                startActivity(intent);
-            }
-        });
-
-        if (stocksAdapter.getCount() > 1) {
-            if (Tools.firstTimeViewingSwipeLayout()) {
+        if(activity != null) {
+            if (stocksProvider.getStocks() == null) {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        final SwipeLayout layout = (SwipeLayout) adapterView.getChildAt(0);
-                        if (layout != null) {
-                            layout.open(true);
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (layout != null) layout.close();
-                                    final SwipeLayout secondLayout = (SwipeLayout) adapterView.getChildAt(1);
-                                    if (secondLayout != null) {
-                                        secondLayout.open(true);
-                                        handler.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (secondLayout != null) secondLayout.close();
-                                            }
-                                        }, 600);
-                                    }
-                                }
-                            }, 600);
-                        }
+                        update();
                     }
-                }, 1000);
+                }, 600);
+            }
+
+            final TextView lastUpdatedTextView = (TextView) findViewById(R.id.last_updated);
+            if (lastUpdatedTextView != null) {
+                lastUpdatedTextView.setText("Last updated: " + stocksProvider.lastFetched());
+            }
+
+            final GridView adapterView = (GridView) findViewById(R.id.stockList);
+            if (adapterView != null) {
+                scrollListener.setListView(adapterView);
+                adapterView.setOnScrollListener(scrollListener);
+
+                if (stocksAdapter == null) {
+                    stocksAdapter = new StocksAdapter(stocksProvider,
+                            new StocksAdapter.OnRemoveClickListener() {
+                                @Override
+                                public void onRemoveClick(View view, Stock stock, int position) {
+                                    promptRemove(stock);
+                                }
+                            });
+                } else {
+                    stocksAdapter.refresh(stocksProvider);
+                }
+
+                adapterView.setAdapter(stocksAdapter);
+
+                if (listViewState != null) {
+                    adapterView.onRestoreInstanceState(listViewState);
+                }
+
+                adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                        final Intent intent = new Intent(activity, GraphActivity.class);
+                        intent.putExtra(GraphActivity.GRAPH_DATA, stocksAdapter.getItem(position));
+                        startActivity(intent);
+                    }
+                });
+
+                if (stocksAdapter.getCount() > 1) {
+                    if (Tools.firstTimeViewingSwipeLayout()) {
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                final SwipeLayout layout = (SwipeLayout) adapterView.getChildAt(0);
+                                if (layout != null) {
+                                    layout.open(true);
+                                    handler.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (layout != null) layout.close();
+                                            final SwipeLayout secondLayout = (SwipeLayout) adapterView.getChildAt(1);
+                                            if (secondLayout != null) {
+                                                secondLayout.open(true);
+                                                handler.postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        if (secondLayout != null)
+                                                            secondLayout.close();
+                                                    }
+                                                }, 600);
+                                            }
+                                        }
+                                    }, 600);
+                                }
+                            }
+                        }, 1000);
+                    }
+                }
             }
         }
     }

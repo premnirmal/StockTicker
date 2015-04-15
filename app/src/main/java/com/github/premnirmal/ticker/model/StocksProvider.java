@@ -82,6 +82,12 @@ public class StocksProvider implements IStocksProvider {
         this.preferences = sharedPreferences;
         final String tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS);
         tickerList = new ArrayList<>(Arrays.asList(tickerListVars.split(",")));
+        final List<String> newTickerList = new ArrayList<>();
+        for(String ticker : tickerList) {
+            if(ticker!= null) {
+                newTickerList.add(ticker.replaceAll(".",""));
+            }
+        }
         if (preferences.contains(STOCK_LIST)) { // for users using older versions
             final Set<String> deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET);
             preferences.edit().remove(STOCK_LIST).apply();
@@ -156,7 +162,7 @@ public class StocksProvider implements IStocksProvider {
 
                         @Override
                         public void onError(Throwable e) {
-                            Crashlytics.logException(new Throwable(e)); // why does this happen?
+                            Crashlytics.logException(new RuntimeException("Encountered onError when fetching stocks", e)); // why does this happen?
                             e.printStackTrace();
                             scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)); // 1 minute
                         }
