@@ -16,6 +16,7 @@ import android.preference.PreferenceActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.devpaul.filepickerlibrary.FilePickerActivity;
+import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
@@ -48,6 +50,16 @@ public class SettingsActivity extends PreferenceActivity {
 
     @Inject
     SharedPreferences preferences;
+
+    private class DefaultPreferenceChangeListener implements Preference.OnPreferenceChangeListener {
+
+        @Override
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+
+            return false;
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +133,7 @@ public class SettingsActivity extends PreferenceActivity {
             sharePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
+                    Analytics.trackSettingsChange("SHARE", TextUtils.join(",", stocksProvider.getTickers().toArray()));
                     final File file = Tools.getTickersFile();
                     if(file.exists()) {
                         shareTickers();
@@ -161,9 +174,10 @@ public class SettingsActivity extends PreferenceActivity {
             final int size = preferences.getInt(Tools.FONT_SIZE, 1);
             fontSizePreference.setValueIndex(size);
             fontSizePreference.setSummary(fontSizePreference.getEntries()[size]);
-            fontSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            fontSizePreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
@@ -181,9 +195,10 @@ public class SettingsActivity extends PreferenceActivity {
             final int bgIndex = preferences.getInt(Tools.WIDGET_BG, 0);
             bgPreference.setValueIndex(bgIndex);
             bgPreference.setSummary(bgPreference.getEntries()[bgIndex]);
-            bgPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            bgPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
@@ -201,9 +216,10 @@ public class SettingsActivity extends PreferenceActivity {
             final int typeIndex = preferences.getInt(Tools.LAYOUT_TYPE, 0);
             layoutTypePref.setValueIndex(typeIndex);
             layoutTypePref.setSummary(layoutTypePref.getEntries()[typeIndex]);
-            layoutTypePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            layoutTypePref.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
@@ -221,9 +237,10 @@ public class SettingsActivity extends PreferenceActivity {
             final int colorIndex = preferences.getInt(Tools.TEXT_COLOR, 0);
             textColorPreference.setValueIndex(colorIndex);
             textColorPreference.setSummary(textColorPreference.getEntries()[colorIndex]);
-            textColorPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            textColorPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
@@ -242,9 +259,10 @@ public class SettingsActivity extends PreferenceActivity {
             final int refreshIndex = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
             refreshPreference.setValueIndex(refreshIndex);
             refreshPreference.setSummary(refreshPreference.getEntries()[refreshIndex]);
-            refreshPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            refreshPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
@@ -261,9 +279,10 @@ public class SettingsActivity extends PreferenceActivity {
             final CheckBoxPreference autoSortPreference = (CheckBoxPreference) findPreference(Tools.SETTING_AUTOSORT);
             final boolean autoSort = Tools.autoSortEnabled();
             autoSortPreference.setChecked(autoSort);
-            autoSortPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            autoSortPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final boolean checked = (boolean) value;
                     preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply();
                     return true;
@@ -275,9 +294,10 @@ public class SettingsActivity extends PreferenceActivity {
             final CheckBoxPreference boldChangePreference = (CheckBoxPreference) findPreference(Tools.BOLD_CHANGE);
             final boolean bold = Tools.boldEnabled();
             boldChangePreference.setChecked(bold);
-            boldChangePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            boldChangePreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
+                    super.onPreferenceChange(preference,value);
                     final boolean checked = (boolean) value;
                     preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply();
                     return true;
@@ -288,9 +308,10 @@ public class SettingsActivity extends PreferenceActivity {
         {
             final TimePreference startTimePref = (TimePreference) findPreference(Tools.START_TIME);
             startTimePref.setSummary(preferences.getString(Tools.START_TIME, "09:30"));
-            startTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            startTimePref.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    super.onPreferenceChange(preference,newValue);
                     preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply();
                     startTimePref.setSummary(newValue.toString());
                     Toast.makeText(SettingsActivity.this, R.string.start_time_updated, Toast.LENGTH_SHORT).show();
@@ -302,9 +323,10 @@ public class SettingsActivity extends PreferenceActivity {
         {
             final TimePreference endTimePref = (TimePreference) findPreference(Tools.END_TIME);
             endTimePref.setSummary(preferences.getString(Tools.END_TIME, "16:30"));
-            endTimePref.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            endTimePref.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    super.onPreferenceChange(preference,newValue);
                     preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply();
                     endTimePref.setSummary(newValue.toString());
                     Toast.makeText(SettingsActivity.this, R.string.end_time_updated, Toast.LENGTH_SHORT).show();

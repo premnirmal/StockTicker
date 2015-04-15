@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
@@ -79,6 +80,7 @@ public class GraphActivity extends BaseActivity {
                 break;
         }
         findViewById(viewId).setEnabled(false);
+        Analytics.trackUI("GraphView", ticker.symbol);
     }
 
     @Override
@@ -217,6 +219,7 @@ public class GraphActivity extends BaseActivity {
                 range = Range.ONE_YEAR;
                 break;
         }
+        Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name());
         final ViewGroup parent = (ViewGroup) v.getParent();
         for (int i = 0; i < parent.getChildCount(); i++) {
             final View view = parent.getChildAt(i);

@@ -9,15 +9,12 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
 import com.tapjoy.Tapjoy;
 
 import javax.inject.Inject;
-
-import io.fabric.sdk.android.Fabric;
 
 public class ParanormalActivity extends BaseActivity {
 
@@ -30,7 +27,6 @@ public class ParanormalActivity extends BaseActivity {
         Tapjoy.connect(this, BuildConfig.KEY);
         Tapjoy.setDebugEnabled(BuildConfig.DEBUG);
         Injector.inject(this);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_paranormal);
         if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
             preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply();

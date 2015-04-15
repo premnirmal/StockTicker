@@ -48,7 +48,7 @@ public class AppModule {
     @Singleton
     SharedPreferences provideSharedPreferences(Context context) {
         final SharedPreferences sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
-        Tools.init(sharedPreferences);
+        Tools.init(context,sharedPreferences);
         return sharedPreferences;
     }
 }

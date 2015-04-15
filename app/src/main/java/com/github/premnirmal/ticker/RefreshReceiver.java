@@ -19,6 +19,7 @@ public class RefreshReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Injector.inject(this);
+        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "RefreshReceived", System.currentTimeMillis());
         stocksProvider.fetch();
     }
 }

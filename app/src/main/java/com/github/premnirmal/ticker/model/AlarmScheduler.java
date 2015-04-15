@@ -7,9 +7,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.SystemClock;
 
+import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.RefreshReceiver;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.widget.StockWidget;
@@ -76,15 +76,12 @@ final class AlarmScheduler {
     }
 
     static void scheduleUpdate(long msToNextAlarm, Context context, SharedPreferences preferences) {
+        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "UpdateScheduled", msToNextAlarm);
         final Intent updateReceiverIntent = new Intent(context, RefreshReceiver.class);
         updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         final PendingIntent pendingIntent = PendingIntent.getBroadcast(context.getApplicationContext(), 0, updateReceiverIntent, 0);
-        if (Build.VERSION.SDK_INT >= 19) {
-            alarmManager.setWindow(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, (5 * 60 * 1000), pendingIntent);
-        } else {
-            alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent);
-        }
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent);
     }
 
     static void sendBroadcast(Context context) {

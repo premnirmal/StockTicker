@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 
+import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.ParanormalActivity;
 import com.github.premnirmal.ticker.Tools;
@@ -31,6 +32,7 @@ public class StockWidget extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
+        Analytics.trackWidgetUpdate("onReceive");
         if (intent.getAction().equals(ACTION_NAME)) {
             context.startActivity(new Intent(context, ParanormalActivity.class));
         }
@@ -39,6 +41,7 @@ public class StockWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         Injector.inject(this);
+        Analytics.trackWidgetUpdate("onUpdate");
         for (final int widgetId : appWidgetIds) {
             final int min_width;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -82,6 +85,7 @@ public class StockWidget extends AppWidgetProvider {
             remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.widget_2x1);
         }
+        Analytics.trackWidgetSizeUpdate(min_width);
         updateWidget(context, appWidgetManager, appWidgetId, remoteViews);
         appWidgetManager.updateAppWidget(new ComponentName(context, StockWidget.class), remoteViews);
     }

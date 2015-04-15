@@ -1,12 +1,11 @@
 package com.github.premnirmal.ticker;
 
-import android.app.Application;
 import android.support.multidex.MultiDexApplication;
 
-import com.github.premnirmal.tickerwidget.BuildConfig;
+import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.tickerwidget.R;
-import com.tapjoy.Tapjoy;
 
+import io.fabric.sdk.android.Fabric;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 /**
@@ -18,6 +17,8 @@ public class StocksApp extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         Injector.init(this);
+        Fabric.with(this, new Crashlytics());
+        Analytics.init(this);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/Montserrat-Regular.otf")
                         .setFontAttrId(R.attr.fontPath)

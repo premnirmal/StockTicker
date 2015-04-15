@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker;
 
+import android.app.AlarmManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -38,12 +39,31 @@ public final class Tools {
 
     private static Tools INSTANCE;
 
-    static void init(SharedPreferences sharedPreferences) {
-        INSTANCE = new Tools(sharedPreferences);
+    static void init(Context context, SharedPreferences sharedPreferences) {
+        INSTANCE = new Tools(context, sharedPreferences);
+        INSTANCE.trackInitial(context);
     }
 
-    private Tools(SharedPreferences sharedPreferences) {
+    private void trackInitial(Context context) {
+        Analytics.trackIntialSettings(LAYOUT_TYPE, stockViewLayout() == 0 ? "Animated" : "Tabbed");
+        Analytics.trackIntialSettings(TEXT_COLOR, INSTANCE.sharedPreferences.getInt(TEXT_COLOR, 0) == 0 ? "White" : "Dark");
+        Analytics.trackIntialSettings(START_TIME, INSTANCE.sharedPreferences.getString(START_TIME, "09:30"));
+        Analytics.trackIntialSettings(END_TIME, INSTANCE.sharedPreferences.getString(END_TIME, "09:30"));
+        Analytics.trackIntialSettings(SETTING_AUTOSORT, Boolean.toString(autoSortEnabled()));
+        Analytics.trackIntialSettings(WIDGET_BG, INSTANCE.sharedPreferences
+                .getInt(WIDGET_BG, TRANSPARENT) + "");
+        Analytics.trackIntialSettings(FONT_SIZE, getFontSize(context) + "");
+        {
+            final int updatePref = sharedPreferences.getInt(Tools.UPDATE_INTERVAL, 1);
+            final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
+            Analytics.trackIntialSettings(UPDATE_INTERVAL, time + "");
+        }
+        Analytics.trackIntialSettings(BOLD_CHANGE, Boolean.toString(boldEnabled()));
+    }
+
+    private Tools(Context context, SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+
     }
 
     public static int stockViewLayout() {
