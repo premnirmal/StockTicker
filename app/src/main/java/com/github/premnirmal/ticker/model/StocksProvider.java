@@ -31,11 +31,8 @@ import java.util.TimeZone;
 
 import javax.inject.Singleton;
 
-import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -110,28 +107,30 @@ public class StocksProvider implements IStocksProvider {
 
     private void fetchLocal() {
         stockList = storage.readSynchronous();
-        removeGoogleStocks();
         if (stockList != null) {
             sortStockList();
             sendBroadcast();
+            removeGoogleStocks();
         } else {
             fetch();
         }
     }
 
     private void removeGoogleStocks() {
-        final Stock dummy1 = new Stock();
-        dummy1.symbol = "^DJI";
-        final Stock dummy2 = new Stock();
-        dummy2.symbol = "^IXIC";
-        final Stock dummy3 = new Stock();
-        dummy3.symbol = ".DJI";
-        final Stock dummy4 = new Stock();
-        dummy4.symbol = ".IXIC";
-        stockList.remove(dummy1);
-        stockList.remove(dummy2);
-        stockList.remove(dummy3);
-        stockList.remove(dummy4);
+        if(stockList != null) {
+            final Stock dummy1 = new Stock();
+            dummy1.symbol = "^DJI";
+            final Stock dummy2 = new Stock();
+            dummy2.symbol = "^IXIC";
+            final Stock dummy3 = new Stock();
+            dummy3.symbol = ".DJI";
+            final Stock dummy4 = new Stock();
+            dummy4.symbol = ".IXIC";
+            stockList.remove(dummy1);
+            stockList.remove(dummy2);
+            stockList.remove(dummy3);
+            stockList.remove(dummy4);
+        }
     }
 
     private void save() {
