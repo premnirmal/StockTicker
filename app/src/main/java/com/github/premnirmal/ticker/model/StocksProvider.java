@@ -33,6 +33,7 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -43,19 +44,18 @@ import rx.schedulers.Schedulers;
 @Singleton
 public class StocksProvider implements IStocksProvider {
 
-    public static final String STOCK_LIST = "STOCK_LIST";
+    private static final String STOCK_LIST = "STOCK_LIST";
     public static final String SORTED_STOCK_LIST = "SORTED_STOCK_LIST";
-    public static final String LAST_FETCHED = "LAST_FETCHED";
+    private static final String LAST_FETCHED = "LAST_FETCHED";
 
-    private static final String DEFAULT_STOCKS = "^SPY,^DJI,^IXIC,GOOG,AAPL,MSFT,YHOO,TSLA";
+    private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA";
 
     public static final List<String> GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC");
+    public static final List<String> _GOOGLE_SYMBOLS = Arrays.asList("^DJI", "^IXIC");
 
     private static final Set<String> DEFAULT_SET = new HashSet<String>() {
         {
             add("^SPY");
-            add("^DJI");
-            add("^IXIC");
             add("GOOG");
             add("AAPL");
             add("MSFT");
@@ -88,6 +88,7 @@ public class StocksProvider implements IStocksProvider {
                 newTickerList.add(ticker.replaceAll(".",""));
             }
         }
+        tickerList.removeAll(_GOOGLE_SYMBOLS); // removed google finance because it's causing lots of problems, returning 400s
         if (preferences.contains(STOCK_LIST)) { // for users using older versions
             final Set<String> deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET);
             preferences.edit().remove(STOCK_LIST).apply();
@@ -96,8 +97,9 @@ public class StocksProvider implements IStocksProvider {
                     tickerList.add(ticker);
                 }
             }
-            preferences.edit().putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).apply();
         }
+        final String tickerList = Tools.toCommaSeparatedString(this.tickerList);
+        preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply();
         lastFetched = preferences.getString(LAST_FETCHED, null);
         if (lastFetched == null) {
             fetch();
@@ -108,6 +110,7 @@ public class StocksProvider implements IStocksProvider {
 
     private void fetchLocal() {
         stockList = storage.readSynchronous();
+        removeGoogleStocks();
         if (stockList != null) {
             sortStockList();
             sendBroadcast();
@@ -116,12 +119,28 @@ public class StocksProvider implements IStocksProvider {
         }
     }
 
+    private void removeGoogleStocks() {
+        final Stock dummy1 = new Stock();
+        dummy1.symbol = "^DJI";
+        final Stock dummy2 = new Stock();
+        dummy2.symbol = "^IXIC";
+        final Stock dummy3 = new Stock();
+        dummy3.symbol = ".DJI";
+        final Stock dummy4 = new Stock();
+        dummy4.symbol = ".IXIC";
+        stockList.remove(dummy1);
+        stockList.remove(dummy2);
+        stockList.remove(dummy3);
+        stockList.remove(dummy4);
+    }
+
     private void save() {
         preferences.edit()
                 .remove(STOCK_LIST)
                 .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
                 .putString(LAST_FETCHED, lastFetched)
                 .apply();
+        removeGoogleStocks();
         storage.save(stockList)
                 .subscribe(new Subscriber<Boolean>() {
                     @Override
@@ -146,16 +165,10 @@ public class StocksProvider implements IStocksProvider {
     @Override
     public void fetch() {
         if (Tools.isNetworkOnline(context)) {
-            final Observable<String> allStocks = api.getStocks(tickerList).map(new Func1<List<Stock>, String>() {
-                @Override
-                public String call(List<Stock> stocks) {
-                    stockList = stocks;
-                    return api.lastFetched;
-                }
-            });
-            allStocks.observeOn(AndroidSchedulers.mainThread())
+            api.getStocks(tickerList)
+                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
-                    .subscribe(new Subscriber<String>() {
+                    .subscribe(new Subscriber<List<Stock>>() {
                         @Override
                         public void onCompleted() {
                         }
@@ -168,10 +181,15 @@ public class StocksProvider implements IStocksProvider {
                         }
 
                         @Override
-                        public void onNext(String fetched) {
-                            lastFetched = fetched;
-                            save();
-                            sendBroadcast();
+                        public void onNext(List<Stock> stocks) {
+                            if(stocks == null || stocks.isEmpty()) {
+                                onError(new NullPointerException("stocks == null"));
+                            } else {
+                                stockList = stocks;
+                                lastFetched = api.lastFetched;
+                                save();
+                                sendBroadcast();
+                            }
                         }
                     });
         } else {

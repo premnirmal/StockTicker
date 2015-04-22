@@ -85,7 +85,7 @@ public class StockWidget extends AppWidgetProvider {
             remoteViews = new RemoteViews(context.getPackageName(),
                     R.layout.widget_2x1);
         }
-        Analytics.trackWidgetSizeUpdate(min_width);
+        Analytics.trackWidgetSizeUpdate(min_width + "px");
         updateWidget(context, appWidgetManager, appWidgetId, remoteViews);
         appWidgetManager.updateAppWidget(new ComponentName(context, StockWidget.class), remoteViews);
     }

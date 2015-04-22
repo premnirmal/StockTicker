@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 
+import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.tickerwidget.R;
 
 import java.io.File;
@@ -59,6 +60,7 @@ public final class Tools {
             Analytics.trackIntialSettings(UPDATE_INTERVAL, time + "");
         }
         Analytics.trackIntialSettings(BOLD_CHANGE, Boolean.toString(boldEnabled()));
+        final String tickerListVars = INSTANCE.sharedPreferences.getString(StocksProvider.SORTED_STOCK_LIST, "EMPTY!");
     }
 
     private Tools(Context context, SharedPreferences sharedPreferences) {

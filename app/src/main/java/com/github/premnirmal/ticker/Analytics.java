@@ -43,12 +43,11 @@ public class Analytics {
         INSTANCE = new Analytics(context);
     }
 
-    public static void trackUpdate(String action, String label, long value) {
+    public static void trackUpdate(String action, String label) {
         INSTANCE.tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("WidgetStatus")
                 .setAction(action)
                 .setLabel(label)
-                .setValue(value)
                 .build());
     }
 
@@ -59,12 +58,11 @@ public class Analytics {
                 .build());
     }
 
-    public static void trackWidgetSizeUpdate(long value) {
+    public static void trackWidgetSizeUpdate(String value) {
         INSTANCE.tracker.send(new HitBuilders.EventBuilder()
                 .setCategory("WidgetStatus")
                 .setAction("onOptionsChanged")
-                .setLabel("Size")
-                .setValue(value)
+                .setLabel(value)
                 .build());
     }
 

@@ -43,8 +43,8 @@ class StockConverter {
         final List<String> newSymbols = new ArrayList<>();
         for (String symbol : symbols) {
             newSymbols.add(symbol
-                    .replace("^DJI", ".DJI")
-                    .replace("^IXIC", ".IXIC")
+//                    .replace("^DJI", ".DJI")
+//                    .replace("^IXIC", ".IXIC")
                     .replace("^","") // for symbols like ^SPY for yahoo
             );
 

@@ -51,9 +51,9 @@ public class ApiModule {
 
     @Provides
     @Singleton
-    StocksApi provideStocksApi(YahooFinance yahooFinance, GoogleFinance googleFinance) {
+    StocksApi provideStocksApi(YahooFinance yahooFinance) {
         if (stocksApi == null) {
-            stocksApi = new StocksApi(yahooFinance, googleFinance);
+            stocksApi = new StocksApi(yahooFinance);
         }
         return stocksApi;
     }
@@ -68,16 +68,16 @@ public class ApiModule {
         return yahooFinance;
     }
 
-    @Provides
-    @Singleton
-    GoogleFinance provideGoogleFinance(Context context) {
-        final RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(context.getString(R.string.google_endpoint))
-                .setConverter(new GStockConverter())
-                .build();
-        final GoogleFinance googleFinance = restAdapter.create(GoogleFinance.class);
-        return googleFinance;
-    }
+//    @Provides
+//    @Singleton
+//    GoogleFinance provideGoogleFinance(Context context) {
+//        final RestAdapter restAdapter = new RestAdapter.Builder()
+//                .setEndpoint(context.getString(R.string.google_endpoint))
+//                .setConverter(new GStockConverter())
+//                .build();
+//        final GoogleFinance googleFinance = restAdapter.create(GoogleFinance.class);
+//        return googleFinance;
+//    }
 
     @Provides
     @Singleton
