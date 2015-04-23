@@ -76,7 +76,7 @@ final class AlarmScheduler {
     }
 
     static void scheduleUpdate(long msToNextAlarm, Context context, SharedPreferences preferences) {
-        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "UpdateScheduled for " + (msToNextAlarm/(1000*60)) + " minutes");
+        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "UpdateScheduled for " + ((msToNextAlarm - SystemClock.elapsedRealtime())/(1000*60)) + " minutes");
         final Intent updateReceiverIntent = new Intent(context, RefreshReceiver.class);
         updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
