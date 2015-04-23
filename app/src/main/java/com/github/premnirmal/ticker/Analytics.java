@@ -1,9 +1,7 @@
 package com.github.premnirmal.ticker;
 
 import android.content.Context;
-import android.provider.Settings;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -29,14 +27,6 @@ public class Analytics {
             googleAnalytics.getLogger().setLogLevel(Logger.LogLevel.VERBOSE);
         }
         tracker = googleAnalytics.newTracker(R.xml.event_tracker);
-        final String android_id = Settings.Secure.getString(context.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
-        if (android_id != null) {
-            tracker.set("&uid", android_id);
-        } else {
-            Crashlytics.log("Android_ID is null!");
-            tracker.set("&uid", "EMPTY");
-        }
     }
 
     static void init(Context context) {
