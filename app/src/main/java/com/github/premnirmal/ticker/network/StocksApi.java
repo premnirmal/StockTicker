@@ -1,36 +1,97 @@
 package com.github.premnirmal.ticker.network;
 
+import com.crashlytics.android.Crashlytics;
+import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
 
-import retrofit.http.GET;
+import java.util.ArrayList;
+import java.util.List;
+
 import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * Created by premnirmal on 12/21/14.
  */
-public interface StocksApi {
+public class StocksApi {
 
+    final YahooFinance yahooApi;
+//    final GoogleFinance googleApi;
 
-//    "http://query.yahooapis.com/v1/public/yql?q=select%20%2a%20from%20yahoo.finance.quotes" +
-//            "%20where%20symbol%20in%20%28%22YHOO%22%2C%22AAPL%22%2C%22GOOG%22%2C%22MSFT%22%29%0A%09%09" +
-//            "&env=http%3A%2F%2Fdatatables.org%2Falltables.env&format=json"
+    public String lastFetched;
 
+    public StocksApi(YahooFinance yahooApi) {
+        this.yahooApi = yahooApi;
+//        this.googleApi = googleApi;
+    }
 
-    /**
-     * Returns a quote that provides a list of {@link com.github.premnirmal.ticker.network.Stock}s
-     *
-     * @param tickers of the stocks, must be comma separated
-     * @return
-     */
-    @GET("/yql?env=store://datatables.org/alltableswithkeys&format=json")
-    Observable<StockQuery> getStocks(@retrofit.http.Query(value = "q", encodeValue = false) String query);
+    public Observable<StockQuery> getYahooFinanceStocks(String query) {
+        return yahooApi.getStocks(query);
+    }
 
+//    public Observable<List<Stock>> getGoogleFinanceStocks(String query) {
+//        return googleApi.getStock(query)
+//                .map(new Func1<List<GStock>, List<Stock>>() {
+//                    @Override
+//                    public List<Stock> call(List<GStock> gStocks) {
+//                        final List<Stock> stocks = new ArrayList<Stock>();
+//                        for (GStock gStock : gStocks) {
+//                            stocks.add(StockConverter.convert(gStock));
+//                        }
+//                        final List<Stock> updatedStocks = StockConverter.convertResponseQuotes(stocks);
+//                        return updatedStocks;
+//                    }
+//                }).onErrorResumeNext(new Func1<Throwable, Observable<? extends List<Stock>>>() {
+//                    @Override
+//                    public Observable<? extends List<Stock>> call(Throwable throwable) {
+//                        Crashlytics.logException(new RuntimeException("Encountered onErrorResumeNext", throwable));
+//                        return Observable.empty();
+//                    }
+//                });
+//    }
 
-//    https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where
-// %20symbol%20%3D%20%22YHOO%22%20and%20startDate%20%3D%20%222009-09-11%22%20and%20endDate%20%3D%20%222010-03-10%22
-// &format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=
+    public Observable<HistoricalData> getHistory(String query) {
+        return yahooApi.getHistory(query);
+    }
 
-    @GET("/yql?env=store://datatables.org/alltableswithkeys&format=json")
-    Observable<HistoricalData> getHistory(@retrofit.http.Query(value = "q", encodeValue = false) String query);
+    public Observable<List<Stock>> getStocks(List<String> tickerList) {
+        final List<String> symbols = StockConverter.convertRequestSymbols(tickerList);
+        final List<String> yahooSymbols = new ArrayList<>(symbols);
+//        final List<String> googleSymbols = new ArrayList<>(symbols);
+        yahooSymbols.removeAll(StocksProvider.GOOGLE_SYMBOLS);
+        yahooSymbols.removeAll(StocksProvider._GOOGLE_SYMBOLS);
+//        googleSymbols.retainAll(StocksProvider.GOOGLE_SYMBOLS);
+
+//        final Observable<List<Stock>> googleObservable = getGoogleFinanceStocks(QueryCreator.googleStocksQuery(googleSymbols.toArray()));
+        final Observable<List<Stock>> yahooObservable = getYahooFinanceStocks(QueryCreator.buildStocksQuery(yahooSymbols.toArray()))
+                .map(new Func1<StockQuery, List<Stock>>() {
+                    @Override
+                    public List<Stock> call(StockQuery stockQuery) {
+                        if (stockQuery == null) {
+                            return new ArrayList<>();
+                        } else {
+                            final Query query = stockQuery.query;
+                            lastFetched = query.created;
+                            return query.results.quote;
+                        }
+                    }
+                }).onErrorResumeNext(new Func1<Throwable, Observable<? extends List<Stock>>>() {
+                    @Override
+                    public Observable<? extends List<Stock>> call(Throwable throwable) {
+                        Crashlytics.logException(new RuntimeException("Encountered onErrorResumeNext for yahooFinance", throwable));
+                        return Observable.empty();
+                    }
+                });
+
+//        final Observable<List<Stock>> allStocks = yahooObservable.zipWith(googleObservable, new Func2<List<Stock>, List<Stock>, List<Stock>>() {
+//            @Override
+//            public List<Stock> call(List<Stock> stocks, List<Stock> stocks2) {
+//                stocks.addAll(stocks2);
+//                return stocks;
+//            }
+//        });
+
+        return yahooObservable;
+    }
 
 }

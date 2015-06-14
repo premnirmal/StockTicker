@@ -9,14 +9,11 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
-import com.crashlytics.android.Crashlytics;
 import com.github.premnirmal.ticker.widget.StockWidget;
 import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Inject;
-
-import io.fabric.sdk.android.Fabric;
 
 public class ParanormalActivity extends BaseActivity {
 
@@ -27,12 +24,10 @@ public class ParanormalActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
-        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_paranormal);
         if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
             preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply();
             final StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("What\'s new in Version " + BuildConfig.VERSION_NAME + ":\n\n");
             final String[] whatsNew = getResources().getStringArray(R.array.whats_new);
             for (int i = 0; i < whatsNew.length; i++) {
                 stringBuilder.append("\t");
@@ -42,6 +37,7 @@ public class ParanormalActivity extends BaseActivity {
                 }
             }
             new AlertDialog.Builder(this)
+                    .setTitle("What\'s new in Version " + BuildConfig.VERSION_NAME)
                     .setMessage(stringBuilder.toString())
                     .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                         @Override

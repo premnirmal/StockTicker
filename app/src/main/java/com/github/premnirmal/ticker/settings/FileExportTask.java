@@ -1,7 +1,10 @@
 package com.github.premnirmal.ticker.settings;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 
+import com.crashlytics.android.Crashlytics;
+import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.Tools;
 
 import java.io.File;
@@ -29,10 +32,13 @@ class FileExportTask extends AsyncTask<Object, Void, String> {
             fileOutputStream.flush();
             fileOutputStream.close();
         } catch (FileNotFoundException e) {
+            Crashlytics.logException(new RuntimeException(e));
             return null;
         } catch (IOException e) {
+            Crashlytics.logException(new RuntimeException(e));
             return null;
         }
+        Analytics.trackSettingsChange("EXPORT", TextUtils.join(",", tickers));
         return file.getPath();
     }
 }

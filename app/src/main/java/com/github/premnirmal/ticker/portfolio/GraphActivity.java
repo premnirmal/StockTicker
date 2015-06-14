@@ -1,12 +1,12 @@
 package com.github.premnirmal.ticker.portfolio;
 
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.BaseActivity;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
@@ -80,6 +80,7 @@ public class GraphActivity extends BaseActivity {
                 break;
         }
         findViewById(viewId).setEnabled(false);
+        Analytics.trackUI("GraphView", ticker.symbol);
     }
 
     @Override
@@ -153,12 +154,12 @@ public class GraphActivity extends BaseActivity {
 
         final PointsGraphSeries disposableSeries = new PointsGraphSeries(new DataPointInterface[]{dataPoints[dataPoints.length - 1]});
         graphView.addSeries(disposableSeries);
-        disposableSeries.setColor(Color.GREEN);
+        disposableSeries.setColor(getResources().getColor(R.color.spicy_salmon));
         disposableSeries.setShape(PointsGraphSeries.Shape.POINT);
         disposableSeries.setSize(10f);
 
         series.setDrawBackground(true);
-        series.setBackgroundColor(getResources().getColor(R.color.maroon));
+        series.setBackgroundColor(getResources().getColor(R.color.color_accent));
         series.setOnDataPointTapListener(new OnDataPointTapListener() {
             @Override
             public void onTap(Series series, DataPointInterface dataPointInterface) {
@@ -218,6 +219,7 @@ public class GraphActivity extends BaseActivity {
                 range = Range.ONE_YEAR;
                 break;
         }
+        Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name());
         final ViewGroup parent = (ViewGroup) v.getParent();
         for (int i = 0; i < parent.getChildCount(); i++) {
             final View view = parent.getChildAt(i);

@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
         app:navigationContentDescription="@string/abc_action_bar_up_description"
-        android:background="?attr/colorAccent"
+        android:background="@color/color_primary"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:title="@string/action_Settings"
         />

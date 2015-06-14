@@ -4,18 +4,6 @@
     tools:context=".ParanormalActivity">
 
     <item
-        android:id="@+id/action_add_ticker"
-        android:title="@string/action_add"
-        android:icon="@drawable/ic_action_content_new"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/action_update"
-        android:title="@string/action_update"
-        android:icon="@drawable/ic_action_refresh"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_rearrange"
         android:title="@string/action_rearrage"
         app:showAsAction="never" />

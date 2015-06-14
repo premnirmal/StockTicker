@@ -6,6 +6,9 @@ import android.content.Intent;
 
 import com.github.premnirmal.ticker.model.IStocksProvider;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+
 import javax.inject.Inject;
 
 /**
@@ -19,6 +22,7 @@ public class RefreshReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Injector.inject(this);
+        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "RefreshReceived on " + DateTimeFormat.mediumDateTime().print(DateTime.now()));
         stocksProvider.fetch();
     }
 }

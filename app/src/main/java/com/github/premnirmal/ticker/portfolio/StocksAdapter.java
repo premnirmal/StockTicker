@@ -105,9 +105,9 @@ class StocksAdapter extends BaseAdapter {
 
         final int color;
         if (change >= 0) {
-            color = Color.GREEN;
+            color = context.getResources().getColor(R.color.positive_green);
         } else {
-            color = Color.RED;
+            color = context.getResources().getColor(R.color.negative_red);
         }
 
         changeInPercent.setTextColor(color);

@@ -1,32 +1,17 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:key="IMPORT"
-        android:title="@string/action_import"
-        android:selectable="true"
-        android:summary="@string/import_desc"/>
-
-    <Preference
-        android:key="EXPORT"
-        android:title="@string/action_export"
-        android:selectable="true"
-        android:summary="@string/export_desc"/>
+    <CheckBoxPreference
+        android:key="SETTING_AUTOSORT"
+        android:title="@string/auto_sort"
+        android:summary="@string/auto_sort_desc"
+        android:defaultValue="true" />
 
     <ListPreference
-        android:key="com.github.premnirmal.ticker.textsize"
-        android:title="@string/choose_text_size"
+        android:key="UPDATE_INTERVAL"
+        android:title="@string/update_interval"
         android:defaultValue="1"
-        android:entries="@array/font_sizes"
-        android:entryValues="@array/font_sizes_values"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
-
-    <ListPreference
-        android:key="WIDGET_BG"
-        android:title="@string/bg"
-        android:defaultValue="0"
-        android:entries="@array/backgrounds"
-        android:entryValues="@array/backgrounds_values"
+        android:entries="@array/sync_periods"
+        android:entryValues="@array/sync_periods_values"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
@@ -41,18 +26,61 @@
         android:defaultValue="16:30" />
 
     <ListPreference
-        android:key="UPDATE_INTERVAL"
-        android:title="@string/update_interval"
+        android:key="LAYOUT_TYPE"
+        android:title="@string/layout_type"
+        android:defaultValue="0"
+        android:entries="@array/layout_types"
+        android:entryValues="@array/layout_types_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="WIDGET_BG"
+        android:title="@string/bg"
+        android:defaultValue="0"
+        android:entries="@array/backgrounds"
+        android:entryValues="@array/backgrounds_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="TEXT_COLOR"
+        android:title="@string/text_color"
+        android:defaultValue="0"
+        android:entries="@array/text_colors"
+        android:entryValues="@array/backgrounds_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <ListPreference
+        android:key="com.github.premnirmal.ticker.textsize"
+        android:title="@string/choose_text_size"
         android:defaultValue="1"
-        android:entries="@array/sync_periods"
-        android:entryValues="@array/sync_periods_values"
+        android:entries="@array/font_sizes"
+        android:entryValues="@array/font_sizes_values"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
     <CheckBoxPreference
-        android:key="SETTING_AUTOSORT"
-        android:title="@string/auto_sort"
-        android:summary="@string/auto_sort_desc"
-        android:defaultValue="true" />
+        android:key="BOLD_CHANGE"
+        android:title="@string/bold_change"
+        android:summary="@string/bold_change_desc"
+        android:defaultValue="false" />
 
+    <Preference
+        android:key="SHARE"
+        android:title="@string/action_share"
+        android:selectable="true"/>
+
+    <Preference
+        android:key="IMPORT"
+        android:title="@string/action_import"
+        android:selectable="true"
+        android:summary="@string/import_desc"/>
+
+    <Preference
+        android:key="EXPORT"
+        android:title="@string/action_export"
+        android:selectable="true"
+        android:summary="@string/export_desc"/>
 </PreferenceScreen>

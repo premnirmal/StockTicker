@@ -20,12 +20,31 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.1"
 
+    final File versionFile = file("file:version.properties")
+    final Properties versionProps = new Properties();
+    versionProps.load(new FileInputStream(versionFile));
+    def final code = versionProps.getProperty('versionCode').toInteger();
+    def final name = versionProps.getProperty('versionName').toString();
+    def final appIdBase = 'com.github.premnirmal.tickerwidget'
     defaultConfig {
-        applicationId "com.github.premnirmal.tickerwidget"
+        applicationId appIdBase
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 48
-        versionName "5.30.34"
+
+        versionCode = code
+        versionName = name
+
+        multiDexEnabled true
+
+        final File propsFile = file("file:keystore.properties");
+        if (propsFile.exists()) {
+            final Properties props = new Properties();
+            props.load(new FileInputStream(propsFile));
+            def final akey = props.getProperty('analyticsKey')
+            buildConfigField "String", "KEY", akey
+        } else {
+            buildConfigField "String", "KEY", ""
+        }
     }
 
     signingConfigs {
@@ -39,9 +58,16 @@ android {
                 storePassword props.getProperty('key.store.password')
                 keyPassword props.getProperty('key.alias.password')
                 keyAlias props.getProperty('key.alias.alias')
-            } else {
-                throw new GradleScriptException("cannot find keystore.properties file");
             }
+        }
+    }
+
+    productFlavors {
+        dev {
+            applicationId = appIdBase + ".dev"
+        }
+        prod {
+            applicationId = appIdBase
         }
     }
 
@@ -64,7 +90,7 @@ dependencies {
     compile 'com.squareup.retrofit:retrofit:1.8.+'
     compile 'io.reactivex:rxandroid:0.24.+'
     compile 'joda-time:joda-time:2.6'
-    compile 'com.github.developerpaul123.filepickerlibrary:library:1.+'
+    compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
     compile 'com.jjoe64:graphview:4.0.0'
     compile 'com.android.support:support-v4:21.0.2'
     compile 'uk.co.chrisjenx:calligraphy:2.0.1'
@@ -74,4 +100,7 @@ dependencies {
     }
     compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
     compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
+
+    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.google.android.gms:play-services:7.0.0'
 }

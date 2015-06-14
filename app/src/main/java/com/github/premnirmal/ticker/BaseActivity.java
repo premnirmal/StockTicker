@@ -31,11 +31,8 @@ public abstract class BaseActivity extends ActionBarActivity {
     private static final List<Integer> colorResources = new ArrayList<Integer>() {
         {
             add(R.color.sea);
-            add(R.color.turqoise);
-            add(R.color.salmon);
+            add(R.color.color_primary);
             add(R.color.spicy_salmon);
-            add(R.color.seagull);
-            add(R.color.dead_seagull);
         }
     };
 
@@ -95,7 +92,6 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         lifecycleSubject.onNext(LifecycleEvent.RESUME);
-        setRandomActionBarColor();
     }
 
     protected void setRandomActionBarColor() {

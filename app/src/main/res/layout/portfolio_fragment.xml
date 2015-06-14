@@ -1,24 +1,44 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        tools:text="Last updated: 15:00"
         android:id="@+id/last_updated"
         android:gravity="center"
         android:layout_margin="5dp" />
 
-    <GridView
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_container"
+        android:layout_below="@id/last_updated"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="2"
-        android:paddingLeft="@dimen/list_spacing"
-        android:paddingRight="@dimen/list_spacing"
-        android:horizontalSpacing="@dimen/list_spacing"
-        android:verticalSpacing="@dimen/list_spacing"
-        android:id="@+id/stockList" />
+        android:layout_height="match_parent">
 
-</LinearLayout>
+        <GridView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:numColumns="2"
+            android:paddingLeft="@dimen/list_spacing"
+            android:paddingRight="@dimen/list_spacing"
+            android:horizontalSpacing="@dimen/list_spacing"
+            android:verticalSpacing="@dimen/list_spacing"
+            android:id="@+id/stockList" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="20dp"
+        android:id="@+id/add_ticker_button"
+        android:background="@drawable/round_button_bg"
+        android:src="@drawable/ic_action_content_new"
+        android:layout_gravity="center"
+        android:duplicateParentState="true" />
+
+</RelativeLayout>

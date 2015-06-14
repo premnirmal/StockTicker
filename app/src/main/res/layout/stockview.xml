@@ -3,10 +3,8 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="3dp"
-    android:paddingBottom="3dp"
+    android:paddingLeft="3dp"
+    android:paddingRight="3dp"
     android:id="@+id/row"
     >
 
@@ -16,7 +14,9 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:textSize="12sp"
+        android:layout_marginRight="2dp"
         android:singleLine="true"
+        android:ellipsize="end"
         android:textStyle="bold"
         android:id="@+id/ticker" />
 
@@ -27,6 +27,7 @@
         android:textColor="@android:color/white"
         android:textSize="12sp"
         android:singleLine="true"
+        android:ellipsize="none"
         android:id="@+id/totalValue" />
 
     <ViewFlipper
@@ -40,18 +41,20 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/holo_green_dark"
             android:textSize="12sp"
             android:singleLine="true"
+            android:ellipsize="none"
             android:id="@+id/changePercent"
             android:gravity="end" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
+            android:textColor="@android:color/holo_green_dark"
             android:textSize="12sp"
             android:singleLine="true"
+            android:ellipsize="none"
             android:id="@+id/changeValue"
             android:gravity="end" />
 
