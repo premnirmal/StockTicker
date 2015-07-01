@@ -43,7 +43,7 @@ android {
             def final akey = props.getProperty('analyticsKey')
             buildConfigField "String", "KEY", akey
         } else {
-            buildConfigField "String", "KEY", ""
+            buildConfigField "String", "KEY", "\"\""
         }
     }
 
