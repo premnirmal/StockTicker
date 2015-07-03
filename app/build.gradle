@@ -35,16 +35,6 @@ android {
         versionName = name
 
         multiDexEnabled true
-
-        final File propsFile = file("file:keystore.properties");
-        if (propsFile.exists()) {
-            final Properties props = new Properties();
-            props.load(new FileInputStream(propsFile));
-            def final akey = props.getProperty('analyticsKey')
-            buildConfigField "String", "KEY", akey
-        } else {
-            buildConfigField "String", "KEY", "\"\""
-        }
     }
 
     signingConfigs {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>A new app icon!</item>
+        <item>Now you can add positions!</item>
         <item>If your portfolio doesn\'t update, go into your devices Settings -> apps -> StockTicker, and select Clear Data.</item>
     </string-array>
 </resources>

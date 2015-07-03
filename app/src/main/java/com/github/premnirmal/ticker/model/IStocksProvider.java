@@ -22,6 +22,8 @@ public interface IStocksProvider {
 
     Collection<Stock> rearrange(List<String> tickers);
 
+    Stock getStock(String ticker);
+
     List<String> getTickers();
 
     String lastFetched();

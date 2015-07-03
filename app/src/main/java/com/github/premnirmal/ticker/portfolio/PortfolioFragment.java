@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.portfolio;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -133,7 +134,7 @@ public class PortfolioFragment extends BaseFragment {
 
     private void update() {
         final FragmentActivity activity = getActivity();
-        if(activity != null) {
+        if (activity != null) {
             if (stocksProvider.getStocks() == null) {
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -174,9 +175,21 @@ public class PortfolioFragment extends BaseFragment {
                 adapterView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                        final Intent intent = new Intent(activity, GraphActivity.class);
-                        intent.putExtra(GraphActivity.GRAPH_DATA, stocksAdapter.getItem(position));
-                        startActivity(intent);
+                        new AlertDialog.Builder(getActivity())
+                                .setItems(R.array.graph_or_positions, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        final Intent intent;
+                                        if (which == 0) {
+                                            intent = new Intent(activity, GraphActivity.class);
+                                            intent.putExtra(GraphActivity.GRAPH_DATA, stocksAdapter.getItem(position));
+                                        } else {
+                                            intent = new Intent(activity, EditPositionActivity.class);
+                                            intent.putExtra(EditPositionActivity.TICKER, stocksAdapter.getItem(position).symbol);
+                                        }
+                                        getActivity().startActivity(intent);
+                                    }
+                                }).show();
                     }
                 });
 

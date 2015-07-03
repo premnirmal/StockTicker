@@ -115,6 +115,14 @@ public abstract class BaseActivity extends ActionBarActivity {
                 .show();
     }
 
+    protected final AlertDialog showDialog(String message, DialogInterface.OnClickListener positiveOnClick, DialogInterface.OnClickListener negativeOnClick) {
+        return new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", positiveOnClick)
+                .setNegativeButton("Cancel", negativeOnClick)
+                .show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

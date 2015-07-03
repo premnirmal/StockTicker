@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="15dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tickerName"
+        android:textStyle="bold"
+        android:textSize="@dimen/xlarge_text"
+        tools:text="GOOG"
+        android:gravity="center" />
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.4"
+            android:layout_height="wrap_content"
+            android:text="@string/number_of_shares"
+            android:layout_gravity="bottom" />
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:layout_height="wrap_content"
+            android:id="@+id/shares"
+            android:textAlignment="textEnd"
+            android:gravity="end"
+            android:inputType="numberDecimal"
+            android:nextFocusForward="@+id/price"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.4"
+            android:layout_height="wrap_content"
+            android:text="@string/Price"
+            android:layout_gravity="bottom" />
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="0.6"
+            android:layout_height="wrap_content"
+            android:id="@id/price"
+            android:layout_gravity="right"
+            android:textAlignment="textEnd"
+            android:gravity="end"
+            android:inputType="numberDecimal" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginRight="10dp"
+            >
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_gravity="right"
+                android:text="@string/done"
+                android:id="@+id/doneButton" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginLeft="10dp">
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_gravity="left"
+                android:text="@string/skip"
+                android:id="@+id/skipButton" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

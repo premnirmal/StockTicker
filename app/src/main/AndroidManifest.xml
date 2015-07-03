@@ -35,6 +35,14 @@
             android:label="@string/add_ticker"
             android:screenOrientation="portrait" />
         <activity
+            android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
+            android:label="@string/add_position"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.github.premnirmal.ticker.portfolio.EditPositionActivity"
+            android:label="@string/edit_position"
+            android:screenOrientation="portrait" />
+        <activity
             android:name="com.github.premnirmal.ticker.portfolio.GraphActivity"
             android:label="@string/portfolio"
             android:theme="@style/GraphActivityTheme"

@@ -10,6 +10,8 @@ import com.github.premnirmal.ticker.model.HistoryProvider;
 import com.github.premnirmal.ticker.model.IHistoryProvider;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.model.StocksProvider;
+import com.github.premnirmal.ticker.portfolio.AddPositionActivity;
+import com.github.premnirmal.ticker.portfolio.EditPositionActivity;
 import com.github.premnirmal.ticker.portfolio.GraphActivity;
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment;
 import com.github.premnirmal.ticker.portfolio.RearrangeActivity;
@@ -39,7 +41,9 @@ import retrofit.RestAdapter;
                 RefreshReceiver.class,
                 GraphActivity.class,
                 PortfolioFragment.class,
-                RearrangeActivity.class
+                RearrangeActivity.class,
+                AddPositionActivity.class,
+                EditPositionActivity.class
         },
         complete = false,
         library = true

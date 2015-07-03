@@ -82,9 +82,9 @@ public class StocksProvider implements IStocksProvider {
         final String tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS);
         tickerList = new ArrayList<>(Arrays.asList(tickerListVars.split(",")));
         final List<String> newTickerList = new ArrayList<>();
-        for(String ticker : tickerList) {
-            if(ticker!= null) {
-                newTickerList.add(ticker.replaceAll(".",""));
+        for (String ticker : tickerList) {
+            if (ticker != null) {
+                newTickerList.add(ticker.replaceAll(".", ""));
             }
         }
         tickerList.removeAll(_GOOGLE_SYMBOLS); // removed google finance because it's causing lots of problems, returning 400s
@@ -99,9 +99,6 @@ public class StocksProvider implements IStocksProvider {
         }
 
         positionList = Tools.stringToPositions(preferences.getString(POSITION_LIST, ""));
-        for (Stock pos : positionList) {
-            tickerList.add(pos.symbol);
-        }
 
         final String tickerList = Tools.toCommaSeparatedString(this.tickerList);
         preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply();
@@ -125,7 +122,7 @@ public class StocksProvider implements IStocksProvider {
     }
 
     private void removeGoogleStocks() {
-        if(stockList != null) {
+        if (stockList != null) {
             final Stock dummy1 = new Stock();
             dummy1.symbol = "^DJI";
             final Stock dummy2 = new Stock();
@@ -190,7 +187,7 @@ public class StocksProvider implements IStocksProvider {
 
                         @Override
                         public void onNext(List<Stock> stocks) {
-                            if(stocks == null || stocks.isEmpty()) {
+                            if (stocks == null || stocks.isEmpty()) {
                                 onError(new NullPointerException("stocks == null"));
                             } else {
                                 stockList = stocks;
@@ -237,16 +234,26 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public Collection<String> addPosition(String ticker, float shares, float price) {
-        if (tickerList.contains(ticker)) {
-            return tickerList;
+        Stock position = getStock(ticker);
+        if (position == null) {
+            position = new Stock();
+        } else {
+
         }
-        Stock position = new Stock();
+        if(!ticker.contains(ticker)) {
+            tickerList.add(ticker);
+        }
         position.symbol = ticker;
         position.IsPosition = true;
         position.PositionPrice = price;
         position.PositionShares = shares;
+        positionList.remove(position);
         positionList.add(position);
-        return addStock(ticker);
+        stockList.remove(position);
+        stockList.add(position);
+        save();
+        fetch();
+        return tickerList;
     }
 
     @Override
@@ -322,6 +329,18 @@ public class StocksProvider implements IStocksProvider {
         save();
         sendBroadcast();
         return getStocks();
+    }
+
+    @Override
+    public Stock getStock(String ticker) {
+        final Stock dummy = new Stock();
+        dummy.symbol = ticker;
+        final int index = stockList.indexOf(dummy);
+        if (index >= 0) {
+            final Stock stock = stockList.get(index);
+            return stock;
+        }
+        return null;
     }
 
     @Override

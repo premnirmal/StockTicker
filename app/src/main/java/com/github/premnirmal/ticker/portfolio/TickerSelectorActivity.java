@@ -1,12 +1,12 @@
 package com.github.premnirmal.ticker.portfolio;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -46,15 +46,6 @@ public class TickerSelectorActivity extends BaseActivity {
     Subscription subscription;
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Injector.inject(this);
@@ -64,9 +55,6 @@ public class TickerSelectorActivity extends BaseActivity {
 
         final EditText searchView = (EditText) findViewById(R.id.query);
         final ListView listView = (ListView) findViewById(R.id.resultList);
-        final CheckBox isPositionView = (CheckBox) findViewById(R.id.isPosition);
-        final EditText priceView = (EditText) findViewById(R.id.price);
-        final EditText sharesView = (EditText) findViewById(R.id.shares);
 
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -127,19 +115,27 @@ public class TickerSelectorActivity extends BaseActivity {
                 final SuggestionsAdapter suggestionsAdapter = (SuggestionsAdapter) parent.getAdapter();
                 final Suggestion suggestion = suggestionsAdapter.getItem(position);
                 final String ticker = suggestion.symbol;
-
-                float price;
-                float shares;
-                if (isPositionView.isChecked()) {
-                    price = Float.parseFloat(priceView.getText().toString());
-                    shares = Float.parseFloat(sharesView.getText().toString());
-                    stocksProvider.addPosition(ticker,shares,price);
-                } else {
+                if (!stocksProvider.getTickers().contains(ticker)) {
                     stocksProvider.addStock(ticker);
+                    showDialog(ticker + " added to list. Do you want to add positions?", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            final Intent intent = new Intent(TickerSelectorActivity.this, AddPositionActivity.class);
+                            intent.putExtra(EditPositionActivity.TICKER, ticker);
+                            startActivity(intent);
+                        }
+                    }, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    searchView.setText("");
+                    listView.setAdapter(new SuggestionsAdapter(new ArrayList<Suggestion>()));
+                } else {
+                    showDialog(ticker + " is already in your portfolio");
                 }
-                Toast.makeText(TickerSelectorActivity.this, ticker + " added to list", Toast.LENGTH_SHORT).show();
-                searchView.setText("");
-                listView.setAdapter(new SuggestionsAdapter(new ArrayList<Suggestion>()));
+
             }
         });
 

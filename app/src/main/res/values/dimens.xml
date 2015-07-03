@@ -18,6 +18,7 @@
 
     <dimen name="small_text">10sp</dimen>
     <dimen name="large_text">16sp</dimen>
+    <dimen name="xlarge_text">20sp</dimen>
 
     <dimen name="scroll_threshold">2dp</dimen>
 </resources>

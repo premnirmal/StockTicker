@@ -55,5 +55,17 @@
     <string name="start_time_updated">Start time updated</string>
     <string name="share_email_subject">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
     <string name="my_stock_portfolio">My Stock Portfolio</string>
+    <string name="number_of_shares">No. of Shares</string>
+    <string name="Price">Price</string>
+    <string name="add_position">Add Position</string>
+    <string name="done">Done</string>
+    <string name="skip">Skip</string>
+    <string name="edit_position">Edit Position</string>
+    <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
+
+    <string-array name="graph_or_positions">
+        <item>View graph</item>
+        <item>Edit Positions</item>
+    </string-array>
 
 </resources>
