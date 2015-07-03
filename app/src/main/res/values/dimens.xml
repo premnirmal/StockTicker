@@ -17,6 +17,7 @@
     <dimen name="list_spacing">6dp</dimen>
 
     <dimen name="small_text">10sp</dimen>
+    <dimen name="xsmall_text">8sp</dimen>
     <dimen name="large_text">16sp</dimen>
     <dimen name="xlarge_text">20sp</dimen>
 

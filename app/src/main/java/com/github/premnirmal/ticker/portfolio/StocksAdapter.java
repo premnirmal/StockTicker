@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.portfolio;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,21 +109,25 @@ class StocksAdapter extends BaseAdapter {
         changeValue.setTextColor(color);
 
         if (stock.IsPosition == true) {
-            setStockFieldLabel(convertView, R.id.averageDailyVolume, String.valueOf("Value"));
+            setStockFieldLabel(convertView, R.id.averageDailyVolume, "Value");
             setStockFieldText(convertView, R.id.averageDailyVolume, String.format("%.2f", stock.LastTradePriceOnly * stock.PositionShares));
 
-            setStockFieldLabel(convertView, R.id.exchange, String.valueOf("Gain/Loss"));
+            setStockFieldLabel(convertView, R.id.exchange, "Gain/Loss");
             setStockFieldText(convertView, R.id.exchange, String.format("%.2f", (stock.LastTradePriceOnly * stock.PositionShares) - (stock.PositionShares * stock.PositionPrice)));
  
-            setStockFieldLabel(convertView, R.id.yearHigh, String.valueOf("Change %"));
+            setStockFieldLabel(convertView, R.id.yearHigh, "Change %");
             setStockFieldText(convertView, R.id.yearHigh, String.format("%.2f",((stock.LastTradePriceOnly - stock.PositionPrice) / stock.PositionPrice) * 100));
 
-            setStockFieldLabel(convertView, R.id.yearLow, String.valueOf("Change"));
+            setStockFieldLabel(convertView, R.id.yearLow, "Change");
             setStockFieldText(convertView, R.id.yearLow, String.format("%.2f",stock.LastTradePriceOnly-stock.PositionPrice));
         } else {
+            setStockFieldLabel(convertView, R.id.averageDailyVolume, "Daily Volume");
             setStockFieldText(convertView, R.id.averageDailyVolume, String.valueOf(stock.AverageDailyVolume));
+            setStockFieldLabel(convertView, R.id.exchange, "Exchange");
             setStockFieldText(convertView, R.id.exchange, String.valueOf(stock.StockExchange));
+            setStockFieldLabel(convertView, R.id.yearHigh, "Year High");
             setStockFieldText(convertView, R.id.yearHigh, String.valueOf(stock.YearHigh));
+            setStockFieldLabel(convertView, R.id.yearLow, "Year Low");
             setStockFieldText(convertView, R.id.yearLow, String.valueOf(stock.YearLow));
         }
 
