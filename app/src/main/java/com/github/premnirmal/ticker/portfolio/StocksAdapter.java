@@ -115,9 +115,9 @@ class StocksAdapter extends BaseAdapter {
 
             setStockFieldLabel(convertView, R.id.exchange, String.valueOf("Gain/Loss"));
             setStockFieldText(convertView, R.id.exchange, String.format("%.2f", (stock.LastTradePriceOnly * stock.PositionShares) - (stock.PositionShares * stock.PositionPrice)));
-
+ 
             setStockFieldLabel(convertView, R.id.yearHigh, String.valueOf("Change %"));
-            setStockFieldText(convertView, R.id.yearHigh, String.format("%.2f",((stock.LastTradePriceOnly - stock.PositionShares) / stock.PositionPrice) * 100));
+            setStockFieldText(convertView, R.id.yearHigh, String.format("%.2f",((stock.LastTradePriceOnly - stock.PositionPrice) / stock.PositionPrice) * 100));
 
             setStockFieldLabel(convertView, R.id.yearLow, String.valueOf("Change"));
             setStockFieldText(convertView, R.id.yearLow, String.format("%.2f",stock.LastTradePriceOnly-stock.PositionPrice));

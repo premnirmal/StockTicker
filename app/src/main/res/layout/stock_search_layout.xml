@@ -6,31 +6,55 @@
     android:layout_height="match_parent"
     android:id="@+id/stock_search">
 
-    <TableRow
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Position"
+        android:id="@+id/isPosition" />
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <CheckBox
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Position"
-            android:id="@+id/isPosition"
-            android:layout_gravity="center_horizontal" />
+            android:layout_height="match_parent"
+            android:text="Shares"
+            android:id="@+id/lblShares"
+            android:gravity="center_vertical" />
 
         <EditText
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/shares"
+            android:textAlignment="textEnd"
+            android:gravity="end"
+            android:inputType="numberDecimal" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Price"
+            android:id="@+id/lblPrice"
+            android:gravity="center_vertical" />
+
+        <EditText
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/price"
             android:layout_gravity="right"
-            android:text="0.00" />
-
-        <EditText
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/shares"
-            android:text="100" />
-
-    </TableRow>
+            android:textAlignment="textEnd"
+            android:gravity="end"
+            android:inputType="numberDecimal" />
+    </LinearLayout>
 
     <EditText
         android:layout_width="match_parent"

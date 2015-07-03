@@ -267,6 +267,7 @@ public class StocksProvider implements IStocksProvider {
         final Stock dummy = new Stock();
         dummy.symbol = ticker;
         stockList.remove(dummy);
+        positionList.remove(dummy);
         save();
         sendBroadcast();
         return tickerList;
