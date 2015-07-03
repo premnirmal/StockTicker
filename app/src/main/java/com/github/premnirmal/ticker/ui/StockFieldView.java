@@ -61,6 +61,10 @@ public class StockFieldView extends LinearLayout {
         this(context, attrs);
     }
 
+    public void setLabel(CharSequence text) {
+        fieldName.setText(text);
+    }
+
     public void setText(CharSequence text) {
         fieldValue.setText(text);
     }

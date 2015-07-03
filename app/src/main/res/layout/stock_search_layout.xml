@@ -3,7 +3,34 @@
     android:orientation="vertical"
     android:padding="@dimen/activity_horizontal_margin"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/stock_search">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Position"
+            android:id="@+id/isPosition"
+            android:layout_gravity="center_horizontal" />
+
+        <EditText
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/price"
+            android:layout_gravity="right"
+            android:text="0.00" />
+
+        <EditText
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/shares"
+            android:text="100" />
+
+    </TableRow>
 
     <EditText
         android:layout_width="match_parent"

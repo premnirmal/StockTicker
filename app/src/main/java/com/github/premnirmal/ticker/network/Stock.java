@@ -27,6 +27,11 @@ public class Stock implements Comparable<Stock>, Serializable {
     public String Volume;
     public String StockExchange;
 
+    // Add Position fields
+    public boolean IsPosition;
+    public float PositionPrice;
+    public float PositionShares;
+
 //    "symbol": "YHOO",
 //            "AverageDailyVolume": "18131200",
 //            "Change": "+1.37",

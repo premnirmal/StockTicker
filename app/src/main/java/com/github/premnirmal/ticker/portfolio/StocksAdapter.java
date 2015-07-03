@@ -98,10 +98,6 @@ class StocksAdapter extends BaseAdapter {
         final StockFieldView changeValue = (StockFieldView) convertView.findViewById(R.id.changeValue);
         changeValue.setText(stock.Change);
         setStockFieldText(convertView, R.id.totalValue, String.valueOf(stock.LastTradePriceOnly));
-        setStockFieldText(convertView, R.id.averageDailyVolume, String.valueOf(stock.AverageDailyVolume));
-        setStockFieldText(convertView, R.id.exchange, String.valueOf(stock.StockExchange));
-        setStockFieldText(convertView, R.id.yearHigh, String.valueOf(stock.YearHigh));
-        setStockFieldText(convertView, R.id.yearLow, String.valueOf(stock.YearLow));
 
         final int color;
         if (change >= 0) {
@@ -113,6 +109,25 @@ class StocksAdapter extends BaseAdapter {
         changeInPercent.setTextColor(color);
         changeValue.setTextColor(color);
 
+        if (stock.IsPosition == true) {
+            setStockFieldLabel(convertView, R.id.averageDailyVolume, String.valueOf("Value"));
+            setStockFieldText(convertView, R.id.averageDailyVolume, String.format("%.2f", stock.LastTradePriceOnly * stock.PositionShares));
+
+            setStockFieldLabel(convertView, R.id.exchange, String.valueOf("Gain/Loss"));
+            setStockFieldText(convertView, R.id.exchange, String.format("%.2f", (stock.LastTradePriceOnly * stock.PositionShares) - (stock.PositionShares * stock.PositionPrice)));
+
+            setStockFieldLabel(convertView, R.id.yearHigh, String.valueOf("Change %"));
+            setStockFieldText(convertView, R.id.yearHigh, String.format("%.2f",((stock.LastTradePriceOnly - stock.PositionShares) / stock.PositionPrice) * 100));
+
+            setStockFieldLabel(convertView, R.id.yearLow, String.valueOf("Change"));
+            setStockFieldText(convertView, R.id.yearLow, String.format("%.2f",stock.LastTradePriceOnly-stock.PositionPrice));
+        } else {
+            setStockFieldText(convertView, R.id.averageDailyVolume, String.valueOf(stock.AverageDailyVolume));
+            setStockFieldText(convertView, R.id.exchange, String.valueOf(stock.StockExchange));
+            setStockFieldText(convertView, R.id.yearHigh, String.valueOf(stock.YearHigh));
+            setStockFieldText(convertView, R.id.yearLow, String.valueOf(stock.YearLow));
+        }
+
         final int padding = (int) context.getResources().getDimension(R.dimen.text_padding);
         convertView.setPadding(0, padding, 0, padding);
 
@@ -122,6 +137,11 @@ class StocksAdapter extends BaseAdapter {
     static void setText(View parent, int textViewId, CharSequence text) {
         final TextView textView = (TextView) parent.findViewById(textViewId);
         textView.setText(text);
+    }
+
+    static void setStockFieldLabel(View parent, int textViewId, CharSequence text) {
+        final StockFieldView textView = (StockFieldView) parent.findViewById(textViewId);
+        textView.setLabel(text);
     }
 
     static void setStockFieldText(View parent, int textViewId, CharSequence text) {

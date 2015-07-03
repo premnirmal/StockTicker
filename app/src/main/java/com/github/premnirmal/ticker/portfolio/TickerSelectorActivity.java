@@ -6,6 +6,7 @@ import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -63,6 +64,9 @@ public class TickerSelectorActivity extends BaseActivity {
 
         final EditText searchView = (EditText) findViewById(R.id.query);
         final ListView listView = (ListView) findViewById(R.id.resultList);
+        final CheckBox isPositionView = (CheckBox) findViewById(R.id.isPosition);
+        final EditText priceView = (EditText) findViewById(R.id.price);
+        final EditText sharesView = (EditText) findViewById(R.id.shares);
 
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -123,7 +127,16 @@ public class TickerSelectorActivity extends BaseActivity {
                 final SuggestionsAdapter suggestionsAdapter = (SuggestionsAdapter) parent.getAdapter();
                 final Suggestion suggestion = suggestionsAdapter.getItem(position);
                 final String ticker = suggestion.symbol;
-                stocksProvider.addStock(ticker);
+
+                float price;
+                float shares;
+                if (isPositionView.isChecked()) {
+                    price = Float.parseFloat(priceView.getText().toString());
+                    shares = Float.parseFloat(sharesView.getText().toString());
+                    stocksProvider.addPosition(ticker,shares,price);
+                } else {
+                    stocksProvider.addStock(ticker);
+                }
                 Toast.makeText(TickerSelectorActivity.this, ticker + " added to list", Toast.LENGTH_SHORT).show();
                 searchView.setText("");
                 listView.setAdapter(new SuggestionsAdapter(new ArrayList<Suggestion>()));

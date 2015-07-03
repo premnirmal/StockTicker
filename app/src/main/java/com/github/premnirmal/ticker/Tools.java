@@ -10,8 +10,11 @@ import android.os.Environment;
 
 import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.tickerwidget.R;
+import com.github.premnirmal.ticker.network.Stock;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -171,6 +174,42 @@ public final class Tools {
             builder.deleteCharAt(length - 1);
         }
         return builder.toString();
+    }
+
+    public static String positionsToString(List<Stock> stockList) {
+        final StringBuilder builder = new StringBuilder();
+        for (Stock stock : stockList) {
+            if (stock.IsPosition == true){
+                builder.append(stock.symbol);
+                builder.append(",");
+                builder.append(stock.IsPosition);
+                builder.append(",");
+                builder.append(stock.PositionPrice);
+                builder.append(",");
+                builder.append(stock.PositionShares);
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
+    }
+
+    public static List<Stock> stringToPositions(String positions) {
+        final ArrayList<String> tickerListCSV = new ArrayList<>(Arrays.asList(positions.split("\n")));
+        ArrayList<Stock> stockList = new ArrayList<Stock>();
+        ArrayList<String> tickerFields;
+        Stock tmpStock;
+        for (String tickerCSV : tickerListCSV) {
+            tickerFields = new ArrayList<>(Arrays.asList(tickerCSV.split(",")));
+            if (tickerFields.size() >= 4 && Boolean.parseBoolean(tickerFields.get(1)) == true) {
+                tmpStock = new Stock();
+                tmpStock.IsPosition = true;
+                tmpStock.symbol = tickerFields.get(0);
+                tmpStock.PositionPrice = Float.parseFloat(tickerFields.get(2));
+                tmpStock.PositionShares = Float.parseFloat(tickerFields.get(3));
+                stockList.add(tmpStock);
+            }
+        }
+        return stockList;
     }
 
     public static boolean boldEnabled() {

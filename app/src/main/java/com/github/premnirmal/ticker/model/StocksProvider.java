@@ -44,6 +44,7 @@ public class StocksProvider implements IStocksProvider {
     private static final String STOCK_LIST = "STOCK_LIST";
     public static final String SORTED_STOCK_LIST = "SORTED_STOCK_LIST";
     private static final String LAST_FETCHED = "LAST_FETCHED";
+    private static final String POSITION_LIST = "POSITION_LIST";
 
     private static final String DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA";
 
@@ -63,6 +64,7 @@ public class StocksProvider implements IStocksProvider {
 
     private List<String> tickerList;
     private List<Stock> stockList;
+    private List<Stock> positionList;
     private String lastFetched;
     private final SharedPreferences preferences;
 
@@ -95,6 +97,12 @@ public class StocksProvider implements IStocksProvider {
                 }
             }
         }
+
+        positionList = Tools.stringToPositions(preferences.getString(POSITION_LIST, ""));
+        for (Stock pos : positionList) {
+            tickerList.add(pos.symbol);
+        }
+
         final String tickerList = Tools.toCommaSeparatedString(this.tickerList);
         preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply();
         lastFetched = preferences.getString(LAST_FETCHED, null);
@@ -136,6 +144,7 @@ public class StocksProvider implements IStocksProvider {
     private void save() {
         preferences.edit()
                 .remove(STOCK_LIST)
+                .putString(POSITION_LIST, Tools.positionsToString(positionList))
                 .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
                 .putString(LAST_FETCHED, lastFetched)
                 .apply();
@@ -227,6 +236,20 @@ public class StocksProvider implements IStocksProvider {
     }
 
     @Override
+    public Collection<String> addPosition(String ticker, float shares, float price) {
+        if (tickerList.contains(ticker)) {
+            return tickerList;
+        }
+        Stock position = new Stock();
+        position.symbol = ticker;
+        position.IsPosition = true;
+        position.PositionPrice = price;
+        position.PositionShares = shares;
+        positionList.add(position);
+        return addStock(ticker);
+    }
+
+    @Override
     public Collection<String> addStocks(Collection<String> tickers) {
         for (String ticker : tickers) {
             if (!tickerList.contains(ticker)) {
@@ -253,6 +276,27 @@ public class StocksProvider implements IStocksProvider {
     public Collection<Stock> getStocks() {
         if (stockList != null) {
             sortStockList();
+
+            List<Stock> newStockList = new ArrayList<Stock>();
+            boolean added = false;
+            // Set all positions
+            for (Stock stock : stockList) {
+                added = false;
+                for (Stock pos : positionList) {
+                    if (added == false && stock.symbol.equals(pos.symbol)) {
+                        stock.IsPosition = true;
+                        stock.PositionShares = pos.PositionShares;
+                        stock.PositionPrice = pos.PositionPrice;
+                        newStockList.add(stock);
+                        added = true;
+                    }
+                }
+                if (added == false) {
+                    newStockList.add(stock);
+                }
+            }
+
+            return newStockList;
         }
         return stockList;
     }
