@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
+import com.github.premnirmal.ticker.CrashLogger;
 import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.events.StockUpdatedEvent;
@@ -180,7 +180,7 @@ public class StocksProvider implements IStocksProvider {
 
                         @Override
                         public void onError(Throwable e) {
-                            Crashlytics.logException(new RuntimeException("Encountered onError when fetching stocks", e)); // why does this happen?
+                            CrashLogger.logException(new RuntimeException("Encountered onError when fetching stocks", e)); // why does this happen?
                             e.printStackTrace();
                             scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)); // 1 minute
                         }

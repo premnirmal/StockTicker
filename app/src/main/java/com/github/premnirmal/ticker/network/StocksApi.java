@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network;
 
-import com.crashlytics.android.Crashlytics;
+import com.github.premnirmal.ticker.CrashLogger;
 import com.github.premnirmal.ticker.model.StocksProvider;
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData;
 
@@ -78,7 +78,7 @@ public class StocksApi {
                 }).onErrorResumeNext(new Func1<Throwable, Observable<? extends List<Stock>>>() {
                     @Override
                     public Observable<? extends List<Stock>> call(Throwable throwable) {
-                        Crashlytics.logException(new RuntimeException("Encountered onErrorResumeNext for yahooFinance", throwable));
+                        CrashLogger.logException(new RuntimeException("Encountered onErrorResumeNext for yahooFinance", throwable));
                         return Observable.empty();
                     }
                 });

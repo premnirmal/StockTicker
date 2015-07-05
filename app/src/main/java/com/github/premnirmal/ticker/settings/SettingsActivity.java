@@ -22,7 +22,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
+import com.github.premnirmal.ticker.CrashLogger;
 import com.devpaul.filepickerlibrary.FilePickerActivity;
 import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.Injector;
@@ -117,7 +117,7 @@ public class SettingsActivity extends PreferenceActivity {
                         protected void onPostExecute(String result) {
                             if (result == null) {
                                 showDialog(getString(R.string.error_exporting));
-                                Crashlytics.logException(new Throwable("Error exporting tickers"));
+                                CrashLogger.logException(new Throwable("Error exporting tickers"));
                             } else {
                                showDialog("Exported to " + result);
                             }
@@ -143,7 +143,7 @@ public class SettingsActivity extends PreferenceActivity {
                             protected void onPostExecute(String result) {
                                 if (result == null) {
                                     showDialog(getString(R.string.error_sharing));
-                                    Crashlytics.logException(new Throwable("Error sharing tickers"));
+                                    CrashLogger.logException(new Throwable("Error sharing tickers"));
                                 } else {
                                     shareTickers();
                                 }
@@ -345,7 +345,7 @@ public class SettingsActivity extends PreferenceActivity {
         final File file = Tools.getTickersFile();
         if (!file.exists() || !file.canRead()) {
             showDialog(getString(R.string.error_sharing));
-            Crashlytics.logException(new Throwable("Error sharing tickers"));
+            CrashLogger.logException(new Throwable("Error sharing tickers"));
             return;
         }
         final Uri uri = Uri.fromFile(file);

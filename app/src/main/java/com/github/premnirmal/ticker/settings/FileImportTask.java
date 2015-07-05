@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.settings;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
-import com.crashlytics.android.Crashlytics;
+import com.github.premnirmal.ticker.CrashLogger;
 import com.github.premnirmal.ticker.Analytics;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 
@@ -59,7 +59,7 @@ class FileImportTask extends AsyncTask<String, Void, Boolean> {
             result = true;
             Analytics.trackSettingsChange("IMPORT", TextUtils.join(",", tickers));
         } catch (IOException e) {
-            Crashlytics.logException(new RuntimeException(e));
+            CrashLogger.logException(new RuntimeException(e));
             result = false;
         }
 
