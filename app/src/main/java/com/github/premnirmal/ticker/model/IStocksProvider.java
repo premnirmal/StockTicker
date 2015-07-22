@@ -14,7 +14,9 @@ public interface IStocksProvider {
 
     Collection<String> addStock(String ticker);
 
-    Collection<String> addPosition(String ticker, float shares, float price);
+    void addPosition(String ticker, float shares, float price);
+
+    void removePosition(String ticker);
 
     Collection<String> addStocks(Collection<String> tickers);
 

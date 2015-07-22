@@ -118,8 +118,8 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected final AlertDialog showDialog(String message, DialogInterface.OnClickListener positiveOnClick, DialogInterface.OnClickListener negativeOnClick) {
         return new AlertDialog.Builder(this)
                 .setMessage(message)
-                .setPositiveButton("OK", positiveOnClick)
-                .setNegativeButton("Cancel", negativeOnClick)
+                .setPositiveButton("YES", positiveOnClick)
+                .setNegativeButton("NO", negativeOnClick)
                 .show();
     }
 

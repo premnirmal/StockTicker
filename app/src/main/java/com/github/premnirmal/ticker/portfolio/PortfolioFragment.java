@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
+import com.github.premnirmal.ticker.InAppMessage;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.RxBus;
 import com.github.premnirmal.ticker.Tools;
@@ -54,7 +55,6 @@ public class PortfolioFragment extends BaseFragment {
     RxBus bus;
 
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private AlertDialog alertDialog;
     private Parcelable listViewState;
     private StocksAdapter stocksAdapter;
     private final ScrollDetector scrollListener = new ScrollDetector() {
@@ -68,6 +68,7 @@ public class PortfolioFragment extends BaseFragment {
             animateButton(true);
         }
     };
+    private View rootView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,7 +87,7 @@ public class PortfolioFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final Context context = inflater.getContext();
         final View view = inflater.inflate(R.layout.portfolio_fragment, null);
-
+        rootView = view.findViewById(R.id.fragment_root);
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
         swipeRefreshLayout.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon, R.color.sea);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -270,10 +271,7 @@ public class PortfolioFragment extends BaseFragment {
     }
 
     private void noNetwork(NoNetworkEvent event) {
-        final boolean showing = alertDialog != null && !alertDialog.isShowing();
-        if (!showing) {
-            alertDialog = showDialog(getString(R.string.no_network_message));
-        }
+        InAppMessage.showMessage(rootView, getString(R.string.no_network_message));
     }
 
     @Override

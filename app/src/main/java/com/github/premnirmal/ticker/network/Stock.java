@@ -73,6 +73,11 @@ public class Stock implements Comparable<Stock>, Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return symbol != null ? symbol.hashCode() : super.hashCode();
+    }
+
+    @Override
     public String toString() {
         return symbol;
     }

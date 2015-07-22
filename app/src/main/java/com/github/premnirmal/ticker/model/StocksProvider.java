@@ -233,27 +233,39 @@ public class StocksProvider implements IStocksProvider {
     }
 
     @Override
-    public Collection<String> addPosition(String ticker, float shares, float price) {
+    public void addPosition(String ticker, float shares, float price) {
         Stock position = getStock(ticker);
         if (position == null) {
             position = new Stock();
-        } else {
-
         }
         if(!ticker.contains(ticker)) {
             tickerList.add(ticker);
         }
         position.symbol = ticker;
-        position.IsPosition = true;
         position.PositionPrice = price;
         position.PositionShares = shares;
         positionList.remove(position);
-        positionList.add(position);
-        stockList.remove(position);
-        stockList.add(position);
+        if(shares != 0f) {
+            position.IsPosition = true;
+            positionList.add(position);
+            stockList.remove(position);
+            stockList.add(position);
+            save();
+            fetch();
+        } else {
+            removePosition(ticker);
+        }
+    }
+
+    @Override
+    public void removePosition(String ticker) {
+        final Stock position = getStock(ticker);
+        if (position == null) {
+            return;
+        }
+        position.IsPosition = false;
+        positionList.remove(position);
         save();
-        fetch();
-        return tickerList;
     }
 
     @Override

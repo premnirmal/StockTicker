@@ -42,7 +42,7 @@
     <string name="error_sharing">Error sharing tickers</string>
     <string name="ticker_import_success">Tickers imported successfully</string>
     <string name="ticker_import_fail">Error importing tickers</string>
-    <string name="no_network_message">No network connection, check your connection settings</string>
+    <string name="no_network_message">No network connection</string>
     <string name="one_month">1 month</string>
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>
@@ -62,6 +62,7 @@
     <string name="skip">Skip</string>
     <string name="edit_position">Edit Position</string>
     <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
+    <string name="remove">Remove</string>
 
     <string-array name="graph_or_positions">
         <item>View graph</item>

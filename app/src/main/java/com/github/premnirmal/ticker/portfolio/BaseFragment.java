@@ -1,7 +1,5 @@
 package com.github.premnirmal.ticker.portfolio;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.AndroidRuntimeException;
@@ -102,21 +100,5 @@ abstract class BaseFragment extends Fragment {
         } else {
             return null;
         }
-    }
-
-    protected final AlertDialog showDialog(String message) {
-        return showDialog(message, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-    }
-
-    protected final AlertDialog showDialog(String message, DialogInterface.OnClickListener listener) {
-        return new AlertDialog.Builder(getActivity())
-                .setMessage(message)
-                .setNeutralButton("OK", listener)
-                .show();
     }
 }

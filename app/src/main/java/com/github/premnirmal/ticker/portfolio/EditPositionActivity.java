@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.portfolio;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.github.premnirmal.ticker.network.Stock;
@@ -19,6 +20,8 @@ public class EditPositionActivity extends AddPositionActivity {
         if(stock != null) {
             final EditText sharesView = (EditText) findViewById(R.id.shares);
             final EditText priceView = (EditText) findViewById(R.id.price);
+            final Button skipButton = (Button) findViewById(R.id.skipButton);
+            skipButton.setText(R.string.remove);
             sharesView.setText("" + stock.PositionShares);
             priceView.setText("" + stock.PositionPrice);
         } else {
@@ -29,5 +32,11 @@ public class EditPositionActivity extends AddPositionActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected void skip() {
+        stocksProvider.removePosition(ticker);
+        super.skip();
     }
 }

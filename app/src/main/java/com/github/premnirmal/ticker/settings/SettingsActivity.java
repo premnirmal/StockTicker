@@ -20,11 +20,11 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.premnirmal.ticker.CrashLogger;
 import com.devpaul.filepickerlibrary.FilePickerActivity;
 import com.github.premnirmal.ticker.Analytics;
+import com.github.premnirmal.ticker.CrashLogger;
+import com.github.premnirmal.ticker.InAppMessage;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
@@ -119,7 +119,7 @@ public class SettingsActivity extends PreferenceActivity {
                                 showDialog(getString(R.string.error_exporting));
                                 CrashLogger.logException(new Throwable("Error exporting tickers"));
                             } else {
-                               showDialog("Exported to " + result);
+                                showDialog("Exported to " + result);
                             }
                         }
                     }.execute(stocksProvider.getTickers().toArray());
@@ -135,7 +135,7 @@ public class SettingsActivity extends PreferenceActivity {
                 public boolean onPreferenceClick(Preference preference) {
                     Analytics.trackSettingsChange("SHARE", TextUtils.join(",", stocksProvider.getTickers().toArray()));
                     final File file = Tools.getTickersFile();
-                    if(file.exists()) {
+                    if (file.exists()) {
                         shareTickers();
                     } else {
                         new FileExportTask() {
@@ -177,14 +177,14 @@ public class SettingsActivity extends PreferenceActivity {
             fontSizePreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
                     preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply();
                     broadcastUpdateWidget();
                     fontSizePreference.setSummary(fontSizePreference.getEntries()[index]);
-                    Toast.makeText(SettingsActivity.this, R.string.text_size_updated_message, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.text_size_updated_message);
                     return true;
                 }
             });
@@ -198,14 +198,14 @@ public class SettingsActivity extends PreferenceActivity {
             bgPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
                     preferences.edit().putInt(Tools.WIDGET_BG, index).apply();
                     broadcastUpdateWidget();
                     bgPreference.setSummary(bgPreference.getEntries()[index]);
-                    Toast.makeText(SettingsActivity.this, R.string.bg_updated_message, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.bg_updated_message);
                     return true;
                 }
             });
@@ -219,14 +219,14 @@ public class SettingsActivity extends PreferenceActivity {
             layoutTypePref.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
                     preferences.edit().putInt(Tools.LAYOUT_TYPE, index).apply();
                     broadcastUpdateWidget();
                     layoutTypePref.setSummary(layoutTypePref.getEntries()[index]);
-                    Toast.makeText(SettingsActivity.this, R.string.layout_updated_message, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.layout_updated_message);
                     return true;
                 }
             });
@@ -240,7 +240,7 @@ public class SettingsActivity extends PreferenceActivity {
             textColorPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
@@ -248,7 +248,7 @@ public class SettingsActivity extends PreferenceActivity {
                     broadcastUpdateWidget();
                     CharSequence color = textColorPreference.getEntries()[index];
                     textColorPreference.setSummary(color);
-                    Toast.makeText(SettingsActivity.this, R.string.text_coor_updated_message, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.text_coor_updated_message);
                     return true;
                 }
             });
@@ -262,14 +262,14 @@ public class SettingsActivity extends PreferenceActivity {
             refreshPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final String stringValue = value.toString();
                     final ListPreference listPreference = (ListPreference) preference;
                     final int index = listPreference.findIndexOfValue(stringValue);
                     preferences.edit().putInt(Tools.UPDATE_INTERVAL, index).apply();
                     broadcastUpdateWidget();
                     refreshPreference.setSummary(refreshPreference.getEntries()[index]);
-                    Toast.makeText(SettingsActivity.this, R.string.refresh_updated_message, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.refresh_updated_message);
                     return true;
                 }
             });
@@ -282,7 +282,7 @@ public class SettingsActivity extends PreferenceActivity {
             autoSortPreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final boolean checked = (boolean) value;
                     preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply();
                     return true;
@@ -297,7 +297,7 @@ public class SettingsActivity extends PreferenceActivity {
             boldChangePreference.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object value) {
-                    super.onPreferenceChange(preference,value);
+                    super.onPreferenceChange(preference, value);
                     final boolean checked = (boolean) value;
                     preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply();
                     return true;
@@ -311,10 +311,10 @@ public class SettingsActivity extends PreferenceActivity {
             startTimePref.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    super.onPreferenceChange(preference,newValue);
+                    super.onPreferenceChange(preference, newValue);
                     preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply();
                     startTimePref.setSummary(newValue.toString());
-                    Toast.makeText(SettingsActivity.this, R.string.start_time_updated, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.start_time_updated);
                     return true;
                 }
             });
@@ -326,10 +326,10 @@ public class SettingsActivity extends PreferenceActivity {
             endTimePref.setOnPreferenceChangeListener(new DefaultPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    super.onPreferenceChange(preference,newValue);
+                    super.onPreferenceChange(preference, newValue);
                     preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply();
                     endTimePref.setSummary(newValue.toString());
-                    Toast.makeText(SettingsActivity.this, R.string.end_time_updated, Toast.LENGTH_SHORT).show();
+                    InAppMessage.showMessage(SettingsActivity.this, R.string.end_time_updated);
                     return true;
                 }
             });

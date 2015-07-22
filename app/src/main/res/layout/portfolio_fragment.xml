@@ -1,20 +1,22 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/fragment_root">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_height="30dp"
         tools:text="Last updated: 15:00"
         android:id="@+id/last_updated"
+        android:layout_gravity="top"
         android:gravity="center"
         android:layout_margin="5dp" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipe_container"
-        android:layout_below="@id/last_updated"
+        android:layout_marginTop="30dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -29,16 +31,15 @@
             android:id="@+id/stockList" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <ImageButton
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_margin="20dp"
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/borderW"
+        android:layout_gravity="bottom|right"
         android:id="@+id/add_ticker_button"
-        android:background="@drawable/round_button_bg"
         android:src="@drawable/ic_action_content_new"
-        android:layout_gravity="center"
-        android:duplicateParentState="true" />
+        app:rippleColor="@android:color/white"
+        app:borderWidth="0dp"
+        app:elevation="5dp" />
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -43,9 +43,13 @@ public class AddPositionActivity extends BaseActivity {
         findViewById(R.id.skipButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                skip();
             }
         });
+    }
+
+    protected void skip() {
+        finish();
     }
 
     protected void onDoneClicked() {
