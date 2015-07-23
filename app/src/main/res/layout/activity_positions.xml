@@ -36,6 +36,8 @@
             android:id="@+id/shares"
             android:textAlignment="textEnd"
             android:gravity="end"
+            android:singleLine="true"
+            android:text="0"
             android:inputType="numberDecimal"
             android:nextFocusForward="@+id/price"
             />
@@ -63,6 +65,8 @@
             android:layout_gravity="right"
             android:textAlignment="textEnd"
             android:gravity="end"
+            android:singleLine="true"
+            android:text="0"
             android:inputType="numberDecimal" />
     </LinearLayout>
 

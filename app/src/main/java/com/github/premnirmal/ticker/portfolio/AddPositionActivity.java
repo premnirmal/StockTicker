@@ -55,9 +55,13 @@ public class AddPositionActivity extends BaseActivity {
     protected void onDoneClicked() {
         final EditText sharesView = (EditText) findViewById(R.id.shares);
         final EditText priceView = (EditText) findViewById(R.id.price);
-        final float price = Float.parseFloat(priceView.getText().toString());
-        final float shares = Float.parseFloat(sharesView.getText().toString());
-        stocksProvider.addPosition(ticker, shares, price);
+        final String priceText = priceView.getText().toString();
+        final String sharesText = sharesView.getText().toString();
+        if(!priceText.isEmpty() && !sharesText.isEmpty()) {
+            final float price = Float.parseFloat(priceText);
+            final float shares = Float.parseFloat(sharesText);
+            stocksProvider.addPosition(ticker, shares, price);
+        }
         finish();
     }
 }
