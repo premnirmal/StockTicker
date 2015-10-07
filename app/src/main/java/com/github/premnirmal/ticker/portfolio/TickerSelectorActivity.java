@@ -17,7 +17,6 @@ import com.github.premnirmal.ticker.Tools;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Suggestion;
 import com.github.premnirmal.ticker.network.SuggestionApi;
-import com.github.premnirmal.ticker.network.Suggestions;
 import com.github.premnirmal.tickerwidget.R;
 
 import java.util.ArrayList;
@@ -29,7 +28,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
@@ -75,14 +73,8 @@ public class TickerSelectorActivity extends BaseActivity {
                         subscription.unsubscribe();
                     }
                     if (Tools.isNetworkOnline(getApplicationContext())) {
-                        final Observable<Suggestions> observable = suggestionApi.getSuggestions(query);
+                        final Observable<List<Suggestion>> observable = suggestionApi.getSuggestions(query);
                         subscription = bind(observable)
-                                .map(new Func1<Suggestions, List<Suggestion>>() {
-                                    @Override
-                                    public List<Suggestion> call(Suggestions suggestions) {
-                                        return suggestions.ResultSet.Result;
-                                    }
-                                })
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribeOn(Schedulers.io())
                                 .subscribe(new Subscriber<List<Suggestion>>() {
@@ -93,7 +85,7 @@ public class TickerSelectorActivity extends BaseActivity {
 
                                     @Override
                                     public void onError(Throwable throwable) {
-                                        showDialog(getString(R.string.adblock));
+                                        InAppMessage.showMessage(TickerSelectorActivity.this, R.string.error_fetching_suggestions);
                                     }
 
                                     @Override

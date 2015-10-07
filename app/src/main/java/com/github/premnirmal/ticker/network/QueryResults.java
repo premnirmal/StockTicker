@@ -7,6 +7,6 @@ import java.util.List;
  */
 public class QueryResults {
 
-    public String Query;
+//    public String Query;
     public List<Suggestion> Result;
 }
