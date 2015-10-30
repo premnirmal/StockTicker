@@ -33,7 +33,7 @@
     <string name="bold_change">Bold text</string>
     <string name="bold_change_desc">Show changes and market value in bold</string>
     <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
-    <string name="choose_text_size">Choose a text size</string>
+    <string name="choose_text_size">Text Size</string>
     <string name="text_size_updated_message">Text size updated</string>
     <string name="bg_updated_message">Background updated</string>
     <string name="layout_updated_message">Layout type updated</string>

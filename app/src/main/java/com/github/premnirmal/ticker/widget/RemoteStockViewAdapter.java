@@ -34,7 +34,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
     private List<Stock> stocks;
     private Context context;
 
-    private final Format format = new DecimalFormat("0.00#");
+    private final Format format = new DecimalFormat("0.000");
 
     @Inject
     IStocksProvider stocksProvider;
@@ -85,13 +85,12 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
                 change = 0d;
                 changePercent = 0d;
             }
-            final String prefix = change > 0 ? "+" : "";
             final String changeValueFormatted = format.format(change);
             final String changePercentFormatted = format.format(changePercent);
             final String priceFormatted = format.format(stock.LastTradePriceOnly);
 
-            changePercentString = new SpannableString(prefix + changePercentFormatted + "%");
-            changeValueString = new SpannableString(prefix + changeValueFormatted);
+            changePercentString = new SpannableString(changePercentFormatted + "%");
+            changeValueString = new SpannableString(changeValueFormatted);
             priceString = new SpannableString(priceFormatted);
 
             if (Tools.boldEnabled() && stock.ChangeinPercent != null && stock.Change != null) {

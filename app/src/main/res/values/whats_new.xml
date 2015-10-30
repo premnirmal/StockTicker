@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>A new widget type - Fixed. When using this widget type click on the change to switch between change percent and change value.</item>
+        <item>A new widget type - Fixed. When using this widget type click on the change to switch between change percent and change value</item>
+        <item>Having widget set to 3 decimal places</item>
+        <item>Hiding status bar when showing graphs</item>
     </string-array>
 </resources>
