@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>Using a new API for ticker lookup</item>
+        <item>A new widget type - Fixed. When using this widget type click on the change to switch between change percent and change value.</item>
     </string-array>
 </resources>

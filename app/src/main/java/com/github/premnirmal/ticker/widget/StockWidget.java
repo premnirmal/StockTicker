@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.github.premnirmal.ticker.Analytics;
+import com.github.premnirmal.ticker.WidgetClickReceiver;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.ParanormalActivity;
 import com.github.premnirmal.ticker.Tools;
@@ -92,11 +93,10 @@ public class StockWidget extends AppWidgetProvider {
 
     private void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, RemoteViews remoteViews) {
         remoteViews.setRemoteAdapter(R.id.list, new Intent(context, RemoteStockProviderService.class));
-        final Intent startActivityIntent = new Intent(context, ParanormalActivity.class);
-        final PendingIntent startActivityPendingIntent = PendingIntent.getActivity(context, 0,
-                startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteViews.setPendingIntentTemplate(R.id.list, startActivityPendingIntent);
-        remoteViews.setOnClickPendingIntent(R.id.widget_layout, startActivityPendingIntent);
+        final Intent intent = new Intent(context, WidgetClickReceiver.class);
+        intent.setAction(WidgetClickReceiver.CLICK_BCAST_INTENTFILTER);
+        final PendingIntent flipIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setPendingIntentTemplate(R.id.list, flipIntent);
         remoteViews.setTextViewText(R.id.last_updated, "Last updated: " + stocksProvider.lastFetched());
         appWidgetManager.updateAppWidget(new ComponentName(context, StockWidget.class), remoteViews);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);

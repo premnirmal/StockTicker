@@ -1,57 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:id="@+id/row"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:paddingLeft="3dp"
-    android:paddingRight="3dp"
-    android:id="@+id/row"
-    >
+    android:paddingRight="3dp">
 
     <TextView
+        android:id="@+id/ticker"
         android:layout_width="0dp"
-        android:layout_weight="0.25"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
         android:layout_marginRight="2dp"
-        android:singleLine="true"
+        android:layout_weight="0.25"
         android:ellipsize="end"
-        android:textStyle="bold"
-        android:id="@+id/ticker" />
-
-    <TextView
-        android:layout_width="0dp"
-        android:layout_weight="0.25"
-        android:layout_height="wrap_content"
+        android:singleLine="true"
         android:textColor="@android:color/white"
         android:textSize="12sp"
-        android:ellipsize="none"
-        android:singleLine="true"
-        android:id="@+id/totalValue" />
+        android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/totalValue"
         android:layout_width="0dp"
-        android:layout_weight="0.30"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_green_dark"
-        android:textSize="12sp"
+        android:layout_weight="0.25"
         android:ellipsize="none"
-        android:layout_marginRight="2dp"
         android:singleLine="true"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+
+
+    <TextView
         android:id="@+id/changeValue"
-        android:gravity="end" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="2dp"
+        android:layout_weight="0.30"
+        android:ellipsize="none"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="12sp" />
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_weight="0.30"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_green_dark"
-        android:textSize="12sp"
-        android:ellipsize="none"
-        android:singleLine="true"
         android:id="@+id/changePercent"
-        android:gravity="end" />
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.30"
+        android:ellipsize="none"
+        android:gravity="end"
+        android:singleLine="true"
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="12sp" />
 
 
 </LinearLayout>

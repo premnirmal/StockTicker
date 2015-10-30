@@ -22,6 +22,10 @@ import java.util.List;
  */
 public final class Tools {
 
+    public enum ChangeType {
+        value, percent
+    }
+
     public static final String PREFS_NAME = "com.github.premnirmal.ticker";
     public static final String FONT_SIZE = "com.github.premnirmal.ticker.textsize";
     public static final String START_TIME = "START_TIME";
@@ -38,13 +42,14 @@ public final class Tools {
     public static final String BOLD_CHANGE = "BOLD_CHANGE";
     public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
     public static final String WHATS_NEW = "WHATS_NEW";
+    public static final String PERCENT = "PERCENT";
 
     private final SharedPreferences sharedPreferences;
 
     private static Tools INSTANCE;
 
     static void init(Context context, SharedPreferences sharedPreferences) {
-        INSTANCE = new Tools(context, sharedPreferences);
+        INSTANCE = new Tools(sharedPreferences);
         INSTANCE.trackInitial(context);
     }
 
@@ -66,14 +71,29 @@ public final class Tools {
         final String tickerListVars = INSTANCE.sharedPreferences.getString(StocksProvider.SORTED_STOCK_LIST, "EMPTY!");
     }
 
-    private Tools(Context context, SharedPreferences sharedPreferences) {
+    private Tools(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
+    }
 
+    public static ChangeType getChangeType() {
+        final boolean state = INSTANCE.sharedPreferences.getBoolean(PERCENT, false);
+        return state ? ChangeType.percent : ChangeType.value;
+    }
+
+    static void flipChange() {
+        final boolean state = INSTANCE.sharedPreferences.getBoolean(PERCENT, false);
+        INSTANCE.sharedPreferences.edit().putBoolean(PERCENT, !state).apply();
     }
 
     public static int stockViewLayout() {
         final int pref = INSTANCE.sharedPreferences.getInt(LAYOUT_TYPE, 0);
-        return pref == 0 ? R.layout.stockview : R.layout.stockview2;
+        if(pref == 0) {
+            return R.layout.stockview;
+        } else if(pref == 1) {
+            return R.layout.stockview2;
+        } else {
+            return R.layout.stockview3;
+        }
     }
 
     public static int getTextColor(Context context) {

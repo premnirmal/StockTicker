@@ -65,6 +65,7 @@
     <string name="edit_position">Edit Position</string>
     <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
     <string name="remove">Remove</string>
+    <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
 
     <string-array name="graph_or_positions">
         <item>View graph</item>

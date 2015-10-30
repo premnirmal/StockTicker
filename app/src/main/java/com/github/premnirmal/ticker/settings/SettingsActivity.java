@@ -227,6 +227,11 @@ public class SettingsActivity extends PreferenceActivity {
                     broadcastUpdateWidget();
                     layoutTypePref.setSummary(layoutTypePref.getEntries()[index]);
                     InAppMessage.showMessage(SettingsActivity.this, R.string.layout_updated_message);
+
+                    if(index == 2) {
+                        showDialog(getString(R.string.change_instructions));
+                    }
+
                     return true;
                 }
             });

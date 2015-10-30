@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker;
 
+import android.content.IntentFilter;
 import android.support.multidex.MultiDexApplication;
 
 import com.crashlytics.android.Crashlytics;

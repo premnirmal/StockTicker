@@ -72,7 +72,16 @@
         <receiver
             android:name="com.github.premnirmal.ticker.RefreshReceiver"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"/>
+
+        <receiver
+            android:name="com.github.premnirmal.ticker.WidgetClickReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.github.premnirmal.ticker.widgetclick" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name="com.github.premnirmal.ticker.widget.StockWidget"

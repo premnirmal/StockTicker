@@ -13,6 +13,7 @@ import android.widget.RemoteViewsService;
 
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.Tools;
+import com.github.premnirmal.ticker.WidgetClickReceiver;
 import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.tickerwidget.R;
@@ -68,7 +69,8 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public RemoteViews getViewAt(int position) {
-        final RemoteViews remoteViews = new RemoteViews(context.getPackageName(), Tools.stockViewLayout());
+        final int stockViewLayout = Tools.stockViewLayout();
+        final RemoteViews remoteViews = new RemoteViews(context.getPackageName(), stockViewLayout);
         final Stock stock = stocks.get(position);
         remoteViews.setTextViewText(R.id.ticker, stock.symbol);
 
@@ -99,9 +101,17 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
             }
         }
 
-
-        remoteViews.setTextViewText(R.id.changePercent, changePercentString);
-        remoteViews.setTextViewText(R.id.changeValue, changeValueString);
+        if (stockViewLayout == R.layout.stockview3) {
+            final Tools.ChangeType changeType = Tools.getChangeType();
+            if (changeType == Tools.ChangeType.percent) {
+                remoteViews.setTextViewText(R.id.change, changePercentString);
+            } else {
+                remoteViews.setTextViewText(R.id.change, changeValueString);
+            }
+        } else {
+            remoteViews.setTextViewText(R.id.changePercent, changePercentString);
+            remoteViews.setTextViewText(R.id.changeValue, changeValueString);
+        }
         remoteViews.setTextViewText(R.id.totalValue, priceString);
 
 
@@ -111,22 +121,34 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
         } else {
             color = context.getResources().getColor(R.color.negative_red);
         }
-        remoteViews.setTextColor(R.id.changePercent, color);
-        remoteViews.setTextColor(R.id.changeValue, color);
+        if (stockViewLayout == R.layout.stockview3) {
+            remoteViews.setTextColor(R.id.change, color);
+        } else {
+            remoteViews.setTextColor(R.id.changePercent, color);
+            remoteViews.setTextColor(R.id.changeValue, color);
+        }
 
         remoteViews.setTextColor(R.id.ticker, Tools.getTextColor(context));
         remoteViews.setTextColor(R.id.totalValue, Tools.getTextColor(context));
 
         final float fontSize = Tools.getFontSize(context);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (stockViewLayout == R.layout.stockview3) {
+                remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize);
+            } else {
+                remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_SP, fontSize);
+                remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_SP, fontSize);
+            }
             remoteViews.setTextViewTextSize(R.id.ticker, TypedValue.COMPLEX_UNIT_SP, fontSize);
-            remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_SP, fontSize);
-            remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_SP, fontSize);
             remoteViews.setTextViewTextSize(R.id.totalValue, TypedValue.COMPLEX_UNIT_SP, fontSize);
         }
 
-        final Intent fillInIntent = new Intent();
-        remoteViews.setOnClickFillInIntent(R.id.row, fillInIntent);
+        if(stockViewLayout == R.layout.stockview3) {
+            final Intent intent = new Intent();
+            intent.putExtra(WidgetClickReceiver.FLIP, true);
+            remoteViews.setOnClickFillInIntent(R.id.change, intent);
+        }
+        remoteViews.setOnClickFillInIntent(R.id.ticker, new Intent());
 
         return remoteViews;
     }
@@ -138,7 +160,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     @Override
     public int getViewTypeCount() {
-        return 2; // stockview or stockview2 (layout from Tools.stockViewLayout())
+        return 3;
     }
 
     @Override
