@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
@@ -55,11 +56,23 @@ public class SettingsActivity extends PreferenceActivity {
 
         @Override
         public boolean onPreferenceChange(Preference preference, Object newValue) {
-
             return false;
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        final Intent intent = new Intent(getApplicationContext(), StockWidget.class);
+        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        final AppWidgetManager widgetManager = AppWidgetManager.getInstance(this);
+        final int[] ids = widgetManager.getAppWidgetIds(new ComponentName(this, StockWidget.class));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            widgetManager.notifyAppWidgetViewDataChanged(ids, R.id.list);
+        }
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +101,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         final TextView versionView = (TextView) findViewById(R.id.version);
         final SpannableStringBuilder sBuilder = new SpannableStringBuilder();
-        sBuilder.append("Version " + BuildConfig.VERSION_NAME);
+        sBuilder.append("v" + BuildConfig.VERSION_NAME);
         final CalligraphyTypefaceSpan typefaceSpan = new CalligraphyTypefaceSpan(TypefaceUtils.load(getAssets(), "fonts/alegreya-black-italic.ttf"));
         sBuilder.setSpan(typefaceSpan, 0, sBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         versionView.setText(sBuilder);

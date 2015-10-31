@@ -3,18 +3,10 @@ package com.github.premnirmal.ticker;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-
-import com.github.premnirmal.tickerwidget.R;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 import rx.Observable;
 import rx.android.app.AppObservable;
@@ -26,26 +18,12 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 /**
  * Created by premnirmal on 12/24/14.
  */
-public abstract class BaseActivity extends ActionBarActivity {
-
-    private static final List<Integer> colorResources = new ArrayList<Integer>() {
-        {
-            add(R.color.sea);
-            add(R.color.color_primary);
-            add(R.color.spicy_salmon);
-        }
-    };
-
-    private final Random random = new Random();
+public abstract class BaseActivity extends AppCompatActivity {
 
     private final BehaviorSubject<LifecycleEvent> lifecycleSubject = BehaviorSubject.create();
 
     private Observable<LifecycleEvent> lifecycle() {
         return lifecycleSubject.asObservable();
-    }
-
-    protected int randomColor() {
-        return getResources().getColor(colorResources.get(random.nextInt(colorResources.size())));
     }
 
     /**
@@ -94,11 +72,6 @@ public abstract class BaseActivity extends ActionBarActivity {
         lifecycleSubject.onNext(LifecycleEvent.RESUME);
     }
 
-    protected void setRandomActionBarColor() {
-        final Drawable drawable = new ColorDrawable(randomColor());
-        getSupportActionBar().setBackgroundDrawable(drawable);
-    }
-
     protected final AlertDialog showDialog(String message) {
         return showDialog(message, new DialogInterface.OnClickListener() {
             @Override
@@ -111,6 +84,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected final AlertDialog showDialog(String message, DialogInterface.OnClickListener listener) {
         return new AlertDialog.Builder(this)
                 .setMessage(message)
+                .setCancelable(false)
                 .setNeutralButton("OK", listener)
                 .show();
     }
@@ -118,6 +92,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     protected final AlertDialog showDialog(String message, DialogInterface.OnClickListener positiveOnClick, DialogInterface.OnClickListener negativeOnClick) {
         return new AlertDialog.Builder(this)
                 .setMessage(message)
+                .setCancelable(false)
                 .setPositiveButton("YES", positiveOnClick)
                 .setNegativeButton("NO", negativeOnClick)
                 .show();
