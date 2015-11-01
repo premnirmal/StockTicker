@@ -34,7 +34,7 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
     private List<Stock> stocks;
     private Context context;
 
-    private final Format format = new DecimalFormat("0.000");
+    private final Format format = new DecimalFormat("0.00");
 
     @Inject
     IStocksProvider stocksProvider;
