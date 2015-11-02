@@ -96,7 +96,6 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
             if (Tools.boldEnabled() && stock.ChangeinPercent != null && stock.Change != null) {
                 changePercentString.setSpan(new StyleSpan(Typeface.BOLD), 0, changePercentString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 changeValueString.setSpan(new StyleSpan(Typeface.BOLD), 0, changeValueString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                priceString.setSpan(new StyleSpan(Typeface.BOLD), 0, priceString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
 
