@@ -20,7 +20,7 @@ import dagger.Provides;
                 ApiModule.class
         },
         injects = {
-                ParanormalActivity.class, PortfolioFragment.class, SettingsActivity.class, Tools.class
+                ParanormalActivity.class, PortfolioFragment.class, SettingsActivity.class
         },
         complete = true,
         library = false
@@ -48,7 +48,6 @@ public class AppModule {
     @Singleton
     SharedPreferences provideSharedPreferences(Context context) {
         final SharedPreferences sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
-        Tools.init(context,sharedPreferences);
         return sharedPreferences;
     }
 }

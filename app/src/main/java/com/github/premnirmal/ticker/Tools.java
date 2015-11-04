@@ -48,45 +48,49 @@ public final class Tools {
 
     private static Tools INSTANCE;
 
-    static void init(Context context, SharedPreferences sharedPreferences) {
-        INSTANCE = new Tools(sharedPreferences);
-        INSTANCE.trackInitial(context);
-    }
-
-    private void trackInitial(Context context) {
-        Analytics.trackIntialSettings(LAYOUT_TYPE, stockViewLayout() == 0 ? "Animated" : "Tabbed");
-        Analytics.trackIntialSettings(TEXT_COLOR, INSTANCE.sharedPreferences.getInt(TEXT_COLOR, 0) == 0 ? "White" : "Dark");
-        Analytics.trackIntialSettings(START_TIME, INSTANCE.sharedPreferences.getString(START_TIME, "09:30"));
-        Analytics.trackIntialSettings(END_TIME, INSTANCE.sharedPreferences.getString(END_TIME, "09:30"));
-        Analytics.trackIntialSettings(SETTING_AUTOSORT, Boolean.toString(autoSortEnabled()));
-        Analytics.trackIntialSettings(WIDGET_BG, INSTANCE.sharedPreferences
-                .getInt(WIDGET_BG, TRANSPARENT) + "");
-        Analytics.trackIntialSettings(FONT_SIZE, getFontSize(context) + "");
-        {
-            final int updatePref = sharedPreferences.getInt(Tools.UPDATE_INTERVAL, 1);
-            final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
-            Analytics.trackIntialSettings(UPDATE_INTERVAL, time + "");
+    private static Tools getInstance() {
+        if(INSTANCE == null) {
+            final SharedPreferences sharedPreferences = StocksApp.getInstance().getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE);
+            INSTANCE = new Tools(sharedPreferences);
+            trackInitial(StocksApp.getInstance());
         }
-        Analytics.trackIntialSettings(BOLD_CHANGE, Boolean.toString(boldEnabled()));
-        final String tickerListVars = INSTANCE.sharedPreferences.getString(StocksProvider.SORTED_STOCK_LIST, "EMPTY!");
+        return INSTANCE;
     }
 
     private Tools(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
     }
 
+    private static void trackInitial(Context context) {
+        Analytics.trackIntialSettings(LAYOUT_TYPE, stockViewLayout() == 0 ? "Animated" : "Tabbed");
+        Analytics.trackIntialSettings(TEXT_COLOR, getInstance().sharedPreferences.getInt(TEXT_COLOR, 0) == 0 ? "White" : "Dark");
+        Analytics.trackIntialSettings(START_TIME, getInstance().sharedPreferences.getString(START_TIME, "09:30"));
+        Analytics.trackIntialSettings(END_TIME, getInstance().sharedPreferences.getString(END_TIME, "09:30"));
+        Analytics.trackIntialSettings(SETTING_AUTOSORT, Boolean.toString(autoSortEnabled()));
+        Analytics.trackIntialSettings(WIDGET_BG, getInstance().sharedPreferences
+                .getInt(WIDGET_BG, TRANSPARENT) + "");
+        Analytics.trackIntialSettings(FONT_SIZE, getFontSize(context) + "");
+        {
+            final int updatePref = getInstance().sharedPreferences.getInt(Tools.UPDATE_INTERVAL, 1);
+            final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
+            Analytics.trackIntialSettings(UPDATE_INTERVAL, time + "");
+        }
+        Analytics.trackIntialSettings(BOLD_CHANGE, Boolean.toString(boldEnabled()));
+        final String tickerListVars = getInstance().sharedPreferences.getString(StocksProvider.SORTED_STOCK_LIST, "EMPTY!");
+    }
+
     public static ChangeType getChangeType() {
-        final boolean state = INSTANCE.sharedPreferences.getBoolean(PERCENT, false);
+        final boolean state = getInstance().sharedPreferences.getBoolean(PERCENT, false);
         return state ? ChangeType.percent : ChangeType.value;
     }
 
     static void flipChange() {
-        final boolean state = INSTANCE.sharedPreferences.getBoolean(PERCENT, false);
-        INSTANCE.sharedPreferences.edit().putBoolean(PERCENT, !state).apply();
+        final boolean state = getInstance().sharedPreferences.getBoolean(PERCENT, false);
+        getInstance().sharedPreferences.edit().putBoolean(PERCENT, !state).apply();
     }
 
     public static int stockViewLayout() {
-        final int pref = INSTANCE.sharedPreferences.getInt(LAYOUT_TYPE, 0);
+        final int pref = getInstance().sharedPreferences.getInt(LAYOUT_TYPE, 0);
         if(pref == 0) {
             return R.layout.stockview;
         } else if(pref == 1) {
@@ -97,36 +101,36 @@ public final class Tools {
     }
 
     public static int getTextColor(Context context) {
-        final int pref = INSTANCE.sharedPreferences.getInt(TEXT_COLOR, 0);
+        final int pref = getInstance().sharedPreferences.getInt(TEXT_COLOR, 0);
         return pref == 0 ? Color.WHITE : context.getResources().getColor(R.color.dark_text);
     }
 
     public static int[] startTime() {
-        final String startTimeString = INSTANCE.sharedPreferences.getString(START_TIME, "09:30");
+        final String startTimeString = getInstance().sharedPreferences.getString(START_TIME, "09:30");
         final String[] split = startTimeString.split(":");
         final int[] times = new int[]{Integer.valueOf(split[0]), Integer.valueOf(split[1])};
         return times;
     }
 
     public static int[] endTime() {
-        final String endTimeString = INSTANCE.sharedPreferences.getString(END_TIME, "16:30");
+        final String endTimeString = getInstance().sharedPreferences.getString(END_TIME, "16:30");
         final String[] split = endTimeString.split(":");
         final int[] times = new int[]{Integer.valueOf(split[0]), Integer.valueOf(split[1])};
         return times;
     }
 
     public static boolean autoSortEnabled() {
-        return INSTANCE.sharedPreferences.getBoolean(SETTING_AUTOSORT, true);
+        return getInstance().sharedPreferences.getBoolean(SETTING_AUTOSORT, true);
     }
 
     public static boolean firstTimeViewingSwipeLayout() {
-        final boolean firstTime = INSTANCE.sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
-        INSTANCE.sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply();
+        final boolean firstTime = getInstance().sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true);
+        getInstance().sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply();
         return firstTime;
     }
 
     public static int getBackgroundResource(Context context) {
-        final int bgPref = INSTANCE.sharedPreferences
+        final int bgPref = getInstance().sharedPreferences
                 .getInt(WIDGET_BG, TRANSPARENT);
         switch (bgPref) {
             case TRANSLUCENT:
@@ -143,7 +147,7 @@ public final class Tools {
     }
 
     public static float getFontSize(Context context) {
-        final int size = INSTANCE.sharedPreferences
+        final int size = getInstance().sharedPreferences
                 .getInt(FONT_SIZE, 1);
         switch (size) {
             case 0:
@@ -233,6 +237,6 @@ public final class Tools {
     }
 
     public static boolean boldEnabled() {
-        return INSTANCE.sharedPreferences.getBoolean(BOLD_CHANGE, false);
+        return getInstance().sharedPreferences.getBoolean(BOLD_CHANGE, false);
     }
 }
