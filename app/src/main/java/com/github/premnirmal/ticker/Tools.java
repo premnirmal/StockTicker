@@ -105,6 +105,11 @@ public final class Tools {
         return pref == 0 ? Color.WHITE : context.getResources().getColor(R.color.dark_text);
     }
 
+    public static long getUpdateInterval() {
+        final int pref = getInstance().sharedPreferences.getInt(UPDATE_INTERVAL, 1);
+        return AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1);
+    }
+
     public static int[] startTime() {
         final String startTimeString = getInstance().sharedPreferences.getString(START_TIME, "09:30");
         final String[] split = startTimeString.split(":");

@@ -12,26 +12,14 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 /**
  * Created by premnirmal on 12/21/14.
  */
-public class StocksApp extends MultiDexApplication {
-
-    private static StocksApp instance;
-
-    public static StocksApp getInstance() {
-        return instance;
-    }
+public class StocksApp extends BaseApp {
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         Injector.init(this);
         Fabric.with(this, new Crashlytics());
         Analytics.init(this);
-        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/Montserrat-Regular.otf")
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
     }
 
 }

@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.SystemClock;
 
 import com.github.premnirmal.ticker.Analytics;
@@ -23,11 +22,15 @@ import org.joda.time.MutableDateTime;
 /**
  * Created by premnirmal on 4/10/15.
  */
-final class AlarmScheduler {
+public final class AlarmScheduler {
 
     public static final String UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE";
 
-    static long msToNextAlarm(Context context, SharedPreferences preferences) {
+    public static long msOfNextAlarm() {
+        return SystemClock.elapsedRealtime() + msToNextAlarm();
+    }
+
+    public static long msToNextAlarm() {
         final int hourOfDay = DateTime.now().hourOfDay().get();
         final int minuteOfHour = DateTime.now().minuteOfHour().get();
         final int dayOfWeek = DateTime.now().getDayOfWeek();
@@ -65,17 +68,16 @@ final class AlarmScheduler {
                 mutableDateTime.setMinuteOfHour(startTimez[1]);
             }
         }
-        if (set) {
-            final long msToNextSchedule = mutableDateTime.getMillis() - DateTime.now().getMillis();
-            return SystemClock.elapsedRealtime() + msToNextSchedule;
+        final long msToNextAlarm;
+        if(set) {
+            msToNextAlarm = mutableDateTime.getMillis() - DateTime.now().getMillis();
         } else {
-            final int updatePref = preferences.getInt(Tools.UPDATE_INTERVAL, 1);
-            final long time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1);
-            return SystemClock.elapsedRealtime() + time;
+            msToNextAlarm = Tools.getUpdateInterval();
         }
+        return msToNextAlarm;
     }
 
-    static void scheduleUpdate(long msToNextAlarm, Context context, SharedPreferences preferences) {
+    static void scheduleUpdate(long msToNextAlarm, Context context) {
         Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "UpdateScheduled for " + ((msToNextAlarm - SystemClock.elapsedRealtime())/(1000*60)) + " minutes");
         final Intent updateReceiverIntent = new Intent(context, RefreshReceiver.class);
         updateReceiverIntent.setAction(UPDATE_FILTER);

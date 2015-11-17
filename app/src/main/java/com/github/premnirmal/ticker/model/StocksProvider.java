@@ -214,11 +214,11 @@ public class StocksProvider implements IStocksProvider {
      * @return
      */
     private long getMsToNextAlarm() {
-        return AlarmScheduler.msToNextAlarm(context, preferences);
+        return AlarmScheduler.msOfNextAlarm();
     }
 
     private void scheduleUpdate(long msToNextAlarm) {
-        AlarmScheduler.scheduleUpdate(msToNextAlarm, context, preferences);
+        AlarmScheduler.scheduleUpdate(msToNextAlarm, context);
     }
 
     @Override
