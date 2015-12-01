@@ -48,10 +48,11 @@ public final class AlarmScheduler {
             mutableDateTime.setHourOfDay(startTimez[0]);
             mutableDateTime.setMinuteOfHour(startTimez[1]);
             set = true;
-        } else if (hourOfDay < startTimez[0] || (hourOfDay == startTimez[0] && minuteOfHour < startTimez[1])) {
+        } else if (dayOfWeek <= DateTimeConstants.FRIDAY
+                && (hourOfDay < startTimez[0] || (hourOfDay == startTimez[0] && minuteOfHour < startTimez[1]))) {
             mutableDateTime.setHourOfDay(startTimez[0]);
             mutableDateTime.setMinuteOfHour(startTimez[1]);
-            set = true;
+            return mutableDateTime.getMillis() - DateTime.now().getMillis();
         }
 
         if (set && dayOfWeek == DateTimeConstants.FRIDAY) {
