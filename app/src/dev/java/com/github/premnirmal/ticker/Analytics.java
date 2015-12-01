@@ -2,14 +2,10 @@ package com.github.premnirmal.ticker;
 
 import android.content.Context;
 
-import com.github.premnirmal.tickerwidget.BuildConfig;
-import com.github.premnirmal.tickerwidget.R;
-
 /**
  * Created by premnirmal on 4/15/15.
  */
 public class Analytics {
-
 
     public static final String SCHEDULE_UPDATE_ACTION = "ScheduleUpdate";
 

@@ -1,7 +1,5 @@
 package com.github.premnirmal.ticker.network;
 
-import java.util.List;
-
 import retrofit.http.GET;
 import rx.Observable;
 
@@ -11,7 +9,7 @@ import rx.Observable;
 public interface SuggestionApi {
 
 
-    @GET("/Lookup/json")
-    Observable<List<Suggestion>> getSuggestions(@retrofit.http.Query("input") String query);
+    @GET("/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
+    Observable<Suggestions> getSuggestions(@retrofit.http.Query("query") String query);
 
 }

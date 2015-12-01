@@ -11,12 +11,17 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 
 import com.github.premnirmal.ticker.Analytics;
-import com.github.premnirmal.ticker.WidgetClickReceiver;
 import com.github.premnirmal.ticker.Injector;
 import com.github.premnirmal.ticker.ParanormalActivity;
 import com.github.premnirmal.ticker.Tools;
+import com.github.premnirmal.ticker.WidgetClickReceiver;
+import com.github.premnirmal.ticker.model.AlarmScheduler;
 import com.github.premnirmal.ticker.model.IStocksProvider;
+import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 import javax.inject.Inject;
 
@@ -97,7 +102,16 @@ public class StockWidget extends AppWidgetProvider {
         intent.setAction(WidgetClickReceiver.CLICK_BCAST_INTENTFILTER);
         final PendingIntent flipIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         remoteViews.setPendingIntentTemplate(R.id.list, flipIntent);
-        remoteViews.setTextViewText(R.id.last_updated, "Last updated: " + stocksProvider.lastFetched());
+        final String lastUpdatedText;
+        if (!BuildConfig.DEBUG) {
+            lastUpdatedText = "Last updated: " + stocksProvider.lastFetched();
+        } else {
+            final long msToNextAlarm = AlarmScheduler.msToNextAlarm();
+            final DateTime nextAlarmTime = new DateTime(DateTime.now().getMillis() + msToNextAlarm);
+            lastUpdatedText = "Next update: " + DateTimeFormat.shortTime().print(nextAlarmTime)
+                    + " Last updated: " + stocksProvider.lastFetched();
+        }
+        remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText);
         appWidgetManager.updateAppWidget(new ComponentName(context, StockWidget.class), remoteViews);
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list);
         remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", Tools.getBackgroundResource(context));

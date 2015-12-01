@@ -19,7 +19,6 @@ import com.github.premnirmal.ticker.portfolio.TickerSelectorActivity;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter;
 import com.github.premnirmal.ticker.widget.StockWidget;
-import com.github.premnirmal.tickerwidget.BuildConfig;
 import com.github.premnirmal.tickerwidget.R;
 
 import javax.inject.Singleton;
@@ -67,7 +66,6 @@ public class ApiModule {
     @Singleton
     YahooFinance provideYahooFinance(Context context) {
         final RestAdapter restAdapter = new RestAdapter.Builder()
-                .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
                 .setEndpoint(context.getString(R.string.yahoo_endpoint))
                 .build();
         final YahooFinance yahooFinance = restAdapter.create(YahooFinance.class);
@@ -90,9 +88,8 @@ public class ApiModule {
     SuggestionApi provideSuggestionsApi(Context context) {
         if (suggestionApi == null) {
             final RestAdapter restAdapter = new RestAdapter.Builder()
-                    .setLogLevel(BuildConfig.DEBUG ? RestAdapter.LogLevel.FULL : RestAdapter.LogLevel.NONE)
-                    .setEndpoint(context.getString(R.string.suggestions_markit_endpoint))
-//                    .setConverter(new StupidYahooWrapConverter())
+                    .setEndpoint(context.getString(R.string.suggestions_endpoint))
+                    .setConverter(new StupidYahooWrapConverter())
                     .build();
             suggestionApi = restAdapter.create(SuggestionApi.class);
         }
