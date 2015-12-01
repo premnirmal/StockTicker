@@ -1,4 +1,6 @@
 # [StockTicker](http://todaystocks.instapage.com/)
+[![Circle CI](https://circleci.com/gh/premnirmal/StockTicker.svg?style=svg)](https://circleci.com/gh/premnirmal/StockTicker)
+
 [![Google play link](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
 
 [iOS version](https://itunes.apple.com/us/app/todaystocks/id993467855?ls=1&mt=8) available on [github](https://github.com/premnirmal/TodayStocks) too!
