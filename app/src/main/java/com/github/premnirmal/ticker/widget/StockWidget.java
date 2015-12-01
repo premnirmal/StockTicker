@@ -108,8 +108,8 @@ public class StockWidget extends AppWidgetProvider {
         } else {
             final long msToNextAlarm = AlarmScheduler.msToNextAlarm();
             final DateTime nextAlarmTime = new DateTime(DateTime.now().getMillis() + msToNextAlarm);
-            lastUpdatedText = "Last updated: " + stocksProvider.lastFetched()
-                    + "\nNext update: " + DateTimeFormat.shortTime().print(nextAlarmTime);
+            lastUpdatedText = "Next update: " + DateTimeFormat.shortTime().print(nextAlarmTime)
+                    + " Last updated: " + stocksProvider.lastFetched();
         }
         remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText);
         appWidgetManager.updateAppWidget(new ComponentName(context, StockWidget.class), remoteViews);
