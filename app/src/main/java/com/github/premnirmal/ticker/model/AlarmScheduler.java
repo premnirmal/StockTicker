@@ -48,6 +48,10 @@ public final class AlarmScheduler {
             mutableDateTime.setHourOfDay(startTimez[0]);
             mutableDateTime.setMinuteOfHour(startTimez[1]);
             set = true;
+        } else if (hourOfDay < startTimez[0] || (hourOfDay == startTimez[0] && minuteOfHour < startTimez[1])) {
+            mutableDateTime.setHourOfDay(startTimez[0]);
+            mutableDateTime.setMinuteOfHour(startTimez[1]);
+            set = true;
         }
 
         if (set && dayOfWeek == DateTimeConstants.FRIDAY) {
@@ -69,7 +73,7 @@ public final class AlarmScheduler {
             }
         }
         final long msToNextAlarm;
-        if(set) {
+        if (set) {
             msToNextAlarm = mutableDateTime.getMillis() - DateTime.now().getMillis();
         } else {
             msToNextAlarm = Tools.getUpdateInterval();
@@ -78,7 +82,7 @@ public final class AlarmScheduler {
     }
 
     static void scheduleUpdate(long msToNextAlarm, Context context) {
-        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "UpdateScheduled for " + ((msToNextAlarm - SystemClock.elapsedRealtime())/(1000*60)) + " minutes");
+        Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION, "UpdateScheduled for " + ((msToNextAlarm - SystemClock.elapsedRealtime()) / (1000 * 60)) + " minutes");
         final Intent updateReceiverIntent = new Intent(context, RefreshReceiver.class);
         updateReceiverIntent.setAction(UPDATE_FILTER);
         final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
