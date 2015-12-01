@@ -46,7 +46,7 @@ class SuggestionsAdapter extends BaseAdapter {
         }
         final TextView textView = (TextView) convertView;
         final Suggestion item = getItem(position);
-        final String name = item.symbol + " (" + Html.fromHtml(item.name) + ") " + item.exchDisp;
+        final String name = item.symbol + " - " + Html.fromHtml(item.name) + " (" + item.exchDisp + ")";
         textView.setText(name);
         final int padding = (int) context.getResources().getDimension(R.dimen.text_padding);
         textView.setPadding(padding, padding, padding, padding);

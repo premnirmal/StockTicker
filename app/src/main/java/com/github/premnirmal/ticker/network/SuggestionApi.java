@@ -9,7 +9,7 @@ import rx.Observable;
 public interface SuggestionApi {
 
 
-    @GET("/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=&lang=")
+    @GET("/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
     Observable<Suggestions> getSuggestions(@retrofit.http.Query("query") String query);
 
 }

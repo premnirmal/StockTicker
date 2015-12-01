@@ -93,7 +93,7 @@ public class TickerSelectorActivity extends BaseActivity {
 
                                     @Override
                                     public void onError(Throwable throwable) {
-                                        showDialog(getString(R.string.adblock));
+                                        InAppMessage.showMessage(TickerSelectorActivity.this, R.string.error_fetching_suggestions);
                                     }
 
                                     @Override

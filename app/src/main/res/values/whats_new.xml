@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
+        <item>Fixed symbol lookup</item>
         <item>Bug fixes related to scheduling</item>
     </string-array>
 </resources>
