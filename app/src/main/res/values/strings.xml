@@ -17,8 +17,7 @@
 
     <string name="yahoo_endpoint">http://query.yahooapis.com/v1/public</string>
     <string name="google_endpoint">http://finance.google.com/finance</string>
-    <string name="suggestions_yahoo_endpoint">http://d.yimg.com/autoc.finance.yahoo.com</string>
-    <string name="suggestions_markit_endpoint">http://dev.markitondemand.com/Api/v2</string>
+    <string name="suggestions_endpoint">https://s.yimg.com/aq</string>
     <string name="add_ticker">Add Ticker</string>
     <string name="dotdotdot">…</string>
     <string name="text_size">Text Size</string>
@@ -47,8 +46,7 @@
     <string name="one_month">1 month</string>
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>
-    <string name="error_fetching_suggestions">Error fetching suggestions</string>
-    <string name="adblock">Error fetching suggestions. Are you sure you\'re not using an adblocker? If you are using an adblocker, please add d.yimg.com to your whitelist.</string>
+    <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
     <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
     <string name="drag_instructions">Long click a stock to drag</string>
     <string name="rearrange">Rearrange</string>
