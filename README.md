@@ -29,4 +29,4 @@ The main purpose of this app is to demonstrate usage of Dagger and RxJava
 MIT
 
 ### Author
-> Prem Nirmal | [premnirmal.github.io](http://premnirmal.github.io/) | [twitter](https://twitter.com/premnirmal88)
+> [Prem Nirmal](http://premnirmal.me/)
