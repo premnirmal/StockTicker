@@ -282,11 +282,17 @@ public class StocksProvider implements IStocksProvider {
 
     @Override
     public Collection<String> removeStock(String ticker) {
+        final String ticker2 = "^" + ticker; // in case it was an index
         tickerList.remove(ticker);
+        tickerList.remove(ticker2);
         final Stock dummy = new Stock();
+        final Stock dummy2 = new Stock();
         dummy.symbol = ticker;
+        dummy2.symbol = ticker2;
         stockList.remove(dummy);
+        stockList.remove(dummy2);
         positionList.remove(dummy);
+        positionList.remove(dummy2);
         save();
         sendBroadcast();
         return tickerList;
@@ -297,13 +303,13 @@ public class StocksProvider implements IStocksProvider {
         if (stockList != null) {
             sortStockList();
 
-            List<Stock> newStockList = new ArrayList<Stock>();
-            boolean added = false;
+            final List<Stock> newStockList = new ArrayList<Stock>();
+            boolean added;
             // Set all positions
             for (Stock stock : stockList) {
                 added = false;
                 for (Stock pos : positionList) {
-                    if (added == false && stock.symbol.equals(pos.symbol)) {
+                    if (!added && stock.symbol.equals(pos.symbol)) {
                         stock.IsPosition = true;
                         stock.PositionShares = pos.PositionShares;
                         stock.PositionPrice = pos.PositionPrice;
@@ -311,7 +317,7 @@ public class StocksProvider implements IStocksProvider {
                         added = true;
                     }
                 }
-                if (added == false) {
+                if (!added) {
                     newStockList.add(stock);
                 }
             }
