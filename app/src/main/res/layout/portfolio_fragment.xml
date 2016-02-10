@@ -20,14 +20,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <GridView
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:numColumns="2"
-            android:paddingLeft="@dimen/list_spacing"
-            android:paddingRight="@dimen/list_spacing"
-            android:horizontalSpacing="@dimen/list_spacing"
-            android:verticalSpacing="@dimen/list_spacing"
             android:id="@+id/stockList" />
     </android.support.v4.widget.SwipeRefreshLayout>
 

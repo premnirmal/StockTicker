@@ -13,6 +13,8 @@ import com.github.premnirmal.tickerwidget.R;
 import com.github.premnirmal.ticker.network.Stock;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,6 +45,8 @@ public final class Tools {
     public static final String FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT";
     public static final String WHATS_NEW = "WHATS_NEW";
     public static final String PERCENT = "PERCENT";
+
+    public static final Format DECIMAL_FORMAT = new DecimalFormat("0.00");
 
     private final SharedPreferences sharedPreferences;
 

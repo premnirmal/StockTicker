@@ -18,7 +18,7 @@ abstract class BaseFragment extends Fragment {
 
     private final BehaviorSubject<LifecycleEvent> lifecycleSubject = BehaviorSubject.create();
 
-    private boolean mCalled;
+    private boolean called;
 
     protected Observable<LifecycleEvent> lifecycle() {
         return lifecycleSubject.asObservable();
@@ -40,7 +40,7 @@ abstract class BaseFragment extends Fragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lifecycleSubject.onNext(LifecycleEvent.CREATE_VIEW);
-        mCalled = true;
+        called = true;
     }
 
     @Override
@@ -51,7 +51,7 @@ abstract class BaseFragment extends Fragment {
 
     @Override
     public void onResume() {
-        if (!mCalled) {
+        if (!called) {
             throw new AndroidRuntimeException("You didn't call super.onResume() when in " + getClass().getSimpleName());
         }
         super.onResume();
@@ -93,10 +93,10 @@ abstract class BaseFragment extends Fragment {
         return LifecycleObservable.bindFragmentLifecycle(lifecycle(), boundObservable);
     }
 
-    protected View findViewById(int id) {
+    protected <T extends View> T findViewById(int id) {
         final View view = getView();
         if (view != null) {
-            return view.findViewById(id);
+            return (T) view.findViewById(id);
         } else {
             return null;
         }

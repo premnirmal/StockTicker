@@ -20,7 +20,6 @@ import com.github.premnirmal.ticker.network.SuggestionApi;
 import com.github.premnirmal.ticker.network.Suggestions;
 import com.github.premnirmal.tickerwidget.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -117,7 +116,8 @@ public class TickerSelectorActivity extends BaseActivity {
                 final String ticker = suggestion.symbol;
                 if (!stocksProvider.getTickers().contains(ticker)) {
                     stocksProvider.addStock(ticker);
-                    showDialog(ticker + " added to list. Do you want to add positions?", new DialogInterface.OnClickListener() {
+                    InAppMessage.showMessage(TickerSelectorActivity.this, ticker + " added to list");
+                    showDialog("Do you want to add positions for " + ticker + "?", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             final Intent intent = new Intent(TickerSelectorActivity.this, AddPositionActivity.class);
@@ -130,8 +130,6 @@ public class TickerSelectorActivity extends BaseActivity {
                             dialog.dismiss();
                         }
                     });
-                    searchView.setText("");
-                    listView.setAdapter(new SuggestionsAdapter(new ArrayList<Suggestion>()));
                 } else {
                     showDialog(ticker + " is already in your portfolio");
                 }

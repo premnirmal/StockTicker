@@ -294,7 +294,8 @@ public class StocksProvider implements IStocksProvider {
         positionList.remove(dummy);
         positionList.remove(dummy2);
         save();
-        sendBroadcast();
+        AlarmScheduler.sendBroadcast(context);
+        scheduleUpdate(getMsToNextAlarm());
         return tickerList;
     }
 

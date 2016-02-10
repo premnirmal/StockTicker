@@ -18,7 +18,11 @@
 
     <style name="TextViewStyle" parent="android:Widget.TextView">
         <item name="android:textSize">@dimen/text_size</item>
-        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+        <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+    </style>
+
+    <style name="BoldTextView" parent="TextViewStyle">
+        <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
     </style>
 
     <style name="ButtonStyle" parent="android:Widget.Button">
@@ -30,7 +34,7 @@
 
     <style name="EditTextStyle" parent="android:Widget.EditText">
         <item name="android:textSize">@dimen/text_size</item>
-        <item name="fontPath">fonts/Montserrat-Regular.otf</item>
+        <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
     </style>
 
     <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
@@ -43,6 +47,7 @@
 
     <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@android:color/white</item>
+        <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
     </style>
 
 </resources>

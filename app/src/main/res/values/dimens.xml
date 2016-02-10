@@ -14,7 +14,7 @@
     <integer name="text_size_medium">12</integer>
     <integer name="text_size_large">14</integer>
 
-    <dimen name="list_spacing">6dp</dimen>
+    <dimen name="list_spacing">3dp</dimen>
 
     <dimen name="small_text">10sp</dimen>
     <dimen name="xsmall_text">8sp</dimen>

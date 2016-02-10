@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/tickerName"
-        android:textStyle="bold"
+        style="@style/BoldTextView"
         android:textSize="@dimen/xlarge_text"
         tools:text="GOOG"
         android:gravity="center" />

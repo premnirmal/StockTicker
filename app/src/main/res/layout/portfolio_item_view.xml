@@ -5,12 +5,12 @@
     android:background="@drawable/card_bg">
     <!-- Bottom View Start-->
     <FrameLayout
-        android:layout_width="50dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
+        android:id="@+id/trash"
         android:padding="15dp">
 
         <ImageButton
-            android:id="@+id/trash"
             android:background="@android:color/transparent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,6 +24,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:sfw="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/stockContainer"
         android:orientation="horizontal"
         android:padding="5dp"
         android:layout_width="match_parent"
@@ -42,7 +43,7 @@
                 android:textSize="@dimen/large_text"
                 android:singleLine="true"
                 android:ellipsize="end"
-                android:textStyle="bold"
+                style="@style/BoldTextView"
                 android:layout_marginBottom="5dp"
                 android:textColor="@android:color/white"
                 tools:text="GOOG"

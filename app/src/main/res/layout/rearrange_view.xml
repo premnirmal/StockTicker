@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
+        style="@style/BoldTextView"
         android:textSize="14sp"
         android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"

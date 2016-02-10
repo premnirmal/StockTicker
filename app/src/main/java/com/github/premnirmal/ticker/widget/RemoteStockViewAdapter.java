@@ -18,8 +18,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider;
 import com.github.premnirmal.ticker.network.Stock;
 import com.github.premnirmal.tickerwidget.R;
 
-import java.text.DecimalFormat;
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,8 +31,6 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
 
     private List<Stock> stocks;
     private Context context;
-
-    private final Format format = new DecimalFormat("0.00");
 
     @Inject
     IStocksProvider stocksProvider;
@@ -85,9 +81,9 @@ public class RemoteStockViewAdapter implements RemoteViewsService.RemoteViewsFac
                 change = 0d;
                 changePercent = 0d;
             }
-            final String changeValueFormatted = format.format(change);
-            final String changePercentFormatted = format.format(changePercent);
-            final String priceFormatted = format.format(stock.LastTradePriceOnly);
+            final String changeValueFormatted = Tools.DECIMAL_FORMAT.format(change);
+            final String changePercentFormatted = Tools.DECIMAL_FORMAT.format(changePercent);
+            final String priceFormatted = Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly);
 
             changePercentString = new SpannableString(changePercentFormatted + "%");
             changeValueString = new SpannableString(changeValueFormatted);

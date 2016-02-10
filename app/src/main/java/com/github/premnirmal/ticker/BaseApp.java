@@ -22,7 +22,7 @@ public abstract class BaseApp extends MultiDexApplication {
         super.onCreate();
         instance = this;
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/Montserrat-Regular.otf")
+                .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build());
     }
