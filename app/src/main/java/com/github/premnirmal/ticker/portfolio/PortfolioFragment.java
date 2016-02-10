@@ -56,6 +56,7 @@ public class PortfolioFragment extends BaseFragment {
     private Parcelable listViewState;
     private StocksAdapter stocksAdapter;
     private View rootView;
+    private RecyclerView recyclerView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,9 @@ public class PortfolioFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         update();
+        if (listViewState != null) {
+            recyclerView.getLayoutManager().onRestoreInstanceState(listViewState);
+        }
     }
 
     @Override
@@ -75,7 +79,7 @@ public class PortfolioFragment extends BaseFragment {
         final Context context = inflater.getContext();
         final View view = inflater.inflate(R.layout.portfolio_fragment, null);
         rootView = view.findViewById(R.id.fragment_root);
-        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.stockList);
+        recyclerView = (RecyclerView) view.findViewById(R.id.stockList);
         recyclerView.addItemDecoration(new SpacingDecoration(context.getResources().getDimensionPixelSize(R.dimen.list_spacing)));
         recyclerView.setLayoutManager(new GridLayoutManager(context, 2));
         final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
@@ -143,7 +147,6 @@ public class PortfolioFragment extends BaseFragment {
                 lastUpdatedTextView.setText("Last updated: " + stocksProvider.lastFetched());
             }
 
-            final RecyclerView recyclerView = findViewById(R.id.stockList);
             if (recyclerView != null) {
                 if (stocksAdapter == null) {
                     stocksAdapter = new StocksAdapter(stocksProvider,
@@ -177,10 +180,6 @@ public class PortfolioFragment extends BaseFragment {
                 }
 
                 recyclerView.setAdapter(stocksAdapter);
-
-                if (listViewState != null) {
-                    recyclerView.getLayoutManager().onRestoreInstanceState(listViewState);
-                }
 
                 if (stocksAdapter.getItemCount() > 1) {
                     if (Tools.firstTimeViewingSwipeLayout()) {
@@ -216,11 +215,24 @@ public class PortfolioFragment extends BaseFragment {
         }
     }
 
-    private void promptRemove(final Stock stock, int position) {
-        stocksProvider.removeStock(stock.symbol);
-        if (stocksAdapter.remove(stock)) {
-            stocksAdapter.notifyItemRemoved(position);
-        }
+    private void promptRemove(final Stock stock, final int position) {
+        new AlertDialog.Builder(getActivity()).setTitle("Remove")
+                .setMessage("Are you sure you want to remove " + stock.symbol + " from your portfolio?")
+                .setPositiveButton("Remove", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        stocksProvider.removeStock(stock.symbol);
+                        if (stocksAdapter.remove(stock)) {
+                            stocksAdapter.notifyItemRemoved(position);
+                        }
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        }).show();
     }
 
     @Override
@@ -254,7 +266,7 @@ public class PortfolioFragment extends BaseFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        listViewState = ((RecyclerView) findViewById(R.id.stockList)).getLayoutManager().onSaveInstanceState();
+        listViewState = recyclerView.getLayoutManager().onSaveInstanceState();
         outState.putParcelable(LIST_INSTANCE_STATE, listViewState);
     }
 }
