@@ -14,7 +14,7 @@ import com.github.premnirmal.ticker.portfolio.AddPositionActivity;
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity;
 import com.github.premnirmal.ticker.portfolio.GraphActivity;
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment;
-import com.github.premnirmal.ticker.portfolio.RearrangeActivity;
+import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity;
 import com.github.premnirmal.ticker.portfolio.TickerSelectorActivity;
 import com.github.premnirmal.ticker.settings.SettingsActivity;
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter;
@@ -29,8 +29,8 @@ import retrofit.RestAdapter;
 
 /**
  * Created by premnirmal on 12/21/14.
+ * TODO move this to kotlin when using Dagger 2
  */
-
 @Module(
         injects = {
                 TickerSelectorActivity.class,

@@ -29,7 +29,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.RearrangeActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity"
             android:label="@string/portfolio"
             android:screenOrientation="portrait" />
         <activity

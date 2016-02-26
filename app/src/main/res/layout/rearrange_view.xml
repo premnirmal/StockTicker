@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/card_bg"
-    android:padding="5dp">
+    android:padding="15dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/BoldTextView"
         android:textSize="14sp"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:id="@+id/tickerName" />
+        android:id="@+id/tickerName"
+        android:maxLines="2"
+        android:ellipsize="end"
+        />
 
 </FrameLayout>

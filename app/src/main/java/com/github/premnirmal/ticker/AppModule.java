@@ -14,6 +14,7 @@ import dagger.Provides;
 
 /**
  * Created by premnirmal on 12/21/14.
+ * TODO move this to kotlin when switching to Dagger 2
  */
 @Module(
         includes = {
