@@ -67,7 +67,7 @@ abstract class BaseActivity : AppCompatActivity() {
         lifecycleSubject.onNext(LifecycleEvent.RESUME)
     }
 
-    @JvmOverloads protected fun showDialog(message: String, listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }): AlertDialog {
+    protected fun showDialog(message: String, listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }): AlertDialog {
         return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setNeutralButton("OK", listener).show()
     }
 

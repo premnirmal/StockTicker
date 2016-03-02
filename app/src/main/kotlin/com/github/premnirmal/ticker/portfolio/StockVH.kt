@@ -14,7 +14,11 @@ import com.github.premnirmal.tickerwidget.R
 internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun update(stock: Stock?, listener: StocksAdapter.OnStockClickListener) {
-        val position = position
+        if (stock == null) {
+            return
+        }
+
+        val position = adapterPosition
         itemView.findViewById(R.id.stockContainer).setOnClickListener { listener.onClick(stock) }
         itemView.findViewById(R.id.trash).setOnClickListener { v -> listener.onRemoveClick(v, stock, position) }
 
@@ -22,7 +26,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
         swipeLayout.dragEdge = SwipeLayout.DragEdge.Right
 
-        setText(itemView, R.id.ticker, stock!!.symbol)
+        setText(itemView, R.id.ticker, stock.symbol)
 
         val change: Double
         if (stock != null && stock.Change != null) {
@@ -37,7 +41,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         changeInPercent.setText(stock.ChangeinPercent)
         val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
         changeValue.setText(stock.Change)
-        setStockFieldText(itemView, R.id.totalValue, stock.LastTradePriceOnly.toString())
+        setStockFieldText(itemView, R.id.totalValue, "${stock.LastTradePriceOnly}")
 
         val color: Int
         if (change >= 0) {
@@ -63,13 +67,13 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             setStockFieldText(itemView, R.id.yearLow, String.format("%.2f", stock.LastTradePriceOnly - stock.PositionPrice))
         } else {
             setStockFieldLabel(itemView, R.id.averageDailyVolume, "Daily Volume")
-            setStockFieldText(itemView, R.id.averageDailyVolume, stock.AverageDailyVolume.toString())
+            setStockFieldText(itemView, R.id.averageDailyVolume, "${stock.AverageDailyVolume}")
             setStockFieldLabel(itemView, R.id.exchange, "Exchange")
-            setStockFieldText(itemView, R.id.exchange, stock.StockExchange.toString())
+            setStockFieldText(itemView, R.id.exchange, "${stock.StockExchange}")
             setStockFieldLabel(itemView, R.id.yearHigh, "Year High")
-            setStockFieldText(itemView, R.id.yearHigh, stock.YearHigh.toString())
+            setStockFieldText(itemView, R.id.yearHigh, "${stock.YearHigh}")
             setStockFieldLabel(itemView, R.id.yearLow, "Year Low")
-            setStockFieldText(itemView, R.id.yearLow, stock.YearLow.toString())
+            setStockFieldText(itemView, R.id.yearLow, "${stock.YearLow}")
         }
 
         val padding = itemView.getResources().getDimension(R.dimen.text_padding).toInt()
@@ -78,7 +82,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     companion object {
 
-        fun setText(parent: View, textViewId: Int, text: CharSequence) {
+        fun setText(parent: View, textViewId: Int, text: CharSequence?) {
             val textView = parent.findViewById(textViewId) as TextView
             textView.text = text
         }

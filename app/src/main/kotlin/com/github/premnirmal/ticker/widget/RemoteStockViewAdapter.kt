@@ -22,7 +22,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class RemoteStockViewAdapter(private var context: Context) : RemoteViewsService.RemoteViewsFactory {
+class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.RemoteViewsFactory {
 
     private var stocks: List<Stock>? = null
 
@@ -45,7 +45,7 @@ class RemoteStockViewAdapter(private var context: Context) : RemoteViewsService.
     }
 
     override fun onDestroy() {
-        context = null as Context
+
     }
 
     override fun getCount(): Int {

@@ -97,7 +97,7 @@ class TickerSelectorActivity : BaseActivity() {
                         },
                         DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
             } else {
-                showDialog(ticker + " is already in your portfolio")
+                showDialog("${ticker} is already in your portfolio")
             }
         })
 

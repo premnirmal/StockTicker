@@ -9,23 +9,23 @@ public class Stock implements Comparable<Stock>, Serializable {
 
     private static final long serialVersionUID = -425355L;
 
-    public String symbol;
+    public String symbol = "";
 
-    public String Name;
+    public String Name = "";
 
     public float LastTradePriceOnly;
-    public String LastTradeDate;
-    public String ChangeinPercent;
-    public String Change;
-    public String AverageDailyVolume;
-    public String DaysLow;
-    public String DaysHigh;
-    public String YearLow;
-    public String YearHigh;
-    public String MarketCapitalization;
-    public String DaysRange;
-    public String Volume;
-    public String StockExchange;
+    public String LastTradeDate = "";
+    public String ChangeinPercent = "";
+    public String Change = "";
+    public String AverageDailyVolume = "";
+    public String DaysLow = "";
+    public String DaysHigh = "";
+    public String YearLow = "";
+    public String YearHigh = "";
+    public String MarketCapitalization = "";
+    public String DaysRange = "";
+    public String Volume = "";
+    public String StockExchange = "";
 
     // Add Position fields
     public boolean IsPosition;
