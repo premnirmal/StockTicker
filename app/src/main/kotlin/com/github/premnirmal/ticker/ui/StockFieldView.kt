@@ -53,11 +53,11 @@ class StockFieldView @JvmOverloads constructor(context: Context, attrs: Attribut
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : this(context, attrs) {
     }
 
-    fun setLabel(text: CharSequence) {
+    fun setLabel(text: CharSequence?) {
         fieldName.text = text
     }
 
-    fun setText(text: CharSequence) {
+    fun setText(text: CharSequence?) {
         fieldValue.text = text
     }
 

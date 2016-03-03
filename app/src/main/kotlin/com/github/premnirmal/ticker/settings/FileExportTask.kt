@@ -8,21 +8,23 @@ import java.io.FileOutputStream
 import java.io.IOException
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Analytics
+import java.util.*
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-internal open class FileExportTask : AsyncTask<Any, Void, String>() {
+internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
 
-    override fun doInBackground(vararg tickers: Any): String? {
+    override fun doInBackground(vararg tickers: List<String>): String? {
         val file = Tools.tickersFile
+        val tickerList : List<String> = ArrayList(tickers[0])
         try {
             if (file.exists()) {
                 file.delete()
                 file.createNewFile()
             }
             val fileOutputStream = FileOutputStream(file)
-            for (ticker in tickers) {
+            for (ticker: String in tickerList) {
                 fileOutputStream.write(("$ticker ,").toByteArray())
             }
             fileOutputStream.flush()
@@ -35,7 +37,7 @@ internal open class FileExportTask : AsyncTask<Any, Void, String>() {
             return null
         }
 
-        Analytics.trackSettingsChange("EXPORT", TextUtils.join(",", tickers))
+        Analytics.trackSettingsChange("EXPORT", TextUtils.join(",", tickerList))
         return file.path
     }
 }

@@ -18,7 +18,10 @@ import java.util.*
  */
 internal open class FileImportTask(private val stocksProvider: IStocksProvider) : AsyncTask<String, Void, Boolean>() {
 
-    override fun doInBackground(vararg params: String): Boolean? {
+    override fun doInBackground(vararg params: String?): Boolean? {
+        if (params.size == 0 || params[0] == null) {
+            return false
+        }
         val uri: URI?
         try {
             uri = URI(params[0])

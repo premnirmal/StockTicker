@@ -105,7 +105,7 @@ class SettingsActivity : PreferenceActivity() {
             val exportPref = findPreference("EXPORT")
             exportPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 object : FileExportTask() {
-                    protected override fun onPostExecute(result: String?) {
+                    override fun onPostExecute(result: String?) {
                         if (result == null) {
                             showDialog(getString(R.string.error_exporting))
                             CrashLogger.logException(Throwable("Error exporting tickers"))
@@ -113,7 +113,7 @@ class SettingsActivity : PreferenceActivity() {
                             showDialog("Exported to $result")
                         }
                     }
-                }.execute(stocksProvider.getTickers().toTypedArray())
+                }.execute(stocksProvider.getTickers())
                 true
             }
         })
@@ -127,7 +127,7 @@ class SettingsActivity : PreferenceActivity() {
                     shareTickers()
                 } else {
                     object : FileExportTask() {
-                        protected override fun onPostExecute(result: String?) {
+                        override fun onPostExecute(result: String?) {
                             if (result == null) {
                                 showDialog(getString(R.string.error_sharing))
                                 CrashLogger.logException(Throwable("Error sharing tickers"))
@@ -135,7 +135,7 @@ class SettingsActivity : PreferenceActivity() {
                                 shareTickers()
                             }
                         }
-                    }.execute(*stocksProvider.getTickers().toTypedArray())
+                    }.execute(stocksProvider.getTickers())
                 }
                 true
             }
@@ -158,7 +158,7 @@ class SettingsActivity : PreferenceActivity() {
             fontSizePreference.setValueIndex(size)
             fontSizePreference.summary = fontSizePreference.entries[size]
             fontSizePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val stringValue = newValue.toString()
                     val listPreference = preference as ListPreference
@@ -178,7 +178,7 @@ class SettingsActivity : PreferenceActivity() {
             bgPreference.setValueIndex(bgIndex)
             bgPreference.summary = bgPreference.entries[bgIndex]
             bgPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val stringValue = newValue.toString()
                     val listPreference = preference as ListPreference
@@ -198,7 +198,7 @@ class SettingsActivity : PreferenceActivity() {
             layoutTypePref.setValueIndex(typeIndex)
             layoutTypePref.summary = layoutTypePref.entries[typeIndex]
             layoutTypePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val stringValue = newValue.toString()
                     val listPreference = preference as ListPreference
@@ -223,7 +223,7 @@ class SettingsActivity : PreferenceActivity() {
             textColorPreference.setValueIndex(colorIndex)
             textColorPreference.summary = textColorPreference.entries[colorIndex]
             textColorPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val stringValue = newValue.toString()
                     val listPreference = preference as ListPreference
@@ -244,7 +244,7 @@ class SettingsActivity : PreferenceActivity() {
             refreshPreference.setValueIndex(refreshIndex)
             refreshPreference.summary = refreshPreference.entries[refreshIndex]
             refreshPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val stringValue = newValue.toString()
                     val listPreference = preference as ListPreference
@@ -263,7 +263,7 @@ class SettingsActivity : PreferenceActivity() {
             val autoSort = Tools.autoSortEnabled()
             autoSortPreference.isChecked = autoSort
             autoSortPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val checked = newValue as Boolean
                     preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply()
@@ -277,7 +277,7 @@ class SettingsActivity : PreferenceActivity() {
             val bold = Tools.boldEnabled()
             boldChangePreference.isChecked = bold
             boldChangePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     val checked = newValue as Boolean
                     preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply()
@@ -290,7 +290,7 @@ class SettingsActivity : PreferenceActivity() {
             val startTimePref = findPreference(Tools.START_TIME) as TimePreference
             startTimePref.summary = preferences.getString(Tools.START_TIME, "09:30")
             startTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply()
                     startTimePref.summary = newValue.toString()
@@ -304,7 +304,7 @@ class SettingsActivity : PreferenceActivity() {
             val endTimePref = findPreference(Tools.END_TIME) as TimePreference
             endTimePref.summary = preferences.getString(Tools.END_TIME, "16:30")
             endTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-                public override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+                override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
                     super.onPreferenceChange(preference, newValue)
                     preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply()
                     endTimePref.summary = newValue.toString()
@@ -317,7 +317,7 @@ class SettingsActivity : PreferenceActivity() {
 
     private fun shareTickers() {
         val intent = Intent(Intent.ACTION_SEND)
-        intent.setType("text/plain")
+        intent.type = "text/plain"
         intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>())
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.my_stock_portfolio))
         intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_email_subject))
@@ -333,22 +333,22 @@ class SettingsActivity : PreferenceActivity() {
     }
 
     private fun broadcastUpdateWidget() {
-        val intent = Intent(getApplicationContext(), StockWidget::class.java)
-        intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
-        val widgetManager = AppWidgetManager.getInstance(getApplicationContext())
-        val ids = widgetManager.getAppWidgetIds(ComponentName(getApplicationContext(), StockWidget::class.java))
+        val intent = Intent(applicationContext, StockWidget::class.java)
+        intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+        val widgetManager = AppWidgetManager.getInstance(applicationContext)
+        val ids = widgetManager.getAppWidgetIds(ComponentName(applicationContext, StockWidget::class.java))
         widgetManager.notifyAppWidgetViewDataChanged(ids, android.R.id.list)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         sendBroadcast(intent)
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == FilePickerActivity.REQUEST_FILE && resultCode == Activity.RESULT_OK) {
-            val filePath = data.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH)
+            val filePath = data?.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH)
             if (filePath != null) {
                 object : FileImportTask(stocksProvider) {
-                    protected override fun onPostExecute(result: Boolean?) {
-                        if (result!!) {
+                    override fun onPostExecute(result: Boolean?) {
+                        if (result != null && result) {
                             showDialog(getString(R.string.ticker_import_success))
                         } else {
                             showDialog(getString(R.string.ticker_import_fail))
