@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>Rearranging stocks is a lot smoother now!!</item>
+        <item>Crash fixes</item>
+        <item>Rearranging stocks is a lot smoother now</item>
     </string-array>
 </resources>
