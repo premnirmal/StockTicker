@@ -10,8 +10,7 @@ class StocksApp : BaseApp() {
 
     override fun onCreate() {
         super.onCreate()
-        Injector.init(this)
-        Fabric.with(this, Crashlytics())
         Analytics.init(this)
+        Fabric.with(this, Crashlytics())
     }
 }

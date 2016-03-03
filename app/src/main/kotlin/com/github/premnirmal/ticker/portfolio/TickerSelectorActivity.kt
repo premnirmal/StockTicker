@@ -36,7 +36,7 @@ class TickerSelectorActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         setContentView(R.layout.stock_search_layout)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

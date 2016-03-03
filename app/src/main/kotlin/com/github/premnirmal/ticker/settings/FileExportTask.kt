@@ -25,7 +25,7 @@ internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
             }
             val fileOutputStream = FileOutputStream(file)
             for (ticker: String in tickerList) {
-                fileOutputStream.write(("$ticker ,").toByteArray())
+                fileOutputStream.write(("${ticker}, ").toByteArray())
             }
             fileOutputStream.flush()
             fileOutputStream.close()

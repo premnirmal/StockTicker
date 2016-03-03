@@ -24,7 +24,7 @@ open class AddPositionActivity : BaseActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         setContentView(R.layout.activity_positions)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         ticker = intent.getStringExtra(TICKER)

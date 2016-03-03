@@ -1,16 +1,16 @@
 package com.github.premnirmal.ticker
 
-import dagger.ObjectGraph
-
 /**
  * Created by premnirmal on 2/26/16.
  */
-class Injector private constructor(app: StocksApp) {
+class Injector private constructor(app: BaseApp) {
 
-    private val objectGraph: ObjectGraph
+    private val component: AppComponent
 
     init {
-        objectGraph = ObjectGraph.create(AppModule(app))
+        component = DaggerAppComponent.builder()
+                .appModule(AppModule(app))
+                .build()
         instance = this
     }
 
@@ -18,16 +18,12 @@ class Injector private constructor(app: StocksApp) {
 
         private var instance: Injector? = null
 
-        internal fun init(app: StocksApp) {
+        internal fun init(app: BaseApp) {
             instance = Injector(app)
         }
 
-        @JvmStatic operator fun <T> get(clazz: Class<T>): T {
-            return instance!!.objectGraph.get(clazz)
-        }
-
-        @JvmStatic fun inject(`object`: Any) {
-            instance!!.objectGraph.inject(`object`)
+        fun getAppComponent(): AppComponent {
+            return instance!!.component
         }
     }
 

@@ -40,7 +40,7 @@ class GraphActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         setContentView(R.layout.activity_graph)
         val supportActionBar = supportActionBar
         supportActionBar?.hide()

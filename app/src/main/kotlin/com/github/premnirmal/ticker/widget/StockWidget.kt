@@ -39,7 +39,7 @@ class StockWidget : AppWidgetProvider() {
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         Analytics.trackWidgetUpdate("onUpdate")
         for (widgetId in appWidgetIds) {
             val min_width: Int
@@ -73,7 +73,7 @@ class StockWidget : AppWidgetProvider() {
     }
 
     override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, newOptions: Bundle) {
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         val min_width = getMinWidgetWidth(newOptions)
         val remoteViews: RemoteViews
         if (min_width > 250) {

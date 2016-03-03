@@ -13,6 +13,7 @@ abstract class BaseApp : MultiDexApplication() {
         super.onCreate()
         instance = this
         CalligraphyConfig.initDefault(CalligraphyConfig.Builder().setDefaultFontPath("fonts/Ubuntu-Regular.ttf").setFontAttrId(R.attr.fontPath).build())
+        Injector.init(this)
     }
 
     companion object {

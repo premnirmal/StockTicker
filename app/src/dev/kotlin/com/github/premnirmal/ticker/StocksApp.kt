@@ -7,6 +7,5 @@ class StocksApp : BaseApp() {
 
     override fun onCreate() {
         super.onCreate()
-        Injector.init(this)
     }
 }

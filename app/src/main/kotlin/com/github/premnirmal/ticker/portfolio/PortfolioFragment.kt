@@ -69,7 +69,7 @@ class PortfolioFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         setHasOptionsMenu(true)
     }
 

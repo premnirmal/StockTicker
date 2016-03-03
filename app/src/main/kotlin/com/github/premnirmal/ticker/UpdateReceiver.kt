@@ -23,7 +23,7 @@ class UpdateReceiver : BroadcastReceiver() {
     internal val random = Random(System.currentTimeMillis())
 
     override fun onReceive(context: Context, intent: Intent) {
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         val path = context.getString(R.string.package_replaced_string)
         val intentData = intent.dataString
         if (path == intentData || "package:" + path == intentData) {

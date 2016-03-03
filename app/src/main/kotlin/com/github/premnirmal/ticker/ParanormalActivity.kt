@@ -20,7 +20,7 @@ class ParanormalActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         val extras : Bundle? = intent.extras
         val widgetId: Int
         if (extras != null) {

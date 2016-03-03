@@ -23,7 +23,7 @@ class RearrangeActivity : BaseActivity(), OnStartDragListener {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Injector.inject(this)
+        Injector.getAppComponent().inject(this)
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
         setTitle(R.string.rearrange)
