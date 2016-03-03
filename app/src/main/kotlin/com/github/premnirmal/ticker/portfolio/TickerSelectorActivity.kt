@@ -39,7 +39,7 @@ class TickerSelectorActivity : BaseActivity() {
         Injector.inject(this)
         setContentView(R.layout.stock_search_layout)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val searchView = findViewById(R.id.query) as EditText
         val listView = findViewById(R.id.resultList) as ListView
@@ -56,9 +56,7 @@ class TickerSelectorActivity : BaseActivity() {
             override fun afterTextChanged(s: Editable) {
                 val query = s.toString().trim { it <= ' ' }.replace(" ".toRegex(), "")
                 if (!query.isEmpty()) {
-                    if (subscription != null) {
-                        subscription!!.unsubscribe()
-                    }
+                    subscription?.unsubscribe()
                     if (Tools.isNetworkOnline(applicationContext)) {
                         val observable = suggestionApi.getSuggestions(query)
                         subscription = bind(observable).map { suggestions -> suggestions.ResultSet.Result }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(object : Subscriber<List<Suggestion>>() {

@@ -13,7 +13,7 @@ import android.widget.TimePicker
 class TimePreference(ctxt: Context, attrs: AttributeSet) : DialogPreference(ctxt, attrs) {
     private var lastHour = 0
     private var lastMinute = 0
-    private var picker: TimePicker? = null
+    lateinit private var picker: TimePicker
 
     init {
         positiveButtonText = "Set"
@@ -22,21 +22,21 @@ class TimePreference(ctxt: Context, attrs: AttributeSet) : DialogPreference(ctxt
 
     override fun onCreateDialogView(): View {
         picker = TimePicker(context)
-        picker!!.setIs24HourView(true)
+        picker.setIs24HourView(true)
         return picker as TimePicker
     }
 
     override fun onBindDialogView(v: View) {
         super.onBindDialogView(v)
-        picker!!.currentHour = lastHour
-        picker!!.currentMinute = lastMinute
+        picker.currentHour = lastHour
+        picker.currentMinute = lastMinute
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
         super.onDialogClosed(positiveResult)
         if (positiveResult) {
-            lastHour = picker!!.currentHour
-            lastMinute = picker!!.currentMinute
+            lastHour = picker.currentHour
+            lastMinute = picker.currentMinute
             val hourString = if (lastHour < 10) "0" + lastHour else lastHour.toString()
             val minuteString = if (lastMinute < 10) "0" + lastMinute else lastMinute.toString()
             val time = hourString + ":" + minuteString
@@ -59,7 +59,7 @@ class TimePreference(ctxt: Context, attrs: AttributeSet) : DialogPreference(ctxt
                 time = getPersistedString(defaultValue.toString())
             }
         } else {
-            time = defaultValue!!.toString()
+            time = defaultValue.toString()
         }
         lastHour = getHour(time)
         lastMinute = getMinute(time)

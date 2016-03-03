@@ -31,7 +31,7 @@ class GraphActivity : BaseActivity() {
 
     private val formatter = DateTimeFormat.forPattern("MM/dd/YYYY")
 
-    private var ticker: Stock? = null
+    lateinit private var ticker: Stock
     private var dataPoints: Array<SerializableDataPoint?>? = null
     private var range = Range.THREE_MONTH
 
@@ -64,7 +64,7 @@ class GraphActivity : BaseActivity() {
             Range.ONE_YEAR -> viewId = R.id.one_year
         }
         findViewById(viewId).isEnabled = false
-        Analytics.trackUI("GraphView", ticker!!.symbol)
+        Analytics.trackUI("GraphView", ticker.symbol)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -86,7 +86,7 @@ class GraphActivity : BaseActivity() {
         if (Tools.isNetworkOnline(this)) {
             findViewById(R.id.graph_holder).visibility = View.GONE
             findViewById(R.id.progress).visibility = View.VISIBLE
-            val observable = historyProvider.getDataPoints(ticker!!.symbol, range)
+            val observable = historyProvider.getDataPoints(ticker.symbol, range)
             bind(observable).subscribe(object : Subscriber<Array<SerializableDataPoint?>>() {
                 override fun onCompleted() {
 
@@ -116,8 +116,8 @@ class GraphActivity : BaseActivity() {
 
         val tickerName = findViewById(R.id.ticker) as TextView
         val desc = findViewById(R.id.desc) as TextView
-        tickerName.text = ticker!!.symbol
-        desc.text = ticker!!.Name
+        tickerName.text = ticker.symbol
+        desc.text = ticker.Name
         val dataPointValue = findViewById(R.id.dataPointValue) as TextView
         val series = LineGraphSeries(dataPoints)
         graphView.addSeries(series)
@@ -163,7 +163,7 @@ class GraphActivity : BaseActivity() {
             }
         }
         if (min != Integer.MAX_VALUE.toDouble() && max != Integer.MIN_VALUE.toDouble()) {
-            min = min - Math.abs(0.1 * min)
+            min -= Math.abs(0.1 * min)
             viewport.setMinY(if (min <= 0) 0.0 else min)
             viewport.setMaxY(max + Math.abs(0.1 * max))
         }
@@ -180,7 +180,7 @@ class GraphActivity : BaseActivity() {
             R.id.three_month -> range = Range.THREE_MONTH
             R.id.one_year -> range = Range.ONE_YEAR
         }
-        Analytics.trackUI("GraphUpdateRange", ticker!!.symbol + "-" + range.name)
+        Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name)
         val parent = v.parent as ViewGroup
         for (i in 0..parent.childCount - 1) {
             val view = parent.getChildAt(i)

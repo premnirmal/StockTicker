@@ -24,7 +24,7 @@ import javax.inject.Inject
  */
 class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.RemoteViewsFactory {
 
-    private var stocks: List<Stock>? = null
+    private val stocks: MutableList<Stock>
 
     @Inject
     lateinit internal var stocksProvider: IStocksProvider
@@ -32,7 +32,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     init {
         Injector.inject(this)
         val stocks = stocksProvider.getStocks()
-        this.stocks = if (stocks == null) ArrayList<Stock>() else ArrayList(stocks)
+        this.stocks = ArrayList(stocks)
     }
 
     override fun onCreate() {
@@ -40,8 +40,9 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     }
 
     override fun onDataSetChanged() {
-        val stocks = stocksProvider.getStocks()
-        this.stocks = if (stocks == null) ArrayList<Stock>() else ArrayList(stocks)
+        val stocksList = stocksProvider.getStocks()
+        this.stocks.clear()
+        this.stocks.addAll(stocksList)
     }
 
     override fun onDestroy() {
@@ -49,17 +50,13 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     }
 
     override fun getCount(): Int {
-        if (stocks != null) {
-            return stocks!!.size
-        } else {
-            return 0
-        }
+        return stocks.size
     }
 
     override fun getViewAt(position: Int): RemoteViews {
         val stockViewLayout = Tools.stockViewLayout()
         val remoteViews = RemoteViews(context.packageName, stockViewLayout)
-        val stock = stocks!![position]
+        val stock = stocks[position]
         remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
         val change: Double

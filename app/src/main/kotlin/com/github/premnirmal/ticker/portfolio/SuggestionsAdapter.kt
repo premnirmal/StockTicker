@@ -26,17 +26,18 @@ internal class SuggestionsAdapter(val suggestions: List<Suggestion>) : BaseAdapt
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
         val context = parent.context
+        val textView: TextView
         if (convertView == null) {
-            convertView = TextView(context)
+            textView = TextView(context)
+        } else {
+            textView = convertView as TextView
         }
-        val textView = convertView as TextView?
         val item = getItem(position)
         val name = item.symbol + " - " + Html.fromHtml(item.name) + " (" + item.exchDisp + ")"
-        textView!!.text = name
+        textView.text = name
         val padding = context.resources.getDimension(R.dimen.text_padding).toInt()
-        textView!!.setPadding(padding, padding, padding, padding)
+        textView.setPadding(padding, padding, padding, padding)
 
         return textView
     }

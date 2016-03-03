@@ -26,7 +26,7 @@ open class AddPositionActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         Injector.inject(this)
         setContentView(R.layout.activity_positions)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         ticker = intent.getStringExtra(TICKER)
         val name = findViewById(R.id.tickerName) as TextView
         name.text = ticker

@@ -81,8 +81,8 @@ class PortfolioFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.portfolio_fragment, null)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.portfolio_fragment, null)
         return view
     }
 
@@ -176,17 +176,17 @@ class PortfolioFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        menu!!.clear()
-        inflater!!.inflate(R.menu.menu_paranormal, menu)
+        menu.clear()
+        inflater.inflate(R.menu.menu_paranormal, menu)
         val rearrangeItem = menu.findItem(R.id.action_rearrange)
         rearrangeItem.isEnabled = !Tools.autoSortEnabled()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val activity = activity
-        val itemId = item!!.itemId
+        val itemId = item.itemId
         if (itemId == R.id.action_settings) {
             val intent = Intent(activity, SettingsActivity::class.java)
             startActivity(intent)
