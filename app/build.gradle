@@ -1,19 +1,25 @@
 buildscript {
+    ext.kotlin_version = '1.0.0'
     repositories {
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
 }
 
 android {
@@ -35,6 +41,18 @@ android {
         versionName = name
 
         multiDexEnabled true
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    kapt {
+        generateStubs = true
+    }
+
+    dexOptions {
+        javaMaxHeapSize "2048M"
     }
 
     signingConfigs {
@@ -74,12 +92,22 @@ android {
             versionNameSuffix '-DEBUG'
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
 }
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.squareup.dagger:dagger-compiler:1.2.+'
-    compile 'com.squareup.dagger:dagger:1.2.+'
+    compile 'javax.inject:javax.inject:1'
+    compile 'javax.annotation:javax.annotation-api:1.2'
+    compile 'com.google.dagger:dagger:2.0'
+    kapt 'com.google.dagger:dagger-compiler:2.0'
     compile 'com.squareup.retrofit:retrofit:1.8.+'
     compile 'io.reactivex:rxandroid:0.24.+'
     compile 'joda-time:joda-time:2.6'
@@ -91,10 +119,9 @@ dependencies {
     prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
         transitive = true;
     }
-    compile 'com.nhaarman.listviewanimations:lib-core:3.1.0@aar'
-    compile 'com.nhaarman.listviewanimations:lib-manipulation:3.1.0@aar'
 
     compile 'com.android.support:multidex:1.0.0'
     prodCompile 'com.google.android.gms:play-services:7.0.0'
     compile 'com.android.support:design:23.1.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

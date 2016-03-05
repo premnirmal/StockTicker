@@ -2,5 +2,6 @@
 <resources>
     <string-array name="whats_new">
         <item>Crash fixes</item>
+        <item>Rearranging stocks is a lot smoother now</item>
     </string-array>
 </resources>
