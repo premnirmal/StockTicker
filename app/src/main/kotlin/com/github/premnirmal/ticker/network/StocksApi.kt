@@ -3,15 +3,13 @@ package com.github.premnirmal.ticker.network
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
 import rx.Observable
-import rx.functions.Func1
 import java.util.*
-import com.github.premnirmal.ticker.CrashLogger
 
 /**
  * Created on 3/3/16.
  */
-class StocksApi(internal val yahooApi: YahooFinance)//        this.googleApi = googleApi;
-{
+class StocksApi(internal val yahooApi: YahooFinance)  {
+    //        this.googleApi = googleApi;
     //    final GoogleFinance googleApi;
 
     var lastFetched: String? = null
@@ -62,10 +60,11 @@ class StocksApi(internal val yahooApi: YahooFinance)//        this.googleApi = g
                 lastFetched = query.created
                 query.results.quote
             }
-        }.onErrorResumeNext { throwable ->
-            CrashLogger.logException(RuntimeException("Encountered onErrorResumeNext for yahooFinance", throwable))
-            Observable.empty<List<Stock>>()
         }
+//                .onErrorResumeNext { throwable ->
+//            CrashLogger.logException(RuntimeException("Encountered onErrorResumeNext for yahooFinance", throwable))
+//            Observable.empty<List<Stock>>()
+//        }
 
         //        final Observable<List<Stock>> allStocks = yahooObservable.zipWith(googleObservable, new Func2<List<Stock>, List<Stock>, List<Stock>>() {
         //            @Override

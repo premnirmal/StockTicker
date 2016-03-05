@@ -1,9 +1,11 @@
 package com.github.premnirmal.ticker.settings
 
+import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.*
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -11,6 +13,9 @@ import android.preference.CheckBoxPreference
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
+import android.provider.Settings
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.Toolbar
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -35,7 +40,13 @@ import com.github.premnirmal.ticker.Analytics
 /**
  * Created by premnirmal on 2/27/16.
  */
-class SettingsActivity : PreferenceActivity() {
+class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
+
+    companion object {
+        private val REQCODE_WRITE_EXTERNAL_STORAGE = 850
+        private val REQCODE_READ_EXTERNAL_STORAGE = 851
+        private val REQCODE_WRITE_EXTERNAL_STORAGE_SHARE = 852
+    }
 
     @Inject
     lateinit internal var stocksProvider: IStocksProvider
@@ -104,16 +115,11 @@ class SettingsActivity : PreferenceActivity() {
         run({
             val exportPref = findPreference("EXPORT")
             exportPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                object : FileExportTask() {
-                    override fun onPostExecute(result: String?) {
-                        if (result == null) {
-                            showDialog(getString(R.string.error_exporting))
-                            CrashLogger.logException(Throwable("Error exporting tickers"))
-                        } else {
-                            showDialog("Exported to $result")
-                        }
-                    }
-                }.execute(stocksProvider.getTickers())
+                if (needsPermissionGrant()) {
+                    askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE)
+                } else {
+                    exportTickers()
+                }
                 true
             }
         })
@@ -122,20 +128,10 @@ class SettingsActivity : PreferenceActivity() {
             val sharePref = findPreference("SHARE")
             sharePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
                 Analytics.trackSettingsChange("SHARE", TextUtils.join(",", stocksProvider.getTickers().toTypedArray()))
-                val file = Tools.tickersFile
-                if (file.exists()) {
-                    shareTickers()
+                if (needsPermissionGrant()) {
+                    askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE_SHARE)
                 } else {
-                    object : FileExportTask() {
-                        override fun onPostExecute(result: String?) {
-                            if (result == null) {
-                                showDialog(getString(R.string.error_sharing))
-                                CrashLogger.logException(Throwable("Error sharing tickers"))
-                            } else {
-                                shareTickers()
-                            }
-                        }
-                    }.execute(stocksProvider.getTickers())
+                    exportAndShareTickers()
                 }
                 true
             }
@@ -144,10 +140,11 @@ class SettingsActivity : PreferenceActivity() {
         run({
             val importPref = findPreference("IMPORT")
             importPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                val filePickerIntent = Intent(this@SettingsActivity, FilePickerActivity::class.java)
-                filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE)
-                filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.color_primary)
-                startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE)
+                if (needsPermissionGrant()) {
+                    askForExternalStoragePermissions(REQCODE_READ_EXTERNAL_STORAGE)
+                } else {
+                    launchImportIntent()
+                }
                 true
             }
         })
@@ -165,7 +162,7 @@ class SettingsActivity : PreferenceActivity() {
                     val index = listPreference.findIndexOfValue(stringValue)
                     preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply()
                     broadcastUpdateWidget()
-                    fontSizePreference.summary = fontSizePreference.getEntries()[index]
+                    fontSizePreference.summary = fontSizePreference.entries[index]
                     InAppMessage.showMessage(this@SettingsActivity, R.string.text_size_updated_message)
                     return true
                 }
@@ -185,7 +182,7 @@ class SettingsActivity : PreferenceActivity() {
                     val index = listPreference.findIndexOfValue(stringValue)
                     preferences.edit().putInt(Tools.WIDGET_BG, index).apply()
                     broadcastUpdateWidget()
-                    bgPreference.summary = bgPreference.getEntries()[index]
+                    bgPreference.summary = bgPreference.entries[index]
                     InAppMessage.showMessage(this@SettingsActivity, R.string.bg_updated_message)
                     return true
                 }
@@ -207,7 +204,6 @@ class SettingsActivity : PreferenceActivity() {
                     broadcastUpdateWidget()
                     layoutTypePref.summary = layoutTypePref.entries[index]
                     InAppMessage.showMessage(this@SettingsActivity, R.string.layout_updated_message)
-
                     if (index == 2) {
                         showDialog(getString(R.string.change_instructions))
                     }
@@ -315,6 +311,56 @@ class SettingsActivity : PreferenceActivity() {
         })
     }
 
+    private fun needsPermissionGrant(): Boolean {
+        return Build.VERSION.SDK_INT >= 23 &&
+                ContextCompat.checkSelfPermission(this@SettingsActivity,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun askForExternalStoragePermissions(reqCode: Int) {
+        ActivityCompat.requestPermissions(this@SettingsActivity,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE),
+                reqCode)
+    }
+
+    private fun exportAndShareTickers() {
+        val file = Tools.tickersFile
+        if (file.exists()) {
+            shareTickers()
+        } else {
+            object : FileExportTask() {
+                override fun onPostExecute(result: String?) {
+                    if (result == null) {
+                        showDialog(getString(R.string.error_sharing))
+                        CrashLogger.logException(Throwable("Error sharing tickers"))
+                    } else {
+                        shareTickers()
+                    }
+                }
+            }.execute(stocksProvider.getTickers())
+        }
+    }
+
+    private fun launchImportIntent() {
+        val filePickerIntent = Intent(this@SettingsActivity, FilePickerActivity::class.java)
+        filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE)
+        filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.color_primary)
+        startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE)
+    }
+
+    private fun exportTickers() {
+        object : FileExportTask() {
+            override fun onPostExecute(result: String?) {
+                if (result == null) {
+                    showDialog(getString(R.string.error_exporting))
+                    CrashLogger.logException(Throwable("Error exporting tickers"))
+                } else {
+                    showDialog("Exported to $result")
+                }
+            }
+        }.execute(stocksProvider.getTickers())
+    }
+
     private fun shareTickers() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/plain"
@@ -340,6 +386,32 @@ class SettingsActivity : PreferenceActivity() {
         widgetManager.notifyAppWidgetViewDataChanged(ids, android.R.id.list)
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
         sendBroadcast(intent)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQCODE_WRITE_EXTERNAL_STORAGE -> {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    exportTickers()
+                } else {
+                    showDialog("Cannot export tickers without permission to write to external storage")
+                }
+            }
+            REQCODE_READ_EXTERNAL_STORAGE -> {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    launchImportIntent()
+                } else {
+                    showDialog("Cannot import tickers without permission to read external storage")
+                }
+            }
+            REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
+                if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    exportAndShareTickers()
+                } else {
+                    showDialog("Cannot share tickers without permission to write to external storage")
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
