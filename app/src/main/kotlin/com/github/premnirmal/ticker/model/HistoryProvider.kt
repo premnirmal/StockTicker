@@ -58,9 +58,10 @@ class HistoryProvider(private val stocksApi: StocksApi, private val context: Con
                     val dataPoints = arrayOfNulls<SerializableDataPoint?>(history.quote.size)
                     for (i in history.quote.indices) {
                         val quote = history.quote[i]
-                        val point = SerializableDataPoint(quote.date.toDate(), quote.mClose)
+                        val point = SerializableDataPoint(quote.mClose.toFloat(), i, quote)
                         dataPoints[i] = point
                     }
+
                     dataPoints
                 }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
                         .subscribe(object : Subscriber<Array<SerializableDataPoint?>>() {

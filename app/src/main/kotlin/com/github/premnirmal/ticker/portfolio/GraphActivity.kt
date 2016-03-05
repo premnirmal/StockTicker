@@ -1,12 +1,19 @@
 package com.github.premnirmal.ticker.portfolio
 
 import android.content.DialogInterface
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.TextView
+import com.github.mikephil.charting.animation.Easing
+import com.github.mikephil.charting.components.MarkerView
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.BaseActivity
 import com.github.premnirmal.ticker.Injector
@@ -16,12 +23,10 @@ import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.model.SerializableDataPoint
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.tickerwidget.R
-import com.jjoe64.graphview.GraphView
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
-import com.jjoe64.graphview.series.*
-import org.joda.time.DateTime
+import kotlinx.android.synthetic.main.activity_graph.*
 import org.joda.time.format.DateTimeFormat
 import rx.Subscriber
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -42,6 +47,17 @@ class GraphActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         Injector.getAppComponent().inject(this)
         setContentView(R.layout.activity_graph)
+        graphView.isDoubleTapToZoomEnabled = false
+        graphView.axisLeft.setDrawGridLines(false)
+        graphView.axisLeft.setDrawAxisLine(false)
+        graphView.axisLeft.isEnabled = false
+        graphView.axisRight.setDrawGridLines(false)
+        graphView.axisRight.setDrawAxisLine(true)
+        graphView.axisRight.isEnabled = true
+        graphView.xAxis.setDrawGridLines(false)
+        graphView.setDescription("")
+        graphView.legend.isEnabled = false
+        graphView.markerView = TextMarkerView(this, graphView)
         val supportActionBar = supportActionBar
         supportActionBar?.hide()
         if (Build.VERSION.SDK_INT < 16) {
@@ -109,63 +125,47 @@ class GraphActivity : BaseActivity() {
     }
 
     private fun loadGraph() {
-        findViewById(R.id.graph_holder).visibility = View.VISIBLE
-        findViewById(R.id.progress).visibility = View.GONE
-        val graphView = findViewById(R.id.graph) as GraphView
-        graphView.removeAllSeries()
-
-        val tickerName = findViewById(R.id.ticker) as TextView
-        val desc = findViewById(R.id.desc) as TextView
-        tickerName.text = ticker.symbol
-        desc.text = ticker.Name
-        val dataPointValue = findViewById(R.id.dataPointValue) as TextView
-        val series = LineGraphSeries(dataPoints)
-        graphView.addSeries(series)
-
-        val disposableSeries = PointsGraphSeries(arrayOf<DataPointInterface?>(dataPoints!![dataPoints!!.size - 1]))
-        graphView.addSeries(disposableSeries)
-        disposableSeries.color = resources.getColor(R.color.spicy_salmon)
-        disposableSeries.shape = PointsGraphSeries.Shape.POINT
-        disposableSeries.size = 10f
-
-        series.isDrawBackground = true
-        series.backgroundColor = resources.getColor(R.color.color_accent)
-        series.setOnDataPointTapListener { series, dataPointInterface ->
-            val dataPointText = StringBuilder()
-            val dateTime = DateTime(dataPointInterface.x.toLong())
-            dataPointText.append(formatter.print(dateTime))
-            dataPointText.append(" // ")
-            dataPointText.append("$")
-            dataPointText.append(dataPointInterface.y)
-            dataPointValue.text = dataPointText.toString()
-            disposableSeries.resetData(arrayOf(dataPointInterface))
-        }
-        val gridLabelRenderer = graphView.gridLabelRenderer
-        gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(this)
-        gridLabelRenderer.numHorizontalLabels = 5
-
-        val viewport = graphView.viewport
-        viewport.isXAxisBoundsManual = true
-        viewport.isYAxisBoundsManual = true
-
-        viewport.setMinX(dataPoints!![0]!!.x)
-        viewport.setMaxX(dataPoints!![dataPoints!!.size - 1]!!.x)
-
-        var min = Integer.MAX_VALUE.toDouble()
-        var max = Integer.MIN_VALUE.toDouble()
-        for (i in dataPoints!!.indices) {
-            val point = dataPoints!![i]
-            val `val` = point!!.y
-            if (`val` < min) {
-                min = `val`
-            } else if (`val` > max) {
-                max = `val`
+        if (dataPoints != null) {
+            val dataPointsList = dataPoints!!.toList()
+            tickerName.text = ticker.symbol
+            desc.text = ticker.Name
+            val series = LineDataSet(dataPointsList.toList(), range.name)
+            series.setDrawHorizontalHighlightIndicator(false)
+            series.setDrawValues(false)
+            val color_accent = getColor(R.color.color_accent)
+            series.setDrawFilled(true)
+            series.color = color_accent
+            series.fillColor = color_accent
+            series.fillAlpha = 150
+            series.setDrawCubic(true)
+            series.cubicIntensity = 0.07f
+            series.lineWidth = 2f
+            series.setDrawCircles(false)
+            series.highLightColor = Color.GRAY
+            val dataSets: MutableList<ILineDataSet> = ArrayList()
+            dataSets.add(series)
+            val xDataSet: MutableList<String> = ArrayList()
+            for (i in dataPointsList.indices) {
+                xDataSet.add(DateTimeFormat.shortDate().print(dataPointsList[i]?.getQuote()?.date))
             }
-        }
-        if (min != Integer.MAX_VALUE.toDouble() && max != Integer.MIN_VALUE.toDouble()) {
-            min -= Math.abs(0.1 * min)
-            viewport.setMinY(if (min <= 0) 0.0 else min)
-            viewport.setMaxY(max + Math.abs(0.1 * max))
+            val lineData: LineData = LineData(xDataSet, dataSets)
+            graphView.data = lineData
+            val xAxis: XAxis = graphView.xAxis
+            val yAxis: YAxis = graphView.axisRight
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.textSize = 10f
+            yAxis.textSize = 10f
+            xAxis.textColor = Color.GRAY
+            yAxis.textColor = Color.GRAY
+            xAxis.setLabelsToSkip(xDataSet.size / 5)
+            yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
+            xAxis.setDrawAxisLine(true)
+            yAxis.setDrawAxisLine(true)
+            xAxis.setDrawGridLines(false)
+            yAxis.setDrawGridLines(false)
+            graph_holder.visibility = View.VISIBLE
+            progress.visibility = View.GONE
+            graphView.animateX(DURATION, Easing.EasingOption.EaseInOutQuad)
         }
     }
 
@@ -198,6 +198,7 @@ class GraphActivity : BaseActivity() {
         val GRAPH_DATA = "GRAPH_DATA"
         private val DATAPOINTS = "DATAPOINTS"
         private val RANGE = "RANGE"
+        private val DURATION = 2000
     }
 
 }

@@ -9,7 +9,9 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.88">
+        android:layout_weight="0.88"
+        android:padding="15dp"
+        >
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -23,18 +25,13 @@
             android:id="@+id/graph_holder"
             android:visibility="gone">
 
-            <com.jjoe64.graphview.GraphView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/graph" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="3dp"
                 android:textSize="20dp"
                 style="@style/BoldTextView"
-                android:id="@+id/ticker"
+                android:id="@+id/tickerName"
                 tools:text="GOOG"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true" />
@@ -42,25 +39,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="3dp"
                 android:textSize="14dp"
                 style="@style/BoldTextView"
                 android:id="@+id/desc"
                 tools:text="GOOG"
                 android:layout_centerHorizontal="true"
-                android:layout_below="@id/ticker" />
+                android:layout_below="@id/tickerName" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:textSize="12dp"
-                style="@style/BoldTextView"
-                android:id="@+id/dataPointValue"
-                android:gravity="center"
-                tools:text="GOOG"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/desc" />
+            <com.github.mikephil.charting.charts.LineChart
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/graphView" />
+
         </RelativeLayout>
     </FrameLayout>
 

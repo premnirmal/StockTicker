@@ -4,6 +4,7 @@ buildscript {
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
@@ -20,6 +21,7 @@ repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    maven { url "https://jitpack.io" }
 }
 
 android {
@@ -112,7 +114,7 @@ dependencies {
     compile 'io.reactivex:rxandroid:0.24.+'
     compile 'joda-time:joda-time:2.6'
     compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
-    compile 'com.jjoe64:graphview:4.0.0'
+    compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
     compile 'com.android.support:support-v4:23.1.1'
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.daimajia.swipelayout:library:1.0.3@aar'
