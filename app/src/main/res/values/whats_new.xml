@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>Crash fixes</item>
-        <item>Rearranging stocks is a lot smoother now</item>
+        <item>Sexy graphs now, check them out!</item>
     </string-array>
 </resources>
