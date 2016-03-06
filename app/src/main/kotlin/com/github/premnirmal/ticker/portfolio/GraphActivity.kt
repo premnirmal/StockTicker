@@ -94,7 +94,7 @@ class GraphActivity : BaseActivity() {
         if (dataPoints == null) {
             getData()
         } else {
-            loadGraph()
+            loadGraph(dataPoints!!)
         }
     }
 
@@ -115,7 +115,7 @@ class GraphActivity : BaseActivity() {
 
                 override fun onNext(data: Array<SerializableDataPoint?>) {
                     dataPoints = data
-                    loadGraph()
+                    loadGraph(dataPoints!!)
                 }
             })
         } else {
@@ -124,49 +124,49 @@ class GraphActivity : BaseActivity() {
         }
     }
 
-    private fun loadGraph() {
-        if (dataPoints != null) {
-            val dataPointsList = dataPoints!!.toList()
-            tickerName.text = ticker.symbol
-            desc.text = ticker.Name
-            val series = LineDataSet(dataPointsList.toList(), range.name)
-            series.setDrawHorizontalHighlightIndicator(false)
-            series.setDrawValues(false)
-            val color_accent = getColor(R.color.color_accent)
-            series.setDrawFilled(true)
-            series.color = color_accent
-            series.fillColor = color_accent
-            series.fillAlpha = 150
-            series.setDrawCubic(true)
-            series.cubicIntensity = 0.07f
-            series.lineWidth = 2f
-            series.setDrawCircles(false)
-            series.highLightColor = Color.GRAY
-            val dataSets: MutableList<ILineDataSet> = ArrayList()
-            dataSets.add(series)
-            val xDataSet: MutableList<String> = ArrayList()
-            for (i in dataPointsList.indices) {
-                xDataSet.add(DateTimeFormat.shortDate().print(dataPointsList[i]?.getQuote()?.date))
-            }
-            val lineData: LineData = LineData(xDataSet, dataSets)
-            graphView.data = lineData
-            val xAxis: XAxis = graphView.xAxis
-            val yAxis: YAxis = graphView.axisRight
-            xAxis.position = XAxis.XAxisPosition.BOTTOM
-            xAxis.textSize = 10f
-            yAxis.textSize = 10f
-            xAxis.textColor = Color.GRAY
-            yAxis.textColor = Color.GRAY
-            xAxis.setLabelsToSkip(xDataSet.size / 5)
-            yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
-            xAxis.setDrawAxisLine(true)
-            yAxis.setDrawAxisLine(true)
-            xAxis.setDrawGridLines(false)
-            yAxis.setDrawGridLines(false)
-            graph_holder.visibility = View.VISIBLE
-            progress.visibility = View.GONE
-            graphView.animateX(DURATION, Easing.EasingOption.EaseInOutQuad)
+    private fun loadGraph(points: Array<SerializableDataPoint?>) {
+        graphView.lineData?.clearValues()
+        graphView.invalidate()
+        val dataPointsList = points.toList()
+        tickerName.text = ticker.symbol
+        desc.text = ticker.Name
+        val series = LineDataSet(dataPointsList.toList(), range.name)
+        series.setDrawHorizontalHighlightIndicator(false)
+        series.setDrawValues(false)
+        val color_accent = resources.getColor(R.color.color_accent)
+        series.setDrawFilled(true)
+        series.color = color_accent
+        series.fillColor = color_accent
+        series.fillAlpha = 150
+        series.setDrawCubic(true)
+        series.cubicIntensity = 0.07f
+        series.lineWidth = 2f
+        series.setDrawCircles(false)
+        series.highLightColor = Color.GRAY
+        val dataSets: MutableList<ILineDataSet> = ArrayList()
+        dataSets.add(series)
+        val xDataSet: MutableList<String> = ArrayList()
+        for (i in dataPointsList.indices) {
+            xDataSet.add(DateTimeFormat.shortDate().print(dataPointsList[i]?.getQuote()?.date))
         }
+        val lineData: LineData = LineData(xDataSet, dataSets)
+        graphView.data = lineData
+        val xAxis: XAxis = graphView.xAxis
+        val yAxis: YAxis = graphView.axisRight
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.textSize = 10f
+        yAxis.textSize = 10f
+        xAxis.textColor = Color.GRAY
+        yAxis.textColor = Color.GRAY
+        xAxis.setLabelsToSkip(xDataSet.size / 5)
+        yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
+        xAxis.setDrawAxisLine(true)
+        yAxis.setDrawAxisLine(true)
+        xAxis.setDrawGridLines(false)
+        yAxis.setDrawGridLines(false)
+        graph_holder.visibility = View.VISIBLE
+        progress.visibility = View.GONE
+        graphView.animateX(DURATION, Easing.EasingOption.EaseInOutQuad)
     }
 
     /**
