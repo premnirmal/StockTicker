@@ -56,6 +56,14 @@ class Analytics private constructor(context: Context) {
         @JvmStatic fun trackSettingsChange(action: String, label: String) {
             INSTANCE.tracker.send(HitBuilders.EventBuilder().setCategory("AppSettingsChange").setAction(action).setLabel(label).build())
         }
+
+        @JvmStatic fun trackRateYes() {
+            INSTANCE.tracker.send(HitBuilders.EventBuilder().setCategory("Rate").setAction("Yes").setLabel("Yes").build())
+        }
+
+        @JvmStatic fun trackRateNo() {
+            INSTANCE.tracker.send(HitBuilders.EventBuilder().setCategory("Rate").setAction("No").setLabel("No").build())
+        }
     }
 
 }

@@ -126,7 +126,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
 
                 override fun onNext(stocks: List<Stock>?) {
                     if (stocks == null || stocks.isEmpty()) {
-                        onError(NullPointerException("stocks == null"))
+                        onError(NullPointerException("stocks == null or empty"))
                     } else {
                         stockList.clear()
                         stockList.addAll(stocks)

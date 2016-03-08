@@ -66,6 +66,11 @@
     <string name="remove">Remove</string>
     <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
 
+    <string name="like_our_app">Like our app?</string>
+    <string name="please_rate">Please rate us on the PlayStore, we would love to hear what you have to say!</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
     <string-array name="graph_or_positions">
         <item>View graph</item>
         <item>Edit Positions</item>

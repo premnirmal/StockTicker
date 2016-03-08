@@ -60,7 +60,11 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
         @JvmField
         val PERCENT = "PERCENT"
         @JvmField
+        val DID_RATE = "DID_RATE"
+        @JvmField
         val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
+
+        private val random = Random(System.currentTimeMillis())
 
         @JvmStatic val instance: Tools by lazy {
             val sharedPreferences = BaseApp.instance!!.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE)
@@ -138,7 +142,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
         @JvmStatic fun firstTimeViewingSwipeLayout(): Boolean {
             val firstTime = instance.sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true)
             instance.sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply()
-            return firstTime
+            return firstTime || (random.nextInt() % 2 == 0)
         }
 
         @JvmStatic fun getBackgroundResource(context: Context): Int {
@@ -238,6 +242,19 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
 
         @JvmStatic fun boldEnabled(): Boolean {
             return instance.sharedPreferences.getBoolean(BOLD_CHANGE, false)
+        }
+
+        fun userDidRate() {
+            instance.sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
+        }
+
+        fun hasUserAlreadyRated(): Boolean {
+            return instance.sharedPreferences.getBoolean(DID_RATE, false)
+        }
+
+        fun shouldPromptRate(): Boolean {
+            // if the user hasn't rated, try again on occasions
+            return (random.nextInt() % 2 == 0) && !hasUserAlreadyRated()
         }
     }
 }

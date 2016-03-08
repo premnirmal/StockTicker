@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -16,12 +17,14 @@ import javax.inject.Inject
 class ParanormalActivity : BaseActivity() {
 
     @Inject
-    lateinit internal var preferences : SharedPreferences
+    lateinit internal var preferences: SharedPreferences
+
+    private var rateDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Injector.getAppComponent().inject(this)
-        val extras : Bundle? = intent.extras
+        val extras: Bundle? = intent.extras
         val widgetId: Int
         if (extras != null) {
             widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
@@ -29,7 +32,7 @@ class ParanormalActivity : BaseActivity() {
             widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
         }
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            val result : Intent = Intent()
+            val result: Intent = Intent()
             result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
             setResult(Activity.RESULT_OK, result)
         }
@@ -55,5 +58,34 @@ class ParanormalActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         supportInvalidateOptionsMenu()
+        maybeAskToRate()
+    }
+
+    protected fun maybeAskToRate() {
+        if (rateDialog == null && Tools.shouldPromptRate()) {
+            rateDialog = AlertDialog.Builder(this).setTitle(R.string.like_our_app)
+                    .setMessage(R.string.please_rate)
+                    .setPositiveButton(R.string.yes) {
+                        dialog, which ->
+                        sendToPlayStore()
+                        Analytics.trackRateYes()
+                        Tools.userDidRate()
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton(R.string.no) {
+                        dialog, which ->
+                        Analytics.trackRateNo()
+                        dialog.dismiss()
+                    }
+                    .setOnDismissListener { rateDialog = null }
+                    .create()
+            rateDialog?.show()
+        }
+    }
+
+    private fun sendToPlayStore() {
+        val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
+        val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
+        startActivity(marketIntent)
     }
 }
