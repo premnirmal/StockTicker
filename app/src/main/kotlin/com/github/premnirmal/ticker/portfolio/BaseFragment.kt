@@ -46,7 +46,7 @@ abstract class BaseFragment : Fragment() {
 
     override fun onResume() {
         if (!called) {
-            throw AndroidRuntimeException("You didn't call super.onResume() when in " + javaClass.simpleName)
+            throw AndroidRuntimeException("You didn't call super.onViewCreated() when in " + javaClass.simpleName)
         }
         super.onResume()
         lifecycleSubject.onNext(LifecycleEvent.RESUME)
