@@ -139,20 +139,28 @@ class PortfolioFragment : BaseFragment() {
                 stockList.adapter = stocksAdapter
                 if (stocksAdapter.itemCount > 1) {
                     if (Tools.firstTimeViewingSwipeLayout()) {
-                        handler.postDelayed({
-                            val layout = stockList?.getChildAt(0) as SwipeLayout?
-                            if (layout != null) {
-                                layout.open(true)
-                                handler.postDelayed({
-                                    layout.close()
-                                    val secondLayout = stockList?.getChildAt(1) as SwipeLayout?
-                                    if (secondLayout != null) {
-                                        secondLayout.open(true)
-                                        handler.postDelayed({
-                                            secondLayout.close()
-                                        }, 600)
-                                    }
-                                }, 600)
+                        handler.postDelayed({ // TODO think of a better way to do this.. nesting is ugly
+                            if (isVisible) {
+                                val layout = stockList?.getChildAt(0) as SwipeLayout?
+                                if (layout != null) {
+                                    layout.open(true)
+                                    handler.postDelayed({
+                                        if (isVisible) {
+                                            layout.close()
+                                            val secondLayout = stockList?.getChildAt(1) as SwipeLayout?
+                                            if (isVisible) {
+                                                if (secondLayout != null) {
+                                                    secondLayout.open(true)
+                                                    handler.postDelayed({
+                                                        if (isVisible) {
+                                                            secondLayout.close()
+                                                        }
+                                                    }, 600)
+                                                }
+                                            }
+                                        }
+                                    }, 600)
+                                }
                             }
                         }, 1000)
                     }
