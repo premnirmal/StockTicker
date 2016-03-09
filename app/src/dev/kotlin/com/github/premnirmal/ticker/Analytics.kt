@@ -45,6 +45,14 @@ class Analytics private constructor(context: Context) {
         @JvmStatic fun trackSettingsChange(action: String, label: String) {
 
         }
+
+        @JvmStatic fun trackRateYes() {
+
+        }
+
+        @JvmStatic fun trackRateNo() {
+
+        }
     }
 
 }
