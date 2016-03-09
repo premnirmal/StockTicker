@@ -77,7 +77,7 @@ class ParanormalActivity : BaseActivity() {
                         Analytics.trackRateNo()
                         dialog.dismiss()
                     }
-                    .setOnDismissListener { rateDialog = null }
+                    .setOnDismissListener({dialog -> rateDialog = null})
                     .create()
             rateDialog?.show()
         }
