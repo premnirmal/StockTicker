@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="whats_new">
-        <item>Added android N support - resizable windows!</item>
         <item>UI tweaks</item>
         <item>Please rate the app in the PlayStore!</item>
     </string-array>
