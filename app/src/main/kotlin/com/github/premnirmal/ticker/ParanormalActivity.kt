@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.PersistableBundle
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject
@@ -21,8 +22,15 @@ class ParanormalActivity : BaseActivity() {
 
     private var dialogShown = false
 
+    companion object {
+        val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState != null) {
+            dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
+        }
         Injector.getAppComponent().inject(this)
         val extras: Bundle? = intent.extras
         val widgetId: Int
@@ -52,13 +60,19 @@ class ParanormalActivity : BaseActivity() {
                     .setMessage(stringBuilder.toString())
                     .setNeutralButton("OK") { dialog, which -> dialog.dismiss() }
                     .show()
+        } else {
+            maybeAskToRate()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState?.putBoolean(DIALOG_SHOWN, dialogShown)
     }
 
     override fun onResume() {
         super.onResume()
         supportInvalidateOptionsMenu()
-        maybeAskToRate()
     }
 
     protected fun maybeAskToRate() {
