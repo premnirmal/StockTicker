@@ -17,8 +17,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.github.premnirmal.ticker.ParanormalActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
                 <action android:name="android.intent.action.MAIN" />
@@ -28,20 +27,16 @@
         </activity>
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity"
-            android:label="@string/portfolio"
-            android:screenOrientation="portrait" />
+            android:label="@string/portfolio" />
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity"
-            android:label="@string/add_ticker"
-            android:screenOrientation="portrait" />
+            android:label="@string/add_ticker" />
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
-            android:label="@string/add_position"
-            android:screenOrientation="portrait" />
+            android:label="@string/add_position" />
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.EditPositionActivity"
-            android:label="@string/edit_position"
-            android:screenOrientation="portrait" />
+            android:label="@string/edit_position" />
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.GraphActivity"
             android:label="@string/portfolio"
