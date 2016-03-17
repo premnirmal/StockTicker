@@ -25,7 +25,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 'android-N'
+    compileSdkVersion 23
+//    compileSdkVersion 'android-N'
     buildToolsVersion '22.0.1'
 
     final File versionFile = file("file:version.properties")
@@ -37,7 +38,8 @@ android {
     defaultConfig {
         applicationId appIdBase
         minSdkVersion 14
-        targetSdkVersion 'N'
+        targetSdkVersion 23
+//        targetSdkVersion 'N'
 
         versionCode = code
         versionName = name
