@@ -8,6 +8,7 @@ import android.util.Log
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.events.UpdateFailedEvent
 import com.github.premnirmal.ticker.events.StockUpdatedEvent
 import com.github.premnirmal.ticker.network.Stock
@@ -142,6 +143,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
                         }
                     })
         } else {
+            bus.post(NoNetworkEvent())
             scheduleUpdate(SystemClock.elapsedRealtime() + 5 * 60 * 1000) // 5 minutes
         }
     }

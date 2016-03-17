@@ -7,10 +7,9 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import com.trello.rxlifecycle.ActivityEvent
+import com.trello.rxlifecycle.RxLifecycle
 import rx.Observable
-import rx.android.app.AppObservable
-import rx.android.lifecycle.LifecycleEvent
-import rx.android.lifecycle.LifecycleObservable
 import rx.subjects.BehaviorSubject
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 
@@ -19,23 +18,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-    private val lifecycleSubject = BehaviorSubject.create<LifecycleEvent>()
+    private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-    private fun lifecycle(): Observable<LifecycleEvent> {
+    private fun lifecycle(): Observable<ActivityEvent> {
         return lifecycleSubject.asObservable()
     }
 
     /**
      * Using this to automatically unsubscribe from observables on lifecycle events
-     * @param observable
-     * *
-     * @param
-     * *
-     * @return
      */
     protected fun <T> bind(observable: Observable<T>): Observable<T> {
-        val boundObservable = AppObservable.bindActivity(this, observable)
-        return LifecycleObservable.bindActivityLifecycle(lifecycle(), boundObservable)
+        return observable.compose(RxLifecycle.bindActivity<T>(lifecycle()));
     }
 
     override fun attachBaseContext(newBase: Context) {
@@ -44,27 +37,32 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
-        lifecycleSubject.onNext(LifecycleEvent.CREATE)
+        lifecycleSubject.onNext(ActivityEvent.CREATE)
     }
 
     override fun onStart() {
         super.onStart()
-        lifecycleSubject.onNext(LifecycleEvent.START)
+        lifecycleSubject.onNext(ActivityEvent.START)
     }
 
     override fun onStop() {
         super.onStop()
-        lifecycleSubject.onNext(LifecycleEvent.STOP)
+        lifecycleSubject.onNext(ActivityEvent.STOP)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        lifecycleSubject.onNext(LifecycleEvent.DESTROY)
+        lifecycleSubject.onNext(ActivityEvent.DESTROY)
     }
 
     override fun onResume() {
         super.onResume()
-        lifecycleSubject.onNext(LifecycleEvent.RESUME)
+        lifecycleSubject.onNext(ActivityEvent.RESUME)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        lifecycleSubject.onNext(ActivityEvent.PAUSE)
     }
 
     protected fun showDialog(message: String): AlertDialog {

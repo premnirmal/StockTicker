@@ -7,14 +7,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Parcelable
 import android.support.design.widget.CoordinatorLayout
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.GridLayoutManager
 import android.view.*
 import com.daimajia.swipe.SwipeLayout
-import com.github.premnirmal.ticker.InAppMessage
-import com.github.premnirmal.ticker.Injector
-import com.github.premnirmal.ticker.RxBus
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.*
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.events.StockUpdatedEvent
 import com.github.premnirmal.ticker.events.UpdateFailedEvent
@@ -92,27 +88,25 @@ class PortfolioFragment : BaseFragment() {
         stockList.addItemDecoration(SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
         stockList.layoutManager = GridLayoutManager(context, 2)
         swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon, R.color.sea)
-        swipe_container.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
-            if (!Tools.isNetworkOnline(activity.applicationContext)) {
-                noNetwork(NoNetworkEvent())
-                swipe_container.isRefreshing = false
-            } else {
-                stocksProvider.fetch()
-            }
+        swipe_container.setOnRefreshListener({
+            stocksProvider.fetch()
         })
 
-        bind(bus.toObserverable()).subscribe({ event ->
-            if (event is NoNetworkEvent) {
-                noNetwork(event as NoNetworkEvent)
-                swipe_container.isRefreshing = false
-            } else if (event is StockUpdatedEvent) {
-                update()
-                swipe_container.isRefreshing = false
-            } else if (event is UpdateFailedEvent) {
-                swipe_container.isRefreshing = false
-                InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
-            }
-        })
+        bind(bus.forEventType(NoNetworkEvent::class.java)).subscribe { event ->
+            noNetwork(event as NoNetworkEvent)
+            swipe_container.isRefreshing = false
+        }
+
+        bind(bus.forEventType(StockUpdatedEvent::class.java)).subscribe { event ->
+            update()
+            swipe_container.isRefreshing = false
+        }
+
+        bind(bus.forEventType(UpdateFailedEvent::class.java)).subscribe { event ->
+            swipe_container.isRefreshing = false
+            InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
+        }
+
         if (!Tools.isNetworkOnline(context.applicationContext)) {
             noNetwork(NoNetworkEvent())
         }

@@ -137,7 +137,9 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     }
 
     override fun getLoadingView(): RemoteViews {
-        return RemoteViews(context.packageName, R.layout.loadview)
+        val loadingView = RemoteViews(context.packageName, R.layout.loadview)
+        loadingView.setTextColor(R.id.loadingText, Tools.getTextColor(context))
+        return loadingView
     }
 
     override fun getViewTypeCount(): Int {
