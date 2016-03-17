@@ -23,8 +23,8 @@ class StockConverter {
         stock.StockExchange = gStock.e != null ? gStock.e.replace("INDEX","") : "";
 
         stock.AverageDailyVolume = "0";
-        stock.YearLow = "";
-        stock.YearHigh = "";
+        stock.YearLow = 0.0f;
+        stock.YearHigh = 0.0f;
 
         return stock;
     }

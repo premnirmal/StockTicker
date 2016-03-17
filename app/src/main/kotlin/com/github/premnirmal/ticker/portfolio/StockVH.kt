@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.daimajia.swipe.SwipeLayout
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
@@ -37,11 +38,22 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         setText(itemView, R.id.name, stock.Name)
 
+        val changeVal: Double
+        val changePercentVal: Double
+        if (stock.Change != null) {
+            changeVal = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
+            changePercentVal = java.lang.Double.parseDouble(stock.ChangeinPercent.replace("+", "").replace("%", ""))
+        } else {
+            changeVal = 0.0
+            changePercentVal = 0.0
+        }
+
         val changeInPercent = itemView.findViewById(R.id.changePercent) as StockFieldView
-        changeInPercent.setText(stock.ChangeinPercent)
+        changeInPercent.setText(Tools.DECIMAL_FORMAT.format(changePercentVal))
         val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
-        changeValue.setText(stock.Change)
-        setStockFieldText(itemView, R.id.totalValue, "${stock.LastTradePriceOnly}")
+        changeValue.setText(Tools.DECIMAL_FORMAT.format(changeVal))
+        val totalValue: TextView = itemView.findViewById(R.id.totalValueText) as TextView
+        totalValue.text = Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly)
 
         val color: Int
         if (change >= 0) {
@@ -54,26 +66,26 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         changeValue.setTextColor(color)
 
         if (stock.IsPosition == true) {
-            setStockFieldLabel(itemView, R.id.averageDailyVolume, "Value")
-            setStockFieldText(itemView, R.id.averageDailyVolume, String.format("%.2f", stock.LastTradePriceOnly * stock.PositionShares))
+            setStockFieldLabel(itemView, R.id.averageDailyVolume, "Holdings")
+            setStockFieldText(itemView, R.id.averageDailyVolume, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly * stock.PositionShares))
 
             setStockFieldLabel(itemView, R.id.exchange, "Gain/Loss")
-            setStockFieldText(itemView, R.id.exchange, String.format("%.2f", stock.LastTradePriceOnly * stock.PositionShares - stock.PositionShares * stock.PositionPrice))
+            setStockFieldText(itemView, R.id.exchange, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly * stock.PositionShares - stock.PositionShares * stock.PositionPrice))
 
             setStockFieldLabel(itemView, R.id.yearHigh, "Change %")
-            setStockFieldText(itemView, R.id.yearHigh, String.format("%.2f", (stock.LastTradePriceOnly - stock.PositionPrice) / stock.PositionPrice * 100))
+            setStockFieldText(itemView, R.id.yearHigh, Tools.DECIMAL_FORMAT.format((stock.LastTradePriceOnly - stock.PositionPrice) / stock.PositionPrice * 100))
 
             setStockFieldLabel(itemView, R.id.yearLow, "Change")
-            setStockFieldText(itemView, R.id.yearLow, String.format("%.2f", stock.LastTradePriceOnly - stock.PositionPrice))
+            setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly - stock.PositionPrice))
         } else {
             setStockFieldLabel(itemView, R.id.averageDailyVolume, "Daily Volume")
             setStockFieldText(itemView, R.id.averageDailyVolume, "${stock.AverageDailyVolume}")
             setStockFieldLabel(itemView, R.id.exchange, "Exchange")
             setStockFieldText(itemView, R.id.exchange, "${stock.StockExchange}")
             setStockFieldLabel(itemView, R.id.yearHigh, "Year High")
-            setStockFieldText(itemView, R.id.yearHigh, "${stock.YearHigh}")
+            setStockFieldText(itemView, R.id.yearHigh, Tools.DECIMAL_FORMAT.format(stock.YearHigh))
             setStockFieldLabel(itemView, R.id.yearLow, "Year Low")
-            setStockFieldText(itemView, R.id.yearLow, "${stock.YearLow}")
+            setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.YearLow))
         }
 
         val padding = itemView.getResources().getDimension(R.dimen.text_padding).toInt()

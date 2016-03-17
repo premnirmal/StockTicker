@@ -233,7 +233,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
                     tmpStock.IsPosition = true
                     tmpStock.symbol = tickerFields[0]
                     tmpStock.PositionPrice = java.lang.Float.parseFloat(tickerFields[2])
-                    tmpStock.PositionShares = java.lang.Float.parseFloat(tickerFields[3])
+                    tmpStock.PositionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
                     stockList.add(tmpStock)
                 }
             }

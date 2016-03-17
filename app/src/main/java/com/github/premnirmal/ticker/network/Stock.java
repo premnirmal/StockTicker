@@ -20,8 +20,8 @@ public class Stock implements Comparable<Stock>, Serializable {
     public String AverageDailyVolume = "";
     public String DaysLow = "";
     public String DaysHigh = "";
-    public String YearLow = "";
-    public String YearHigh = "";
+    public float YearLow;
+    public float YearHigh;
     public String MarketCapitalization = "";
     public String DaysRange = "";
     public String Volume = "";
@@ -30,7 +30,7 @@ public class Stock implements Comparable<Stock>, Serializable {
     // Add Position fields
     public boolean IsPosition;
     public float PositionPrice;
-    public float PositionShares;
+    public int PositionShares;
 
 //    "symbol": "YHOO",
 //            "AverageDailyVolume": "18131200",

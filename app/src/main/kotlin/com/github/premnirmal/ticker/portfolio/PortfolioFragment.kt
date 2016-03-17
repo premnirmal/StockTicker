@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.events.StockUpdatedEvent
+import com.github.premnirmal.ticker.events.UpdateFailedEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
@@ -107,6 +108,9 @@ class PortfolioFragment : BaseFragment() {
             } else if (event is StockUpdatedEvent) {
                 update()
                 swipe_container.isRefreshing = false
+            } else if (event is UpdateFailedEvent) {
+                swipe_container.isRefreshing = false
+                InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
             }
         })
         if (!Tools.isNetworkOnline(context.applicationContext)) {

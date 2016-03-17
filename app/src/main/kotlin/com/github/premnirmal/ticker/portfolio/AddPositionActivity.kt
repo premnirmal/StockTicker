@@ -47,7 +47,7 @@ open class AddPositionActivity : BaseActivity() {
         val sharesText = sharesView.text.toString()
         if (!priceText.isEmpty() && !sharesText.isEmpty()) {
             val price = java.lang.Float.parseFloat(priceText)
-            val shares = java.lang.Float.parseFloat(sharesText)
+            val shares = java.lang.Integer.parseInt(sharesText)
             stocksProvider.addPosition(ticker, shares, price)
         }
         finish()

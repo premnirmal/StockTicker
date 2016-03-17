@@ -8,14 +8,17 @@ import android.util.Log
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.events.UpdateFailedEvent
 import com.github.premnirmal.ticker.events.StockUpdatedEvent
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.network.StocksApi
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.ISODateTimeFormat
+import rx.Observable
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
+import rx.functions.Func1
 import rx.schedulers.Schedulers
 import java.text.DateFormatSymbols
 import java.util.*
@@ -114,28 +117,30 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
 
     override fun fetch() {
         if (Tools.isNetworkOnline(context)) {
-            api.getStocks(tickerList).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(object : Subscriber<List<Stock>>() {
-                override fun onCompleted() {
-                }
+            api.getStocks(tickerList).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io())
+                    .subscribe(object : Subscriber<List<Stock>>() {
+                        override fun onCompleted() {
+                        }
 
-                override fun onError(e: Throwable) {
-                    CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", e)) // why does this happen?
-                    e.printStackTrace()
-                    scheduleUpdate(SystemClock.elapsedRealtime() + 60 * 1000) // 1 minute
-                }
+                        override fun onError(e: Throwable) {
+                            CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", e)) // why does this happen?
+                            e.printStackTrace()
+                            bus.post(UpdateFailedEvent())
+                            scheduleUpdate(SystemClock.elapsedRealtime() + 60 * 1000) // 1 minute
+                        }
 
-                override fun onNext(stocks: List<Stock>?) {
-                    if (stocks == null || stocks.isEmpty()) {
-                        onError(NullPointerException("stocks == null or empty"))
-                    } else {
-                        stockList.clear()
-                        stockList.addAll(stocks)
-                        lastFetched = api.lastFetched
-                        save()
-                        sendBroadcast()
-                    }
-                }
-            })
+                        override fun onNext(stocks: List<Stock>?) {
+                            if (stocks == null || stocks.isEmpty()) {
+                                onError(NullPointerException("stocks == null or empty"))
+                            } else {
+                                stockList.clear()
+                                stockList.addAll(stocks)
+                                lastFetched = api.lastFetched
+                                save()
+                                sendBroadcast()
+                            }
+                        }
+                    })
         } else {
             scheduleUpdate(SystemClock.elapsedRealtime() + 5 * 60 * 1000) // 5 minutes
         }
@@ -169,7 +174,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
         return tickerList
     }
 
-    override fun addPosition(ticker: String?, shares: Float, price: Float) {
+    override fun addPosition(ticker: String?, shares: Int, price: Float) {
         if (ticker != null) {
             var position = getStock(ticker)
             if (position == null) {
@@ -182,7 +187,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
             position.PositionPrice = price
             position.PositionShares = shares
             positionList.remove(position)
-            if (shares != 0f) {
+            if (shares != 0) {
                 position.IsPosition = true
                 positionList.add(position)
                 stockList.remove(position)

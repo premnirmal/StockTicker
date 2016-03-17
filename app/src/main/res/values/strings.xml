@@ -43,6 +43,7 @@
     <string name="ticker_import_success">Tickers imported successfully</string>
     <string name="ticker_import_fail">Error importing tickers</string>
     <string name="no_network_message">No network connection</string>
+    <string name="refresh_failed">Refresh failed</string>
     <string name="one_month">1 month</string>
     <string name="three_month">3 month</string>
     <string name="one_year">1 year</string>

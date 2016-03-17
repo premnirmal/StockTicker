@@ -27,6 +27,7 @@
         android:textColor="@android:color/white"
         tools:text="GOOG"
         android:layout_centerVertical="true"
+        android:ellipsize="none"
         android:gravity="right"
         />
 </merge>

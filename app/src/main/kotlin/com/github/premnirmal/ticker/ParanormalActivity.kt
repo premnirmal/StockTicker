@@ -19,7 +19,7 @@ class ParanormalActivity : BaseActivity() {
     @Inject
     lateinit internal var preferences: SharedPreferences
 
-    private var rateDialog: AlertDialog? = null
+    private var dialogShown = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,8 +62,8 @@ class ParanormalActivity : BaseActivity() {
     }
 
     protected fun maybeAskToRate() {
-        if (rateDialog == null && Tools.shouldPromptRate()) {
-            rateDialog = AlertDialog.Builder(this).setTitle(R.string.like_our_app)
+        if (!dialogShown && Tools.shouldPromptRate()) {
+            AlertDialog.Builder(this).setTitle(R.string.like_our_app)
                     .setMessage(R.string.please_rate)
                     .setPositiveButton(R.string.yes) {
                         dialog, which ->
@@ -77,9 +77,8 @@ class ParanormalActivity : BaseActivity() {
                         Analytics.trackRateNo()
                         dialog.dismiss()
                     }
-                    .setOnDismissListener({dialog -> rateDialog = null})
-                    .create()
-            rateDialog?.show()
+                    .create().show()
+            dialogShown = true
         }
     }
 

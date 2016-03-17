@@ -11,7 +11,7 @@ interface IStocksProvider {
 
     fun addStock(ticker: String): Collection<String>?
 
-    fun addPosition(ticker: String?, shares: Float, price: Float)
+    fun addPosition(ticker: String?, shares: Int, price: Float)
 
     fun removePosition(ticker: String?)
 

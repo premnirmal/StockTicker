@@ -25,7 +25,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 'android-N'
     buildToolsVersion '22.0.1'
 
     final File versionFile = file("file:version.properties")
@@ -37,7 +37,7 @@ android {
     defaultConfig {
         applicationId appIdBase
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 'N'
 
         versionCode = code
         versionName = name
@@ -95,6 +95,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -110,6 +115,7 @@ dependencies {
     compile 'javax.annotation:javax.annotation-api:1.2'
     compile 'com.google.dagger:dagger:2.0'
     kapt 'com.google.dagger:dagger-compiler:2.0'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.retrofit:retrofit:1.8.+'
     compile 'io.reactivex:rxandroid:0.24.+'
     compile 'joda-time:joda-time:2.6'
