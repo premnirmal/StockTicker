@@ -52,7 +52,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/xsmall_text"
+                android:textSize="@dimen/small_text"
                 tools:text="Google Inc"
                 android:singleLine="true"
                 android:ellipsize="end"
@@ -65,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Daily Volume"
-                sfw:size="@dimen/xsmall_text"
+                sfw:size="@dimen/small_text"
                 sfw:or="vertical"
                 android:id="@+id/averageDailyVolume" />
 
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Exchange"
-                sfw:size="@dimen/xsmall_text"
+                sfw:size="@dimen/small_text"
                 sfw:or="vertical"
                 android:id="@+id/exchange" />
 
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Change %"
-                sfw:size="@dimen/xsmall_text"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/changePercent" />
 
             <com.github.premnirmal.ticker.ui.StockFieldView
@@ -110,7 +110,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Change"
-                sfw:size="@dimen/xsmall_text"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/changeValue" />
 
 
@@ -119,14 +119,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
                 sfw:name="Year High"
-                sfw:size="@dimen/xsmall_text"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/yearHigh" />
 
             <com.github.premnirmal.ticker.ui.StockFieldView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 sfw:name="Year Low"
-                sfw:size="@dimen/xsmall_text"
+                sfw:size="@dimen/small_text"
                 android:id="@+id/yearLow" />
 
         </LinearLayout>

@@ -21,6 +21,8 @@ import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.portfolio_fragment.*
+import rx.android.schedulers.AndroidSchedulers
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
@@ -30,6 +32,7 @@ class PortfolioFragment : BaseFragment() {
 
     companion object {
         private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
+        private val NO_NETWORK_THROTTLE_INTERVAL = 1000L
     }
 
     @Inject
@@ -91,11 +94,14 @@ class PortfolioFragment : BaseFragment() {
         swipe_container.setOnRefreshListener({
             stocksProvider.fetch()
         })
-
-        bind(bus.forEventType(NoNetworkEvent::class.java)).subscribe { event ->
-            noNetwork(event as NoNetworkEvent)
-            swipe_container.isRefreshing = false
-        }
+        fragment_root.invalidate()
+        bind(bus.forEventType(NoNetworkEvent::class.java))
+                .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { event ->
+                    noNetwork(event as NoNetworkEvent)
+                    swipe_container.isRefreshing = false
+                }
 
         bind(bus.forEventType(StockUpdatedEvent::class.java)).subscribe { event ->
             update()
@@ -126,7 +132,7 @@ class PortfolioFragment : BaseFragment() {
     private fun update() {
         val activity = activity
         if (activity != null) {
-            if (stocksProvider.getStocks() == null) {
+            if (stocksProvider.getStocks().isEmpty()) {
                 handler.postDelayed({ update() }, 600)
             }
 
