@@ -78,6 +78,18 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         super.onCreate(savedInstanceState)
         Injector.getAppComponent().inject(this)
         setContentView(R.layout.activity_preferences)
+        val extras: Bundle? = intent.extras
+        val widgetId: Int
+        if (extras != null) {
+            widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        } else {
+            widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
+        }
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            val result: Intent = Intent()
+            result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+            setResult(Activity.RESULT_OK, result)
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {

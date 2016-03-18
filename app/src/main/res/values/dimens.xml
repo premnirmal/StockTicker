@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">15dp</dimen>
 
     <integer name="flip_time">8000</integer>
-    <dimen name="text_padding">5dp</dimen>
+    <dimen name="text_padding">2dp</dimen>
 
     <dimen name="text_size">15sp</dimen>
     <dimen name="button_text">10dp</dimen>

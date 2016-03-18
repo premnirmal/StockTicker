@@ -52,8 +52,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         changeInPercent.setText(Tools.DECIMAL_FORMAT.format(changePercentVal))
         val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
         changeValue.setText(Tools.DECIMAL_FORMAT.format(changeVal))
-        val totalValue: TextView = itemView.findViewById(R.id.totalValueText) as TextView
-        totalValue.text = Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly)
+        setStockFieldText(itemView, R.id.totalValue, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly))
 
         val color: Int
         if (change >= 0) {
@@ -67,7 +66,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         if (stock.IsPosition == true) {
             setStockFieldLabel(itemView, R.id.averageDailyVolume, "Holdings")
-            setStockFieldText(itemView, R.id.averageDailyVolume, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly * stock.PositionShares))
+            setStockFieldText(itemView, R.id.averageDailyVolume, "$${Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly * stock.PositionShares)}")
 
             setStockFieldLabel(itemView, R.id.exchange, "Gain/Loss")
             setStockFieldText(itemView, R.id.exchange, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly * stock.PositionShares - stock.PositionShares * stock.PositionPrice))
@@ -87,9 +86,6 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             setStockFieldLabel(itemView, R.id.yearLow, "Year Low")
             setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.YearLow))
         }
-
-        val padding = itemView.getResources().getDimension(R.dimen.text_padding).toInt()
-        itemView.setPadding(0, padding, 0, padding)
     }
 
     companion object {

@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
@@ -21,6 +22,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import javax.inject.Inject
 import com.github.premnirmal.ticker.Analytics
+import org.joda.time.format.ISODateTimeFormat
 
 /**
  * Created by premnirmal on 2/27/16.
@@ -49,19 +51,26 @@ class StockWidget : AppWidgetProvider() {
             } else {
                 min_width = appWidgetManager.getAppWidgetInfo(widgetId).minWidth
             }
-            val remoteViews: RemoteViews
-            if (min_width > 250) {
-                remoteViews = RemoteViews(context.packageName,
-                        R.layout.widget_4x1)
-            } else {
-                remoteViews = RemoteViews(context.packageName,
-                        R.layout.widget_2x1)
-            }
+            val remoteViews: RemoteViews = createRemoteViews(context, min_width)
+            Log.d(TAG, "widget size update: " + "${min_width}px")
             updateWidget(context, appWidgetManager, widgetId, remoteViews)
             appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
         }
-
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+    }
+
+    private fun createRemoteViews(context: Context, min_width: Int): RemoteViews {
+        val remoteViews: RemoteViews
+        if (min_width > 750) {
+            remoteViews = RemoteViews(context.packageName, R.layout.widget_4x1)
+        } else if (min_width > 500) {
+            remoteViews = RemoteViews(context.packageName, R.layout.widget_3x1)
+        } else if (min_width > 250) {
+            remoteViews = RemoteViews(context.packageName, R.layout.widget_2x1)
+        } else {
+            remoteViews = RemoteViews(context.packageName, R.layout.widget_1x1)
+        }
+        return remoteViews
     }
 
     private fun getMinWidgetWidth(options: Bundle?): Int {
@@ -75,15 +84,9 @@ class StockWidget : AppWidgetProvider() {
     override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int, newOptions: Bundle) {
         Injector.getAppComponent().inject(this)
         val min_width = getMinWidgetWidth(newOptions)
-        val remoteViews: RemoteViews
-        if (min_width > 250) {
-            remoteViews = RemoteViews(context.packageName,
-                    R.layout.widget_4x1)
-        } else {
-            remoteViews = RemoteViews(context.packageName,
-                    R.layout.widget_2x1)
-        }
+        val remoteViews: RemoteViews = createRemoteViews(context, min_width)
         Analytics.trackWidgetSizeUpdate("${min_width}px")
+        Log.d(TAG, "widget size update: " + "${min_width}px")
         updateWidget(context, appWidgetManager, appWidgetId, remoteViews)
         appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     }
@@ -96,13 +99,13 @@ class StockWidget : AppWidgetProvider() {
         remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
         val lastUpdatedText: String
         if (!BuildConfig.DEBUG) {
-            val lastFetched : String = stocksProvider.lastFetched()
+            val lastFetched: String = stocksProvider.lastFetched()
             lastUpdatedText = "Last updated: $lastFetched"
         } else {
             val msToNextAlarm = AlarmScheduler.msToNextAlarm()
             val nextAlarmTime = DateTime(DateTime.now().millis + msToNextAlarm)
-            val shortTime : String = DateTimeFormat.shortTime().print(nextAlarmTime)
-            val lastFetched : String = stocksProvider.lastFetched()
+            val shortTime: String = nextAlarmTime.toString(ISODateTimeFormat.hourMinute())
+            val lastFetched: String = stocksProvider.lastFetched()
             lastUpdatedText = "Next update: $shortTime Last updated: $lastFetched"
         }
         remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
@@ -113,5 +116,6 @@ class StockWidget : AppWidgetProvider() {
 
     companion object {
         @JvmField val ACTION_NAME = "OPEN_APP"
+        @JvmField val TAG = StockWidget::class.java.simpleName
     }
 }

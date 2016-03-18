@@ -32,18 +32,6 @@ class ParanormalActivity : BaseActivity() {
             dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
         }
         Injector.getAppComponent().inject(this)
-        val extras: Bundle? = intent.extras
-        val widgetId: Int
-        if (extras != null) {
-            widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-        } else {
-            widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-        }
-        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            val result: Intent = Intent()
-            result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-            setResult(Activity.RESULT_OK, result)
-        }
         setContentView(R.layout.activity_paranormal)
         if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
             preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply()

@@ -2,6 +2,7 @@
 <resources>
     <string-array name="whats_new">
         <item>UI tweaks</item>
+        <item>Fixed some widget bugs</item>
         <item>Please rate the app in the PlayStore!</item>
     </string-array>
 </resources>

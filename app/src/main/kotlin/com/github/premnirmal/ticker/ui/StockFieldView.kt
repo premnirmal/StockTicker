@@ -37,7 +37,7 @@ class StockFieldView @JvmOverloads constructor(context: Context, attrs: Attribut
             fieldname.text = name
             val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20).toFloat()
             fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-            fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.8f)
+            fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
             array.recycle()
         }
     }
