@@ -63,6 +63,8 @@ internal class StocksStorage(val context: Context) {
                 e.printStackTrace()
             } catch (e: IOException) {
                 e.printStackTrace()
+            } catch (e: IllegalArgumentException) {
+                e.printStackTrace()
             } finally {
                 if (oos != null) {
                     try {
@@ -105,6 +107,8 @@ internal class StocksStorage(val context: Context) {
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
         } catch (e: StreamCorruptedException) {
+            e.printStackTrace()
+        } catch (e: IllegalArgumentException) {
             e.printStackTrace()
         } finally {
             if (ois != null) {
