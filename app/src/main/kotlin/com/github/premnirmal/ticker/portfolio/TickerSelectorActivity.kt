@@ -87,13 +87,15 @@ class TickerSelectorActivity : BaseActivity() {
             if (!stocksProvider.getTickers().contains(ticker)) {
                 stocksProvider.addStock(ticker)
                 InAppMessage.showMessage(this@TickerSelectorActivity, ticker + " added to list")
-                showDialog("Do you want to add positions for $ticker?",
-                        DialogInterface.OnClickListener { dialog, which ->
-                            val intent = Intent(this@TickerSelectorActivity, AddPositionActivity::class.java)
-                            intent.putExtra(EditPositionActivity.TICKER, ticker)
-                            startActivity(intent)
-                        },
-                        DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+                if (!ticker.startsWith("^")) { // don't allow positions for indices
+                    showDialog("Do you want to add positions for $ticker?",
+                            DialogInterface.OnClickListener { dialog, which ->
+                                val intent = Intent(this@TickerSelectorActivity, AddPositionActivity::class.java)
+                                intent.putExtra(EditPositionActivity.TICKER, ticker)
+                                startActivity(intent)
+                            },
+                            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+                }
             } else {
                 showDialog("${ticker} is already in your portfolio")
             }

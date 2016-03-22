@@ -67,6 +67,12 @@
         android:summary="@string/bold_change_desc"
         android:defaultValue="false" />
 
+    <CheckBoxPreference
+        android:key="ENABLE_GOOGLE_FINANCE"
+        android:title="@string/enable_google_finance"
+        android:summary="@string/enable_google_finance_desc"
+        android:defaultValue="true" />
+
     <Preference
         android:key="SHARE"
         android:title="@string/action_share"

@@ -15,8 +15,8 @@
     <string name="action_rearrage">Rearrange Stocks</string>
     <string name="action_update">Refresh Now</string>
 
-    <string name="yahoo_endpoint">http://query.yahooapis.com/v1/public</string>
-    <string name="google_endpoint">http://finance.google.com/finance</string>
+    <string name="yahoo_endpoint">https://query.yahooapis.com/v1/public</string>
+    <string name="google_endpoint">https://finance.google.com/finance</string>
     <string name="suggestions_endpoint">https://s.yimg.com/aq</string>
     <string name="add_ticker">Add Ticker</string>
     <string name="dotdotdot">…</string>
@@ -71,6 +71,8 @@
     <string name="please_rate">Please rate us on the PlayStore, we would love to hear what you have to say!</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="enable_google_finance">Enable Google Finance?</string>
+    <string name="enable_google_finance_desc">Enabling the Google Finance api allows you to get quotes for tickers indices as ^DJI, but isn\'t robust</string>
 
     <string-array name="graph_or_positions">
         <item>View graph</item>

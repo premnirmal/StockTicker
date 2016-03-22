@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.squareup.okhttp.OkHttpClient
 import dagger.Module
@@ -42,9 +43,9 @@ class ApiModule {
     }
 
     @Provides @Singleton
-    internal fun provideStocksApi(yahooFinance: YahooFinance): StocksApi {
+    internal fun provideStocksApi(yahooFinance: YahooFinance, googleFinance: GoogleFinance): StocksApi {
         if (stocksApi == null) {
-            stocksApi = StocksApi(yahooFinance)
+            stocksApi = StocksApi(yahooFinance, googleFinance)
         }
         return stocksApi as StocksApi
     }
@@ -54,21 +55,23 @@ class ApiModule {
         val restAdapter = RestAdapter.Builder()
                 .setClient(okHttpClient)
                 .setEndpoint(context.getString(R.string.yahoo_endpoint))
+                .setLogLevel(if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else RestAdapter.LogLevel.NONE)
                 .build()
         val yahooFinance = restAdapter.create(YahooFinance::class.java)
         return yahooFinance
     }
 
-    //    @Provides
-    //    @Singleton
-    //    GoogleFinance provideGoogleFinance(Context context) {
-    //        final RestAdapter restAdapter = new RestAdapter.Builder()
-    //                .setEndpoint(context.getString(R.string.google_endpoint))
-    //                .setConverter(new GStockConverter())
-    //                .build();
-    //        final GoogleFinance googleFinance = restAdapter.create(GoogleFinance.class);
-    //        return googleFinance;
-    //    }
+    @Provides @Singleton
+    internal fun provideGoogleFinance(context: Context, okHttpClient: OkClient): GoogleFinance {
+        val restAdapter: RestAdapter = RestAdapter.Builder()
+                .setClient(okHttpClient)
+                .setEndpoint(context.getString(R.string.google_endpoint))
+                .setLogLevel(if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else RestAdapter.LogLevel.NONE)
+                .setConverter(GStockConverter())
+                .build()
+        val googleFinance: GoogleFinance = restAdapter.create(GoogleFinance::class.java)
+        return googleFinance
+    }
 
     @Provides @Singleton
     internal fun provideSuggestionsApi(context: Context, okHttpClient: OkClient): SuggestionApi {
@@ -76,6 +79,7 @@ class ApiModule {
             val restAdapter = RestAdapter.Builder()
                     .setClient(okHttpClient)
                     .setEndpoint(context.getString(R.string.suggestions_endpoint))
+                    .setLogLevel(if (BuildConfig.DEBUG) RestAdapter.LogLevel.FULL else RestAdapter.LogLevel.NONE)
                     .setConverter(StupidYahooWrapConverter())
                     .build()
             suggestionApi = restAdapter.create(SuggestionApi::class.java)

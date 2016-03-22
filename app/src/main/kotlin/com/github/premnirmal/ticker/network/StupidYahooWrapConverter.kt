@@ -20,7 +20,7 @@ internal class StupidYahooWrapConverter : BaseConverter() {
                 val suggestions = gson.fromJson(m.group(1), Suggestions::class.java)
                 return suggestions
             }
-            throw RuntimeException("Invalid response")
+            throw ConversionException("Invalid response")
         } catch (e: IOException) {
             e.printStackTrace()
             return null
