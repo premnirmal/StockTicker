@@ -20,7 +20,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         }
 
         val position = adapterPosition
-        itemView.findViewById(R.id.stockContainer).setOnClickListener { listener.onClick(stock) }
+        itemView.findViewById(R.id.stockContainer).setOnClickListener { if (!stock.isIndex) listener.onClick(stock) }
         itemView.findViewById(R.id.trash).setOnClickListener { v -> listener.onRemoveClick(v, stock, position) }
 
         val swipeLayout = itemView as SwipeLayout
@@ -52,7 +52,8 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         changeInPercent.setText(Tools.DECIMAL_FORMAT.format(changePercentVal))
         val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
         changeValue.setText(Tools.DECIMAL_FORMAT.format(changeVal))
-        setStockFieldText(itemView, R.id.totalValue, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly))
+        val totalValueText = itemView.findViewById(R.id.totalValue) as TextView
+        totalValueText.text = Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly)
 
         val color: Int
         if (change >= 0) {
@@ -78,13 +79,20 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
             setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly - stock.PositionPrice))
         } else {
             setStockFieldLabel(itemView, R.id.averageDailyVolume, "Daily Volume")
-            setStockFieldText(itemView, R.id.averageDailyVolume, "${stock.AverageDailyVolume}")
             setStockFieldLabel(itemView, R.id.exchange, "Exchange")
-            setStockFieldText(itemView, R.id.exchange, "${stock.StockExchange}")
             setStockFieldLabel(itemView, R.id.yearHigh, "Year High")
-            setStockFieldText(itemView, R.id.yearHigh, Tools.DECIMAL_FORMAT.format(stock.YearHigh))
             setStockFieldLabel(itemView, R.id.yearLow, "Year Low")
-            setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.YearLow))
+            setStockFieldText(itemView, R.id.exchange, "${stock.StockExchange}")
+            val isIndex = stock.symbol.startsWith("^")
+            if (isIndex) {
+                setStockFieldText(itemView, R.id.averageDailyVolume, "NA")
+                setStockFieldText(itemView, R.id.yearHigh, "NA")
+                setStockFieldText(itemView, R.id.yearLow, "NA")
+            } else {
+                setStockFieldText(itemView, R.id.averageDailyVolume, "${stock.AverageDailyVolume}")
+                setStockFieldText(itemView, R.id.yearHigh, Tools.DECIMAL_FORMAT.format(stock.YearHigh))
+                setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.YearLow))
+            }
         }
     }
 

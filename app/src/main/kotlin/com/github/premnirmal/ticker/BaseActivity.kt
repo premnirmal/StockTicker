@@ -28,7 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
      * Using this to automatically unsubscribe from observables on lifecycle events
      */
     protected fun <T> bind(observable: Observable<T>): Observable<T> {
-        return observable.compose(RxLifecycle.bindActivity<T>(lifecycle()));
+        return observable.compose(RxLifecycle.bindActivity<T>(lifecycle()))
     }
 
     override fun attachBaseContext(newBase: Context) {

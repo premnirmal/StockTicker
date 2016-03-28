@@ -32,7 +32,7 @@ import javax.inject.Singleton
 class StocksProvider(private val api: StocksApi, private val bus: RxBus, private val context: Context, private val preferences: SharedPreferences) : IStocksProvider {
 
     private val tickerList: MutableList<String>
-    private val stockList: MutableList<Stock> = ArrayList<Stock>()
+    private val stockList: MutableList<Stock> = ArrayList()
     private val positionList: MutableList<Stock>
     private var lastFetched: String? = null
     private val storage: StocksStorage
@@ -45,7 +45,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
         for (ticker in tickerList) {
             newTickerList.add(ticker.replace(".".toRegex(), ""))
         }
-        tickerList.removeAll(_GOOGLE_SYMBOLS) // removed google finance because it's causing lots of problems, returning 400s
+        //        tickerList.removeAll(_GOOGLE_SYMBOLS) // removed google finance because it's causing lots of problems, returning 400s
         if (preferences.contains(STOCK_LIST)) {
             // for users using older versions
             val deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET)
@@ -75,30 +75,30 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
         if (!stockList.isEmpty()) {
             sortStockList()
             sendBroadcast()
-            removeGoogleStocks()
+            //            removeGoogleStocks()
         } else {
             fetch()
         }
     }
 
-    private fun removeGoogleStocks() {
-        val dummy1 = Stock()
-        dummy1.symbol = "^DJI"
-        val dummy2 = Stock()
-        dummy2.symbol = "^IXIC"
-        val dummy3 = Stock()
-        dummy3.symbol = ".DJI"
-        val dummy4 = Stock()
-        dummy4.symbol = ".IXIC"
-        stockList.remove(dummy1)
-        stockList.remove(dummy2)
-        stockList.remove(dummy3)
-        stockList.remove(dummy4)
-    }
+    //    private fun removeGoogleStocks() {
+    //        val dummy1 = Stock()
+    //        dummy1.symbol = "^DJI"
+    //        val dummy2 = Stock()
+    //        dummy2.symbol = "^IXIC"
+    //        val dummy3 = Stock()
+    //        dummy3.symbol = ".DJI"
+    //        val dummy4 = Stock()
+    //        dummy4.symbol = ".IXIC"
+    //        stockList.remove(dummy1)
+    //        stockList.remove(dummy2)
+    //        stockList.remove(dummy3)
+    //        stockList.remove(dummy4)
+    //    }
 
     private fun save() {
         preferences.edit().remove(STOCK_LIST).putString(POSITION_LIST, Tools.positionsToString(positionList)).putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList)).putString(LAST_FETCHED, lastFetched).apply()
-        removeGoogleStocks()
+        //        removeGoogleStocks()
         storage.save(stockList).subscribe(object : Subscriber<Boolean>() {
             override fun onCompleted() {
 

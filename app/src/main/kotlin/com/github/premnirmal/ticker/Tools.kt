@@ -36,6 +36,8 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
         @JvmField
         val SETTING_AUTOSORT = "SETTING_AUTOSORT"
         @JvmField
+        val ENABLE_GOOGLE_FINANCE = "ENABLE_GOOGLE_FINANCE"
+        @JvmField
         val WIDGET_BG = "WIDGET_BG"
         @JvmField
         val TEXT_COLOR = "TEXT_COLOR"
@@ -255,6 +257,10 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
         fun shouldPromptRate(): Boolean {
             // if the user hasn't rated, try again on occasions
             return (random.nextInt() % 2 == 0) && !hasUserAlreadyRated()
+        }
+
+        @JvmStatic fun googleFinanceEnabled(): Boolean {
+            return instance.sharedPreferences.getBoolean(Tools.ENABLE_GOOGLE_FINANCE, true)
         }
     }
 }

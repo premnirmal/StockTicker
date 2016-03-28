@@ -7,7 +7,8 @@ class CrashLogger {
 
     companion object {
         @JvmStatic fun logException(throwable: Throwable) {
-
+            val exception: Exception = java.lang.Exception(throwable)
+            exception.printStackTrace()
         }
     }
 }

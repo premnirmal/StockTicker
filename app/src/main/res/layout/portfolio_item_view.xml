@@ -88,14 +88,16 @@
             android:layout_weight="0.6"
             android:layout_height="wrap_content">
 
-            <com.github.premnirmal.ticker.ui.StockFieldView
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="right"
+                android:textColor="@android:color/white"
+                tools:text="555.02"
                 style="@style/BoldTextView"
                 android:layout_marginBottom="5dp"
+                android:singleLine="true"
                 android:textSize="@dimen/large_text"
-                sfw:name="Price"
-                sfw:size="@dimen/large_text"
                 android:id="@+id/totalValue" />
 
             <com.github.premnirmal.ticker.ui.StockFieldView

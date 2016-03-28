@@ -81,4 +81,8 @@ public class Stock implements Comparable<Stock>, Serializable {
     public String toString() {
         return symbol;
     }
+
+    public boolean isIndex() {
+        return symbol != null && symbol.startsWith("^");
+    }
 }
