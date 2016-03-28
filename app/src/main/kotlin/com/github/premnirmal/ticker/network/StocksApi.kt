@@ -14,7 +14,8 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
 
     var lastFetched: String? = null
 
-    fun getYahooFinanceStocks(query: String): Observable<List<Stock>> {
+    fun getYahooFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
+        val query = QueryCreator.buildStocksQuery(tickers)
         return yahooApi.getStocks(query).map({ stockQuery ->
             if (stockQuery == null) {
                 ArrayList()
@@ -23,13 +24,11 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
                 lastFetched = query.created
                 query.results.quote
             }
-        }).onErrorReturn({ throwable ->
-            CrashLogger.logException(throwable)
-            ArrayList<Stock>()
         })
     }
 
-    fun getGoogleFinanceStocks(query: String): Observable<List<Stock>> {
+    fun getGoogleFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
+        val query = QueryCreator.googleStocksQuery(tickers)
         return googleApi.getStock(query).map({ gStocks ->
             val stocks = ArrayList<Stock>()
             for (gStock in gStocks) {
@@ -50,7 +49,7 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
     fun getStocks(tickerList: List<String>): Observable<List<Stock>> {
         val symbols = StockConverter.convertRequestSymbols(tickerList)
         if (!Tools.googleFinanceEnabled()) {
-            val yahooObservable = getYahooFinanceStocks(QueryCreator.buildStocksQuery(symbols.toArray()))
+            val yahooObservable = getYahooFinanceStocks(symbols.toArray())
             return yahooObservable
         } else {
             val yahooSymbols = ArrayList<String>()
@@ -62,11 +61,11 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
                     yahooSymbols.add(symbol)
                 }
             }
-            val yahooObservable = getYahooFinanceStocks(QueryCreator.buildStocksQuery(yahooSymbols.toArray()))
+            val yahooObservable = getYahooFinanceStocks(yahooSymbols.toArray())
             if (googleSymbols.isEmpty()) {
                 return yahooObservable
             } else {
-                val googleObservable = getGoogleFinanceStocks(QueryCreator.googleStocksQuery(googleSymbols.toArray()))
+                val googleObservable = getGoogleFinanceStocks(googleSymbols.toArray())
                 val allStocks = Observable.zip(yahooObservable, googleObservable, { stocks, stocks2 ->
                     val zipped: MutableList<Stock> = ArrayList()
                     zipped.addAll(stocks2)
