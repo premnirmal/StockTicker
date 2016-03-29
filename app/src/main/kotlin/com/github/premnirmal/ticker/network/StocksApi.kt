@@ -66,7 +66,7 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
                 return yahooObservable
             } else {
                 val googleObservable = getGoogleFinanceStocks(googleSymbols.toArray())
-                val allStocks = Observable.zip(yahooObservable, googleObservable, { stocks, stocks2 ->
+                val allStocks = Observable.zip(googleObservable, yahooObservable, { stocks, stocks2 ->
                     val zipped: MutableList<Stock> = ArrayList()
                     zipped.addAll(stocks2)
                     zipped.addAll(stocks)

@@ -72,7 +72,7 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="enable_google_finance">Enable Google Finance?</string>
-    <string name="enable_google_finance_desc">Enabling the Google Finance api allows you to get quotes for tickers indices as ^DJI, but isn\'t robust</string>
+    <string name="enable_google_finance_desc">Enabling the Google Finance api allows you to get quotes for indices as ^DJI, but isn\'t robust</string>
 
     <string-array name="graph_or_positions">
         <item>View graph</item>
