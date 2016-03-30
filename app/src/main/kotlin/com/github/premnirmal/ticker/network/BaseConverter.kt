@@ -11,20 +11,20 @@ import java.io.InputStream
  */
 internal abstract class BaseConverter : retrofit.converter.Converter {
 
-    protected val gson = GsonBuilder().create()
+  protected val gson = GsonBuilder().create()
 
-    @Throws(IOException::class)
-    protected fun getString(`is`: InputStream): String {
-        var ch: Int
-        val sb = StringBuilder()
-        do {
-            ch = `is`.read()
-            sb.append(ch.toChar())
-        } while (ch != -1)
-        return sb.toString()
-    }
+  @Throws(IOException::class)
+  protected fun getString(`is`: InputStream): String {
+    var ch: Int
+    val sb = StringBuilder()
+    do {
+      ch = `is`.read()
+      sb.append(ch.toChar())
+    } while (ch != -1)
+    return sb.toString()
+  }
 
-    override fun toBody(`object`: Any): TypedOutput {
-        return GsonConverter(gson).toBody(`object`)
-    }
+  override fun toBody(`object`: Any): TypedOutput {
+    return GsonConverter(gson).toBody(`object`)
+  }
 }

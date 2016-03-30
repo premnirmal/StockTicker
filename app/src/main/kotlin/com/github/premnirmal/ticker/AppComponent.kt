@@ -13,32 +13,32 @@ import javax.inject.Singleton
  */
 @Singleton
 @Component(
-        modules = arrayOf(AppModule::class)
+    modules = arrayOf(AppModule::class)
 )
 interface AppComponent {
 
-    fun inject(paranormalActivity: ParanormalActivity)
+  fun inject(paranormalActivity: ParanormalActivity)
 
-    fun inject(portfolioFragment: PortfolioFragment)
+  fun inject(portfolioFragment: PortfolioFragment)
 
-    fun inject(settingsActivity: SettingsActivity)
+  fun inject(settingsActivity: SettingsActivity)
 
-    fun inject(tickerSelectorActivity: TickerSelectorActivity)
+  fun inject(tickerSelectorActivity: TickerSelectorActivity)
 
-    fun inject(remoteStockViewAdapter: RemoteStockViewAdapter)
+  fun inject(remoteStockViewAdapter: RemoteStockViewAdapter)
 
-    fun inject(stockWidget: StockWidget)
+  fun inject(stockWidget: StockWidget)
 
-    fun inject(updateReceiver: UpdateReceiver)
+  fun inject(updateReceiver: UpdateReceiver)
 
-    fun inject(refreshReceiver: RefreshReceiver)
+  fun inject(refreshReceiver: RefreshReceiver)
 
-    fun inject(graphActivity: GraphActivity)
+  fun inject(graphActivity: GraphActivity)
 
-    fun inject(rearrangeActivity: RearrangeActivity)
+  fun inject(rearrangeActivity: RearrangeActivity)
 
-    fun inject(addPositionActivity: AddPositionActivity)
+  fun inject(addPositionActivity: AddPositionActivity)
 
-    fun inject(editPositionActivity: EditPositionActivity)
+  fun inject(editPositionActivity: EditPositionActivity)
 
 }

@@ -16,37 +16,37 @@ import javax.inject.Inject
  */
 class RearrangeActivity : BaseActivity(), OnStartDragListener {
 
-    private var itemTouchHelper : ItemTouchHelper? = null
+  private var itemTouchHelper: ItemTouchHelper? = null
 
-    @Inject
-    lateinit internal var stocksProvider: IStocksProvider
+  @Inject
+  lateinit internal var stocksProvider: IStocksProvider
 
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Injector.getAppComponent().inject(this)
-        val actionBar = supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        setTitle(R.string.rearrange)
+  public override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    Injector.getAppComponent().inject(this)
+    val actionBar = supportActionBar
+    actionBar?.setDisplayHomeAsUpEnabled(true)
+    setTitle(R.string.rearrange)
 
-        val recyclerView = RecyclerView(this)
-        recyclerView.setHasFixedSize(true)
-        val spacing = resources.getDimensionPixelSize(R.dimen.list_spacing)
-        recyclerView.setPadding(spacing, spacing, spacing, 0)
-        recyclerView.addItemDecoration(SpacingDecoration(spacing))
-        val adapter = RearrangeAdapter(stocksProvider, this)
-        recyclerView.adapter = adapter
-        val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(this, 2)
-        recyclerView.layoutManager = layoutManager
+    val recyclerView = RecyclerView(this)
+    recyclerView.setHasFixedSize(true)
+    val spacing = resources.getDimensionPixelSize(R.dimen.list_spacing)
+    recyclerView.setPadding(spacing, spacing, spacing, 0)
+    recyclerView.addItemDecoration(SpacingDecoration(spacing))
+    val adapter = RearrangeAdapter(stocksProvider, this)
+    recyclerView.adapter = adapter
+    val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(this, 2)
+    recyclerView.layoutManager = layoutManager
 
-        setContentView(recyclerView)
+    setContentView(recyclerView)
 
-        val callback: ItemTouchHelper.Callback  = SimpleItemTouchHelperCallback(adapter)
-        itemTouchHelper = ItemTouchHelper(callback)
-        itemTouchHelper?.attachToRecyclerView(recyclerView)
-        showDialog(getString(R.string.drag_instructions))
-    }
+    val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(adapter)
+    itemTouchHelper = ItemTouchHelper(callback)
+    itemTouchHelper?.attachToRecyclerView(recyclerView)
+    showDialog(getString(R.string.drag_instructions))
+  }
 
-    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-        itemTouchHelper?.startDrag(viewHolder)
-    }
+  override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+    itemTouchHelper?.startDrag(viewHolder)
+  }
 }

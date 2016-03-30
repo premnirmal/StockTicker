@@ -5,7 +5,7 @@ package com.github.premnirmal.ticker.portfolio.drag_drop
  */
 internal interface ItemTouchHelperViewHolder {
 
-    fun onItemSelected()
+  fun onItemSelected()
 
-    fun onItemClear()
+  fun onItemClear()
 }

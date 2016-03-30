@@ -5,7 +5,7 @@ package com.github.premnirmal.ticker
  */
 class StocksApp : BaseApp() {
 
-    override fun onCreate() {
-        super.onCreate()
-    }
+  override fun onCreate() {
+    super.onCreate()
+  }
 }

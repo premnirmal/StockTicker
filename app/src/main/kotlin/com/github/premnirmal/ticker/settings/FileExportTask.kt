@@ -15,29 +15,29 @@ import java.util.*
  */
 internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
 
-    override fun doInBackground(vararg tickers: List<String>): String? {
-        val file = Tools.tickersFile
-        val tickerList : List<String> = ArrayList(tickers[0])
-        try {
-            if (file.exists()) {
-                file.delete()
-                file.createNewFile()
-            }
-            val fileOutputStream = FileOutputStream(file)
-            for (ticker: String in tickerList) {
-                fileOutputStream.write(("$ticker, ").toByteArray())
-            }
-            fileOutputStream.flush()
-            fileOutputStream.close()
-        } catch (e: FileNotFoundException) {
-            CrashLogger.logException(RuntimeException(e))
-            return null
-        } catch (e: IOException) {
-            CrashLogger.logException(RuntimeException(e))
-            return null
-        }
-
-        Analytics.trackSettingsChange("EXPORT", TextUtils.join(",", tickerList))
-        return file.path
+  override fun doInBackground(vararg tickers: List<String>): String? {
+    val file = Tools.tickersFile
+    val tickerList: List<String> = ArrayList(tickers[0])
+    try {
+      if (file.exists()) {
+        file.delete()
+        file.createNewFile()
+      }
+      val fileOutputStream = FileOutputStream(file)
+      for (ticker: String in tickerList) {
+        fileOutputStream.write(("$ticker, ").toByteArray())
+      }
+      fileOutputStream.flush()
+      fileOutputStream.close()
+    } catch (e: FileNotFoundException) {
+      CrashLogger.logException(RuntimeException(e))
+      return null
+    } catch (e: IOException) {
+      CrashLogger.logException(RuntimeException(e))
+      return null
     }
+
+    Analytics.trackSettingsChange("EXPORT", TextUtils.join(",", tickerList))
+    return file.path
+  }
 }

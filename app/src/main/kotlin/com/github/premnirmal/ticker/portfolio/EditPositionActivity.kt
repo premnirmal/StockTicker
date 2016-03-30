@@ -11,28 +11,28 @@ import com.github.premnirmal.tickerwidget.R
  */
 class EditPositionActivity : AddPositionActivity() {
 
-    companion object {
-        const val TICKER = "TICKER"
-    }
+  companion object {
+    const val TICKER = "TICKER"
+  }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val stock = stocksProvider.getStock(ticker)
-        if (stock != null) {
-            val sharesView = findViewById(R.id.shares) as EditText
-            val priceView = findViewById(R.id.price) as EditText
-            val skipButton = findViewById(R.id.skipButton) as Button
-            skipButton.setText(R.string.remove)
-            sharesView.setText("" + stock.PositionShares)
-            priceView.setText("" + stock.PositionPrice)
-        } else {
-            showDialog(getString(R.string.no_such_stock_in_portfolio),
-                    DialogInterface.OnClickListener { p0, p1 -> finish() })
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    val stock = stocksProvider.getStock(ticker)
+    if (stock != null) {
+      val sharesView = findViewById(R.id.shares) as EditText
+      val priceView = findViewById(R.id.price) as EditText
+      val skipButton = findViewById(R.id.skipButton) as Button
+      skipButton.setText(R.string.remove)
+      sharesView.setText("" + stock.PositionShares)
+      priceView.setText("" + stock.PositionPrice)
+    } else {
+      showDialog(getString(R.string.no_such_stock_in_portfolio),
+          DialogInterface.OnClickListener { p0, p1 -> finish() })
     }
+  }
 
-    override fun skip() {
-        stocksProvider.removePosition(ticker)
-        super.skip()
-    }
+  override fun skip() {
+    stocksProvider.removePosition(ticker)
+    super.skip()
+  }
 }

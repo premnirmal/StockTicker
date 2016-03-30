@@ -5,5 +5,5 @@ package com.github.premnirmal.ticker.network;
  */
 public class Suggestions {
 
-    public QueryResults ResultSet;
+  public QueryResults ResultSet;
 }

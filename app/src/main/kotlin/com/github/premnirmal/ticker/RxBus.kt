@@ -10,23 +10,23 @@ import rx.subjects.SerializedSubject
  */
 class RxBus {
 
-    private val _bus = SerializedSubject(PublishSubject.create<Any>())
+  private val _bus = SerializedSubject(PublishSubject.create<Any>())
 
-    fun post(o: Any) {
-        _bus.onNext(o)
-    }
+  fun post(o: Any) {
+    _bus.onNext(o)
+  }
 
-    /**
-     * Subscribe to any event
-     */
-    fun forAnyEvent(): Observable<Any> {
-        return _bus.observeOn(AndroidSchedulers.mainThread())
-    }
+  /**
+   * Subscribe to any event
+   */
+  fun forAnyEvent(): Observable<Any> {
+    return _bus.observeOn(AndroidSchedulers.mainThread())
+  }
 
-    /**
-     * Subscribe to a specific event type
-     */
-    fun <T> forEventType(eventType: Class<T>) : Observable<T> {
-        return _bus.ofType(eventType).observeOn(AndroidSchedulers.mainThread())
-    }
+  /**
+   * Subscribe to a specific event type
+   */
+  fun <T> forEventType(eventType: Class<T>): Observable<T> {
+    return _bus.ofType(eventType).observeOn(AndroidSchedulers.mainThread())
+  }
 }

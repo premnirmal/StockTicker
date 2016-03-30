@@ -34,171 +34,171 @@ import javax.inject.Inject
  */
 class GraphActivity : BaseActivity() {
 
-    private val formatter = DateTimeFormat.forPattern("MM/dd/YYYY")
+  private val formatter = DateTimeFormat.forPattern("MM/dd/YYYY")
 
-    lateinit private var ticker: Stock
-    private var dataPoints: Array<SerializableDataPoint?>? = null
-    private var range = Range.THREE_MONTH
+  lateinit private var ticker: Stock
+  private var dataPoints: Array<SerializableDataPoint?>? = null
+  private var range = Range.THREE_MONTH
 
-    @Inject
-    lateinit internal var historyProvider: IHistoryProvider
+  @Inject
+  lateinit internal var historyProvider: IHistoryProvider
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Injector.getAppComponent().inject(this)
-        setContentView(R.layout.activity_graph)
-        graphView.isDoubleTapToZoomEnabled = false
-        graphView.axisLeft.setDrawGridLines(false)
-        graphView.axisLeft.setDrawAxisLine(false)
-        graphView.axisLeft.isEnabled = false
-        graphView.axisRight.setDrawGridLines(false)
-        graphView.axisRight.setDrawAxisLine(true)
-        graphView.axisRight.isEnabled = true
-        graphView.xAxis.setDrawGridLines(false)
-        graphView.setDescription("")
-        graphView.legend.isEnabled = false
-        graphView.markerView = TextMarkerView(this, graphView)
-        val supportActionBar = supportActionBar
-        supportActionBar?.hide()
-        if (Build.VERSION.SDK_INT < 16) {
-            window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        } else {
-            val decorView = window.decorView
-            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        }
-        ticker = intent.getSerializableExtra(GRAPH_DATA) as Stock
-        if (savedInstanceState != null) {
-            dataPoints = savedInstanceState.getSerializable(DATAPOINTS) as Array<SerializableDataPoint?>
-            range = savedInstanceState.getSerializable(RANGE) as Range
-        }
-
-        val viewId: Int
-        when (range) {
-            Range.ONE_MONTH -> viewId = R.id.one_month
-            Range.THREE_MONTH -> viewId = R.id.three_month
-            Range.ONE_YEAR -> viewId = R.id.one_year
-        }
-        findViewById(viewId).isEnabled = false
-        Analytics.trackUI("GraphView", ticker.symbol)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    Injector.getAppComponent().inject(this)
+    setContentView(R.layout.activity_graph)
+    graphView.isDoubleTapToZoomEnabled = false
+    graphView.axisLeft.setDrawGridLines(false)
+    graphView.axisLeft.setDrawAxisLine(false)
+    graphView.axisLeft.isEnabled = false
+    graphView.axisRight.setDrawGridLines(false)
+    graphView.axisRight.setDrawAxisLine(true)
+    graphView.axisRight.isEnabled = true
+    graphView.xAxis.setDrawGridLines(false)
+    graphView.setDescription("")
+    graphView.legend.isEnabled = false
+    graphView.markerView = TextMarkerView(this, graphView)
+    val supportActionBar = supportActionBar
+    supportActionBar?.hide()
+    if (Build.VERSION.SDK_INT < 16) {
+      window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+          WindowManager.LayoutParams.FLAG_FULLSCREEN)
+    } else {
+      val decorView = window.decorView
+      decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
+    ticker = intent.getSerializableExtra(GRAPH_DATA) as Stock
+    if (savedInstanceState != null) {
+      dataPoints = savedInstanceState.getSerializable(DATAPOINTS) as Array<SerializableDataPoint?>
+      range = savedInstanceState.getSerializable(RANGE) as Range
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putSerializable(DATAPOINTS, dataPoints)
-        outState.putSerializable(RANGE, range)
+    val viewId: Int
+    when (range) {
+      Range.ONE_MONTH -> viewId = R.id.one_month
+      Range.THREE_MONTH -> viewId = R.id.three_month
+      Range.ONE_YEAR -> viewId = R.id.one_year
     }
+    findViewById(viewId).isEnabled = false
+    Analytics.trackUI("GraphView", ticker.symbol)
+  }
 
-    override fun onResume() {
-        super.onResume()
-        if (dataPoints == null) {
-            getData()
-        } else {
-            loadGraph(dataPoints!!)
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putSerializable(DATAPOINTS, dataPoints)
+    outState.putSerializable(RANGE, range)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    if (dataPoints == null) {
+      getData()
+    } else {
+      loadGraph(dataPoints!!)
+    }
+  }
+
+  private fun getData() {
+    if (Tools.isNetworkOnline(this)) {
+      findViewById(R.id.graph_holder).visibility = View.GONE
+      findViewById(R.id.progress).visibility = View.VISIBLE
+      val observable = historyProvider.getDataPoints(ticker.symbol, range)
+      bind(observable).subscribe(object : Subscriber<Array<SerializableDataPoint?>>() {
+        override fun onCompleted() {
+
         }
-    }
 
-    private fun getData() {
-        if (Tools.isNetworkOnline(this)) {
-            findViewById(R.id.graph_holder).visibility = View.GONE
-            findViewById(R.id.progress).visibility = View.VISIBLE
-            val observable = historyProvider.getDataPoints(ticker.symbol, range)
-            bind(observable).subscribe(object : Subscriber<Array<SerializableDataPoint?>>() {
-                override fun onCompleted() {
-
-                }
-
-                override fun onError(e: Throwable) {
-                    showDialog("Error loading datapoints",
-                            DialogInterface.OnClickListener { dialog, which -> finish() })
-                }
-
-                override fun onNext(data: Array<SerializableDataPoint?>) {
-                    dataPoints = data
-                    loadGraph(dataPoints!!)
-                }
-            })
-        } else {
-            showDialog(getString(R.string.no_network_message),
-                    DialogInterface.OnClickListener { dialog, which -> finish() })
+        override fun onError(e: Throwable) {
+          showDialog("Error loading datapoints",
+              DialogInterface.OnClickListener { dialog, which -> finish() })
         }
-    }
 
-    private fun loadGraph(points: Array<SerializableDataPoint?>) {
-        graphView.lineData?.clearValues()
-        graphView.invalidate()
-        val dataPointsList = points.toList()
-        tickerName.text = ticker.symbol
-        desc.text = ticker.Name
-        val series = LineDataSet(dataPointsList.toList(), range.name)
-        series.setDrawHorizontalHighlightIndicator(false)
-        series.setDrawValues(false)
-        val color_accent = resources.getColor(R.color.color_accent)
-        series.setDrawFilled(true)
-        series.color = color_accent
-        series.fillColor = color_accent
-        series.fillAlpha = 150
-        series.setDrawCubic(true)
-        series.cubicIntensity = 0.07f
-        series.lineWidth = 2f
-        series.setDrawCircles(false)
-        series.highLightColor = Color.GRAY
-        val dataSets: MutableList<ILineDataSet> = ArrayList()
-        dataSets.add(series)
-        val xDataSet: MutableList<String> = ArrayList()
-        for (i in dataPointsList.indices) {
-            xDataSet.add(DateTimeFormat.shortDate().print(dataPointsList[i]?.getQuote()?.date))
+        override fun onNext(data: Array<SerializableDataPoint?>) {
+          dataPoints = data
+          loadGraph(dataPoints!!)
         }
-        val lineData: LineData = LineData(xDataSet, dataSets)
-        graphView.data = lineData
-        val xAxis: XAxis = graphView.xAxis
-        val yAxis: YAxis = graphView.axisRight
-        xAxis.position = XAxis.XAxisPosition.BOTTOM
-        xAxis.textSize = 10f
-        yAxis.textSize = 10f
-        xAxis.textColor = Color.GRAY
-        yAxis.textColor = Color.GRAY
-        xAxis.setLabelsToSkip(xDataSet.size / 5)
-        yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
-        xAxis.setDrawAxisLine(true)
-        yAxis.setDrawAxisLine(true)
-        xAxis.setDrawGridLines(false)
-        yAxis.setDrawGridLines(false)
-        graph_holder.visibility = View.VISIBLE
-        progress.visibility = View.GONE
-        graphView.animateX(DURATION, Easing.EasingOption.EaseInOutQuad)
+      })
+    } else {
+      showDialog(getString(R.string.no_network_message),
+          DialogInterface.OnClickListener { dialog, which -> finish() })
     }
+  }
 
-    /**
-     * xml OnClick
-
-     * @param v
-     */
-    fun updateRange(v: View) {
-        when (v.id) {
-            R.id.one_month -> range = Range.ONE_MONTH
-            R.id.three_month -> range = Range.THREE_MONTH
-            R.id.one_year -> range = Range.ONE_YEAR
-        }
-        Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name)
-        val parent = v.parent as ViewGroup
-        for (i in 0..parent.childCount - 1) {
-            val view = parent.getChildAt(i)
-            if (view !== v) {
-                view.isEnabled = true
-            } else {
-                view.isEnabled = false
-            }
-        }
-        getData()
+  private fun loadGraph(points: Array<SerializableDataPoint?>) {
+    graphView.lineData?.clearValues()
+    graphView.invalidate()
+    val dataPointsList = points.toList()
+    tickerName.text = ticker.symbol
+    desc.text = ticker.Name
+    val series = LineDataSet(dataPointsList.toList(), range.name)
+    series.setDrawHorizontalHighlightIndicator(false)
+    series.setDrawValues(false)
+    val color_accent = resources.getColor(R.color.color_accent)
+    series.setDrawFilled(true)
+    series.color = color_accent
+    series.fillColor = color_accent
+    series.fillAlpha = 150
+    series.setDrawCubic(true)
+    series.cubicIntensity = 0.07f
+    series.lineWidth = 2f
+    series.setDrawCircles(false)
+    series.highLightColor = Color.GRAY
+    val dataSets: MutableList<ILineDataSet> = ArrayList()
+    dataSets.add(series)
+    val xDataSet: MutableList<String> = ArrayList()
+    for (i in dataPointsList.indices) {
+      xDataSet.add(DateTimeFormat.shortDate().print(dataPointsList[i]?.getQuote()?.date))
     }
+    val lineData: LineData = LineData(xDataSet, dataSets)
+    graphView.data = lineData
+    val xAxis: XAxis = graphView.xAxis
+    val yAxis: YAxis = graphView.axisRight
+    xAxis.position = XAxis.XAxisPosition.BOTTOM
+    xAxis.textSize = 10f
+    yAxis.textSize = 10f
+    xAxis.textColor = Color.GRAY
+    yAxis.textColor = Color.GRAY
+    xAxis.setLabelsToSkip(xDataSet.size / 5)
+    yAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART)
+    xAxis.setDrawAxisLine(true)
+    yAxis.setDrawAxisLine(true)
+    xAxis.setDrawGridLines(false)
+    yAxis.setDrawGridLines(false)
+    graph_holder.visibility = View.VISIBLE
+    progress.visibility = View.GONE
+    graphView.animateX(DURATION, Easing.EasingOption.EaseInOutQuad)
+  }
 
-    companion object {
+  /**
+   * xml OnClick
 
-        val GRAPH_DATA = "GRAPH_DATA"
-        private val DATAPOINTS = "DATAPOINTS"
-        private val RANGE = "RANGE"
-        private val DURATION = 2000
+   * @param v
+   */
+  fun updateRange(v: View) {
+    when (v.id) {
+      R.id.one_month -> range = Range.ONE_MONTH
+      R.id.three_month -> range = Range.THREE_MONTH
+      R.id.one_year -> range = Range.ONE_YEAR
     }
+    Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name)
+    val parent = v.parent as ViewGroup
+    for (i in 0..parent.childCount - 1) {
+      val view = parent.getChildAt(i)
+      if (view !== v) {
+        view.isEnabled = true
+      } else {
+        view.isEnabled = false
+      }
+    }
+    getData()
+  }
+
+  companion object {
+
+    val GRAPH_DATA = "GRAPH_DATA"
+    private val DATAPOINTS = "DATAPOINTS"
+    private val RANGE = "RANGE"
+    private val DURATION = 2000
+  }
 
 }

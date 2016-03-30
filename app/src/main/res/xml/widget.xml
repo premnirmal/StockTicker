@@ -7,4 +7,4 @@
     android:resizeMode="horizontal|vertical"
     android:configure="com.github.premnirmal.ticker.settings.SettingsActivity"
     android:initialLayout="@layout/initial_widget_layout"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen"/>

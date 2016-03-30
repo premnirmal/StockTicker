@@ -26,82 +26,86 @@ import javax.inject.Inject
  */
 class TickerSelectorActivity : BaseActivity() {
 
-    @Inject
-    lateinit internal var suggestionApi: SuggestionApi
+  @Inject
+  lateinit internal var suggestionApi: SuggestionApi
 
-    @Inject
-    lateinit internal var stocksProvider: IStocksProvider
+  @Inject
+  lateinit internal var stocksProvider: IStocksProvider
 
-    internal var subscription: Subscription? = null
+  internal var subscription: Subscription? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Injector.getAppComponent().inject(this)
-        setContentView(R.layout.stock_search_layout)
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    Injector.getAppComponent().inject(this)
+    setContentView(R.layout.stock_search_layout)
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val searchView = findViewById(R.id.query) as EditText
-        val listView = findViewById(R.id.resultList) as ListView
+    val searchView = findViewById(R.id.query) as EditText
+    val listView = findViewById(R.id.resultList) as ListView
 
-        searchView.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+    searchView.addTextChangedListener(object : TextWatcher {
+      override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
-            }
+      }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+      override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
-            }
+      }
 
-            override fun afterTextChanged(s: Editable) {
-                val query = s.toString().trim { it <= ' ' }.replace(" ".toRegex(), "")
-                if (!query.isEmpty()) {
-                    subscription?.unsubscribe()
-                    if (Tools.isNetworkOnline(applicationContext)) {
-                        val observable = suggestionApi.getSuggestions(query)
-                        subscription = bind(observable).map { suggestions -> suggestions.ResultSet.Result }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(object : Subscriber<List<Suggestion>>() {
-                            override fun onCompleted() {
+      override fun afterTextChanged(s: Editable) {
+        val query = s.toString().trim { it <= ' ' }.replace(" ".toRegex(), "")
+        if (!query.isEmpty()) {
+          subscription?.unsubscribe()
+          if (Tools.isNetworkOnline(applicationContext)) {
+            val observable = suggestionApi.getSuggestions(query)
+            subscription = bind(
+                observable).map { suggestions -> suggestions.ResultSet.Result }.observeOn(
+                AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(
+                object : Subscriber<List<Suggestion>>() {
+                  override fun onCompleted() {
 
-                            }
+                  }
 
-                            override fun onError(throwable: Throwable) {
-                                InAppMessage.showMessage(this@TickerSelectorActivity, R.string.error_fetching_suggestions)
-                            }
+                  override fun onError(throwable: Throwable) {
+                    InAppMessage.showMessage(this@TickerSelectorActivity,
+                        R.string.error_fetching_suggestions)
+                  }
 
-                            override fun onNext(suggestions: List<Suggestion>) {
-                                val suggestionList = suggestions
-                                listView.adapter = SuggestionsAdapter(suggestionList)
-                            }
-                        })
-                    } else {
-                        InAppMessage.showMessage(this@TickerSelectorActivity, R.string.no_network_message)
-                    }
-                }
-            }
-        })
+                  override fun onNext(suggestions: List<Suggestion>) {
+                    val suggestionList = suggestions
+                    listView.adapter = SuggestionsAdapter(suggestionList)
+                  }
+                })
+          } else {
+            InAppMessage.showMessage(this@TickerSelectorActivity, R.string.no_network_message)
+          }
+        }
+      }
+    })
 
-        listView.setOnItemClickListener({ parent, view, position, id ->
-            val suggestionsAdapter = parent.adapter as SuggestionsAdapter
-            val suggestion: Suggestion = suggestionsAdapter.getItem(position)
-            val ticker = suggestion.symbol
-            if (!stocksProvider.getTickers().contains(ticker)) {
-                stocksProvider.addStock(ticker)
-                InAppMessage.showMessage(this@TickerSelectorActivity, ticker + " added to list")
-                if (!ticker.startsWith("^")) { // don't allow positions for indices
-                    showDialog("Do you want to add positions for $ticker?",
-                            DialogInterface.OnClickListener { dialog, which ->
-                                val intent = Intent(this@TickerSelectorActivity, AddPositionActivity::class.java)
-                                intent.putExtra(EditPositionActivity.TICKER, ticker)
-                                startActivity(intent)
-                            },
-                            DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
-                }
-            } else {
-                showDialog("${ticker} is already in your portfolio")
-            }
-        })
+    listView.setOnItemClickListener({ parent, view, position, id ->
+      val suggestionsAdapter = parent.adapter as SuggestionsAdapter
+      val suggestion: Suggestion = suggestionsAdapter.getItem(position)
+      val ticker = suggestion.symbol
+      if (!stocksProvider.getTickers().contains(ticker)) {
+        stocksProvider.addStock(ticker)
+        InAppMessage.showMessage(this@TickerSelectorActivity, ticker + " added to list")
+        if (!ticker.startsWith("^")) {
+          // don't allow positions for indices
+          showDialog("Do you want to add positions for $ticker?",
+              DialogInterface.OnClickListener { dialog, which ->
+                val intent = Intent(this@TickerSelectorActivity, AddPositionActivity::class.java)
+                intent.putExtra(EditPositionActivity.TICKER, ticker)
+                startActivity(intent)
+              },
+              DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+        }
+      } else {
+        showDialog("${ticker} is already in your portfolio")
+      }
+    })
 
-    }
-
+  }
 
 }

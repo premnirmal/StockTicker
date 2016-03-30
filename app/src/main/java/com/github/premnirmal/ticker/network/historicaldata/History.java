@@ -10,33 +10,31 @@ import java.util.List;
  */
 public class History implements Parcelable {
 
-    public List<Quote> quote;
+  public List<Quote> quote;
 
-    public History() {
+  public History() {
 
+  }
+
+  public History(Parcel in) {
+    in.readList(quote, Quote.class.getClassLoader());
+  }
+
+  @Override public int describeContents() {
+    return 0;
+  }
+
+  public static final Creator<History> CREATOR = new Creator<History>() {
+    public History createFromParcel(Parcel in) {
+      return new History(in);
     }
 
-    public History(Parcel in) {
-        in.readList(quote, Quote.class.getClassLoader());
+    public History[] newArray(int size) {
+      return new History[size];
     }
+  };
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<History> CREATOR = new Creator<History>() {
-        public History createFromParcel(Parcel in) {
-            return new History(in);
-        }
-
-        public History[] newArray(int size) {
-            return new History[size];
-        }
-    };
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(quote);
-    }
+  @Override public void writeToParcel(Parcel dest, int flags) {
+    dest.writeList(quote);
+  }
 }

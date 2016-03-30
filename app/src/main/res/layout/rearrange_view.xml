@@ -3,16 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/card_bg"
-    android:padding="15dp">
+    android:padding="15dp"
+    >
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/BoldTextView"
-        android:textSize="14sp"
-        android:id="@+id/tickerName"
-        android:maxLines="2"
-        android:ellipsize="end"
-        />
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      style="@style/BoldTextView"
+      android:textSize="14sp"
+      android:id="@+id/tickerName"
+      android:maxLines="2"
+      android:ellipsize="end"
+      />
 
 </FrameLayout>

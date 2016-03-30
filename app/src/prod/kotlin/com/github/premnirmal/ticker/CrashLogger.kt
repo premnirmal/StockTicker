@@ -7,9 +7,9 @@ import com.crashlytics.android.Crashlytics
  */
 class CrashLogger {
 
-    companion object {
-        @JvmStatic fun logException(throwable: Throwable) {
-            Crashlytics.logException(throwable)
-        }
+  companion object {
+    @JvmStatic fun logException(throwable: Throwable) {
+      Crashlytics.logException(throwable)
     }
+  }
 }

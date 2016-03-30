@@ -14,25 +14,25 @@ import javax.inject.Inject
  */
 class UpdateReceiver : BroadcastReceiver() {
 
-    @Inject
-    lateinit internal var stocksProvider: IStocksProvider
+  @Inject
+  lateinit internal var stocksProvider: IStocksProvider
 
-    @Inject
-    lateinit internal var preferences: SharedPreferences
+  @Inject
+  lateinit internal var preferences: SharedPreferences
 
-    internal val random = Random(System.currentTimeMillis())
+  internal val random = Random(System.currentTimeMillis())
 
-    override fun onReceive(context: Context, intent: Intent) {
-        Injector.getAppComponent().inject(this)
-        val path = context.getString(R.string.package_replaced_string)
-        val intentData = intent.dataString
-        if (path == intentData || "package:" + path == intentData) {
-            stocksProvider.fetch()
-            preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
-            preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply()
-        } else if (random.nextInt() % 2 == 0) {
-            // randomly change this string so the user sees the animation
-            preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
-        }
+  override fun onReceive(context: Context, intent: Intent) {
+    Injector.getAppComponent().inject(this)
+    val path = context.getString(R.string.package_replaced_string)
+    val intentData = intent.dataString
+    if (path == intentData || "package:" + path == intentData) {
+      stocksProvider.fetch()
+      preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
+      preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply()
+    } else if (random.nextInt() % 2 == 0) {
+      // randomly change this string so the user sees the animation
+      preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
     }
+  }
 }

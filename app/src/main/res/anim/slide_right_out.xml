@@ -1,8 +1,8 @@
 <translate xmlns:android="http://schemas.android.com/apk/res/android"
-           android:interpolator="@android:anim/accelerate_interpolator"
-           android:fromYDelta="0"
-           android:toYDelta="0"
-           android:zAdjustment="top"
-           android:fromXDelta="0%"        
-           android:toXDelta="100%"
-           android:duration="400"/>
+    android:interpolator="@android:anim/accelerate_interpolator"
+    android:fromYDelta="0"
+    android:toYDelta="0"
+    android:zAdjustment="top"
+    android:fromXDelta="0%"
+    android:toXDelta="100%"
+    android:duration="400"/>

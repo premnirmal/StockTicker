@@ -5,29 +5,29 @@
     android:layout_height="match_parent"
     >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:singleLine="true"
-        tools:text="Price"
-        android:id="@+id/fieldname"
-        android:textColor="@android:color/darker_gray"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:gravity="left"
-        />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="24sp"
+      android:singleLine="true"
+      tools:text="Price"
+      android:id="@+id/fieldname"
+      android:textColor="@android:color/darker_gray"
+      android:layout_centerVertical="true"
+      android:layout_alignParentLeft="true"
+      android:gravity="left"
+      />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:singleLine="true"
-        android:id="@+id/fieldvalue"
-        android:textColor="@android:color/white"
-        tools:text="GOOG"
-        android:layout_centerVertical="true"
-        android:ellipsize="none"
-        android:gravity="right"
-        />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="24sp"
+      android:singleLine="true"
+      android:id="@+id/fieldvalue"
+      android:textColor="@android:color/white"
+      tools:text="GOOG"
+      android:layout_centerVertical="true"
+      android:ellipsize="none"
+      android:gravity="right"
+      />
 </merge>

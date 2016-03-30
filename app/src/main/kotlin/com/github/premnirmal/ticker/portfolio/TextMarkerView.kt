@@ -14,45 +14,43 @@ import org.joda.time.format.DateTimeFormat
 /**
  * Created by premnirmal on 3/5/16.
  */
-class TextMarkerView(context: Context, private val mChart: View) : MarkerView(context, R.layout.text_marker_layout) {
+class TextMarkerView(context: Context, private val mChart: View) : MarkerView(context,
+    R.layout.text_marker_layout) {
 
-    private val tvContent: TextView
+  private val tvContent: TextView
 
-    init {
-        tvContent = findViewById(R.id.tvContent) as TextView
-    }
+  init {
+    tvContent = findViewById(R.id.tvContent) as TextView
+  }
 
-    override fun refreshContent(e: Entry, highlight: Highlight) {
-        val timeFrame = e.data as Quote
-        val date = fmt.print(timeFrame.date)
-        tvContent.text = "$${e.`val`}\n$date"
-    }
+  override fun refreshContent(e: Entry, highlight: Highlight) {
+    val timeFrame = e.data as Quote
+    val date = fmt.print(timeFrame.date)
+    tvContent.text = "$${e.`val`}\n$date"
+  }
 
-    override fun getXOffset(xpos: Float): Int {
-        return -(width / 2)
-    }
+  override fun getXOffset(xpos: Float): Int {
+    return -(width / 2)
+  }
 
-    override fun getYOffset(ypos: Float): Int {
-        return -height
-    }
+  override fun getYOffset(ypos: Float): Int {
+    return -height
+  }
 
-    override fun draw(canvas: Canvas, posx: Float, posy: Float) {
-        var x = posx
-        var y = posy
-        y += getYOffset(posy).toFloat()
-        if (x > mChart.width + getXOffset(x))
-            x += mChart.width + getXOffset(x) - x + getXOffset(x)
-        else if (x < width / 2)
-            x += width / 2 - x + getXOffset(x)
-        else
-            x += getXOffset(x).toFloat()
-        canvas.translate(x, y)
-        draw(canvas)
-        canvas.translate(-x, -y)
-    }
+  override fun draw(canvas: Canvas, posx: Float, posy: Float) {
+    var x = posx
+    var y = posy
+    y += getYOffset(posy).toFloat()
+    if (x > mChart.width + getXOffset(x)) x += mChart.width + getXOffset(x) - x + getXOffset(x)
+    else if (x < width / 2) x += width / 2 - x + getXOffset(x)
+    else x += getXOffset(x).toFloat()
+    canvas.translate(x, y)
+    draw(canvas)
+    canvas.translate(-x, -y)
+  }
 
-    companion object {
+  companion object {
 
-        private val fmt = DateTimeFormat.forPattern("MMMM d")
-    }
+    private val fmt = DateTimeFormat.forPattern("MMMM d")
+  }
 }

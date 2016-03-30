@@ -5,53 +5,58 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingLeft="3dp"
-    android:paddingRight="3dp">
+    android:paddingRight="3dp"
+    >
 
-    <TextView
-        android:id="@+id/ticker"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="2dp"
-        android:layout_weight="0.30"
-        android:ellipsize="end"
-        android:singleLine="true"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+  <TextView
+      android:id="@+id/ticker"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="2dp"
+      android:layout_weight="0.30"
+      android:ellipsize="end"
+      android:singleLine="true"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      android:textStyle="bold"
+      />
 
-    <TextView
-        android:id="@+id/totalValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.30"
-        android:ellipsize="none"
-        android:singleLine="true"
-        android:textColor="@android:color/white"
-        android:textSize="12sp" />
+  <TextView
+      android:id="@+id/totalValue"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.30"
+      android:ellipsize="none"
+      android:singleLine="true"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      />
 
 
-    <TextView
-        android:id="@+id/changeValue"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="2dp"
-        android:layout_weight="0.25"
-        android:ellipsize="none"
-        android:gravity="end"
-        android:singleLine="true"
-        android:textColor="@android:color/holo_green_dark"
-        android:textSize="12sp" />
+  <TextView
+      android:id="@+id/changeValue"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginRight="2dp"
+      android:layout_weight="0.25"
+      android:ellipsize="none"
+      android:gravity="end"
+      android:singleLine="true"
+      android:textColor="@android:color/holo_green_dark"
+      android:textSize="12sp"
+      />
 
-    <TextView
-        android:id="@+id/changePercent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.30"
-        android:ellipsize="none"
-        android:gravity="end"
-        android:singleLine="true"
-        android:textColor="@android:color/holo_green_dark"
-        android:textSize="12sp" />
+  <TextView
+      android:id="@+id/changePercent"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="0.30"
+      android:ellipsize="none"
+      android:gravity="end"
+      android:singleLine="true"
+      android:textColor="@android:color/holo_green_dark"
+      android:textSize="12sp"
+      />
 
 
 </LinearLayout>

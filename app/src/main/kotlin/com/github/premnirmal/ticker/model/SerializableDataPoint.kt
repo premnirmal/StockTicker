@@ -9,18 +9,18 @@ import java.io.Serializable
  */
 class SerializableDataPoint : Entry, Serializable {
 
-    constructor(y: Float, x: Int) : super(y, x) {
-    }
+  constructor(y: Float, x: Int) : super(y, x) {
+  }
 
-    constructor(y: Float, x: Int, data: Quote) : super(y, x, data) {
-    }
+  constructor(y: Float, x: Int, data: Quote) : super(y, x, data) {
+  }
 
-    fun getQuote(): Quote {
-        return (data as Quote)
-    }
+  fun getQuote(): Quote {
+    return (data as Quote)
+  }
 
-    companion object {
+  companion object {
 
-        private val serialVersionUID = 42L
-    }
+    private val serialVersionUID = 42L
+  }
 }

@@ -17,76 +17,74 @@ import javax.inject.Inject
  */
 class ParanormalActivity : BaseActivity() {
 
-    @Inject
-    lateinit internal var preferences: SharedPreferences
+  @Inject
+  lateinit internal var preferences: SharedPreferences
 
-    private var dialogShown = false
+  private var dialogShown = false
 
-    companion object {
-        val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+  companion object {
+    val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+  }
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    if (savedInstanceState != null) {
+      dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
     }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
+    Injector.getAppComponent().inject(this)
+    setContentView(R.layout.activity_paranormal)
+    if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
+      preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply()
+      val stringBuilder = StringBuilder()
+      val whatsNew = resources.getStringArray(R.array.whats_new)
+      for (i in whatsNew.indices) {
+        stringBuilder.append("\t")
+        stringBuilder.append(whatsNew[i])
+        if (i != whatsNew.size - 1) {
+          stringBuilder.append("\n\n")
         }
-        Injector.getAppComponent().inject(this)
-        setContentView(R.layout.activity_paranormal)
-        if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
-            preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply()
-            val stringBuilder = StringBuilder()
-            val whatsNew = resources.getStringArray(R.array.whats_new)
-            for (i in whatsNew.indices) {
-                stringBuilder.append("\t")
-                stringBuilder.append(whatsNew[i])
-                if (i != whatsNew.size - 1) {
-                    stringBuilder.append("\n\n")
-                }
-            }
-            AlertDialog.Builder(this).setTitle("What\'s new in Version " + BuildConfig.VERSION_NAME)
-                    .setMessage(stringBuilder.toString())
-                    .setNeutralButton("OK") { dialog, which -> dialog.dismiss() }
-                    .show()
-        } else {
-            maybeAskToRate()
-        }
+      }
+      AlertDialog.Builder(this).setTitle("What\'s new in Version " + BuildConfig.VERSION_NAME)
+          .setMessage(stringBuilder.toString())
+          .setNeutralButton("OK") { dialog, which -> dialog.dismiss() }
+          .show()
+    } else {
+      maybeAskToRate()
     }
+  }
 
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        outState?.putBoolean(DIALOG_SHOWN, dialogShown)
-    }
+  override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+    super.onSaveInstanceState(outState, outPersistentState)
+    outState?.putBoolean(DIALOG_SHOWN, dialogShown)
+  }
 
-    override fun onResume() {
-        super.onResume()
-        supportInvalidateOptionsMenu()
-    }
+  override fun onResume() {
+    super.onResume()
+    supportInvalidateOptionsMenu()
+  }
 
-    protected fun maybeAskToRate() {
-        if (!dialogShown && Tools.shouldPromptRate()) {
-            AlertDialog.Builder(this).setTitle(R.string.like_our_app)
-                    .setMessage(R.string.please_rate)
-                    .setPositiveButton(R.string.yes) {
-                        dialog, which ->
-                        sendToPlayStore()
-                        Analytics.trackRateYes()
-                        Tools.userDidRate()
-                        dialog.dismiss()
-                    }
-                    .setNegativeButton(R.string.no) {
-                        dialog, which ->
-                        Analytics.trackRateNo()
-                        dialog.dismiss()
-                    }
-                    .create().show()
-            dialogShown = true
-        }
+  protected fun maybeAskToRate() {
+    if (!dialogShown && Tools.shouldPromptRate()) {
+      AlertDialog.Builder(this).setTitle(R.string.like_our_app)
+          .setMessage(R.string.please_rate)
+          .setPositiveButton(R.string.yes) { dialog, which ->
+            sendToPlayStore()
+            Analytics.trackRateYes()
+            Tools.userDidRate()
+            dialog.dismiss()
+          }
+          .setNegativeButton(R.string.no) { dialog, which ->
+            Analytics.trackRateNo()
+            dialog.dismiss()
+          }
+          .create().show()
+      dialogShown = true
     }
+  }
 
-    private fun sendToPlayStore() {
-        val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
-        val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
-        startActivity(marketIntent)
-    }
+  private fun sendToPlayStore() {
+    val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
+    val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
+    startActivity(marketIntent)
+  }
 }

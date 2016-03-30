@@ -10,11 +10,11 @@ import com.squareup.okhttp.Response
  */
 internal class NoCacheRequestInterceptor : Interceptor {
 
-    override fun intercept(chain: Interceptor.Chain): Response? {
-        val request: Request = chain.request().newBuilder()
-                .cacheControl(CacheControl.FORCE_NETWORK)
-                .build()
-        return chain.proceed(request)
-    }
+  override fun intercept(chain: Interceptor.Chain): Response? {
+    val request: Request = chain.request().newBuilder()
+        .cacheControl(CacheControl.FORCE_NETWORK)
+        .build()
+    return chain.proceed(request)
+  }
 
 }

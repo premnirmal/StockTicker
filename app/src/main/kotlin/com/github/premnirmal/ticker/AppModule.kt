@@ -10,24 +10,24 @@ import javax.inject.Singleton
 /**
  * Created on 3/3/16.
  */
-@Module( includes = arrayOf(ApiModule::class))
+@Module(includes = arrayOf(ApiModule::class))
 class AppModule(private val app: Context) {
 
-    @Provides
-    internal fun provideApplicationContext(): Context {
-        return app
-    }
+  @Provides
+  internal fun provideApplicationContext(): Context {
+    return app
+  }
 
-    @Provides
-    @Singleton
-    internal fun provideEventBus(): RxBus {
-        return RxBus()
-    }
+  @Provides
+  @Singleton
+  internal fun provideEventBus(): RxBus {
+    return RxBus()
+  }
 
-    @Provides
-    @Singleton
-    internal fun provideSharedPreferences(context: Context): SharedPreferences {
-        val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE)
-        return sharedPreferences
-    }
+  @Provides
+  @Singleton
+  internal fun provideSharedPreferences(context: Context): SharedPreferences {
+    val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences
+  }
 }

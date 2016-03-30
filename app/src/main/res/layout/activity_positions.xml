@@ -4,107 +4,118 @@
     android:orientation="vertical"
     android:padding="15dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
+
+  <TextView
+      android:layout_marginTop="20dp"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:id="@+id/tickerName"
+      style="@style/BoldTextView"
+      android:textSize="@dimen/xlarge_text"
+      tools:text="GOOG"
+      android:gravity="center"
+      />
+
+  <LinearLayout
+      android:layout_marginTop="10dp"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
 
     <TextView
-        android:layout_marginTop="20dp"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        android:layout_weight="0.4"
         android:layout_height="wrap_content"
-        android:id="@+id/tickerName"
-        style="@style/BoldTextView"
-        android:textSize="@dimen/xlarge_text"
-        tools:text="GOOG"
-        android:gravity="center" />
+        android:text="@string/number_of_shares"
+        android:layout_gravity="bottom"
+        />
 
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <EditText
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+        android:layout_height="wrap_content"
+        android:id="@+id/shares"
+        android:textAlignment="textEnd"
+        android:gravity="end"
+        android:singleLine="true"
+        android:text="0"
+        android:inputType="number"
+        android:nextFocusForward="@+id/price"
+        />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.4"
-            android:layout_height="wrap_content"
-            android:text="@string/number_of_shares"
-            android:layout_gravity="bottom" />
+  </LinearLayout>
 
-        <EditText
-            android:layout_width="0dp"
-            android:layout_weight="0.6"
-            android:layout_height="wrap_content"
-            android:id="@+id/shares"
-            android:textAlignment="textEnd"
-            android:gravity="end"
-            android:singleLine="true"
-            android:text="0"
-            android:inputType="number"
-            android:nextFocusForward="@+id/price"
-            />
+  <LinearLayout
+      android:layout_marginTop="10dp"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
 
-    </LinearLayout>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="0.4"
+        android:layout_height="wrap_content"
+        android:text="@string/Price"
+        android:layout_gravity="bottom"
+        />
 
-    <LinearLayout
-        android:layout_marginTop="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <EditText
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+        android:layout_height="wrap_content"
+        android:id="@id/price"
+        android:layout_gravity="right"
+        android:textAlignment="textEnd"
+        android:gravity="end"
+        android:singleLine="true"
+        android:text="0"
+        android:inputType="numberDecimal"
+        />
+  </LinearLayout>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="0.4"
-            android:layout_height="wrap_content"
-            android:text="@string/Price"
-            android:layout_gravity="bottom" />
+  <LinearLayout
+      android:layout_marginTop="20dp"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
 
-        <EditText
-            android:layout_width="0dp"
-            android:layout_weight="0.6"
-            android:layout_height="wrap_content"
-            android:id="@id/price"
-            android:layout_gravity="right"
-            android:textAlignment="textEnd"
-            android:gravity="end"
-            android:singleLine="true"
-            android:text="0"
-            android:inputType="numberDecimal" />
-    </LinearLayout>
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_marginRight="10dp"
+        >
 
-    <LinearLayout
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+      <Button
+          android:layout_width="100dp"
+          android:layout_height="40dp"
+          android:layout_gravity="right"
+          android:text="@string/done"
+          android:id="@+id/doneButton"
+          />
+    </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginRight="10dp"
-            >
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_marginLeft="10dp"
+        >
 
-            <Button
-                android:layout_width="100dp"
-                android:layout_height="40dp"
-                android:layout_gravity="right"
-                android:text="@string/done"
-                android:id="@+id/doneButton" />
-        </FrameLayout>
+      <Button
+          android:layout_width="100dp"
+          android:layout_height="40dp"
+          android:layout_gravity="left"
+          android:text="@string/skip"
+          android:id="@+id/skipButton"
+          />
+    </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginLeft="10dp">
-
-            <Button
-                android:layout_width="100dp"
-                android:layout_height="40dp"
-                android:layout_gravity="left"
-                android:text="@string/skip"
-                android:id="@+id/skipButton" />
-        </FrameLayout>
-
-    </LinearLayout>
+  </LinearLayout>
 
 </LinearLayout>

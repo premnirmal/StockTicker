@@ -6,17 +6,18 @@ import android.view.View
 /**
  * Created by premnirmal on 2/29/16.
  */
-internal class ItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView), ItemTouchHelperViewHolder {
+internal class ItemViewHolder(itemView: View?) : RecyclerView.ViewHolder(
+    itemView), ItemTouchHelperViewHolder {
 
-    init {
+  init {
 
-    }
+  }
 
-    override fun onItemSelected() {
-        itemView.alpha = 0.5f
-    }
+  override fun onItemSelected() {
+    itemView.alpha = 0.5f
+  }
 
-    override fun onItemClear() {
-        itemView.alpha = 1f
-    }
+  override fun onItemClear() {
+    itemView.alpha = 1f
+  }
 }

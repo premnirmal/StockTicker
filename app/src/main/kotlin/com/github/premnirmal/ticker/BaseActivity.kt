@@ -18,72 +18,75 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-    private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
+  private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-    private fun lifecycle(): Observable<ActivityEvent> {
-        return lifecycleSubject.asObservable()
-    }
+  private fun lifecycle(): Observable<ActivityEvent> {
+    return lifecycleSubject.asObservable()
+  }
 
-    /**
-     * Using this to automatically unsubscribe from observables on lifecycle events
-     */
-    protected fun <T> bind(observable: Observable<T>): Observable<T> {
-        return observable.compose(RxLifecycle.bindActivity<T>(lifecycle()))
-    }
+  /**
+   * Using this to automatically unsubscribe from observables on lifecycle events
+   */
+  protected fun <T> bind(observable: Observable<T>): Observable<T> {
+    return observable.compose(RxLifecycle.bindActivity<T>(lifecycle()))
+  }
 
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
-    }
+  override fun attachBaseContext(newBase: Context) {
+    super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+  }
 
-    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
-        super.onCreate(savedInstanceState, persistentState)
-        lifecycleSubject.onNext(ActivityEvent.CREATE)
-    }
+  override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+    super.onCreate(savedInstanceState, persistentState)
+    lifecycleSubject.onNext(ActivityEvent.CREATE)
+  }
 
-    override fun onStart() {
-        super.onStart()
-        lifecycleSubject.onNext(ActivityEvent.START)
-    }
+  override fun onStart() {
+    super.onStart()
+    lifecycleSubject.onNext(ActivityEvent.START)
+  }
 
-    override fun onStop() {
-        super.onStop()
-        lifecycleSubject.onNext(ActivityEvent.STOP)
-    }
+  override fun onStop() {
+    super.onStop()
+    lifecycleSubject.onNext(ActivityEvent.STOP)
+  }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        lifecycleSubject.onNext(ActivityEvent.DESTROY)
-    }
+  override fun onDestroy() {
+    super.onDestroy()
+    lifecycleSubject.onNext(ActivityEvent.DESTROY)
+  }
 
-    override fun onResume() {
-        super.onResume()
-        lifecycleSubject.onNext(ActivityEvent.RESUME)
-    }
+  override fun onResume() {
+    super.onResume()
+    lifecycleSubject.onNext(ActivityEvent.RESUME)
+  }
 
-    override fun onPause() {
-        super.onPause()
-        lifecycleSubject.onNext(ActivityEvent.PAUSE)
-    }
+  override fun onPause() {
+    super.onPause()
+    lifecycleSubject.onNext(ActivityEvent.PAUSE)
+  }
 
-    protected fun showDialog(message: String): AlertDialog {
-        return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
-                .setNeutralButton("OK", { dialogInterface: DialogInterface, i: Int -> }).show()
-    }
+  protected fun showDialog(message: String): AlertDialog {
+    return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
+        .setNeutralButton("OK", { dialogInterface: DialogInterface, i: Int -> }).show()
+  }
 
-    protected fun showDialog(message: String,
-                             listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }): AlertDialog {
-        return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setNeutralButton("OK", listener).show()
-    }
+  protected fun showDialog(message: String,
+      listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }): AlertDialog {
+    return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setNeutralButton("OK",
+        listener).show()
+  }
 
-    protected fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener, negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
-        return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setPositiveButton("YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
-    }
+  protected fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
+      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+    return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setPositiveButton(
+        "YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
+  }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    if (item.itemId == android.R.id.home) {
+      onBackPressed()
+      return true
     }
+    return super.onOptionsItemSelected(item)
+  }
 }

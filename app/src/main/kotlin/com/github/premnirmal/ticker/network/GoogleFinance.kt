@@ -8,6 +8,7 @@ import rx.Observable
  */
 interface GoogleFinance {
 
-    @GET("/info")
-    fun getStock(@retrofit.http.Query(value = "q", encodeValue = false) query: String): Observable<List<GStock>>
+  @GET("/info")
+  fun getStock(@retrofit.http.Query(value = "q",
+      encodeValue = false) query: String): Observable<List<GStock>>
 }

@@ -9,68 +9,75 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.stock_field_view.view.*
+import kotlinx.android.synthetic.main.stock_field_view.view.fieldname
+import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StockFieldView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+class StockFieldView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(
+    context, attrs) {
 
-    init {
-        LayoutInflater.from(context).inflate(R.layout.stock_field_view, this, true)
-        if (attrs != null) {
-            val array = getContext().obtainStyledAttributes(attrs, R.styleable.StockFieldView)
-            val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
-            if (orientation == 0) {
-                setOrientation(LinearLayout.HORIZONTAL)
-                fieldname.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
-                fieldvalue.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
-                fieldvalue.gravity = Gravity.RIGHT
-            } else {
-                setOrientation(LinearLayout.VERTICAL)
-                fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0, 0.5f)
-                fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0, 0.5f)
-                fieldvalue.gravity = Gravity.LEFT
-            }
-            weightSum = 1f
-            val name = getStringValue(context, array, R.styleable.StockFieldView_name)
-            fieldname.text = name
-            val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20).toFloat()
-            fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-            fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
-            array.recycle()
-        }
+  init {
+    LayoutInflater.from(context).inflate(R.layout.stock_field_view, this, true)
+    if (attrs != null) {
+      val array = getContext().obtainStyledAttributes(attrs, R.styleable.StockFieldView)
+      val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
+      if (orientation == 0) {
+        setOrientation(LinearLayout.HORIZONTAL)
+        fieldname.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT,
+            0.5f)
+        fieldvalue.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT,
+            0.5f)
+        fieldvalue.gravity = Gravity.RIGHT
+      } else {
+        setOrientation(LinearLayout.VERTICAL)
+        fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0,
+            0.5f)
+        fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0,
+            0.5f)
+        fieldvalue.gravity = Gravity.LEFT
+      }
+      weightSum = 1f
+      val name = getStringValue(context, array, R.styleable.StockFieldView_name)
+      fieldname.text = name
+      val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20).toFloat()
+      fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
+      fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
+      array.recycle()
     }
+  }
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : this(context, attrs) {
-    }
+  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : this(context, attrs) {
+  }
 
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : this(context, attrs) {
-    }
+  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : this(
+      context, attrs) {
+  }
 
-    fun setLabel(text: CharSequence?) {
-        fieldname.text = text
-    }
+  fun setLabel(text: CharSequence?) {
+    fieldname.text = text
+  }
 
-    fun setText(text: CharSequence?) {
-        fieldvalue.text = text
-    }
+  fun setText(text: CharSequence?) {
+    fieldvalue.text = text
+  }
 
-    fun setTextColor(color: Int) {
-        fieldvalue.setTextColor(color)
-    }
+  fun setTextColor(color: Int) {
+    fieldvalue.setTextColor(color)
+  }
 
-    private fun getStringValue(context: Context, array: TypedArray, stylelable: Int): String {
-        var name = array.getString(stylelable)
-        if (name == null) {
-            val stringId = array.getResourceId(stylelable, -1)
-            if (stringId > 0) {
-                name = context.getString(stringId)
-            } else {
-                name = ""
-            }
-        }
-        return name
+  private fun getStringValue(context: Context, array: TypedArray, stylelable: Int): String {
+    var name = array.getString(stylelable)
+    if (name == null) {
+      val stringId = array.getResourceId(stylelable, -1)
+      if (stringId > 0) {
+        name = context.getString(stringId)
+      } else {
+        name = ""
+      }
     }
+    return name
+  }
 
 }

@@ -8,56 +8,60 @@
     android:id="@+id/row"
     >
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_weight="0.5"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textSize="12sp"
-        android:layout_marginRight="2dp"
-        android:singleLine="true"
-        android:ellipsize="end"
-        android:textStyle="bold"
-        android:id="@+id/ticker" />
+  <TextView
+      android:layout_width="0dp"
+      android:layout_weight="0.5"
+      android:layout_height="wrap_content"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      android:layout_marginRight="2dp"
+      android:singleLine="true"
+      android:ellipsize="end"
+      android:textStyle="bold"
+      android:id="@+id/ticker"
+      />
+
+  <TextView
+      android:layout_width="0dp"
+      android:layout_weight="0.5"
+      android:layout_height="wrap_content"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      android:singleLine="true"
+      android:ellipsize="none"
+      android:id="@+id/totalValue"
+      />
+
+  <ViewFlipper
+      android:layout_width="0dp"
+      android:layout_weight="0.5"
+      android:layout_height="wrap_content"
+      android:flipInterval="@integer/flip_time"
+      android:autoStart="true"
+      >
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_weight="0.5"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/holo_green_dark"
         android:textSize="12sp"
         android:singleLine="true"
         android:ellipsize="none"
-        android:id="@+id/totalValue" />
+        android:id="@+id/changePercent"
+        android:gravity="end"
+        />
 
-    <ViewFlipper
-        android:layout_width="0dp"
-        android:layout_weight="0.5"
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:flipInterval="@integer/flip_time"
-        android:autoStart="true"
-        >
+        android:textColor="@android:color/holo_green_dark"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:ellipsize="none"
+        android:id="@+id/changeValue"
+        android:gravity="end"
+        />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="12sp"
-            android:singleLine="true"
-            android:ellipsize="none"
-            android:id="@+id/changePercent"
-            android:gravity="end" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/holo_green_dark"
-            android:textSize="12sp"
-            android:singleLine="true"
-            android:ellipsize="none"
-            android:id="@+id/changeValue"
-            android:gravity="end" />
-
-    </ViewFlipper>
+  </ViewFlipper>
 
 </LinearLayout>

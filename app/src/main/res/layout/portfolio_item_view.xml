@@ -4,136 +4,151 @@
     android:layout_height="match_parent"
     android:paddingTop="@dimen/text_padding"
     android:paddingBottom="@dimen/text_padding"
-    android:background="@drawable/card_bg">
-    <!-- Bottom View Start-->
-    <FrameLayout
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
-        android:padding="15dp">
+    android:background="@drawable/card_bg"
+    >
+  <!-- Bottom View Start-->
+  <FrameLayout
+      android:layout_width="80dp"
+      android:layout_height="match_parent"
+      android:padding="15dp"
+      >
 
-        <ImageButton
-            android:background="@android:color/transparent"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/trash"
-            android:layout_gravity="center"
-            android:src="@android:drawable/ic_menu_delete" />
-
-    </FrameLayout>
-    <!-- Bottom View End-->
-
-    <!-- Surface View Start -->
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        xmlns:sfw="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/stockContainer"
-        android:orientation="horizontal"
-        android:padding="5dp"
+    <ImageButton
+        android:background="@android:color/transparent"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/trash"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_menu_delete"
+        />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="0.4"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="10dp"
-            android:orientation="vertical">
+  </FrameLayout>
+  <!-- Bottom View End-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/large_text"
-                android:singleLine="true"
-                android:ellipsize="end"
-                style="@style/BoldTextView"
-                android:layout_marginBottom="5dp"
-                android:textColor="@android:color/white"
-                tools:text="GOOG"
-                android:id="@+id/ticker" />
+  <!-- Surface View Start -->
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      xmlns:sfw="http://schemas.android.com/apk/res-auto"
+      android:id="@+id/stockContainer"
+      android:orientation="horizontal"
+      android:padding="5dp"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/xsmall_text"
-                tools:text="Google Inc"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="5dp"
-                android:id="@+id/name" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="0.4"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        >
 
-            <com.github.premnirmal.ticker.ui.StockFieldView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                sfw:name="Daily Volume"
-                sfw:size="@dimen/xsmall_text"
-                sfw:or="vertical"
-                android:id="@+id/averageDailyVolume" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="@dimen/large_text"
+          android:singleLine="true"
+          android:ellipsize="end"
+          style="@style/BoldTextView"
+          android:layout_marginBottom="5dp"
+          android:textColor="@android:color/white"
+          tools:text="GOOG"
+          android:id="@+id/ticker"
+          />
 
-            <com.github.premnirmal.ticker.ui.StockFieldView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                sfw:name="Exchange"
-                sfw:size="@dimen/xsmall_text"
-                sfw:or="vertical"
-                android:id="@+id/exchange" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textSize="@dimen/xsmall_text"
+          tools:text="Google Inc"
+          android:singleLine="true"
+          android:ellipsize="end"
+          android:textColor="@android:color/white"
+          android:layout_marginBottom="5dp"
+          android:id="@+id/name"
+          />
 
-        </LinearLayout>
+      <com.github.premnirmal.ticker.ui.StockFieldView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          sfw:name="Daily Volume"
+          sfw:size="@dimen/xsmall_text"
+          sfw:or="vertical"
+          android:id="@+id/averageDailyVolume"
+          />
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_weight="0.6"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:textColor="@android:color/white"
-                tools:text="555.02"
-                style="@style/BoldTextView"
-                android:layout_marginBottom="5dp"
-                android:singleLine="true"
-                android:textSize="@dimen/large_text"
-                android:id="@+id/totalValue" />
-
-            <com.github.premnirmal.ticker.ui.StockFieldView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                sfw:name="Change %"
-                sfw:size="@dimen/xsmall_text"
-                android:id="@+id/changePercent" />
-
-            <com.github.premnirmal.ticker.ui.StockFieldView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                sfw:name="Change"
-                sfw:size="@dimen/xsmall_text"
-                android:id="@+id/changeValue" />
-
-
-            <com.github.premnirmal.ticker.ui.StockFieldView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                sfw:name="Year High"
-                sfw:size="@dimen/xsmall_text"
-                android:id="@+id/yearHigh" />
-
-            <com.github.premnirmal.ticker.ui.StockFieldView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                sfw:name="Year Low"
-                sfw:size="@dimen/xsmall_text"
-                android:id="@+id/yearLow" />
-
-        </LinearLayout>
+      <com.github.premnirmal.ticker.ui.StockFieldView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          sfw:name="Exchange"
+          sfw:size="@dimen/xsmall_text"
+          sfw:or="vertical"
+          android:id="@+id/exchange"
+          />
 
     </LinearLayout>
-    <!-- Surface View End -->
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+        android:layout_height="wrap_content"
+        >
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="right"
+          android:textColor="@android:color/white"
+          tools:text="555.02"
+          style="@style/BoldTextView"
+          android:layout_marginBottom="5dp"
+          android:singleLine="true"
+          android:textSize="@dimen/large_text"
+          android:id="@+id/totalValue"
+          />
+
+      <com.github.premnirmal.ticker.ui.StockFieldView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          sfw:name="Change %"
+          sfw:size="@dimen/xsmall_text"
+          android:id="@+id/changePercent"
+          />
+
+      <com.github.premnirmal.ticker.ui.StockFieldView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          sfw:name="Change"
+          sfw:size="@dimen/xsmall_text"
+          android:id="@+id/changeValue"
+          />
+
+
+      <com.github.premnirmal.ticker.ui.StockFieldView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          sfw:name="Year High"
+          sfw:size="@dimen/xsmall_text"
+          android:id="@+id/yearHigh"
+          />
+
+      <com.github.premnirmal.ticker.ui.StockFieldView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          sfw:name="Year Low"
+          sfw:size="@dimen/xsmall_text"
+          android:id="@+id/yearLow"
+          />
+
+    </LinearLayout>
+
+  </LinearLayout>
+  <!-- Surface View End -->
 </com.daimajia.swipe.SwipeLayout>

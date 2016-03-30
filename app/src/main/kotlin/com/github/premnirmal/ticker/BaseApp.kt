@@ -9,15 +9,17 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig
  */
 abstract class BaseApp : MultiDexApplication() {
 
-    override fun onCreate() {
-        super.onCreate()
-        instance = this
-        CalligraphyConfig.initDefault(CalligraphyConfig.Builder().setDefaultFontPath("fonts/Ubuntu-Regular.ttf").setFontAttrId(R.attr.fontPath).build())
-        Injector.init(this)
-    }
+  override fun onCreate() {
+    super.onCreate()
+    instance = this
+    CalligraphyConfig.initDefault(
+        CalligraphyConfig.Builder().setDefaultFontPath("fonts/Ubuntu-Regular.ttf").setFontAttrId(
+            R.attr.fontPath).build())
+    Injector.init(this)
+  }
 
-    companion object {
-        var instance: BaseApp? = null
-            private set
-    }
+  companion object {
+    var instance: BaseApp? = null
+      private set
+  }
 }

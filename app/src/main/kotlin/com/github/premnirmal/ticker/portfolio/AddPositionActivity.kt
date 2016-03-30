@@ -14,42 +14,42 @@ import javax.inject.Inject
  */
 open class AddPositionActivity : BaseActivity() {
 
-    companion object {
-        const val TICKER = "TICKER"
+  companion object {
+    const val TICKER = "TICKER"
+  }
+
+  @Inject
+  lateinit internal var stocksProvider: IStocksProvider
+  protected var ticker: String? = null
+
+  public override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    Injector.getAppComponent().inject(this)
+    setContentView(R.layout.activity_positions)
+    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    ticker = intent.getStringExtra(TICKER)
+    val name = findViewById(R.id.tickerName) as TextView
+    name.text = ticker
+
+    findViewById(R.id.doneButton).setOnClickListener { onDoneClicked() }
+
+    findViewById(R.id.skipButton).setOnClickListener { skip() }
+  }
+
+  protected open fun skip() {
+    finish()
+  }
+
+  protected fun onDoneClicked() {
+    val sharesView = findViewById(R.id.shares) as EditText
+    val priceView = findViewById(R.id.price) as EditText
+    val priceText = priceView.text.toString()
+    val sharesText = sharesView.text.toString()
+    if (!priceText.isEmpty() && !sharesText.isEmpty()) {
+      val price = java.lang.Float.parseFloat(priceText)
+      val shares = java.lang.Integer.parseInt(sharesText)
+      stocksProvider.addPosition(ticker, shares, price)
     }
-
-    @Inject
-    lateinit internal var stocksProvider: IStocksProvider
-    protected var ticker: String? = null
-
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        Injector.getAppComponent().inject(this)
-        setContentView(R.layout.activity_positions)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        ticker = intent.getStringExtra(TICKER)
-        val name = findViewById(R.id.tickerName) as TextView
-        name.text = ticker
-
-        findViewById(R.id.doneButton).setOnClickListener { onDoneClicked() }
-
-        findViewById(R.id.skipButton).setOnClickListener { skip() }
-    }
-
-    protected open fun skip() {
-        finish()
-    }
-
-    protected fun onDoneClicked() {
-        val sharesView = findViewById(R.id.shares) as EditText
-        val priceView = findViewById(R.id.price) as EditText
-        val priceText = priceView.text.toString()
-        val sharesText = sharesView.text.toString()
-        if (!priceText.isEmpty() && !sharesText.isEmpty()) {
-            val price = java.lang.Float.parseFloat(priceText)
-            val shares = java.lang.Integer.parseInt(sharesText)
-            stocksProvider.addPosition(ticker, shares, price)
-        }
-        finish()
-    }
+    finish()
+  }
 }

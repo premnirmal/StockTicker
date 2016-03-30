@@ -8,7 +8,7 @@ import android.widget.RemoteViewsService
  */
 class RemoteStockProviderService : RemoteViewsService() {
 
-    override fun onGetViewFactory(intent: Intent): RemoteViewsService.RemoteViewsFactory {
-        return RemoteStockViewAdapter(applicationContext)
-    }
+  override fun onGetViewFactory(intent: Intent): RemoteViewsService.RemoteViewsFactory {
+    return RemoteStockViewAdapter(applicationContext)
+  }
 }

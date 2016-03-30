@@ -7,6 +7,5 @@ import java.util.List;
  */
 public class Results {
 
-    public List<Stock> quote;
-
+  public List<Stock> quote;
 }

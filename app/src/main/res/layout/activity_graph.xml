@@ -4,91 +4,101 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/black"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    >
 
-    <FrameLayout
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="0.88"
+      android:padding="15dp"
+      >
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/progress"
+        />
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.88"
-        android:padding="15dp"
+        android:layout_height="match_parent"
+        android:id="@+id/graph_holder"
+        android:visibility="gone"
         >
 
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:id="@+id/progress" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="3dp"
+          android:textSize="20dp"
+          style="@style/BoldTextView"
+          android:id="@+id/tickerName"
+          tools:text="GOOG"
+          android:layout_centerHorizontal="true"
+          android:layout_alignParentTop="true"
+          />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/graph_holder"
-            android:visibility="gone">
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_margin="3dp"
+          android:textSize="14dp"
+          style="@style/BoldTextView"
+          android:id="@+id/desc"
+          tools:text="GOOG"
+          android:layout_centerHorizontal="true"
+          android:layout_below="@id/tickerName"
+          />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:textSize="20dp"
-                style="@style/BoldTextView"
-                android:id="@+id/tickerName"
-                tools:text="GOOG"
-                android:layout_centerHorizontal="true"
-                android:layout_alignParentTop="true" />
+      <com.github.mikephil.charting.charts.LineChart
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/graphView"
+          />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="3dp"
-                android:textSize="14dp"
-                style="@style/BoldTextView"
-                android:id="@+id/desc"
-                tools:text="GOOG"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/tickerName" />
+    </RelativeLayout>
+  </FrameLayout>
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/graphView" />
+  <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="0dp"
+      android:layout_weight="0.12"
+      android:layout_gravity="center_horizontal"
+      android:orientation="horizontal"
+      >
 
-        </RelativeLayout>
-    </FrameLayout>
+    <Button
+        android:layout_width="100dp"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:text="@string/one_month"
+        android:id="@+id/one_month"
+        android:layout_margin="5dp"
+        android:onClick="updateRange"
+        />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="0.12"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal">
+    <Button
+        android:layout_width="100dp"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:text="@string/three_month"
+        android:id="@+id/three_month"
+        android:layout_margin="5dp"
+        android:onClick="updateRange"
+        />
 
-        <Button
-            android:layout_width="100dp"
-            android:gravity="center"
-            android:layout_height="match_parent"
-            android:text="@string/one_month"
-            android:id="@+id/one_month"
-            android:layout_margin="5dp"
-            android:onClick="updateRange" />
+    <Button
+        android:layout_width="100dp"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:text="@string/one_year"
+        android:id="@+id/one_year"
+        android:layout_margin="5dp"
+        android:onClick="updateRange"
+        />
 
-        <Button
-            android:layout_width="100dp"
-            android:gravity="center"
-            android:layout_height="match_parent"
-            android:text="@string/three_month"
-            android:id="@+id/three_month"
-            android:layout_margin="5dp"
-            android:onClick="updateRange" />
-
-        <Button
-            android:layout_width="100dp"
-            android:gravity="center"
-            android:layout_height="match_parent"
-            android:text="@string/one_year"
-            android:id="@+id/one_year"
-            android:layout_margin="5dp"
-            android:onClick="updateRange" />
-
-    </LinearLayout>
+  </LinearLayout>
 
 </LinearLayout>

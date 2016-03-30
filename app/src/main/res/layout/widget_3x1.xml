@@ -7,21 +7,22 @@
     android:id="@+id/widget_layout"
     >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/last_updated"
-        android:textSize="@dimen/small_text"
-        android:layout_marginBottom="2dp"
-        android:layout_marginRight="5dp"
-        android:layout_gravity="right"
-        android:textColor="@android:color/darker_gray"
-        />
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/last_updated"
+      android:textSize="@dimen/small_text"
+      android:layout_marginBottom="2dp"
+      android:layout_marginRight="5dp"
+      android:layout_gravity="right"
+      android:textColor="@android:color/darker_gray"
+      />
 
-    <GridView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:numColumns="3"
-        android:horizontalSpacing="3dp"
-        android:id="@+id/list" />
+  <GridView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:numColumns="3"
+      android:horizontalSpacing="3dp"
+      android:id="@+id/list"
+      />
 </LinearLayout>

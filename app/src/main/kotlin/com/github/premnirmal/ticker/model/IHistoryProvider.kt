@@ -8,7 +8,7 @@ import rx.Observable
  */
 interface IHistoryProvider {
 
-    fun getHistory(ticker: String, range: Range): Observable<History>
+  fun getHistory(ticker: String, range: Range): Observable<History>
 
-    fun getDataPoints(ticker: String, range: Range): Observable<Array<SerializableDataPoint?>>
+  fun getDataPoints(ticker: String, range: Range): Observable<Array<SerializableDataPoint?>>
 }

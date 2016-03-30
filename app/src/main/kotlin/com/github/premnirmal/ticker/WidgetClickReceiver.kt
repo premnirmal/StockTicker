@@ -12,25 +12,25 @@ import com.github.premnirmal.ticker.widget.StockWidget
  */
 class WidgetClickReceiver : BroadcastReceiver() {
 
-    override fun onReceive(context: Context, intent: Intent) {
-        if (intent.getBooleanExtra(FLIP, false)) {
-            Tools.flipChange()
-            val updateIntent = Intent(context, StockWidget::class.java)
-            updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            val widgetManager = AppWidgetManager.getInstance(context)
-            val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
-            updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-            context.sendBroadcast(updateIntent)
-        } else {
-            val startActivityIntent = Intent(context, ParanormalActivity::class.java)
-            startActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            context.startActivity(startActivityIntent)
-        }
+  override fun onReceive(context: Context, intent: Intent) {
+    if (intent.getBooleanExtra(FLIP, false)) {
+      Tools.flipChange()
+      val updateIntent = Intent(context, StockWidget::class.java)
+      updateIntent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+      val widgetManager = AppWidgetManager.getInstance(context)
+      val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+      updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+      context.sendBroadcast(updateIntent)
+    } else {
+      val startActivityIntent = Intent(context, ParanormalActivity::class.java)
+      startActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+      context.startActivity(startActivityIntent)
     }
+  }
 
-    companion object {
+  companion object {
 
-        @JvmField val CLICK_BCAST_INTENTFILTER = "com.github.premnirmal.ticker.widgetclick"
-        @JvmField val FLIP = "FLIP"
-    }
+    @JvmField val CLICK_BCAST_INTENTFILTER = "com.github.premnirmal.ticker.widgetclick"
+    @JvmField val FLIP = "FLIP"
+  }
 }

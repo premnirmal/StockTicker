@@ -8,7 +8,7 @@ import rx.Observable
  */
 interface SuggestionApi {
 
-    @GET("/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
-    fun getSuggestions(@retrofit.http.Query("query") query: String): Observable<Suggestions>
+  @GET("/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
+  fun getSuggestions(@retrofit.http.Query("query") query: String): Observable<Suggestions>
 
 }
