@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Now you can add indices such as ^DJI</item>
-    <item>Fixed ^GDAXI</item>
+    <item>Bugfixes</item>
     <item>If you experience issues fetching stocks, please disable Google Finance in Widget Settings</item>
     <item>Please rate StockTicker in the PlayStore!</item>
   </string-array>
