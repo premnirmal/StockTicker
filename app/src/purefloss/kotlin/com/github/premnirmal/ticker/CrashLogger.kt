@@ -6,7 +6,7 @@ package com.github.premnirmal.ticker
 class CrashLogger {
 
   companion object {
-    @JvmStatic fun logException(throwable: Throwable) {
+    fun logException(throwable: Throwable) {
 
     }
   }

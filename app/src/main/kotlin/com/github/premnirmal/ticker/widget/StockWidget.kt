@@ -120,7 +120,7 @@ class StockWidget : AppWidgetProvider() {
   }
 
   companion object {
-    @JvmField val ACTION_NAME = "OPEN_APP"
-    @JvmField val TAG = StockWidget::class.java.simpleName
+    val ACTION_NAME = "OPEN_APP"
+    val TAG = StockWidget::class.java.simpleName
   }
 }

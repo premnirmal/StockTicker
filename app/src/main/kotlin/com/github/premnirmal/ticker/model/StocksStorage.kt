@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.model
 import android.content.Context
 import com.github.premnirmal.ticker.network.Stock
 import rx.Observable
-import rx.Subscriber
+import rx.schedulers.Schedulers
 import java.io.*
 import java.util.*
 
@@ -11,29 +11,6 @@ import java.util.*
  * Created by premnirmal on 2/28/16.
  */
 internal class StocksStorage(val context: Context) {
-
-  fun save(stocks: MutableList<Stock>?): Observable<Boolean> {
-    return Observable.create { subscriber ->
-      if (stocks != null) {
-        saveInternal(stocks).subscribe(object : Subscriber<Boolean>() {
-          override fun onCompleted() {
-
-          }
-
-          override fun onError(e: Throwable) {
-            subscriber.onError(e)
-          }
-
-          override fun onNext(aBoolean: Boolean?) {
-            subscriber.onNext(aBoolean)
-            subscriber.onCompleted()
-          }
-        })
-      } else {
-        subscriber.onError(NullPointerException("Stock list was null!"))
-      }
-    }
-  }
 
   fun readSynchronous(): MutableList<Stock> {
     try {
@@ -45,8 +22,8 @@ internal class StocksStorage(val context: Context) {
 
   }
 
-  private fun saveInternal(stocks: MutableList<Stock>): Observable<Boolean> {
-    return Observable.create { subscriber ->
+  fun save(stocks: MutableList<Stock>?): Observable<Boolean> {
+    return Observable.fromCallable {
       var success = false
       val stocksFile = File(context.externalCacheDir, STOCKS_FILE)
       var fout: FileOutputStream? = null
@@ -85,8 +62,7 @@ internal class StocksStorage(val context: Context) {
 
         }
       }
-      subscriber.onNext(success)
-      subscriber.onCompleted()
+      success
     }
   }
 

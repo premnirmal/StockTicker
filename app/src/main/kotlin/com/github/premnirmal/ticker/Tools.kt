@@ -68,13 +68,13 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
 
     private val random = Random(System.currentTimeMillis())
 
-    @JvmStatic val instance: Tools by lazy {
+    val instance: Tools by lazy {
       val sharedPreferences = BaseApp.instance!!.getSharedPreferences(Tools.PREFS_NAME,
           Context.MODE_PRIVATE)
       Tools(sharedPreferences)
     }
 
-    @JvmStatic private fun trackInitial(context: Context) {
+    private fun trackInitial(context: Context) {
       Analytics.trackIntialSettings(LAYOUT_TYPE,
           if (stockViewLayout() == 0) "Animated" else "Tabbed")
       Analytics.trackIntialSettings(TEXT_COLOR,
@@ -97,18 +97,18 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
           "EMPTY!")
     }
 
-    @JvmStatic val changeType: ChangeType
+    val changeType: ChangeType
       get() {
         val state = instance.sharedPreferences.getBoolean(PERCENT, false)
         return if (state) ChangeType.percent else ChangeType.value
       }
 
-    @JvmStatic fun flipChange() {
+    fun flipChange() {
       val state = instance.sharedPreferences.getBoolean(PERCENT, false)
       instance.sharedPreferences.edit().putBoolean(PERCENT, !state).apply()
     }
 
-    @JvmStatic fun stockViewLayout(): Int {
+    fun stockViewLayout(): Int {
       val pref = instance.sharedPreferences.getInt(LAYOUT_TYPE, 0)
       if (pref == 0) {
         return R.layout.stockview
@@ -119,42 +119,42 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       }
     }
 
-    @JvmStatic fun getTextColor(context: Context): Int {
+    fun getTextColor(context: Context): Int {
       val pref = instance.sharedPreferences.getInt(TEXT_COLOR, 0)
       return if (pref == 0) Color.WHITE else context.resources.getColor(R.color.dark_text)
     }
 
-    @JvmStatic val updateInterval: Long
+    val updateInterval: Long
       get() {
         val pref = instance.sharedPreferences.getInt(UPDATE_INTERVAL, 1)
         return AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
       }
 
-    @JvmStatic fun startTime(): IntArray {
+    fun startTime(): IntArray {
       val startTimeString = instance.sharedPreferences.getString(START_TIME, "09:30")
       val split = startTimeString.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
       val times = intArrayOf(Integer.valueOf(split[0])!!, Integer.valueOf(split[1])!!)
       return times
     }
 
-    @JvmStatic fun endTime(): IntArray {
+    fun endTime(): IntArray {
       val endTimeString = instance.sharedPreferences.getString(END_TIME, "16:30")
       val split = endTimeString.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
       val times = intArrayOf(Integer.valueOf(split[0])!!, Integer.valueOf(split[1])!!)
       return times
     }
 
-    @JvmStatic fun autoSortEnabled(): Boolean {
+    fun autoSortEnabled(): Boolean {
       return instance.sharedPreferences.getBoolean(SETTING_AUTOSORT, true)
     }
 
-    @JvmStatic fun firstTimeViewingSwipeLayout(): Boolean {
+    fun firstTimeViewingSwipeLayout(): Boolean {
       val firstTime = instance.sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true)
       instance.sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply()
       return firstTime || (random.nextInt() % 2 == 0)
     }
 
-    @JvmStatic fun getBackgroundResource(context: Context): Int {
+    fun getBackgroundResource(context: Context): Int {
       val bgPref = instance.sharedPreferences.getInt(WIDGET_BG, TRANSPARENT)
       when (bgPref) {
         TRANSLUCENT -> return R.drawable.translucent_widget_bg
@@ -164,7 +164,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       }
     }
 
-    @JvmStatic fun getFontSize(context: Context): Float {
+    fun getFontSize(context: Context): Float {
       val size = instance.sharedPreferences.getInt(FONT_SIZE, 1)
       when (size) {
         0 -> return context.resources.getInteger(R.integer.text_size_small).toFloat()
@@ -173,7 +173,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       }
     }
 
-    @JvmStatic val tickersFile: File
+    val tickersFile: File
       get() {
         val dir = Environment.getExternalStoragePublicDirectory("StockTickers")
         if (!dir.exists()) {
@@ -184,7 +184,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
         return file
       }
 
-    @JvmStatic fun isNetworkOnline(context: Context): Boolean {
+    fun isNetworkOnline(context: Context): Boolean {
       try {
         val connectivityManager = context.getSystemService(
             Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -199,7 +199,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
 
     }
 
-    @JvmStatic fun toCommaSeparatedString(list: List<String>): String {
+    fun toCommaSeparatedString(list: List<String>): String {
       val builder = StringBuilder()
       for (string in list) {
         builder.append(string)
@@ -212,7 +212,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       return builder.toString()
     }
 
-    @JvmStatic fun positionsToString(stockList: List<Stock>): String {
+    fun positionsToString(stockList: List<Stock>): String {
       val builder = StringBuilder()
       for (stock in stockList) {
         if (stock.IsPosition == true) {
@@ -229,7 +229,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       return builder.toString()
     }
 
-    @JvmStatic fun stringToPositions(positions: String): MutableList<Stock> {
+    fun stringToPositions(positions: String): MutableList<Stock> {
       val tickerListCSV = ArrayList(Arrays.asList(
           *positions.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
       val stockList = ArrayList<Stock>()
@@ -250,7 +250,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       return stockList
     }
 
-    @JvmStatic fun boldEnabled(): Boolean {
+    fun boldEnabled(): Boolean {
       return instance.sharedPreferences.getBoolean(BOLD_CHANGE, false)
     }
 
@@ -267,7 +267,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       return (random.nextInt() % 2 == 0) && !hasUserAlreadyRated()
     }
 
-    @JvmStatic fun googleFinanceEnabled(): Boolean {
+    fun googleFinanceEnabled(): Boolean {
       return instance.sharedPreferences.getBoolean(Tools.ENABLE_GOOGLE_FINANCE, true)
     }
   }

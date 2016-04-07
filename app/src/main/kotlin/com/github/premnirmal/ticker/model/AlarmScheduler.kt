@@ -23,13 +23,18 @@ import com.github.premnirmal.ticker.Analytics
 class AlarmScheduler {
 
   companion object {
-    @JvmField val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
+    val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
 
-    @JvmStatic fun msOfNextAlarm(): Long {
+    /**
+     * Takes care of weekends and afterhours
+
+     * @return
+     */
+    fun msOfNextAlarm(): Long {
       return SystemClock.elapsedRealtime() + msToNextAlarm()
     }
 
-    @JvmStatic fun msToNextAlarm(): Long {
+    fun msToNextAlarm(): Long {
       val hourOfDay = DateTime.now().hourOfDay().get()
       val minuteOfHour = DateTime.now().minuteOfHour().get()
       val dayOfWeek = DateTime.now().dayOfWeek
@@ -80,7 +85,7 @@ class AlarmScheduler {
       return msToNextAlarm
     }
 
-    @JvmStatic fun scheduleUpdate(msToNextAlarm: Long, context: Context) {
+    fun scheduleUpdate(msToNextAlarm: Long, context: Context) {
       Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
           "UpdateScheduled for " + (msToNextAlarm - SystemClock.elapsedRealtime()) / (1000 * 60) + " minutes")
       val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
@@ -91,7 +96,7 @@ class AlarmScheduler {
       alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
     }
 
-    @JvmStatic fun sendBroadcast(context: Context) {
+    fun sendBroadcast(context: Context) {
       val intent = Intent(context.applicationContext, StockWidget::class.java)
       intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
       val widgetManager = AppWidgetManager.getInstance(context)

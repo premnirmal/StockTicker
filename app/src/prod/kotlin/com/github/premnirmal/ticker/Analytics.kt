@@ -25,7 +25,7 @@ class Analytics private constructor(context: Context) {
 
   companion object {
 
-    @JvmField val SCHEDULE_UPDATE_ACTION = "ScheduleUpdate"
+    val SCHEDULE_UPDATE_ACTION = "ScheduleUpdate"
 
     lateinit private var INSTANCE: Analytics
 
@@ -33,46 +33,46 @@ class Analytics private constructor(context: Context) {
       INSTANCE = Analytics(context)
     }
 
-    @JvmStatic fun trackUpdate(action: String, label: String) {
+    fun trackUpdate(action: String, label: String) {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("WidgetStatus").setAction(action).setLabel(
               label).build())
     }
 
-    @JvmStatic fun trackWidgetUpdate(action: String) {
+    fun trackWidgetUpdate(action: String) {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("WidgetStatus").setAction(action).build())
     }
 
-    @JvmStatic fun trackWidgetSizeUpdate(value: String) {
+    fun trackWidgetSizeUpdate(value: String) {
       INSTANCE.tracker.send(HitBuilders.EventBuilder().setCategory("WidgetStatus").setAction(
           "onOptionsChanged").setLabel(value).build())
     }
 
-    @JvmStatic fun trackUI(action: String, label: String) {
+    fun trackUI(action: String, label: String) {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("AppView").setAction(action).setLabel(
               label).build())
     }
 
-    @JvmStatic fun trackIntialSettings(action: String, label: String) {
+    fun trackIntialSettings(action: String, label: String) {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("AppSettings").setAction(action).setLabel(
               label).build())
     }
 
-    @JvmStatic fun trackSettingsChange(action: String, label: String) {
+    fun trackSettingsChange(action: String, label: String) {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("AppSettingsChange").setAction(action).setLabel(
               label).build())
     }
 
-    @JvmStatic fun trackRateYes() {
+    fun trackRateYes() {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("Rate").setAction("Yes").setLabel("Yes").build())
     }
 
-    @JvmStatic fun trackRateNo() {
+    fun trackRateNo() {
       INSTANCE.tracker.send(
           HitBuilders.EventBuilder().setCategory("Rate").setAction("No").setLabel("No").build())
     }

@@ -46,7 +46,6 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     for (ticker in tickerList) {
       newTickerList.add(ticker.replace(".".toRegex(), ""))
     }
-    //        tickerList.removeAll(_GOOGLE_SYMBOLS) // removed google finance because it's causing lots of problems, returning 400s
     if (preferences.contains(STOCK_LIST)) {
       // for users using older versions
       val deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET)
@@ -76,32 +75,15 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     if (!stockList.isEmpty()) {
       sortStockList()
       sendBroadcast()
-      //            removeGoogleStocks()
     } else {
       fetch()
     }
   }
 
-  //    private fun removeGoogleStocks() {
-  //        val dummy1 = Stock()
-  //        dummy1.symbol = "^DJI"
-  //        val dummy2 = Stock()
-  //        dummy2.symbol = "^IXIC"
-  //        val dummy3 = Stock()
-  //        dummy3.symbol = ".DJI"
-  //        val dummy4 = Stock()
-  //        dummy4.symbol = ".IXIC"
-  //        stockList.remove(dummy1)
-  //        stockList.remove(dummy2)
-  //        stockList.remove(dummy3)
-  //        stockList.remove(dummy4)
-  //    }
-
   private fun save() {
     preferences.edit().remove(STOCK_LIST).putString(POSITION_LIST,
         Tools.positionsToString(positionList)).putString(SORTED_STOCK_LIST,
         Tools.toCommaSeparatedString(tickerList)).putString(LAST_FETCHED, lastFetched).apply()
-    //        removeGoogleStocks()
     storage.save(stockList).subscribe(object : Subscriber<Boolean>() {
       override fun onCompleted() {
 
@@ -159,11 +141,6 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     scheduleUpdate(msToNextAlarm)
   }
 
-  /**
-   * Takes care of weekends and afterhours
-
-   * @return
-   */
   private val msToNextAlarm: Long
     get() = AlarmScheduler.msOfNextAlarm()
 
@@ -327,11 +304,11 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     private val STOCK_LIST = "STOCK_LIST"
     private val LAST_FETCHED = "LAST_FETCHED"
     private val POSITION_LIST = "POSITION_LIST"
-    private val DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA"
+    private val DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA,^DJI"
 
-    @JvmField val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
-    @JvmField val GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC")
-    @JvmField val _GOOGLE_SYMBOLS = Arrays.asList("^DJI", "^IXIC")
+    val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
+    val GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC")
+    val _GOOGLE_SYMBOLS = Arrays.asList("^DJI", "^IXIC")
 
     private val DEFAULT_SET = object : HashSet<String>() {
       init {
@@ -341,6 +318,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
         add("MSFT")
         add("YHOO")
         add("TSLA")
+        add("^DJI")
       }
     }
   }

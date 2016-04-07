@@ -6,7 +6,7 @@ package com.github.premnirmal.ticker
 class CrashLogger {
 
   companion object {
-    @JvmStatic fun logException(throwable: Throwable) {
+    fun logException(throwable: Throwable) {
       val exception: Exception = java.lang.Exception(throwable)
       exception.printStackTrace()
     }

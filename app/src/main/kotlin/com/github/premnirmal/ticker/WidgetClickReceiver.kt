@@ -30,7 +30,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
 
   companion object {
 
-    @JvmField val CLICK_BCAST_INTENTFILTER = "com.github.premnirmal.ticker.widgetclick"
-    @JvmField val FLIP = "FLIP"
+    val CLICK_BCAST_INTENTFILTER = "com.github.premnirmal.ticker.widgetclick"
+    val FLIP = "FLIP"
   }
 }
