@@ -139,7 +139,8 @@ class PortfolioFragment : BaseFragment() {
         handler.postDelayed({ update() }, 600)
       }
 
-      last_updated?.text = "Last updated: ${stocksProvider.lastFetched()}"
+      last_updated?.text = "Last fetch: ${stocksProvider.lastFetched()}"
+      next_update?.text = "Next fetch: ${stocksProvider.nextFetch()}"
 
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)

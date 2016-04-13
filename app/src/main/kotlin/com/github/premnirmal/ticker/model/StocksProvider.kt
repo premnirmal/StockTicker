@@ -1,12 +1,14 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.SystemClock
 import android.text.TextUtils
 import android.util.Log
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.CrashLogger
+import com.github.premnirmal.ticker.RefreshReceiver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.events.UpdateFailedEvent
@@ -29,12 +31,14 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider(private val api: StocksApi, private val bus: RxBus, private val context: Context, private val preferences: SharedPreferences) : IStocksProvider {
+class StocksProvider(private val api: StocksApi, private val bus: RxBus,
+    private val context: Context, private val preferences: SharedPreferences) : IStocksProvider {
 
   private val tickerList: MutableList<String>
   private val stockList: MutableList<Stock> = ArrayList()
   private val positionList: MutableList<Stock>
   private var lastFetched: String? = null
+  private var nextFetch: Long = 0L
   private val storage: StocksStorage
 
   init {
@@ -62,6 +66,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     val tickerList = Tools.toCommaSeparatedString(this.tickerList)
     preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply()
     lastFetched = preferences.getString(LAST_FETCHED, null)
+    nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == null) {
       fetch()
     } else {
@@ -101,38 +106,29 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     })
   }
 
-  override fun fetch() {
+  override fun fetchSynchronous() {
     if (Tools.isNetworkOnline(context)) {
-      api.getStocks(tickerList).observeOn(AndroidSchedulers.mainThread()).subscribeOn(
-          Schedulers.io())
-          .subscribe(object : Subscriber<List<Stock>>() {
-            override fun onCompleted() {
-            }
-
-            override fun onError(e: Throwable) {
-              CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks",
-                  e)) // why does this happen?
-              e.printStackTrace()
-              bus.post(UpdateFailedEvent())
-              scheduleUpdate(SystemClock.elapsedRealtime() + 60 * 1000) // 1 minute
-            }
-
-            override fun onNext(stocks: List<Stock>?) {
-              if (stocks == null || stocks.isEmpty()) {
-                onError(NullPointerException("stocks == null or empty"))
-              } else {
-                stockList.clear()
-                stockList.addAll(stocks)
-                lastFetched = api.lastFetched
-                save()
-                sendBroadcast()
-              }
-            }
-          })
+      val stocks = api.getStocks(tickerList).toBlocking().first()
+      if (stocks == null || stocks.isEmpty()) {
+        CrashLogger.logException(NullPointerException("Encountered onError when fetching stocks"))
+        bus.post(UpdateFailedEvent())
+        scheduleUpdate(SystemClock.elapsedRealtime() + 60 * 1000) // 1 minute
+      } else {
+        stockList.clear()
+        stockList.addAll(stocks)
+        lastFetched = api.lastFetched
+        save()
+        sendBroadcast()
+      }
     } else {
       bus.post(NoNetworkEvent())
-      scheduleUpdate(SystemClock.elapsedRealtime() + 5 * 60 * 1000) // 5 minutes
+      scheduleUpdate(SystemClock.elapsedRealtime() + 2 * 60 * 1000) // 2 minutes
     }
+  }
+
+  override fun fetch() {
+    val intent = Intent(context, RefreshReceiver::class.java)
+    context.sendBroadcast(intent)
   }
 
   private fun sendBroadcast() {
@@ -145,7 +141,9 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     get() = AlarmScheduler.msOfNextAlarm()
 
   private fun scheduleUpdate(msToNextAlarm: Long) {
-    AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
+    val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
+    nextFetch = updateTime.millis
+    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
   }
 
   override fun addStock(ticker: String): Collection<String> {
@@ -283,26 +281,44 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus, private
     if (!TextUtils.isEmpty(lastFetched)) {
       val time = DateTime.parse(lastFetched).withZone(
           DateTimeZone.forTimeZone(TimeZone.getDefault()))
-      val dfs = DateFormatSymbols.getInstance(Locale.ENGLISH)
-      val fetchedDayOfWeek = time.dayOfWeek().get()
-      val today = DateTime.now().dayOfWeek().get()
-      if (today == fetchedDayOfWeek) {
-        fetched = time.toString(ISODateTimeFormat.hourMinute())
-      } else {
-        val day: String = dfs.weekdays[fetchedDayOfWeek % 7 + 1]
-        val timeStr: String = time.toString(ISODateTimeFormat.hourMinute())
-        fetched = "$day $timeStr"
-      }
+      fetched = createTimeString(time)
     } else {
       fetched = ""
     }
     return fetched
   }
 
+  private fun createTimeString(time: DateTime): String {
+    val fetched: String
+    val dfs = DateFormatSymbols.getInstance(Locale.ENGLISH)
+    val fetchedDayOfWeek = time.dayOfWeek().get()
+    val today = DateTime.now().dayOfWeek().get()
+    if (today == fetchedDayOfWeek) {
+      fetched = time.toString(ISODateTimeFormat.hourMinute())
+    } else {
+      val day: String = dfs.shortWeekdays[fetchedDayOfWeek % 7 + 1]
+      val timeStr: String = time.toString(ISODateTimeFormat.hourMinute())
+      fetched = "$day $timeStr"
+    }
+    return fetched
+  }
+
+  override fun nextFetch(): String {
+    val fetch: String
+    if (nextFetch > 0) {
+      val time = DateTime(nextFetch)
+      fetch = createTimeString(time)
+    } else {
+      fetch = ""
+    }
+    return fetch
+  }
+
   companion object {
 
     private val STOCK_LIST = "STOCK_LIST"
     private val LAST_FETCHED = "LAST_FETCHED"
+    private val NEXT_FETCH = "NEXT_FETCH"
     private val POSITION_LIST = "POSITION_LIST"
     private val DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA,^DJI"
 

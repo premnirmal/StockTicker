@@ -6,15 +6,33 @@
     android:id="@+id/fragment_root"
     >
 
-  <TextView
+  <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="30dp"
-      tools:text="Last updated: 15:00"
-      android:id="@+id/last_updated"
-      android:layout_gravity="top"
-      android:gravity="center"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
       android:layout_margin="5dp"
-      />
+      >
+    <TextView
+        android:id="@+id/next_update"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="none"
+        android:layout_gravity="left"
+        android:gravity="left"
+        />
+    <TextView
+        android:id="@+id/last_updated"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:singleLine="true"
+        android:ellipsize="none"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:gravity="right"
+        />
+  </LinearLayout>
 
   <android.support.v4.widget.SwipeRefreshLayout
       android:id="@+id/swipe_container"

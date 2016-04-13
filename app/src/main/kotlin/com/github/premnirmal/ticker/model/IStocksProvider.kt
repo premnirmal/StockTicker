@@ -27,5 +27,9 @@ interface IStocksProvider {
 
   fun lastFetched(): String
 
+  fun nextFetch(): String
+
   fun fetch()
+
+  fun fetchSynchronous()
 }

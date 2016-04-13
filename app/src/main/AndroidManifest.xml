@@ -7,6 +7,7 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
   <application
       android:name="com.github.premnirmal.ticker.StocksApp"
@@ -95,6 +96,9 @@
     <service
         android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"
         android:permission="android.permission.BIND_REMOTEVIEWS"/>
+
+    <service android:name="com.github.premnirmal.ticker.RefreshWakefulService"
+        />
 
     <meta-data
         android:name="com.google.android.gms.version"

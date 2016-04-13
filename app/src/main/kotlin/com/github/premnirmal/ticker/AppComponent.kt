@@ -41,4 +41,6 @@ interface AppComponent {
 
   fun inject(editPositionActivity: EditPositionActivity)
 
+  fun inject(refreshWakefulService: RefreshWakefulService)
+
 }

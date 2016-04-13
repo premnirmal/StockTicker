@@ -101,22 +101,15 @@ class StockWidget : AppWidgetProvider() {
     val flipIntent = PendingIntent.getBroadcast(context, 0, intent,
         PendingIntent.FLAG_UPDATE_CURRENT)
     remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
-    val lastUpdatedText: String
-    if (!BuildConfig.DEBUG) {
-      val lastFetched: String = stocksProvider.lastFetched()
-      lastUpdatedText = "Last updated: $lastFetched"
-    } else {
-      val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-      val nextAlarmTime = DateTime(DateTime.now().millis + msToNextAlarm)
-      val shortTime: String = nextAlarmTime.toString(ISODateTimeFormat.hourMinute())
-      val lastFetched: String = stocksProvider.lastFetched()
-      lastUpdatedText = "Next update: $shortTime Last updated: $lastFetched"
-    }
+    val lastFetched: String = stocksProvider.lastFetched()
+    val nextUpdate: String = stocksProvider.nextFetch()
+    val nextUpdateText: String = "Next fetch: $nextUpdate"
+    val lastUpdatedText = "Last fetch: $lastFetched"
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
+    remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
     appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list)
-    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource",
-        Tools.getBackgroundResource(context))
+    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", Tools.getBackgroundResource(context))
   }
 
   companion object {

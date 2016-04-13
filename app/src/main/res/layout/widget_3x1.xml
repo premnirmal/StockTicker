@@ -6,17 +6,39 @@
     android:layout_height="match_parent"
     android:id="@+id/widget_layout"
     >
-
-  <TextView
-      android:layout_width="wrap_content"
+  <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:id="@+id/last_updated"
-      android:textSize="@dimen/small_text"
+      android:orientation="horizontal"
       android:layout_marginBottom="2dp"
+      android:layout_marginLeft="5dp"
       android:layout_marginRight="5dp"
-      android:layout_gravity="right"
-      android:textColor="@android:color/darker_gray"
-      />
+      >
+    <TextView
+        android:id="@+id/next_update"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="none"
+        android:layout_gravity="left"
+        android:gravity="left"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="@dimen/small_text"
+        />
+    <TextView
+        android:id="@+id/last_updated"
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:ellipsize="none"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="@dimen/small_text"
+        />
+  </LinearLayout>
 
   <GridView
       android:layout_width="match_parent"

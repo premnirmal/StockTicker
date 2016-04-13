@@ -85,15 +85,18 @@ class AlarmScheduler {
       return msToNextAlarm
     }
 
-    fun scheduleUpdate(msToNextAlarm: Long, context: Context) {
+    fun scheduleUpdate(msToNextAlarm: Long, context: Context): DateTime {
+      val nextAlarm = msToNextAlarm - SystemClock.elapsedRealtime()
       Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
-          "UpdateScheduled for " + (msToNextAlarm - SystemClock.elapsedRealtime()) / (1000 * 60) + " minutes")
+          "UpdateScheduled for " + nextAlarm / (1000 * 60) + " minutes")
       val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
       updateReceiverIntent.action = UPDATE_FILTER
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
           updateReceiverIntent, 0)
+      val nextAlarmDate = DateTime(System.currentTimeMillis() + nextAlarm)
       alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
+      return nextAlarmDate
     }
 
     fun sendBroadcast(context: Context) {
