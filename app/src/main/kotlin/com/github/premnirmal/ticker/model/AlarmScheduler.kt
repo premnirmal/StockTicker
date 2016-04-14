@@ -95,7 +95,7 @@ internal class AlarmScheduler {
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
           updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
       val nextAlarmDate = DateTime(System.currentTimeMillis() + nextAlarm)
-      alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
+      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
       return nextAlarmDate
     }
 
