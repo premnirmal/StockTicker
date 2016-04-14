@@ -20,7 +20,7 @@ import com.github.premnirmal.ticker.Analytics
 /**
  * Created by premnirmal on 2/28/16.
  */
-class AlarmScheduler {
+internal class AlarmScheduler {
 
   companion object {
     val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
@@ -30,11 +30,11 @@ class AlarmScheduler {
 
      * @return
      */
-    fun msOfNextAlarm(): Long {
+    internal fun msOfNextAlarm(): Long {
       return SystemClock.elapsedRealtime() + msToNextAlarm()
     }
 
-    fun msToNextAlarm(): Long {
+    internal fun msToNextAlarm(): Long {
       val hourOfDay = DateTime.now().hourOfDay().get()
       val minuteOfHour = DateTime.now().minuteOfHour().get()
       val dayOfWeek = DateTime.now().dayOfWeek
@@ -85,7 +85,7 @@ class AlarmScheduler {
       return msToNextAlarm
     }
 
-    fun scheduleUpdate(msToNextAlarm: Long, context: Context): DateTime {
+    internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): DateTime {
       val nextAlarm = msToNextAlarm - SystemClock.elapsedRealtime()
       Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
           "UpdateScheduled for " + nextAlarm / (1000 * 60) + " minutes")
@@ -93,13 +93,13 @@ class AlarmScheduler {
       updateReceiverIntent.action = UPDATE_FILTER
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
-          updateReceiverIntent, 0)
+          updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
       val nextAlarmDate = DateTime(System.currentTimeMillis() + nextAlarm)
-      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
+      alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
       return nextAlarmDate
     }
 
-    fun sendBroadcast(context: Context) {
+    internal fun sendBroadcast(context: Context) {
       val intent = Intent(context.applicationContext, StockWidget::class.java)
       intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
       val widgetManager = AppWidgetManager.getInstance(context)

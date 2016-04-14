@@ -33,9 +33,9 @@ class ApiModule {
   }
 
   @Provides @Singleton
-  internal fun provideHttpClient(): OkClient {
+  internal fun provideHttpClient(context: Context, bus: RxBus): OkClient {
     val okHttpClient = OkHttpClient()
-    okHttpClient.interceptors().add(NoCacheRequestInterceptor())
+    okHttpClient.interceptors().add(NoCacheRequestInterceptor(context, bus))
     okHttpClient.setConnectTimeout(CONNECTION_TMEOUT, TimeUnit.MILLISECONDS)
     okHttpClient.setReadTimeout(READ_TMEOUT, TimeUnit.MILLISECONDS)
     val client = OkClient(okHttpClient)

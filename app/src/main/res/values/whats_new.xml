@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Using wakelock to fix widget update issues</item>
+    <item>More scheduling fixes :)</item>
     <item>If you experience issues fetching stocks, please disable Google Finance in Widget Settings</item>
     <item>Please rate StockTicker in the PlayStore!</item>
   </string-array>

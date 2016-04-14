@@ -5,8 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.tickerwidget.R
-import java.util.*
+import java.util.Random
 import javax.inject.Inject
 
 /**
@@ -27,7 +28,7 @@ class UpdateReceiver : BroadcastReceiver() {
     val path = context.getString(R.string.package_replaced_string)
     val intentData = intent.dataString
     if (path == intentData || "package:" + path == intentData) {
-      stocksProvider.fetch()
+      stocksProvider.fetch().subscribe(SimpleSubscriber<List<Stock>>())
       preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
       preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply()
     } else if (random.nextInt() % 2 == 0) {

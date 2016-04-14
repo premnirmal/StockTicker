@@ -8,19 +8,32 @@ import android.os.Looper
 import android.os.Parcelable
 import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.GridLayoutManager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import com.daimajia.swipe.SwipeLayout
-import com.github.premnirmal.ticker.*
+import com.github.premnirmal.ticker.BaseFragment
+import com.github.premnirmal.ticker.InAppMessage
+import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.RxBus
+import com.github.premnirmal.ticker.SimpleSubscriber
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
-import com.github.premnirmal.ticker.events.StockUpdatedEvent
-import com.github.premnirmal.ticker.events.UpdateFailedEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.portfolio_fragment.*
+import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
+import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
+import kotlinx.android.synthetic.main.portfolio_fragment.last_updated
+import kotlinx.android.synthetic.main.portfolio_fragment.next_update
+import kotlinx.android.synthetic.main.portfolio_fragment.stockList
+import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -95,7 +108,17 @@ class PortfolioFragment : BaseFragment() {
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
-      stocksProvider.fetch()
+      bind(stocksProvider.fetch()).subscribe(object: SimpleSubscriber<List<Stock>>(){
+        override fun onError(e: Throwable?) {
+          swipe_container.isRefreshing = false
+          InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
+        }
+
+        override fun onNext(t: List<Stock>) {
+          swipe_container.isRefreshing = false
+          update()
+        }
+      })
     })
     fragment_root.invalidate()
     bind(bus.forEventType(NoNetworkEvent::class.java))
@@ -105,16 +128,6 @@ class PortfolioFragment : BaseFragment() {
           noNetwork(event as NoNetworkEvent)
           swipe_container.isRefreshing = false
         }
-
-    bind(bus.forEventType(StockUpdatedEvent::class.java)).subscribe { event ->
-      update()
-      swipe_container.isRefreshing = false
-    }
-
-    bind(bus.forEventType(UpdateFailedEvent::class.java)).subscribe { event ->
-      swipe_container.isRefreshing = false
-      InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
-    }
 
     if (!Tools.isNetworkOnline(context.applicationContext)) {
       noNetwork(NoNetworkEvent())

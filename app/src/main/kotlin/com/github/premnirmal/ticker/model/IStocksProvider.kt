@@ -1,15 +1,16 @@
 package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.network.Stock
+import rx.Observable
 
 /**
  * Created by premnirmal on 2/28/16.
  */
 interface IStocksProvider {
 
-  fun removeStock(ticker: String): Collection<String>
+  fun addStock(ticker: String): Collection<String>
 
-  fun addStock(ticker: String): Collection<String>?
+  fun removeStock(ticker: String): Collection<String>
 
   fun addPosition(ticker: String?, shares: Int, price: Float)
 
@@ -19,17 +20,15 @@ interface IStocksProvider {
 
   fun getStocks(): Collection<Stock>
 
-  fun rearrange(tickers: List<String>): Collection<Stock>
-
   fun getStock(ticker: String?): Stock?
 
   fun getTickers(): List<String>
+
+  fun rearrange(tickers: List<String>): Collection<Stock>
 
   fun lastFetched(): String
 
   fun nextFetch(): String
 
-  fun fetch()
-
-  fun fetchSynchronous()
+  fun fetch(): Observable<List<Stock>>
 }

@@ -9,16 +9,17 @@ import android.util.Log
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.RefreshReceiver
+import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
-import com.github.premnirmal.ticker.events.UpdateFailedEvent
-import com.github.premnirmal.ticker.events.StockUpdatedEvent
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.network.StocksApi
+import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.ISODateTimeFormat
 import rx.Observable
+import rx.Observable.Operator
 import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
 import rx.functions.Func1
@@ -68,21 +69,23 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     lastFetched = preferences.getString(LAST_FETCHED, null)
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == null) {
-      fetch()
+      fetch().subscribe(SimpleSubscriber<List<Stock>>())
     } else {
       fetchLocal()
     }
   }
 
   private fun fetchLocal() {
-    stockList.clear()
-    stockList.addAll(storage.readSynchronous())
-    if (!stockList.isEmpty()) {
-      sortStockList()
-      sendBroadcast()
-    } else {
-      fetch()
-    }
+    synchronized(stockList, {
+      stockList.clear()
+      stockList.addAll(storage.readSynchronous())
+      if (!stockList.isEmpty()) {
+        sortStockList()
+        sendBroadcast()
+      } else {
+        fetch().subscribe(SimpleSubscriber<List<Stock>>())
+      }
+    })
   }
 
   private fun save() {
@@ -106,34 +109,30 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     })
   }
 
-  override fun fetchSynchronous() {
-    if (Tools.isNetworkOnline(context)) {
-      val stocks = api.getStocks(tickerList).toBlocking().first()
-      if (stocks == null || stocks.isEmpty()) {
-        CrashLogger.logException(NullPointerException("Encountered onError when fetching stocks"))
-        bus.post(UpdateFailedEvent())
-        scheduleUpdate(SystemClock.elapsedRealtime() + 60 * 1000) // 1 minute
-      } else {
-        stockList.clear()
-        stockList.addAll(stocks)
-        lastFetched = api.lastFetched
-        save()
-        sendBroadcast()
-      }
-    } else {
-      bus.post(NoNetworkEvent())
-      scheduleUpdate(SystemClock.elapsedRealtime() + 2 * 60 * 1000) // 2 minutes
-    }
-  }
-
-  override fun fetch() {
-    val intent = Intent(context, RefreshReceiver::class.java)
-    context.sendBroadcast(intent)
+  override fun fetch(): Observable<List<Stock>> {
+    return api.getStocks(tickerList)
+        .doOnError { e ->
+          CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks",
+              e)) // why does this happen?
+          e.printStackTrace()
+          scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)) // 1 minute
+          AlarmScheduler.sendBroadcast(context)
+        }
+        .doOnNext { stocks ->
+          synchronized(stockList, {
+            stockList.clear()
+            stockList.addAll(stocks)
+            lastFetched = api.lastFetched
+            save()
+            sendBroadcast()
+          })
+        }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
   }
 
   private fun sendBroadcast() {
     AlarmScheduler.sendBroadcast(context)
-    bus.post(StockUpdatedEvent())
     scheduleUpdate(msToNextAlarm)
   }
 
@@ -152,33 +151,35 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     }
     tickerList.add(ticker)
     save()
-    fetch()
+    fetch().subscribe(SimpleSubscriber<List<Stock>>())
     return tickerList
   }
 
   override fun addPosition(ticker: String?, shares: Int, price: Float) {
     if (ticker != null) {
-      var position = getStock(ticker)
-      if (position == null) {
-        position = Stock()
-      }
-      if (!ticker.contains(ticker)) {
-        tickerList.add(ticker)
-      }
-      position.symbol = ticker
-      position.PositionPrice = price
-      position.PositionShares = shares
-      positionList.remove(position)
-      if (shares != 0) {
-        position.IsPosition = true
-        positionList.add(position)
-        stockList.remove(position)
-        stockList.add(position)
-        save()
-        fetch()
-      } else {
-        removePosition(ticker)
-      }
+      synchronized(stockList, {
+        var position = getStock(ticker)
+        if (position == null) {
+          position = Stock()
+        }
+        if (!ticker.contains(ticker)) {
+          tickerList.add(ticker)
+        }
+        position.symbol = ticker
+        position.PositionPrice = price
+        position.PositionShares = shares
+        positionList.remove(position)
+        if (shares != 0) {
+          position.IsPosition = true
+          positionList.add(position)
+          stockList.remove(position)
+          stockList.add(position)
+          save()
+          fetch().subscribe(SimpleSubscriber<List<Stock>>())
+        } else {
+          removePosition(ticker)
+        }
+      })
     }
   }
 
@@ -196,61 +197,66 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
       }
     }
     save()
-    fetch()
+    fetch().subscribe(SimpleSubscriber<List<Stock>>())
     return tickerList
   }
 
   override fun removeStock(ticker: String): Collection<String> {
-    val ticker2 = "^" + ticker // in case it was an index
-    tickerList.remove(ticker)
-    tickerList.remove(ticker2)
-    val dummy = Stock()
-    val dummy2 = Stock()
-    dummy.symbol = ticker
-    dummy2.symbol = ticker2
-    stockList.remove(dummy)
-    stockList.remove(dummy2)
-    positionList.remove(dummy)
-    positionList.remove(dummy2)
-    save()
-    AlarmScheduler.sendBroadcast(context)
-    scheduleUpdate(msToNextAlarm)
-    return tickerList
+    synchronized(stockList, {
+      val ticker2 = "^" + ticker // in case it was an index
+      tickerList.remove(ticker)
+      tickerList.remove(ticker2)
+      val dummy = Stock()
+      val dummy2 = Stock()
+      dummy.symbol = ticker
+      dummy2.symbol = ticker2
+      stockList.remove(dummy)
+      stockList.remove(dummy2)
+      positionList.remove(dummy)
+      positionList.remove(dummy2)
+      save()
+      AlarmScheduler.sendBroadcast(context)
+      scheduleUpdate(msToNextAlarm)
+      return tickerList
+    })
   }
 
   override fun getStocks(): Collection<Stock> {
-    sortStockList()
+    synchronized(stockList, {
+      sortStockList()
 
-    val newStockList = ArrayList<Stock>()
-    var added: Boolean
-    // Set all positions
-    for (stock in stockList) {
-      added = false
-      for (pos in positionList) {
-        if (!added && stock.symbol == pos.symbol) {
-          stock.IsPosition = true
-          stock.PositionShares = pos.PositionShares
-          stock.PositionPrice = pos.PositionPrice
+      val newStockList = ArrayList<Stock>()
+      var added: Boolean
+      // Set all positions
+      for (stock in stockList) {
+        added = false
+        for (pos in positionList) {
+          if (!added && stock.symbol == pos.symbol) {
+            stock.IsPosition = true
+            stock.PositionShares = pos.PositionShares
+            stock.PositionPrice = pos.PositionPrice
+            newStockList.add(stock)
+            added = true
+          }
+        }
+        if (!added) {
           newStockList.add(stock)
-          added = true
         }
       }
-      if (!added) {
-        newStockList.add(stock)
-      }
-    }
-
-    return newStockList
+      return newStockList
+    })
   }
 
   private fun sortStockList() {
-    if (Tools.autoSortEnabled()) {
-      Collections.sort(stockList)
-    } else {
-      Collections.sort(stockList) { lhs, rhs ->
-        tickerList.indexOf(lhs.symbol).toInt().compareTo(tickerList.indexOf(rhs.symbol))
+    synchronized(stockList, {
+      if (Tools.autoSortEnabled()) {
+        Collections.sort(stockList)
+      } else {
+        Collections.sort(stockList) { lhs, rhs ->
+          tickerList.indexOf(lhs.symbol).toInt().compareTo(tickerList.indexOf(rhs.symbol))
+        }
       }
-    }
+    })
   }
 
   override fun rearrange(tickers: List<String>): Collection<Stock> {
@@ -262,14 +268,16 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   }
 
   override fun getStock(ticker: String?): Stock? {
-    val dummy = Stock()
-    dummy.symbol = ticker
-    val index = stockList.indexOf(dummy)
-    if (index >= 0) {
-      val stock = stockList[index]
-      return stock
-    }
-    return null
+    synchronized(stockList, {
+      val dummy = Stock()
+      dummy.symbol = ticker
+      val index = stockList.indexOf(dummy)
+      if (index >= 0) {
+        val stock = stockList[index]
+        return stock
+      }
+      return null
+    })
   }
 
   override fun getTickers(): List<String> {
