@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network
 
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by premnirmal on 3/21/16.
@@ -48,6 +48,7 @@ internal object StockConverter {
         newSymbols.add(symbol
             .replace("^DJI", ".DJI")
             .replace("^IXIC", ".IXIC")
+            .replace("^XAU", "XAU")
             .replace("^SPY", "SPY") // for symbols like ^SPY for yahoo
             .replace("^", ".")
         )

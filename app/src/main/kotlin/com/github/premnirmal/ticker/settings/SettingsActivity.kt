@@ -133,7 +133,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       gStockPreference.isChecked = enable
       gStockPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val checked = newValue as Boolean
           preferences.edit().putBoolean(Tools.ENABLE_GOOGLE_FINANCE, checked).apply()
           return true
@@ -187,7 +186,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       fontSizePreference.summary = fontSizePreference.entries[size]
       fontSizePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
@@ -207,7 +205,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       bgPreference.summary = bgPreference.entries[bgIndex]
       bgPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
@@ -227,7 +224,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       layoutTypePref.summary = layoutTypePref.entries[typeIndex]
       layoutTypePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
@@ -238,7 +234,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           if (index == 2) {
             showDialog(getString(R.string.change_instructions))
           }
-
           return true
         }
       }
@@ -251,7 +246,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       textColorPreference.summary = textColorPreference.entries[colorIndex]
       textColorPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
@@ -272,7 +266,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       refreshPreference.summary = refreshPreference.entries[refreshIndex]
       refreshPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
@@ -291,7 +284,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       autoSortPreference.isChecked = autoSort
       autoSortPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val checked = newValue as Boolean
           preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply()
           return true
@@ -305,7 +297,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       boldChangePreference.isChecked = bold
       boldChangePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
           val checked = newValue as Boolean
           preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply()
           return true
@@ -318,11 +309,17 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       startTimePref.summary = preferences.getString(Tools.START_TIME, "09:30")
       startTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
-          preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply()
-          startTimePref.summary = newValue.toString()
-          InAppMessage.showMessage(this@SettingsActivity, R.string.start_time_updated)
-          return true
+          val startTimez = Tools.timeAsIntArray(newValue.toString())
+          val timez = Tools.endTime()
+          if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
+            InAppMessage.showMessage(this@SettingsActivity, R.string.incorrect_time_update_error)
+            return false
+          } else {
+            preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply()
+            startTimePref.summary = newValue.toString()
+            InAppMessage.showMessage(this@SettingsActivity, R.string.start_time_updated)
+            return true
+          }
         }
       }
     })
@@ -330,13 +327,26 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     run({
       val endTimePref = findPreference(Tools.END_TIME) as TimePreference
       endTimePref.summary = preferences.getString(Tools.END_TIME, "16:30")
+      run ({
+        val timez = Tools.endTime()
+        val startTimez = Tools.startTime()
+        if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
+          endTimePref.setSummary(R.string.incorrect_time_update_error)
+        }
+      })
       endTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          super.onPreferenceChange(preference, newValue)
-          preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply()
-          endTimePref.summary = newValue.toString()
-          InAppMessage.showMessage(this@SettingsActivity, R.string.end_time_updated)
-          return true
+          val timez = Tools.timeAsIntArray(newValue.toString())
+          val startTimez = Tools.startTime()
+          if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
+            InAppMessage.showMessage(this@SettingsActivity, R.string.incorrect_time_update_error)
+            return false
+          } else {
+            preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply()
+            endTimePref.summary = newValue.toString()
+            InAppMessage.showMessage(this@SettingsActivity, R.string.end_time_updated)
+            return true
+          }
         }
       }
     })

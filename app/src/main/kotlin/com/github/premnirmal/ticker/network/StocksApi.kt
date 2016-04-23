@@ -55,7 +55,11 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
       val yahooSymbols = ArrayList<String>()
       val googleSymbols = ArrayList<String>()
       for (symbol: String in symbols) {
-        if (!symbol.equals(Stock.GDAXI_TICKER) && (symbol.startsWith("^") || symbol.startsWith("."))) {
+        if (!symbol.equals(Stock.GDAXI_TICKER) &&
+            (symbol.startsWith("^")
+                || symbol.startsWith("."))
+          || symbol.equals(Stock.XAU_TICKER)
+        ) {
           googleSymbols.add(symbol.replace("^", "."))
         } else {
           yahooSymbols.add(symbol.replace("^", "%5E"))

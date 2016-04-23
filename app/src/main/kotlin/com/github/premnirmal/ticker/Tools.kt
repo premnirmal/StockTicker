@@ -130,18 +130,20 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
         return AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
       }
 
-    fun startTime(): IntArray {
-      val startTimeString = instance.sharedPreferences.getString(START_TIME, "09:30")
-      val split = startTimeString.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    fun timeAsIntArray(time: String): IntArray {
+      val split = time.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
       val times = intArrayOf(Integer.valueOf(split[0])!!, Integer.valueOf(split[1])!!)
       return times
     }
 
+    fun startTime(): IntArray {
+      val startTimeString = instance.sharedPreferences.getString(START_TIME, "09:30")
+      return timeAsIntArray(startTimeString)
+    }
+
     fun endTime(): IntArray {
       val endTimeString = instance.sharedPreferences.getString(END_TIME, "16:30")
-      val split = endTimeString.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-      val times = intArrayOf(Integer.valueOf(split[0])!!, Integer.valueOf(split[1])!!)
-      return times
+      return timeAsIntArray(endTimeString)
     }
 
     fun autoSortEnabled(): Boolean {

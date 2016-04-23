@@ -42,6 +42,15 @@ internal class AlarmScheduler {
       val startTimez = Tools.startTime()
       val endTimez = Tools.endTime()
 
+      run ({ // don't allow end time less than start time. reset to default time if so
+        if (endTimez[0] < startTimez[0] || (endTimez[0] == startTimez[0] && endTimez[0] <= startTimez[0])) {
+          startTimez[0] = 9
+          startTimez[1] = 30
+          endTimez[0] = 16
+          endTimez[1] = 15
+        }
+      })
+
       val mutableDateTime = MutableDateTime(DateTime.now())
       mutableDateTime.zone = DateTimeZone.getDefault()
 

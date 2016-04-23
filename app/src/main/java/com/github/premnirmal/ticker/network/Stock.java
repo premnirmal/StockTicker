@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class Stock implements Comparable<Stock>, Serializable {
 
   public static final String GDAXI_TICKER = "^GDAXI";
+  public static final String XAU_TICKER = "XAU";
 
   private static final long serialVersionUID = -425355L;
 
