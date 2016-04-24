@@ -16,7 +16,7 @@ import com.github.premnirmal.ticker.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.tickerwidget.R
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -64,10 +64,10 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val changeValueString: SpannableString
     val priceString: SpannableString
     val changePercent: Double
-    if (stock.Change != null) {
-      change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
-      changePercent = java.lang.Double.parseDouble(
-          stock.ChangeinPercent.replace("+", "").replace("%", ""))
+    if (stock.Change != null && stock.Change.isNotBlank()
+        && stock.ChangeinPercent != null && stock.ChangeinPercent.isNotBlank()) {
+      change = stock.Change.replace("+", "").toDouble()
+      changePercent = stock.ChangeinPercent.replace("+", "").replace("%", "").toDouble()
     } else {
       change = 0.0
       changePercent = 0.0
