@@ -61,8 +61,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     }
   }
 
-  override fun onBackPressed() {
-    super.onBackPressed()
+  override fun onPause() {
+    super.onPause()
     val intent = Intent(applicationContext, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val widgetManager = AppWidgetManager.getInstance(this)

@@ -10,9 +10,9 @@
   <dimen name="button_text">10dp</dimen>
 
 
-  <integer name="text_size_small">10</integer>
-  <integer name="text_size_medium">12</integer>
-  <integer name="text_size_large">14</integer>
+  <integer name="text_size_small">12</integer>
+  <integer name="text_size_medium">14</integer>
+  <integer name="text_size_large">18</integer>
 
   <dimen name="list_spacing">3dp</dimen>
 
