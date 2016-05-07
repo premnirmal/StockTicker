@@ -74,10 +74,7 @@
   <string name="no">No</string>
   <string name="enable_google_finance">Enable Google Finance?</string>
   <string name="enable_google_finance_desc">Enabling the Google Finance api allows you to get quotes for indices as ^DJI, but isn\'t robust</string>
-
-  <string-array name="graph_or_positions">
-    <item>View graph</item>
-    <item>Edit Positions</item>
-  </string-array>
+  <string name="edit_positions">Edit Positions</string>
+  <string name="view_graph">View Graph</string>
 
 </resources>

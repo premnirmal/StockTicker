@@ -8,19 +8,9 @@ import android.os.Looper
 import android.os.Parcelable
 import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.GridLayoutManager
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
-import com.daimajia.swipe.SwipeLayout
-import com.github.premnirmal.ticker.BaseFragment
-import com.github.premnirmal.ticker.InAppMessage
-import com.github.premnirmal.ticker.Injector
-import com.github.premnirmal.ticker.RxBus
-import com.github.premnirmal.ticker.SimpleSubscriber
-import com.github.premnirmal.ticker.Tools
+import android.view.*
+import android.widget.PopupMenu
+import com.github.premnirmal.ticker.*
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
@@ -28,12 +18,8 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
-import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
-import kotlinx.android.synthetic.main.portfolio_fragment.last_updated
-import kotlinx.android.synthetic.main.portfolio_fragment.next_update
-import kotlinx.android.synthetic.main.portfolio_fragment.stockList
-import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
+import com.jakewharton.rxbinding.widget.RxPopupMenu
+import kotlinx.android.synthetic.main.portfolio_fragment.*
 import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -59,23 +45,30 @@ class PortfolioFragment : BaseFragment() {
   private val stocksAdapter by lazy {
     StocksAdapter(stocksProvider,
         object : StocksAdapter.OnStockClickListener {
-          override fun onRemoveClick(view: View, stock: Stock?, position: Int) {
-            promptRemove(stock, position)
-          }
-
-          override fun onClick(stock: Stock?) {
-            AlertDialog.Builder(activity).setItems(R.array.graph_or_positions,
-                { dialog, which ->
-                  val intent: Intent
-                  if (which == 0) {
-                    intent = Intent(activity, GraphActivity::class.java)
+          override fun onClick(view: View, stock: Stock?, position: Int) {
+            val popupWindow = PopupMenu(view.context, view)
+            popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
+            bind(RxPopupMenu.itemClicks(popupWindow)).subscribe(object: SimpleSubscriber<MenuItem>() {
+              override fun onNext(menuItem: MenuItem) {
+                val itemId = menuItem.itemId
+                when (itemId) {
+                  R.id.graph -> {
+                    val intent = Intent(activity, GraphActivity::class.java)
                     intent.putExtra(GraphActivity.GRAPH_DATA, stock)
-                  } else {
-                    intent = Intent(activity, EditPositionActivity::class.java)
-                    intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
+                    activity.startActivity(intent)
                   }
-                  activity.startActivity(intent)
-                }).show()
+                  R.id.positions -> {
+                    val intent = Intent(activity, EditPositionActivity::class.java)
+                    intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
+                    activity.startActivity(intent)
+                  }
+                  R.id.remove -> {
+                    promptRemove(stock, position)
+                  }
+                }
+              }
+            })
+            popupWindow.show()
           }
         })
   }
@@ -158,34 +151,6 @@ class PortfolioFragment : BaseFragment() {
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
         stockList.adapter = stocksAdapter
-        if (stocksAdapter.itemCount > 1) {
-          if (Tools.firstTimeViewingSwipeLayout()) {
-            handler.postDelayed({ // TODO think of a better way to do this.. nesting is ugly
-              if (isVisible) {
-                val layout = stockList?.getChildAt(0) as SwipeLayout?
-                if (layout != null) {
-                  layout.open(true)
-                  handler.postDelayed({
-                    if (isVisible) {
-                      layout.close()
-                      val secondLayout = stockList?.getChildAt(1) as SwipeLayout?
-                      if (isVisible) {
-                        if (secondLayout != null) {
-                          secondLayout.open(true)
-                          handler.postDelayed({
-                            if (isVisible) {
-                              secondLayout.close()
-                            }
-                          }, 600)
-                        }
-                      }
-                    }
-                  }, 600)
-                }
-              }
-            }, 1000)
-          }
-        }
       }
     }
   }

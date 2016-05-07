@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.portfolio
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
-import com.daimajia.swipe.SwipeLayout
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.ui.StockFieldView
@@ -21,14 +20,9 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val position = adapterPosition
     itemView.findViewById(
-        R.id.stockContainer).setOnClickListener { if (!stock.isIndex) listener.onClick(stock) }
-    itemView.findViewById(R.id.trash).setOnClickListener { v ->
-      listener.onRemoveClick(v, stock, position)
+        R.id.more_menu).setOnClickListener { v ->
+      if (!stock.isIndex) listener.onClick(v, stock, position)
     }
-
-    val swipeLayout = itemView as SwipeLayout
-    swipeLayout.showMode = SwipeLayout.ShowMode.PullOut
-    swipeLayout.dragEdge = SwipeLayout.DragEdge.Right
 
     setText(itemView, R.id.ticker, stock.symbol)
 

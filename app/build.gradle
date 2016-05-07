@@ -7,7 +7,7 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:1.5.0'
+    classpath 'com.android.tools.build:gradle:2.1.0'
     classpath 'io.fabric.tools:gradle:1.+'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -27,7 +27,7 @@ repositories {
 android {
   compileSdkVersion 23
   //    compileSdkVersion 'android-N'
-  buildToolsVersion '22.0.1'
+  buildToolsVersion '23.0.2'
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties();
@@ -129,13 +129,12 @@ dependencies {
   compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
   compile 'com.android.support:support-v4:23.1.1'
   compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-  compile 'com.daimajia.swipelayout:library:1.0.3@aar'
+  compile 'com.android.support:multidex:1.0.0'
+  compile 'com.android.support:design:23.1.1'
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+  prodCompile 'com.google.android.gms:play-services:7.0.0'
   prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
     transitive = true;
   }
-
-  compile 'com.android.support:multidex:1.0.0'
-  prodCompile 'com.google.android.gms:play-services:7.0.0'
-  compile 'com.android.support:design:23.1.1'
-  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
