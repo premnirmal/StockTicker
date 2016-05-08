@@ -21,7 +21,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val position = adapterPosition
     itemView.findViewById(
         R.id.more_menu).setOnClickListener { v ->
-      if (!stock.isIndex) listener.onClick(v, stock, position)
+      listener.onClick(v, stock, position)
     }
 
     setText(itemView, R.id.ticker, stock.symbol)

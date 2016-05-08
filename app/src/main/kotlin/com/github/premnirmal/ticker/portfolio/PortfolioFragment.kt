@@ -45,9 +45,16 @@ class PortfolioFragment : BaseFragment() {
   private val stocksAdapter by lazy {
     StocksAdapter(stocksProvider,
         object : StocksAdapter.OnStockClickListener {
-          override fun onClick(view: View, stock: Stock?, position: Int) {
+          override fun onClick(view: View, stock: Stock, position: Int) {
             val popupWindow = PopupMenu(view.context, view)
             popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
+            if (stock.isIndex) {
+              popupWindow.menu.findItem(R.id.graph).isEnabled = false
+              popupWindow.menu.findItem(R.id.positions).isEnabled = false
+            } else {
+              popupWindow.menu.findItem(R.id.graph).isEnabled = true
+              popupWindow.menu.findItem(R.id.positions).isEnabled = true
+            }
             bind(RxPopupMenu.itemClicks(popupWindow)).subscribe(object: SimpleSubscriber<MenuItem>() {
               override fun onNext(menuItem: MenuItem) {
                 val itemId = menuItem.itemId

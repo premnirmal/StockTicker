@@ -17,7 +17,7 @@ internal class StocksAdapter(stocksProvider: IStocksProvider, private val listen
   private val stockList: MutableList<Stock>
 
   internal interface OnStockClickListener {
-    fun onClick(view: View, stock: Stock?, position: Int)
+    fun onClick(view: View, stock: Stock, position: Int)
   }
 
   init {
