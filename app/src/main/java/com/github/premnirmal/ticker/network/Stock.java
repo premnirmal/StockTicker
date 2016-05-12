@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.network;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 /**
@@ -12,23 +13,15 @@ public class Stock implements Comparable<Stock>, Serializable {
 
   private static final long serialVersionUID = -425355L;
 
-  public String symbol = "";
-
-  public String Name = "";
-
-  public float LastTradePriceOnly;
-  public String LastTradeDate = "";
-  public String ChangeinPercent = "";
-  public String Change = "";
-  public String AverageDailyVolume = "";
-  public String DaysLow = "";
-  public String DaysHigh = "";
-  public float YearLow;
-  public float YearHigh;
-  public String MarketCapitalization = "";
-  public String DaysRange = "";
-  public String Volume = "";
-  public String StockExchange = "";
+  @SerializedName("Symbol") public String symbol = "";
+  @SerializedName("Name") public String Name = "";
+  @SerializedName("LastTradePriceOnly") public float LastTradePriceOnly;
+  @SerializedName("ChangeinPercent") public String ChangeinPercent = "";
+  @SerializedName("Change") public String Change = "";
+  @SerializedName("AverageDailyVolume") public String AverageDailyVolume = "";
+  @SerializedName("YearLow") public float YearLow;
+  @SerializedName("YearHigh") public float YearHigh;
+  @SerializedName("StockExchange") public String StockExchange = "";
 
   // Add Position fields
   public boolean IsPosition;

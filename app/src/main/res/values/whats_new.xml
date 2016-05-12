@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Menu update for indices</item>
+    <item>Using a different stocks api giving you more accurate quotes!</item>
   </string-array>
 </resources>

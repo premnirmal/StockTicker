@@ -38,7 +38,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   private val tickerList: MutableList<String>
   private val stockList: MutableList<Stock> = ArrayList()
   private val positionList: MutableList<Stock>
-  private var lastFetched: String? = null
+  private var lastFetched: Long = 0L
   private var nextFetch: Long = 0L
   private val storage: StocksStorage
 
@@ -66,7 +66,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
 
     val tickerList = Tools.toCommaSeparatedString(this.tickerList)
     preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply()
-    lastFetched = preferences.getString(LAST_FETCHED, null)
+    lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == null) {
       fetch().subscribe(SimpleSubscriber<List<Stock>>())
@@ -91,7 +91,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   private fun save() {
     preferences.edit().remove(STOCK_LIST).putString(POSITION_LIST,
         Tools.positionsToString(positionList)).putString(SORTED_STOCK_LIST,
-        Tools.toCommaSeparatedString(tickerList)).putString(LAST_FETCHED, lastFetched).apply()
+        Tools.toCommaSeparatedString(tickerList)).putLong(LAST_FETCHED, lastFetched).apply()
     storage.save(stockList).subscribe(object : Subscriber<Boolean>() {
       override fun onCompleted() {
 
@@ -286,9 +286,8 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
 
   override fun lastFetched(): String {
     val fetched: String
-    if (!TextUtils.isEmpty(lastFetched)) {
-      val time = DateTime.parse(lastFetched).withZone(
-          DateTimeZone.forTimeZone(TimeZone.getDefault()))
+    if (lastFetched > 0L) {
+      val time = DateTime(lastFetched)
       fetched = createTimeString(time)
     } else {
       fetched = ""

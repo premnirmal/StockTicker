@@ -80,20 +80,34 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
       setStockFieldText(itemView, R.id.yearLow,
           Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly - stock.PositionPrice))
     } else {
-      setStockFieldLabel(itemView, R.id.averageDailyVolume, "Daily Volume")
-      setStockFieldLabel(itemView, R.id.exchange, "Exchange")
-      setStockFieldLabel(itemView, R.id.yearHigh, "Year High")
-      setStockFieldLabel(itemView, R.id.yearLow, "Year Low")
-      setStockFieldText(itemView, R.id.exchange, "${stock.StockExchange}")
-      val isIndex = stock.isIndex
-      if (isIndex) {
-        setStockFieldText(itemView, R.id.averageDailyVolume, NA)
-        setStockFieldText(itemView, R.id.yearHigh, NA)
-        setStockFieldText(itemView, R.id.yearLow, NA)
+      if (Tools.googleFinanceEnabled()) {
+        setStockFieldLabel(itemView, R.id.averageDailyVolume, "Holdings")
+        setStockFieldText(itemView, R.id.averageDailyVolume, "NA")
+
+        setStockFieldLabel(itemView, R.id.exchange, "Gain/Loss")
+        setStockFieldText(itemView, R.id.exchange, "NA")
+
+        setStockFieldLabel(itemView, R.id.yearHigh, "Change %")
+        setStockFieldText(itemView, R.id.yearHigh, "NA")
+
+        setStockFieldLabel(itemView, R.id.yearLow, "Change")
+        setStockFieldText(itemView, R.id.yearLow, "NA")
       } else {
-        setStockFieldText(itemView, R.id.averageDailyVolume, "${stock.AverageDailyVolume}")
-        setStockFieldText(itemView, R.id.yearHigh, Tools.DECIMAL_FORMAT.format(stock.YearHigh))
-        setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.YearLow))
+        setStockFieldLabel(itemView, R.id.averageDailyVolume, "Daily Volume")
+        setStockFieldLabel(itemView, R.id.exchange, "Exchange")
+        setStockFieldLabel(itemView, R.id.yearHigh, "Year High")
+        setStockFieldLabel(itemView, R.id.yearLow, "Year Low")
+        setStockFieldText(itemView, R.id.exchange, "${stock.StockExchange}")
+        val isIndex = stock.isIndex
+        if (isIndex) {
+          setStockFieldText(itemView, R.id.averageDailyVolume, NA)
+          setStockFieldText(itemView, R.id.yearHigh, NA)
+          setStockFieldText(itemView, R.id.yearLow, NA)
+        } else {
+          setStockFieldText(itemView, R.id.averageDailyVolume, "${stock.AverageDailyVolume}")
+          setStockFieldText(itemView, R.id.yearHigh, Tools.DECIMAL_FORMAT.format(stock.YearHigh))
+          setStockFieldText(itemView, R.id.yearLow, Tools.DECIMAL_FORMAT.format(stock.YearLow))
+        }
       }
     }
   }
