@@ -49,10 +49,14 @@ public class Stock implements Comparable<Stock>, Serializable {
   }
 
   static double getChangeFromPercentString(String percentString) {
-    if (percentString == null) {
+    if (percentString == null || percentString.isEmpty()) {
       return -1000000.0d;
     }
-    return Double.valueOf(percentString.replace('%', '\0').trim());
+    try {
+      return Double.valueOf(percentString.replace('%', '\0').trim());
+    } catch (Throwable t) {
+      return -1000000.0d;
+    }
   }
 
   @Override public boolean equals(Object o) {

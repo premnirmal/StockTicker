@@ -72,11 +72,11 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
       setStockFieldText(itemView, R.id.exchange, Tools.DECIMAL_FORMAT.format(
           stock.LastTradePriceOnly * stock.PositionShares - stock.PositionShares * stock.PositionPrice))
 
-      setStockFieldLabel(itemView, R.id.yearHigh, "Change %")
+      setStockFieldLabel(itemView, R.id.yearHigh, "Day change %")
       setStockFieldText(itemView, R.id.yearHigh, "${(Tools.DECIMAL_FORMAT.format(
           (stock.LastTradePriceOnly - stock.PositionPrice) / stock.PositionPrice * 100))}%")
 
-      setStockFieldLabel(itemView, R.id.yearLow, "Change")
+      setStockFieldLabel(itemView, R.id.yearLow, "Day change")
       setStockFieldText(itemView, R.id.yearLow,
           Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly - stock.PositionPrice))
     } else {
@@ -87,10 +87,10 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         setStockFieldLabel(itemView, R.id.exchange, "Gain/Loss")
         setStockFieldText(itemView, R.id.exchange, "NA")
 
-        setStockFieldLabel(itemView, R.id.yearHigh, "Change %")
+        setStockFieldLabel(itemView, R.id.yearHigh, "Day change %")
         setStockFieldText(itemView, R.id.yearHigh, "NA")
 
-        setStockFieldLabel(itemView, R.id.yearLow, "Change")
+        setStockFieldLabel(itemView, R.id.yearLow, "Day change")
         setStockFieldText(itemView, R.id.yearLow, "NA")
       } else {
         setStockFieldLabel(itemView, R.id.averageDailyVolume, "Daily Volume")

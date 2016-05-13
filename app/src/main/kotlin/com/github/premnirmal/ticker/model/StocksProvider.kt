@@ -66,7 +66,11 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
 
     val tickerList = Tools.toCommaSeparatedString(this.tickerList)
     preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply()
-    lastFetched = preferences.getLong(LAST_FETCHED, 0L)
+    try {
+      lastFetched = preferences.getLong(LAST_FETCHED, 0L)
+    } catch (e: Exception) {
+      lastFetched = 0L
+    }
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == null) {
       fetch().subscribe(SimpleSubscriber<List<Stock>>())

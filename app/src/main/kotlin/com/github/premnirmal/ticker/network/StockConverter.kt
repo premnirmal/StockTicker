@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network
 
-import java.util.*
+import java.util.ArrayList
 
 /**
  * Created by premnirmal on 3/21/16.
@@ -15,7 +15,16 @@ internal object StockConverter {
     stock.LastTradePriceOnly =
         if (gStock.lCur != null) (gStock.lCur.replace(",", "")).toFloat()
         else 0f
-    val changePercent = gStock.cp.toDouble()
+    var changePercent: Double
+    if (gStock.cp.isNullOrEmpty()) {
+      changePercent = 0.0
+    } else {
+      try {
+        changePercent = gStock.cp.toDouble()
+      } catch (e: Exception) {
+        changePercent = 0.0
+      }
+    }
     if (changePercent > 0) {
       stock.ChangeinPercent = "+$changePercent%"
     } else {
