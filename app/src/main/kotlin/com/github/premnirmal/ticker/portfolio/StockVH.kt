@@ -28,7 +28,11 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val change: Double
     if (stock != null && stock.Change != null) {
-      change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
+      try {
+        change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
+      } catch (e: Exception) {
+        change = 0.0
+      }
     } else {
       change = 0.0
     }
