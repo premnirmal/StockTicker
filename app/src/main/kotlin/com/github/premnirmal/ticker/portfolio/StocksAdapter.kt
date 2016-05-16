@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.tickerwidget.R
 import java.util.*
 
@@ -41,7 +42,11 @@ internal class StocksAdapter(stocksProvider: IStocksProvider, private val listen
   }
 
   override fun onBindViewHolder(holder: StockVH, position: Int) {
-    holder.update(stockList[position], listener)
+    try {
+      holder.update(stockList[position], listener)
+    } catch (e: Exception) {
+      CrashLogger.logException(e)
+    }
   }
 
   override fun getItemId(position: Int): Long {

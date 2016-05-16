@@ -13,6 +13,7 @@ import com.github.premnirmal.tickerwidget.R
  */
 internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
+  @Throws(Exception::class)
   fun update(stock: Stock?, listener: StocksAdapter.OnStockClickListener) {
     if (stock == null) {
       return
@@ -27,12 +28,8 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
     setText(itemView, R.id.ticker, stock.symbol)
 
     val change: Double
-    if (stock != null && stock.Change != null) {
-      try {
-        change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
-      } catch (e: Exception) {
-        change = 0.0
-      }
+    if (stock.Change != null && !stock.Change.isEmpty()) {
+      change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
     } else {
       change = 0.0
     }
@@ -41,10 +38,16 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val changeVal: Double
     val changePercentVal: Double
-    if (stock.Change != null) {
-      changeVal = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
-      changePercentVal = java.lang.Double.parseDouble(
-          stock.ChangeinPercent.replace("+", "").replace("%", ""))
+    if (stock.Change != null && !stock.Change.isEmpty()
+        && stock.ChangeinPercent != null && !stock.ChangeinPercent.isEmpty()) {
+      try {
+        changeVal = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
+        changePercentVal = java.lang.Double.parseDouble(
+            stock.ChangeinPercent.replace("+", "").replace("%", ""))
+      } catch (e: Exception) {
+        changeVal = 0.0
+        changePercentVal = 0.0
+      }
     } else {
       changeVal = 0.0
       changePercentVal = 0.0

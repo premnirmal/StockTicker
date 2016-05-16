@@ -35,6 +35,20 @@ import javax.inject.Singleton
 class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     private val context: Context, private val preferences: SharedPreferences) : IStocksProvider {
 
+  companion object {
+
+    private val LAST_FETCHED = "LAST_FETCHED"
+    private val NEXT_FETCH = "NEXT_FETCH"
+    private val POSITION_LIST = "POSITION_LIST"
+    private val DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA,^DJI"
+
+    private val TICKER_CLEANUP = "TICKER_CLEANUP"
+
+    val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
+    val GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC")
+    val _GOOGLE_SYMBOLS = Arrays.asList("^DJI", "^IXIC")
+  }
+
   private val tickerList: MutableList<String>
   private val stockList: MutableList<Stock> = ArrayList()
   private val positionList: MutableList<Stock>
@@ -47,19 +61,17 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(
         *tickerListVars.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-    val newTickerList = ArrayList<String>()
-    for (ticker in tickerList) {
-      newTickerList.add(ticker.replace(".".toRegex(), ""))
-    }
-    if (preferences.contains(STOCK_LIST)) {
-      // for users using older versions
-      val deprecatedTickerSet = preferences.getStringSet(STOCK_LIST, DEFAULT_SET)
-      preferences.edit().remove(STOCK_LIST).apply()
-      for (ticker in deprecatedTickerSet) {
-        if (!tickerList.contains(ticker)) {
-          tickerList.add(ticker)
+
+    // cleanup
+    val tickers = ArrayList(tickerList)
+    if (!preferences.getBoolean(TICKER_CLEANUP, false)) {
+      tickerList.remove("SNDK")
+      for (ticker in tickers) {
+        if (ticker.startsWith("^")) {
+          tickerList.remove(ticker)
         }
       }
+      preferences.edit().putBoolean(TICKER_CLEANUP, true).apply()
     }
 
     positionList = Tools.stringToPositions(preferences.getString(POSITION_LIST, ""))
@@ -93,9 +105,10 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   }
 
   private fun save() {
-    preferences.edit().remove(STOCK_LIST).putString(POSITION_LIST,
-        Tools.positionsToString(positionList)).putString(SORTED_STOCK_LIST,
-        Tools.toCommaSeparatedString(tickerList)).putLong(LAST_FETCHED, lastFetched).apply()
+    preferences.edit().putString(POSITION_LIST, Tools.positionsToString(positionList))
+        .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
+        .putLong(LAST_FETCHED, lastFetched)
+        .apply()
     storage.save(stockList).subscribe(object : Subscriber<Boolean>() {
       override fun onCompleted() {
 
@@ -107,7 +120,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
 
       override fun onNext(success: Boolean) {
         if (!success) {
-          Log.e(javaClass.simpleName, "Save failed")
+          CrashLogger.logException(RuntimeException("Save failed"))
         }
       }
     })
@@ -136,8 +149,8 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   }
 
   private fun sendBroadcast() {
-    AlarmScheduler.sendBroadcast(context)
     scheduleUpdate(msToNextAlarm)
+    AlarmScheduler.sendBroadcast(context)
   }
 
   private val msToNextAlarm: Long
@@ -219,8 +232,8 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
       positionList.remove(dummy)
       positionList.remove(dummy2)
       save()
-      AlarmScheduler.sendBroadcast(context)
       scheduleUpdate(msToNextAlarm)
+      AlarmScheduler.sendBroadcast(context)
       return tickerList
     })
   }
@@ -324,30 +337,4 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     }
     return fetch
   }
-
-  companion object {
-
-    private val STOCK_LIST = "STOCK_LIST"
-    private val LAST_FETCHED = "LAST_FETCHED"
-    private val NEXT_FETCH = "NEXT_FETCH"
-    private val POSITION_LIST = "POSITION_LIST"
-    private val DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA,^DJI"
-
-    val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
-    val GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC")
-    val _GOOGLE_SYMBOLS = Arrays.asList("^DJI", "^IXIC")
-
-    private val DEFAULT_SET = object : HashSet<String>() {
-      init {
-        add("^SPY")
-        add("GOOG")
-        add("AAPL")
-        add("MSFT")
-        add("YHOO")
-        add("TSLA")
-        add("^DJI")
-      }
-    }
-  }
-
 }
