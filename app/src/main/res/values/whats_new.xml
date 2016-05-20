@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Crash fixes :)</item>
-    <item>Fixes to stock fetching</item>
-    <item>Using a different stocks api giving you more accurate quotes!</item>
+    <item>Improved stability when using the alternate API</item>
   </string-array>
 </resources>
