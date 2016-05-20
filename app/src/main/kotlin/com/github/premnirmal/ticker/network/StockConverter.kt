@@ -35,7 +35,7 @@ internal object StockConverter {
     if (changePercent >= 0) {
       stock.ChangeinPercent = "+$changePercent%"
     } else {
-      stock.ChangeinPercent = "-$changePercent%"
+      stock.ChangeinPercent = "$changePercent%"
     }
     stock.Change = gStock.c
     stock.StockExchange = name
