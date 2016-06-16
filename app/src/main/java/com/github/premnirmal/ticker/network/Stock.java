@@ -79,6 +79,6 @@ public class Stock implements Comparable<Stock>, Serializable {
   }
 
   public boolean isIndex() {
-    return symbol != null && symbol.startsWith("^") && !symbol.equals(GDAXI_TICKER);
+    return symbol != null && (symbol.startsWith("^") || symbol.contains("="));
   }
 }

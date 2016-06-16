@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Improved stability when using the alternate API</item>
+    <item>Now currencies such as EURUSD=X can be added</item>
   </string-array>
 </resources>
