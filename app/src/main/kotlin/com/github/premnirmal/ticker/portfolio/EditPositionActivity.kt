@@ -2,9 +2,8 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.content.DialogInterface
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.activity_positions.*
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -19,9 +18,9 @@ class EditPositionActivity : AddPositionActivity() {
     super.onCreate(savedInstanceState)
     val stock = stocksProvider.getStock(ticker)
     if (stock != null) {
-      val sharesView = findViewById(R.id.shares) as EditText
-      val priceView = findViewById(R.id.price) as EditText
-      val skipButton = findViewById(R.id.skipButton) as Button
+      val sharesView = shares
+      val priceView = price
+      val skipButton = skipButton
       skipButton.setText(R.string.remove)
       sharesView.setText("" + stock.PositionShares)
       priceView.setText("" + stock.PositionPrice)

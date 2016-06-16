@@ -322,7 +322,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
     } else {
       val day: String = dfs.shortWeekdays[fetchedDayOfWeek % 7 + 1]
       val timeStr: String = time.toString(ISODateTimeFormat.hourMinute())
-      fetched = "$day $timeStr"
+      fetched = "$timeStr $day"
     }
     return fetched
   }

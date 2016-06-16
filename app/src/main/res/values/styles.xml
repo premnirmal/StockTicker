@@ -1,11 +1,10 @@
 <resources>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat">
+  <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
     <item name="colorPrimary">@color/color_primary</item>
     <item name="colorPrimaryDark">@color/color_secondary</item>
     <item name="colorAccent">@color/color_accent</item>
-    <item name="actionBarStyle">@style/ActionBarStyle</item>
 
     <item name="android:textViewStyle">@style/TextViewStyle</item>
     <item name="android:editTextStyle">@style/EditTextStyle</item>
@@ -47,7 +46,7 @@
 
   <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
     <item name="android:textColor">@android:color/white</item>
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+    <item name="fontPath">fonts/Avenir-Bold.otf</item>
   </style>
 
 </resources>

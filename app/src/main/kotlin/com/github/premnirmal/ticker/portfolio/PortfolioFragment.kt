@@ -2,13 +2,13 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Parcelable
+import android.os.*
 import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.GridLayoutManager
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.PopupMenu
 import com.github.premnirmal.ticker.*
 import com.github.premnirmal.ticker.events.NoNetworkEvent
@@ -55,26 +55,27 @@ class PortfolioFragment : BaseFragment() {
               popupWindow.menu.findItem(R.id.graph).isEnabled = true
               popupWindow.menu.findItem(R.id.positions).isEnabled = true
             }
-            bind(RxPopupMenu.itemClicks(popupWindow)).subscribe(object: SimpleSubscriber<MenuItem>() {
-              override fun onNext(menuItem: MenuItem) {
-                val itemId = menuItem.itemId
-                when (itemId) {
-                  R.id.graph -> {
-                    val intent = Intent(activity, GraphActivity::class.java)
-                    intent.putExtra(GraphActivity.GRAPH_DATA, stock)
-                    activity.startActivity(intent)
+            bind(RxPopupMenu.itemClicks(popupWindow)).subscribe(
+                object : SimpleSubscriber<MenuItem>() {
+                  override fun onNext(menuItem: MenuItem) {
+                    val itemId = menuItem.itemId
+                    when (itemId) {
+                      R.id.graph -> {
+                        val intent = Intent(activity, GraphActivity::class.java)
+                        intent.putExtra(GraphActivity.GRAPH_DATA, stock)
+                        activity.startActivity(intent)
+                      }
+                      R.id.positions -> {
+                        val intent = Intent(activity, EditPositionActivity::class.java)
+                        intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
+                        activity.startActivity(intent)
+                      }
+                      R.id.remove -> {
+                        promptRemove(stock, position)
+                      }
+                    }
                   }
-                  R.id.positions -> {
-                    val intent = Intent(activity, EditPositionActivity::class.java)
-                    intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
-                    activity.startActivity(intent)
-                  }
-                  R.id.remove -> {
-                    promptRemove(stock, position)
-                  }
-                }
-              }
-            })
+                })
             popupWindow.show()
           }
         })
@@ -92,6 +93,8 @@ class PortfolioFragment : BaseFragment() {
     if (listViewState != null) {
       stockList?.layoutManager?.onRestoreInstanceState(listViewState)
     }
+    val rearrangeItem = toolbar.menu.findItem(R.id.action_rearrange)
+    rearrangeItem.isEnabled = !Tools.autoSortEnabled()
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -102,13 +105,16 @@ class PortfolioFragment : BaseFragment() {
 
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight()
+    }
     stockList.addItemDecoration(
         SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     stockList.layoutManager = GridLayoutManager(context, 2)
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
-      bind(stocksProvider.fetch()).subscribe(object: SimpleSubscriber<List<Stock>>(){
+      bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
         override fun onError(e: Throwable?) {
           swipe_container.isRefreshing = false
           InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
@@ -120,7 +126,19 @@ class PortfolioFragment : BaseFragment() {
         }
       })
     })
-    fragment_root.invalidate()
+    toolbar.inflateMenu(R.menu.menu_paranormal)
+    toolbar.setOnMenuItemClickListener { item ->
+      val itemId = item.itemId
+      if (itemId == R.id.action_settings) {
+        val intent = Intent(activity, SettingsActivity::class.java)
+        startActivity(intent)
+        true
+      } else if (itemId == R.id.action_rearrange) {
+        startActivity(Intent(activity, RearrangeActivity::class.java))
+        true
+      }
+      false
+    }
     bind(bus.forEventType(NoNetworkEvent::class.java))
         .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
@@ -152,8 +170,7 @@ class PortfolioFragment : BaseFragment() {
         handler.postDelayed({ update() }, 600)
       }
 
-      last_updated?.text = "Last fetch: ${stocksProvider.lastFetched()}"
-      next_update?.text = "Next fetch: ${stocksProvider.nextFetch()}"
+      toolbar.title = "Fetched at ${stocksProvider.lastFetched()}"
 
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
@@ -175,28 +192,6 @@ class PortfolioFragment : BaseFragment() {
           })
           .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() }).show()
     }
-  }
-
-  override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-    super.onCreateOptionsMenu(menu, inflater)
-    menu.clear()
-    inflater.inflate(R.menu.menu_paranormal, menu)
-    val rearrangeItem = menu.findItem(R.id.action_rearrange)
-    rearrangeItem.isEnabled = !Tools.autoSortEnabled()
-  }
-
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
-    val activity = activity
-    val itemId = item.itemId
-    if (itemId == R.id.action_settings) {
-      val intent = Intent(activity, SettingsActivity::class.java)
-      startActivity(intent)
-      return true
-    } else if (itemId == R.id.action_rearrange) {
-      startActivity(Intent(activity, RearrangeActivity::class.java))
-      return true
-    }
-    return super.onOptionsItemSelected(item)
   }
 
   private fun noNetwork(event: NoNetworkEvent) {

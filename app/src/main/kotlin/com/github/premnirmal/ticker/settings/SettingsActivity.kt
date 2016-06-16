@@ -36,6 +36,8 @@ import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Analytics
+import kotlinx.android.synthetic.main.activity_preferences.*
+import kotlinx.android.synthetic.main.preferences_footer.*
 
 /**
  * Created by premnirmal on 2/27/16.
@@ -78,6 +80,10 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     super.onCreate(savedInstanceState)
     Injector.getAppComponent().inject(this)
     setContentView(R.layout.activity_preferences)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(),
+          toolbar.paddingRight, toolbar.paddingBottom)
+    }
     val extras: Bundle? = intent.extras
     val widgetId: Int
     if (extras != null) {
@@ -97,15 +103,15 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
   }
 
-  protected override fun onPostCreate(savedInstanceState: Bundle?) {
+  override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    val bar = findViewById(R.id.toolbar) as Toolbar
+    val bar = toolbar
     bar.setNavigationOnClickListener(android.view.View.OnClickListener { finish() })
 
     listView.addFooterView(
         LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false))
 
-    val versionView = findViewById(R.id.version) as TextView
+    val versionView = version
     val sBuilder = SpannableStringBuilder()
     sBuilder.append("v" + BuildConfig.VERSION_NAME)
     val typefaceSpan = CalligraphyTypefaceSpan(

@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Suggestion
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.activity_ticker_selector.*
 import rx.Subscriber
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
@@ -37,9 +38,11 @@ class TickerSelectorActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.getAppComponent().inject(this)
-    setContentView(R.layout.stock_search_layout)
-
-    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    setContentView(R.layout.activity_ticker_selector)
+    updateToolbar(toolbar)
+    toolbar.setNavigationOnClickListener {
+      finish()
+    }
 
     val searchView = findViewById(R.id.query) as EditText
     val listView = findViewById(R.id.resultList) as ListView

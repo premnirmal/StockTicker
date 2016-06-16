@@ -3,9 +3,11 @@ package com.github.premnirmal.ticker
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.trello.rxlifecycle.ActivityEvent
 import com.trello.rxlifecycle.RxLifecycle
@@ -93,5 +95,12 @@ abstract class BaseActivity : AppCompatActivity() {
       return true
     }
     return super.onOptionsItemSelected(item)
+  }
+
+  fun updateToolbar(toolbar: Toolbar) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(),
+          toolbar.paddingRight, toolbar.paddingBottom)
+    }
   }
 }

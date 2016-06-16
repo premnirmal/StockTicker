@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/black"
     android:orientation="vertical"
+    android:id="@+id/graphActivityRoot"
     >
 
   <FrameLayout

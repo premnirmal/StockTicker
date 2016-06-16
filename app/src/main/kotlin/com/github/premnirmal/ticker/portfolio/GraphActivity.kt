@@ -47,6 +47,10 @@ class GraphActivity : BaseActivity() {
     super.onCreate(savedInstanceState)
     Injector.getAppComponent().inject(this)
     setContentView(R.layout.activity_graph)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, Tools.getStatusBarHeight(),
+          graphActivityRoot.paddingRight, graphActivityRoot.paddingBottom)
+    }
     graphView.isDoubleTapToZoomEnabled = false
     graphView.axisLeft.setDrawGridLines(false)
     graphView.axisLeft.setDrawAxisLine(false)
@@ -58,8 +62,6 @@ class GraphActivity : BaseActivity() {
     graphView.setDescription("")
     graphView.legend.isEnabled = false
     graphView.markerView = TextMarkerView(this, graphView)
-    val supportActionBar = supportActionBar
-    supportActionBar?.hide()
     if (Build.VERSION.SDK_INT < 16) {
       window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
           WindowManager.LayoutParams.FLAG_FULLSCREEN)

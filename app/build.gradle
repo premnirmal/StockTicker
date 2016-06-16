@@ -1,5 +1,5 @@
 buildscript {
-  ext.kotlin_version = '1.0.0'
+  ext.kotlin_version = '1.0.2'
   repositories {
     mavenCentral()
     maven { url 'https://maven.fabric.io/public' }
@@ -7,7 +7,7 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:2.1.0'
+    classpath 'com.android.tools.build:gradle:2.1.2'
     classpath 'io.fabric.tools:gradle:1.+'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -113,25 +113,32 @@ android {
 }
 
 dependencies {
+  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
   compile 'com.android.support:appcompat-v7:23.1.1'
+  compile 'com.android.support:support-v4:23.1.1'
+  compile 'com.android.support:multidex:1.0.0'
+  compile 'com.android.support:design:23.1.1'
+
   compile 'javax.inject:javax.inject:1'
   compile 'javax.annotation:javax.annotation-api:1.2'
+
   compile 'com.google.dagger:dagger:2.0'
   kapt 'com.google.dagger:dagger-compiler:2.0'
+
   compile 'com.squareup.okhttp:okhttp:2.4.0'
   compile 'com.squareup.retrofit:retrofit:1.8.+'
+
   compile 'io.reactivex:rxandroid:1.1.0'
   compile 'io.reactivex:rxjava:1.1.0'
+
   compile 'com.trello:rxlifecycle:0.5.0'
   compile 'com.trello:rxlifecycle-kotlin:0.5.0'
+
   compile 'joda-time:joda-time:2.6'
   compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
   compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
-  compile 'com.android.support:support-v4:23.1.1'
   compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-  compile 'com.android.support:multidex:1.0.0'
-  compile 'com.android.support:design:23.1.1'
-  compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   prodCompile 'com.google.android.gms:play-services:7.0.0'
   prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {

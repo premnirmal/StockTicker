@@ -1,12 +1,11 @@
 package com.github.premnirmal.ticker.portfolio
 
 import android.os.Bundle
-import android.widget.EditText
-import android.widget.TextView
 import com.github.premnirmal.ticker.BaseActivity
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.activity_positions.*
 import javax.inject.Inject
 
 /**
@@ -26,14 +25,18 @@ open class AddPositionActivity : BaseActivity() {
     super.onCreate(savedInstanceState)
     Injector.getAppComponent().inject(this)
     setContentView(R.layout.activity_positions)
-    supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    updateToolbar(toolbar)
+    toolbar.setNavigationOnClickListener {
+      finish()
+    }
+
     ticker = intent.getStringExtra(TICKER)
-    val name = findViewById(R.id.tickerName) as TextView
+    val name = tickerName
     name.text = ticker
 
-    findViewById(R.id.doneButton).setOnClickListener { onDoneClicked() }
+    doneButton.setOnClickListener { onDoneClicked() }
 
-    findViewById(R.id.skipButton).setOnClickListener { skip() }
+    skipButton.setOnClickListener { skip() }
   }
 
   protected open fun skip() {
@@ -41,8 +44,8 @@ open class AddPositionActivity : BaseActivity() {
   }
 
   protected fun onDoneClicked() {
-    val sharesView = findViewById(R.id.shares) as EditText
-    val priceView = findViewById(R.id.price) as EditText
+    val sharesView = shares
+    val priceView = price
     val priceText = priceView.text.toString()
     val sharesText = sharesView.text.toString()
     if (!priceText.isEmpty() && !sharesText.isEmpty()) {

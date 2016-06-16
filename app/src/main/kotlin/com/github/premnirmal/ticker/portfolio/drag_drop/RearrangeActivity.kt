@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.activity_rearrange.*
 import javax.inject.Inject
 
 /**
@@ -24,11 +25,11 @@ class RearrangeActivity : BaseActivity(), OnStartDragListener {
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.getAppComponent().inject(this)
-    val actionBar = supportActionBar
-    actionBar?.setDisplayHomeAsUpEnabled(true)
-    setTitle(R.string.rearrange)
-
-    val recyclerView = RecyclerView(this)
+    setContentView(R.layout.activity_rearrange)
+    updateToolbar(toolbar)
+    toolbar.setNavigationOnClickListener {
+      finish()
+    }
     recyclerView.setHasFixedSize(true)
     val spacing = resources.getDimensionPixelSize(R.dimen.list_spacing)
     recyclerView.setPadding(spacing, spacing, spacing, 0)
@@ -37,8 +38,6 @@ class RearrangeActivity : BaseActivity(), OnStartDragListener {
     recyclerView.adapter = adapter
     val layoutManager: RecyclerView.LayoutManager = GridLayoutManager(this, 2)
     recyclerView.layoutManager = layoutManager
-
-    setContentView(recyclerView)
 
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(adapter)
     itemTouchHelper = ItemTouchHelper(callback)
