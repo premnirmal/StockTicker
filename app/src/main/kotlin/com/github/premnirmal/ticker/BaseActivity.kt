@@ -78,7 +78,12 @@ abstract class BaseActivity : AppCompatActivity() {
 
   protected fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
       negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
-    return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setPositiveButton(
+    return showDialog(message, false, positiveOnClick, negativeOnClick)
+  }
+
+  protected fun showDialog(message: String, cancelable: Boolean, positiveOnClick: DialogInterface.OnClickListener,
+      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+    return AlertDialog.Builder(this).setMessage(message).setCancelable(cancelable).setPositiveButton(
         "YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
   }
 

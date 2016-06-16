@@ -36,7 +36,7 @@ internal class SuggestionsAdapter(val suggestions: List<Suggestion>) : BaseAdapt
     val item = getItem(position)
     val name = item.symbol + " - " + Html.fromHtml(item.name) + " (" + item.exchDisp + ")"
     textView.text = name
-    val padding = context.resources.getDimension(R.dimen.text_padding).toInt()
+    val padding = context.resources.getDimension(R.dimen.suggestions_padding).toInt()
     textView.setPadding(padding, padding, padding, padding)
 
     return textView

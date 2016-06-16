@@ -4,6 +4,7 @@ import android.util.Log
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
+import com.github.premnirmal.ticker.network.historicaldata.Quote
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.internal.LinkedTreeMap
@@ -24,17 +25,23 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
 
   fun getYahooFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
     val query = QueryCreator.buildStocksQuery(tickers)
-    return yahooApi.getStocks(query).map({ stockQuery ->
+    return yahooApi.getStocks(query).map({ json ->
       lastFetched = System.currentTimeMillis()
-      if (stockQuery == null) {
+      if (json == null) {
         ArrayList<Stock>()
       } else {
-        val query = stockQuery.query
-        val quote = query.results.quote
         val stocks = ArrayList<Stock>()
-        if (quote is LinkedTreeMap) {
-          val stock = gson.fromJson(gson.toJson(quote), Stock::class.java)
-          stocks.add(stock)
+        val quoteJsonArray = json.asJsonObject
+            .get("query").asJsonObject
+            .get("results").asJsonObject
+            .get("quote").asJsonArray
+        for (stockJson in quoteJsonArray) {
+          try {
+            val stock = gson.fromJson(stockJson, Stock::class.java)
+            stocks.add(stock)
+          } catch (e: Exception) {
+            CrashLogger.logException(e)
+          }
         }
         stocks
       }

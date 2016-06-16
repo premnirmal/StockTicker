@@ -91,9 +91,10 @@ class TickerSelectorActivity : BaseActivity() {
       if (!stocksProvider.getTickers().contains(ticker)) {
         stocksProvider.addStock(ticker)
         InAppMessage.showMessage(this@TickerSelectorActivity, ticker + " added to list")
-        if (!ticker.startsWith("^")) {
-          // don't allow positions for indices
+        // don't allow positions for indices
+        if (!ticker.startsWith("^") && !ticker.contains("=")) {
           showDialog("Do you want to add positions for $ticker?",
+              true,
               DialogInterface.OnClickListener { dialog, which ->
                 val intent = Intent(this@TickerSelectorActivity, AddPositionActivity::class.java)
                 intent.putExtra(EditPositionActivity.TICKER, ticker)

@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
+import com.google.gson.JsonElement
 import retrofit.http.GET
 import rx.Observable
 
@@ -23,7 +24,7 @@ interface YahooFinance {
    */
   @GET("/yql?env=store://datatables.org/alltableswithkeys&format=json")
   fun getStocks(
-      @retrofit.http.Query(value = "q", encodeValue = false) query: String): Observable<StockQuery>
+      @retrofit.http.Query(value = "q", encodeValue = false) query: String): Observable<JsonElement>
 
 
   //    https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where
