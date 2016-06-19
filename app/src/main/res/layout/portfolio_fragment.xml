@@ -10,7 +10,7 @@
   <android.support.design.widget.AppBarLayout
       android:id="@+id/app_bar_layout"
       android:layout_width="match_parent"
-      android:layout_height="200dp"
+      android:layout_height="150dp"
       android:fitsSystemWindows="true"
       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
@@ -39,6 +39,7 @@
           android:fitsSystemWindows="true"
           app:layout_collapseMode="pin"
           app:titleTextAppearance="@style/ActionBarTitleText"
+          app:title="@string/app_name"
       />
 
     </android.support.design.widget.CollapsingToolbarLayout>

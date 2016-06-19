@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Added a material look to your portfolio</item>
-    <item>Now currencies such as EURUSD=X can be added</item>
+    <item>Some UI tweaks to the widget</item>
   </string-array>
 </resources>

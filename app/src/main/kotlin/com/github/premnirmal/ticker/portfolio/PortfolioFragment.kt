@@ -94,7 +94,7 @@ class PortfolioFragment : BaseFragment() {
       stockList?.layoutManager?.onRestoreInstanceState(listViewState)
     }
     val rearrangeItem = toolbar.menu.findItem(R.id.action_rearrange)
-    rearrangeItem.isEnabled = !Tools.autoSortEnabled()
+    rearrangeItem.isEnabled = true
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -169,8 +169,6 @@ class PortfolioFragment : BaseFragment() {
       if (stocksProvider.getStocks().isEmpty()) {
         handler.postDelayed({ update() }, 600)
       }
-
-      toolbar.title = "Fetched at ${stocksProvider.lastFetched()}"
 
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)

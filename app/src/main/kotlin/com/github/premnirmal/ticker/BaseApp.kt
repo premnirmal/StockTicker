@@ -19,7 +19,7 @@ abstract class BaseApp : MultiDexApplication() {
   }
 
   companion object {
-    var instance: BaseApp? = null
+    lateinit var instance: BaseApp
       private set
   }
 }

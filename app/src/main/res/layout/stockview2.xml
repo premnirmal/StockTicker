@@ -27,6 +27,7 @@
       android:layout_height="wrap_content"
       android:layout_weight="0.30"
       android:ellipsize="none"
+      android:gravity="end"
       android:singleLine="true"
       android:textColor="@android:color/white"
       android:textSize="12sp"

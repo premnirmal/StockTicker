@@ -30,6 +30,7 @@
       android:singleLine="true"
       android:ellipsize="none"
       android:id="@+id/totalValue"
+      android:gravity="end"
       />
 
   <ViewFlipper

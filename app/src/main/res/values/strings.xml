@@ -50,7 +50,7 @@
   <string name="error_fetching_suggestions">Error fetching suggestions</string>
   <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
   <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
-  <string name="drag_instructions">Long click a stock to drag</string>
+  <string name="autosort_disabled">Autosort has been disabled. You can re-enable autosort in settings.</string>
   <string name="rearrange">Rearrange</string>
   <string name="only_updates_on_weekdays">Only updates on weekdays</string>
   <string name="end_time_updated">End time updated</string>

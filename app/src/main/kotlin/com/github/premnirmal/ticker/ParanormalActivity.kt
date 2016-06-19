@@ -58,11 +58,6 @@ class ParanormalActivity : BaseActivity() {
     outState?.putBoolean(DIALOG_SHOWN, dialogShown)
   }
 
-  override fun onResume() {
-    super.onResume()
-    supportInvalidateOptionsMenu()
-  }
-
   protected fun maybeAskToRate() {
     if (!dialogShown && Tools.shouldPromptRate()) {
       AlertDialog.Builder(this).setTitle(R.string.like_our_app)

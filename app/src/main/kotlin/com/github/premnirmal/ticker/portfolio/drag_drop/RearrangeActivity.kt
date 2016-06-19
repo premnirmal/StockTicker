@@ -1,11 +1,13 @@
 package com.github.premnirmal.ticker.portfolio.drag_drop
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import com.github.premnirmal.ticker.BaseActivity
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
@@ -21,6 +23,9 @@ class RearrangeActivity : BaseActivity(), OnStartDragListener {
 
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
+
+  @Inject
+  lateinit internal var preferences: SharedPreferences
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -42,7 +47,10 @@ class RearrangeActivity : BaseActivity(), OnStartDragListener {
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(adapter)
     itemTouchHelper = ItemTouchHelper(callback)
     itemTouchHelper?.attachToRecyclerView(recyclerView)
-    showDialog(getString(R.string.drag_instructions))
+    if (Tools.autoSortEnabled()) {
+      preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, false).apply()
+      showDialog(getString(R.string.autosort_disabled))
+    }
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {

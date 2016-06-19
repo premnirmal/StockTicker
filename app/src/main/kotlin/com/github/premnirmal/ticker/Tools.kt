@@ -69,7 +69,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
     private val random = Random(System.currentTimeMillis())
 
     val instance: Tools by lazy {
-      val sharedPreferences = BaseApp.instance!!.getSharedPreferences(Tools.PREFS_NAME,
+      val sharedPreferences = BaseApp.instance.getSharedPreferences(Tools.PREFS_NAME,
           Context.MODE_PRIVATE)
       Tools(sharedPreferences)
     }
@@ -276,9 +276,9 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
 
     fun getStatusBarHeight(): Int{
       val result: Int
-      val resourceId: Int = BaseApp.instance!!.resources.getIdentifier("status_bar_height", "dimen", "android")
+      val resourceId: Int = BaseApp.instance.resources.getIdentifier("status_bar_height", "dimen", "android")
       if (resourceId > 0) {
-        result = BaseApp.instance!!.resources.getDimensionPixelSize(resourceId)
+        result = BaseApp.instance.resources.getDimensionPixelSize(resourceId)
       } else {
         result = 0
       }
