@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Some UI tweaks to the widget</item>
+    <item>Bugfixes</item>
+    <item>UI Tweaks</item>
   </string-array>
 </resources>

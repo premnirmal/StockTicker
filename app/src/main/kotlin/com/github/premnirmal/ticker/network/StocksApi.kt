@@ -7,6 +7,8 @@ import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
 import com.github.premnirmal.ticker.network.historicaldata.Quote
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.internal.LinkedTreeMap
 import rx.Observable
 import rx.functions.Func2
@@ -31,13 +33,22 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
         ArrayList<Stock>()
       } else {
         val stocks = ArrayList<Stock>()
-        val quoteJsonArray = json.asJsonObject
+        val quoteJson = json.asJsonObject
             .get("query").asJsonObject
             .get("results").asJsonObject
-            .get("quote").asJsonArray
-        for (stockJson in quoteJsonArray) {
+            .get("quote")
+        if (quoteJson.isJsonArray) {
+          for (stockJson in quoteJson as JsonArray) {
+            try {
+              val stock = gson.fromJson(stockJson, Stock::class.java)
+              stocks.add(stock)
+            } catch (e: Exception) {
+              CrashLogger.logException(e)
+            }
+          }
+        } else if (quoteJson.isJsonObject) {
           try {
-            val stock = gson.fromJson(stockJson, Stock::class.java)
+            val stock = gson.fromJson(quoteJson, Stock::class.java)
             stocks.add(stock)
           } catch (e: Exception) {
             CrashLogger.logException(e)

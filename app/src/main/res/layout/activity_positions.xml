@@ -12,7 +12,7 @@
       android:layout_height="wrap_content"
       android:id="@+id/toolbar"
       android:background="@color/color_primary"
-      app:navigationIcon="@drawable/ic_action_navigation_back"
+      app:navigationIcon="?attr/homeAsUpIndicator"
       app:titleTextAppearance="@style/ActionBarTitleText"
   />
 
