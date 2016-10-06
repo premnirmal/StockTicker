@@ -6,13 +6,13 @@
 [iOS version](https://itunes.apple.com/us/app/todaystocks/id993467855?ls=1&mt=8) available on [github](https://github.com/premnirmal/TodayStocks) too!
 
 ## Motivation
-The main purpose of this app is to demonstrate usage of Dagger and RxJava
+The main purpose of this app is to demonstrate usage of [Dagger2](https://github.com/google/dagger) and [RxJava](https://github.com/ReactiveX/RxJava)
 
 - A homescreen widget that shows your stock portolio in a resizable grid.
-- Based off the [ministocks widget](https://github.com/niteshpatel/ministocks) but allowing unlimited tickers in a grid so you don't have to worry about sizing.
+- Similar to [ministocks widget](https://github.com/niteshpatel/ministocks) but allowing unlimited tickers in a grid so you don't have to worry about widget size.
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours and weekdays.
-- **Now has Graphs!** Using [MPAndroidChart] (https://github.com/PhilJay/MPAndroidChart)
+- Has graphs using [MPAndroidChart] (https://github.com/PhilJay/MPAndroidChart).
 
 ## Importing and exporting
 - You can import a list of tickers by selecting **import tickers** from the settings menu. All you need is a textfile with your tickers in *comma-separated* format.
