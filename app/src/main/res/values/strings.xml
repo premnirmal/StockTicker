@@ -76,5 +76,6 @@
   <string name="enable_google_finance_desc">In beta. Please disable if it doesn\'t give accurate quotes.</string>
   <string name="edit_positions">Edit Positions</string>
   <string name="view_graph">View Graph</string>
+  <string name="add_stock">Add Stock</string>
 
 </resources>

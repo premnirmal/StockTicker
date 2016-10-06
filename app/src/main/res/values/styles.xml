@@ -49,4 +49,8 @@
     <item name="fontPath">fonts/Avenir-Bold.otf</item>
   </style>
 
+  <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
+    <item name="android:textSize">34sp</item>
+  </style>
+
 </resources>

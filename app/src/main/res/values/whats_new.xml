@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Bugfixes</item>
-    <item>UI Tweaks</item>
+    <item>Added last fetch info to header</item>
   </string-array>
 </resources>

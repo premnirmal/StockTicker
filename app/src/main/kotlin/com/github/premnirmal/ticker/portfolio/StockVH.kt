@@ -54,7 +54,7 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     val changeInPercent = itemView.findViewById(R.id.changePercent) as StockFieldView
-    changeInPercent.setText(Tools.DECIMAL_FORMAT.format(changePercentVal))
+    changeInPercent.setText("${Tools.DECIMAL_FORMAT.format(changePercentVal)}%")
     val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
     changeValue.setText(Tools.DECIMAL_FORMAT.format(changeVal))
     val totalValueText = itemView.findViewById(R.id.totalValue) as TextView

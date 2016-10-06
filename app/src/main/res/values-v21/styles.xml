@@ -55,9 +55,4 @@
     <item name="titleTextStyle">@style/ActionBarTitleText</item>
   </style>
 
-  <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-    <item name="android:textColor">@android:color/white</item>
-    <item name="fontPath">fonts/Avenir-Bold.otf</item>
-  </style>
-
 </resources>

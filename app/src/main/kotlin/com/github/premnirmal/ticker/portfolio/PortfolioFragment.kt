@@ -84,7 +84,6 @@ class PortfolioFragment : BaseFragment() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.getAppComponent().inject(this)
-    setHasOptionsMenu(true)
   }
 
   override fun onResume() {
@@ -173,6 +172,7 @@ class PortfolioFragment : BaseFragment() {
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
         stockList.adapter = stocksAdapter
+        subtitle.text = "Last Fetch: ${stocksProvider.lastFetched()}"
       }
     }
   }
