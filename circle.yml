@@ -4,6 +4,8 @@ machine:
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter "extra"
+    - echo y | android update sdk --no-ui --all --filter "tools, build-tools-24.0.2, platform-tools"
+    - echo y | android update sdk --no-ui --all --filter "android-25"
 test:
   override:
     - ./gradlew assembleDebug -PdisablePreDex
