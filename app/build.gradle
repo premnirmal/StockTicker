@@ -94,6 +94,7 @@ android {
     debug {
       debuggable true
       versionNameSuffix '-DEBUG'
+      ext.enableCrashlytics=false
     }
   }
 
