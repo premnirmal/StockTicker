@@ -26,7 +26,7 @@ repositories {
 android {
   compileSdkVersion 23
   //    compileSdkVersion 'android-N'
-  buildToolsVersion '23.0.2'
+  buildToolsVersion '25.0.0'
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties();
@@ -144,4 +144,7 @@ dependencies {
   prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
     transitive = true;
   }
+
+  testCompile 'org.robolectric:robolectric:3.2.2'
+  testCompile 'org.robolectric:shadows-support-v4:3.2.2'
 }
