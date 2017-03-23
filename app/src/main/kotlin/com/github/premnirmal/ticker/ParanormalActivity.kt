@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
+import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject
@@ -15,7 +16,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-class ParanormalActivity : BaseActivity() {
+open class ParanormalActivity : BaseActivity() {
 
   @Inject
   lateinit internal var preferences: SharedPreferences
@@ -33,6 +34,9 @@ class ParanormalActivity : BaseActivity() {
     }
     Injector.getAppComponent().inject(this)
     setContentView(R.layout.activity_paranormal)
+    val fragment = createPortfolioFragment()
+    supportFragmentManager.beginTransaction().add(R.id.fragment_container,
+        fragment, fragment.javaClass.simpleName).commit()
     if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
       preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply()
       val stringBuilder = StringBuilder()
@@ -52,6 +56,8 @@ class ParanormalActivity : BaseActivity() {
       maybeAskToRate()
     }
   }
+
+  protected open fun createPortfolioFragment() = PortfolioFragment()
 
   override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
     super.onSaveInstanceState(outState, outPersistentState)

@@ -56,13 +56,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   @Inject
   lateinit internal var preferences: SharedPreferences
 
-  private inner open class DefaultPreferenceChangeListener : Preference.OnPreferenceChangeListener {
-
-    override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-      return false
-    }
-  }
-
   override fun onPause() {
     super.onPause()
     val intent = Intent(applicationContext, StockWidget::class.java)
@@ -333,7 +326,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     run({
       val endTimePref = findPreference(Tools.END_TIME) as TimePreference
       endTimePref.summary = preferences.getString(Tools.END_TIME, "16:30")
-      run ({
+      run({
         val timez = Tools.endTime()
         val startTimez = Tools.startTime()
         if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {

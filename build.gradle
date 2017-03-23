@@ -1,7 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  ext.kotlin_version = '1.0.2'
+  ext.kotlin_version = '1.0.5'
   repositories {
     jcenter()
   }
@@ -21,6 +21,11 @@ allprojects {
 }
 
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
+
+ext {
+  sourceCompatibilityVersion = JavaVersion.VERSION_1_7
+  targetCompatibilityVersion = JavaVersion.VERSION_1_7
+}
 
 subprojects {
   project.plugins.whenPluginAdded { plugin ->

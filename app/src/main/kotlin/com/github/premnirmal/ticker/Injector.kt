@@ -3,14 +3,9 @@ package com.github.premnirmal.ticker
 /**
  * Created by premnirmal on 2/26/16.
  */
-class Injector private constructor(app: BaseApp) {
-
-  private val component: AppComponent
+class Injector private constructor(val appComponent: AppComponent) {
 
   init {
-    component = DaggerAppComponent.builder()
-        .appModule(AppModule(app))
-        .build()
     instance = this
   }
 
@@ -18,12 +13,12 @@ class Injector private constructor(app: BaseApp) {
 
     private var instance: Injector? = null
 
-    internal fun init(app: BaseApp) {
-      instance = Injector(app)
+    internal fun init(appComponent: AppComponent) {
+      instance = Injector(appComponent)
     }
 
     fun getAppComponent(): AppComponent {
-      return instance!!.component
+      return instance!!.appComponent
     }
   }
 

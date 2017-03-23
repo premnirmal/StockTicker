@@ -36,8 +36,8 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     setText(itemView, R.id.name, stock.Name)
 
-    val changeVal: Double
-    val changePercentVal: Double
+    var changeVal: Double
+    var changePercentVal: Double
     if (stock.Change != null && !stock.Change.isEmpty()
         && stock.ChangeinPercent != null && !stock.ChangeinPercent.isEmpty()) {
       try {
@@ -62,15 +62,15 @@ internal class StockVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val color: Int
     if (change >= 0) {
-      color = itemView.getResources().getColor(R.color.positive_green)
+      color = itemView.resources.getColor(R.color.positive_green)
     } else {
-      color = itemView.getResources().getColor(R.color.negative_red)
+      color = itemView.resources.getColor(R.color.negative_red)
     }
 
     changeInPercent.setTextColor(color)
     changeValue.setTextColor(color)
 
-    if (stock.IsPosition == true) {
+    if (stock.IsPosition) {
       setStockFieldLabel(itemView, R.id.averageDailyVolume, "Holdings")
       setStockFieldText(itemView, R.id.averageDailyVolume,
           "$${Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly * stock.PositionShares)}")

@@ -27,7 +27,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-class PortfolioFragment : BaseFragment() {
+open class PortfolioFragment : BaseFragment() {
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"

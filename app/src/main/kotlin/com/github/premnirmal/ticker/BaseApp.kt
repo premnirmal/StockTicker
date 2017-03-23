@@ -13,9 +13,18 @@ abstract class BaseApp : MultiDexApplication() {
     super.onCreate()
     instance = this
     CalligraphyConfig.initDefault(
-        CalligraphyConfig.Builder().setDefaultFontPath("fonts/Ubuntu-Regular.ttf").setFontAttrId(
-            R.attr.fontPath).build())
-    Injector.init(this)
+        CalligraphyConfig.Builder()
+            .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
+            .setFontAttrId(R.attr.fontPath)
+            .build())
+    Injector.init(createAppComponent())
+  }
+
+  protected open fun createAppComponent(): AppComponent {
+    val component: AppComponent = DaggerAppComponent.builder()
+        .appModule(AppModule(this))
+        .build()
+    return component
   }
 
   companion object {
