@@ -4,62 +4,62 @@ import android.content.Context
 
 abstract class Analytics protected constructor(context: Context) {
 
-    companion object {
+  companion object {
 
-        val SCHEDULE_UPDATE_ACTION = "ScheduleUpdate"
+    val SCHEDULE_UPDATE_ACTION = "ScheduleUpdate"
 
-        private lateinit var INSTANCE: Analytics
+    private lateinit var INSTANCE: Analytics
 
-        internal fun init(context: Context) {
-            INSTANCE = AnalyticsImpl(context)
-        }
-
-        fun trackUpdate(action: String, label: String) {
-            INSTANCE.internalTrackUpdate(action, label)
-        }
-
-        fun trackWidgetUpdate(action: String) {
-            INSTANCE.internalTrackWidgetUpdate(action)
-        }
-
-        fun trackWidgetSizeUpdate(value: String) {
-            INSTANCE.internalTrackWidgetSizeUpdate(value)
-        }
-
-        fun trackUI(action: String, label: String) {
-            INSTANCE.internalTrackUI(action, label)
-        }
-
-        fun trackIntialSettings(action: String, label: String) {
-            INSTANCE.internalTrackIntialSettings(action, label)
-        }
-
-        fun trackSettingsChange(action: String, label: String) {
-            INSTANCE.internalTrackSettingsChange(action, label)
-        }
-
-        fun trackRateYes() {
-            INSTANCE.internalTrackRateYes()
-        }
-
-        fun trackRateNo() {
-            INSTANCE.internalTrackRateNo()
-        }
+    internal fun init(context: Context) {
+      INSTANCE = AnalyticsImpl(context)
     }
 
-    abstract fun internalTrackUpdate(action: String, label: String)
+    fun trackUpdate(action: String, label: String) {
+      INSTANCE.internalTrackUpdate(action, label)
+    }
 
-    abstract fun internalTrackWidgetUpdate(action: String)
+    fun trackWidgetUpdate(action: String) {
+      INSTANCE.internalTrackWidgetUpdate(action)
+    }
 
-    abstract fun internalTrackWidgetSizeUpdate(value: String)
+    fun trackWidgetSizeUpdate(value: String) {
+      INSTANCE.internalTrackWidgetSizeUpdate(value)
+    }
 
-    abstract fun internalTrackUI(action: String, label: String)
+    fun trackUI(action: String, label: String) {
+      INSTANCE.internalTrackUI(action, label)
+    }
 
-    abstract fun internalTrackIntialSettings(action: String, label: String)
+    fun trackIntialSettings(action: String, label: String) {
+      INSTANCE.internalTrackIntialSettings(action, label)
+    }
 
-    abstract fun internalTrackSettingsChange(action: String, label: String)
+    fun trackSettingsChange(action: String, label: String) {
+      INSTANCE.internalTrackSettingsChange(action, label)
+    }
 
-    abstract fun internalTrackRateYes()
+    fun trackRateYes() {
+      INSTANCE.internalTrackRateYes()
+    }
 
-    abstract fun internalTrackRateNo()
+    fun trackRateNo() {
+      INSTANCE.internalTrackRateNo()
+    }
+  }
+
+  abstract fun internalTrackUpdate(action: String, label: String)
+
+  abstract fun internalTrackWidgetUpdate(action: String)
+
+  abstract fun internalTrackWidgetSizeUpdate(value: String)
+
+  abstract fun internalTrackUI(action: String, label: String)
+
+  abstract fun internalTrackIntialSettings(action: String, label: String)
+
+  abstract fun internalTrackSettingsChange(action: String, label: String)
+
+  abstract fun internalTrackRateYes()
+
+  abstract fun internalTrackRateNo()
 }

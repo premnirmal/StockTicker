@@ -7,7 +7,7 @@ import timber.log.Timber
  */
 internal class CrashLoggerImpl : CrashLogger() {
 
-    override fun log(throwable: Throwable) {
-        Timber.d(throwable)
-    }
+  override fun log(throwable: Throwable) {
+    Timber.d(throwable)
+  }
 }

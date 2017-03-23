@@ -4,10 +4,11 @@ import android.content.Context
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
-import com.squareup.okhttp.CacheControl
-import com.squareup.okhttp.Interceptor
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.Response
+import okhttp3.CacheControl
+import okhttp3.Interceptor
+import okhttp3.Interceptor.Chain
+import okhttp3.Request
+import okhttp3.Response
 import java.io.IOException
 
 /**
@@ -16,7 +17,7 @@ import java.io.IOException
 internal class NoCacheRequestInterceptor(val context: Context, val bus: RxBus) : Interceptor {
 
   @Throws(IOException::class)
-  override fun intercept(chain: Interceptor.Chain): Response? {
+  override fun intercept(chain: Chain): Response? {
     if (!Tools.isNetworkOnline(context)) {
       bus.post(NoNetworkEvent())
       throw IOException("No network connection")

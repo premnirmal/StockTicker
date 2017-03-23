@@ -6,7 +6,7 @@ package com.github.premnirmal.ticker
  */
 internal class CrashLoggerImpl : CrashLogger() {
 
-    override fun log(throwable: Throwable) {
+  override fun log(throwable: Throwable) {
 
-    }
+  }
 }

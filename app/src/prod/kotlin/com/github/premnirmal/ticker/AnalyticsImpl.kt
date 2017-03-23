@@ -23,46 +23,46 @@ internal class AnalyticsImpl(context: Context) : Analytics(context = context) {
     tracker = googleAnalytics.newTracker(R.xml.event_tracker)
   }
 
-  fun internalTrackUpdate(action: String, label: String) {
+  override fun internalTrackUpdate(action: String, label: String) {
     tracker.send(
-            HitBuilders.EventBuilder().setCategory("WidgetStatus")
-                    .setAction(action).setLabel(label).build())
+        HitBuilders.EventBuilder().setCategory("WidgetStatus")
+            .setAction(action).setLabel(label).build())
   }
 
-  fun internalTrackWidgetUpdate(action: String) {
+  override fun internalTrackWidgetUpdate(action: String) {
     tracker.send(
-            HitBuilders.EventBuilder().setCategory("WidgetStatus")
-                    .setAction(action).build())
+        HitBuilders.EventBuilder().setCategory("WidgetStatus")
+            .setAction(action).build())
   }
 
-  fun internalTrackWidgetSizeUpdate(value: String) {
+  override fun internalTrackWidgetSizeUpdate(value: String) {
     tracker.send(HitBuilders.EventBuilder().setCategory("WidgetStatus")
-            .setAction("onOptionsChanged").setLabel(value).build())
+        .setAction("onOptionsChanged").setLabel(value).build())
   }
 
-  fun internalTrackUI(action: String, label: String) {
+  override fun internalTrackUI(action: String, label: String) {
     tracker.send(
-            HitBuilders.EventBuilder().setCategory("AppView").setAction(action)
-                    .setLabel(label).build())
+        HitBuilders.EventBuilder().setCategory("AppView").setAction(action)
+            .setLabel(label).build())
   }
 
-  fun internalTrackIntialSettings(action: String, label: String) {
+  override fun internalTrackIntialSettings(action: String, label: String) {
     tracker.send(
-            HitBuilders.EventBuilder().setCategory("AppSettings").setAction(action)
-                    .setLabel(label).build())
+        HitBuilders.EventBuilder().setCategory("AppSettings").setAction(action)
+            .setLabel(label).build())
   }
 
-  fun internalTrackSettingsChange(action: String, label: String) {
+  override fun internalTrackSettingsChange(action: String, label: String) {
     tracker.send(
-            HitBuilders.EventBuilder().setCategory("AppSettingsChange").setAction(action)
-                    .setLabel(label).build())
+        HitBuilders.EventBuilder().setCategory("AppSettingsChange").setAction(action)
+            .setLabel(label).build())
   }
 
-  fun internalTrackRateYes() {
+  override fun internalTrackRateYes() {
 
   }
 
-  fun internalTrackRateNo() {
+  override fun internalTrackRateNo() {
 
   }
 }

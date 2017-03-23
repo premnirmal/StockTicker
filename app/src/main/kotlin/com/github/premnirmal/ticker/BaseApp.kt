@@ -18,6 +18,7 @@ abstract class BaseApp : MultiDexApplication() {
             .setFontAttrId(R.attr.fontPath)
             .build())
     Injector.init(createAppComponent())
+    Analytics.init(this)
   }
 
   protected open fun createAppComponent(): AppComponent {

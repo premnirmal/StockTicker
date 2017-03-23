@@ -80,11 +80,11 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
     if (!Tools.googleFinanceEnabled()) {
       for (symbol: String in symbols) {
         if (!symbol.contains("=") &&
-            !symbol.equals(Stock.GDAXI_TICKER) &&
+            symbol != Stock.GDAXI_TICKER &&
             (symbol.startsWith("^")
                 || symbol.startsWith("."))
-            || symbol.equals(Stock.XAU_TICKER)
-        ) {
+            || symbol == Stock.XAU_TICKER
+            ) {
           googleSymbols.add(symbol.replace("^", "."))
         } else {
           yahooSymbols.add(symbol.replace("^", "%5E"))
@@ -92,7 +92,7 @@ class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: Goo
       }
     } else {
       for (symbol: String in symbols) {
-        if (!symbol.equals(Stock.GDAXI_TICKER) && !symbol.contains("=")) {
+        if (symbol != Stock.GDAXI_TICKER && !symbol.contains("=")) {
           googleSymbols.add(symbol.replace("^", "."))
         } else {
           yahooSymbols.add(symbol.replace("^", "%5E"))
