@@ -13,7 +13,8 @@ import java.util.*
 /**
  * Created by premnirmal on 2/28/16.
  */
-class HistoryProvider(private val stocksApi: StocksApi, private val context: Context) : IHistoryProvider {
+class HistoryProvider(private val stocksApi: StocksApi,
+    private val context: Context) : IHistoryProvider {
 
   override fun getHistory(ticker: String, range: Range): Observable<History> {
     val now = DateTime.now()

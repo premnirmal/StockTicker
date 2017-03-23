@@ -62,18 +62,16 @@ internal object StockConverter {
   fun convertRequestSymbols(symbols: List<String>): ArrayList<String> {
     val newSymbols = ArrayList<String>()
     for (symbol in symbols) {
-      if (symbol != null) {
-        if (symbol.equals(Stock.GDAXI_TICKER)) {
-          newSymbols.add(symbol)
-        } else {
-          newSymbols.add(symbol
-              .replace("^DJI", ".DJI")
-              .replace("^IXIC", ".IXIC")
-              .replace("^XAU", "XAU")
-              .replace("^SPY", "SPY") // for symbols like ^SPY for yahoo
-              .replace("^", ".")
-          )
-        }
+      if (symbol == Stock.GDAXI_TICKER || symbol == Stock.GSPC_TICKER) {
+        newSymbols.add(symbol)
+      } else {
+        newSymbols.add(symbol
+            .replace("^DJI", ".DJI")
+            .replace("^IXIC", ".IXIC")
+            .replace("^XAU", "XAU")
+            .replace("^SPY", "SPY") // for symbols like ^SPY for yahoo
+            .replace("^", ".")
+        )
       }
     }
     return newSymbols

@@ -15,7 +15,8 @@ import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StockFieldView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(
+class StockFieldView @JvmOverloads constructor(context: Context,
+    attrs: AttributeSet? = null) : LinearLayout(
     context, attrs) {
 
   init {

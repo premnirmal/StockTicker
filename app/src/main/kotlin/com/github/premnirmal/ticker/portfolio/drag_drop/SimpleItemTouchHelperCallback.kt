@@ -8,7 +8,8 @@ import android.support.v7.widget.helper.ItemTouchHelper
 /**
  * Created by premnirmal on 2/29/16.
  */
-internal class SimpleItemTouchHelperCallback(val mAdapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
+internal class SimpleItemTouchHelperCallback(
+    val mAdapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
 
   companion object {
     val ALPHA_FULL: Float = 1.0f
@@ -29,12 +30,12 @@ internal class SimpleItemTouchHelperCallback(val mAdapter: ItemTouchHelperAdapte
   override fun getMovementFlags(recyclerView: RecyclerView,
       viewHolder: RecyclerView.ViewHolder): Int {
     if (recyclerView.layoutManager is GridLayoutManager) {
-      val dragFlags: Int = ItemTouchHelper.UP or(ItemTouchHelper.DOWN) or(ItemTouchHelper.LEFT) or(ItemTouchHelper.RIGHT)
+      val dragFlags: Int = ItemTouchHelper.UP or (ItemTouchHelper.DOWN) or (ItemTouchHelper.LEFT) or (ItemTouchHelper.RIGHT)
       val swipeFlags: Int = 0
       return makeMovementFlags(dragFlags, swipeFlags)
     } else {
-      val dragFlags: Int = ItemTouchHelper.UP or(ItemTouchHelper.DOWN)
-      val swipeFlags: Int = ItemTouchHelper.START or(ItemTouchHelper.END)
+      val dragFlags: Int = ItemTouchHelper.UP or (ItemTouchHelper.DOWN)
+      val swipeFlags: Int = ItemTouchHelper.START or (ItemTouchHelper.END)
       return makeMovementFlags(dragFlags, swipeFlags)
     }
   }

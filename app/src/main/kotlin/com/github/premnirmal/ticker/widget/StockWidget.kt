@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
@@ -54,7 +55,7 @@ class StockWidget : AppWidgetProvider() {
       }
       val remoteViews: RemoteViews = createRemoteViews(context, min_width)
       Log.d(TAG, "widget size update: " + "${min_width}px")
-      updateWidget(context, appWidgetManager, widgetId, remoteViews)
+      updateWidget(context, appWidgetManager, widgetId, remoteViews, min_width > 150)
       appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     }
     super.onUpdate(context, appWidgetManager, appWidgetIds)
@@ -67,8 +68,10 @@ class StockWidget : AppWidgetProvider() {
     } else if (min_width > 500) {
       remoteViews = RemoteViews(context.packageName, R.layout.widget_3x1)
     } else if (min_width > 250) {
+      // 3x2
       remoteViews = RemoteViews(context.packageName, R.layout.widget_2x1)
     } else {
+      // 2x1
       remoteViews = RemoteViews(context.packageName, R.layout.widget_1x1)
     }
     return remoteViews
@@ -89,12 +92,12 @@ class StockWidget : AppWidgetProvider() {
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
     Analytics.trackWidgetSizeUpdate("${min_width}px")
     Log.d(TAG, "widget size update: " + "${min_width}px")
-    updateWidget(context, appWidgetManager, appWidgetId, remoteViews)
+    updateWidget(context, appWidgetManager, appWidgetId, remoteViews, min_width > 150)
     appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
   }
 
   private fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int,
-      remoteViews: RemoteViews) {
+      remoteViews: RemoteViews, nextFetchVisible: Boolean) {
     remoteViews.setRemoteAdapter(R.id.list, Intent(context, RemoteStockProviderService::class.java))
     val intent = Intent(context, WidgetClickReceiver::class.java)
     intent.action = WidgetClickReceiver.CLICK_BCAST_INTENTFILTER
@@ -102,14 +105,20 @@ class StockWidget : AppWidgetProvider() {
         PendingIntent.FLAG_UPDATE_CURRENT)
     remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
     val lastFetched: String = stocksProvider.lastFetched()
-    val nextUpdate: String = stocksProvider.nextFetch()
-    val nextUpdateText: String = "Next fetch: $nextUpdate"
     val lastUpdatedText = "Last fetch: $lastFetched"
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
-    remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
+    if (nextFetchVisible) {
+      val nextUpdate: String = stocksProvider.nextFetch()
+      val nextUpdateText: String = "Next fetch: $nextUpdate"
+      remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
+      remoteViews.setViewVisibility(R.id.next_update, View.VISIBLE)
+    } else {
+      remoteViews.setViewVisibility(R.id.next_update, View.GONE)
+    }
     appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list)
-    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", Tools.getBackgroundResource(context))
+    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource",
+        Tools.getBackgroundResource(context))
   }
 
   companion object {

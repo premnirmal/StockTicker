@@ -13,7 +13,8 @@ import java.util.*
 /**
  * Created by premnirmal on 2/29/16.
  */
-internal class StocksAdapter(stocksProvider: IStocksProvider, private val listener: StocksAdapter.OnStockClickListener) : RecyclerView.Adapter<StockVH>() {
+internal class StocksAdapter(stocksProvider: IStocksProvider,
+    private val listener: StocksAdapter.OnStockClickListener) : RecyclerView.Adapter<StockVH>() {
 
   private val stockList: MutableList<Stock>
 

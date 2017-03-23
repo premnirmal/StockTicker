@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/stock_search"
->
+    >
 
   <android.support.v7.widget.Toolbar
       android:layout_width="match_parent"
@@ -15,7 +15,7 @@
       app:navigationIcon="?attr/homeAsUpIndicator"
       app:titleTextAppearance="@style/ActionBarTitleText"
       app:title="@string/add_stock"
-  />
+      />
 
   <EditText
       android:layout_width="match_parent"

@@ -8,8 +8,10 @@ import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ListView
 import com.github.premnirmal.ticker.BaseActivity
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.InAppMessage
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Suggestion
@@ -65,12 +67,10 @@ class TickerSelectorActivity : BaseActivity() {
             subscription = bind(
                 observable).map { suggestions -> suggestions.ResultSet.Result }.observeOn(
                 AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(
-                object : Subscriber<List<Suggestion>>() {
-                  override fun onCompleted() {
-
-                  }
+                object : SimpleSubscriber<List<Suggestion>>() {
 
                   override fun onError(throwable: Throwable) {
+                    CrashLogger.logException(throwable)
                     InAppMessage.showMessage(this@TickerSelectorActivity,
                         R.string.error_fetching_suggestions)
                   }

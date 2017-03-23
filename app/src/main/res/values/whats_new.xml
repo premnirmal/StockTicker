@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Added last fetch info to header</item>
+    <item>A new widget size of 2x1!</item>
+    <item>Fix for ^GSPC ticker</item>
+    <item>Updated to OkHttp3</item>
   </string-array>
 </resources>

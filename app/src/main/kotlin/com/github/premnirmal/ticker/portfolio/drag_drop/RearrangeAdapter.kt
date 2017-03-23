@@ -15,7 +15,7 @@ import java.util.*
  */
 internal class RearrangeAdapter internal constructor(private val stocksProvider: IStocksProvider,
     private val dragStartListener: OnStartDragListener)
-: RecyclerView.Adapter<ItemViewHolder>(), ItemTouchHelperAdapter {
+  : RecyclerView.Adapter<ItemViewHolder>(), ItemTouchHelperAdapter {
 
   private val stockList: MutableList<Stock>
 
