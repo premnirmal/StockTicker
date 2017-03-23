@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
-import retrofit.converter.ConversionException
-import retrofit.mime.TypedInput
+import com.google.gson.Gson
+import okhttp3.ResponseBody
 import java.io.IOException
 import java.lang.reflect.Type
 import java.util.regex.Pattern
@@ -9,23 +9,21 @@ import java.util.regex.Pattern
 /**
  * Created on 3/3/16.
  */
-internal class StupidYahooWrapConverter : BaseConverter() {
+internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestion>(gson) {
 
-  @Throws(ConversionException::class)
-  override fun fromBody(body: TypedInput, type: Type): Any? {
+  override fun convert(value: ResponseBody?): Suggestion? {
     try {
-      val bodyString = getString(body.`in`())
+      val bodyString = getString(value!!.byteStream())
       val m = PATTERN_RESPONSE.matcher(bodyString)
       if (m.find()) {
         val suggestions = gson.fromJson(m.group(1), Suggestions::class.java)
-        return suggestions
+        return suggestions as Suggestion?
       }
-      throw ConversionException("Invalid response")
+      throw error("Invalid response")
     } catch (e: IOException) {
       e.printStackTrace()
       return null
     }
-
   }
 
   companion object {

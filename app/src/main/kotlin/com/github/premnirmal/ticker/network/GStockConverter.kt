@@ -1,19 +1,20 @@
 package com.github.premnirmal.ticker.network
 
-import retrofit.converter.ConversionException
-import retrofit.mime.TypedInput
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import okhttp3.ResponseBody
 import java.io.IOException
 import java.lang.reflect.Type
+import java.util.ArrayList
 
 /**
  * Created on 3/3/16.
  */
-internal class GStockConverter : BaseConverter() {
+internal class GStockConverter(gson: Gson) : BaseConverter<List<GStock>>(gson) {
 
-  @Throws(ConversionException::class)
-  override fun fromBody(body: TypedInput, type: Type): Any {
+  override fun convert(value: ResponseBody?): List<GStock> {
     try {
-      val bodyString = getString(body.`in`()).replace("\n".toRegex(), "")
+      val bodyString = getString(value!!.byteStream()).replace("\n".toRegex(), "")
       val responseString: String
       if (bodyString.startsWith("//")) {
         responseString = bodyString.substring(bodyString.indexOf('['),
@@ -21,12 +22,12 @@ internal class GStockConverter : BaseConverter() {
       } else {
         responseString = bodyString
       }
+      val type = object : TypeToken<ArrayList<GStock>>() {}.type
       val stocks = gson.fromJson<List<GStock>>(responseString, type)
       return stocks
     } catch (e: IOException) {
       e.printStackTrace()
-      throw ConversionException(e)
+      throw error(e)
     }
-
   }
 }

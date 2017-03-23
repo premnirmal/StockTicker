@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.network
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import rx.Observable
@@ -11,11 +12,7 @@ import java.util.*
 /**
  * Created on 3/3/16.
  */
-class StocksApi(internal val yahooApi: YahooFinance, internal val googleApi: GoogleFinance) {
-
-  companion object {
-    val gson = GsonBuilder().create()
-  }
+class StocksApi(internal val gson: Gson, internal val yahooApi: YahooFinance, internal val googleApi: GoogleFinance) {
 
   var lastFetched: Long = 0
 

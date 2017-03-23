@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.network
 
-import retrofit.http.GET
+import retrofit2.http.GET
+import retrofit2.http.Query
 import rx.Observable
 
 /**
@@ -8,7 +9,6 @@ import rx.Observable
  */
 interface GoogleFinance {
 
-  @GET("/info")
-  fun getStock(@retrofit.http.Query(value = "q",
-      encodeValue = false) query: String): Observable<List<GStock>>
+  @GET("info")
+  fun getStock(@Query(value = "q", encoded = false) query: String): Observable<List<GStock>>
 }
