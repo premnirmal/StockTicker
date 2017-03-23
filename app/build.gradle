@@ -5,7 +5,7 @@ apply plugin: 'io.fabric'
 apply from: '../build.gradle'
 
 buildscript {
-  ext.kotlin_version = '1.0.5'
+  ext.kotlin_version = '1.0.6'
   repositories {
     jcenter()
     mavenCentral()
@@ -125,6 +125,7 @@ android {
 
 dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
   compile 'com.android.support:appcompat-v7:25.2.0'
   compile 'com.android.support:support-v4:25.2.0'
@@ -150,6 +151,7 @@ dependencies {
   compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
   compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
   compile 'uk.co.chrisjenx:calligraphy:2.1.0'
+  compile 'com.jakewharton.timber:timber:4.3.1'
 
   prodCompile 'com.google.android.gms:play-services:7.0.0'
   prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
@@ -170,6 +172,10 @@ dependencies {
   testCompile 'com.android.tools:testutils:24.3.1'
   testCompile 'com.linkedin.dexmaker:dexmaker-mockito:2.2.0'
   testCompile 'org.hamcrest:hamcrest-library:1.3'
-  testCompile 'org.mockito:mockito-core:2.1.0'
+  testCompile 'org.mockito:mockito-core:2.7.5'
+  testCompile('com.nhaarman:mockito-kotlin:1.3.0') {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-reflect'
+  }
   kaptTest 'com.google.dagger:dagger-compiler:2.0'
 }

@@ -1,17 +1,11 @@
 package com.github.premnirmal.ticker.network
 
-import android.util.Log
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
-import com.github.premnirmal.ticker.network.historicaldata.Quote
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.google.gson.internal.LinkedTreeMap
 import rx.Observable
-import rx.functions.Func2
 import java.util.*
 
 /**
