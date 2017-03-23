@@ -166,7 +166,6 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       }
     }
 
-
     fun getFontSize(context: Context): Float {
       val size = instance.sharedPreferences.getInt(FONT_SIZE, 1)
       when (size) {
@@ -274,9 +273,10 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       return instance.sharedPreferences.getBoolean(Tools.ENABLE_GOOGLE_FINANCE, true)
     }
 
-    fun getStatusBarHeight(): Int{
+    fun getStatusBarHeight(): Int {
       val result: Int
-      val resourceId: Int = BaseApp.instance.resources.getIdentifier("status_bar_height", "dimen", "android")
+      val resourceId: Int = BaseApp.instance.resources.getIdentifier("status_bar_height", "dimen",
+          "android")
       if (resourceId > 0) {
         result = BaseApp.instance.resources.getDimensionPixelSize(resourceId)
       } else {

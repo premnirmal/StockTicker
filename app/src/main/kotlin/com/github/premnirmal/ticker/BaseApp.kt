@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker
 
 import android.support.multidex.MultiDexApplication
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
@@ -18,6 +19,7 @@ abstract class BaseApp : MultiDexApplication() {
             .setFontAttrId(R.attr.fontPath)
             .build())
     Injector.init(createAppComponent())
+    Analytics.init(this)
   }
 
   protected open fun createAppComponent(): AppComponent {

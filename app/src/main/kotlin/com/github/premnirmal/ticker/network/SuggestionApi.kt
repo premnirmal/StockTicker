@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.network
 
-import retrofit.http.GET
+import retrofit2.http.GET
+import retrofit2.http.Query
 import rx.Observable
 
 /**
@@ -8,7 +9,7 @@ import rx.Observable
  */
 interface SuggestionApi {
 
-  @GET("/autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
-  fun getSuggestions(@retrofit.http.Query("query") query: String): Observable<Suggestions>
+  @GET("autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
+  fun getSuggestions(@Query("query") query: String): Observable<Suggestions>
 
 }

@@ -114,7 +114,8 @@ open class PortfolioFragment : BaseFragment() {
         R.color.sea)
     swipe_container.setOnRefreshListener({
       bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
-        override fun onError(e: Throwable?) {
+        override fun onError(e: Throwable) {
+          CrashLogger.logException(e)
           swipe_container.isRefreshing = false
           InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
         }
