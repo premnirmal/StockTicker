@@ -4,7 +4,6 @@ import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import rx.Observable
 import java.util.*
@@ -12,11 +11,12 @@ import java.util.*
 /**
  * Created on 3/3/16.
  */
-class StocksApi(internal val gson: Gson, internal val yahooApi: YahooFinance, internal val googleApi: GoogleFinance) {
+class StocksApi(internal val gson: Gson, internal val yahooApi: YahooFinance,
+    internal val googleApi: GoogleFinance) {
 
   var lastFetched: Long = 0
 
-  fun getYahooFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
+  private fun getYahooFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
     val query = QueryCreator.buildStocksQuery(tickers)
     return yahooApi.getStocks(query).map({ json ->
       lastFetched = System.currentTimeMillis()
@@ -50,7 +50,7 @@ class StocksApi(internal val gson: Gson, internal val yahooApi: YahooFinance, in
     })
   }
 
-  fun getGoogleFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
+  private fun getGoogleFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
     val query = QueryCreator.googleStocksQuery(tickers)
     return googleApi.getStock(query).map({ gStocks ->
       lastFetched = System.currentTimeMillis()
@@ -103,12 +103,13 @@ class StocksApi(internal val gson: Gson, internal val yahooApi: YahooFinance, in
     } else if (yahooSymbols.isEmpty()) {
       return googleObservable
     } else {
-      val allStocks = Observable.zip(googleObservable, yahooObservable, { stocks, stocks2 ->
-        val zipped: MutableList<Stock> = ArrayList()
-        zipped.addAll(stocks2)
-        zipped.addAll(stocks)
-        zipped as List<Stock>
-      })
+      val allStocks: Observable<List<Stock>> = Observable.zip(googleObservable, yahooObservable,
+          { stocks, stocks2 ->
+            val zipped: MutableList<Stock> = ArrayList()
+            zipped.addAll(stocks2)
+            zipped.addAll(stocks)
+            zipped
+          })
       return allStocks
     }
   }

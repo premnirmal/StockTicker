@@ -44,24 +44,20 @@ public final class QueryCreator {
       commaSeparator.deleteCharAt(length - 1);
     }
 
-    return "select%20%2A%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(\""
-        + commaSeparator.toString()
-        + "\")&diagnostics=true";
+    return "select%20%2A%20from%20yahoo.finance.quotes%20where%20symbol%20in%20(\"" + commaSeparator
+        .toString() + "\")";
   }
 
   public static String buildHistoricalDataQuery(String ticker, DateTime start, DateTime end) {
     final StringBuilder stringBuilder = new StringBuilder();
     stringBuilder.append(
-        "select%20%2A%20from%20yahoo.finance.historicaldata%20where%20symbol%20=%20");
-        //"select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20=%20\"");
+        "select%20%2A%20from%20yahoo.finance.historicaldata%20where%20symbol%20=%20\"");
     stringBuilder.append(ticker);
-    // "%20and%20startDate%20=%20"2012-09-11"%20and%20endDate%20=%20"2014-02-11"&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys
     stringBuilder.append("\"%20and%20startDate%20=%20\"");
     stringBuilder.append(formatter.print(start));
     stringBuilder.append("\"%20and%20endDate%20=%20\"");
     stringBuilder.append(formatter.print(end));
     stringBuilder.append('\"');
-    stringBuilder.append("&diagnostics=true");
     return stringBuilder.toString();
   }
 }

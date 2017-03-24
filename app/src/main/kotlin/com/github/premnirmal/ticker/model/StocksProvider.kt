@@ -129,9 +129,8 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   override fun fetch(): Observable<List<Stock>> {
     return api.getStocks(tickerList)
         .doOnError { e ->
-          CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks",
-              e)) // why does this happen?
-          e.printStackTrace()
+          // why does this happen?
+          CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", e))
           scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)) // 1 minute
           AlarmScheduler.sendBroadcast(context)
         }

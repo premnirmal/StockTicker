@@ -24,7 +24,7 @@ interface YahooFinance {
    * @return
    */
   @GET("yql?env=store://datatables.org/alltableswithkeys&format=json")
-  fun getStocks(@Query(value = "q", encoded = false) query: String): Observable<JsonElement>
+  fun getStocks(@Query(value = "q", encoded = true) query: String): Observable<JsonElement>
 
 
   //    https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where
@@ -32,6 +32,6 @@ interface YahooFinance {
   // &format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=
 
   @GET("yql?env=store://datatables.org/alltableswithkeys&format=json")
-  fun getHistory(@Query(value = "q", encoded = false) query: String): Observable<HistoricalData>
+  fun getHistory(@Query(value = "q", encoded = true) query: String): Observable<HistoricalData>
 
 }

@@ -8,6 +8,6 @@ import timber.log.Timber
 internal class CrashLoggerImpl : CrashLogger() {
 
   override fun log(throwable: Throwable) {
-    Timber.d(throwable)
+    Timber.w(throwable)
   }
 }
