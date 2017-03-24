@@ -154,7 +154,7 @@ dependencies {
   compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
   compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
   compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-  compile 'com.jakewharton.timber:timber:4.3.1'
+  devCompile 'com.jakewharton.timber:timber:4.3.1'
 
   prodCompile 'com.google.android.gms:play-services:7.0.0'
   prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {

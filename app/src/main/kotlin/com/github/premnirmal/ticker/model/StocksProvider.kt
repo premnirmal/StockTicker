@@ -109,11 +109,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
         .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
         .putLong(LAST_FETCHED, lastFetched)
         .apply()
-    storage.save(stockList).subscribe(object : Subscriber<Boolean>() {
-      override fun onCompleted() {
-
-      }
-
+    storage.save(stockList).subscribe(object : SimpleSubscriber<Boolean>() {
       override fun onError(e: Throwable) {
         e.printStackTrace()
       }

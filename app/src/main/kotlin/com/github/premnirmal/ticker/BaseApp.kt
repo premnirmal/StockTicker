@@ -1,7 +1,9 @@
 package com.github.premnirmal.ticker
 
 import android.support.multidex.MultiDexApplication
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 /**

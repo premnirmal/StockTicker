@@ -17,6 +17,7 @@ import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.BaseActivity
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.Range
@@ -105,11 +106,7 @@ class GraphActivity : BaseActivity() {
       findViewById(R.id.graph_holder).visibility = View.GONE
       findViewById(R.id.progress).visibility = View.VISIBLE
       val observable = historyProvider.getDataPoints(ticker.symbol, range)
-      bind(observable).subscribe(object : Subscriber<Array<SerializableDataPoint?>>() {
-        override fun onCompleted() {
-
-        }
-
+      bind(observable).subscribe(object : SimpleSubscriber<Array<SerializableDataPoint?>>() {
         override fun onError(e: Throwable) {
           showDialog("Error loading datapoints",
               DialogInterface.OnClickListener { dialog, which -> finish() })

@@ -5,7 +5,11 @@ import timber.log.Timber
 /**
  * Created by premnirmal on 2/28/16.
  */
-internal class CrashLoggerImpl : CrashLogger() {
+internal class CrashLoggerImpl() : CrashLogger() {
+
+  init {
+
+  }
 
   override fun log(throwable: Throwable) {
     Timber.w(throwable)

@@ -9,15 +9,15 @@ import java.util.regex.Pattern
 /**
  * Created on 3/3/16.
  */
-internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestion>(gson) {
+internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>(gson) {
 
-  override fun convert(value: ResponseBody?): Suggestion? {
+  override fun convert(value: ResponseBody?): Suggestions? {
     try {
       val bodyString = getString(value!!.byteStream())
       val m = PATTERN_RESPONSE.matcher(bodyString)
       if (m.find()) {
         val suggestions = gson.fromJson(m.group(1), Suggestions::class.java)
-        return suggestions as Suggestion?
+        return suggestions
       }
       throw error("Invalid response")
     } catch (e: IOException) {
