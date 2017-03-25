@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Created on 3/3/16.
+ * Created by premnirmal on 3/3/16.
  */
 @Singleton class StocksApi @Inject constructor() {
 

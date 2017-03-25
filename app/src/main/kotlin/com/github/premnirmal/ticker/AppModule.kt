@@ -8,7 +8,7 @@ import dagger.Provides
 import javax.inject.Singleton
 
 /**
- * Created on 3/3/16.
+ * Created by premnirmal on 3/3/16.
  */
 @Module(includes = arrayOf(ApiModule::class))
 class AppModule(private val app: Context) {

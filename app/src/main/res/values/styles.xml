@@ -11,6 +11,8 @@
     <item name="android:buttonStyle">@style/ButtonStyle</item>
   </style>
 
+  <style name="ParanormalActivityTheme" parent="AppTheme"/>
+
   <style name="GraphActivityTheme" parent="AppTheme">
     <item name="colorPrimaryDark">@color/black</item>
   </style>

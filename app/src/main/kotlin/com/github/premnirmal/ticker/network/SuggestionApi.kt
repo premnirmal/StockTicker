@@ -5,7 +5,7 @@ import retrofit2.http.Query
 import rx.Observable
 
 /**
- * Created on 3/3/16.
+ * Created by premnirmal on 3/3/16.
  */
 interface SuggestionApi {
 

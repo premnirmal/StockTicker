@@ -7,7 +7,7 @@ import java.lang.reflect.Type
 import java.util.regex.Pattern
 
 /**
- * Created on 3/3/16.
+ * Created by premnirmal on 3/3/16.
  */
 internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>(gson) {
 

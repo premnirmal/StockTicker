@@ -1,58 +1,14 @@
 <resources>
 
-  <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-    <item name="android:alertDialogTheme">@style/Theme.AlertDialog</item>
-    <item name="colorPrimary">@color/color_primary</item>
-    <item name="colorPrimaryDark">@color/color_secondary</item>
-    <item name="colorAccent">@color/color_accent</item>
-
-    <item name="android:textViewStyle">@style/TextViewStyle</item>
-    <item name="android:editTextStyle">@style/EditTextStyle</item>
-    <item name="android:buttonStyle">@style/ButtonStyle</item>
-
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/black</item>
     <item name="android:windowTranslucentStatus">true</item>
   </style>
 
-  <style name="Theme.AlertDialog" parent="android:Theme.Material.Dialog.Alert">
-    <item name="android:colorPrimary">@color/color_primary</item>
-    <item name="android:colorPrimaryDark">@color/color_secondary</item>
-    <item name="android:colorAccent">@color/color_accent</item>
-  </style>
-
-  <style name="GraphActivityTheme" parent="AppTheme">
-    <item name="colorPrimaryDark">@color/black</item>
-  </style>
-
-  <style name="TextViewStyle" parent="android:Widget.TextView">
-    <item name="android:textSize">@dimen/text_size</item>
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
-  </style>
-
-  <style name="BoldTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-  </style>
-
-  <style name="ButtonStyle" parent="android:Widget.Button">
-    <item name="android:textSize">@dimen/button_text</item>
-    <item name="android:textColor">@android:color/white</item>
-    <item name="fontPath">fonts/Avenir-Bold.otf</item>
-    <item name="android:background">@drawable/button_bg</item>
-  </style>
-
-  <style name="EditTextStyle" parent="android:Widget.EditText">
-    <item name="android:textSize">@dimen/text_size</item>
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
-  </style>
-
-  <style name="ActionBarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-    <item name="android:background">@color/color_primary</item>
-    <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
-    <item name="actionModeBackground">@android:color/background_light</item>
-    <!-- Support library compatibility -->
-    <item name="titleTextStyle">@style/ActionBarTitleText</item>
+  <style name="ParanormalActivityTheme" parent="AppTheme">
+    <!-- :( Doesn't work with snackbar and floating action button-->
+    <!--<item name="android:windowTranslucentNavigation">true</item>-->
   </style>
 
 </resources>
