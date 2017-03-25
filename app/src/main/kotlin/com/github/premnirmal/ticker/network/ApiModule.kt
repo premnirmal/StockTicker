@@ -153,9 +153,9 @@ class ApiModule {
   }
 
   @Provides @Singleton
-  internal fun provideStocksProvider(context: Context, stocksApi: StocksApi, bus: RxBus,
+  internal fun provideStocksProvider(context: Context, stocksApi: StocksApi,
       sharedPreferences: SharedPreferences): IStocksProvider {
-    return StocksProvider(stocksApi, bus, context, sharedPreferences)
+    return StocksProvider(stocksApi, context, sharedPreferences)
   }
 
   @Provides @Singleton
