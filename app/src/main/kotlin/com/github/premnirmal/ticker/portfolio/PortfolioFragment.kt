@@ -152,8 +152,9 @@ open class PortfolioFragment : BaseFragment() {
       } else if (itemId == R.id.action_rearrange) {
         startActivity(Intent(activity, RearrangeActivity::class.java))
         true
+      } else {
+        false
       }
-      false
     }
     bind(bus.forEventType(NoNetworkEvent::class.java))
         .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
@@ -200,12 +201,14 @@ open class PortfolioFragment : BaseFragment() {
           .setMessage("Are you sure you want to remove ${stock.symbol} from your portfolio?")
           .setPositiveButton("Remove", { dialog, which ->
             stocksProvider.removeStock(stock.symbol)
-            if (stocksAdapter.remove(stock)) {
-              stocksAdapter.notifyItemRemoved(position)
+            val index = stocksAdapter.remove(stock)
+            if (index >= 0) {
+              stocksAdapter.notifyItemRemoved(index)
             }
             dialog.dismiss()
           })
-          .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() }).show()
+          .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() })
+          .show()
     }
   }
 

@@ -4,11 +4,11 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
-import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.tickerwidget.R
-import java.util.*
+import java.util.ArrayList
 
 /**
  * Created by premnirmal on 2/29/16.
@@ -26,8 +26,10 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
     stockList = ArrayList(stocksProvider.getStocks())
   }
 
-  fun remove(stock: Stock): Boolean {
-    return stockList.remove(stock)
+  fun remove(stock: Stock): Int {
+    val index = stockList.indexOf(stock)
+    val removed = stockList.remove(stock)
+    return index
   }
 
   fun refresh(stocksProvider: IStocksProvider) {
