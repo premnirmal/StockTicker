@@ -1,53 +1,46 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.SystemClock
-import android.text.TextUtils
-import android.util.Log
-import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.CrashLogger
-import com.github.premnirmal.ticker.RefreshReceiver
+import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.network.StocksApi
-import com.trello.rxlifecycle.kotlin.bindToLifecycle
 import org.joda.time.DateTime
-import org.joda.time.DateTimeZone
 import org.joda.time.format.ISODateTimeFormat
 import rx.Observable
-import rx.Observable.Operator
-import rx.Subscriber
 import rx.android.schedulers.AndroidSchedulers
-import rx.functions.Func1
 import rx.schedulers.Schedulers
 import java.text.DateFormatSymbols
-import java.util.*
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.Collections
+import java.util.Locale
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider(private val api: StocksApi, private val bus: RxBus,
-    private val context: Context, private val preferences: SharedPreferences) : IStocksProvider {
+class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
     private val LAST_FETCHED = "LAST_FETCHED"
     private val NEXT_FETCH = "NEXT_FETCH"
     private val POSITION_LIST = "POSITION_LIST"
-    private val DEFAULT_STOCKS = "^SPY,GOOG,AAPL,MSFT,YHOO,TSLA,^DJI"
-
-    private val TICKER_CLEANUP = "TICKER_CLEANUP"
+    private val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
 
     val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
-    val GOOGLE_SYMBOLS = Arrays.asList(".DJI", ".IXIC")
-    val _GOOGLE_SYMBOLS = Arrays.asList("^DJI", "^IXIC")
   }
+
+  @Inject internal lateinit var api: StocksApi
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var preferences: SharedPreferences
 
   private val tickerList: MutableList<String>
   private val stockList: MutableList<Stock> = ArrayList()
@@ -57,22 +50,11 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   private val storage: StocksStorage
 
   init {
+    Injector.inject(this)
     storage = StocksStorage(context)
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(
-        *tickerListVars.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-
-    // cleanup
-    val tickers = ArrayList(tickerList)
-    if (!preferences.getBoolean(TICKER_CLEANUP, false)) {
-      tickerList.remove("SNDK")
-      for (ticker in tickers) {
-        if (ticker.startsWith("^")) {
-          tickerList.remove(ticker)
-        }
-      }
-      preferences.edit().putBoolean(TICKER_CLEANUP, true).apply()
-    }
+        *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
 
     positionList = Tools.stringToPositions(preferences.getString(POSITION_LIST, ""))
 
@@ -84,7 +66,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
       lastFetched = 0L
     }
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
-    if (lastFetched == null) {
+    if (lastFetched == 0L) {
       fetch().subscribe(SimpleSubscriber<List<Stock>>())
     } else {
       fetchLocal()
@@ -114,8 +96,8 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
         e.printStackTrace()
       }
 
-      override fun onNext(success: Boolean) {
-        if (!success) {
+      override fun onNext(result: Boolean) {
+        if (!result) {
           CrashLogger.logException(RuntimeException("Save failed"))
         }
       }
@@ -203,11 +185,9 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
   }
 
   override fun addStocks(tickers: Collection<String>): Collection<String> {
-    for (ticker in tickers) {
-      if (!tickerList.contains(ticker)) {
-        tickerList.add(ticker)
-      }
-    }
+    tickers
+        .filterNot { tickerList.contains(it) }
+        .forEach { tickerList.add(it) }
     save()
     fetch().subscribe(SimpleSubscriber<List<Stock>>())
     return tickerList
@@ -265,7 +245,7 @@ class StocksProvider(private val api: StocksApi, private val bus: RxBus,
         Collections.sort(stockList)
       } else {
         Collections.sort(stockList) { lhs, rhs ->
-          tickerList.indexOf(lhs.symbol).toInt().compareTo(tickerList.indexOf(rhs.symbol))
+          tickerList.indexOf(lhs.symbol).compareTo(tickerList.indexOf(rhs.symbol))
         }
       }
     })

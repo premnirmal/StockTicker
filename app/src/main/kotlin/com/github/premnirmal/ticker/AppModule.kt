@@ -18,14 +18,12 @@ class AppModule(private val app: Context) {
     return app
   }
 
-  @Provides
-  @Singleton
+  @Provides @Singleton
   internal fun provideEventBus(): RxBus {
     return RxBus()
   }
 
-  @Provides
-  @Singleton
+  @Provides @Singleton
   internal fun provideSharedPreferences(context: Context): SharedPreferences {
     val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE)
     return sharedPreferences

@@ -23,7 +23,7 @@ open class AddPositionActivity : BaseActivity() {
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
     setContentView(R.layout.activity_positions)
     updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {

@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.Context
+import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.network.QueryCreator
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.historicaldata.History
@@ -8,13 +9,21 @@ import org.joda.time.DateTime
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.util.*
+import java.util.Collections
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-class HistoryProvider(private val stocksApi: StocksApi,
-    private val context: Context) : IHistoryProvider {
+@Singleton class HistoryProvider @Inject constructor() : IHistoryProvider {
+
+  @Inject internal lateinit var stocksApi: StocksApi
+  @Inject internal lateinit var context: Context
+
+  init {
+    Injector.inject(this)
+  }
 
   override fun getHistory(ticker: String, range: Range): Observable<History> {
     val now = DateTime.now()

@@ -39,7 +39,7 @@ class TickerSelectorActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
     setContentView(R.layout.activity_ticker_selector)
     updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {

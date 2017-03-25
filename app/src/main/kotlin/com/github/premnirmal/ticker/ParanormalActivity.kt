@@ -1,8 +1,6 @@
 package com.github.premnirmal.ticker
 
-import android.app.Activity
 import android.app.AlertDialog
-import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -32,7 +30,7 @@ open class ParanormalActivity : BaseActivity() {
     if (savedInstanceState != null) {
       dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
     }
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
     setContentView(R.layout.activity_paranormal)
     val fragment = createPortfolioFragment()
     supportFragmentManager.beginTransaction().add(R.id.fragment_container,

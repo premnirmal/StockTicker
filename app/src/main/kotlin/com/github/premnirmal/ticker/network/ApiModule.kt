@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider
@@ -31,10 +30,6 @@ import javax.inject.Singleton
 @Module
 class ApiModule {
 
-  lateinit var stocksApi: StocksApi
-  lateinit var suggestionApi: SuggestionApi
-
-
   companion object {
     internal val CONNECTION_TIMEOUT: Long = 20000
     internal val READ_TIMEOUT: Long = 20000
@@ -54,10 +49,8 @@ class ApiModule {
   }
 
   @Provides @Singleton
-  internal fun provideStocksApi(gson: Gson, yahooFinance: YahooFinance,
-      googleFinance: GoogleFinance): StocksApi {
-    stocksApi = StocksApi(gson, yahooFinance, googleFinance)
-    return stocksApi
+  internal fun provideStocksApi(): StocksApi {
+    return StocksApi()
   }
 
   @Provides @Singleton
@@ -148,19 +141,18 @@ class ApiModule {
           }
         })
         .build()
-    suggestionApi = Retrofit.create(SuggestionApi::class.java)
+    val suggestionApi = Retrofit.create(SuggestionApi::class.java)
     return suggestionApi
   }
 
   @Provides @Singleton
-  internal fun provideStocksProvider(context: Context, stocksApi: StocksApi, bus: RxBus,
-      sharedPreferences: SharedPreferences): IStocksProvider {
-    return StocksProvider(stocksApi, bus, context, sharedPreferences)
+  internal fun provideStocksProvider(): IStocksProvider {
+    return StocksProvider()
   }
 
   @Provides @Singleton
-  internal fun provideHistoryProvider(context: Context, stocksApi: StocksApi): IHistoryProvider {
-    return HistoryProvider(stocksApi, context)
+  internal fun provideHistoryProvider(): IHistoryProvider {
+    return HistoryProvider()
   }
 
 }

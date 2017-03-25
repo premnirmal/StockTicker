@@ -19,7 +19,7 @@ class RefreshReceiver : BroadcastReceiver() {
   lateinit internal var stocksProvider: IStocksProvider
 
   override fun onReceive(context: Context, intent: Intent) {
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
     Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
         "RefreshReceived on " + DateTimeFormat.mediumDateTime().print(DateTime.now()))
     stocksProvider.fetch().subscribe(SimpleSubscriber<List<Stock>>())

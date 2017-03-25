@@ -30,7 +30,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
   lateinit internal var stocksProvider: IStocksProvider
 
   init {
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
     val stocks = stocksProvider.getStocks()
     this.stocks = ArrayList(stocks)
   }
