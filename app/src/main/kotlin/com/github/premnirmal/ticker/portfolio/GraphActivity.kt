@@ -46,7 +46,7 @@ class GraphActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
     setContentView(R.layout.activity_graph)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, Tools.getStatusBarHeight(),

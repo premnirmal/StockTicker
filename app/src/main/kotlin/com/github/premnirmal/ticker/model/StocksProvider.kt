@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.SystemClock
 import com.github.premnirmal.ticker.CrashLogger
+import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.Stock
@@ -18,14 +19,14 @@ import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
 import java.util.Locale
+import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider(private val api: StocksApi,
-    private val context: Context, private val preferences: SharedPreferences) : IStocksProvider {
+class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
@@ -37,6 +38,10 @@ class StocksProvider(private val api: StocksApi,
     val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
   }
 
+  @Inject internal lateinit var api: StocksApi
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var preferences: SharedPreferences
+
   private val tickerList: MutableList<String>
   private val stockList: MutableList<Stock> = ArrayList()
   private val positionList: MutableList<Stock>
@@ -45,6 +50,7 @@ class StocksProvider(private val api: StocksApi,
   private val storage: StocksStorage
 
   init {
+    Injector.inject(this)
     storage = StocksStorage(context)
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(

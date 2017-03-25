@@ -1,20 +1,30 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.CrashLogger
+import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import rx.Observable
-import java.util.*
+import java.util.ArrayList
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created on 3/3/16.
  */
-class StocksApi(internal val gson: Gson, internal val yahooApi: YahooFinance,
-    internal val googleApi: GoogleFinance) {
+@Singleton class StocksApi @Inject constructor() {
+
+  @Inject internal lateinit var gson: Gson
+  @Inject internal lateinit var yahooApi: YahooFinance
+  @Inject internal lateinit var googleApi: GoogleFinance
 
   var lastFetched: Long = 0
+
+  init {
+    Injector.inject(this)
+  }
 
   private fun getYahooFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
     val query = QueryCreator.buildStocksQuery(tickers)

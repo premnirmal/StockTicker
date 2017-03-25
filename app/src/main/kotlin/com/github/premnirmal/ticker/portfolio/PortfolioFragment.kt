@@ -99,7 +99,7 @@ open class PortfolioFragment : BaseFragment() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.getAppComponent().inject(this)
+    Injector.inject(this)
   }
 
   override fun onResume() {
