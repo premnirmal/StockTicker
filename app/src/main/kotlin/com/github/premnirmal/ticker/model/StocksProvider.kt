@@ -30,10 +30,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
-    private val LAST_FETCHED = "LAST_FETCHED"
-    private val NEXT_FETCH = "NEXT_FETCH"
-    private val POSITION_LIST = "POSITION_LIST"
-    private val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
+    internal val LAST_FETCHED = "LAST_FETCHED"
+    internal val NEXT_FETCH = "NEXT_FETCH"
+    internal val POSITION_LIST = "POSITION_LIST"
+    internal val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
 
     val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
   }
@@ -42,12 +42,12 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   @Inject internal lateinit var context: Context
   @Inject internal lateinit var preferences: SharedPreferences
 
-  private val tickerList: MutableList<String>
-  private val stockList: MutableList<Stock> = ArrayList()
-  private val positionList: MutableList<Stock>
-  private var lastFetched: Long = 0L
-  private var nextFetch: Long = 0L
-  private val storage: StocksStorage
+  internal val tickerList: MutableList<String>
+  internal val stockList: MutableList<Stock> = ArrayList()
+  internal val positionList: MutableList<Stock>
+  internal var lastFetched: Long = 0L
+  internal var nextFetch: Long = 0L
+  internal val storage: StocksStorage
 
   init {
     Injector.inject(this)
@@ -73,7 +73,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
   }
 
-  private fun fetchLocal() {
+  internal fun fetchLocal() {
     synchronized(stockList, {
       stockList.clear()
       stockList.addAll(storage.readSynchronous())
@@ -86,7 +86,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
-  private fun save() {
+  internal fun save() {
     preferences.edit().putString(POSITION_LIST, Tools.positionsToString(positionList))
         .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
         .putLong(LAST_FETCHED, lastFetched)
@@ -125,15 +125,15 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         .observeOn(AndroidSchedulers.mainThread())
   }
 
-  private fun sendBroadcast() {
+  internal fun sendBroadcast() {
     scheduleUpdate(msToNextAlarm)
     AlarmScheduler.sendBroadcast(context)
   }
 
-  private val msToNextAlarm: Long
+  internal val msToNextAlarm: Long
     get() = AlarmScheduler.msOfNextAlarm()
 
-  private fun scheduleUpdate(msToNextAlarm: Long) {
+  internal fun scheduleUpdate(msToNextAlarm: Long) {
     val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
     nextFetch = updateTime.millis
     preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
@@ -239,7 +239,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
-  private fun sortStockList() {
+  internal fun sortStockList() {
     synchronized(stockList, {
       if (Tools.autoSortEnabled()) {
         Collections.sort(stockList)
@@ -287,7 +287,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return fetched
   }
 
-  private fun createTimeString(time: DateTime): String {
+  internal fun createTimeString(time: DateTime): String {
     val fetched: String
     val dfs = DateFormatSymbols.getInstance(Locale.ENGLISH)
     val fetchedDayOfWeek = time.dayOfWeek().get()

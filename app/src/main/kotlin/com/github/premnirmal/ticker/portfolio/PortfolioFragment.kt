@@ -181,6 +181,11 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     })
   }
 
+  override fun onDestroyView() {
+    handler.removeCallbacksAndMessages(null)
+    super.onDestroyView()
+  }
+
   internal fun update() {
     val activity = activity
     if (activity != null) {
@@ -205,6 +210,8 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
             val index = stocksAdapter.remove(stock)
             if (index >= 0) {
               stocksAdapter.notifyItemRemoved(index)
+              // Refresh last two so that the bottom spacing is fixed
+              stocksAdapter.notifyItemRangeChanged(stocksAdapter.itemCount - 3, 2)
             }
             dialog.dismiss()
           })
