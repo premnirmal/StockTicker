@@ -74,8 +74,8 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     }
     bind(RxPopupMenu.itemClicks(popupWindow))
         .subscribe(object : SimpleSubscriber<MenuItem>() {
-          override fun onNext(menuItem: MenuItem) {
-            val itemId = menuItem.itemId
+          override fun onNext(result: MenuItem) {
+            val itemId = result.itemId
             when (itemId) {
               R.id.graph -> {
                 val intent = Intent(activity, GraphActivity::class.java)
@@ -189,10 +189,6 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   internal fun update() {
     val activity = activity
     if (activity != null) {
-      if (stocksProvider.getStocks().isEmpty()) {
-        handler.postDelayed({ update() }, 600)
-      }
-
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
         stockList.adapter = stocksAdapter
