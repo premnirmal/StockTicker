@@ -8,9 +8,7 @@ import io.fabric.sdk.android.Fabric
  */
 class StocksApp : BaseApp() {
 
-  override fun onCreate() {
-    super.onCreate()
-    Analytics.init(this)
+  override fun initCrashLogger() {
     Fabric.with(this, Crashlytics())
   }
 }

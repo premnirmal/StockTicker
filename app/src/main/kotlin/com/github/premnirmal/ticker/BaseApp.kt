@@ -1,14 +1,13 @@
 package com.github.premnirmal.ticker
 
-import android.support.multidex.MultiDexApplication
-import com.github.premnirmal.tickerwidget.BuildConfig
+import android.app.Application
 import com.github.premnirmal.tickerwidget.R
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-abstract class BaseApp : MultiDexApplication() {
+abstract class BaseApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
@@ -20,7 +19,10 @@ abstract class BaseApp : MultiDexApplication() {
             .build())
     Injector.init(createAppComponent())
     Analytics.init(this)
+    initCrashLogger()
   }
+
+  protected abstract fun initCrashLogger()
 
   protected open fun createAppComponent(): AppComponent {
     val component: AppComponent = DaggerAppComponent.builder()

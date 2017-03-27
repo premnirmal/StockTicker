@@ -53,8 +53,6 @@ android {
 
     versionCode = code
     versionName = name
-
-    multiDexEnabled true
   }
 
   sourceSets {
@@ -99,11 +97,10 @@ android {
 
   buildTypes {
     release {
-      debuggable false
+      debuggable true
       signingConfig signingConfigs.release
       minifyEnabled true
-      proguardFile 'proguard-rules.pro'
-      proguardFile getDefaultProguardFile('proguard-android.txt')
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
     debug {
       debuggable true
@@ -133,7 +130,6 @@ dependencies {
   compile 'com.android.support:appcompat-v7:25.2.0'
   compile 'com.android.support:support-v4:25.2.0'
   compile 'com.android.support:design:25.2.0'
-  compile 'com.android.support:multidex:1.0.1'
 
   compile 'javax.inject:javax.inject:1'
   compile 'javax.annotation:javax.annotation-api:1.2'

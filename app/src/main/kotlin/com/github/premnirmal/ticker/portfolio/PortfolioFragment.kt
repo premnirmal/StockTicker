@@ -4,8 +4,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Parcelable
 import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.GridLayoutManager
@@ -55,7 +53,6 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   @Inject
   lateinit internal var bus: RxBus
 
-  private val handler = Handler(Looper.getMainLooper())
   private var listViewState: Parcelable? = null
 
   private val stocksAdapter by lazy {
@@ -181,13 +178,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     })
   }
 
-  override fun onDestroyView() {
-    handler.removeCallbacksAndMessages(null)
-    super.onDestroyView()
-  }
-
   internal fun update() {
-    val activity = activity
     if (activity != null) {
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)

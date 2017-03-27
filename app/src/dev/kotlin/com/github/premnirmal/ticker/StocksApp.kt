@@ -7,8 +7,7 @@ import timber.log.Timber
  */
 class StocksApp : BaseApp() {
 
-  override fun onCreate() {
-    super.onCreate()
+  override fun initCrashLogger() {
     Timber.plant(Timber.DebugTree())
   }
 }
