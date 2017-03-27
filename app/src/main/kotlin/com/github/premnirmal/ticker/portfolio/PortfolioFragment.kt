@@ -24,9 +24,9 @@ import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
-import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.rxbinding.widget.RxPopupMenu
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
@@ -42,7 +42,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class PortfolioFragment : BaseFragment() {
+open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
@@ -59,42 +59,41 @@ open class PortfolioFragment : BaseFragment() {
   private var listViewState: Parcelable? = null
 
   private val stocksAdapter by lazy {
-    StocksAdapter(stocksProvider,
-        object : StocksAdapter.OnStockClickListener {
-          override fun onClick(view: View, stock: Stock, position: Int) {
-            val popupWindow = PopupMenu(view.context, view)
-            popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-            if (stock.isIndex) {
-              popupWindow.menu.findItem(R.id.graph).isEnabled = false
-              popupWindow.menu.findItem(R.id.positions).isEnabled = false
-            } else {
-              popupWindow.menu.findItem(R.id.graph).isEnabled = true
-              popupWindow.menu.findItem(R.id.positions).isEnabled = true
+    StocksAdapter(stocksProvider, this as OnStockClickListener)
+  }
+
+  override fun onClick(view: View, stock: Stock, position: Int) {
+    val popupWindow = PopupMenu(view.context, view)
+    popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
+    if (stock.isIndex) {
+      popupWindow.menu.findItem(R.id.graph).isEnabled = false
+      popupWindow.menu.findItem(R.id.positions).isEnabled = false
+    } else {
+      popupWindow.menu.findItem(R.id.graph).isEnabled = true
+      popupWindow.menu.findItem(R.id.positions).isEnabled = true
+    }
+    bind(RxPopupMenu.itemClicks(popupWindow))
+        .subscribe(object : SimpleSubscriber<MenuItem>() {
+          override fun onNext(result: MenuItem) {
+            val itemId = result.itemId
+            when (itemId) {
+              R.id.graph -> {
+                val intent = Intent(activity, GraphActivity::class.java)
+                intent.putExtra(GraphActivity.GRAPH_DATA, stock)
+                activity.startActivity(intent)
+              }
+              R.id.positions -> {
+                val intent = Intent(activity, EditPositionActivity::class.java)
+                intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
+                activity.startActivity(intent)
+              }
+              R.id.remove -> {
+                promptRemove(stock, position)
+              }
             }
-            bind(RxPopupMenu.itemClicks(popupWindow)).subscribe(
-                object : SimpleSubscriber<MenuItem>() {
-                  override fun onNext(menuItem: MenuItem) {
-                    val itemId = menuItem.itemId
-                    when (itemId) {
-                      R.id.graph -> {
-                        val intent = Intent(activity, GraphActivity::class.java)
-                        intent.putExtra(GraphActivity.GRAPH_DATA, stock)
-                        activity.startActivity(intent)
-                      }
-                      R.id.positions -> {
-                        val intent = Intent(activity, EditPositionActivity::class.java)
-                        intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
-                        activity.startActivity(intent)
-                      }
-                      R.id.remove -> {
-                        promptRemove(stock, position)
-                      }
-                    }
-                  }
-                })
-            popupWindow.show()
           }
         })
+    popupWindow.show()
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,9 +122,11 @@ open class PortfolioFragment : BaseFragment() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight()
     }
+    val gridLayoutManager = GridLayoutManager(context, 2)
+    stockList.layoutManager = gridLayoutManager
     stockList.addItemDecoration(
-        SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
-    stockList.layoutManager = GridLayoutManager(context, 2)
+        PortfolioSpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing),
+            gridLayoutManager))
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
@@ -180,13 +181,14 @@ open class PortfolioFragment : BaseFragment() {
     })
   }
 
+  override fun onDestroyView() {
+    handler.removeCallbacksAndMessages(null)
+    super.onDestroyView()
+  }
+
   internal fun update() {
     val activity = activity
     if (activity != null) {
-      if (stocksProvider.getStocks().isEmpty()) {
-        handler.postDelayed({ update() }, 600)
-      }
-
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
         stockList.adapter = stocksAdapter
@@ -204,6 +206,8 @@ open class PortfolioFragment : BaseFragment() {
             val index = stocksAdapter.remove(stock)
             if (index >= 0) {
               stocksAdapter.notifyItemRemoved(index)
+              // Refresh last two so that the bottom spacing is fixed
+              stocksAdapter.notifyItemRangeChanged(stocksAdapter.itemCount - 3, 2)
             }
             dialog.dismiss()
           })

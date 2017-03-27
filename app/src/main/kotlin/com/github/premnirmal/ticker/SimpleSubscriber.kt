@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker
 import rx.Subscriber
 
 /**
- * Created on 4/14/16.
+ * Created by premnirmal on 4/14/16.
  */
 open class SimpleSubscriber<T> : Subscriber<T>() {
 

@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Created on 3/3/16.
+ * Created by premnirmal on 3/3/16.
  */
 @Singleton class StocksApi @Inject constructor() {
 
@@ -64,10 +64,7 @@ import javax.inject.Singleton
     val query = QueryCreator.googleStocksQuery(tickers)
     return googleApi.getStock(query).map({ gStocks ->
       lastFetched = System.currentTimeMillis()
-      val stocks = ArrayList<Stock>()
-      for (gStock in gStocks) {
-        stocks.add(StockConverter.convert(gStock))
-      }
+      val stocks = gStocks.map { StockConverter.convert(it) }
       val updatedStocks = StockConverter.convertResponseQuotes(stocks)
       updatedStocks
     }).onErrorReturn({ throwable ->
@@ -111,16 +108,28 @@ import javax.inject.Singleton
     val yahooObservable = getYahooFinanceStocks(yahooSymbols.toArray())
     val googleObservable = getGoogleFinanceStocks(googleSymbols.toArray())
     if (googleSymbols.isEmpty()) {
-      return yahooObservable
+      return yahooObservable.doOnNext { stocks ->
+        if (stocks.isEmpty()) {
+          throw Exception("No stocks returned")
+        }
+      }
     } else if (yahooSymbols.isEmpty()) {
-      return googleObservable
+      return googleObservable.doOnNext { stocks ->
+        if (stocks.isEmpty()) {
+          throw Exception("No stocks returned")
+        }
+      }
     } else {
       val allStocks: Observable<List<Stock>> = Observable.zip(googleObservable, yahooObservable,
           { stocks, stocks2 ->
             val zipped: MutableList<Stock> = ArrayList()
             zipped.addAll(stocks2)
             zipped.addAll(stocks)
-            zipped
+            if (zipped.isEmpty()) {
+              throw Exception("No stocks returned")
+            } else {
+              zipped
+            }
           })
       return allStocks
     }

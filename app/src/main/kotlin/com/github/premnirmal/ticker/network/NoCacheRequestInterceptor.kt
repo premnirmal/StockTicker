@@ -12,7 +12,7 @@ import okhttp3.Response
 import java.io.IOException
 
 /**
- * Created on 3/17/16.
+ * Created by premnirmal on 3/17/16.
  */
 internal class NoCacheRequestInterceptor(val context: Context, val bus: RxBus) : Interceptor {
 
