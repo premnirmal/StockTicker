@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.github.mikephil.charting.data.Entry
 import com.github.premnirmal.ticker.network.historicaldata.Quote
 import java.io.Serializable
@@ -9,11 +11,11 @@ import java.io.Serializable
  */
 class SerializableDataPoint : Entry, Serializable {
 
-  constructor(y: Float, x: Int) : super(y, x) {
-  }
+  constructor(y: Float, x: Int) : super(y, x)
 
-  constructor(y: Float, x: Int, data: Quote) : super(y, x, data) {
-  }
+  constructor(y: Float, x: Int, data: Quote) : super(y, x, data)
+
+  constructor(source: Parcel) : super(source)
 
   fun getQuote(): Quote {
     return (data as Quote)
@@ -22,5 +24,15 @@ class SerializableDataPoint : Entry, Serializable {
   companion object {
 
     private val serialVersionUID = 42L
+
+    val CREATOR: Parcelable.Creator<SerializableDataPoint> = object : Parcelable.Creator<SerializableDataPoint> {
+      override fun createFromParcel(source: Parcel): SerializableDataPoint {
+        return SerializableDataPoint(source)
+      }
+
+      override fun newArray(size: Int): Array<SerializableDataPoint?> {
+        return arrayOfNulls(size)
+      }
+    }
   }
 }

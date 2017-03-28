@@ -103,7 +103,7 @@ internal class AlarmScheduler {
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
           updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-      val instant = Instant.ofEpochSecond(System.currentTimeMillis() + nextAlarm)
+      val instant = Instant.ofEpochMilli(System.currentTimeMillis() + nextAlarm)
       val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
       return nextAlarmDate

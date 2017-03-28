@@ -4,9 +4,11 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.github.premnirmal.ticker.network.QueryCreator;
 import com.google.gson.annotations.SerializedName;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
+import org.threeten.bp.temporal.TemporalAccessor;
 
 public class Quote implements Parcelable, Comparable<Quote> {
 
@@ -34,8 +36,8 @@ public class Quote implements Parcelable, Comparable<Quote> {
 
   }
 
-  public ZonedDateTime getDate() {
-    return ZonedDateTime.parse(mDate, formatter.withZone(ZoneId.systemDefault()));
+  public TemporalAccessor getDate() {
+    return formatter.parse(mDate);
   }
 
   public Quote(Parcel in) {

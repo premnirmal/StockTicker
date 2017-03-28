@@ -15,6 +15,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.BaseActivity
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
@@ -111,12 +112,13 @@ class GraphActivity : BaseActivity() {
       val observable = historyProvider.getDataPoints(ticker.symbol, range)
       bind(observable).subscribe(object : SimpleSubscriber<Array<SerializableDataPoint?>>() {
         override fun onError(e: Throwable) {
+          CrashLogger.logException(e)
           showDialog("Error loading datapoints",
               DialogInterface.OnClickListener { dialog, which -> finish() })
         }
 
-        override fun onNext(data: Array<SerializableDataPoint?>) {
-          dataPoints = data
+        override fun onNext(result: Array<SerializableDataPoint?>) {
+          dataPoints = result
           loadGraph(dataPoints!!)
         }
       })

@@ -9,9 +9,11 @@ import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.network.StocksApi
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.TextStyle.SHORT
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -291,13 +293,12 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   internal fun createTimeString(time: ZonedDateTime): String {
     val fetched: String
-    val dfs = DateFormatSymbols.getInstance(Locale.ENGLISH)
     val fetchedDayOfWeek = time.dayOfWeek.value
     val today = ZonedDateTime.now().dayOfWeek.value
     if (today == fetchedDayOfWeek) {
       fetched = Tools.TIME_FORMATTER.format(time)
     } else {
-      val day: String = dfs.shortWeekdays[fetchedDayOfWeek % 7 + 1]
+      val day: String = DayOfWeek.from(time).getDisplayName(SHORT, Locale.getDefault())
       val timeStr: String = Tools.TIME_FORMATTER.format(time)
       fetched = "$timeStr $day"
     }

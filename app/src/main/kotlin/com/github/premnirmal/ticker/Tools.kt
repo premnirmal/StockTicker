@@ -28,7 +28,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
 
   companion object {
 
-    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:MM")
+    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")
 
     @JvmField
     val PREFS_NAME = "com.github.premnirmal.ticker"
@@ -132,7 +132,8 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
     val updateInterval: Long
       get() {
         val pref = instance.sharedPreferences.getInt(UPDATE_INTERVAL, 1)
-        return AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
+        val ms = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
+        return ms
       }
 
     fun timeAsIntArray(time: String): IntArray {
