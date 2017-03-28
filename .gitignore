@@ -61,3 +61,6 @@ app/keystore.*
 
 #crashlytics secret
 app/crashlytics.properties
+
+#google services
+app/google-services.json

@@ -1,15 +1,18 @@
 package com.github.premnirmal.ticker
 
-abstract class CrashLogger {
+import android.content.Context
 
-  private object Holder {
-    val INSTANCE = CrashLoggerImpl()
-  }
+abstract class CrashLogger constructor(context: Context) {
 
   companion object {
-    private val instance: CrashLogger by lazy { Holder.INSTANCE }
+    lateinit var INSTANCE: CrashLogger
+
+    internal fun init(context: Context) {
+      INSTANCE = CrashLoggerImpl(context)
+    }
+
     fun logException(throwable: Throwable) {
-      instance.log(throwable)
+      INSTANCE.log(throwable)
     }
   }
 

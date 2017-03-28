@@ -15,15 +15,10 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.WidgetClickReceiver
-import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import javax.inject.Inject
 import com.github.premnirmal.ticker.Analytics
-import org.joda.time.format.ISODateTimeFormat
 
 /**
  * Created by premnirmal on 2/27/16.
