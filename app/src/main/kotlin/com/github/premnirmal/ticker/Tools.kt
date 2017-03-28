@@ -9,11 +9,13 @@ import android.os.Environment
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.tickerwidget.R
+import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
 import java.text.DecimalFormat
 import java.text.Format
-import java.util.*
-import javax.inject.Singleton
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.Random
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -25,6 +27,9 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
   }
 
   companion object {
+
+    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:MM")
+
     @JvmField
     val PREFS_NAME = "com.github.premnirmal.ticker"
     @JvmField
@@ -69,7 +74,7 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
     private val random = Random(System.currentTimeMillis())
 
     val instance: Tools by lazy {
-      val sharedPreferences = BaseApp.instance.getSharedPreferences(Tools.PREFS_NAME,
+      val sharedPreferences = StocksApp.instance.getSharedPreferences(Tools.PREFS_NAME,
           Context.MODE_PRIVATE)
       Tools(sharedPreferences)
     }
@@ -275,10 +280,10 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
 
     fun getStatusBarHeight(): Int {
       val result: Int
-      val resourceId: Int = BaseApp.instance.resources.getIdentifier("status_bar_height", "dimen",
+      val resourceId: Int = StocksApp.instance.resources.getIdentifier("status_bar_height", "dimen",
           "android")
       if (resourceId > 0) {
-        result = BaseApp.instance.resources.getDimensionPixelSize(resourceId)
+        result = StocksApp.instance.resources.getDimensionPixelSize(resourceId)
       } else {
         result = 0
       }

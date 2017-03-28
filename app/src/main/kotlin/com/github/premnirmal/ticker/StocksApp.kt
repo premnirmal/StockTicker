@@ -2,16 +2,19 @@ package com.github.premnirmal.ticker
 
 import android.app.Application
 import com.github.premnirmal.tickerwidget.R
+import com.jakewharton.threetenabp.AndroidThreeTen
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-abstract class BaseApp : Application() {
+class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
     instance = this
+    CrashLogger.init(this)
+    AndroidThreeTen.init(this)
     CalligraphyConfig.initDefault(
         CalligraphyConfig.Builder()
             .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
@@ -19,10 +22,7 @@ abstract class BaseApp : Application() {
             .build())
     Injector.init(createAppComponent())
     Analytics.init(this)
-    initCrashLogger()
   }
-
-  protected abstract fun initCrashLogger()
 
   protected open fun createAppComponent(): AppComponent {
     val component: AppComponent = DaggerAppComponent.builder()
@@ -32,7 +32,7 @@ abstract class BaseApp : Application() {
   }
 
   companion object {
-    lateinit var instance: BaseApp
+    lateinit var instance: StocksApp
       private set
   }
 }

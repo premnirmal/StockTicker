@@ -2,12 +2,11 @@ package com.github.premnirmal.ticker.network.historicaldata;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.github.premnirmal.ticker.network.QueryCreator;
 import com.google.gson.annotations.SerializedName;
-
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 
 public class Quote implements Parcelable, Comparable<Quote> {
 
@@ -35,8 +34,8 @@ public class Quote implements Parcelable, Comparable<Quote> {
 
   }
 
-  public DateTime getDate() {
-    return formatter.parseDateTime(mDate);
+  public ZonedDateTime getDate() {
+    return ZonedDateTime.parse(mDate, formatter.withZone(ZoneId.systemDefault()));
   }
 
   public Quote(Parcel in) {

@@ -5,7 +5,7 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.network.QueryCreator
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.historicaldata.History
-import org.joda.time.DateTime
+import org.threeten.bp.ZonedDateTime
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -26,8 +26,8 @@ import javax.inject.Singleton
   }
 
   override fun getHistory(ticker: String, range: Range): Observable<History> {
-    val now = DateTime.now()
-    val from: DateTime
+    val now = ZonedDateTime.now()
+    val from: ZonedDateTime
     when (range) {
       Range.ONE_MONTH -> from = now.minusMonths(1)
       Range.THREE_MONTH -> from = now.minusMonths(3)

@@ -3,11 +3,11 @@ package com.github.premnirmal.ticker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.support.v4.content.WakefulBroadcastReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle.MEDIUM
 import javax.inject.Inject
 
 /**
@@ -21,7 +21,8 @@ class RefreshReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     Injector.inject(this)
     Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
-        "RefreshReceived on " + DateTimeFormat.mediumDateTime().print(DateTime.now()))
+        "RefreshReceived on " + DateTimeFormatter.ofLocalizedDateTime(MEDIUM).format(
+            LocalDateTime.now()))
     stocksProvider.fetch().subscribe(SimpleSubscriber<List<Stock>>())
   }
 }

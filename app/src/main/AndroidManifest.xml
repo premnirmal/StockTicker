@@ -15,6 +15,7 @@
       android:label="@string/app_name"
       android:theme="@style/AppTheme"
       tools:replace="android:icon">
+
     <activity
         android:name="com.github.premnirmal.ticker.ParanormalActivity"
         android:label="@string/app_name"
@@ -98,8 +99,8 @@
         android:permission="android.permission.BIND_REMOTEVIEWS"/>
 
     <meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version"/>
+        android:name="io.fabric.ApiKey"
+        android:value="856c59cfad291a9403df034e02e90219acfdedb1"/>
   </application>
 
 </manifest>
