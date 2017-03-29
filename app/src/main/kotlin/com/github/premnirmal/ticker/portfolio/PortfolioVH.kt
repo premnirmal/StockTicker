@@ -9,9 +9,6 @@ import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 
-private val PortfolioVH.i: Int
-  get() = itemView.resources.getColor(color.positive_green)
-
 /**
  * Created by premnirmal on 2/29/16.
  */
