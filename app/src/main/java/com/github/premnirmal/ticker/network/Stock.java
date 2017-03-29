@@ -12,7 +12,7 @@ public class Stock implements Comparable<Stock>, Serializable {
   public static final String GSPC_TICKER = "^GSPC";
   public static final String XAU_TICKER = "XAU";
 
-  private static final long serialVersionUID = -425355L;
+  private static final long serialVersionUID = -4235355L;
 
   @SerializedName("Symbol") public String symbol = "";
   @SerializedName("Name") public String Name = "";
