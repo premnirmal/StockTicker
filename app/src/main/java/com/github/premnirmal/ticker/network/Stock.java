@@ -19,9 +19,6 @@ public class Stock implements Comparable<Stock>, Serializable {
   @SerializedName("LastTradePriceOnly") public float LastTradePriceOnly;
   @SerializedName("ChangeinPercent") public String ChangeinPercent = "";
   @SerializedName("Change") public String Change = "";
-  @SerializedName("AverageDailyVolume") public String AverageDailyVolume = "";
-  @SerializedName("YearLow") public float YearLow;
-  @SerializedName("YearHigh") public float YearHigh;
   @SerializedName("StockExchange") public String StockExchange = "";
 
   // Add Position fields

@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network
 
-import java.util.*
+import java.util.ArrayList
 
 /**
  * Created by premnirmal on 3/21/16.
@@ -39,10 +39,6 @@ internal object StockConverter {
     }
     stock.Change = gStock.c
     stock.StockExchange = name
-
-    stock.AverageDailyVolume = "0"
-    stock.YearLow = 0.0f
-    stock.YearHigh = 0.0f
 
     return stock
   }

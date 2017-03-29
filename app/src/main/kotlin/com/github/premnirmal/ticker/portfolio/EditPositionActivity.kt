@@ -26,11 +26,16 @@ class EditPositionActivity : AddPositionActivity() {
       skipButton.setText(R.string.remove)
       sharesView.setText(stock.PositionShares.toString())
       val value = stock.PositionPrice.toString()
-      val priceString = "$$value"
+      val priceString: String
+      if (value.length > 3 && value.toCharArray()[value.length - 2] == '.') {
+        priceString = "${value}0"
+      } else {
+        priceString = value
+      }
       priceView.setText(priceString)
     } else {
       showDialog(getString(R.string.no_such_stock_in_portfolio),
-          DialogInterface.OnClickListener { p0, p1 -> finish() })
+          DialogInterface.OnClickListener { dialog, which -> finish() })
     }
   }
 

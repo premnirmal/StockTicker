@@ -157,21 +157,20 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         var position = getStock(ticker)
         if (position == null) {
           position = Stock()
+          position.symbol = ticker
         }
-        if (!ticker.contains(ticker)) {
+        if (!tickerList.contains(ticker)) {
           tickerList.add(ticker)
         }
-        position.symbol = ticker
-        position.PositionPrice = price
-        position.PositionShares = shares
-        positionList.remove(position)
-        if (shares != 0) {
+        if (shares > 0) {
           position.IsPosition = true
+          position.PositionPrice = price
+          position.PositionShares = shares
+          positionList.remove(position)
           positionList.add(position)
           stockList.remove(position)
           stockList.add(position)
           save()
-          fetch().subscribe(SimpleSubscriber<List<Stock>>())
         } else {
           removePosition(ticker)
         }
@@ -271,8 +270,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       if (index >= 0) {
         val stock = stockList[index]
         return stock
+      } else {
+        return null
       }
-      return null
     })
   }
 

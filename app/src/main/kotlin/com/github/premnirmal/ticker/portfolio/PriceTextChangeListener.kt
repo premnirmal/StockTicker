@@ -16,7 +16,7 @@ internal class PriceTextChangeListener(private val editText: EditText) : TextWat
 
   override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
     if (!s.toString().matches("^\\$(\\d{1,3}(,\\d{3})*|(\\d+))(\\.\\d{2})?$".toRegex())) {
-      val userInput = "" + s.toString().replace("[^\\d]".toRegex(), "")
+      val userInput = s.toString().replace("[^\\d]".toRegex(), "")
       val amountBuilder = StringBuilder(userInput)
 
       while (amountBuilder.length > 3 && amountBuilder[0] == '0') {

@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList
 
@@ -65,10 +66,10 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
     val context = parent.context
     val portfolioVH: PortfolioVH
     if (viewType == TYPE_POSITION) {
-      val itemView = LayoutInflater.from(context).inflate(R.layout.item_position, null)
+      val itemView = LayoutInflater.from(context).inflate(R.layout.item_position, parent, false)
       portfolioVH = PositionVH(itemView)
     } else {
-      val itemView = LayoutInflater.from(context).inflate(R.layout.item_stock, null)
+      val itemView = LayoutInflater.from(context).inflate(R.layout.item_stock, parent, false)
       portfolioVH = StockVH(itemView)
     }
     return portfolioVH
@@ -78,7 +79,11 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
     try {
       holder.update(stockList[position], listener)
     } catch (e: Exception) {
-      CrashLogger.logException(e)
+      if (BuildConfig.DEBUG) {
+        throw e
+      } else {
+        CrashLogger.logException(e)
+      }
     }
   }
 
