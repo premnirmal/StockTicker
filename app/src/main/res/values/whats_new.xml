@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>UI fixes</item>
+    <item>Edit positions fix</item>
     <item>Schedule time bug fixes</item>
     <item>Using proguard for code obfuscation</item>
   </string-array>

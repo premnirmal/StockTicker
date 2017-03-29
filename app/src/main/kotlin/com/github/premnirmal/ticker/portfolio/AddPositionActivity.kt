@@ -31,6 +31,7 @@ open class AddPositionActivity : BaseActivity() {
     Injector.inject(this)
     ticker = intent.getStringExtra(TICKER)
     setContentView(R.layout.activity_positions)
+    toolbar.setTitle(R.string.add_position)
     updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {
       finish()

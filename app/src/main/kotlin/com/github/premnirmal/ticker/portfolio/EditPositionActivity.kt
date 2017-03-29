@@ -6,6 +6,7 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.shares
 import kotlinx.android.synthetic.main.activity_positions.skipButton
+import kotlinx.android.synthetic.main.activity_positions.toolbar
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -18,6 +19,7 @@ class EditPositionActivity : AddPositionActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    toolbar.setTitle(R.string.edit_position)
     val stock = stocksProvider.getStock(ticker)
     if (stock != null) {
       val sharesView = shares
