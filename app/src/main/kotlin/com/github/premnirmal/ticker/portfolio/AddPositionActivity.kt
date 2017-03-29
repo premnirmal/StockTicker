@@ -5,7 +5,12 @@ import com.github.premnirmal.ticker.BaseActivity
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_positions.*
+import kotlinx.android.synthetic.main.activity_positions.doneButton
+import kotlinx.android.synthetic.main.activity_positions.price
+import kotlinx.android.synthetic.main.activity_positions.shares
+import kotlinx.android.synthetic.main.activity_positions.skipButton
+import kotlinx.android.synthetic.main.activity_positions.tickerName
+import kotlinx.android.synthetic.main.activity_positions.toolbar
 import javax.inject.Inject
 
 /**
@@ -19,24 +24,25 @@ open class AddPositionActivity : BaseActivity() {
 
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
-  protected var ticker: String? = null
+  lateinit protected var ticker: String
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.inject(this)
+    ticker = intent.getStringExtra(TICKER)
     setContentView(R.layout.activity_positions)
     updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {
       finish()
     }
-
-    ticker = intent.getStringExtra(TICKER)
     val name = tickerName
     name.text = ticker
 
     doneButton.setOnClickListener { onDoneClicked() }
 
     skipButton.setOnClickListener { skip() }
+
+    price.addTextChangedListener(PriceTextChangeListener(price))
   }
 
   protected open fun skip() {
@@ -46,7 +52,7 @@ open class AddPositionActivity : BaseActivity() {
   protected fun onDoneClicked() {
     val sharesView = shares
     val priceView = price
-    val priceText = priceView.text.toString()
+    val priceText = priceView.text.toString().substring(1)
     val sharesText = sharesView.text.toString()
     if (!priceText.isEmpty() && !sharesText.isEmpty()) {
       val price = java.lang.Float.parseFloat(priceText)

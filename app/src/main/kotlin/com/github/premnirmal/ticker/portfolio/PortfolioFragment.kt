@@ -168,12 +168,14 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     attemptingFetch = true
     bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
       override fun onError(e: Throwable) {
+        attemptingFetch = false
         CrashLogger.logException(e)
         swipe_container.isRefreshing = false
         InAppMessage.showMessage(fragment_root, getString(string.refresh_failed))
       }
 
       override fun onNext(result: List<Stock>) {
+        attemptingFetch = false
         swipe_container.isRefreshing = false
         update()
       }
@@ -185,7 +187,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       if (stocksProvider.getStocks().isEmpty()) {
         if (!attemptingFetch) {
           fetch()
-          attemptingFetch = false
+          return
         }
       }
       if (stockList != null) {
@@ -202,12 +204,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
           .setMessage("Are you sure you want to remove ${stock.symbol} from your portfolio?")
           .setPositiveButton("Remove", { dialog, which ->
             stocksProvider.removeStock(stock.symbol)
-            val index = stocksAdapter.remove(stock)
-            if (index >= 0) {
-              stocksAdapter.notifyItemRemoved(index)
-              // Refresh last two so that the bottom spacing is fixed
-              stocksAdapter.notifyItemRangeChanged(stocksAdapter.itemCount - 3, 2)
-            }
+            stocksAdapter.remove(stock)
             dialog.dismiss()
           })
           .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() })

@@ -3,7 +3,9 @@ package com.github.premnirmal.ticker.portfolio
 import android.content.DialogInterface
 import android.os.Bundle
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_positions.*
+import kotlinx.android.synthetic.main.activity_positions.price
+import kotlinx.android.synthetic.main.activity_positions.shares
+import kotlinx.android.synthetic.main.activity_positions.skipButton
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -22,8 +24,10 @@ class EditPositionActivity : AddPositionActivity() {
       val priceView = price
       val skipButton = skipButton
       skipButton.setText(R.string.remove)
-      sharesView.setText("" + stock.PositionShares)
-      priceView.setText("" + stock.PositionPrice)
+      sharesView.setText(stock.PositionShares.toString())
+      val value = stock.PositionPrice.toString()
+      val priceString = "$$value"
+      priceView.setText(priceString)
     } else {
       showDialog(getString(R.string.no_such_stock_in_portfolio),
           DialogInterface.OnClickListener { p0, p1 -> finish() })

@@ -17,7 +17,6 @@ import org.threeten.bp.format.TextStyle.SHORT
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.text.DateFormatSymbols
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
@@ -183,6 +182,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun removePosition(ticker: String?) {
     val position = getStock(ticker) ?: return
     position.IsPosition = false
+    position.PositionPrice = 0f
+    position.PositionShares = 0
     positionList.remove(position)
     save()
   }

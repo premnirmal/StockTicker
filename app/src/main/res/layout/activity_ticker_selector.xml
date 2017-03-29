@@ -22,7 +22,7 @@
       android:layout_height="wrap_content"
       android:id="@+id/query"
       android:imeOptions="actionDone"
-      android:singleLine="true"
+      android:maxLines="1"
       android:layout_marginLeft="@dimen/activity_horizontal_margin"
       android:layout_marginRight="@dimen/activity_horizontal_margin"
       android:layout_marginTop="@dimen/activity_horizontal_margin"
