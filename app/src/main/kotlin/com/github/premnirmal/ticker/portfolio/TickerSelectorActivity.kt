@@ -69,8 +69,8 @@ class TickerSelectorActivity : BaseActivity() {
                 AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(
                 object : SimpleSubscriber<List<Suggestion>>() {
 
-                  override fun onError(throwable: Throwable) {
-                    CrashLogger.logException(throwable)
+                  override fun onError(e: Throwable) {
+                    CrashLogger.logException(e)
                     InAppMessage.showMessage(this@TickerSelectorActivity,
                         R.string.error_fetching_suggestions)
                   }
@@ -106,7 +106,7 @@ class TickerSelectorActivity : BaseActivity() {
               DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
         }
       } else {
-        showDialog("${ticker} is already in your portfolio")
+        showDialog("$ticker is already in your portfolio")
       }
     })
 

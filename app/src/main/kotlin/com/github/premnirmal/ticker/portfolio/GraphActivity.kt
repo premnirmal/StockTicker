@@ -23,7 +23,6 @@ import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.model.SerializableDataPoint
 import com.github.premnirmal.ticker.network.Stock
-import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
 import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
 import kotlinx.android.synthetic.main.activity_graph.graphView
@@ -184,14 +183,9 @@ class GraphActivity : BaseActivity() {
     }
     Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name)
     val parent = v.parent as ViewGroup
-    for (i in 0..parent.childCount - 1) {
-      val view = parent.getChildAt(i)
-      if (view !== v) {
-        view.isEnabled = true
-      } else {
-        view.isEnabled = false
-      }
-    }
+    (0..parent.childCount - 1)
+        .map { parent.getChildAt(it) }
+        .forEach { it.isEnabled = it != v }
     getData()
   }
 
