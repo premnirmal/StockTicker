@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
+import com.github.premnirmal.ticker.mock.Mocker
 import org.junit.After
 import org.junit.Before
 import org.robolectric.Robolectric
@@ -27,6 +28,12 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
     }
   }
 
+  @After
+  fun afterTestDestroy() {
+    mController.pause().stop().destroy()
+    Mocker.clear()
+  }
+
   protected fun setIntent(intent: Intent) {
     assertNull("Cannot set intent after starting the activity", mActivity)
     mController.withIntent(intent)
@@ -48,11 +55,6 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
     mActivity = mController.setup().get()
   }
 
-  @After
-  fun afterTestDestroy() {
-    mController.pause().stop().destroy()
-  }
-
   protected fun findFragment(tag: String): Fragment {
     return mActivity.supportFragmentManager.findFragmentByTag(tag)
   }
@@ -64,4 +66,4 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
     assertTrue(fragment.isVisible)
     return fragment
   }
-}/* autoCreateActivity */
+}

@@ -11,6 +11,4 @@ import javax.inject.Singleton
 @Component(
     modules = arrayOf(MockAppModule::class)
 )
-interface MockAppComponent : AppComponent {
-
-}
+interface MockAppComponent : AppComponent

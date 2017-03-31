@@ -45,7 +45,7 @@ dexcount {
 
 android {
   compileSdkVersion 25
-  buildToolsVersion '25.0.1'
+  buildToolsVersion '25.0.2'
 
   sourceSets {
     String testDir = 'src/test/kotlin'
@@ -139,27 +139,43 @@ android {
   }
 }
 
+kapt {
+  generateStubs = true
+}
+
 dependencies {
+  final SUPPORT_LIBRARY_VERSION = '25.2.0'
+  final DAGGER_VERSION = '2.6.1'
+  final DEXMAKER_VERSION = '1.4'
+  final MOCKITO_VERSION = '2.7.5'
+  final JUNIT_VERSION = '4.12'
+  final RUNNER_VERSION = '0.5'
+  final RETROFIT_VERSION = '2.2.0'
+  final OKHTTP_VERSION = '3.5.0'
+  final RXJAVA_VERSION = '1.1.0'
+  final ROBOLECTRIC_VERSION = '3.2.2'
+  final PLAY_SERVICES_VERSION = '10.0.1'
+
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  compile 'com.android.support:appcompat-v7:25.2.0'
-  compile 'com.android.support:support-v4:25.2.0'
-  compile 'com.android.support:design:25.2.0'
+  compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
+  compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+  compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
 
   compile 'javax.inject:javax.inject:1'
   compile 'javax.annotation:javax.annotation-api:1.2'
 
-  compile 'com.google.dagger:dagger:2.6.1'
-  kapt 'com.google.dagger:dagger-compiler:2.6.1'
+  compile "com.google.dagger:dagger:$DAGGER_VERSION"
+  kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
-  compile 'com.squareup.okhttp3:okhttp:3.5.0'
-  compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
-  compile 'com.squareup.retrofit2:retrofit:2.2.0'
-  compile 'com.squareup.retrofit2:converter-gson:2.2.0'
-  compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
+  compile "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
+  compile "com.squareup.okhttp3:logging-interceptor:$OKHTTP_VERSION"
+  compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
+  compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
+  compile "com.squareup.retrofit2:adapter-rxjava:$RETROFIT_VERSION"
 
-  compile 'io.reactivex:rxandroid:1.1.0'
-  compile 'io.reactivex:rxjava:1.1.0'
+  compile "io.reactivex:rxandroid:$RXJAVA_VERSION"
+  compile "io.reactivex:rxjava:$RXJAVA_VERSION"
 
   compile 'com.trello:rxlifecycle:0.5.0'
   compile 'com.trello:rxlifecycle-kotlin:0.5.0'
@@ -171,31 +187,29 @@ dependencies {
   compile 'uk.co.chrisjenx:calligraphy:2.1.0'
   devCompile 'com.jakewharton.timber:timber:4.3.1'
 
-  prodCompile 'com.google.android.gms:play-services-analytics:10.0.1'
+  prodCompile "com.google.android.gms:play-services-analytics:$PLAY_SERVICES_VERSION"
   prodCompile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
     transitive = true;
   }
 
-  testCompile 'junit:junit:4.12'
+  testCompile "junit:junit:$JUNIT_VERSION"
   testCompile 'org.assertj:assertj-core:1.7.1'
-  testCompile 'org.robolectric:robolectric:3.2.2'
-  testCompile 'org.robolectric:shadows-support-v4:3.2.2'
-  testCompile 'com.android.support:support-annotations:25.2.0'
+  testCompile "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"
+  testCompile "org.robolectric:shadows-support-v4:$ROBOLECTRIC_VERSION"
+  testCompile "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
   testCompile('com.android.support.test:rules:0.5') {
     exclude group: 'com.android.support', module: 'support-annotations'
   }
-  testCompile('com.android.support.test:runner:0.5') {
+  testCompile("com.android.support.test:runner:$RUNNER_VERSION") {
     exclude group: 'com.android.support', module: 'support-annotations'
   }
   testCompile 'com.android.tools:testutils:24.3.1'
-  testCompile 'com.linkedin.dexmaker:dexmaker-mockito:2.2.0'
-  testCompile 'org.hamcrest:hamcrest-library:1.3'
-  testCompile 'org.mockito:mockito-core:2.7.5'
-  testCompile('com.nhaarman:mockito-kotlin:1.3.0') {
-    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
-    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-reflect'
-  }
-  kaptAndroidTest 'com.google.dagger:dagger-compiler:2.6.1'
+  testCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
+  androidTestCompile "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
+  androidTestCompile "com.crittercism.dexmaker:dexmaker-dx:$DEXMAKER_VERSION"
+  androidTestCompile "com.crittercism.dexmaker:dexmaker-mockito:$DEXMAKER_VERSION"
+  kaptAndroidTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+  androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 }
 
 apply plugin: 'com.google.gms.google-services'

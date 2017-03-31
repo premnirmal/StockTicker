@@ -22,7 +22,7 @@ class MockAppModule(private val app: Context) {
   @Provides
   @Singleton
   internal fun provideEventBus(): RxBus {
-    return mock(RxBus::class.java)
+    return Mocker.provide(RxBus::class.java)
   }
 
   @Provides
