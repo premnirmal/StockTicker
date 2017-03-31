@@ -6,7 +6,6 @@ apply from: '../build.gradle'
 apply plugin: 'com.getkeepsafe.dexcount'
 
 buildscript {
-  ext.kotlin_version = '1.0.6'
   repositories {
     jcenter()
     mavenCentral()
@@ -150,8 +149,8 @@ dependencies {
   compile 'javax.inject:javax.inject:1'
   compile 'javax.annotation:javax.annotation-api:1.2'
 
-  compile 'com.google.dagger:dagger:2.0'
-  kapt 'com.google.dagger:dagger-compiler:2.0'
+  compile 'com.google.dagger:dagger:2.6.1'
+  kapt 'com.google.dagger:dagger-compiler:2.6.1'
 
   compile 'com.squareup.okhttp3:okhttp:3.5.0'
   compile 'com.squareup.okhttp3:logging-interceptor:3.5.0'
@@ -196,7 +195,7 @@ dependencies {
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
     exclude group: 'org.jetbrains.kotlin', module: 'kotlin-reflect'
   }
-  kaptTest 'com.google.dagger:dagger-compiler:2.0'
+  kaptAndroidTest 'com.google.dagger:dagger-compiler:2.6.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

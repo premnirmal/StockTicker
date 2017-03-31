@@ -9,7 +9,7 @@
 .DS_Store
 /build
 /captures
-
+app/build
 
 # ignore keystore and keystore.properties
 *.jks

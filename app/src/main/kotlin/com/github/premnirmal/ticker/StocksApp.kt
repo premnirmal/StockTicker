@@ -8,7 +8,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 /**
  * Created by premnirmal on 2/26/16.
  */
-class StocksApp : Application() {
+open class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
