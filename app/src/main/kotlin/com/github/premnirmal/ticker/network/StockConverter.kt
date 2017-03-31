@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.network
 
+import com.github.premnirmal.ticker.network.data.GStock
+import com.github.premnirmal.ticker.network.data.Stock
 import java.util.ArrayList
 
 /**
@@ -9,11 +11,11 @@ internal object StockConverter {
 
   fun convert(gStock: GStock): Stock {
     val stock = Stock()
-    val name = if (gStock.e != null) gStock.e.replace("INDEX", "") else gStock.t
+    val name = if (!gStock.e.isNullOrEmpty()) gStock.e.replace("INDEX", "") else gStock.t
     stock.symbol = gStock.t
     stock.Name = name
     stock.LastTradePriceOnly =
-        if (gStock.lCur != null) {
+        if (!gStock.lCur.isNullOrEmpty()) {
           try {
             (gStock.lCur.replace(",", "")).toFloat()
           } catch(e: Exception) {
@@ -23,7 +25,7 @@ internal object StockConverter {
           0f
         }
     var changePercent: Double
-    if (gStock.cp == null || gStock.cp.isNullOrEmpty()) {
+    if (gStock.cp.isNullOrEmpty()) {
       changePercent = 0.0
     } else {
       try {
@@ -45,11 +47,7 @@ internal object StockConverter {
 
   fun convertResponseQuotes(quotes: List<Stock>): List<Stock> {
     for (quote in quotes) {
-      val newSymbol = if (quote != null && quote.symbol != null) {
-        quote.symbol.replace(".", "^")
-      } else {
-        ""
-      }
+      val newSymbol = quote.symbol.replace(".", "^")
       quote.symbol = newSymbol
     }
     return quotes

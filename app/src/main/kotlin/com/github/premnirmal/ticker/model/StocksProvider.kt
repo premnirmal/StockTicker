@@ -7,8 +7,8 @@ import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.data.Stock
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -151,7 +151,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return tickerList
   }
 
-  override fun addPosition(ticker: String?, shares: Int, price: Float) {
+  override fun addPosition(ticker: String, shares: Int, price: Float) {
     if (ticker != null) {
       synchronized(stockList, {
         var position = getStock(ticker)
@@ -178,7 +178,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
   }
 
-  override fun removePosition(ticker: String?) {
+  override fun removePosition(ticker: String) {
     val position = getStock(ticker) ?: return
     position.IsPosition = false
     position.PositionPrice = 0f
@@ -262,7 +262,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return getStocks()
   }
 
-  override fun getStock(ticker: String?): Stock? {
+  override fun getStock(ticker: String): Stock? {
     synchronized(stockList, {
       val dummy = Stock()
       dummy.symbol = ticker

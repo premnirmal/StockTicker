@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.tickerwidget.R
 import java.util.Random
 import javax.inject.Inject
@@ -13,7 +13,11 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class UpdateReceiver : BroadcastReceiver() {
+class UpdateReceiver() : BroadcastReceiver() {
+
+  init {
+    Injector.inject(this)
+  }
 
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
@@ -24,7 +28,6 @@ class UpdateReceiver : BroadcastReceiver() {
   internal val random = Random(System.currentTimeMillis())
 
   override fun onReceive(context: Context, intent: Intent) {
-    Injector.inject(this)
     val path = context.getString(R.string.package_replaced_string)
     val intentData = intent.dataString
     if (path == intentData || "package:" + path == intentData) {

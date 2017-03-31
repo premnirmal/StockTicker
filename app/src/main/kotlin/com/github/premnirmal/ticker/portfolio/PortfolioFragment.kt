@@ -20,7 +20,7 @@ import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
@@ -62,7 +62,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   override fun onClick(view: View, stock: Stock, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-    if (stock.isIndex) {
+    if (stock.isIndex()) {
       popupWindow.menu.findItem(R.id.graph).isEnabled = false
       popupWindow.menu.findItem(R.id.positions).isEnabled = false
     } else {
@@ -117,7 +117,8 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight()
+      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight(
+          activity)
     }
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager

@@ -2,8 +2,13 @@
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
 
-# Retain the names of all classes in the network package because they are serialized/deserialized
--keepnames class com.github.premnirmal.ticker.network.** { *; }
+# Retain the names of all classes in the data package for gson to deserialize
+-keepnames class com.github.premnirmal.ticker.network.data.** { *; }
+
+# Get rid of kotlin's run-time nullchecks
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
 
 # Android support
 -dontwarn android.support.v4.**

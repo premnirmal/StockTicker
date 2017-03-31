@@ -22,7 +22,8 @@ import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.model.SerializableDataPoint
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
 import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
 import kotlinx.android.synthetic.main.activity_graph.graphView
@@ -52,7 +53,7 @@ class GraphActivity : BaseActivity() {
     Injector.inject(this)
     setContentView(R.layout.activity_graph)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, Tools.getStatusBarHeight(),
+      graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, Tools.getStatusBarHeight(this),
           graphActivityRoot.paddingRight, graphActivityRoot.paddingBottom)
     }
     graphView.isDoubleTapToZoomEnabled = false

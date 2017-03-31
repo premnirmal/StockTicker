@@ -12,7 +12,6 @@ class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    instance = this
     CrashLogger.init(this)
     AndroidThreeTen.init(this)
     CalligraphyConfig.initDefault(
@@ -29,10 +28,5 @@ class StocksApp : Application() {
         .appModule(AppModule(this))
         .build()
     return component
-  }
-
-  companion object {
-    lateinit var instance: StocksApp
-      private set
   }
 }

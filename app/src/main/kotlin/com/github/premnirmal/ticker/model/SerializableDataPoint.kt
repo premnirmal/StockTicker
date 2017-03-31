@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.model
 import android.os.Parcel
 import android.os.Parcelable
 import com.github.mikephil.charting.data.Entry
-import com.github.premnirmal.ticker.network.historicaldata.Quote
+import com.github.premnirmal.ticker.network.data.historicaldata.Quote
 import java.io.Serializable
 
 /**

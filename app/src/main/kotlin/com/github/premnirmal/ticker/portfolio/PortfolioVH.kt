@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
@@ -43,7 +43,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     nameView.text = stock.Name
 
     val change: Double
-    if (stock.Change != null && !stock.Change.isEmpty()) {
+    if (!stock.Change.isEmpty()) {
       change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
     } else {
       change = 0.0
@@ -51,8 +51,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
 
     var changeVal: Double
     var changePercentVal: Double
-    if (stock.Change != null && !stock.Change.isEmpty()
-        && stock.ChangeinPercent != null && !stock.ChangeinPercent.isEmpty()) {
+    if (!stock.Change.isEmpty() && !stock.ChangeinPercent.isEmpty()) {
       try {
         changeVal = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
         changePercentVal = java.lang.Double.parseDouble(

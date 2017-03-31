@@ -14,7 +14,7 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.tickerwidget.R
 import java.util.*
 import javax.inject.Inject

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
 import com.github.premnirmal.tickerwidget.BuildConfig
@@ -55,7 +55,7 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
     val stock = stockList[position]
     if (stock.IsPosition) {
       return TYPE_POSITION
-    } else if (stock.isIndex) {
+    } else if (stock.isIndex()) {
       return TYPE_INDEX
     } else {
       return TYPE_STOCK
