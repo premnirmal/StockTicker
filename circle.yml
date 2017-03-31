@@ -8,6 +8,7 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "build-tools-25.0.1"
     - echo y | android update sdk --no-ui --all --filter "extra-android-m2repository"
     - echo y | android update sdk --no-ui --all --filter "extra-android-support"
+    - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
 test:
   override:
     - ./gradlew assembleDebug -PdisablePreDex
