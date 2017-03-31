@@ -11,27 +11,26 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
+import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.WidgetClickReceiver
-import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import javax.inject.Inject
-import com.github.premnirmal.ticker.Analytics
-import org.joda.time.format.ISODateTimeFormat
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StockWidget : AppWidgetProvider() {
+class StockWidget() : AppWidgetProvider() {
 
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
+
+  init {
+    Injector.inject(this)
+  }
 
   override fun onReceive(context: Context, intent: Intent) {
     super.onReceive(context, intent)
@@ -43,7 +42,6 @@ class StockWidget : AppWidgetProvider() {
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetIds: IntArray) {
-    Injector.inject(this)
     Analytics.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       val min_width: Int
@@ -87,7 +85,6 @@ class StockWidget : AppWidgetProvider() {
 
   override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetId: Int, newOptions: Bundle) {
-    Injector.inject(this)
     val min_width = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
     Analytics.trackWidgetSizeUpdate("${min_width}px")

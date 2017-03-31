@@ -14,11 +14,10 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.Suggestion
 import com.github.premnirmal.ticker.network.SuggestionApi
+import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_ticker_selector.*
-import rx.Subscriber
+import kotlinx.android.synthetic.main.activity_ticker_selector.toolbar
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -64,19 +63,19 @@ class TickerSelectorActivity : BaseActivity() {
           subscription?.unsubscribe()
           if (Tools.isNetworkOnline(applicationContext)) {
             val observable = suggestionApi.getSuggestions(query)
-            subscription = bind(
-                observable).map { suggestions -> suggestions.ResultSet.Result }.observeOn(
-                AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(
-                object : SimpleSubscriber<List<Suggestion>>() {
-
-                  override fun onError(throwable: Throwable) {
-                    CrashLogger.logException(throwable)
+            subscription = bind(observable)
+                .map { suggestions -> suggestions.ResultSet?.Result }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(object : SimpleSubscriber<List<Suggestion>>() {
+                  override fun onError(e: Throwable) {
+                    CrashLogger.logException(e)
                     InAppMessage.showMessage(this@TickerSelectorActivity,
                         R.string.error_fetching_suggestions)
                   }
 
-                  override fun onNext(suggestions: List<Suggestion>) {
-                    val suggestionList = suggestions
+                  override fun onNext(result: List<Suggestion>) {
+                    val suggestionList = result
                     listView.adapter = SuggestionsAdapter(suggestionList)
                   }
                 })
@@ -106,7 +105,7 @@ class TickerSelectorActivity : BaseActivity() {
               DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
         }
       } else {
-        showDialog("${ticker} is already in your portfolio")
+        showDialog("$ticker is already in your portfolio")
       }
     })
 

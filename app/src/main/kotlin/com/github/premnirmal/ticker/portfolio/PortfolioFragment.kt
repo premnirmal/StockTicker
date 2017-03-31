@@ -4,10 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.os.Parcelable
-import android.support.design.widget.CoordinatorLayout
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -23,11 +20,12 @@ import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.string
 import com.jakewharton.rxbinding.widget.RxPopupMenu
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
 import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
@@ -55,9 +53,8 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   @Inject
   lateinit internal var bus: RxBus
 
-  private val handler = Handler(Looper.getMainLooper())
   private var listViewState: Parcelable? = null
-
+  private var attemptingFetch = false
   private val stocksAdapter by lazy {
     StocksAdapter(stocksProvider, this as OnStockClickListener)
   }
@@ -65,7 +62,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   override fun onClick(view: View, stock: Stock, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-    if (stock.isIndex) {
+    if (stock.isIndex()) {
       popupWindow.menu.findItem(R.id.graph).isEnabled = false
       popupWindow.menu.findItem(R.id.positions).isEnabled = false
     } else {
@@ -84,7 +81,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
               }
               R.id.positions -> {
                 val intent = Intent(activity, EditPositionActivity::class.java)
-                intent.putExtra(EditPositionActivity.TICKER, stock?.symbol)
+                intent.putExtra(EditPositionActivity.TICKER, stock.symbol)
                 activity.startActivity(intent)
               }
               R.id.remove -> {
@@ -120,7 +117,8 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight()
+      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight(
+          activity)
     }
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
@@ -130,18 +128,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
-      bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
-        override fun onError(e: Throwable) {
-          CrashLogger.logException(e)
-          swipe_container.isRefreshing = false
-          InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
-        }
-
-        override fun onNext(t: List<Stock>) {
-          swipe_container.isRefreshing = false
-          update()
-        }
-      })
+      fetch()
     })
     toolbar.inflateMenu(R.menu.menu_paranormal)
     toolbar.setOnMenuItemClickListener { item ->
@@ -172,23 +159,38 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       listViewState = savedInstanceState.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
     }
 
-    val params = add_ticker_button.layoutParams as CoordinatorLayout.LayoutParams
-    params.behavior = FABBehaviour()
-    add_ticker_button.layoutParams = params
     add_ticker_button.setOnClickListener({ v ->
       val intent = Intent(v.context, TickerSelectorActivity::class.java)
       startActivity(intent)
     })
   }
 
-  override fun onDestroyView() {
-    handler.removeCallbacksAndMessages(null)
-    super.onDestroyView()
+  internal fun fetch() {
+    attemptingFetch = true
+    bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
+      override fun onError(e: Throwable) {
+        attemptingFetch = false
+        CrashLogger.logException(e)
+        swipe_container.isRefreshing = false
+        InAppMessage.showMessage(fragment_root, getString(string.refresh_failed))
+      }
+
+      override fun onNext(result: List<Stock>) {
+        attemptingFetch = false
+        swipe_container.isRefreshing = false
+        update()
+      }
+    })
   }
 
   internal fun update() {
-    val activity = activity
     if (activity != null) {
+      if (stocksProvider.getStocks().isEmpty()) {
+        if (!attemptingFetch) {
+          fetch()
+          return
+        }
+      }
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
         stockList.adapter = stocksAdapter
@@ -203,12 +205,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
           .setMessage("Are you sure you want to remove ${stock.symbol} from your portfolio?")
           .setPositiveButton("Remove", { dialog, which ->
             stocksProvider.removeStock(stock.symbol)
-            val index = stocksAdapter.remove(stock)
-            if (index >= 0) {
-              stocksAdapter.notifyItemRemoved(index)
-              // Refresh last two so that the bottom spacing is fixed
-              stocksAdapter.notifyItemRangeChanged(stocksAdapter.itemCount - 3, 2)
-            }
+            stocksAdapter.remove(stock)
             dialog.dismiss()
           })
           .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() })

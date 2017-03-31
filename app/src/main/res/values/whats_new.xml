@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>A new widget size of 2x1!</item>
-    <item>Fix for ^GSPC ticker</item>
-    <item>Updated to OkHttp3</item>
+    <item>No more Java - all Kotlin now!</item>
+    <item>Schedule time bug fixes</item>
+    <item>Using proguard for code obfuscation</item>
   </string-array>
 </resources>

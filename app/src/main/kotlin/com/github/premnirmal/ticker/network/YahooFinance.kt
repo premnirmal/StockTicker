@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
+import com.github.premnirmal.ticker.network.data.historicaldata.HistoricalData
 import com.google.gson.JsonElement
 import retrofit2.http.GET
 import retrofit2.http.Query

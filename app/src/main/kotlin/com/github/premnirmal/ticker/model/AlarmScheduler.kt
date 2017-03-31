@@ -7,15 +7,16 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
+import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.RefreshReceiver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.tickerwidget.R
-import org.joda.time.DateTime
-import org.joda.time.DateTimeConstants
-import org.joda.time.DateTimeZone
-import org.joda.time.MutableDateTime
-import com.github.premnirmal.ticker.Analytics
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -35,9 +36,9 @@ internal class AlarmScheduler {
     }
 
     internal fun msToNextAlarm(): Long {
-      val hourOfDay = DateTime.now().hourOfDay().get()
-      val minuteOfHour = DateTime.now().minuteOfHour().get()
-      val dayOfWeek = DateTime.now().dayOfWeek
+      val hourOfDay = LocalDateTime.now().hour
+      val minuteOfHour = LocalDateTime.now().minute
+      val dayOfWeek = LocalDateTime.now().dayOfWeek
 
       val startTimez = Tools.startTime()
       val endTimez = Tools.endTime()
@@ -52,50 +53,48 @@ internal class AlarmScheduler {
         }
       })
 
-      val mutableDateTime = MutableDateTime(DateTime.now())
-      mutableDateTime.zone = DateTimeZone.getDefault()
+      var mutableDateTime: ZonedDateTime = ZonedDateTime.now()
 
       var set = false
 
       if (hourOfDay > endTimez[0] || hourOfDay == endTimez[0] && minuteOfHour > endTimez[1]) {
-        mutableDateTime.addDays(1)
-        mutableDateTime.hourOfDay = startTimez[0]
-        mutableDateTime.minuteOfHour = startTimez[1]
+        mutableDateTime = mutableDateTime.plusDays(1)
+            .withHour(startTimez[0])
+            .withMinute(startTimez[1])
         set = true
-      } else if (dayOfWeek <= DateTimeConstants.FRIDAY && (hourOfDay < startTimez[0] || hourOfDay == startTimez[0] && minuteOfHour < startTimez[1])) {
-        mutableDateTime.hourOfDay = startTimez[0]
-        mutableDateTime.minuteOfHour = startTimez[1]
-        return mutableDateTime.millis - DateTime.now().millis
+      } else if (dayOfWeek <= DayOfWeek.FRIDAY && (hourOfDay < startTimez[0] || hourOfDay == startTimez[0] && minuteOfHour < startTimez[1])) {
+        mutableDateTime = mutableDateTime.withHour(startTimez[0])
+            .withMinute(startTimez[1])
+        return mutableDateTime.toInstant().toEpochMilli() - ZonedDateTime.now().toInstant().toEpochMilli()
       }
 
-      if (set && dayOfWeek == DateTimeConstants.FRIDAY) {
-        mutableDateTime.addDays(2)
+      if (set && dayOfWeek == DayOfWeek.FRIDAY) {
+        mutableDateTime = mutableDateTime.plusDays(2)
       }
 
-      if (dayOfWeek > DateTimeConstants.FRIDAY) {
-        if (dayOfWeek == DateTimeConstants.SATURDAY) {
-          mutableDateTime.addDays(if (set) 1 else 2)
-        } else if (dayOfWeek == DateTimeConstants.SUNDAY) {
+      if (dayOfWeek > DayOfWeek.FRIDAY) {
+        if (dayOfWeek == DayOfWeek.SATURDAY) {
+          mutableDateTime = mutableDateTime.plusDays(if (set) 1 else 2)
+        } else if (dayOfWeek == DayOfWeek.SUNDAY) {
           if (!set) {
-            mutableDateTime.addDays(1)
+            mutableDateTime = mutableDateTime.plusDays(1)
           }
         }
         if (!set) {
           set = true
-          mutableDateTime.hourOfDay = startTimez[0]
-          mutableDateTime.minuteOfHour = startTimez[1]
+          mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
         }
       }
       val msToNextAlarm: Long
       if (set) {
-        msToNextAlarm = mutableDateTime.millis - DateTime.now().millis
+        msToNextAlarm = mutableDateTime.toInstant().toEpochMilli() - ZonedDateTime.now().toInstant().toEpochMilli()
       } else {
         msToNextAlarm = Tools.updateInterval
       }
       return msToNextAlarm
     }
 
-    internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): DateTime {
+    internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
       val nextAlarm = msToNextAlarm - SystemClock.elapsedRealtime()
       Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
           "UpdateScheduled for " + nextAlarm / (1000 * 60) + " minutes")
@@ -104,7 +103,8 @@ internal class AlarmScheduler {
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
           updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-      val nextAlarmDate = DateTime(System.currentTimeMillis() + nextAlarm)
+      val instant = Instant.ofEpochMilli(System.currentTimeMillis() + nextAlarm)
+      val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
       return nextAlarmDate
     }

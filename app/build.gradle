@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 apply from: '../build.gradle'
+apply plugin: 'com.getkeepsafe.dexcount'
 
 buildscript {
   ext.kotlin_version = '1.0.6'
@@ -14,8 +15,9 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.+'
+    classpath 'io.fabric.tools:gradle:1.21.6'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3'
   }
 }
 
@@ -25,6 +27,21 @@ repositories {
   maven { url 'https://maven.fabric.io/public' }
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
+}
+
+dexcount {
+  format = "list"
+  includeClasses = false
+  includeFieldCount = true
+  includeTotalMethodCount = false
+  orderByMethodCount = true
+  verbose = false
+  maxTreeDepth = Integer.MAX_VALUE
+  teamCityIntegration = false
+  enableForInstantRun = false
+  teamCitySlug = null
+  runOnEachAssemble = true
+  maxMethodCount = 64000
 }
 
 android {
@@ -47,14 +64,12 @@ android {
 
   defaultConfig {
     applicationId appIdBase
-    minSdkVersion 14
+    minSdkVersion 15
     targetSdkVersion 25
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code
     versionName = name
-
-    multiDexEnabled true
   }
 
   sourceSets {
@@ -102,8 +117,7 @@ android {
       debuggable false
       signingConfig signingConfigs.release
       minifyEnabled true
-      proguardFile 'proguard-rules.pro'
-      proguardFile getDefaultProguardFile('proguard-android.txt')
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
     debug {
       debuggable true
@@ -128,12 +142,10 @@ android {
 
 dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
   compile 'com.android.support:appcompat-v7:25.2.0'
   compile 'com.android.support:support-v4:25.2.0'
   compile 'com.android.support:design:25.2.0'
-  compile 'com.android.support:multidex:1.0.1'
 
   compile 'javax.inject:javax.inject:1'
   compile 'javax.annotation:javax.annotation-api:1.2'
@@ -153,14 +165,15 @@ dependencies {
   compile 'com.trello:rxlifecycle:0.5.0'
   compile 'com.trello:rxlifecycle-kotlin:0.5.0'
 
-  compile 'joda-time:joda-time:2.6'
+  compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+
   compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
   compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
   compile 'uk.co.chrisjenx:calligraphy:2.1.0'
   devCompile 'com.jakewharton.timber:timber:4.3.1'
 
-  prodCompile 'com.google.android.gms:play-services:7.0.0'
-  prodCompile('com.crashlytics.sdk.android:crashlytics:2.2.1@aar') {
+  prodCompile 'com.google.android.gms:play-services-analytics:10.0.1'
+  prodCompile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
     transitive = true;
   }
 
@@ -185,3 +198,5 @@ dependencies {
   }
   kaptTest 'com.google.dagger:dagger-compiler:2.0'
 }
+
+apply plugin: 'com.google.gms.google-services'

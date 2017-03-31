@@ -7,14 +7,16 @@ import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.network.Stock
 import com.github.premnirmal.ticker.network.StocksApi
-import org.joda.time.DateTime
-import org.joda.time.format.ISODateTimeFormat
+import com.github.premnirmal.ticker.network.data.Stock
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.TextStyle.SHORT
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.text.DateFormatSymbols
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
@@ -135,7 +137,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   internal fun scheduleUpdate(msToNextAlarm: Long) {
     val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
-    nextFetch = updateTime.millis
+    nextFetch = updateTime.toInstant().toEpochMilli()
     preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
   }
 
@@ -149,27 +151,26 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return tickerList
   }
 
-  override fun addPosition(ticker: String?, shares: Int, price: Float) {
+  override fun addPosition(ticker: String, shares: Int, price: Float) {
     if (ticker != null) {
       synchronized(stockList, {
         var position = getStock(ticker)
         if (position == null) {
           position = Stock()
+          position.symbol = ticker
         }
-        if (!ticker.contains(ticker)) {
+        if (!tickerList.contains(ticker)) {
           tickerList.add(ticker)
         }
-        position.symbol = ticker
-        position.PositionPrice = price
-        position.PositionShares = shares
-        positionList.remove(position)
-        if (shares != 0) {
+        if (shares > 0) {
           position.IsPosition = true
+          position.PositionPrice = price
+          position.PositionShares = shares
+          positionList.remove(position)
           positionList.add(position)
           stockList.remove(position)
           stockList.add(position)
           save()
-          fetch().subscribe(SimpleSubscriber<List<Stock>>())
         } else {
           removePosition(ticker)
         }
@@ -177,9 +178,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
   }
 
-  override fun removePosition(ticker: String?) {
+  override fun removePosition(ticker: String) {
     val position = getStock(ticker) ?: return
     position.IsPosition = false
+    position.PositionPrice = 0f
+    position.PositionShares = 0
     positionList.remove(position)
     save()
   }
@@ -259,7 +262,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return getStocks()
   }
 
-  override fun getStock(ticker: String?): Stock? {
+  override fun getStock(ticker: String): Stock? {
     synchronized(stockList, {
       val dummy = Stock()
       dummy.symbol = ticker
@@ -267,8 +270,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       if (index >= 0) {
         val stock = stockList[index]
         return stock
+      } else {
+        return null
       }
-      return null
     })
   }
 
@@ -279,7 +283,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun lastFetched(): String {
     val fetched: String
     if (lastFetched > 0L) {
-      val time = DateTime(lastFetched)
+      val instant = Instant.ofEpochMilli(lastFetched)
+      val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       fetched = createTimeString(time)
     } else {
       fetched = ""
@@ -287,16 +292,15 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return fetched
   }
 
-  internal fun createTimeString(time: DateTime): String {
+  internal fun createTimeString(time: ZonedDateTime): String {
     val fetched: String
-    val dfs = DateFormatSymbols.getInstance(Locale.ENGLISH)
-    val fetchedDayOfWeek = time.dayOfWeek().get()
-    val today = DateTime.now().dayOfWeek().get()
+    val fetchedDayOfWeek = time.dayOfWeek.value
+    val today = ZonedDateTime.now().dayOfWeek.value
     if (today == fetchedDayOfWeek) {
-      fetched = time.toString(ISODateTimeFormat.hourMinute())
+      fetched = Tools.TIME_FORMATTER.format(time)
     } else {
-      val day: String = dfs.shortWeekdays[fetchedDayOfWeek % 7 + 1]
-      val timeStr: String = time.toString(ISODateTimeFormat.hourMinute())
+      val day: String = DayOfWeek.from(time).getDisplayName(SHORT, Locale.getDefault())
+      val timeStr: String = Tools.TIME_FORMATTER.format(time)
       fetched = "$timeStr $day"
     }
     return fetched
@@ -305,7 +309,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun nextFetch(): String {
     val fetch: String
     if (nextFetch > 0) {
-      val time = DateTime(nextFetch)
+      val instant = Instant.ofEpochMilli(nextFetch)
+      val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       fetch = createTimeString(time)
     } else {
       fetch = ""

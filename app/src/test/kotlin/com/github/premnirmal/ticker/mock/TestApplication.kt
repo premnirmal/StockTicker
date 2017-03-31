@@ -1,12 +1,12 @@
 package com.github.premnirmal.ticker.mock;
 
 import com.github.premnirmal.ticker.AppComponent
-import com.github.premnirmal.ticker.BaseApp
+import com.github.premnirmal.ticker.StocksApp
 
 /**
  * Created by premnirmal on 3/22/17.
  */
-class TestApplication : BaseApp() {
+class TestApplication : StocksApp() {
 
   override fun createAppComponent(): AppComponent {
     val component: AppComponent = DaggerMockAppComponent.builder()

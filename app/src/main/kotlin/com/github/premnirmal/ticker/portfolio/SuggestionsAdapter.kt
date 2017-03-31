@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import com.github.premnirmal.ticker.network.Suggestion
+import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.tickerwidget.R
 
 /**

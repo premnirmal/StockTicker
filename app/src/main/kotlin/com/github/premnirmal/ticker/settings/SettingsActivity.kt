@@ -4,7 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -13,16 +16,15 @@ import android.preference.CheckBoxPreference
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
-import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.Toolbar
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.widget.TextView
 import com.devpaul.filepickerlibrary.FilePickerActivity
+import com.github.premnirmal.ticker.Analytics
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.InAppMessage
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.Tools
@@ -30,14 +32,12 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.activity_preferences.toolbar
+import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
-import com.github.premnirmal.ticker.CrashLogger
-import com.github.premnirmal.ticker.Analytics
-import kotlinx.android.synthetic.main.activity_preferences.*
-import kotlinx.android.synthetic.main.preferences_footer.*
 
 /**
  * Created by premnirmal on 2/27/16.
@@ -74,7 +74,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     Injector.inject(this)
     setContentView(R.layout.activity_preferences)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(),
+      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(this),
           toolbar.paddingRight, toolbar.paddingBottom)
     }
     val extras: Bundle? = intent.extras

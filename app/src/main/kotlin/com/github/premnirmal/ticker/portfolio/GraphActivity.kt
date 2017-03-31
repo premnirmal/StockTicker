@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.LineData
@@ -16,18 +15,23 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.BaseActivity
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.model.SerializableDataPoint
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_graph.*
-import org.joda.time.format.DateTimeFormat
-import rx.Subscriber
-import java.util.*
+import kotlinx.android.synthetic.main.activity_graph.desc
+import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
+import kotlinx.android.synthetic.main.activity_graph.graphView
+import kotlinx.android.synthetic.main.activity_graph.graph_holder
+import kotlinx.android.synthetic.main.activity_graph.progress
+import kotlinx.android.synthetic.main.activity_graph.tickerName
+import org.threeten.bp.format.DateTimeFormatter
+import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -35,7 +39,7 @@ import javax.inject.Inject
  */
 class GraphActivity : BaseActivity() {
 
-  private val formatter = DateTimeFormat.forPattern("MM/dd/YYYY")
+  private val formatter = DateTimeFormatter.ofPattern("MM/dd/YYYY")
 
   lateinit private var ticker: Stock
   private var dataPoints: Array<SerializableDataPoint?>? = null
@@ -49,7 +53,7 @@ class GraphActivity : BaseActivity() {
     Injector.inject(this)
     setContentView(R.layout.activity_graph)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, Tools.getStatusBarHeight(),
+      graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, Tools.getStatusBarHeight(this),
           graphActivityRoot.paddingRight, graphActivityRoot.paddingBottom)
     }
     graphView.isDoubleTapToZoomEnabled = false
@@ -108,12 +112,13 @@ class GraphActivity : BaseActivity() {
       val observable = historyProvider.getDataPoints(ticker.symbol, range)
       bind(observable).subscribe(object : SimpleSubscriber<Array<SerializableDataPoint?>>() {
         override fun onError(e: Throwable) {
+          CrashLogger.logException(e)
           showDialog("Error loading datapoints",
               DialogInterface.OnClickListener { dialog, which -> finish() })
         }
 
-        override fun onNext(data: Array<SerializableDataPoint?>) {
-          dataPoints = data
+        override fun onNext(result: Array<SerializableDataPoint?>) {
+          dataPoints = result
           loadGraph(dataPoints!!)
         }
       })
@@ -144,10 +149,8 @@ class GraphActivity : BaseActivity() {
     series.highLightColor = Color.GRAY
     val dataSets: MutableList<ILineDataSet> = ArrayList()
     dataSets.add(series)
-    val xDataSet: MutableList<String> = ArrayList()
-    for (i in dataPointsList.indices) {
-      xDataSet.add(DateTimeFormat.shortDate().print(dataPointsList[i]?.getQuote()?.date))
-    }
+    val xDataSet: MutableList<String> = dataPointsList.indices.mapTo(
+        ArrayList()) { formatter.format(dataPointsList[it]?.getQuote()?.date) }
     val lineData: LineData = LineData(xDataSet, dataSets)
     graphView.data = lineData
     val xAxis: XAxis = graphView.xAxis
@@ -181,14 +184,9 @@ class GraphActivity : BaseActivity() {
     }
     Analytics.trackUI("GraphUpdateRange", ticker.symbol + "-" + range.name)
     val parent = v.parent as ViewGroup
-    for (i in 0..parent.childCount - 1) {
-      val view = parent.getChildAt(i)
-      if (view !== v) {
-        view.isEnabled = true
-      } else {
-        view.isEnabled = false
-      }
-    }
+    (0..parent.childCount - 1)
+        .map { parent.getChildAt(it) }
+        .forEach { it.isEnabled = it != v }
     getData()
   }
 

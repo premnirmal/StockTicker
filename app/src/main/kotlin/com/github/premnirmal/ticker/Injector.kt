@@ -16,55 +16,49 @@ import com.github.premnirmal.ticker.widget.StockWidget
 /**
  * Created by premnirmal on 2/26/16.
  */
-class Injector private constructor(val appComponent: AppComponent) {
+object Injector {
 
-  init {
-    instance = this
+  lateinit var appComponent: AppComponent
+  
+  internal fun init(ac: AppComponent) {
+    appComponent = ac
   }
 
-  companion object {
-
-    lateinit var instance: Injector
-
-    internal fun init(appComponent: AppComponent) {
-      instance = Injector(appComponent)
-    }
-
-    fun inject(any: Any) {
-      if (any is StocksProvider) {
-        instance.appComponent.inject(any)
-      } else if (any is HistoryProvider) {
-        instance.appComponent.inject(any)
-      }  else if (any is StocksApi) {
-        instance.appComponent.inject(any)
-      } else if (any is ParanormalActivity) {
-        instance.appComponent.inject(any)
-      }else if (any is PortfolioFragment) {
-        instance.appComponent.inject(any)
-      } else if (any is SettingsActivity) {
-        instance.appComponent.inject(any)
-      } else if (any is TickerSelectorActivity) {
-        instance.appComponent.inject(any)
-      } else if (any is RemoteStockViewAdapter) {
-        instance.appComponent.inject(any)
-      } else if (any is StockWidget) {
-        instance.appComponent.inject(any)
-      } else if (any is UpdateReceiver) {
-        instance.appComponent.inject(any)
-      } else if (any is RefreshReceiver) {
-        instance.appComponent.inject(any)
-      } else if (any is GraphActivity) {
-        instance.appComponent.inject(any)
-      } else if (any is RearrangeActivity) {
-        instance.appComponent.inject(any)
-      } else if (any is AddPositionActivity) {
-        instance.appComponent.inject(any)
-      } else if (any is EditPositionActivity) {
-        instance.appComponent.inject(any)
-      } else {
-        throw Exception("This class is not injectable in AppComponent!")
-      }
+  fun inject(any: Any) {
+    if (any is StocksProvider) {
+      appComponent.inject(any)
+    } else if (any is HistoryProvider) {
+      appComponent.inject(any)
+    } else if (any is StocksApi) {
+      appComponent.inject(any)
+    } else if (any is ParanormalActivity) {
+      appComponent.inject(any)
+    } else if (any is PortfolioFragment) {
+      appComponent.inject(any)
+    } else if (any is SettingsActivity) {
+      appComponent.inject(any)
+    } else if (any is TickerSelectorActivity) {
+      appComponent.inject(any)
+    } else if (any is RemoteStockViewAdapter) {
+      appComponent.inject(any)
+    } else if (any is StockWidget) {
+      appComponent.inject(any)
+    } else if (any is UpdateReceiver) {
+      appComponent.inject(any)
+    } else if (any is RefreshReceiver) {
+      appComponent.inject(any)
+    } else if (any is GraphActivity) {
+      appComponent.inject(any)
+    } else if (any is RearrangeActivity) {
+      appComponent.inject(any)
+    } else if (any is AddPositionActivity) {
+      appComponent.inject(any)
+    } else if (any is EditPositionActivity) {
+      appComponent.inject(any)
+    } else if (any is Tools) {
+      appComponent.inject(any)
+    } else {
+      throw Exception("This class is not injectable in AppComponent!")
     }
   }
-
 }

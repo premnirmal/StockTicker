@@ -3,7 +3,9 @@ package com.github.premnirmal.ticker.network
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.network.historicaldata.HistoricalData
+import com.github.premnirmal.ticker.network.data.QueryCreator
+import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.historicaldata.HistoricalData
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import rx.Observable
@@ -30,33 +32,29 @@ import javax.inject.Singleton
     val query = QueryCreator.buildStocksQuery(tickers)
     return yahooApi.getStocks(query).map({ json ->
       lastFetched = System.currentTimeMillis()
-      if (json == null) {
-        ArrayList<Stock>()
-      } else {
-        val stocks = ArrayList<Stock>()
-        val quoteJson = json.asJsonObject
-            .get("query").asJsonObject
-            .get("results").asJsonObject
-            .get("quote")
-        if (quoteJson.isJsonArray) {
-          for (stockJson in quoteJson as JsonArray) {
-            try {
-              val stock = gson.fromJson(stockJson, Stock::class.java)
-              stocks.add(stock)
-            } catch (e: Exception) {
-              CrashLogger.logException(e)
-            }
-          }
-        } else if (quoteJson.isJsonObject) {
+      val stocks = ArrayList<Stock>()
+      val quoteJson = json.asJsonObject
+          .get("query").asJsonObject
+          .get("results").asJsonObject
+          .get("quote")
+      if (quoteJson.isJsonArray) {
+        for (stockJson in quoteJson as JsonArray) {
           try {
-            val stock = gson.fromJson(quoteJson, Stock::class.java)
+            val stock = gson.fromJson(stockJson, Stock::class.java)
             stocks.add(stock)
           } catch (e: Exception) {
             CrashLogger.logException(e)
           }
         }
-        stocks
+      } else if (quoteJson.isJsonObject) {
+        try {
+          val stock = gson.fromJson(quoteJson, Stock::class.java)
+          stocks.add(stock)
+        } catch (e: Exception) {
+          CrashLogger.logException(e)
+        }
       }
+      stocks
     })
   }
 
@@ -67,9 +65,6 @@ import javax.inject.Singleton
       val stocks = gStocks.map { StockConverter.convert(it) }
       val updatedStocks = StockConverter.convertResponseQuotes(stocks)
       updatedStocks
-    }).onErrorReturn({ throwable ->
-      CrashLogger.logException(throwable)
-      ArrayList<Stock>()
     })
   }
 
@@ -108,17 +103,9 @@ import javax.inject.Singleton
     val yahooObservable = getYahooFinanceStocks(yahooSymbols.toArray())
     val googleObservable = getGoogleFinanceStocks(googleSymbols.toArray())
     if (googleSymbols.isEmpty()) {
-      return yahooObservable.doOnNext { stocks ->
-        if (stocks.isEmpty()) {
-          throw Exception("No stocks returned")
-        }
-      }
+      return yahooObservable
     } else if (yahooSymbols.isEmpty()) {
-      return googleObservable.doOnNext { stocks ->
-        if (stocks.isEmpty()) {
-          throw Exception("No stocks returned")
-        }
-      }
+      return googleObservable
     } else {
       val allStocks: Observable<List<Stock>> = Observable.zip(googleObservable, yahooObservable,
           { stocks, stocks2 ->

@@ -24,6 +24,8 @@ import javax.inject.Singleton
 )
 interface AppComponent {
 
+  fun inject(tools: Tools)
+
   fun inject(stocksProvider: StocksProvider)
 
   fun inject(historyProvider: HistoryProvider)

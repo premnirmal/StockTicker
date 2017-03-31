@@ -101,7 +101,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   fun updateToolbar(toolbar: Toolbar) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(),
+      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(this),
           toolbar.paddingRight, toolbar.paddingBottom)
     }
   }

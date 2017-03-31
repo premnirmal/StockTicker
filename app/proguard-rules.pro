@@ -1,38 +1,27 @@
-# Retain line numbers for deobfuscation.
+# Line numbers
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
 
-# Retain the names of all classes in the models package.
--keepnames class com.github.premnirmal.ticker.network.** { *; }
+# Retain the names of all classes in the data package for gson to deserialize
+-keepnames class com.github.premnirmal.ticker.network.data.** { *; }
 
-# Retrofit proguard rules
-
-# Platform calls Class.forName on types which do not exist on Android to determine platform.
--dontnote retrofit2.Platform
-# Platform used when running on RoboVM on iOS. Will not be used at runtime.
--dontnote retrofit2.Platform$IOS$MainThreadExecutor
-# Platform used when running on Java 8 VMs. Will not be used at runtime.
--dontwarn retrofit2.Platform$Java8
-# Retain generic type information for use by reflection by converters and adapters.
--keepattributes Signature
-# Retain declared checked exceptions for use by a Proxy instance.
--keepattributes Exceptions
-# Not actually called at runtime.
--dontwarn okio.**
-# Keep the enclosing methods for anonymous classes.
--keepattributes EnclosingMethod
+# Get rid of kotlin's run-time nullchecks
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}
 
 # Android support
--keep public class android.support.** { *; }
+-dontwarn android.support.v4.**
+-dontwarn android.support.design.**
+-keep class android.support.design.** { *; }
+-keep interface android.support.design.** { *; }
+-keep public class android.support.design.R$* { *; }
 -keep public class android.support.v7.widget.** { *; }
 -keep public class android.support.v7.internal.widget.** { *; }
 -keep public class android.support.v7.internal.view.menu.** { *; }
--keep public class * extends android.support.v4.view.ActionProvider {
-    public <init>(android.content.Context);
+-keep class * extends android.support.design.widget.CoordinatorLayout$Behavior {
+  public <init>(android.content.Context, android.util.AttributeSet);
 }
--keep class * extends android.support.design.widget.CoordinatorLayout.Behavior
--keep class * extends android.support.design.widget.FloatingActionButton.Behavior
-
 
 # Crashlytics
 -keep class com.crashlytics.** { *; }
@@ -44,42 +33,12 @@
  -printmapping mapping.txt
 
 # Calligraphy
-
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
 -keep class uk.co.chrisjenx.calligraphy.* { *; }
 -keep class uk.co.chrisjenx.calligraphy.*$* { *; }
 
-## Google Analytics 3.0 specific rules ##
--keep class com.google.analytics.** { *; }
-## Google Play Services 4.3.23 specific rules ##
-## https://developer.android.com/google/play-services/setup.html#Proguard ##
--keep class * extends java.util.ListResourceBundle {
-    protected Object[][] getContents();
-}
--keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
-    public static final *** NULL;
-}
--keepnames @com.google.android.gms.common.annotation.KeepName class *
--keepclassmembernames class * {
-    @com.google.android.gms.common.annotation.KeepName *;
-}
--keepnames class * implements android.os.Parcelable {
-    public static final ** CREATOR;
-}
--dontwarn android.support.v4.**
--keep public class com.google.android.gms.* { public *; }
+# Google Analytics
+-keep class com.google.android.gms.** { *; }
 -dontwarn com.google.android.gms.**
-
-## Joda Time
--dontwarn org.joda.convert.**
--dontwarn org.joda.time.**
--keep class org.joda.time.** { *; }
--keep interface org.joda.time.** { *; }
 
 # RxJava
 -keep class rx.schedulers.Schedulers {
@@ -107,7 +66,18 @@
 }
 -dontnote rx.internal.util.PlatformDependent
 
-# Realm
+# Retrofit
+-dontnote retrofit2.Platform
+-dontnote retrofit2.Platform$IOS$MainThreadExecutor
+-dontwarn retrofit2.Platform$Java8
+-keepattributes Signature
+-keepattributes Exceptions
+-dontwarn okio.**
+-keepattributes EnclosingMethod
+
+# MPAndroidChart
+-keep class com.github.mikephil.charting.animation.ChartAnimator { *; }
+# Realm in MPAndroidChart
 # For detailed discussion see: https://groups.google.com/forum/#!topic/realm-java/umqKCc50JGU
 # Additionally you need to keep your Realm Model classes as well
 # For example:
@@ -118,6 +88,3 @@
 -keep @io.realm.internal.Keep class *
 -dontwarn javax.**
 -dontwarn io.realm.**
-
-# MPAndroidChart
--keep class com.github.mikephil.charting.animation.ChartAnimator { *; }

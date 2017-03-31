@@ -7,9 +7,9 @@ import android.widget.TextView
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
-import com.github.premnirmal.ticker.network.historicaldata.Quote
+import com.github.premnirmal.ticker.network.data.historicaldata.Quote
 import com.github.premnirmal.tickerwidget.R
-import org.joda.time.format.DateTimeFormat
+import org.threeten.bp.format.DateTimeFormatter
 
 /**
  * Created by premnirmal on 3/5/16.
@@ -25,7 +25,7 @@ class TextMarkerView(context: Context, private val mChart: View) : MarkerView(co
 
   override fun refreshContent(e: Entry, highlight: Highlight) {
     val timeFrame = e.data as Quote
-    val date = fmt.print(timeFrame.date)
+    val date = fmt.format(timeFrame.date)
     tvContent.text = "$${e.`val`}\n$date"
   }
 
@@ -51,6 +51,6 @@ class TextMarkerView(context: Context, private val mChart: View) : MarkerView(co
 
   companion object {
 
-    private val fmt = DateTimeFormat.forPattern("MMMM d")
+    private val fmt = DateTimeFormatter.ofPattern("MMMM d")
   }
 }

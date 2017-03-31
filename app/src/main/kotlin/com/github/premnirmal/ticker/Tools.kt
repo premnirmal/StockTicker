@@ -6,95 +6,62 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Environment
-import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import com.github.premnirmal.tickerwidget.R
+import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
 import java.text.DecimalFormat
 import java.text.Format
-import java.util.*
-import javax.inject.Singleton
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.Random
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-class Tools private constructor(private val sharedPreferences: SharedPreferences) {
+class Tools private constructor() {
+
+  @Inject lateinit var sharedPreferences: SharedPreferences
+
+  init {
+    Injector.inject(this)
+  }
 
   enum class ChangeType {
     value, percent
   }
 
   companion object {
-    @JvmField
-    val PREFS_NAME = "com.github.premnirmal.ticker"
-    @JvmField
-    val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
-    @JvmField
-    val START_TIME = "START_TIME"
-    @JvmField
-    val END_TIME = "END_TIME"
-    @JvmField
-    val SETTING_AUTOSORT = "SETTING_AUTOSORT"
-    @JvmField
-    val ENABLE_GOOGLE_FINANCE = "ENABLE_GOOGLE_FINANCE"
-    @JvmField
-    val WIDGET_BG = "WIDGET_BG"
-    @JvmField
-    val TEXT_COLOR = "TEXT_COLOR"
-    @JvmField
-    val UPDATE_INTERVAL = "UPDATE_INTERVAL"
-    @JvmField
-    val TRANSPARENT = 0
-    @JvmField
-    val TRANSLUCENT = 1
-    @JvmField
-    val DARK = 2
-    @JvmField
-    val LIGHT = 3
-    @JvmField
-    val LAYOUT_TYPE = "LAYOUT_TYPE"
-    @JvmField
-    val BOLD_CHANGE = "BOLD_CHANGE"
-    @JvmField
-    val FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT"
-    @JvmField
-    val WHATS_NEW = "WHATS_NEW"
-    @JvmField
-    val PERCENT = "PERCENT"
-    @JvmField
-    val DID_RATE = "DID_RATE"
-    @JvmField
+
+    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")!!
+
+    const val PREFS_NAME = "com.github.premnirmal.ticker"
+    const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
+    const val START_TIME = "START_TIME"
+    const val END_TIME = "END_TIME"
+    const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
+    const val ENABLE_GOOGLE_FINANCE = "ENABLE_GOOGLE_FINANCE"
+    const val WIDGET_BG = "WIDGET_BG"
+    const val TEXT_COLOR = "TEXT_COLOR"
+    const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
+    const val TRANSPARENT = 0
+    const val TRANSLUCENT = 1
+    const val DARK = 2
+    const val LIGHT = 3
+    const val LAYOUT_TYPE = "LAYOUT_TYPE"
+    const val BOLD_CHANGE = "BOLD_CHANGE"
+    const val FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT"
+    const val WHATS_NEW = "WHATS_NEW"
+    const val PERCENT = "PERCENT"
+    const val DID_RATE = "DID_RATE"
+
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
 
     private val random = Random(System.currentTimeMillis())
 
     val instance: Tools by lazy {
-      val sharedPreferences = BaseApp.instance.getSharedPreferences(Tools.PREFS_NAME,
-          Context.MODE_PRIVATE)
-      Tools(sharedPreferences)
-    }
-
-    private fun trackInitial(context: Context) {
-      Analytics.trackIntialSettings(LAYOUT_TYPE,
-          if (stockViewLayout() == 0) "Animated" else "Tabbed")
-      Analytics.trackIntialSettings(TEXT_COLOR,
-          if (instance.sharedPreferences.getInt(TEXT_COLOR, 0) == 0) "White" else "Dark")
-      Analytics.trackIntialSettings(START_TIME,
-          instance.sharedPreferences.getString(START_TIME, "09:30"))
-      Analytics.trackIntialSettings(END_TIME,
-          instance.sharedPreferences.getString(END_TIME, "09:30"))
-      Analytics.trackIntialSettings(SETTING_AUTOSORT, java.lang.Boolean.toString(autoSortEnabled()))
-      Analytics.trackIntialSettings(WIDGET_BG,
-          instance.sharedPreferences.getInt(WIDGET_BG, TRANSPARENT).toString())
-      Analytics.trackIntialSettings(FONT_SIZE, getFontSize(context).toString())
-      run {
-        val updatePref = instance.sharedPreferences.getInt(Tools.UPDATE_INTERVAL, 1)
-        val time = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (updatePref + 1)
-        Analytics.trackIntialSettings(UPDATE_INTERVAL, time.toString())
-      }
-      Analytics.trackIntialSettings(BOLD_CHANGE, java.lang.Boolean.toString(boldEnabled()))
-      val tickerListVars = instance.sharedPreferences.getString(StocksProvider.SORTED_STOCK_LIST,
-          "EMPTY!")
+      Tools()
     }
 
     val changeType: ChangeType
@@ -127,7 +94,8 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
     val updateInterval: Long
       get() {
         val pref = instance.sharedPreferences.getInt(UPDATE_INTERVAL, 1)
-        return AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
+        val ms = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
+        return ms
       }
 
     fun timeAsIntArray(time: String): IntArray {
@@ -273,12 +241,12 @@ class Tools private constructor(private val sharedPreferences: SharedPreferences
       return instance.sharedPreferences.getBoolean(Tools.ENABLE_GOOGLE_FINANCE, true)
     }
 
-    fun getStatusBarHeight(): Int {
+    fun getStatusBarHeight(context: Context): Int {
       val result: Int
-      val resourceId: Int = BaseApp.instance.resources.getIdentifier("status_bar_height", "dimen",
+      val resourceId: Int = context.resources.getIdentifier("status_bar_height", "dimen",
           "android")
       if (resourceId > 0) {
-        result = BaseApp.instance.resources.getDimensionPixelSize(resourceId)
+        result = context.resources.getDimensionPixelSize(resourceId)
       } else {
         result = 0
       }

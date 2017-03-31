@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.Context
-import com.github.premnirmal.ticker.network.Stock
+import com.github.premnirmal.ticker.network.data.Stock
 import rx.Observable
 import rx.schedulers.Schedulers
 import java.io.*

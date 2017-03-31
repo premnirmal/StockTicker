@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.model
 
-import com.github.premnirmal.ticker.network.historicaldata.History
+import com.github.premnirmal.ticker.network.data.historicaldata.History
 import rx.Observable
 
 /**

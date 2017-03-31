@@ -2,10 +2,10 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import com.github.premnirmal.ticker.Injector
-import com.github.premnirmal.ticker.network.QueryCreator
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.historicaldata.History
-import org.joda.time.DateTime
+import com.github.premnirmal.ticker.network.data.QueryCreator
+import com.github.premnirmal.ticker.network.data.historicaldata.History
+import org.threeten.bp.ZonedDateTime
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -26,8 +26,8 @@ import javax.inject.Singleton
   }
 
   override fun getHistory(ticker: String, range: Range): Observable<History> {
-    val now = DateTime.now()
-    val from: DateTime
+    val now = ZonedDateTime.now()
+    val from: ZonedDateTime
     when (range) {
       Range.ONE_MONTH -> from = now.minusMonths(1)
       Range.THREE_MONTH -> from = now.minusMonths(3)
@@ -35,17 +35,21 @@ import javax.inject.Singleton
     }
     val query = QueryCreator.buildHistoricalDataQuery(ticker, from, now)
     return stocksApi.getHistory(query).map { historicalData ->
-      Collections.sort(historicalData.query.mResult.quote)
-      historicalData.query.mResult
+      Collections.sort(historicalData!!.query!!.mResult!!.quote)
+      if (historicalData.query == null || historicalData.query!!.mResult == null) {
+        History()
+      } else {
+        historicalData.query!!.mResult!!
+      }
     }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
   }
 
   override fun getDataPoints(ticker: String,
       range: Range): Observable<Array<SerializableDataPoint?>> {
     return getHistory(ticker, range).map { history ->
-      val dataPoints = arrayOfNulls<SerializableDataPoint?>(history.quote.size)
-      for (i in history.quote.indices) {
-        val quote = history.quote[i]
+      val dataPoints = arrayOfNulls<SerializableDataPoint?>(history.quote!!.size)
+      for (i in history.quote!!.indices) {
+        val quote = history!!.quote!![i]
         val point = SerializableDataPoint(quote.mClose.toFloat(), i, quote)
         dataPoints[i] = point
       }

@@ -17,4 +17,10 @@ keystore.*
 app/keystore.*
 
 #crashlytics secret
-app/crashlytics.properties
+crashlytics.properties
+app/src/prod/AndroidManifest.xml
+
+#google services
+app/google-services.json
+app/src/dev/google-services.json
+app/src/prod/google-services.json
