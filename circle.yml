@@ -11,5 +11,5 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
 test:
   override:
-    - ./gradlew assembleDebug -PdisablePreDex
+    - ./gradlew assemblePureflossDebug -PdisablePreDex
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
