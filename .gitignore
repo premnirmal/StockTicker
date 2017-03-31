@@ -64,4 +64,6 @@ crashlytics.properties
 app/src/prod/AndroidManifest.xml
 
 #google services
-google-services.json
+app/google-services.json
+app/src/dev/google-services.json
+app/src/prod/google-services.json
