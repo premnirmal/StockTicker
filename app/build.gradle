@@ -1,29 +1,29 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'io.fabric'
-apply from: '../build.gradle'
-apply plugin: 'com.getkeepsafe.dexcount'
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "io.fabric"
+apply from: "../build.gradle"
+apply plugin: "com.getkeepsafe.dexcount"
 
 buildscript {
   repositories {
     jcenter()
     mavenCentral()
-    maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://maven.fabric.io/public" }
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.21.6'
+    classpath "io.fabric.tools:gradle:1.21.6"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3'
+    classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3"
   }
 }
 
 repositories {
   jcenter()
   mavenCentral()
-  maven { url 'https://maven.fabric.io/public' }
+  maven { url "https://maven.fabric.io/public" }
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
 }
@@ -45,10 +45,10 @@ dexcount {
 
 android {
   compileSdkVersion 25
-  buildToolsVersion '25.0.2'
+  buildToolsVersion "25.0.2"
 
   sourceSets {
-    String testDir = 'src/test/kotlin'
+    String testDir = "src/test/kotlin"
     test {
       java.srcDir testDir
     }
@@ -57,9 +57,9 @@ android {
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties();
   versionProps.load(new FileInputStream(versionFile));
-  def final code = versionProps.getProperty('versionCode').toInteger();
-  def final name = versionProps.getProperty('versionName').toString();
-  def final appIdBase = 'com.github.premnirmal.tickerwidget'
+  def final code = versionProps.getProperty("versionCode").toInteger();
+  def final name = versionProps.getProperty("versionName").toString();
+  def final appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
     applicationId appIdBase
@@ -72,7 +72,7 @@ android {
   }
 
   sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
+    main.java.srcDirs += "src/main/kotlin"
   }
 
   kapt {
@@ -91,9 +91,9 @@ android {
       if (propsFile.exists()) {
         final Properties props = new Properties();
         props.load(new FileInputStream(propsFile));
-        storePassword props.getProperty('key.store.password')
-        keyPassword props.getProperty('key.alias.password')
-        keyAlias props.getProperty('key.alias.alias')
+        storePassword props.getProperty("key.store.password")
+        keyPassword props.getProperty("key.alias.password")
+        keyAlias props.getProperty("key.alias.alias")
       }
     }
   }
@@ -116,11 +116,11 @@ android {
       debuggable false
       signingConfig signingConfigs.release
       minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
     debug {
       debuggable true
-      versionNameSuffix '-DEBUG'
+      versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
     }
   }
@@ -131,11 +131,11 @@ android {
   }
 
   packagingOptions {
-    exclude 'META-INF/DEPENDENCIES'
-    exclude 'META-INF/NOTICE'
-    exclude 'META-INF/LICENSE'
-    exclude 'META-INF/LICENSE.txt'
-    exclude 'META-INF/NOTICE.txt'
+    exclude "META-INF/DEPENDENCIES"
+    exclude "META-INF/NOTICE"
+    exclude "META-INF/LICENSE"
+    exclude "META-INF/LICENSE.txt"
+    exclude "META-INF/NOTICE.txt"
   }
 }
 
@@ -144,17 +144,17 @@ kapt {
 }
 
 dependencies {
-  final SUPPORT_LIBRARY_VERSION = '25.2.0'
-  final DAGGER_VERSION = '2.6.1'
-  final DEXMAKER_VERSION = '1.4'
-  final MOCKITO_VERSION = '2.7.5'
-  final JUNIT_VERSION = '4.12'
-  final RUNNER_VERSION = '0.5'
-  final RETROFIT_VERSION = '2.2.0'
-  final OKHTTP_VERSION = '3.5.0'
-  final RXJAVA_VERSION = '1.1.0'
-  final ROBOLECTRIC_VERSION = '3.2.2'
-  final PLAY_SERVICES_VERSION = '10.0.1'
+  final SUPPORT_LIBRARY_VERSION = "25.2.0"
+  final DAGGER_VERSION = "2.6.1"
+  final DEXMAKER_VERSION = "1.4"
+  final MOCKITO_VERSION = "2.7.5"
+  final JUNIT_VERSION = "4.12"
+  final RUNNER_VERSION = "0.5"
+  final RETROFIT_VERSION = "2.2.0"
+  final OKHTTP_VERSION = "3.5.0"
+  final RXJAVA_VERSION = "1.1.0"
+  final ROBOLECTRIC_VERSION = "3.2.2"
+  final PLAY_SERVICES_VERSION = "10.0.1"
 
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -162,8 +162,8 @@ dependencies {
   compile "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
   compile "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
 
-  compile 'javax.inject:javax.inject:1'
-  compile 'javax.annotation:javax.annotation-api:1.2'
+  compile "javax.inject:javax.inject:1"
+  compile "javax.annotation:javax.annotation-api:1.2"
 
   compile "com.google.dagger:dagger:$DAGGER_VERSION"
   kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
@@ -177,33 +177,33 @@ dependencies {
   compile "io.reactivex:rxandroid:$RXJAVA_VERSION"
   compile "io.reactivex:rxjava:$RXJAVA_VERSION"
 
-  compile 'com.trello:rxlifecycle:0.5.0'
-  compile 'com.trello:rxlifecycle-kotlin:0.5.0'
+  compile "com.trello:rxlifecycle:0.5.0"
+  compile "com.trello:rxlifecycle-kotlin:0.5.0"
 
-  compile 'com.jakewharton.threetenabp:threetenabp:1.0.5'
+  compile "com.jakewharton.threetenabp:threetenabp:1.0.5"
 
-  compile 'com.github.developerpaul123.filepickerlibrary:library:1.1'
-  compile 'com.github.PhilJay:MPAndroidChart:v2.2.3'
-  compile 'uk.co.chrisjenx:calligraphy:2.1.0'
-  devCompile 'com.jakewharton.timber:timber:4.3.1'
+  compile "com.github.developerpaul123.filepickerlibrary:library:1.1"
+  compile "com.github.PhilJay:MPAndroidChart:v2.2.3"
+  compile "uk.co.chrisjenx:calligraphy:2.1.0"
+  devCompile "com.jakewharton.timber:timber:4.3.1"
 
   prodCompile "com.google.android.gms:play-services-analytics:$PLAY_SERVICES_VERSION"
-  prodCompile('com.crashlytics.sdk.android:crashlytics:2.6.7@aar') {
+  prodCompile("com.crashlytics.sdk.android:crashlytics:2.6.7@aar") {
     transitive = true;
   }
 
   testCompile "junit:junit:$JUNIT_VERSION"
-  testCompile 'org.assertj:assertj-core:1.7.1'
+  testCompile "org.assertj:assertj-core:1.7.1"
   testCompile "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"
   testCompile "org.robolectric:shadows-support-v4:$ROBOLECTRIC_VERSION"
   testCompile "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
-  testCompile('com.android.support.test:rules:0.5') {
-    exclude group: 'com.android.support', module: 'support-annotations'
+  testCompile("com.android.support.test:rules:0.5") {
+    exclude group: "com.android.support", module: "support-annotations"
   }
   testCompile("com.android.support.test:runner:$RUNNER_VERSION") {
-    exclude group: 'com.android.support', module: 'support-annotations'
+    exclude group: "com.android.support", module: "support-annotations"
   }
-  testCompile 'com.android.tools:testutils:24.3.1'
+  testCompile "com.android.tools:testutils:24.3.1"
   testCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker-dx:$DEXMAKER_VERSION"
@@ -212,4 +212,4 @@ dependencies {
   androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 }
 
-apply plugin: 'com.google.gms.google-services'
+apply plugin: "com.google.gms.google-services"
