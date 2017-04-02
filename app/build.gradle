@@ -210,6 +210,9 @@ dependencies {
   androidTestCompile "com.crittercism.dexmaker:dexmaker-mockito:$DEXMAKER_VERSION"
   kaptAndroidTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
   androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+
+  // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
+  testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
 }
 
 apply plugin: "com.google.gms.google-services"

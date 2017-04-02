@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.mock;
 
+import android.util.Log
 import com.github.premnirmal.ticker.AppComponent
 import com.github.premnirmal.ticker.StocksApp
 
@@ -8,10 +9,23 @@ import com.github.premnirmal.ticker.StocksApp
  */
 class TestApplication : StocksApp() {
 
+  override fun onCreate() {
+    super.onCreate()
+    Log.e("CRASH", "onCreate()")
+  }
+
   override fun createAppComponent(): AppComponent {
     val component: MockAppComponent = DaggerMockAppComponent.builder()
         .mockAppModule(MockAppModule(this))
         .build()
     return component
+  }
+
+  override fun initAnalytics() {
+    // No-op
+  }
+
+  override fun initCrashLogger() {
+    // No-op
   }
 }

@@ -12,7 +12,7 @@ open class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    CrashLogger.init(this)
+    initCrashLogger()
     AndroidThreeTen.init(this)
     CalligraphyConfig.initDefault(
         CalligraphyConfig.Builder()
@@ -20,13 +20,21 @@ open class StocksApp : Application() {
             .setFontAttrId(R.attr.fontPath)
             .build())
     Injector.init(createAppComponent())
-    Analytics.init(this)
+    initAnalytics()
   }
 
-  protected open fun createAppComponent(): AppComponent {
+  open fun createAppComponent(): AppComponent {
     val component: AppComponent = DaggerAppComponent.builder()
         .appModule(AppModule(this))
         .build()
     return component
+  }
+
+  protected open fun initAnalytics() {
+    Analytics.init(this)
+  }
+
+  protected open fun initCrashLogger() {
+    CrashLogger.init(this)
   }
 }

@@ -28,11 +28,8 @@ class StockWidget() : AppWidgetProvider() {
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
 
-  init {
-    Injector.inject(this)
-  }
-
   override fun onReceive(context: Context, intent: Intent) {
+    Injector.inject(this)
     super.onReceive(context, intent)
     Analytics.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
@@ -42,6 +39,7 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetIds: IntArray) {
+    Injector.inject(this)
     Analytics.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       val min_width: Int
@@ -85,6 +83,7 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetId: Int, newOptions: Bundle) {
+    Injector.inject(this)
     val min_width = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
     Analytics.trackWidgetSizeUpdate("${min_width}px")
