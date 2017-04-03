@@ -35,6 +35,7 @@ class EditPositionActivity : AddPositionActivity() {
         priceString = value
       }
       priceView.setText(priceString)
+      priceView.setSelection(priceString.length)
     } else {
       showDialog(getString(R.string.no_such_stock_in_portfolio),
           DialogInterface.OnClickListener { dialog, which -> finish() })

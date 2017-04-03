@@ -43,7 +43,7 @@ open class AddPositionActivity : BaseActivity() {
 
     skipButton.setOnClickListener { skip() }
 
-    price.addTextChangedListener(PriceTextChangeListener(price))
+    price.addTextChangedListener(PriceTextChangeListener())
   }
 
   protected open fun skip() {
@@ -53,7 +53,7 @@ open class AddPositionActivity : BaseActivity() {
   protected fun onDoneClicked() {
     val sharesView = shares
     val priceView = price
-    val priceText = priceView.text.toString().substring(1)
+    val priceText = priceView.text.toString()
     val sharesText = sharesView.text.toString()
     if (!priceText.isEmpty() && !sharesText.isEmpty()) {
       val price = java.lang.Float.parseFloat(priceText)
