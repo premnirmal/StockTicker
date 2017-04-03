@@ -1,11 +1,13 @@
 package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.mock.Mocker
+import com.github.premnirmal.ticker.mock.RxSchedulersOverrideRule
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import junit.framework.TestCase
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.`when`
 import org.robolectric.Robolectric
@@ -31,15 +33,17 @@ abstract class BaseUnitTest : TestCase() {
      * @param activityClass The activity to build and attach the fragment to.
      * @param fragment Fragment to add to the activity.
      */
-    fun attachFragmentToActivity(activityClass: Class<out BaseActivity>, fragment: BaseFragment)
+    fun attachFragmentToTestActivity(fragment: BaseFragment)
         : ActivityController<out BaseActivity> {
-      val controller = Robolectric.buildActivity(activityClass).create().start().resume()
+      val controller = Robolectric.buildActivity(TestActivity::class.java).create().start().resume()
       val activity = controller.get()
       val fm = activity.supportFragmentManager
       fm.beginTransaction().add(R.id.fragment_container, fragment).commit()
       return controller
     }
   }
+
+  @Rule val schedulerRule = RxSchedulersOverrideRule()
 
   @Before
   override public fun setUp() {

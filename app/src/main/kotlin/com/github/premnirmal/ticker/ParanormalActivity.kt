@@ -14,7 +14,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class ParanormalActivity : BaseActivity() {
+class ParanormalActivity : BaseActivity() {
 
   @Inject
   lateinit internal var preferences: SharedPreferences
@@ -32,7 +32,7 @@ open class ParanormalActivity : BaseActivity() {
     }
     Injector.inject(this)
     setContentView(R.layout.activity_paranormal)
-    val fragment = createPortfolioFragment()
+    val fragment = PortfolioFragment()
     supportFragmentManager.beginTransaction().add(R.id.fragment_container,
         fragment, fragment.javaClass.simpleName).commit()
     if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
@@ -54,8 +54,6 @@ open class ParanormalActivity : BaseActivity() {
       maybeAskToRate()
     }
   }
-
-  protected open fun createPortfolioFragment() = PortfolioFragment()
 
   override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
     super.onSaveInstanceState(outState, outPersistentState)
