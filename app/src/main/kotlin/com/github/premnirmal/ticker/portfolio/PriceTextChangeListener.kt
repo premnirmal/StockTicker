@@ -68,11 +68,8 @@ internal class PriceTextChangeListener : TextWatcher {
       nextStr.replace(0, 1, "")
     }
 
-    // ensure at least 3 digits
-    if (nextStr.length < 4) {
-      while (nextStr.length < 4) {
-        nextStr.insert(0, "0")
-      }
+    while (nextStr.length < 4) {
+      nextStr.insert(0, "0")
     }
 
     // insert a decimal at 3'rd to last position

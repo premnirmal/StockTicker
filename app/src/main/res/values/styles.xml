@@ -9,6 +9,8 @@
     <item name="android:textViewStyle">@style/TextViewStyle</item>
     <item name="android:editTextStyle">@style/EditTextStyle</item>
     <item name="android:buttonStyle">@style/ButtonStyle</item>
+    <item name="android:alertDialogTheme">@style/AlertDialog</item>
+    <item name="android:dialogTheme">@style/AlertDialog</item>
 
     <!-- For AppCompat -->
     <item name="editTextStyle">@style/EditTextStyle</item>
@@ -49,6 +51,16 @@
 
   <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
     <item name="android:textSize">34sp</item>
+  </style>
+
+  <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+    <item name="android:textColorPrimary">@color/color_accent</item>
+    <item name="colorPrimary">@android:color/white</item>
+    <item name="colorPrimaryDark">@android:color/white</item>
+    <item name="colorControlNormal">@color/color_accent</item>
+    <item name="colorControlHighlight">@android:color/white</item>
+    <item name="colorControlActivated">@android:color/white</item>
+    <item name="android:background">@color/background_material_dark</item>
   </style>
 
 </resources>

@@ -30,9 +30,9 @@ class EditPositionActivity : AddPositionActivity() {
       val value = stock.PositionPrice.toString()
       val priceString: String
       if (value.length > 3 && value.toCharArray()[value.length - 2] == '.') {
-        priceString = "${value}0"
-      } else {
         priceString = value
+      } else {
+        priceString = "${value}0"
       }
       priceView.setText(priceString)
       priceView.setSelection(priceString.length)
