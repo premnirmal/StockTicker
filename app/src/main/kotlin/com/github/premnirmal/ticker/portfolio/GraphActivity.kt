@@ -133,7 +133,7 @@ class GraphActivity : BaseActivity() {
     graphView.invalidate()
     val dataPointsList = points.toList()
     tickerName.text = ticker.symbol
-    desc.text = ticker.Name
+    desc.text = ticker.name
     val series = LineDataSet(dataPointsList.toList(), range.name)
     series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)

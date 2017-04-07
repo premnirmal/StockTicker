@@ -99,7 +99,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
     val bar = toolbar
-    bar.setNavigationOnClickListener(android.view.View.OnClickListener { finish() })
+    bar.setNavigationOnClickListener({ finish() })
 
     listView.addFooterView(
         LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false))
@@ -141,7 +141,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     })
 
     run({
-      val exportPref = findPreference("EXPORT")
+      val exportPref = findPreference(Tools.SETTING_EXPORT)
       exportPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE)
@@ -153,7 +153,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     })
 
     run({
-      val sharePref = findPreference("SHARE")
+      val sharePref = findPreference(Tools.SETTING_SHARE)
       sharePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         Analytics.trackSettingsChange("SHARE",
             TextUtils.join(",", stocksProvider.getTickers().toTypedArray()))
@@ -167,7 +167,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     })
 
     run({
-      val importPref = findPreference("IMPORT")
+      val importPref = findPreference(Tools.SETTING_IMPORT)
       importPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_READ_EXTERNAL_STORAGE)
@@ -285,6 +285,19 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
           val checked = newValue as Boolean
           preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply()
+          return true
+        }
+      }
+    })
+
+    run({
+      val refreshPreference = findPreference(Tools.SETTING_REFRESH_ON_UNLOCK) as CheckBoxPreference
+      val refresh = Tools.refreshEnabled()
+      refreshPreference.isChecked = refresh
+      refreshPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+          val checked = newValue as Boolean
+          preferences.edit().putBoolean(Tools.SETTING_REFRESH_ON_UNLOCK, checked).apply()
           return true
         }
       }

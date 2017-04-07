@@ -64,23 +64,23 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val changeValueString: SpannableString
     val priceString: SpannableString
     val changePercent: Double
-    if (stock.Change != null && stock.Change.isNotBlank()
-        && stock.ChangeinPercent != null && stock.ChangeinPercent.isNotBlank()) {
-      change = stock.Change.replace("+", "").toDouble()
-      changePercent = stock.ChangeinPercent.replace("+", "").replace("%", "").toDouble()
+    if (stock.change != null && stock.change.isNotBlank()
+        && stock.changeinPercent != null && stock.changeinPercent.isNotBlank()) {
+      change = stock.change.replace("+", "").toDouble()
+      changePercent = stock.changeinPercent.replace("+", "").replace("%", "").toDouble()
     } else {
       change = 0.0
       changePercent = 0.0
     }
     val changeValueFormatted = Tools.DECIMAL_FORMAT.format(change)
     val changePercentFormatted = Tools.DECIMAL_FORMAT.format(changePercent)
-    val priceFormatted = Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly)
+    val priceFormatted = Tools.DECIMAL_FORMAT.format(stock.lastTradePrice)
 
     changePercentString = SpannableString(changePercentFormatted + "%")
     changeValueString = SpannableString(changeValueFormatted)
     priceString = SpannableString(priceFormatted)
 
-    if (Tools.boldEnabled() && stock.ChangeinPercent != null && stock.Change != null) {
+    if (Tools.boldEnabled() && stock.changeinPercent != null && stock.change != null) {
       changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,

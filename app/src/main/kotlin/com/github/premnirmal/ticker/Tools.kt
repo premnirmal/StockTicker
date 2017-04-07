@@ -41,20 +41,24 @@ class Tools private constructor() {
     const val START_TIME = "START_TIME"
     const val END_TIME = "END_TIME"
     const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
+    const val SETTING_REFRESH_ON_UNLOCK = "SETTING_REFRESH_ON_UNLOCK"
+    const val SETTING_EXPORT = "SETTING_EXPORT"
+    const val SETTING_IMPORT = "SETTING_IMPORT"
+    const val SETTING_SHARE = "SETTING_IMPORT"
     const val ENABLE_GOOGLE_FINANCE = "ENABLE_GOOGLE_FINANCE"
     const val WIDGET_BG = "WIDGET_BG"
     const val TEXT_COLOR = "TEXT_COLOR"
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
-    const val TRANSPARENT = 0
-    const val TRANSLUCENT = 1
-    const val DARK = 2
-    const val LIGHT = 3
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
     const val BOLD_CHANGE = "BOLD_CHANGE"
     const val FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT"
     const val WHATS_NEW = "WHATS_NEW"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"
+    const val TRANSPARENT = 0
+    const val TRANSLUCENT = 1
+    const val DARK = 2
+    const val LIGHT = 3
 
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
 
@@ -185,14 +189,14 @@ class Tools private constructor() {
     fun positionsToString(stockList: List<Stock>): String {
       val builder = StringBuilder()
       for (stock in stockList) {
-        if (stock.IsPosition == true) {
+        if (stock.isPosition == true) {
           builder.append(stock.symbol)
           builder.append(",")
-          builder.append(stock.IsPosition)
+          builder.append(stock.isPosition)
           builder.append(",")
-          builder.append(stock.PositionPrice)
+          builder.append(stock.positionPrice)
           builder.append(",")
-          builder.append(stock.PositionShares)
+          builder.append(stock.positionShares)
           builder.append("\n")
         }
       }
@@ -210,10 +214,10 @@ class Tools private constructor() {
             *tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
         if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1]) == true) {
           tmpStock = Stock()
-          tmpStock.IsPosition = true
+          tmpStock.isPosition = true
           tmpStock.symbol = tickerFields[0]
-          tmpStock.PositionPrice = java.lang.Float.parseFloat(tickerFields[2])
-          tmpStock.PositionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
+          tmpStock.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
+          tmpStock.positionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
           stockList.add(tmpStock)
         }
       }
@@ -251,6 +255,22 @@ class Tools private constructor() {
         result = 0
       }
       return result
+    }
+
+    /**
+     * Don't allow end time less than start time. reset to default time if so
+     */
+    fun validateTimeSet(endTimez: IntArray, startTimez: IntArray) {
+      if (endTimez[0] < startTimez[0] || (endTimez[0] == startTimez[0] && endTimez[0] <= startTimez[0])) {
+        startTimez[0] = 9
+        startTimez[1] = 30
+        endTimez[0] = 16
+        endTimez[1] = 15
+      }
+    }
+
+    fun refreshEnabled(): Boolean {
+      return instance.sharedPreferences.getBoolean(SETTING_REFRESH_ON_UNLOCK, true)
     }
   }
 }

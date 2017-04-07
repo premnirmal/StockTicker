@@ -40,10 +40,10 @@ class ParanormalActivity : BaseActivity() {
       val stringBuilder = StringBuilder()
       val whatsNew = resources.getStringArray(R.array.whats_new)
       for (i in whatsNew.indices) {
-        stringBuilder.append("\t")
+        stringBuilder.append("\t - ")
         stringBuilder.append(whatsNew[i])
         if (i != whatsNew.size - 1) {
-          stringBuilder.append("\n\n")
+          stringBuilder.append("\n")
         }
       }
       AlertDialog.Builder(this).setTitle("What\'s new in Version " + BuildConfig.VERSION_NAME)

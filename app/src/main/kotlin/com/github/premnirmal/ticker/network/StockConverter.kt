@@ -13,8 +13,8 @@ internal object StockConverter {
     val stock = Stock()
     val name = if (!gStock.e.isNullOrEmpty()) gStock.e.replace("INDEX", "") else gStock.t
     stock.symbol = gStock.t
-    stock.Name = name
-    stock.LastTradePriceOnly =
+    stock.name = name
+    stock.lastTradePrice =
         if (!gStock.lCur.isNullOrEmpty()) {
           try {
             (gStock.lCur.replace(",", "")).toFloat()
@@ -35,12 +35,12 @@ internal object StockConverter {
       }
     }
     if (changePercent >= 0) {
-      stock.ChangeinPercent = "+$changePercent%"
+      stock.changeinPercent = "+$changePercent%"
     } else {
-      stock.ChangeinPercent = "$changePercent%"
+      stock.changeinPercent = "$changePercent%"
     }
-    stock.Change = gStock.c
-    stock.StockExchange = name
+    stock.change = gStock.c
+    stock.stockExchange = name
 
     return stock
   }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>UI fixes</item>
+    <item>Added option to refresh on screen unlock (see widget settings).</item>
   </string-array>
 </resources>

@@ -1,105 +1,42 @@
 package com.github.premnirmal.ticker.model
 
-import android.content.Context
+import android.content.SharedPreferences
+import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.network.data.Stock
-import rx.Observable
-import rx.schedulers.Schedulers
-import java.io.*
-import java.util.*
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.util.ArrayList
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-internal class StocksStorage(val context: Context) {
-
-  fun readSynchronous(): MutableList<Stock> {
-    try {
-      return readInternal()
-    } catch (e: IOException) {
-      e.printStackTrace()
-      return ArrayList()
-    }
-
-  }
-
-  fun save(stocks: MutableList<Stock>?): Observable<Boolean> {
-    return Observable.fromCallable {
-      var success = false
-      val stocksFile = File(context.externalCacheDir, STOCKS_FILE)
-      var fout: FileOutputStream? = null
-      var oos: ObjectOutputStream? = null
-      try {
-        if (!stocksFile.exists()) {
-          stocksFile.createNewFile()
-        }
-        fout = FileOutputStream(stocksFile)
-        oos = ObjectOutputStream(fout)
-        oos.writeObject(stocks)
-        success = true
-      } catch (e: FileNotFoundException) {
-        e.printStackTrace()
-      } catch (e: IOException) {
-        e.printStackTrace()
-      } catch (e: IllegalArgumentException) {
-        e.printStackTrace()
-      } finally {
-        if (oos != null) {
-          try {
-            oos.flush()
-            oos.close()
-          } catch (e: IOException) {
-            e.printStackTrace()
-          }
-
-        }
-        if (fout != null) {
-          try {
-            fout.flush()
-            fout.close()
-          } catch (e: IOException) {
-            e.printStackTrace()
-          }
-
-        }
-      }
-      success
-    }
-  }
-
-  @Throws(IOException::class)
-  private fun readInternal(): MutableList<Stock> {
-    val stocksFile = File(context.externalCacheDir, STOCKS_FILE)
-    var ois: ObjectInputStream? = null
-    var fis: FileInputStream? = null
-    try {
-      fis = FileInputStream(stocksFile)
-      ois = ObjectInputStream(fis)
-      val stocks = ois.readObject() as MutableList<Stock>
-      return stocks
-    } catch (e: ClassNotFoundException) {
-      e.printStackTrace()
-    } catch (e: OptionalDataException) {
-      e.printStackTrace()
-    } catch (e: FileNotFoundException) {
-      e.printStackTrace()
-    } catch (e: StreamCorruptedException) {
-      e.printStackTrace()
-    } catch (e: IllegalArgumentException) {
-      e.printStackTrace()
-    } finally {
-      if (ois != null) {
-        ois.close()
-      }
-      if (fis != null) {
-        fis.close()
-      }
-    }
-    return ArrayList()
-  }
+class StocksStorage() {
 
   companion object {
-
-    val STOCKS_FILE = "stocks.dat"
+    val KEY_STOCKS_LIST = "STOCKS_LIST"
   }
 
+  @Inject lateinit var preferences: SharedPreferences
+  @Inject lateinit var gson: Gson
+
+  init {
+    Injector.inject(this)
+  }
+
+  fun readStocks(): MutableList<Stock> {
+    val data = preferences.getString(KEY_STOCKS_LIST, "")
+    if (data.isNotEmpty()) {
+      val listType = object : TypeToken<List<Stock>>() {}.type
+      val stocks = gson.fromJson<List<Stock>>(data, listType)
+      return ArrayList<Stock>(stocks)
+    } else {
+      return ArrayList<Stock>()
+    }
+  }
+
+  fun saveStocks(stocks: List<Stock>) {
+    val data = gson.toJson(stocks)
+    preferences.edit().putString(KEY_STOCKS_LIST, data).apply()
+  }
 }

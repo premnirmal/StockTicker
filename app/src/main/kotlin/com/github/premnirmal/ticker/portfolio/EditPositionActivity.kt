@@ -22,20 +22,22 @@ class EditPositionActivity : AddPositionActivity() {
     toolbar.setTitle(R.string.edit_position)
     val stock = stocksProvider.getStock(ticker)
     if (stock != null) {
-      val sharesView = shares
-      val priceView = price
-      val skipButton = skipButton
-      skipButton.setText(R.string.remove)
-      sharesView.setText(stock.PositionShares.toString())
-      val value = stock.PositionPrice.toString()
-      val priceString: String
-      if (value.length > 3 && value.toCharArray()[value.length - 2] == '.') {
-        priceString = value
-      } else {
-        priceString = "${value}0"
+      if (stock.positionShares > 0 && stock.positionPrice > 0) {
+        val sharesView = shares
+        val priceView = price
+        val skipButton = skipButton
+        skipButton.setText(R.string.remove)
+        sharesView.setText(stock.positionShares.toString())
+        val value = stock.positionPrice.toString()
+        val priceString: String
+        if (value.length > 3 && value.toCharArray()[value.length - 2] == '.') {
+          priceString = value
+        } else {
+          priceString = "${value}0"
+        }
+        priceView.setText(priceString)
+        priceView.setSelection(priceString.length)
       }
-      priceView.setText(priceString)
-      priceView.setSelection(priceString.length)
     } else {
       showDialog(getString(R.string.no_such_stock_in_portfolio),
           DialogInterface.OnClickListener { dialog, which -> finish() })

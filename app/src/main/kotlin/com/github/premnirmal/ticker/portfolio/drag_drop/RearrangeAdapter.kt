@@ -43,7 +43,7 @@ internal class RearrangeAdapter internal constructor(private val stocksProvider:
 
   override fun onBindViewHolder(viewHolder: ItemViewHolder, position: Int) {
     val stock = getItem(position)
-    viewHolder.itemView.tickerName.text = "${stock.symbol}\n(${stock.Name})"
+    viewHolder.itemView.tickerName.text = "${stock.symbol}\n(${stock.name})"
     viewHolder.itemView.setOnLongClickListener {
       dragStartListener.onStartDrag(viewHolder)
       true

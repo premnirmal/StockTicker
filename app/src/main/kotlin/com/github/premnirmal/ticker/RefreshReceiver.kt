@@ -23,6 +23,6 @@ class RefreshReceiver : BroadcastReceiver() {
     Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
         "RefreshReceived on " + DateTimeFormatter.ofLocalizedDateTime(MEDIUM).format(
             LocalDateTime.now()))
-    stocksProvider.fetch().subscribe(SimpleSubscriber<List<Stock>>())
+    stocksProvider.fetch().subscribe()
   }
 }

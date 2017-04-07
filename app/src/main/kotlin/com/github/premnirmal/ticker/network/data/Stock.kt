@@ -17,16 +17,16 @@ class Stock : Comparable<Stock>, Serializable {
   }
 
   @SerializedName("Symbol") var symbol: String = ""
-  @SerializedName("Name") var Name = ""
-  @SerializedName("LastTradePriceOnly") var LastTradePriceOnly: Float = 0.toFloat()
-  @SerializedName("ChangeinPercent") var ChangeinPercent = ""
-  @SerializedName("Change") var Change = ""
-  @SerializedName("StockExchange") var StockExchange = ""
+  @SerializedName("Name") var name = ""
+  @SerializedName("LastTradePriceOnly") var lastTradePrice: Float = 0.toFloat()
+  @SerializedName("ChangeinPercent") var changeinPercent = ""
+  @SerializedName("Change") var change = ""
+  @SerializedName("StockExchange") var stockExchange = ""
 
   // Add Position fields
-  var IsPosition: Boolean = false
-  var PositionPrice: Float = 0.toFloat()
-  var PositionShares: Int = 0
+  var isPosition: Boolean = false
+  var positionPrice: Float = 0.toFloat()
+  var positionShares: Int = 0
 
   internal fun getChangeFromPercentString(percentString: String?): Double {
     if (percentString == null || percentString.isEmpty()) {
@@ -62,7 +62,7 @@ class Stock : Comparable<Stock>, Serializable {
   }
 
   override operator fun compareTo(other: Stock): Int {
-    return java.lang.Double.compare(getChangeFromPercentString(other.ChangeinPercent),
-        getChangeFromPercentString(ChangeinPercent))
+    return java.lang.Double.compare(getChangeFromPercentString(other.changeinPercent),
+        getChangeFromPercentString(changeinPercent))
   }
 }

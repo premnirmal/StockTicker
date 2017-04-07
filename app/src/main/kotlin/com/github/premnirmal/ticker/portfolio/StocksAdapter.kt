@@ -53,7 +53,7 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
 
   override fun getItemViewType(position: Int): Int {
     val stock = stockList[position]
-    if (stock.IsPosition) {
+    if (stock.isPosition) {
       return TYPE_POSITION
     } else if (stock.isIndex()) {
       return TYPE_INDEX

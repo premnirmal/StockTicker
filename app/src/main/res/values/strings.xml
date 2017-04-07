@@ -29,6 +29,8 @@
   <string name="update_interval">Update Interval</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
+  <string name="refresh_on_screen_unlock">Refresh on unlock</string>
+  <string name="refresh_on_screen_unlock_desc">Refresh when the screen unlocks (only during set hours).</string>
   <string name="bold_change">Bold text</string>
   <string name="bold_change_desc">Show changes and market value in bold</string>
   <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>

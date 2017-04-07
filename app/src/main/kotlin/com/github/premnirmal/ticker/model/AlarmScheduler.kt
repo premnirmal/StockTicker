@@ -45,12 +45,7 @@ internal class AlarmScheduler {
 
       run({
         // don't allow end time less than start time. reset to default time if so
-        if (endTimez[0] < startTimez[0] || (endTimez[0] == startTimez[0] && endTimez[0] <= startTimez[0])) {
-          startTimez[0] = 9
-          startTimez[1] = 30
-          endTimez[0] = 16
-          endTimez[1] = 15
-        }
+        Tools.validateTimeSet(endTimez, startTimez)
       })
 
       var mutableDateTime: ZonedDateTime = ZonedDateTime.now()

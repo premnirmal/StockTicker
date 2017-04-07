@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.Analytics
@@ -25,11 +24,21 @@ import javax.inject.Inject
  */
 class StockWidget() : AppWidgetProvider() {
 
+  companion object {
+    val ACTION_NAME = "OPEN_APP"
+    val TAG = StockWidget::class.java.simpleName
+  }
+
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
 
+  var injected = false
+
   override fun onReceive(context: Context, intent: Intent) {
-    Injector.inject(this)
+    if (!injected) {
+      Injector.inject(this)
+      injected = true
+    }
     super.onReceive(context, intent)
     Analytics.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
@@ -39,7 +48,6 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetIds: IntArray) {
-    Injector.inject(this)
     Analytics.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       val min_width: Int
@@ -50,11 +58,31 @@ class StockWidget() : AppWidgetProvider() {
         min_width = appWidgetManager.getAppWidgetInfo(widgetId).minWidth
       }
       val remoteViews: RemoteViews = createRemoteViews(context, min_width)
-      Log.d(TAG, "widget size update: " + "${min_width}px")
       updateWidget(context, appWidgetManager, widgetId, remoteViews, min_width > 150)
       appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     }
     super.onUpdate(context, appWidgetManager, appWidgetIds)
+  }
+
+  override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
+      appWidgetId: Int, newOptions: Bundle) {
+    val min_width = getMinWidgetWidth(newOptions)
+    val remoteViews: RemoteViews = createRemoteViews(context, min_width)
+    Analytics.trackWidgetSizeUpdate("${min_width}px")
+    updateWidget(context, appWidgetManager, appWidgetId, remoteViews, min_width > 150)
+    appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
+  }
+
+  override fun onEnabled(context: Context?) {
+    super.onEnabled(context)
+  }
+
+  override fun onDisabled(context: Context?) {
+    super.onDisabled(context)
+  }
+
+  override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
+    super.onDeleted(context, appWidgetIds)
   }
 
   private fun createRemoteViews(context: Context, min_width: Int): RemoteViews {
@@ -81,17 +109,6 @@ class StockWidget() : AppWidgetProvider() {
     }
   }
 
-  override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
-      appWidgetId: Int, newOptions: Bundle) {
-    Injector.inject(this)
-    val min_width = getMinWidgetWidth(newOptions)
-    val remoteViews: RemoteViews = createRemoteViews(context, min_width)
-    Analytics.trackWidgetSizeUpdate("${min_width}px")
-    Log.d(TAG, "widget size update: " + "${min_width}px")
-    updateWidget(context, appWidgetManager, appWidgetId, remoteViews, min_width > 150)
-    appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
-  }
-
   private fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int,
       remoteViews: RemoteViews, nextFetchVisible: Boolean) {
     remoteViews.setRemoteAdapter(R.id.list, Intent(context, RemoteStockProviderService::class.java))
@@ -115,10 +132,5 @@ class StockWidget() : AppWidgetProvider() {
     appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list)
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource",
         Tools.getBackgroundResource(context))
-  }
-
-  companion object {
-    val ACTION_NAME = "OPEN_APP"
-    val TAG = StockWidget::class.java.simpleName
   }
 }

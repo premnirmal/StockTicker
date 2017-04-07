@@ -40,22 +40,22 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     val nameView = itemView.findViewById(R.id.name) as TextView
 
     tickerView.text = stock.symbol
-    nameView.text = stock.Name
+    nameView.text = stock.name
 
     val change: Double
-    if (!stock.Change.isEmpty()) {
-      change = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
+    if (!stock.change.isEmpty()) {
+      change = java.lang.Double.parseDouble(stock.change.replace("+", ""))
     } else {
       change = 0.0
     }
 
     var changeVal: Double
     var changePercentVal: Double
-    if (!stock.Change.isEmpty() && !stock.ChangeinPercent.isEmpty()) {
+    if (!stock.change.isEmpty() && !stock.changeinPercent.isEmpty()) {
       try {
-        changeVal = java.lang.Double.parseDouble(stock.Change.replace("+", ""))
+        changeVal = java.lang.Double.parseDouble(stock.change.replace("+", ""))
         changePercentVal = java.lang.Double.parseDouble(
-            stock.ChangeinPercent.replace("+", "").replace("%", ""))
+            stock.changeinPercent.replace("+", "").replace("%", ""))
       } catch (e: Exception) {
         changeVal = 0.0
         changePercentVal = 0.0
@@ -70,7 +70,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
     changeValue.setText(Tools.DECIMAL_FORMAT.format(changeVal))
     val totalValueText = itemView.findViewById(R.id.totalValue) as TextView
-    totalValueText.text = Tools.DECIMAL_FORMAT.format(stock.LastTradePriceOnly)
+    totalValueText.text = Tools.DECIMAL_FORMAT.format(stock.lastTradePrice)
 
     val color: Int
     if (change >= 0) {
@@ -100,10 +100,10 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
       val dayChangePercentView = itemView.findViewById(R.id.day_change_percent) as StockFieldView
       val dayChangeAmountView = itemView.findViewById(R.id.day_change_amount) as StockFieldView
 
-      val holdingsValue = stock.LastTradePriceOnly * stock.PositionShares
+      val holdingsValue = stock.lastTradePrice * stock.positionShares
       val holdings = Tools.DECIMAL_FORMAT.format(holdingsValue)
       holdingsView.setText("$$holdings")
-      val gainLossAmount = holdingsValue - stock.PositionShares * stock.PositionPrice
+      val gainLossAmount = holdingsValue - stock.positionShares * stock.positionPrice
       gainLossView.setText(Tools.DECIMAL_FORMAT.format(gainLossAmount))
       if (gainLossAmount >= 0) {
         gainLossView.setTextColor(positiveColor)
@@ -111,9 +111,9 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
         gainLossView.setTextColor(negativeColor)
       }
 
-      val dayChangeAmount = stock.LastTradePriceOnly - stock.PositionPrice
+      val dayChangeAmount = stock.lastTradePrice - stock.positionPrice
       dayChangeAmountView.setText(Tools.DECIMAL_FORMAT.format(dayChangeAmount))
-      val dayChangePercent = dayChangeAmount / stock.PositionPrice * 100
+      val dayChangePercent = dayChangeAmount / stock.positionPrice * 100
       dayChangePercentView.setText("${(Tools.DECIMAL_FORMAT.format(dayChangePercent))}%")
       if (dayChangeAmount >= 0) {
         dayChangeAmountView.setTextColor(positiveColor)

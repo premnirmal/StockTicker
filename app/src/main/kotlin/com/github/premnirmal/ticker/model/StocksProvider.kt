@@ -53,7 +53,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   init {
     Injector.inject(this)
-    storage = StocksStorage(context)
+    storage = StocksStorage()
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(
         *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
@@ -69,7 +69,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == 0L) {
-      fetch().subscribe(SimpleSubscriber<List<Stock>>())
+      fetch().subscribe()
     } else {
       fetchLocal()
     }
@@ -78,12 +78,12 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal fun fetchLocal() {
     synchronized(stockList, {
       stockList.clear()
-      stockList.addAll(storage.readSynchronous())
+      stockList.addAll(storage.readStocks())
       if (!stockList.isEmpty()) {
         sortStockList()
         sendBroadcast()
       } else {
-        fetch().subscribe(SimpleSubscriber<List<Stock>>())
+        fetch().subscribe()
       }
     })
   }
@@ -93,17 +93,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
         .putLong(LAST_FETCHED, lastFetched)
         .apply()
-    storage.save(stockList).subscribe(object : SimpleSubscriber<Boolean>() {
-      override fun onError(e: Throwable) {
-        e.printStackTrace()
-      }
-
-      override fun onNext(result: Boolean) {
-        if (!result) {
-          CrashLogger.logException(RuntimeException("Save failed"))
-        }
-      }
-    })
+    storage.saveStocks(stockList)
   }
 
   override fun fetch(): Observable<List<Stock>> {
@@ -147,7 +137,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
     tickerList.add(ticker)
     save()
-    fetch().subscribe(SimpleSubscriber<List<Stock>>())
+    fetch().subscribe()
     return tickerList
   }
 
@@ -163,9 +153,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           tickerList.add(ticker)
         }
         if (shares > 0) {
-          position.IsPosition = true
-          position.PositionPrice = price
-          position.PositionShares = shares
+          position.isPosition = true
+          position.positionPrice = price
+          position.positionShares = shares
           positionList.remove(position)
           positionList.add(position)
           stockList.remove(position)
@@ -180,9 +170,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun removePosition(ticker: String) {
     val position = getStock(ticker) ?: return
-    position.IsPosition = false
-    position.PositionPrice = 0f
-    position.PositionShares = 0
+    position.isPosition = false
+    position.positionPrice = 0f
+    position.positionShares = 0
     positionList.remove(position)
     save()
   }
@@ -192,7 +182,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         .filterNot { tickerList.contains(it) }
         .forEach { tickerList.add(it) }
     save()
-    fetch().subscribe(SimpleSubscriber<List<Stock>>())
+    fetch().subscribe()
     return tickerList
   }
 
@@ -227,9 +217,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         added = false
         for (pos in positionList) {
           if (!added && stock.symbol == pos.symbol) {
-            stock.IsPosition = true
-            stock.PositionShares = pos.PositionShares
-            stock.PositionPrice = pos.PositionPrice
+            stock.isPosition = true
+            stock.positionShares = pos.positionShares
+            stock.positionPrice = pos.positionPrice
             newStockList.add(stock)
             added = true
           }

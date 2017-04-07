@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
@@ -56,6 +57,10 @@ object Injector {
     } else if (any is EditPositionActivity) {
       appComponent.inject(any)
     } else if (any is Tools) {
+      appComponent.inject(any)
+    } else if (any is StocksStorage) {
+      appComponent.inject(any)
+    } else if (any is UnlockReceiver) {
       appComponent.inject(any)
     } else {
       throw Exception("This class is not injectable in AppComponent!")

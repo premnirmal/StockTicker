@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
@@ -23,6 +24,10 @@ import javax.inject.Singleton
     modules = arrayOf(AppModule::class)
 )
 interface AppComponent {
+
+  fun inject(unlockReceiver: UnlockReceiver)
+
+  fun inject(stocksStorage: StocksStorage)
 
   fun inject(tools: Tools)
 
