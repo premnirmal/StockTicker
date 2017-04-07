@@ -25,9 +25,13 @@ object Market {
     // don't allow end time less than start time. reset to default time if so
     Tools.validateTimeSet(endTimez, startTimez)
 
-    val isOpen = (dayOfWeek >= DayOfWeek.MONDAY.ordinal && dayOfWeek <= DayOfWeek.FRIDAY.ordinal)
-        && (hourOfDay >= startTimez[0] && hourOfDay <= endTimez[0])
-        && (minuteOfHour >= startTimez[1] && minuteOfHour <= endTimez[1])
+    var isOpen = dayOfWeek >= DayOfWeek.MONDAY.ordinal && dayOfWeek <= DayOfWeek.FRIDAY.ordinal
+    if (isOpen) {
+      isOpen = hourOfDay >= startTimez[0] && hourOfDay <= endTimez[0]
+    }
+    if (isOpen && hourOfDay == startTimez[0] || hourOfDay == endTimez[0]) {
+      isOpen = minuteOfHour >= startTimez[1] && minuteOfHour <= endTimez[1]
+    }
     return isOpen
   }
 
