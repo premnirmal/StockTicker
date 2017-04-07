@@ -2,11 +2,13 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.content.DialogInterface
 import android.os.Bundle
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.shares
 import kotlinx.android.synthetic.main.activity_positions.skipButton
 import kotlinx.android.synthetic.main.activity_positions.toolbar
+import java.text.DecimalFormat
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -28,15 +30,9 @@ class EditPositionActivity : AddPositionActivity() {
         val skipButton = skipButton
         skipButton.setText(R.string.remove)
         sharesView.setText(stock.positionShares.toString())
-        val value = stock.positionPrice.toString()
-        val priceString: String
-        if (value.length > 3 && value.toCharArray()[value.length - 2] == '.') {
-          priceString = value
-        } else {
-          priceString = "${value}0"
-        }
-        priceView.setText(priceString)
-        priceView.setSelection(priceString.length)
+        val value = Tools.DECIMAL_FORMAT.format(stock.positionPrice)
+        priceView.setText(value)
+        priceView.setSelection(value.length)
       }
     } else {
       showDialog(getString(R.string.no_such_stock_in_portfolio),

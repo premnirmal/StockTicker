@@ -26,14 +26,14 @@ class UnlockReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     Injector.inject(this)
     if (intent.action == Intent.ACTION_USER_PRESENT) {
-      Log.d(TAG, "onReceive")
+      Log.i(TAG, "onReceive")
       if (Tools.refreshEnabled() && Market.isOpen()) {
         val widgetManager = AppWidgetManager.getInstance(context)
         val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
         val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
-        Log.d(TAG, "" + hasWidget)
+        Log.i(TAG, "HasWidget? " + hasWidget)
         if (hasWidget) {
-          Log.d(TAG, "refreshed")
+          Log.i(TAG, "Refreshed!")
           stocksProvider.fetch().subscribe(SimpleSubscriber())
         }
       }
