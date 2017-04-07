@@ -27,7 +27,7 @@ class UpdateReceiver : BroadcastReceiver() {
     val path = context.getString(R.string.package_replaced_string)
     val intentData = intent.dataString
     if (path == intentData || "package:" + path == intentData) {
-      stocksProvider.fetch().subscribe()
+      stocksProvider.fetch().subscribe(SimpleSubscriber())
       preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
       preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply()
     } else if (random.nextInt() % 2 == 0) {

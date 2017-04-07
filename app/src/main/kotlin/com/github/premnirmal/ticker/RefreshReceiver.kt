@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Stock
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle.MEDIUM
@@ -23,6 +22,6 @@ class RefreshReceiver : BroadcastReceiver() {
     Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
         "RefreshReceived on " + DateTimeFormatter.ofLocalizedDateTime(MEDIUM).format(
             LocalDateTime.now()))
-    stocksProvider.fetch().subscribe()
+    stocksProvider.fetch().subscribe(SimpleSubscriber())
   }
 }

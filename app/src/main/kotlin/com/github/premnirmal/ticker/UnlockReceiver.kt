@@ -34,7 +34,7 @@ class UnlockReceiver : BroadcastReceiver() {
         Log.d(TAG, "" + hasWidget)
         if (hasWidget) {
           Log.d(TAG, "refreshed")
-          stocksProvider.fetch().subscribe()
+          stocksProvider.fetch().subscribe(SimpleSubscriber())
         }
       }
     }

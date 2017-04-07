@@ -69,7 +69,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == 0L) {
-      fetch().subscribe()
+      fetch().subscribe(SimpleSubscriber())
     } else {
       fetchLocal()
     }
@@ -83,7 +83,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         sortStockList()
         sendBroadcast()
       } else {
-        fetch().subscribe()
+        fetch().subscribe(SimpleSubscriber())
       }
     })
   }
@@ -137,7 +137,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
     tickerList.add(ticker)
     save()
-    fetch().subscribe()
+    fetch().subscribe(SimpleSubscriber())
     return tickerList
   }
 
@@ -182,7 +182,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         .filterNot { tickerList.contains(it) }
         .forEach { tickerList.add(it) }
     save()
-    fetch().subscribe()
+    fetch().subscribe(SimpleSubscriber())
     return tickerList
   }
 
