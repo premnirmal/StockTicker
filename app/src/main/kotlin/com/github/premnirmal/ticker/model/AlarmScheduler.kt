@@ -43,10 +43,8 @@ internal class AlarmScheduler {
       val startTimez = Tools.startTime()
       val endTimez = Tools.endTime()
 
-      run({
-        // don't allow end time less than start time. reset to default time if so
-        Tools.validateTimeSet(endTimez, startTimez)
-      })
+      // don't allow end time less than start time. reset to default time if so
+      Tools.validateTimeSet(endTimez, startTimez)
 
       var mutableDateTime: ZonedDateTime = ZonedDateTime.now()
 

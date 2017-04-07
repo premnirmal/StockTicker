@@ -27,7 +27,9 @@ class UnlockReceiver : BroadcastReceiver() {
     Injector.inject(this)
     if (intent.action == Intent.ACTION_USER_PRESENT) {
       Log.i(TAG, "onReceive")
-      if (Tools.refreshEnabled() && Market.isOpen()) {
+      val isOpen = Market.isOpen()
+      Log.i(TAG, "Market is open? " + isOpen)
+      if (Tools.refreshEnabled() && isOpen) {
         val widgetManager = AppWidgetManager.getInstance(context)
         val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
         val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }

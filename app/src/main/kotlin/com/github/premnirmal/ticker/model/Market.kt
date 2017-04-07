@@ -15,26 +15,19 @@ object Market {
    * @return whether the current time is within the refresh hours that the user has set.
    */
   fun isOpen(): Boolean {
+    val dayOfWeek = LocalDateTime.now().dayOfWeek.ordinal
     val hourOfDay = LocalDateTime.now().hour
     val minuteOfHour = LocalDateTime.now().minute
-    val dayOfWeek = LocalDateTime.now().dayOfWeek
 
     val startTimez = Tools.startTime()
     val endTimez = Tools.endTime()
 
-    run({
-      // don't allow end time less than start time. reset to default time if so
-      Tools.validateTimeSet(endTimez, startTimez)
-    })
+    // don't allow end time less than start time. reset to default time if so
+    Tools.validateTimeSet(endTimez, startTimez)
 
-    var isOpen = false
-    isOpen = dayOfWeek <= DayOfWeek.FRIDAY && dayOfWeek >= DayOfWeek.MONDAY
-    if (isOpen) {
-      isOpen = hourOfDay >= startTimez[0] && hourOfDay <= endTimez[0]
-    }
-    if (isOpen) {
-      isOpen = minuteOfHour >= startTimez[1] && hourOfDay <= endTimez[1]
-    }
+    val isOpen = (dayOfWeek >= DayOfWeek.MONDAY.ordinal && dayOfWeek <= DayOfWeek.FRIDAY.ordinal)
+        && (hourOfDay >= startTimez[0] && hourOfDay <= endTimez[0])
+        && (minuteOfHour >= startTimez[1] && minuteOfHour <= endTimez[1])
     return isOpen
   }
 
