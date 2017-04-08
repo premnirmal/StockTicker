@@ -125,6 +125,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     stockList.addItemDecoration(
         PortfolioSpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing),
             gridLayoutManager))
+    stockList.adapter = stocksAdapter
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
@@ -193,7 +194,6 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       }
       if (stockList != null) {
         stocksAdapter.refresh(stocksProvider)
-        stockList.adapter = stocksAdapter
         subtitle.text = "Last Fetch: ${stocksProvider.lastFetched()}"
       }
     }

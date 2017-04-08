@@ -21,7 +21,7 @@ class UnlockReceiver : BroadcastReceiver() {
     const val TAG = "UnlockReceiver"
   }
 
-  @Inject lateinit var stocksProvider: IStocksProvider
+  @Inject lateinit internal var stocksProvider: IStocksProvider
 
   override fun onReceive(context: Context, intent: Intent) {
     Injector.inject(this)

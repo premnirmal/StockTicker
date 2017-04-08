@@ -22,7 +22,7 @@ import javax.inject.Inject
  */
 class Tools private constructor() {
 
-  @Inject lateinit var sharedPreferences: SharedPreferences
+  @Inject lateinit internal var sharedPreferences: SharedPreferences
 
   init {
     Injector.inject(this)
