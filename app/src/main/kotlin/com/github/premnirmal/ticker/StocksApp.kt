@@ -13,7 +13,7 @@ open class StocksApp : Application() {
   override fun onCreate() {
     super.onCreate()
     initCrashLogger()
-    AndroidThreeTen.init(this)
+    initThreeTen()
     CalligraphyConfig.initDefault(
         CalligraphyConfig.Builder()
             .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
@@ -21,6 +21,10 @@ open class StocksApp : Application() {
             .build())
     Injector.init(createAppComponent())
     initAnalytics()
+  }
+
+  open fun initThreeTen() {
+    AndroidThreeTen.init(this)
   }
 
   open fun createAppComponent(): AppComponent {

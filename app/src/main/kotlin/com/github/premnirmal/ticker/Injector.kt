@@ -34,7 +34,7 @@ object Injector {
       appComponent.inject(any)
     } else if (any is ParanormalActivity) {
       appComponent.inject(any)
-    } else if (any is PortfolioFragment) {
+    } else if (any is PortfolioFragment.InjectionHolder) {
       appComponent.inject(any)
     } else if (any is SettingsActivity) {
       appComponent.inject(any)

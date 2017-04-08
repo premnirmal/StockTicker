@@ -47,16 +47,27 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     private val NO_NETWORK_THROTTLE_INTERVAL = 1000L
   }
 
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  /**
+   * Using this injection holder because in unit tests, we use a mockito subclass of this fragment.
+   * Without this holder, dagger is unable to inject depedencies into this class.
+   */
+  class InjectionHolder {
+    @Inject
+    lateinit internal var stocksProvider: IStocksProvider
 
-  @Inject
-  lateinit internal var bus: RxBus
+    @Inject
+    lateinit internal var bus: RxBus
 
+    init {
+      Injector.inject(this)
+    }
+  }
+
+  private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
   private var attemptingFetch = false
   private val stocksAdapter by lazy {
-    StocksAdapter(stocksProvider, this as OnStockClickListener)
+    StocksAdapter(holder.stocksProvider, this as OnStockClickListener)
   }
 
   override fun onClick(view: View, stock: Stock, position: Int) {
@@ -93,11 +104,6 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     popupWindow.show()
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    Injector.inject(this)
-  }
-
   override fun onResume() {
     super.onResume()
     update()
@@ -125,6 +131,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     stockList.addItemDecoration(
         PortfolioSpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing),
             gridLayoutManager))
+    stockList.adapter = stocksAdapter
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
@@ -144,7 +151,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
         false
       }
     }
-    bind(bus.forEventType(NoNetworkEvent::class.java))
+    bind(holder.bus.forEventType(NoNetworkEvent::class.java))
         .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe { event ->
@@ -167,7 +174,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   internal fun fetch() {
     attemptingFetch = true
-    bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
+    bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
       override fun onError(e: Throwable) {
         attemptingFetch = false
         CrashLogger.logException(e)
@@ -185,16 +192,15 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   internal fun update() {
     if (activity != null) {
-      if (stocksProvider.getStocks().isEmpty()) {
+      if (holder.stocksProvider.getStocks().isEmpty()) {
         if (!attemptingFetch) {
           fetch()
           return
         }
       }
       if (stockList != null) {
-        stocksAdapter.refresh(stocksProvider)
-        stockList.adapter = stocksAdapter
-        subtitle.text = "Last Fetch: ${stocksProvider.lastFetched()}"
+        stocksAdapter.refresh(holder.stocksProvider)
+        subtitle.text = "Last Fetch: ${holder.stocksProvider.lastFetched()}"
       }
     }
   }
@@ -204,7 +210,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       AlertDialog.Builder(activity).setTitle("Remove")
           .setMessage("Are you sure you want to remove ${stock.symbol} from your portfolio?")
           .setPositiveButton("Remove", { dialog, which ->
-            stocksProvider.removeStock(stock.symbol)
+            holder.stocksProvider.removeStock(stock.symbol)
             stocksAdapter.remove(stock)
             dialog.dismiss()
           })

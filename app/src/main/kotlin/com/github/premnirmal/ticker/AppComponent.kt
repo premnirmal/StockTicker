@@ -39,7 +39,7 @@ interface AppComponent {
 
   fun inject(paranormalActivity: ParanormalActivity)
 
-  fun inject(portfolioFragment: PortfolioFragment)
+  fun inject(holder: PortfolioFragment.InjectionHolder)
 
   fun inject(settingsActivity: SettingsActivity)
 

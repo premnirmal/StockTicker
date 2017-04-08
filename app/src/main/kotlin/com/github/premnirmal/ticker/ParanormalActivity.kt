@@ -32,15 +32,17 @@ class ParanormalActivity : BaseActivity() {
     }
     Injector.inject(this)
     setContentView(R.layout.activity_paranormal)
-    val fragment = PortfolioFragment()
-    supportFragmentManager.beginTransaction().add(R.id.fragment_container,
-        fragment, fragment.javaClass.simpleName).commit()
+    if (savedInstanceState == null) {
+      val fragment = PortfolioFragment()
+      supportFragmentManager.beginTransaction().add(R.id.fragment_container,
+          fragment, fragment.javaClass.simpleName).commit()
+    }
     if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
       preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply()
       val stringBuilder = StringBuilder()
       val whatsNew = resources.getStringArray(R.array.whats_new)
       for (i in whatsNew.indices) {
-        stringBuilder.append("\t - ")
+        stringBuilder.append("- ")
         stringBuilder.append(whatsNew[i])
         if (i != whatsNew.size - 1) {
           stringBuilder.append("\n")

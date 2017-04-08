@@ -1,6 +1,8 @@
 machine:
   java:
     version: oraclejdk8
+  environment:
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2560m -XX:+HeapDumpOnOutOfMemoryError"'
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter "android-25"
@@ -11,6 +13,6 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
 test:
   override:
-    - ./gradlew assemblePureflossDebug -PdisablePreDex
-    - ./gradlew test
+    - case $CIRCLE_NODE_INDEX in 0) ./gradlew assemblePureflossDebug -PdisablePreDex ;; 1) ./gradlew testPureflossDebugUnitTest -PdisablePreDex ;; esac:
+        parallel: true
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
