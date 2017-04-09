@@ -13,6 +13,6 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
 test:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) ./gradlew assemblePureflossDebug -PdisablePreDex ;; 1) ./gradlew testPureflossDebugUnitTest -PdisablePreDex --no-daemon ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) ./gradlew assemblePureflossDebug -PdisablePreDex ;; 1) ./gradlew testPureflossDebugUnitTest -PdisablePreDex -Pcom.android.build.threadPoolSize=1 --no-daemon ;; esac:
         parallel: true
     - cp -r app/build/outputs $CIRCLE_ARTIFACTS
