@@ -73,6 +73,9 @@ android {
 
   sourceSets {
     main.java.srcDirs += "src/main/kotlin"
+    test {
+      resources.srcDirs += ['src/test/resources']
+    }
   }
 
   kapt {

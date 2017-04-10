@@ -1,32 +1,32 @@
 package com.github.premnirmal.ticker.mock
 
 import org.junit.Assert.assertTrue
-import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import java.util.HashMap
 
 object Mocker {
 
-  private val sMockMap = HashMap<Class<*>, Any>()
+  private val mocks = HashMap<Class<*>, Any>()
 
-  operator fun <T> set(clazz: Class<T>, mock: T): T {
-    sMockMap.put(clazz, mock!!)
+  fun <T> setMock(clazz: Class<T>, mock: T): T {
+    mocks.put(clazz, mock!!)
     return mock
   }
 
-  operator fun <T> get(clazz: Class<T>): T {
-    assertTrue(sMockMap.containsKey(clazz))
-    return sMockMap[clazz] as T
+  fun <T> getMock(clazz: Class<T>): T {
+    assertTrue(mocks.containsKey(clazz))
+    return mocks[clazz] as T
   }
 
   fun <T> provide(clazz: Class<T>): T {
-    if (!sMockMap.containsKey(clazz)) {
-      val mock = Mockito.mock(clazz)
-      sMockMap.put(clazz, mock!!)
+    if (!mocks.containsKey(clazz)) {
+      val mock = mock(clazz)
+      mocks.put(clazz, mock!!)
     }
-    return sMockMap[clazz] as T
+    return mocks[clazz] as T
   }
 
-  fun clear() {
-    sMockMap.clear()
+  fun clearMocks() {
+    mocks.clear()
   }
-}// Private constructor to prevent instantiation.
+}

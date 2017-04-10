@@ -11,5 +11,5 @@ import rx.Observable
 interface GoogleFinance {
 
   @GET("info")
-  fun getStock(@Query(value = "q", encoded = false) query: String): Observable<List<GStock>>
+  fun getStocks(@Query(value = "q", encoded = false) query: String): Observable<List<GStock>>
 }

@@ -60,7 +60,7 @@ import javax.inject.Singleton
 
   private fun getGoogleFinanceStocks(tickers: Array<Any>): Observable<List<Stock>> {
     val query = QueryCreator.googleStocksQuery(tickers)
-    return googleApi.getStock(query).map({ gStocks ->
+    return googleApi.getStocks(query).map({ gStocks ->
       lastFetched = System.currentTimeMillis()
       val stocks = gStocks.map { StockConverter.convert(it) }
       val updatedStocks = StockConverter.convertResponseQuotes(stocks)
