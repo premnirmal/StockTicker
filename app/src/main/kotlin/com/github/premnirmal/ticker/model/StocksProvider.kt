@@ -130,12 +130,13 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     val widgetManager = AppWidgetManager.getInstance(context)
     val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
     val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
-    if (hasWidget) {
+    // Uncomment below if you only want to refresh when a widget exists
+//    if (hasWidget) {
       val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
       nextFetch = updateTime.toInstant().toEpochMilli()
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
       AlarmScheduler.sendBroadcast(context)
-    }
+//    }
   }
 
   override fun addStock(ticker: String): Collection<String> {

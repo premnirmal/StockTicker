@@ -66,8 +66,14 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val changePercent: Double
     if (stock.change != null && stock.change.isNotBlank()
         && stock.changeinPercent != null && stock.changeinPercent.isNotBlank()) {
-      change = stock.change.replace("+", "").toDouble()
-      changePercent = stock.changeinPercent.replace("+", "").replace("%", "").toDouble()
+      change = stock.change.replace("+", "")
+          .replace(",", "")
+          .toDouble()
+      changePercent = stock.changeinPercent
+          .replace("+", "")
+          .replace(",", "")
+          .replace("%", "")
+          .toDouble()
     } else {
       change = 0.0
       changePercent = 0.0
