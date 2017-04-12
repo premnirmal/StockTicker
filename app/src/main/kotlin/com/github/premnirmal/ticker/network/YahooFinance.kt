@@ -17,7 +17,7 @@ interface YahooFinance {
 
 
   /**
-   * Returns a quote that provides a list of [com.github.premnirmal.ticker.network.Stock]s
+   * Returns a quote that provides a list of stock quotes.
 
    * @param tickers of the stocks, must be comma separated
    * *

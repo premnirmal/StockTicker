@@ -33,7 +33,7 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
   @After
   fun afterTestDestroy() {
     mController.pause().stop().destroy()
-    Mocker.clear()
+    Mocker.clearMocks()
   }
 
   protected fun setIntent(intent: Intent) {
