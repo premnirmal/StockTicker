@@ -15,4 +15,8 @@ internal class CrashLoggerImpl : CrashLogger {
   override fun log(throwable: Throwable) {
     Timber.w(throwable)
   }
+
+  override fun log(msg: String) {
+    Timber.d(msg)
+  }
 }

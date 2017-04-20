@@ -23,4 +23,8 @@ internal class CrashLoggerImpl : CrashLogger {
   override fun log(throwable: Throwable) {
     Crashlytics.logException(throwable)
   }
+
+  override fun log(msg: String) {
+
+  }
 }

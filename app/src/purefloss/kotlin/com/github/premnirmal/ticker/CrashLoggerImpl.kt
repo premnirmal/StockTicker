@@ -12,4 +12,8 @@ internal class CrashLoggerImpl : CrashLogger {
   override fun log(throwable: Throwable) {
 
   }
+
+  override fun log(msg: String) {
+
+  }
 }
