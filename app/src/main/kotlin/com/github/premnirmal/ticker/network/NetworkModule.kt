@@ -28,7 +28,7 @@ import javax.inject.Singleton
  * Created by premnirmal on 3/3/16.
  */
 @Module
-class ApiModule {
+class NetworkModule {
 
   companion object {
     internal val CONNECTION_TIMEOUT: Long = 20000

@@ -11,7 +11,7 @@ import javax.inject.Singleton
 /**
  * Created by premnirmal on 3/22/17.
  */
-@Module(includes = arrayOf(MockApiModule::class))
+@Module(includes = arrayOf(MockNetworkModule::class))
 class MockAppModule(private val app: Context) {
 
   @Provides

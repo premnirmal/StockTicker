@@ -21,7 +21,7 @@ import javax.inject.Singleton
  * Created by premnirmal on 3/22/17.
  */
 @Module
-class MockApiModule {
+class MockNetworkModule {
 
   @Provides @Singleton
   internal fun provideHttpClient(context: Context, bus: RxBus): OkHttpClient {
