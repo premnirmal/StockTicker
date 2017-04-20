@@ -12,7 +12,6 @@ class TestApplication : StocksApp() {
 
   override fun onCreate() {
     super.onCreate()
-    Log.e("CRASH", "onCreate()")
   }
 
   override fun createAppComponent(): AppComponent {

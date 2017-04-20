@@ -4,7 +4,7 @@ import android.content.Context
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.GoogleFinance
+import com.github.premnirmal.ticker.network.Robindahood
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.YahooFinance
@@ -57,10 +57,10 @@ class MockNetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideGoogleFinance(context: Context, okHttpClient: OkHttpClient,
+  internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): GoogleFinance {
-    return Mocker.provide(GoogleFinance::class.java)
+      rxJavaFactory: RxJavaCallAdapterFactory): Robindahood {
+    return Mocker.provide(Robindahood::class.java)
   }
 
   @Provides @Singleton
