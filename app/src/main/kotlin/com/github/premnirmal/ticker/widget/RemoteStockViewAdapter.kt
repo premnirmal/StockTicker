@@ -58,18 +58,16 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val stockViewLayout = Tools.stockViewLayout()
     val remoteViews = RemoteViews(context.packageName, stockViewLayout)
     val stock = quotes[position]
-    remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
-    val changePercentString: SpannableString
-    val changeValueString: SpannableString
-    val priceString: SpannableString
     val changeValueFormatted = stock.changeString()
     val changePercentFormatted = stock.changePercentString()
     val priceFormatted = stock.priceString()
 
-    changePercentString = SpannableString(changePercentFormatted)
-    changeValueString = SpannableString(changeValueFormatted)
-    priceString = SpannableString(priceFormatted)
+    val changePercentString = SpannableString(changePercentFormatted)
+    val changeValueString = SpannableString(changeValueFormatted)
+    val priceString = SpannableString(priceFormatted)
+
+    remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
     if (Tools.boldEnabled()) {
       changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,

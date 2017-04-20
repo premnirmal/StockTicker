@@ -2,20 +2,17 @@ package com.github.premnirmal.ticker.network
 
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
-import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.mock.TestApplication
-import com.github.premnirmal.ticker.network.data.GQuote
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.QuoteNet
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.reflect.TypeToken
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.Matchers
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
@@ -33,24 +30,20 @@ class StocksApiTest : BaseUnitTest() {
   }
 
   lateinit var yahooFinance: YahooFinance
-  lateinit var googleFinance: GoogleFinance
+  lateinit var robinhood: Robindahood
   lateinit var mockPrefs: SharedPreferences
 
   val stocksApi = StocksApi()
 
   @Before fun initMocks() {
     yahooFinance = Mocker.provide(YahooFinance::class.java)
-    googleFinance = Mocker.provide(GoogleFinance::class.java)
+    robinhood = Mocker.provide(Robindahood::class.java)
     mockPrefs = Mocker.provide(SharedPreferences::class.java)
-    val yStocksJson = parseJsonFile("QuotesFromYahooFinance.json")
-    val listType = object : TypeToken<List<GQuote>>() {}.type
-    val gStocksList = parseJsonFile<List<GQuote>>(listType, "QuotesFromGoogleFinance.json")
-    val yahooStocks = Observable.just(yStocksJson)
-    val googleStocks = Observable.just(gStocksList)
-    `when`(yahooFinance.getStocks(Matchers.anyString()))
-        .thenReturn(yahooStocks)
-    `when`(googleFinance.getStocks(Matchers.anyString()))
-        .thenReturn(googleStocks)
+    val listType = object : TypeToken<List<QuoteNet>>() {}.type
+    val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
+    val stocks = Observable.just(stockList)
+    `when`(robinhood.getStocks(Matchers.anyString()))
+        .thenReturn(stocks)
   }
 
   @After fun clear() {
@@ -63,40 +56,7 @@ class StocksApiTest : BaseUnitTest() {
     val subscriber = TestSubscriber<List<Quote>>()
     stocksApi.getStocks(testTickerList).subscribe(subscriber)
     subscriber.assertNoErrors()
-    val onNextEvents = subscriber.onNextEvents
-    assertTrue(onNextEvents.size == 1)
-    val stocks = onNextEvents[0]
-    assertEquals(testTickerList.size, stocks.size)
-  }
-
-  @Test
-  fun testGetStocksYahoo() {
-    `when`(mockPrefs.getBoolean(eq(Tools.ENABLE_GOOGLE_FINANCE), anyBoolean())).thenReturn(false)
-
-    val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestSubscriber<List<Quote>>()
-    stocksApi.getStocks(testTickerList).subscribe(subscriber)
-
-    verify(yahooFinance).getStocks(anyString())
-
-    subscriber.assertNoErrors()
-    val onNextEvents = subscriber.onNextEvents
-    assertTrue(onNextEvents.size == 1)
-    val stocks = onNextEvents[0]
-    assertEquals(testTickerList.size, stocks.size)
-  }
-
-  @Test
-  fun testGetStocksGoogle() {
-    `when`(mockPrefs.getBoolean(eq(Tools.ENABLE_GOOGLE_FINANCE), anyBoolean())).thenReturn(true)
-
-    val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestSubscriber<List<Quote>>()
-    stocksApi.getStocks(testTickerList).subscribe(subscriber)
-
-    verify(googleFinance).getStocks(anyString())
-
-    subscriber.assertNoErrors()
+    verify(robinhood).getStocks(anyString())
     val onNextEvents = subscriber.onNextEvents
     assertTrue(onNextEvents.size == 1)
     val stocks = onNextEvents[0]

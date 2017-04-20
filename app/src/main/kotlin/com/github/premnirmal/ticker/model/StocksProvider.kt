@@ -7,8 +7,10 @@ import android.content.SharedPreferences
 import android.os.SystemClock
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -46,6 +48,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   @Inject internal lateinit var api: StocksApi
   @Inject internal lateinit var context: Context
   @Inject internal lateinit var preferences: SharedPreferences
+  @Inject internal lateinit var bus: RxBus
 
   internal val tickerList: MutableList<String>
   internal val quoteList: MutableList<Quote> = ArrayList()
@@ -130,13 +133,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     val widgetManager = AppWidgetManager.getInstance(context)
     val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
     val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
-    // Uncomment below if you only want to refresh when a widget exists
+    // Uncomment below if you only want to schedule when a widget exists
 //    if (hasWidget) {
       val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
       nextFetch = updateTime.toInstant().toEpochMilli()
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
-      AlarmScheduler.sendBroadcast(context)
 //    }
+    AlarmScheduler.sendBroadcast(context)
+    bus.post(RefreshEvent())
   }
 
   override fun addStock(ticker: String): Collection<String> {
@@ -144,6 +148,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       return tickerList
     }
     tickerList.add(ticker)
+    val quote = Quote()
+    quote.symbol = ticker
+    quoteList.add(quote)
     save()
     fetch().subscribe(SimpleSubscriber())
     return tickerList

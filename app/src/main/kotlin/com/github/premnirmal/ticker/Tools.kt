@@ -45,7 +45,6 @@ class Tools private constructor() {
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"
     const val SETTING_SHARE = "SETTING_IMPORT"
-    const val ENABLE_GOOGLE_FINANCE = "ENABLE_GOOGLE_FINANCE"
     const val WIDGET_BG = "WIDGET_BG"
     const val TEXT_COLOR = "TEXT_COLOR"
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
@@ -239,10 +238,6 @@ class Tools private constructor() {
     fun shouldPromptRate(): Boolean {
       // if the user hasn't rated, try again on occasions
       return (random.nextInt() % 2 == 0) && !hasUserAlreadyRated()
-    }
-
-    fun googleFinanceEnabled(): Boolean {
-      return instance.sharedPreferences.getBoolean(Tools.ENABLE_GOOGLE_FINANCE, true)
     }
 
     fun getStatusBarHeight(context: Context): Int {

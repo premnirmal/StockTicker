@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
+import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
@@ -108,12 +109,12 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   override fun onResume() {
     super.onResume()
-    update()
     if (listViewState != null) {
       stockList?.layoutManager?.onRestoreInstanceState(listViewState)
     }
     val rearrangeItem = toolbar.menu.findItem(R.id.action_rearrange)
     rearrangeItem.isEnabled = true
+    update()
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -157,8 +158,14 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
         .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe { event ->
-          noNetwork(event as NoNetworkEvent)
+          noNetwork(event)
           swipe_container.isRefreshing = false
+        }
+
+    bind(holder.bus.forEventType(RefreshEvent::class.java))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { event ->
+          update()
         }
 
     if (!Tools.isNetworkOnline(context.applicationContext)) {

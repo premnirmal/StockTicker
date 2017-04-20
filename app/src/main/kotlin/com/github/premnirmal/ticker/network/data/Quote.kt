@@ -10,10 +10,6 @@ class Quote : Comparable<Quote>, Serializable {
 
   companion object {
     private val serialVersionUID = -4235355L
-
-    const val GDAXI_TICKER = "^GDAXI"
-    const val GSPC_TICKER = "^GSPC"
-    const val XAU_TICKER = "XAU"
   }
 
   var symbol = ""

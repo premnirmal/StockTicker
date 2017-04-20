@@ -1,12 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
   <CheckBoxPreference
-      android:key="ENABLE_GOOGLE_FINANCE"
-      android:title="@string/enable_google_finance"
-      android:summary="@string/enable_google_finance_desc"
-      android:defaultValue="true"/>
-
-  <CheckBoxPreference
       android:key="SETTING_AUTOSORT"
       android:title="@string/auto_sort"
       android:summary="@string/auto_sort_desc"

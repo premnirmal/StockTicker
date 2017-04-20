@@ -127,20 +127,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     addPreferencesFromResource(R.xml.prefs)
 
     run({
-      val gStockPreference = findPreference(Tools.ENABLE_GOOGLE_FINANCE) as CheckBoxPreference
-      val enable = Tools.googleFinanceEnabled()
-      gStockPreference.isChecked = enable
-      gStockPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val checked = newValue as Boolean
-          preferences.edit().putBoolean(Tools.ENABLE_GOOGLE_FINANCE, checked).apply()
-          return true
-        }
-      }
-
-    })
-
-    run({
       val exportPref = findPreference(Tools.SETTING_EXPORT)
       exportPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         if (needsPermissionGrant()) {

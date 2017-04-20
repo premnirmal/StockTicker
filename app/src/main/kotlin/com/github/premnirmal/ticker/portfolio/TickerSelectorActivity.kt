@@ -94,7 +94,7 @@ class TickerSelectorActivity : BaseActivity() {
         stocksProvider.addStock(ticker)
         InAppMessage.showMessage(this@TickerSelectorActivity, ticker + " added to list")
         // don't allow positions for indices
-        if (!ticker.startsWith("^") && !ticker.contains("=")) {
+        if (!ticker.startsWith("^") && !ticker.contains("=") && !ticker.startsWith(".")) {
           showDialog("Do you want to add positions for $ticker?",
               true,
               DialogInterface.OnClickListener { dialog, which ->

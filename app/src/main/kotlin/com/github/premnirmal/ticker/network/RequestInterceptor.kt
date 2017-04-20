@@ -22,11 +22,7 @@ internal class RequestInterceptor(val context: Context, val bus: RxBus) : Interc
     val SIGNATURE_HEADER = "XSignature-StockTicker"
   }
 
-  val packageName: String
-
-  init {
-    packageName = context.packageName
-  }
+  val packageName: String = context.packageName
 
   @Throws(IOException::class)
   override fun intercept(chain: Chain): Response? {
@@ -34,6 +30,7 @@ internal class RequestInterceptor(val context: Context, val bus: RxBus) : Interc
       bus.post(NoNetworkEvent())
       throw IOException("No network connection")
     } else {
+      // Disable cache so we always have fresh quotes.
       val request: Request = chain.request().newBuilder()
           .cacheControl(CacheControl.FORCE_NETWORK)
           .addHeader(PACKAGE_HEADER, packageName)

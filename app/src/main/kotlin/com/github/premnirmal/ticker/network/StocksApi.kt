@@ -31,6 +31,7 @@ import javax.inject.Singleton
     val symbols = StockConverter.convertRequestSymbols(tickerList)
     val query = symbols.joinToString(",")
     return financeApi.getStocks(query).map { quoteNets ->
+      lastFetched  = System.currentTimeMillis()
       StockConverter.convertQuoteNets(quoteNets)
     }
   }

@@ -1,0 +1,47 @@
+[
+  {
+    "currency": "US",
+    "symbol": "SPY",
+    "name": "SPDR S&P 500 ETF Trust",
+    "last_trade_price": 235.34,
+    "change": 1.9,
+    "change_percent": 0.81,
+    "exchange": "NYSE"
+  },
+  {
+    "currency": "US",
+    "symbol": "GOOG",
+    "name": "Alphabet Inc. Class C Capital Stock",
+    "last_trade_price": 841.65,
+    "change": 3.44,
+    "change_percent": 0.41,
+    "exchange": "NASDAQ"
+  },
+  {
+    "currency": "US",
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation - Common Stock",
+    "last_trade_price": 65.5,
+    "change": 0.46,
+    "change_percent": 0.71,
+    "exchange": "NASDAQ"
+  },
+  {
+    "currency": "US",
+    "symbol": "DIA",
+    "name": "SPDR Dow Jones Industrial Average ETF Trust",
+    "last_trade_price": 205.7,
+    "change": 1.85,
+    "change_percent": 0.91,
+    "exchange": "NYSE"
+  },
+  {
+    "currency": "US",
+    "symbol": "AAPL",
+    "name": "Apple Inc. - Common Stock",
+    "last_trade_price": 142.44,
+    "change": 1.76,
+    "change_percent": 1.25,
+    "exchange": "NASDAQ"
+  }
+]

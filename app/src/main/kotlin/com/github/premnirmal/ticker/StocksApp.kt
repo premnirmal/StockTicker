@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
-import android.util.Log
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
@@ -26,9 +25,8 @@ open class StocksApp : Application() {
         for (signature in packageInfo.signatures) {
           val md = MessageDigest.getInstance("SHA")
           md.update(signature.toByteArray())
-          val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT)
+          val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT).trim()
           CrashLogger.log(currentSignature)
-          SIGNATURE = currentSignature
           return currentSignature
         }
       } catch (e: Exception) {
@@ -49,7 +47,7 @@ open class StocksApp : Application() {
             .build())
     Injector.init(createAppComponent())
     initAnalytics()
-    getAppSignature(this)
+    SIGNATURE = getAppSignature(this)
   }
 
   open fun initThreeTen() {

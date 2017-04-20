@@ -10,15 +10,9 @@ import java.util.ArrayList
 internal object StockConverter {
 
   fun convertRequestSymbols(symbols: List<String>): List<String> {
-    val newSymbols = ArrayList<String>()
-    for (symbol in symbols) {
-      if (symbol == Quote.GDAXI_TICKER || symbol == Quote.GSPC_TICKER) {
-        newSymbols.add(symbol)
-      } else {
-        newSymbols.add(symbol
-            .replace("^", "")
-            .replace("-", "."))
-      }
+    val newSymbols = symbols.map {
+      it.replace("^", ".")
+          .replace("-", ".")
     }
     return newSymbols
   }
