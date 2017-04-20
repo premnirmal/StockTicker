@@ -28,7 +28,6 @@ open class StocksApp : Application() {
           md.update(signature.toByteArray())
           val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT)
           CrashLogger.log(currentSignature)
-          Log.e("SIGNATURE", currentSignature)
           SIGNATURE = currentSignature
           return currentSignature
         }
