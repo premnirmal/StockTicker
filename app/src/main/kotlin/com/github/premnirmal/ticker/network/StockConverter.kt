@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.network.data.GStock
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.QuoteNet
 import java.util.ArrayList
 
 /**
@@ -9,65 +9,33 @@ import java.util.ArrayList
  */
 internal object StockConverter {
 
-  fun convert(gStock: GStock): Stock {
-    val stock = Stock()
-    val name = if (!gStock.e.isNullOrEmpty()) gStock.e.replace("INDEX", "") else gStock.t
-    stock.symbol = gStock.t
-    stock.name = name
-    stock.lastTradePrice =
-        if (!gStock.lCur.isNullOrEmpty()) {
-          try {
-            (gStock.lCur.replace(",", "")).toFloat()
-          } catch(e: Exception) {
-            0f
-          }
-        } else {
-          0f
-        }
-    var changePercent: Double
-    if (gStock.cp.isNullOrEmpty()) {
-      changePercent = 0.0
-    } else {
-      try {
-        changePercent = gStock.cp.toDouble()
-      } catch (e: Exception) {
-        changePercent = 0.0
-      }
-    }
-    if (changePercent >= 0) {
-      stock.changeinPercent = "+$changePercent%"
-    } else {
-      stock.changeinPercent = "$changePercent%"
-    }
-    stock.change = gStock.c
-    stock.stockExchange = name
-
-    return stock
-  }
-
-  fun convertResponseQuotes(quotes: List<Stock>): List<Stock> {
-    for (quote in quotes) {
-      val newSymbol = quote.symbol.replace(".", "^")
-      quote.symbol = newSymbol
-    }
-    return quotes
-  }
-
-  fun convertRequestSymbols(symbols: List<String>): ArrayList<String> {
+  fun convertRequestSymbols(symbols: List<String>): List<String> {
     val newSymbols = ArrayList<String>()
     for (symbol in symbols) {
-      if (symbol == Stock.GDAXI_TICKER || symbol == Stock.GSPC_TICKER) {
+      if (symbol == Quote.GDAXI_TICKER || symbol == Quote.GSPC_TICKER) {
         newSymbols.add(symbol)
       } else {
         newSymbols.add(symbol
-            .replace("^DJI", ".DJI")
-            .replace("^IXIC", ".IXIC")
-            .replace("^XAU", "XAU")
-            .replace("^SPY", "SPY") // for symbols like ^SPY for yahoo
-            .replace("^", ".")
-        )
+            .replace("^", "")
+            .replace(".", ""))
       }
     }
     return newSymbols
+  }
+
+  fun convertQuoteNets(quoteNets: List<QuoteNet>): List<Quote> {
+    val quotes = ArrayList<Quote>()
+    for (quoteNet in quoteNets) {
+      val quote = Quote()
+      quote.symbol = quoteNet.symbol
+      quote.name = quoteNet.name
+      quote.lastTradePrice = quoteNet.lastTradePrice
+      quote.change = quoteNet.change
+      quote.changeinPercent = quoteNet.changePercent
+      quote.stockExchange = quoteNet.exchange
+      quote.currency = quoteNet.currency
+      quotes.add(quote)
+    }
+    return quotes
   }
 }

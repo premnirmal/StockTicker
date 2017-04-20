@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:ellipsize="end"
-        android:maxLines="1"
+        android:maxLines="2"
         android:textColor="@android:color/white"
         android:textSize="@dimen/portfolio_position_vh_text_size"
         tools:text="Google Inc"
@@ -147,6 +147,19 @@
         sfw:name="@string/day_change_amount"
         sfw:size="@dimen/portfolio_position_vh_text_size"
         />
+    <TextView
+        android:id="@+id/exchange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/portfolio_position_vh_text_size"
+        tools:text="NYSC"
+        />
+
 
   </LinearLayout>
 

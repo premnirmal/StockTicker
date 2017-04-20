@@ -14,7 +14,17 @@ import java.io.IOException
 /**
  * Created by premnirmal on 3/17/16.
  */
-internal class NoCacheRequestInterceptor(val context: Context, val bus: RxBus) : Interceptor {
+internal class RequestInterceptor(val context: Context, val bus: RxBus) : Interceptor {
+
+  companion object {
+    val PACKAGE_HEADER = "XPackage-StockTicker"
+  }
+
+  val packageName: String
+
+  init {
+    packageName = context.packageName
+  }
 
   @Throws(IOException::class)
   override fun intercept(chain: Chain): Response? {
@@ -24,6 +34,7 @@ internal class NoCacheRequestInterceptor(val context: Context, val bus: RxBus) :
     } else {
       val request: Request = chain.request().newBuilder()
           .cacheControl(CacheControl.FORCE_NETWORK)
+          .addHeader(PACKAGE_HEADER, packageName)
           .build()
       return chain.proceed(request)
     }

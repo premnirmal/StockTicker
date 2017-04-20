@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.rearrange_view.view.*
 import java.util.*
@@ -17,18 +17,18 @@ internal class RearrangeAdapter internal constructor(private val stocksProvider:
     private val dragStartListener: OnStartDragListener)
   : RecyclerView.Adapter<ItemViewHolder>(), ItemTouchHelperAdapter {
 
-  private val stockList: MutableList<Stock>
+  private val quoteList: MutableList<Quote>
 
   init {
-    stockList = ArrayList(this.stocksProvider.getStocks())
+    quoteList = ArrayList(this.stocksProvider.getStocks())
   }
 
   override fun getItemCount(): Int {
-    return stockList.size
+    return quoteList.size
   }
 
-  fun getItem(position: Int): Stock {
-    return stockList[position]
+  fun getItem(position: Int): Quote {
+    return quoteList[position]
   }
 
   override fun getItemId(position: Int): Long {
@@ -51,9 +51,9 @@ internal class RearrangeAdapter internal constructor(private val stocksProvider:
   }
 
   override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
-    stockList.add(toPosition, stockList.removeAt(fromPosition))
+    quoteList.add(toPosition, quoteList.removeAt(fromPosition))
     val newTickerList = ArrayList<String>()
-    for (stock in stockList) {
+    for (stock in quoteList) {
       newTickerList.add(stock.symbol)
     }
     stocksProvider.rearrange(newTickerList)

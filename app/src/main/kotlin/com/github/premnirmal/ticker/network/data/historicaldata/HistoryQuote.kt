@@ -10,7 +10,7 @@ import org.threeten.bp.temporal.TemporalAccessor
 /**
  * Created by premnirmal on 3/30/17.
  */
-class Quote : Parcelable, Comparable<Quote> {
+class HistoryQuote : Parcelable, Comparable<HistoryQuote> {
 
   companion object {
 
@@ -25,12 +25,12 @@ class Quote : Parcelable, Comparable<Quote> {
     const val FIELD_DATE = "Date"
     const val FIELD_LOW = "Low"
 
-    val CREATOR: Creator<Quote> = object : Creator<Quote> {
-      override fun createFromParcel(`in`: Parcel): Quote {
-        return Quote(`in`)
+    val CREATOR: Creator<HistoryQuote> = object : Creator<HistoryQuote> {
+      override fun createFromParcel(`in`: Parcel): HistoryQuote {
+        return HistoryQuote(`in`)
       }
 
-      override fun newArray(size: Int): Array<Quote> {
+      override fun newArray(size: Int): Array<HistoryQuote> {
         return newArray(size)
       }
     }
@@ -76,7 +76,7 @@ class Quote : Parcelable, Comparable<Quote> {
     dest.writeDouble(mLow)
   }
 
-  override fun compareTo(other: Quote): Int {
+  override fun compareTo(other: HistoryQuote): Int {
     return mDate.compareTo(other.mDate)
   }
 

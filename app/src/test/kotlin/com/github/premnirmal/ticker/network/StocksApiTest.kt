@@ -5,8 +5,8 @@ import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.mock.TestApplication
-import com.github.premnirmal.ticker.network.data.GStock
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.GQuote
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.reflect.TypeToken
 import org.junit.After
@@ -43,8 +43,8 @@ class StocksApiTest : BaseUnitTest() {
     googleFinance = Mocker.provide(GoogleFinance::class.java)
     mockPrefs = Mocker.provide(SharedPreferences::class.java)
     val yStocksJson = parseJsonFile("QuotesFromYahooFinance.json")
-    val listType = object : TypeToken<List<GStock>>() {}.type
-    val gStocksList = parseJsonFile<List<GStock>>(listType, "QuotesFromGoogleFinance.json")
+    val listType = object : TypeToken<List<GQuote>>() {}.type
+    val gStocksList = parseJsonFile<List<GQuote>>(listType, "QuotesFromGoogleFinance.json")
     val yahooStocks = Observable.just(yStocksJson)
     val googleStocks = Observable.just(gStocksList)
     `when`(yahooFinance.getStocks(Matchers.anyString()))
@@ -60,7 +60,7 @@ class StocksApiTest : BaseUnitTest() {
   @Test
   fun testGetStocks() {
     val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestSubscriber<List<Stock>>()
+    val subscriber = TestSubscriber<List<Quote>>()
     stocksApi.getStocks(testTickerList).subscribe(subscriber)
     subscriber.assertNoErrors()
     val onNextEvents = subscriber.onNextEvents
@@ -74,7 +74,7 @@ class StocksApiTest : BaseUnitTest() {
     `when`(mockPrefs.getBoolean(eq(Tools.ENABLE_GOOGLE_FINANCE), anyBoolean())).thenReturn(false)
 
     val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestSubscriber<List<Stock>>()
+    val subscriber = TestSubscriber<List<Quote>>()
     stocksApi.getStocks(testTickerList).subscribe(subscriber)
 
     verify(yahooFinance).getStocks(anyString())
@@ -91,7 +91,7 @@ class StocksApiTest : BaseUnitTest() {
     `when`(mockPrefs.getBoolean(eq(Tools.ENABLE_GOOGLE_FINANCE), anyBoolean())).thenReturn(true)
 
     val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestSubscriber<List<Stock>>()
+    val subscriber = TestSubscriber<List<Quote>>()
     stocksApi.getStocks(testTickerList).subscribe(subscriber)
 
     verify(googleFinance).getStocks(anyString())

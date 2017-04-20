@@ -20,7 +20,7 @@ import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
@@ -45,6 +45,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
     private val NO_NETWORK_THROTTLE_INTERVAL = 1000L
+    private val SEQUENTIAL_REQUEST_COUNT = 3
   }
 
   /**
@@ -66,14 +67,15 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
   private var attemptingFetch = false
+  private var fetchCount = 0
   private val stocksAdapter by lazy {
     StocksAdapter(holder.stocksProvider, this as OnStockClickListener)
   }
 
-  override fun onClick(view: View, stock: Stock, position: Int) {
+  override fun onClick(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-    if (stock.isIndex()) {
+    if (quote.isIndex()) {
       popupWindow.menu.findItem(R.id.graph).isEnabled = false
       popupWindow.menu.findItem(R.id.positions).isEnabled = false
     } else {
@@ -87,16 +89,16 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
             when (itemId) {
               R.id.graph -> {
                 val intent = Intent(activity, GraphActivity::class.java)
-                intent.putExtra(GraphActivity.GRAPH_DATA, stock)
+                intent.putExtra(GraphActivity.GRAPH_DATA, quote)
                 activity.startActivity(intent)
               }
               R.id.positions -> {
                 val intent = Intent(activity, EditPositionActivity::class.java)
-                intent.putExtra(EditPositionActivity.TICKER, stock.symbol)
+                intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
                 activity.startActivity(intent)
               }
               R.id.remove -> {
-                promptRemove(stock, position)
+                promptRemove(quote, position)
               }
             }
           }
@@ -173,8 +175,9 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   }
 
   internal fun fetch() {
+    fetchCount++
     attemptingFetch = true
-    bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Stock>>() {
+    bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
       override fun onError(e: Throwable) {
         attemptingFetch = false
         CrashLogger.logException(e)
@@ -182,7 +185,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
         InAppMessage.showMessage(fragment_root, getString(string.refresh_failed))
       }
 
-      override fun onNext(result: List<Stock>) {
+      override fun onNext(result: List<Quote>) {
         attemptingFetch = false
         swipe_container.isRefreshing = false
         update()
@@ -192,12 +195,14 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   internal fun update() {
     if (activity != null) {
-      if (holder.stocksProvider.getStocks().isEmpty()) {
+      // Don't attempt to make many requests in a row if the stocks don't fetch.
+      if (holder.stocksProvider.getStocks().isEmpty() && fetchCount < SEQUENTIAL_REQUEST_COUNT) {
         if (!attemptingFetch) {
           fetch()
           return
         }
       }
+      fetchCount = 0
       if (stockList != null) {
         stocksAdapter.refresh(holder.stocksProvider)
         subtitle.text = "Last Fetch: ${holder.stocksProvider.lastFetched()}"
@@ -205,13 +210,13 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     }
   }
 
-  internal fun promptRemove(stock: Stock?, position: Int) {
-    if (stock != null) {
+  internal fun promptRemove(quote: Quote?, position: Int) {
+    if (quote != null) {
       AlertDialog.Builder(activity).setTitle("Remove")
-          .setMessage("Are you sure you want to remove ${stock.symbol} from your portfolio?")
+          .setMessage("Are you sure you want to remove ${quote.symbol} from your portfolio?")
           .setPositiveButton("Remove", { dialog, which ->
-            holder.stocksProvider.removeStock(stock.symbol)
-            stocksAdapter.remove(stock)
+            holder.stocksProvider.removeStock(quote.symbol)
+            stocksAdapter.remove(quote)
             dialog.dismiss()
           })
           .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() })

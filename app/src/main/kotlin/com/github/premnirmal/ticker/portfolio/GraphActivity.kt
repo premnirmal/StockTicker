@@ -22,7 +22,7 @@ import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.model.SerializableDataPoint
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
 import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
@@ -41,7 +41,7 @@ class GraphActivity : BaseActivity() {
 
   private val formatter = DateTimeFormatter.ofPattern("MM/dd/YYYY")
 
-  lateinit private var ticker: Stock
+  lateinit private var ticker: Quote
   private var dataPoints: Array<SerializableDataPoint?>? = null
   private var range = Range.THREE_MONTH
 
@@ -74,7 +74,7 @@ class GraphActivity : BaseActivity() {
       val decorView = window.decorView
       decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
-    ticker = intent.getSerializableExtra(GRAPH_DATA) as Stock
+    ticker = intent.getSerializableExtra(GRAPH_DATA) as Quote
     if (savedInstanceState != null) {
       dataPoints = savedInstanceState.getSerializable(DATAPOINTS) as Array<SerializableDataPoint?>
       range = savedInstanceState.getSerializable(RANGE) as Range

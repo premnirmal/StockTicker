@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
 import com.github.premnirmal.tickerwidget.BuildConfig
@@ -20,7 +20,7 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
     private val listener: StocksAdapter.OnStockClickListener) : RecyclerView.Adapter<PortfolioVH>() {
 
   internal interface OnStockClickListener {
-    fun onClick(view: View, stock: Stock, position: Int)
+    fun onClick(view: View, quote: Quote, position: Int)
   }
 
   companion object {
@@ -29,15 +29,15 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
     val TYPE_POSITION = 3
   }
 
-  private val stockList: MutableList<Stock>
+  private val quoteList: MutableList<Quote>
 
   init {
-    stockList = ArrayList(stocksProvider.getStocks())
+    quoteList = ArrayList(stocksProvider.getStocks())
   }
 
-  fun remove(stock: Stock) {
-    val index = stockList.indexOf(stock)
-    val removed = stockList.remove(stock)
+  fun remove(quote: Quote) {
+    val index = quoteList.indexOf(quote)
+    val removed = quoteList.remove(quote)
     if (index >= 0 && removed) {
       notifyItemRemoved(index)
       // Refresh last two so that the bottom spacing is fixed
@@ -46,13 +46,13 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
   }
 
   fun refresh(stocksProvider: IStocksProvider) {
-    stockList.clear()
-    stockList.addAll(stocksProvider.getStocks())
+    quoteList.clear()
+    quoteList.addAll(stocksProvider.getStocks())
     notifyDataSetChanged()
   }
 
   override fun getItemViewType(position: Int): Int {
-    val stock = stockList[position]
+    val stock = quoteList[position]
     if (stock.isPosition) {
       return TYPE_POSITION
     } else if (stock.isIndex()) {
@@ -77,7 +77,7 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
 
   override fun onBindViewHolder(holder: PortfolioVH, position: Int) {
     try {
-      holder.update(stockList[position], listener)
+      holder.update(quoteList[position], listener)
     } catch (e: Exception) {
       if (BuildConfig.DEBUG) {
         throw e
@@ -92,6 +92,6 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
   }
 
   override fun getItemCount(): Int {
-    return stockList.size
+    return quoteList.size
   }
 }

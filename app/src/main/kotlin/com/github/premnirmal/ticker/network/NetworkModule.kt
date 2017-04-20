@@ -40,7 +40,7 @@ class NetworkModule {
     val logger = HttpLoggingInterceptor()
     logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(NoCacheRequestInterceptor(context, bus))
+        .addInterceptor(RequestInterceptor(context, bus))
         .addInterceptor(logger)
         .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
         .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -83,37 +83,6 @@ class NetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideGoogleFinance(context: Context, okHttpClient: OkHttpClient,
-      gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): GoogleFinance {
-    val Retrofit: Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(context.getString(R.string.google_endpoint))
-        .addCallAdapterFactory(rxJavaFactory)
-        .addConverterFactory(object : Converter.Factory() {
-          override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?,
-              retrofit: Retrofit?): Converter<ResponseBody, *>? {
-            return GStockConverter(gson)
-          }
-
-          override fun requestBodyConverter(type: Type?,
-              parameterAnnotations: Array<out Annotation>?,
-              methodAnnotations: Array<out Annotation>?,
-              retrofit: Retrofit?): Converter<*, RequestBody> {
-            return converterFactory.requestBodyConverter(type, parameterAnnotations,
-                methodAnnotations, retrofit)
-          }
-
-          override fun stringConverter(type: Type?, annotations: Array<out Annotation>?,
-              retrofit: Retrofit?): Converter<*, String>? {
-            return converterFactory.stringConverter(type, annotations, retrofit)
-          }
-        }).build()
-    val googleFinance: GoogleFinance = Retrofit.create(GoogleFinance::class.java)
-    return googleFinance
-  }
-
-  @Provides @Singleton
   internal fun provideSuggestionsApi(context: Context, okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
       rxJavaFactory: RxJavaCallAdapterFactory): SuggestionApi {
@@ -143,6 +112,20 @@ class NetworkModule {
         .build()
     val suggestionApi = Retrofit.create(SuggestionApi::class.java)
     return suggestionApi
+  }
+
+  @Provides @Singleton
+  internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
+      gson: Gson, converterFactory: GsonConverterFactory,
+      rxJavaFactory: RxJavaCallAdapterFactory): Robindahood {
+    val Retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.robindahood_endpoint))
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(converterFactory)
+        .build()
+    val robindahood = Retrofit.create(Robindahood::class.java)
+    return robindahood
   }
 
   @Provides @Singleton

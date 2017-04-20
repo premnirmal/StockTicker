@@ -10,12 +10,12 @@ import com.google.gson.annotations.SerializedName
  */
 class History : Parcelable {
 
-  @SerializedName("quote") var quote: List<Quote>? = null
+  @SerializedName("quote") var quote: List<HistoryQuote>? = null
 
   constructor()
 
   constructor(`in`: Parcel) {
-    `in`.readList(quote, Quote::class.java.classLoader)
+    `in`.readList(quote, HistoryQuote::class.java.classLoader)
   }
 
   override fun describeContents(): Int {

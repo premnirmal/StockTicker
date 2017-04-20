@@ -6,7 +6,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Environment
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.File
@@ -186,9 +186,9 @@ class Tools private constructor() {
       return builder.toString()
     }
 
-    fun positionsToString(stockList: List<Stock>): String {
+    fun positionsToString(quoteList: List<Quote>): String {
       val builder = StringBuilder()
-      for (stock in stockList) {
+      for (stock in quoteList) {
         if (stock.isPosition == true) {
           builder.append(stock.symbol)
           builder.append(",")
@@ -203,22 +203,22 @@ class Tools private constructor() {
       return builder.toString()
     }
 
-    fun stringToPositions(positions: String): MutableList<Stock> {
+    fun stringToPositions(positions: String): MutableList<Quote> {
       val tickerListCSV = ArrayList(Arrays.asList(
           *positions.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-      val stockList = ArrayList<Stock>()
+      val stockList = ArrayList<Quote>()
       var tickerFields: ArrayList<String>
-      var tmpStock: Stock
+      var tmpQuote: Quote
       for (tickerCSV in tickerListCSV) {
         tickerFields = ArrayList(Arrays.asList(
             *tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
         if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1]) == true) {
-          tmpStock = Stock()
-          tmpStock.isPosition = true
-          tmpStock.symbol = tickerFields[0]
-          tmpStock.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
-          tmpStock.positionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
-          stockList.add(tmpStock)
+          tmpQuote = Quote()
+          tmpQuote.isPosition = true
+          tmpQuote.symbol = tickerFields[0]
+          tmpQuote.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
+          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
+          stockList.add(tmpQuote)
         }
       }
       return stockList

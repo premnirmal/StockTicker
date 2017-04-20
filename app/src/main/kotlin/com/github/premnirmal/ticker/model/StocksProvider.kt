@@ -10,7 +10,7 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.StockWidget
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
@@ -48,8 +48,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   @Inject internal lateinit var preferences: SharedPreferences
 
   internal val tickerList: MutableList<String>
-  internal val stockList: MutableList<Stock> = ArrayList()
-  internal val positionList: MutableList<Stock>
+  internal val quoteList: MutableList<Quote> = ArrayList()
+  internal val positionList: MutableList<Quote>
   internal var lastFetched: Long = 0L
   internal var nextFetch: Long = 0L
   internal val storage: StocksStorage
@@ -79,10 +79,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   internal fun fetchLocal() {
-    synchronized(stockList, {
-      stockList.clear()
-      stockList.addAll(storage.readStocks())
-      if (!stockList.isEmpty()) {
+    synchronized(quoteList, {
+      quoteList.clear()
+      quoteList.addAll(storage.readStocks())
+      if (!quoteList.isEmpty()) {
         sortStockList()
         sendBroadcast()
       } else {
@@ -96,10 +96,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
         .putLong(LAST_FETCHED, lastFetched)
         .apply()
-    storage.saveStocks(stockList)
+    storage.saveStocks(quoteList)
   }
 
-  override fun fetch(): Observable<List<Stock>> {
+  override fun fetch(): Observable<List<Quote>> {
     return api.getStocks(tickerList)
         .doOnError { e ->
           // why does this happen?
@@ -107,9 +107,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)) // 1 minute
         }
         .doOnNext { stocks ->
-          synchronized(stockList, {
-            stockList.clear()
-            stockList.addAll(stocks)
+          synchronized(quoteList, {
+            quoteList.clear()
+            quoteList.addAll(stocks)
             lastFetched = api.lastFetched
             save()
             sendBroadcast()
@@ -151,10 +151,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun addPosition(ticker: String, shares: Int, price: Float) {
     if (ticker != null) {
-      synchronized(stockList, {
+      synchronized(quoteList, {
         var position = getStock(ticker)
         if (position == null) {
-          position = Stock()
+          position = Quote()
           position.symbol = ticker
         }
         if (!tickerList.contains(ticker)) {
@@ -166,8 +166,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           position.positionShares = shares
           positionList.remove(position)
           positionList.add(position)
-          stockList.remove(position)
-          stockList.add(position)
+          quoteList.remove(position)
+          quoteList.add(position)
           save()
         } else {
           removePosition(ticker)
@@ -195,16 +195,16 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   override fun removeStock(ticker: String): Collection<String> {
-    synchronized(stockList, {
+    synchronized(quoteList, {
       val ticker2 = "^" + ticker // in case it was an index
       tickerList.remove(ticker)
       tickerList.remove(ticker2)
-      val dummy = Stock()
-      val dummy2 = Stock()
+      val dummy = Quote()
+      val dummy2 = Quote()
       dummy.symbol = ticker
       dummy2.symbol = ticker2
-      stockList.remove(dummy)
-      stockList.remove(dummy2)
+      quoteList.remove(dummy)
+      quoteList.remove(dummy2)
       positionList.remove(dummy)
       positionList.remove(dummy2)
       save()
@@ -213,14 +213,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
-  override fun getStocks(): Collection<Stock> {
-    synchronized(stockList, {
+  override fun getStocks(): Collection<Quote> {
+    synchronized(quoteList, {
       sortStockList()
 
-      val newStockList = ArrayList<Stock>()
+      val newStockList = ArrayList<Quote>()
       var added: Boolean
       // Set all positions
-      for (stock in stockList) {
+      for (stock in quoteList) {
         added = false
         for (pos in positionList) {
           if (!added && stock.symbol == pos.symbol) {
@@ -240,18 +240,18 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   internal fun sortStockList() {
-    synchronized(stockList, {
+    synchronized(quoteList, {
       if (Tools.autoSortEnabled()) {
-        Collections.sort(stockList)
+        Collections.sort(quoteList)
       } else {
-        Collections.sort(stockList) { lhs, rhs ->
+        Collections.sort(quoteList) { lhs, rhs ->
           tickerList.indexOf(lhs.symbol).compareTo(tickerList.indexOf(rhs.symbol))
         }
       }
     })
   }
 
-  override fun rearrange(tickers: List<String>): Collection<Stock> {
+  override fun rearrange(tickers: List<String>): Collection<Quote> {
     tickerList.clear()
     tickerList.addAll(tickers)
     save()
@@ -259,13 +259,13 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return getStocks()
   }
 
-  override fun getStock(ticker: String): Stock? {
-    synchronized(stockList, {
-      val dummy = Stock()
+  override fun getStock(ticker: String): Quote? {
+    synchronized(quoteList, {
+      val dummy = Quote()
       dummy.symbol = ticker
-      val index = stockList.indexOf(dummy)
+      val index = quoteList.indexOf(dummy)
       if (index >= 0) {
-        val stock = stockList[index]
+        val stock = quoteList[index]
         return stock
       } else {
         return null

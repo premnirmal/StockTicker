@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.model
 import android.os.Parcel
 import android.os.Parcelable
 import com.github.mikephil.charting.data.Entry
-import com.github.premnirmal.ticker.network.data.historicaldata.Quote
+import com.github.premnirmal.ticker.network.data.historicaldata.HistoryQuote
 import java.io.Serializable
 
 /**
@@ -13,12 +13,12 @@ class SerializableDataPoint : Entry, Serializable {
 
   constructor(y: Float, x: Int) : super(y, x)
 
-  constructor(y: Float, x: Int, data: Quote) : super(y, x, data)
+  constructor(y: Float, x: Int, data: HistoryQuote) : super(y, x, data)
 
   constructor(source: Parcel) : super(source)
 
-  fun getQuote(): Quote {
-    return (data as Quote)
+  fun getQuote(): HistoryQuote {
+    return (data as HistoryQuote)
   }
 
   companion object {

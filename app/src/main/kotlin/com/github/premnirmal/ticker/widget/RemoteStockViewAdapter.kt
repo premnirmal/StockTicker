@@ -14,9 +14,10 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Stock
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import java.util.*
+import com.github.premnirmal.tickerwidget.R.id.change
+import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -24,7 +25,7 @@ import javax.inject.Inject
  */
 class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.RemoteViewsFactory {
 
-  private val stocks: MutableList<Stock>
+  private val quotes: MutableList<Quote>
 
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
@@ -32,7 +33,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
   init {
     Injector.inject(this)
     val stocks = stocksProvider.getStocks()
-    this.stocks = ArrayList(stocks)
+    this.quotes = ArrayList(stocks)
   }
 
   override fun onCreate() {
@@ -41,8 +42,8 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
 
   override fun onDataSetChanged() {
     val stocksList = stocksProvider.getStocks()
-    this.stocks.clear()
-    this.stocks.addAll(stocksList)
+    this.quotes.clear()
+    this.quotes.addAll(stocksList)
   }
 
   override fun onDestroy() {
@@ -50,43 +51,27 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
   }
 
   override fun getCount(): Int {
-    return stocks.size
+    return quotes.size
   }
 
   override fun getViewAt(position: Int): RemoteViews {
     val stockViewLayout = Tools.stockViewLayout()
     val remoteViews = RemoteViews(context.packageName, stockViewLayout)
-    val stock = stocks[position]
+    val stock = quotes[position]
     remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
-    val change: Double
     val changePercentString: SpannableString
     val changeValueString: SpannableString
     val priceString: SpannableString
-    val changePercent: Double
-    if (stock.change != null && stock.change.isNotBlank()
-        && stock.changeinPercent != null && stock.changeinPercent.isNotBlank()) {
-      change = stock.change.replace("+", "")
-          .replace(",", "")
-          .toDouble()
-      changePercent = stock.changeinPercent
-          .replace("+", "")
-          .replace(",", "")
-          .replace("%", "")
-          .toDouble()
-    } else {
-      change = 0.0
-      changePercent = 0.0
-    }
-    val changeValueFormatted = Tools.DECIMAL_FORMAT.format(change)
-    val changePercentFormatted = Tools.DECIMAL_FORMAT.format(changePercent)
-    val priceFormatted = Tools.DECIMAL_FORMAT.format(stock.lastTradePrice)
+    val changeValueFormatted = stock.changeString()
+    val changePercentFormatted = stock.changePercentString()
+    val priceFormatted = stock.priceString()
 
-    changePercentString = SpannableString(changePercentFormatted + "%")
+    changePercentString = SpannableString(changePercentFormatted)
     changeValueString = SpannableString(changeValueFormatted)
     priceString = SpannableString(priceFormatted)
 
-    if (Tools.boldEnabled() && stock.changeinPercent != null && stock.change != null) {
+    if (Tools.boldEnabled()) {
       changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,

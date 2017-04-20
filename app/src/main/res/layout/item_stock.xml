@@ -16,8 +16,8 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="horizontal"
       android:layout_marginBottom="5dp"
+      android:orientation="horizontal"
       >
 
     <TextView
@@ -68,17 +68,38 @@
     </LinearLayout>
   </LinearLayout>
 
-  <TextView
-      android:id="@+id/name"
-      android:layout_width="wrap_content"
+
+  <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="5dp"
-      android:ellipsize="end"
-      android:maxLines="1"
-      android:textColor="@android:color/white"
-      android:textSize="@dimen/portfolio_stock_vh_text_size"
-      tools:text="Google Inc"
-      />
+      android:orientation="horizontal"
+      >
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="3"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/portfolio_stock_vh_name_text_size"
+        tools:text="Google Inc"
+        />
+    <TextView
+        android:id="@+id/exchange"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:ellipsize="end"
+        android:gravity="end"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/portfolio_stock_vh_name_text_size"
+        tools:text="NYSC"
+        />
+  </LinearLayout>
 
   <com.github.premnirmal.ticker.ui.StockFieldView
       android:id="@+id/changePercent"
