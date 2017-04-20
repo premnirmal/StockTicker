@@ -9,14 +9,6 @@ import java.util.ArrayList
  */
 internal object StockConverter {
 
-  fun convertRequestSymbols(symbols: List<String>): List<String> {
-    val newSymbols = symbols.map {
-      it.replace("^", ".")
-          .replace("-", ".")
-    }
-    return newSymbols
-  }
-
   fun convertQuoteNets(quoteNets: List<QuoteNet>): List<Quote> {
     val quotes = ArrayList<Quote>()
     for (quoteNet in quoteNets) {

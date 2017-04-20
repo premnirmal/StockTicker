@@ -82,8 +82,8 @@
   <string name="holdings">Holdings</string>
   <string name="gain_loss">Gain/Loss</string>
   <string name="change_percent">Change %</string>
-  <string name="change_amount">Change $</string>
+  <string name="change_amount">Change</string>
   <string name="day_change_percent">Day change %</string>
-  <string name="day_change_amount">Day change $</string>
+  <string name="day_change_amount">Day change</string>
 
 </resources>

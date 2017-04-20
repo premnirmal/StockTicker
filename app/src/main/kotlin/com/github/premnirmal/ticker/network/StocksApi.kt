@@ -28,8 +28,7 @@ import javax.inject.Singleton
   }
 
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
-    val symbols = StockConverter.convertRequestSymbols(tickerList)
-    val query = symbols.joinToString(",")
+    val query = tickerList.joinToString(",")
     return financeApi.getStocks(query).map { quoteNets ->
       lastFetched  = System.currentTimeMillis()
       StockConverter.convertQuoteNets(quoteNets)

@@ -78,7 +78,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
       val dayChangeAmountView = itemView.findViewById(R.id.day_change_amount) as StockFieldView
 
       val holdings = quote.holdingsString()
-      holdingsView.setText("$$holdings")
+      holdingsView.setText("$holdings")
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
       if (gainLossAmount >= 0) {
