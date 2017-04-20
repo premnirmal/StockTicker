@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/card_bg"
     android:orientation="vertical"
-    android:paddingBottom="7dp"
+    android:paddingBottom="10dp"
     android:paddingLeft="5dp"
     android:paddingTop="7dp"
     tools:layout_marginTop="100dp"
@@ -68,56 +68,42 @@
     </LinearLayout>
   </LinearLayout>
 
+  <TextView
+      android:id="@+id/name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:ellipsize="end"
+      android:maxLines="2"
+      android:textColor="@android:color/white"
+      android:textSize="@dimen/portfolio_stock_vh_name_text_size"
+      tools:text="Google Inc"
+      />
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="5dp"
-      android:orientation="horizontal"
+      android:layout_height="match_parent"
+      android:gravity="bottom"
+      android:orientation="vertical"
       >
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dp"
+
+    <com.github.premnirmal.ticker.ui.StockFieldView
+        android:id="@+id/changePercent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:ellipsize="end"
-        android:gravity="start"
-        android:maxLines="3"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/portfolio_stock_vh_name_text_size"
-        tools:text="Google Inc"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        sfw:name="@string/change_percent"
+        sfw:size="@dimen/portfolio_stock_vh_text_size"
         />
-    <TextView
-        android:id="@+id/exchange"
-        android:layout_width="0dp"
+
+    <com.github.premnirmal.ticker.ui.StockFieldView
+        android:id="@+id/changeValue"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="0.5"
-        android:ellipsize="end"
-        android:gravity="end"
-        android:maxLines="1"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/portfolio_stock_vh_name_text_size"
-        tools:text="NYSC"
+        android:layout_marginRight="5dp"
+        sfw:name="@string/change_amount"
+        sfw:size="@dimen/portfolio_stock_vh_text_size"
         />
   </LinearLayout>
-
-  <com.github.premnirmal.ticker.ui.StockFieldView
-      android:id="@+id/changePercent"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="5dp"
-      android:layout_marginRight="5dp"
-      sfw:name="@string/change_percent"
-      sfw:size="@dimen/portfolio_stock_vh_text_size"
-      />
-
-  <com.github.premnirmal.ticker.ui.StockFieldView
-      android:id="@+id/changeValue"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="5dp"
-      android:layout_marginRight="5dp"
-      sfw:name="@string/change_amount"
-      sfw:size="@dimen/portfolio_stock_vh_text_size"
-      />
 </LinearLayout>

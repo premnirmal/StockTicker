@@ -17,7 +17,7 @@ internal object StockConverter {
       } else {
         newSymbols.add(symbol
             .replace("^", "")
-            .replace(".", ""))
+            .replace("-", "."))
       }
     }
     return newSymbols
