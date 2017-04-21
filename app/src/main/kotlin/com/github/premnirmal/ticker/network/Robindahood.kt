@@ -14,6 +14,6 @@ interface Robindahood {
    *
    * @return A List of quotes.
    */
-  @GET("api/quotes/")
+  @GET("quotes/")
   fun getStocks(@Query(value = "q") query: String): Observable<List<QuoteNet>>
 }
