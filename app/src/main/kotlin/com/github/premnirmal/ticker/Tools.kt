@@ -236,7 +236,8 @@ class Tools private constructor() {
     }
 
     fun shouldPromptRate(): Boolean {
-      return !hasUserAlreadyRated()
+      // if the user hasn't rated, try again on occasions
+      return (random.nextInt() % 3 == 0) && !hasUserAlreadyRated()
     }
 
     fun getStatusBarHeight(context: Context): Int {

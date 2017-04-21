@@ -84,6 +84,8 @@ class ParanormalActivity : BaseActivity() {
   private fun sendToPlayStore() {
     val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
     val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
-    startActivity(marketIntent)
+    if (marketIntent.resolveActivity(packageManager) != null) {
+      startActivity(marketIntent)
+    }
   }
 }

@@ -205,6 +205,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       // Don't attempt to make many requests in a row if the stocks don't fetch.
       if (holder.stocksProvider.getStocks().isEmpty() && fetchCount < SEQUENTIAL_REQUEST_COUNT) {
         if (!attemptingFetch) {
+          swipe_container.isRefreshing = true
           fetch()
           return
         }
