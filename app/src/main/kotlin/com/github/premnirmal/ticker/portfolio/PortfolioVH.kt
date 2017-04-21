@@ -39,7 +39,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     val nameView = itemView.findViewById(R.id.name) as TextView
 
     tickerView.text = quote.symbol
-    nameView.text = "(${quote.stockExchange}) ${quote.name}"
+    nameView.text = quote.name
 
     val change: Float = quote.change
     val changeInPercent = itemView.findViewById(R.id.changePercent) as StockFieldView

@@ -1,7 +1,5 @@
 package com.github.premnirmal.ticker.model
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.SystemClock
@@ -13,7 +11,6 @@ import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.widget.StockWidget
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -109,12 +106,19 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", e))
           scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)) // 1 minute
         }
-        .doOnNext { stocks ->
+        .map { stocks ->
           synchronized(quoteList, {
+            tickerList.clear()
+            stocks.mapTo(tickerList) { it.symbol }
             quoteList.clear()
             quoteList.addAll(stocks)
             lastFetched = api.lastFetched
             save()
+          })
+          stocks
+        }
+        .doOnNext { stocks ->
+          synchronized(quoteList, {
             sendBroadcast()
           })
         }
@@ -130,14 +134,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     get() = AlarmScheduler.msOfNextAlarm()
 
   internal fun scheduleUpdate(msToNextAlarm: Long) {
-    val widgetManager = AppWidgetManager.getInstance(context)
-    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
-    val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
     // Uncomment below if you only want to schedule when a widget exists
+//    val widgetManager = AppWidgetManager.getInstance(context)
+//    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+//    val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
 //    if (hasWidget) {
-      val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
-      nextFetch = updateTime.toInstant().toEpochMilli()
-      preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
+    val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
+    nextFetch = updateTime.toInstant().toEpochMilli()
+    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
 //    }
     AlarmScheduler.sendBroadcast(context)
     bus.post(RefreshEvent())
@@ -157,30 +161,28 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   override fun addPosition(ticker: String, shares: Int, price: Float) {
-    if (ticker != null) {
-      synchronized(quoteList, {
-        var position = getStock(ticker)
-        if (position == null) {
-          position = Quote()
-          position.symbol = ticker
-        }
-        if (!tickerList.contains(ticker)) {
-          tickerList.add(ticker)
-        }
-        if (shares > 0) {
-          position.isPosition = true
-          position.positionPrice = price
-          position.positionShares = shares
-          positionList.remove(position)
-          positionList.add(position)
-          quoteList.remove(position)
-          quoteList.add(position)
-          save()
-        } else {
-          removePosition(ticker)
-        }
-      })
-    }
+    synchronized(quoteList, {
+      var position = getStock(ticker)
+      if (position == null) {
+        position = Quote()
+        position.symbol = ticker
+      }
+      if (!tickerList.contains(ticker)) {
+        tickerList.add(ticker)
+      }
+      if (shares > 0) {
+        position.isPosition = true
+        position.positionPrice = price
+        position.positionShares = shares
+        positionList.remove(position)
+        positionList.add(position)
+        quoteList.remove(position)
+        quoteList.add(position)
+        save()
+      } else {
+        removePosition(ticker)
+      }
+    })
   }
 
   override fun removePosition(ticker: String) {

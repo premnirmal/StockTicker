@@ -72,7 +72,7 @@ class ParanormalActivity : BaseActivity() {
             Tools.userDidRate()
             dialog.dismiss()
           }
-          .setNegativeButton(R.string.no) { dialog, which ->
+          .setNegativeButton(R.string.later) { dialog, which ->
             Analytics.trackRateNo()
             dialog.dismiss()
           }

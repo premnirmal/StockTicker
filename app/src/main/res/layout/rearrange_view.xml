@@ -12,7 +12,7 @@
       style="@style/BoldTextView"
       android:textSize="14sp"
       android:id="@+id/tickerName"
-      android:maxLines="2"
+      android:maxLines="3"
       android:ellipsize="end"
       />
 

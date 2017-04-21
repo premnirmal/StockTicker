@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.rearrange_view.view.*
-import java.util.*
+import kotlinx.android.synthetic.main.rearrange_view.view.tickerName
+import java.util.ArrayList
 
 /**
  * Created by premnirmal on 2/29/16.
@@ -52,10 +52,7 @@ internal class RearrangeAdapter internal constructor(private val stocksProvider:
 
   override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
     quoteList.add(toPosition, quoteList.removeAt(fromPosition))
-    val newTickerList = ArrayList<String>()
-    for (stock in quoteList) {
-      newTickerList.add(stock.symbol)
-    }
+    val newTickerList = quoteList.mapTo(ArrayList<String>()) { it.symbol }
     stocksProvider.rearrange(newTickerList)
     notifyItemMoved(fromPosition, toPosition)
     return true
