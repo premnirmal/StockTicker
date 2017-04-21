@@ -122,21 +122,21 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         }
         .doOnNext { stocks ->
           synchronized(quoteList, {
-            sendBroadcast()
+            sendBroadcast(true)
           })
         }
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
   }
 
-  internal fun sendBroadcast() {
-    scheduleUpdate(msToNextAlarm)
+  internal fun sendBroadcast(refresh: Boolean = false) {
+    scheduleUpdate(msToNextAlarm, refresh)
   }
 
   internal val msToNextAlarm: Long
     get() = AlarmScheduler.msOfNextAlarm()
 
-  internal fun scheduleUpdate(msToNextAlarm: Long) {
+  internal fun scheduleUpdate(msToNextAlarm: Long, refresh: Boolean = false) {
     val widgetManager = AppWidgetManager.getInstance(context)
     val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
     val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
@@ -146,7 +146,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
     }
     AlarmScheduler.sendBroadcast(context)
-    bus.post(RefreshEvent())
+    if (refresh) {
+      bus.post(RefreshEvent())
+    }
   }
 
   override fun addStock(ticker: String): Collection<String> {

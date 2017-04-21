@@ -109,6 +109,19 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   override fun onResume() {
     super.onResume()
+    bind(holder.bus.forEventType(NoNetworkEvent::class.java))
+        .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { event ->
+          noNetwork(event)
+          swipe_container.isRefreshing = false
+        }
+
+    bind(holder.bus.forEventType(RefreshEvent::class.java))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { event ->
+          update()
+        }
     if (listViewState != null) {
       stockList?.layoutManager?.onRestoreInstanceState(listViewState)
     }
@@ -154,19 +167,6 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
         false
       }
     }
-    bind(holder.bus.forEventType(NoNetworkEvent::class.java))
-        .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
-          noNetwork(event)
-          swipe_container.isRefreshing = false
-        }
-
-    bind(holder.bus.forEventType(RefreshEvent::class.java))
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
-          update()
-        }
 
     if (!Tools.isNetworkOnline(context.applicationContext)) {
       noNetwork(NoNetworkEvent())

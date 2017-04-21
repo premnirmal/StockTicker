@@ -29,10 +29,25 @@ import javax.inject.Singleton
 
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
     val query = tickerList.joinToString(",")
-    return financeApi.getStocks(query).map { quoteNets ->
-      lastFetched  = System.currentTimeMillis()
-      StockConverter.convertQuoteNets(quoteNets)
-    }
+    return financeApi.getStocks(query)
+        .map { quoteNets ->
+          lastFetched = System.currentTimeMillis()
+          quoteNets
+        }
+        .map { quoteNets ->
+          StockConverter.convertQuoteNets(quoteNets)
+        }
+        // Try to keep original order of tickerList.
+        .map { quotesMap ->
+          val quotes = ArrayList<Quote>()
+          tickerList
+              .filter { quotesMap.containsKey(it) }
+              .mapTo(quotes) { quotesMap.remove(it)!! }
+          if (quotesMap.isNotEmpty()) {
+            quotes.addAll(quotesMap.values)
+          }
+          quotes
+        }
   }
 
 }
