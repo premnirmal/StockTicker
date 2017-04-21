@@ -8,12 +8,12 @@ import rx.Observable
 interface Robindahood {
 
   /**
-   * Returns a quote that provides a list of stock quotes.
+   * Retrieves a list of stock quotes.
    *
    * @param query comma separated list of symbols.
    *
    * @return A List of quotes.
    */
-  @GET("/api/quotes/")
+  @GET("api/quotes/")
   fun getStocks(@Query(value = "q") query: String): Observable<List<QuoteNet>>
 }

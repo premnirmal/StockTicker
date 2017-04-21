@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.model
 
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.SystemClock
@@ -11,6 +13,7 @@ import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.widget.StockWidget
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -104,7 +107,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         .doOnError { e ->
           // why does this happen?
           CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", e))
-          scheduleUpdate(SystemClock.elapsedRealtime() + (60 * 1000)) // 1 minute
+          scheduleUpdate(SystemClock.elapsedRealtime() + (3 * 60 * 1000)) // 3 minutes
         }
         .map { stocks ->
           synchronized(quoteList, {
@@ -134,15 +137,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     get() = AlarmScheduler.msOfNextAlarm()
 
   internal fun scheduleUpdate(msToNextAlarm: Long) {
-    // Uncomment below if you only want to schedule when a widget exists
-//    val widgetManager = AppWidgetManager.getInstance(context)
-//    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
-//    val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
-//    if (hasWidget) {
-    val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
-    nextFetch = updateTime.toInstant().toEpochMilli()
-    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
-//    }
+    val widgetManager = AppWidgetManager.getInstance(context)
+    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+    val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
+    if (hasWidget) {
+      val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
+      nextFetch = updateTime.toInstant().toEpochMilli()
+      preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
+    }
     AlarmScheduler.sendBroadcast(context)
     bus.post(RefreshEvent())
   }

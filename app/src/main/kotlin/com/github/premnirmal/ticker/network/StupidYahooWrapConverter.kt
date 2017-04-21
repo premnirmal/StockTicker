@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network
 
-import android.util.Log
+import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.network.data.Suggestions
 import com.google.gson.Gson
 import okhttp3.ResponseBody
@@ -18,15 +18,11 @@ internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>
       val m = PATTERN_RESPONSE.matcher(bodyString)
       if (m.find()) {
         val suggestions = gson.fromJson(m.group(1), Suggestions::class.java)
-        val resultSet = suggestions.ResultSet
-        val query = resultSet?.Query
-        val result = resultSet?.Result
-        Log.d("RESULT", "RESULT")
         return suggestions
       }
       throw error("Invalid response")
     } catch (e: IOException) {
-      e.printStackTrace()
+      CrashLogger.logException(e)
       return null
     }
   }
