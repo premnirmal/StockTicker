@@ -16,7 +16,6 @@ import com.github.premnirmal.ticker.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.id.change
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -62,6 +61,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val changeValueFormatted = stock.changeString()
     val changePercentFormatted = stock.changePercentString()
     val priceFormatted = stock.priceString()
+    val change = stock.change
 
     val changePercentString = SpannableString(changePercentFormatted)
     val changeValueString = SpannableString(changeValueFormatted)
