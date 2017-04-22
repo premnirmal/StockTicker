@@ -16,7 +16,7 @@
   <string name="action_update">Refresh Now</string>
 
   <string name="yahoo_endpoint">https://query.yahooapis.com/v1/public/</string>
-  <string name="robindahood_endpoint">http://robindahood.com/api/</string>
+  <string name="robindahood_endpoint">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint">https://s.yimg.com/aq/</string>
   <string name="add_ticker">Add Ticker</string>
   <string name="dotdotdot">…</string>
