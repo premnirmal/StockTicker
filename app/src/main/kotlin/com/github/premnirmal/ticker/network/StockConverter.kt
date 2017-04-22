@@ -12,13 +12,13 @@ internal object StockConverter {
     val quotes = HashMap<String, Quote>()
     for (quoteNet in quoteNets) {
       val quote = Quote()
-      quote.symbol = quoteNet.symbol
-      quote.name = quoteNet.name
+      quote.symbol = if (quoteNet.symbol != null) quoteNet.symbol!! else ""
+      quote.name = if (quoteNet.name != null) quoteNet.name!! else ""
       quote.lastTradePrice = quoteNet.lastTradePrice
       quote.change = quoteNet.change
       quote.changeinPercent = quoteNet.changePercent
-      quote.stockExchange = quoteNet.exchange
-      quote.currency = quoteNet.currency
+      quote.stockExchange = if (quoteNet.exchange != null) quoteNet.exchange!! else ""
+      quote.currency = if (quoteNet.currency != null) quoteNet.currency!! else "US"
       quotes.put(quote.symbol, quote)
     }
     return quotes
