@@ -2,9 +2,6 @@
 <resources>
   <string-array name="whats_new">
     <item>Using a new quotes api.</item>
-    <item>Only schedule refresh if widget is on home screen.</item>
-    <item>Preserving the order of your portfolio.</item>
-    <item>Please report them by going to \n https://github.com/premnirmal/StockTicker. Feedback is welcome</item>
-    <item>Are you feeling smart? Pull requests are welcome!</item>
+    <item>Propagating descriptive errors.</item>
   </string-array>
 </resources>

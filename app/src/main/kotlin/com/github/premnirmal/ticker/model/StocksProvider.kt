@@ -10,7 +10,9 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.network.RobindahoodException
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -21,6 +23,7 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import rx.exceptions.CompositeException
 import rx.schedulers.Schedulers
 import java.util.ArrayList
 import java.util.Arrays
@@ -104,10 +107,15 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun fetch(): Observable<List<Quote>> {
     return api.getStocks(tickerList)
-        .doOnError { e ->
+        .doOnError { t ->
           // why does this happen?
-          CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", e))
+          CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", t))
           scheduleUpdate(SystemClock.elapsedRealtime() + (3 * 60 * 1000)) // 3 minutes
+          if (t is CompositeException) {
+            t.exceptions
+                .filterIsInstance<RobindahoodException>()
+                .forEach { bus.post(ErrorEvent(it.message!!)) }
+          }
         }
         .map { stocks ->
           synchronized(quoteList, {

@@ -1,9 +1,11 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.historicaldata.HistoricalData
 import com.google.gson.Gson
+import retrofit2.HttpException
 import rx.Observable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -30,6 +32,14 @@ import javax.inject.Singleton
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
     val query = tickerList.joinToString(",")
     return financeApi.getStocks(query)
+        .doOnError { e ->
+          if (e is HttpException) {
+            val errorBody: ErrorBody? = gson.fromJson(e.response().errorBody().string(), ErrorBody::class.java)
+            if (errorBody != null) {
+              throw RobindahoodException(errorBody, e)
+            }
+          }
+        }
         .map { quoteNets ->
           lastFetched = System.currentTimeMillis()
           quoteNets

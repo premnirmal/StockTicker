@@ -9,11 +9,14 @@ import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import com.github.premnirmal.ticker.events.ErrorEvent
 import com.trello.rxlifecycle.ActivityEvent
 import com.trello.rxlifecycle.RxLifecycle
 import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
 import rx.subjects.BehaviorSubject
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -21,6 +24,8 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 abstract class BaseActivity : AppCompatActivity() {
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
+
+  @Inject lateinit var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> {
     return lifecycleSubject.asObservable()
@@ -60,6 +65,11 @@ abstract class BaseActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
     lifecycleSubject.onNext(ActivityEvent.RESUME)
+    bind(bus.forEventType(ErrorEvent::class.java))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { event ->
+          showDialog(event.message)
+        }
   }
 
   override fun onPause() {
