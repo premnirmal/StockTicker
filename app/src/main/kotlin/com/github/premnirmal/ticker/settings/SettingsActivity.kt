@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.DialogInterface.OnClickListener
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -125,6 +126,18 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
 
     // Add 'general' preferences.
     addPreferencesFromResource(R.xml.prefs)
+
+    run({
+      val nukePref = findPreference(Tools.SETTING_NUKE)
+      nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        showDialog(getString(R.string.are_you_sure), OnClickListener { dialog, which ->
+          CrashLogger.logException(RuntimeException("Nuked from settings!"))
+          preferences.edit().clear().commit()
+          System.exit(0)
+        })
+        true
+      }
+    })
 
     run({
       val exportPref = findPreference(Tools.SETTING_EXPORT)
@@ -477,5 +490,9 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   private fun showDialog(message: String) {
     AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK",
         { dialog, which -> dialog.dismiss() }).show()
+  }
+
+  private fun showDialog(message: String, listener: OnClickListener) {
+    AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK", listener).show()
   }
 }

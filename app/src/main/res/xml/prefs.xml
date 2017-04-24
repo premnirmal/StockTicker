@@ -89,4 +89,9 @@
       android:title="@string/action_export"
       android:selectable="true"
       android:summary="@string/export_desc"/>
+
+  <Preference
+      android:key="SETTING_NUKE"
+      android:title="@string/action_nuke"
+      android:selectable="true"/>
 </PreferenceScreen>

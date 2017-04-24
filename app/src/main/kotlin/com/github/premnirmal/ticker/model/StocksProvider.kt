@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.network.RobindahoodException
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.tickerwidget.R
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -106,35 +107,46 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   override fun fetch(): Observable<List<Quote>> {
-    return api.getStocks(tickerList)
-        .doOnError { t ->
-          // why does this happen?
-          CrashLogger.logException(RuntimeException("Encountered onError when fetching stocks", t))
-          scheduleUpdate(SystemClock.elapsedRealtime() + (3 * 60 * 1000)) // 3 minutes
-          if (t is CompositeException) {
-            t.exceptions
-                .filterIsInstance<RobindahoodException>()
-                .forEach { bus.post(ErrorEvent(it.message!!)) }
+    if (tickerList.isEmpty()) {
+      bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+      return Observable.error<List<Quote>>(Exception("No symbols in portfolio"))
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+    } else {
+      return api.getStocks(tickerList)
+          .map { stocks ->
+            synchronized(quoteList, {
+              tickerList.clear()
+              stocks.mapTo(tickerList) { it.symbol }
+              quoteList.clear()
+              quoteList.addAll(stocks)
+              lastFetched = api.lastFetched
+              save()
+            })
+            stocks
           }
-        }
-        .map { stocks ->
-          synchronized(quoteList, {
-            tickerList.clear()
-            stocks.mapTo(tickerList) { it.symbol }
-            quoteList.clear()
-            quoteList.addAll(stocks)
-            lastFetched = api.lastFetched
-            save()
-          })
-          stocks
-        }
-        .doOnNext { stocks ->
-          synchronized(quoteList, {
-            sendBroadcast(true)
-          })
-        }
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+          .doOnNext { stocks ->
+            synchronized(quoteList, {
+              sendBroadcast(true)
+            })
+          }
+          .doOnError { t ->
+            // why does this happen?
+            CrashLogger.logException(
+                Exception("Encountered onError when fetching stocks", t))
+            scheduleUpdate(SystemClock.elapsedRealtime() + (3 * 60 * 1000)) // 3 minutes
+            if (t is CompositeException) {
+              for (exception in t.exceptions) {
+                if (exception is RobindahoodException) {
+                  bus.post(ErrorEvent(exception.message!!))
+                  break
+                }
+              }
+            }
+          }
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+    }
   }
 
   internal fun sendBroadcast(refresh: Boolean = false) {

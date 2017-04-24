@@ -45,6 +45,7 @@ class Tools private constructor() {
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"
     const val SETTING_SHARE = "SETTING_IMPORT"
+    const val SETTING_NUKE = "SETTING_NUKE"
     const val WIDGET_BG = "WIDGET_BG"
     const val TEXT_COLOR = "TEXT_COLOR"
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"

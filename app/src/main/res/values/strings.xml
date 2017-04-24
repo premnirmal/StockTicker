@@ -8,12 +8,15 @@
   <string name="action_add">Add</string>
   <string name="action_export">Export Tickers</string>
   <string name="action_share">Share Portfolio</string>
+  <string name="action_nuke">Clear app data</string>
+  <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
   <string name="export_desc">Export tickers to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
   <string name="action_import">Import Tickers</string>
   <string name="import_desc">Import tickers from a comma separated .txt file</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange Stocks</string>
   <string name="action_update">Refresh Now</string>
+  <string name="are_you_sure">Are you sure?</string>
 
   <string name="yahoo_endpoint">https://query.yahooapis.com/v1/public/</string>
   <string name="robindahood_endpoint">https://robindahood.com/api/</string>
@@ -69,6 +72,7 @@
   <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
   <string name="remove">Remove</string>
   <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
+  <string name="no_symbols_in_portfolio">No symbols in portfolio.</string>
 
   <string name="like_our_app">Like our app?</string>
   <string name="please_rate">Please rate us on the PlayStore, we would love to hear what you have to say!</string>

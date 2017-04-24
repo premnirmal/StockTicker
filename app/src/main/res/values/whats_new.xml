@@ -2,6 +2,7 @@
 <resources>
   <string-array name="whats_new">
     <item>Using a new quotes api.</item>
-    <item>Propagating descriptive errors.</item>
+    <item>Bug fixes.</item>
+    <item>If you experience any issues with your portfolio, please go into Widget Settings and select "Clear app data" from the list.</item>
   </string-array>
 </resources>
