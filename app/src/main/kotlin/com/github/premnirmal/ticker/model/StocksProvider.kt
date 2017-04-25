@@ -115,15 +115,20 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     } else {
       return api.getStocks(tickerList)
           .map { stocks ->
-            synchronized(quoteList, {
-              tickerList.clear()
-              stocks.mapTo(tickerList) { it.symbol }
-              quoteList.clear()
-              quoteList.addAll(stocks)
-              lastFetched = api.lastFetched
-              save()
-            })
-            stocks
+            if (stocks.isEmpty()) {
+              bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+              throw RuntimeException("No symbols in portfolio")
+            } else {
+              synchronized(quoteList, {
+                tickerList.clear()
+                stocks.mapTo(tickerList) { it.symbol }
+                quoteList.clear()
+                quoteList.addAll(stocks)
+                lastFetched = api.lastFetched
+                save()
+              })
+              stocks
+            }
           }
           .doOnNext { stocks ->
             synchronized(quoteList, {

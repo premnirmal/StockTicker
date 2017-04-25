@@ -8,9 +8,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.Gravity
 import android.view.MenuItem
-import android.widget.Toast
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.trello.rxlifecycle.ActivityEvent
 import com.trello.rxlifecycle.RxLifecycle
@@ -70,9 +68,7 @@ abstract class BaseActivity : AppCompatActivity() {
     bind(bus.forEventType(ErrorEvent::class.java))
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe { event ->
-          val toast = Toast.makeText(this, event.message, Toast.LENGTH_SHORT)
-          toast.setGravity(Gravity.CENTER, 0, 0)
-          toast.show()
+          showDialog(event.message)
         }
   }
 
