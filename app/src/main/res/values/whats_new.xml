@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Using a new quotes api.</item>
-    <item>Bug fixes.</item>
-    <item>If you experience any issues with your portfolio, please go into Widget Settings and select "Clear app data" from the list.</item>
+    <item>Increasing request timeout.</item>
   </string-array>
 </resources>

@@ -81,7 +81,7 @@
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|end"
       android:layout_marginBottom="@dimen/borderW"
-      android:src="@drawable/ic_action_content_new"
+      android:src="@drawable/ic_add"
       app:backgroundTint="@color/color_accent"
       app:borderWidth="0dp"
       app:elevation="5dp"

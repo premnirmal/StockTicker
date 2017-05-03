@@ -26,6 +26,7 @@ repositories {
   maven { url "https://maven.fabric.io/public" }
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
+  maven { url  "http://dl.bintray.com/lukaville/maven" }
 }
 
 dexcount {
@@ -189,7 +190,7 @@ dependencies {
 
   compile "com.jakewharton.threetenabp:threetenabp:1.0.5"
 
-  compile "com.github.developerpaul123.filepickerlibrary:library:1.1"
+  compile "com.nbsp:library:1.2"
   compile "com.github.PhilJay:MPAndroidChart:v2.2.3"
   compile "uk.co.chrisjenx:calligraphy:2.1.0"
   devCompile "com.jakewharton.timber:timber:4.3.1"

@@ -139,7 +139,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             // why does this happen?
             CrashLogger.logException(
                 Exception("Encountered onError when fetching stocks", t))
-            scheduleUpdate(SystemClock.elapsedRealtime() + (3 * 60 * 1000)) // 3 minutes
+            scheduleUpdate(SystemClock.elapsedRealtime() + (1 * 60 * 1000)) // 1 minute
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {

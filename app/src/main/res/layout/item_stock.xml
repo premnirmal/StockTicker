@@ -11,6 +11,7 @@
     android:paddingLeft="5dp"
     android:paddingTop="7dp"
     tools:layout_marginTop="100dp"
+    tools:layout_height="150dp"
     >
 
   <LinearLayout

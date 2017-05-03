@@ -23,7 +23,6 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.TextUtils
 import android.view.LayoutInflater
-import com.devpaul.filepickerlibrary.FilePickerActivity
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.InAppMessage
@@ -33,11 +32,14 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import com.nbsp.materialfilepicker.MaterialFilePicker
+import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 /**
@@ -49,6 +51,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     private val REQCODE_WRITE_EXTERNAL_STORAGE = 850
     private val REQCODE_READ_EXTERNAL_STORAGE = 851
     private val REQCODE_WRITE_EXTERNAL_STORAGE_SHARE = 852
+    private val REQCODE_FILE_WRITE = 853
   }
 
   @Inject
@@ -395,10 +398,11 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   }
 
   private fun launchImportIntent() {
-    val filePickerIntent = Intent(this@SettingsActivity, FilePickerActivity::class.java)
-    filePickerIntent.putExtra(FilePickerActivity.REQUEST_CODE, FilePickerActivity.REQUEST_FILE)
-    filePickerIntent.putExtra(FilePickerActivity.INTENT_EXTRA_COLOR_ID, R.color.color_primary)
-    startActivityForResult(filePickerIntent, FilePickerActivity.REQUEST_FILE)
+    MaterialFilePicker()
+    .withActivity(this)
+    .withRequestCode(REQCODE_FILE_WRITE)
+    .withFilter(Pattern.compile(".*\\.txt$")) // Filtering files and directories by file name using regexp
+    .start()
   }
 
   private fun exportTickers() {
@@ -470,8 +474,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   }
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    if (requestCode == FilePickerActivity.REQUEST_FILE && resultCode == Activity.RESULT_OK) {
-      val filePath = data?.getStringExtra(FilePickerActivity.FILE_EXTRA_DATA_PATH)
+    if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
+      val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
       if (filePath != null) {
         object : FileImportTask(stocksProvider) {
           override fun onPostExecute(result: Boolean?) {

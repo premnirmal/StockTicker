@@ -22,6 +22,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -31,16 +32,30 @@ import javax.inject.Singleton
 class NetworkModule {
 
   companion object {
-    internal val CONNECTION_TIMEOUT: Long = 30000
-    internal val READ_TIMEOUT: Long = 30000
+    internal val CONNECTION_TIMEOUT: Long = 70000
+    internal val READ_TIMEOUT: Long = 70000
   }
 
-  @Provides @Singleton
-  internal fun provideHttpClient(context: Context, bus: RxBus): OkHttpClient {
+  @Provides @Singleton @Named("yahooClient")
+  internal fun provideHttpClientForYahoo(context: Context, bus: RxBus): OkHttpClient {
+    val logger = HttpLoggingInterceptor()
+    logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(UserAgentInterceptor())
+        .addInterceptor(logger)
+        .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+        .build()
+    return okHttpClient
+  }
+
+  @Provides @Singleton @Named("robindahoodClient")
+  internal fun provideHttpClientForRobindahood(context: Context, bus: RxBus): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(RequestInterceptor(context, bus))
+        .addInterceptor(UserAgentInterceptor())
         .addInterceptor(logger)
         .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
         .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -54,7 +69,8 @@ class NetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideYahooFinance(context: Context, okHttpClient: OkHttpClient,
+  internal fun provideYahooFinance(context: Context,
+      @Named("yahooClient") okHttpClient: OkHttpClient,
       converterFactory: GsonConverterFactory,
       rxJavaFactory: RxJavaCallAdapterFactory): YahooFinance {
     val Retrofit = Retrofit.Builder()
@@ -83,7 +99,8 @@ class NetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideSuggestionsApi(context: Context, okHttpClient: OkHttpClient,
+  internal fun provideSuggestionsApi(context: Context,
+      @Named("yahooClient") okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
       rxJavaFactory: RxJavaCallAdapterFactory): SuggestionApi {
     val Retrofit = Retrofit.Builder()
@@ -115,7 +132,8 @@ class NetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
+  internal fun provideRobindahood(context: Context,
+      @Named("robindahoodClient") okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
       rxJavaFactory: RxJavaCallAdapterFactory): Robindahood {
     val Retrofit = Retrofit.Builder()

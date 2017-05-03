@@ -11,6 +11,7 @@
     android:paddingLeft="5dp"
     android:paddingTop="7dp"
     tools:layout_marginTop="100dp"
+    tools:layout_height="150dp"
     >
 
   <LinearLayout
@@ -72,8 +73,9 @@
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="match_parent"
       android:orientation="horizontal"
+      android:gravity="bottom"
       >
 
     <LinearLayout
