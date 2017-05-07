@@ -1,4 +1,4 @@
-# StockTicker
+# Stocks Widget
 [![Circle CI](https://circleci.com/gh/premnirmal/StockTicker.svg?style=svg)](https://circleci.com/gh/premnirmal/StockTicker)
 
 [![Google play link](google-play-badge.png)](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
