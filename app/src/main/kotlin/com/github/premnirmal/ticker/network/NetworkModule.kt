@@ -54,7 +54,7 @@ class NetworkModule {
     val logger = HttpLoggingInterceptor()
     logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(RequestInterceptor(context, bus))
+        .addInterceptor(RequestInterceptor())
         .addInterceptor(UserAgentInterceptor())
         .addInterceptor(logger)
         .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)

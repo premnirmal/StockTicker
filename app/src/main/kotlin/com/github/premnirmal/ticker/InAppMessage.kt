@@ -5,12 +5,18 @@ import android.content.Context
 import android.support.design.widget.Snackbar
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.github.premnirmal.tickerwidget.R
 
 /**
  * Created by premnirmal on 2/26/16.
  */
 object InAppMessage {
+
+  fun showToast(context: Context, messageResId: Int) {
+    Toast.makeText(context, messageResId, Toast.LENGTH_SHORT).show()
+  }
+
   fun showMessage(activity: Activity?, messageResId: Int) {
     if (activity == null) {
       return

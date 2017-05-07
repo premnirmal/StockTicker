@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.os.Bundle
 import com.github.premnirmal.ticker.BaseActivity
+import com.github.premnirmal.ticker.InAppMessage
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
@@ -29,11 +30,17 @@ open class AddPositionActivity : BaseActivity() {
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.inject(this)
-    ticker = intent.getStringExtra(TICKER)
     setContentView(R.layout.activity_positions)
     toolbar.setTitle(R.string.add_position)
     updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {
+      finish()
+    }
+    if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
+      ticker = intent.getStringExtra(TICKER)
+    } else {
+      ticker = ""
+      InAppMessage.showToast(this, R.string.error_symbol)
       finish()
     }
     val name = tickerName

@@ -44,6 +44,7 @@
   <string name="text_coor_updated_message">Text color updated</string>
   <string name="refresh_updated_message">Refresh interval updated</string>
   <string name="error_exporting">Error exporting file</string>
+  <string name="error_symbol">Invalid symbol</string>
   <string name="error_sharing">Error sharing tickers</string>
   <string name="ticker_import_success">Tickers imported successfully</string>
   <string name="ticker_import_fail">Error importing tickers</string>
