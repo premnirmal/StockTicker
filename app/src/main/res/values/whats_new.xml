@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Increasing request timeout.</item>
+    <item>StockTicker is now Stocks Widget</item>
   </string-array>
 </resources>
