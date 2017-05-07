@@ -11,7 +11,6 @@
 The main purpose of this app is to demonstrate usage of [Dagger2](https://github.com/google/dagger) and [RxJava](https://github.com/ReactiveX/RxJava)
 
 - A homescreen widget that shows your stock portolio in a resizable grid.
-- Similar to [ministocks widget](https://github.com/niteshpatel/ministocks) but allowing unlimited tickers in a grid so you don't have to worry about widget size.
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours and weekdays.
 - Showing graphs using [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart).
