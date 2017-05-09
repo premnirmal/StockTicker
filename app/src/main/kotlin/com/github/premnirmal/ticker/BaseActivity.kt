@@ -10,11 +10,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.github.premnirmal.ticker.events.ErrorEvent
-import com.trello.rxlifecycle.ActivityEvent
-import com.trello.rxlifecycle.RxLifecycle
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.subjects.BehaviorSubject
+import com.trello.rxlifecycle2.RxLifecycle
+import com.trello.rxlifecycle2.android.ActivityEvent
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.BehaviorSubject
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import javax.inject.Inject
 
@@ -28,14 +28,14 @@ abstract class BaseActivity : AppCompatActivity() {
   @Inject lateinit var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> {
-    return lifecycleSubject.asObservable()
+    return lifecycleSubject
   }
 
   /**
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> {
-    return observable.compose(RxLifecycle.bindActivity<T>(lifecycle()))
+    return observable.compose(RxLifecycle.bind(lifecycle()))
   }
 
   override fun attachBaseContext(newBase: Context) {

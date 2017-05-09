@@ -5,10 +5,10 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.QueryCreator
 import com.github.premnirmal.ticker.network.data.historicaldata.History
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.ZonedDateTime
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 import java.util.Collections
 import javax.inject.Inject
 import javax.inject.Singleton

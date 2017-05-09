@@ -7,8 +7,8 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.historicaldata.HistoricalData
 import com.google.gson.Gson
 import retrofit2.HttpException
-import rx.Observable
-import rx.functions.Action1
+import io.reactivex.Observable
+import io.reactivex.functions.Action1
 import javax.inject.Inject
 import javax.inject.Singleton
 

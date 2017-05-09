@@ -22,10 +22,10 @@ import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.exceptions.CompositeException
-import rx.schedulers.Schedulers
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.exceptions.CompositeException
+import io.reactivex.schedulers.Schedulers
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections

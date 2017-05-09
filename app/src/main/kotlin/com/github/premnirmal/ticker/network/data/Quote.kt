@@ -74,10 +74,6 @@ class Quote : Comparable<Quote>, Serializable {
     return Tools.DECIMAL_FORMAT.format(gainLoss())
   }
 
-  override operator fun compareTo(other: Quote): Int {
-    return java.lang.Float.compare(other.changeinPercent, changeinPercent)
-  }
-
   fun dayChange(): Float {
     return lastTradePrice - positionPrice
   }
@@ -92,5 +88,9 @@ class Quote : Comparable<Quote>, Serializable {
 
   fun dayChangePercentString(): String {
     return "${Tools.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
+  }
+
+  override operator fun compareTo(other: Quote): Int {
+    return java.lang.Float.compare(other.changeinPercent, changeinPercent)
   }
 }

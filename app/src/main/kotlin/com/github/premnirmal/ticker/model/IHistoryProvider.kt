@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.network.data.historicaldata.History
-import rx.Observable
+import io.reactivex.Observable
 
 /**
  * Created by premnirmal on 2/28/16.

@@ -18,8 +18,8 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import rx.Observable
-import rx.observers.TestSubscriber
+import io.reactivex.Observable
+import io.reactivex.observers.TestSubscriber
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, application = TestApplication::class)

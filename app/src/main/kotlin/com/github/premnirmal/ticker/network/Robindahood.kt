@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.network
 import com.github.premnirmal.ticker.network.data.QuoteNet
 import retrofit2.http.GET
 import retrofit2.http.Query
-import rx.Observable
+import io.reactivex.Observable
 
 interface Robindahood {
 

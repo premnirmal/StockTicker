@@ -18,9 +18,9 @@ import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_ticker_selector.toolbar
-import rx.Subscription
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
+import io.reactivex.Subscription
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 /**

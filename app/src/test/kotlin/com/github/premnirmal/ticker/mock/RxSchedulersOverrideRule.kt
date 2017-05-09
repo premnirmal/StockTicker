@@ -3,12 +3,12 @@ package com.github.premnirmal.ticker.mock
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import rx.Scheduler
-import rx.android.plugins.RxAndroidPlugins
-import rx.android.plugins.RxAndroidSchedulersHook
-import rx.functions.Func1
-import rx.plugins.RxJavaHooks
-import rx.schedulers.Schedulers
+import io.reactivex.Scheduler
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.android.plugins.RxAndroidSchedulersHook
+import io.reactivex.functions.Func1
+import io.reactivex.plugins.RxJavaHooks
+import io.reactivex.schedulers.Schedulers
 
 
 class RxSchedulersOverrideRule : TestRule {

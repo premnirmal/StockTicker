@@ -18,7 +18,7 @@ import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
@@ -72,7 +72,7 @@ class NetworkModule {
   internal fun provideYahooFinance(context: Context,
       @Named("yahooClient") okHttpClient: OkHttpClient,
       converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): YahooFinance {
+      rxJavaFactory: RxJava2CallAdapterFactory): YahooFinance {
     val Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.yahoo_endpoint))
@@ -94,15 +94,15 @@ class NetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideRxJavaFactory(): RxJavaCallAdapterFactory {
-    return RxJavaCallAdapterFactory.create()
+  internal fun provideRxJavaFactory(): RxJava2CallAdapterFactory {
+    return RxJava2CallAdapterFactory.create()
   }
 
   @Provides @Singleton
   internal fun provideSuggestionsApi(context: Context,
       @Named("yahooClient") okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): SuggestionApi {
+      rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi {
     val Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.suggestions_endpoint))
@@ -135,7 +135,7 @@ class NetworkModule {
   internal fun provideRobindahood(context: Context,
       @Named("robindahoodClient") okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): Robindahood {
+      rxJavaFactory: RxJava2CallAdapterFactory): Robindahood {
     val Retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.robindahood_endpoint))

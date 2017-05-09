@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -27,14 +26,13 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
-import com.jakewharton.rxbinding.widget.RxPopupMenu
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
 import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
 import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
-import rx.android.schedulers.AndroidSchedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -83,27 +81,25 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       popupWindow.menu.findItem(R.id.graph).isEnabled = true
       popupWindow.menu.findItem(R.id.positions).isEnabled = true
     }
-    bind(RxPopupMenu.itemClicks(popupWindow))
-        .subscribe(object : SimpleSubscriber<MenuItem>() {
-          override fun onNext(result: MenuItem) {
-            val itemId = result.itemId
-            when (itemId) {
-              R.id.graph -> {
-                val intent = Intent(activity, GraphActivity::class.java)
-                intent.putExtra(GraphActivity.GRAPH_DATA, quote)
-                activity.startActivity(intent)
-              }
-              R.id.positions -> {
-                val intent = Intent(activity, EditPositionActivity::class.java)
-                intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
-                activity.startActivity(intent)
-              }
-              R.id.remove -> {
-                promptRemove(quote, position)
-              }
-            }
-          }
-        })
+    popupWindow.setOnMenuItemClickListener { menuItem ->
+      val itemId = menuItem.itemId
+      when (itemId) {
+        R.id.graph -> {
+          val intent = Intent(activity, GraphActivity::class.java)
+          intent.putExtra(GraphActivity.GRAPH_DATA, quote)
+          activity.startActivity(intent)
+        }
+        R.id.positions -> {
+          val intent = Intent(activity, EditPositionActivity::class.java)
+          intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
+          activity.startActivity(intent)
+        }
+        R.id.remove -> {
+          promptRemove(quote, position)
+        }
+      }
+      true
+    }
     popupWindow.show()
   }
 

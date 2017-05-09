@@ -19,8 +19,6 @@ import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.TextUtils
 import android.view.LayoutInflater
 import com.github.premnirmal.ticker.Analytics
@@ -37,8 +35,6 @@ import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -109,12 +105,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false))
 
     val versionView = version
-    val sBuilder = SpannableStringBuilder()
-    sBuilder.append("v" + BuildConfig.VERSION_NAME)
-    val typefaceSpan = CalligraphyTypefaceSpan(
-        TypefaceUtils.load(getAssets(), "fonts/alegreya-black-italic.ttf"))
-    sBuilder.setSpan(typefaceSpan, 0, sBuilder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    versionView.text = sBuilder
+    versionView.text = "v" + BuildConfig.VERSION_NAME
     setupSimplePreferencesScreen()
   }
 

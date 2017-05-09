@@ -53,6 +53,10 @@
     <item name="android:textSize">34sp</item>
   </style>
 
+  <style name="VersionNameText" parent="android:Widget.TextView">
+    <item name="fontPath">fonts/Avenir-Bold.otf</item>
+  </style>
+
   <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
     <item name="android:textColorPrimary">@color/color_accent</item>
     <item name="colorPrimary">@android:color/white</item>
