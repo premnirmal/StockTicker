@@ -60,10 +60,13 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal var lastFetched: Long = 0L
   internal var nextFetch: Long = 0L
   internal val storage: StocksStorage
+  internal val exponentialBackoff: ExponentialBackoff
+  internal var backOffAttemptCount = 0
 
   init {
     Injector.inject(this)
     storage = StocksStorage()
+    exponentialBackoff = ExponentialBackoff()
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(
         *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
@@ -132,14 +135,16 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           }
           .doOnNext { stocks ->
             synchronized(quoteList, {
+              backOffAttemptCount = 0
               sendBroadcast(true)
             })
           }
           .doOnError { t ->
-            // why does this happen?
             CrashLogger.logException(
                 Exception("Encountered onError when fetching stocks", t))
-            scheduleUpdate(SystemClock.elapsedRealtime() + (1 * 60 * 1000)) // 1 minute
+            val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
+            backOffAttemptCount++
+            scheduleUpdate(SystemClock.elapsedRealtime() + backOffTime)
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
