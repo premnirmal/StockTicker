@@ -22,6 +22,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
+import retrofit2.HttpException
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.exceptions.CompositeException
@@ -142,21 +143,38 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           .doOnError { t ->
             CrashLogger.logException(
                 Exception("Encountered onError when fetching stocks", t))
-            val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
-            backOffAttemptCount++
-            scheduleUpdate(SystemClock.elapsedRealtime() + backOffTime)
+            var scheduled = false
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
                   bus.post(ErrorEvent(exception.message!!))
+                  if (exception.code < 500) {
+                    retryWithBackoff()
+                  }
+                  scheduled = true
                   break
                 }
+              }
+            }
+            if (!scheduled) {
+              if (t is HttpException) {
+                if (t.code() < 500) {
+                  retryWithBackoff()
+                }
+              } else {
+                retryWithBackoff()
               }
             }
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
     }
+  }
+
+  private fun retryWithBackoff() {
+    val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
+    backOffAttemptCount++
+    scheduleUpdate(SystemClock.elapsedRealtime() + backOffTime)
   }
 
   internal fun sendBroadcast(refresh: Boolean = false) {

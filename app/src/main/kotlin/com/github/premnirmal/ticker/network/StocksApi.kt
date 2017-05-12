@@ -8,7 +8,6 @@ import com.github.premnirmal.ticker.network.data.historicaldata.HistoricalData
 import com.google.gson.Gson
 import retrofit2.HttpException
 import rx.Observable
-import rx.functions.Action1
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -54,11 +53,15 @@ import javax.inject.Singleton
         }
         .doOnError { e ->
           if (e is HttpException) {
-            val errorBody: ErrorBody? = gson.fromJson(e.response().errorBody().string(), ErrorBody::class.java)
-            if (errorBody != null) {
-              val robindahoodException = RobindahoodException(errorBody, e)
-              CrashLogger.logException(robindahoodException)
-              throw robindahoodException
+            try {
+              val errorBody: ErrorBody? = gson.fromJson(e.response().errorBody().string(), ErrorBody::class.java)
+              if (errorBody != null) {
+                val robindahoodException = RobindahoodException(errorBody, e, e.code())
+                CrashLogger.logException(robindahoodException)
+                throw robindahoodException
+              }
+            } catch (ex: Exception) {
+              // ignored
             }
           }
         }
