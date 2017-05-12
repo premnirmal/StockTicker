@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
+import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -75,6 +76,11 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onEnabled(context: Context?) {
     super.onEnabled(context)
+    if (!injected) {
+      Injector.inject(this)
+      injected = true
+    }
+    stocksProvider.fetch().subscribe(SimpleSubscriber())
   }
 
   override fun onDisabled(context: Context?) {
