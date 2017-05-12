@@ -453,21 +453,21 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportTickers()
         } else {
-          showDialog("Cannot export tickers without permission to write to external storage")
+          showDialog("Cannot export quotes without permission to write to external storage")
         }
       }
       REQCODE_READ_EXTERNAL_STORAGE -> {
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           launchImportIntent()
         } else {
-          showDialog("Cannot import tickers without permission to read external storage")
+          showDialog("Cannot import quotes without permission to read external storage")
         }
       }
       REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportAndShareTickers()
         } else {
-          showDialog("Cannot share tickers without permission to write to external storage")
+          showDialog("Cannot share quotes without permission to write to external storage")
         }
       }
     }

@@ -6,13 +6,13 @@
   <string name="version">Version</string>
 
   <string name="action_add">Add</string>
-  <string name="action_export">Export Tickers</string>
+  <string name="action_export">Export Quotes</string>
   <string name="action_share">Share Portfolio</string>
   <string name="action_nuke">Clear app data</string>
   <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
-  <string name="export_desc">Export tickers to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
-  <string name="action_import">Import Tickers</string>
-  <string name="import_desc">Import tickers from a comma separated .txt file</string>
+  <string name="export_desc">Export quotes to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
+  <string name="action_import">Import Quotes</string>
+  <string name="import_desc">Import quotes from a comma separated .txt file</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange Stocks</string>
   <string name="action_update">Refresh Now</string>
@@ -45,9 +45,9 @@
   <string name="refresh_updated_message">Refresh interval updated</string>
   <string name="error_exporting">Error exporting file</string>
   <string name="error_symbol">Invalid symbol</string>
-  <string name="error_sharing">Error sharing tickers</string>
-  <string name="ticker_import_success">Tickers imported successfully</string>
-  <string name="ticker_import_fail">Error importing tickers</string>
+  <string name="error_sharing">Error sharing quotes</string>
+  <string name="ticker_import_success">Quotes imported successfully</string>
+  <string name="ticker_import_fail">Error importing quotes</string>
   <string name="no_network_message">No network connection</string>
   <string name="refresh_failed">Refresh failed</string>
   <string name="one_month">1 month</string>
