@@ -70,15 +70,6 @@
     </receiver>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.UnlockReceiver"
-        android:enabled="true"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.USER_PRESENT"/>
-      </intent-filter>
-    </receiver>
-
-    <receiver
         android:name="com.github.premnirmal.ticker.RefreshReceiver"
         android:enabled="true"
         android:exported="false"/>

@@ -137,6 +137,6 @@ class StockWidget() : AppWidgetProvider() {
     appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list)
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource",
-        Tools.getBackgroundResource(context))
+        Tools.getBackgroundResource())
   }
 }

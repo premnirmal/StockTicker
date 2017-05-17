@@ -3,26 +3,19 @@ package com.github.premnirmal.ticker.network
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.mock.Mocker
-import com.github.premnirmal.ticker.mock.TestApplication
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteNet
-import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.reflect.TypeToken
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Matchers
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import rx.Observable
 import rx.observers.TestSubscriber
 
-@RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, application = TestApplication::class)
 class StocksApiTest : BaseUnitTest() {
 
   companion object {

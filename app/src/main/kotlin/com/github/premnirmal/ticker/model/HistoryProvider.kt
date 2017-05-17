@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.QueryCreator
 import com.github.premnirmal.ticker.network.data.historicaldata.History
@@ -26,7 +27,7 @@ import javax.inject.Singleton
   }
 
   override fun getHistory(ticker: String, range: Range): Observable<History> {
-    val now = ZonedDateTime.now()
+    val now = Tools.clock().todayZoned()
     val from: ZonedDateTime
     when (range) {
       Range.ONE_MONTH -> from = now.minusMonths(1)

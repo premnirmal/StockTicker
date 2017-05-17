@@ -58,8 +58,8 @@ abstract class BaseUnitTest : TestCase() {
     `when`(iStocksProvider.getTickers()).thenReturn(emptyList())
     `when`(iStocksProvider.addStock(ArgumentMatchers.anyString())).thenReturn(emptyList())
     `when`(iStocksProvider.removeStock(ArgumentMatchers.anyString())).thenReturn(emptyList())
-    `when`(iStocksProvider.lastFetched()).thenReturn("")
-    `when`(iStocksProvider.nextFetch()).thenReturn("")
+    `when`(iStocksProvider.lastFetched()).thenReturn("--")
+    `when`(iStocksProvider.nextFetch()).thenReturn("--")
   }
 
   fun parseJsonFile(fileName: String): JsonElement {

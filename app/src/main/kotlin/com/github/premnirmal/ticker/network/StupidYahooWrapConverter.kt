@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.network.data.Suggestions
 import com.google.gson.Gson
 import okhttp3.ResponseBody
@@ -22,7 +21,6 @@ internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>
       }
       throw error("Invalid response")
     } catch (e: IOException) {
-      CrashLogger.logException(e)
       return null
     }
   }

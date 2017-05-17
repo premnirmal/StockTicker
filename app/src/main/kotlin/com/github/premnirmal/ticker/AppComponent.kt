@@ -27,8 +27,6 @@ import javax.inject.Singleton
 )
 interface AppComponent {
 
-  fun inject(unlockReceiver: UnlockReceiver)
-
   fun inject(stocksStorage: StocksStorage)
 
   fun inject(tools: Tools)

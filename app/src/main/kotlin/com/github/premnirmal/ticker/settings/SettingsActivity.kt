@@ -19,14 +19,13 @@ import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.TextUtils
 import android.view.LayoutInflater
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.InAppMessage
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -37,8 +36,6 @@ import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import uk.co.chrisjenx.calligraphy.CalligraphyTypefaceSpan
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -109,12 +106,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false))
 
     val versionView = version
-    val sBuilder = SpannableStringBuilder()
-    sBuilder.append("v" + BuildConfig.VERSION_NAME)
-    val typefaceSpan = CalligraphyTypefaceSpan(
-        TypefaceUtils.load(getAssets(), "fonts/alegreya-black-italic.ttf"))
-    sBuilder.setSpan(typefaceSpan, 0, sBuilder.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    versionView.text = sBuilder
+    val vName = "v${BuildConfig.VERSION_NAME}"
+    versionView.text = vName
     setupSimplePreferencesScreen()
   }
 
@@ -134,8 +127,10 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       val nukePref = findPreference(Tools.SETTING_NUKE)
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), OnClickListener { dialog, which ->
+          val hasUserAlreadyRated = Tools.hasUserAlreadyRated()
           CrashLogger.logException(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
+          preferences.edit().putBoolean(Tools.DID_RATE, hasUserAlreadyRated).commit()
           System.exit(0)
         })
         true
@@ -293,19 +288,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     })
 
     run({
-      val refreshPreference = findPreference(Tools.SETTING_REFRESH_ON_UNLOCK) as CheckBoxPreference
-      val refresh = Tools.refreshEnabled()
-      refreshPreference.isChecked = refresh
-      refreshPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val checked = newValue as Boolean
-          preferences.edit().putBoolean(Tools.SETTING_REFRESH_ON_UNLOCK, checked).apply()
-          return true
-        }
-      }
-    })
-
-    run({
       val boldChangePreference = findPreference(Tools.BOLD_CHANGE) as CheckBoxPreference
       val bold = Tools.boldEnabled()
       boldChangePreference.isChecked = bold
@@ -324,13 +306,14 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       startTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
           val startTimez = Tools.timeAsIntArray(newValue.toString())
-          val timez = Tools.endTime()
-          if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
-            InAppMessage.showMessage(this@SettingsActivity, R.string.incorrect_time_update_error)
+          val endTimez = Tools.endTime()
+          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+            showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
             preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply()
             startTimePref.summary = newValue.toString()
+            stocksProvider.fetch().subscribe(SimpleSubscriber())
             InAppMessage.showMessage(this@SettingsActivity, R.string.start_time_updated)
             return true
           }
@@ -342,22 +325,23 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       val endTimePref = findPreference(Tools.END_TIME) as TimePreference
       endTimePref.summary = preferences.getString(Tools.END_TIME, "16:30")
       run({
-        val timez = Tools.endTime()
+        val endTimez = Tools.endTime()
         val startTimez = Tools.startTime()
-        if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
+        if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
           endTimePref.setSummary(R.string.incorrect_time_update_error)
         }
       })
       endTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val timez = Tools.timeAsIntArray(newValue.toString())
+          val endTimez = Tools.timeAsIntArray(newValue.toString())
           val startTimez = Tools.startTime()
-          if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
-            InAppMessage.showMessage(this@SettingsActivity, R.string.incorrect_time_update_error)
+          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+            showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
             preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply()
             endTimePref.summary = newValue.toString()
+            stocksProvider.fetch().subscribe(SimpleSubscriber())
             InAppMessage.showMessage(this@SettingsActivity, R.string.end_time_updated)
             return true
           }

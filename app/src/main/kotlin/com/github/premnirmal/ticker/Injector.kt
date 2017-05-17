@@ -62,8 +62,6 @@ object Injector {
       appComponent.inject(any)
     } else if (any is StocksStorage) {
       appComponent.inject(any)
-    } else if (any is UnlockReceiver) {
-      appComponent.inject(any)
     } else if (any is RequestInterceptor) {
       appComponent.inject(any)
     } else if (any is UserAgentInterceptor) {

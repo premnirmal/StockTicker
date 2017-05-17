@@ -26,7 +26,6 @@ import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.string
 import com.jakewharton.rxbinding.widget.RxPopupMenu
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
 import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
@@ -182,22 +181,27 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   }
 
   internal fun fetch() {
-    fetchCount++
-    attemptingFetch = true
-    bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
-      override fun onError(e: Throwable) {
-        attemptingFetch = false
-        CrashLogger.logException(e)
-        swipe_container.isRefreshing = false
-        InAppMessage.showMessage(fragment_root, getString(string.refresh_failed))
-      }
+    if (Tools.isNetworkOnline(context)) {
+      fetchCount++
+      attemptingFetch = true
+      bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
+        override fun onError(e: Throwable) {
+          attemptingFetch = false
+          CrashLogger.logException(e)
+          swipe_container.isRefreshing = false
+          InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
+        }
 
-      override fun onNext(result: List<Quote>) {
-        attemptingFetch = false
-        swipe_container.isRefreshing = false
-        update()
-      }
-    })
+        override fun onNext(result: List<Quote>) {
+          attemptingFetch = false
+          swipe_container.isRefreshing = false
+          update()
+        }
+      })
+    } else {
+      InAppMessage.showMessage(fragment_root, getString(R.string.no_network_message))
+      swipe_container.isRefreshing = false
+    }
   }
 
   internal fun update() {

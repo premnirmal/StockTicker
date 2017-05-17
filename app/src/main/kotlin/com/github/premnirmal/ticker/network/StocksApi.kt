@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.historicaldata.HistoricalData
@@ -34,7 +35,7 @@ import javax.inject.Singleton
     val query = tickerList.joinToString(",")
     return financeApi.getStocks(query)
         .map { quoteNets ->
-          lastFetched = System.currentTimeMillis()
+          lastFetched = Tools.clock().currentTimeMillis()
           quoteNets
         }
         .map { quoteNets ->

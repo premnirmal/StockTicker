@@ -23,6 +23,7 @@ import javax.inject.Inject
 class Tools private constructor() {
 
   @Inject lateinit internal var sharedPreferences: SharedPreferences
+  @Inject lateinit internal var clock: AppClock
 
   init {
     Injector.inject(this)
@@ -34,14 +35,11 @@ class Tools private constructor() {
 
   companion object {
 
-    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")!!
-
     const val PREFS_NAME = "com.github.premnirmal.ticker"
     const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
     const val START_TIME = "START_TIME"
     const val END_TIME = "END_TIME"
     const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
-    const val SETTING_REFRESH_ON_UNLOCK = "SETTING_REFRESH_ON_UNLOCK"
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"
     const val SETTING_SHARE = "SETTING_IMPORT"
@@ -51,7 +49,6 @@ class Tools private constructor() {
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
     const val BOLD_CHANGE = "BOLD_CHANGE"
-    const val FIRST_TIME_VIEWING_SWIPELAYOUT = "FIRST_TIME_VIEWING_SWIPELAYOUT"
     const val WHATS_NEW = "WHATS_NEW"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"
@@ -60,13 +57,16 @@ class Tools private constructor() {
     const val DARK = 2
     const val LIGHT = 3
 
-    val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
-
-    private val random = Random(System.currentTimeMillis())
-
     val instance: Tools by lazy {
       Tools()
     }
+
+    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")!!
+
+    val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
+
+    // Not using clock here because this doesn't need a specific time.
+    val random = Random(System.currentTimeMillis())
 
     val changeType: ChangeType
       get() {
@@ -122,13 +122,7 @@ class Tools private constructor() {
       return instance.sharedPreferences.getBoolean(SETTING_AUTOSORT, true)
     }
 
-    fun firstTimeViewingSwipeLayout(): Boolean {
-      val firstTime = instance.sharedPreferences.getBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, true)
-      instance.sharedPreferences.edit().putBoolean(FIRST_TIME_VIEWING_SWIPELAYOUT, false).apply()
-      return firstTime || (random.nextInt() % 2 == 0)
-    }
-
-    fun getBackgroundResource(context: Context): Int {
+    fun getBackgroundResource(): Int {
       val bgPref = instance.sharedPreferences.getInt(WIDGET_BG, TRANSPARENT)
       when (bgPref) {
         TRANSLUCENT -> return R.drawable.translucent_widget_bg
@@ -253,20 +247,8 @@ class Tools private constructor() {
       return result
     }
 
-    /**
-     * Don't allow end time less than start time. reset to default time if so
-     */
-    fun validateTimeSet(endTimez: IntArray, startTimez: IntArray) {
-      if (endTimez[0] < startTimez[0] || (endTimez[0] == startTimez[0] && endTimez[0] <= startTimez[0])) {
-        startTimez[0] = 9
-        startTimez[1] = 30
-        endTimez[0] = 16
-        endTimez[1] = 15
-      }
-    }
-
-    fun refreshEnabled(): Boolean {
-      return instance.sharedPreferences.getBoolean(SETTING_REFRESH_ON_UNLOCK, true)
+    fun clock(): AppClock {
+      return instance.clock
     }
   }
 }

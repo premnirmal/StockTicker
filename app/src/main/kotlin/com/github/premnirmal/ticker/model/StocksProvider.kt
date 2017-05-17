@@ -4,8 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.SystemClock
-import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
@@ -141,8 +139,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             })
           }
           .doOnError { t ->
-            CrashLogger.logException(
-                Exception("Encountered onError when fetching stocks", t))
             var scheduled = false
             if (t is CompositeException) {
               for (exception in t.exceptions) {
@@ -174,7 +170,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   private fun retryWithBackoff() {
     val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
     backOffAttemptCount++
-    scheduleUpdate(SystemClock.elapsedRealtime() + backOffTime)
+    scheduleUpdate(Tools.clock().elapsedRealtime() + backOffTime)
   }
 
   internal fun sendBroadcast(refresh: Boolean = false) {
@@ -345,7 +341,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       fetched = createTimeString(time)
     } else {
-      fetched = ""
+      fetched = "--"
     }
     return fetched
   }
@@ -353,7 +349,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal fun createTimeString(time: ZonedDateTime): String {
     val fetched: String
     val fetchedDayOfWeek = time.dayOfWeek.value
-    val today = ZonedDateTime.now().dayOfWeek.value
+    val today = Tools.clock().todayZoned().dayOfWeek.value
     if (today == fetchedDayOfWeek) {
       fetched = Tools.TIME_FORMATTER.format(time)
     } else {
