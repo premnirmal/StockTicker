@@ -4,5 +4,6 @@ code=0
 if [ $? != 0 ] ; then
   code=1
 fi
-cp -r app/build/reports/tests/ $CIRCLE_ARTIFACTS
+cp -r app/build/reports/tests/ $CIRCLE_TEST_REPORTS/junit/
+cp -r app/build/test-results/testPureflossDebugUnitTest/ $CIRCLE_TEST_REPORTS/junit/
 exit $code

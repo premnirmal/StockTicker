@@ -6,23 +6,23 @@ import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
+import org.threeten.bp.ZoneOffset
 import org.threeten.bp.ZonedDateTime
 
 class AlarmSchedulerTest : BaseUnitTest() {
 
   companion object {
-    val TIME_1 = 1494857100000L // Monday 05/15/2017 10:05
-    val TIME_2 = 1494684300000L // Saturday 05/13/2017 10:05
-    val TIME_3 = 1494770700000L // Sunday 05/14/2017 10:05
-    val TIME_4 = 1494972000000L // Tuesday 05/16/2017 18:00
-    val TIME_5 = 1494626400000L // Friday 05/12/2017 18:00
+    val TIME_1 = 1494842700000L // Monday 05/15/2017 10:05
+    val TIME_2 = 1494669900000L // Saturday 05/13/2017 10:05
+    val TIME_3 = 1494756300000L // Sunday 05/14/2017 10:05
+    val TIME_4 = 1494957600000L // Tuesday 05/16/2017 18:00
+    val TIME_5 = 1494612000000L // Friday 05/12/2017 18:00
 
-    val FLIP_TIME_1 = 1494900000000L // Monday 05/15/2017 22:00
-    val FLIP_TIME_2 = 1494727200000L // Saturday 05/13/2017 22:00
-    val FLIP_TIME_3 = 1494813600000L // Sunday 05/14/2017 22:00
-    val FLIP_TIME_4 = 1494928800000L // Tuesday 05/16/2017 06:00
-    val FLIP_TIME_5 = 1494583200000L // Friday 05/12/2017 06:00
+    val FLIP_TIME_1 = 1494885600000L // Monday 05/15/2017 22:00
+    val FLIP_TIME_2 = 1494712800000L // Saturday 05/13/2017 22:00
+    val FLIP_TIME_3 = 1494799200000L // Sunday 05/14/2017 22:00
+    val FLIP_TIME_4 = 1494914400000L // Tuesday 05/16/2017 06:00
+    val FLIP_TIME_5 = 1494568800000L // Friday 05/12/2017 06:00
   }
 
   private fun setStartAndEndTime(startTime: String, endTime: String) {
@@ -37,8 +37,8 @@ class AlarmSchedulerTest : BaseUnitTest() {
 
   private fun setNow(now: Long) {
     val instant = Instant.ofEpochMilli(now)
-    val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
+    val localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC)
     val clock = Tools.clock()
     `when`(clock.currentTimeMillis()).thenReturn(now)
     `when`(clock.elapsedRealtime()).thenReturn(now)
