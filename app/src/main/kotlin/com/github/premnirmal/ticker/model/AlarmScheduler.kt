@@ -77,44 +77,6 @@ internal class AlarmScheduler {
             Tools.clock().todayZoned().toInstant().toEpochMilli()
       }
       return msToNextAlarm
-
-//      var set = false
-//
-//      if (hourOfDay > endTimez[0] || hourOfDay == endTimez[0] && minuteOfHour > endTimez[1]) {
-//        mutableDateTime = mutableDateTime.plusDays(1)
-//            .withHour(startTimez[0])
-//            .withMinute(startTimez[1])
-//        set = true
-//      } else if (dayOfWeek <= DayOfWeek.FRIDAY && (hourOfDay < startTimez[0] || hourOfDay == startTimez[0] && minuteOfHour < startTimez[1])) {
-//        mutableDateTime = mutableDateTime.withHour(startTimez[0])
-//            .withMinute(startTimez[1])
-//        return mutableDateTime.toInstant().toEpochMilli() - Tools.clock().todayZoned().toInstant().toEpochMilli()
-//      }
-//
-//      if (set && dayOfWeek == DayOfWeek.FRIDAY) {
-//        mutableDateTime = mutableDateTime.plusDays(2)
-//      }
-//
-//      if (dayOfWeek > DayOfWeek.FRIDAY) {
-//        if (dayOfWeek == DayOfWeek.SATURDAY) {
-//          mutableDateTime = mutableDateTime.plusDays(if (set) 1 else 2)
-//        } else if (dayOfWeek == DayOfWeek.SUNDAY) {
-//          if (!set) {
-//            mutableDateTime = mutableDateTime.plusDays(1)
-//          }
-//        }
-//        if (!set) {
-//          set = true
-//          mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
-//        }
-//      }
-//      val msToNextAlarm: Long
-//      if (set) {
-//        msToNextAlarm = mutableDateTime.toInstant().toEpochMilli() - Tools.clock().todayZoned().toInstant().toEpochMilli()
-//      } else {
-//        msToNextAlarm = Tools.updateInterval
-//      }
-//      return msToNextAlarm
     }
 
     internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
