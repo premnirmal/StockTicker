@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Removed start time &lt; end time restriction</item>
-    <item>You can rearrange your stocks by going to Menu -> Rearrange Stocks</item>
+    <item>Fixes related to scheduling.</item>
+    <item>Removed start time &lt; end time restriction.</item>
+    <item>You can rearrange your stocks by going to Menu -> Rearrange Stocks.</item>
   </string-array>
 </resources>

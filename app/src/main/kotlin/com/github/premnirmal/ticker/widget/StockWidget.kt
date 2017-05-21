@@ -39,6 +39,7 @@ class StockWidget() : AppWidgetProvider() {
     if (!injected) {
       Injector.inject(this)
       injected = true
+      stocksProvider.fetch().subscribe(SimpleSubscriber())
     }
     super.onReceive(context, intent)
     Analytics.trackWidgetUpdate("onReceive")
@@ -79,8 +80,8 @@ class StockWidget() : AppWidgetProvider() {
     if (!injected) {
       Injector.inject(this)
       injected = true
+      stocksProvider.fetch().subscribe(SimpleSubscriber())
     }
-    stocksProvider.fetch().subscribe(SimpleSubscriber())
   }
 
   override fun onDisabled(context: Context?) {

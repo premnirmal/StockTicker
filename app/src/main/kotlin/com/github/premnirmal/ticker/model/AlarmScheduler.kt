@@ -60,7 +60,7 @@ internal class AlarmScheduler {
       val msToNextAlarm: Long
       if (now.isBefore(endTime) && now.isAfter(startTime) && dayOfWeek <= FRIDAY) {
         msToNextAlarm = Tools.updateInterval
-      } else if (!inverse && now.isBefore(startTime)) {
+      } else if (!inverse && now.isBefore(startTime) && dayOfWeek <= FRIDAY) {
         mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
         msToNextAlarm = mutableDateTime.toInstant().toEpochMilli() -
             Tools.clock().todayZoned().toInstant().toEpochMilli()
