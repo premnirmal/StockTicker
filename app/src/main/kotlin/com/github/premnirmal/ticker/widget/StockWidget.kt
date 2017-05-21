@@ -39,7 +39,6 @@ class StockWidget() : AppWidgetProvider() {
     if (!injected) {
       Injector.inject(this)
       injected = true
-      stocksProvider.fetch().subscribe(SimpleSubscriber())
     }
     super.onReceive(context, intent)
     Analytics.trackWidgetUpdate("onReceive")
