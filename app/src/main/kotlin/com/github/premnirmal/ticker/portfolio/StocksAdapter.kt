@@ -17,10 +17,10 @@ import java.util.ArrayList
  * Created by premnirmal on 2/29/16.
  */
 internal class StocksAdapter(stocksProvider: IStocksProvider,
-    private val listener: StocksAdapter.OnStockClickListener) : RecyclerView.Adapter<PortfolioVH>() {
+    private val listener: StocksAdapter.QuoteClickListener) : RecyclerView.Adapter<PortfolioVH>() {
 
-  internal interface OnStockClickListener {
-    fun onClick(view: View, quote: Quote, position: Int)
+  internal interface QuoteClickListener {
+    fun onClickQuote(view: View, quote: Quote, position: Int)
   }
 
   companion object {

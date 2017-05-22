@@ -26,7 +26,6 @@ open class StocksApp : Application() {
           val md = MessageDigest.getInstance("SHA")
           md.update(signature.toByteArray())
           val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT).trim()
-          CrashLogger.log(currentSignature)
           return currentSignature
         }
       } catch (e: Exception) {

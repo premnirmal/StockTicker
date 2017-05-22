@@ -24,7 +24,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
   @Throws(Exception::class) abstract fun updateView(quote: Quote)
 
   @Throws(Exception::class)
-  fun update(quote: Quote?, listener: StocksAdapter.OnStockClickListener) {
+  fun update(quote: Quote?, listener: StocksAdapter.QuoteClickListener) {
     if (quote == null) {
       return
     }
@@ -32,7 +32,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     val position = adapterPosition
     itemView.findViewById(
         R.id.more_menu).setOnClickListener { v ->
-      listener.onClick(v, quote, position)
+      listener.onClickQuote(v, quote, position)
     }
 
     val tickerView = itemView.findViewById(R.id.ticker) as TextView

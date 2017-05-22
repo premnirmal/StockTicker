@@ -167,6 +167,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
   }
 
+  override fun schedule() {
+    sendBroadcast()
+  }
+
   private fun retryWithBackoff() {
     val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
     backOffAttemptCount++

@@ -25,7 +25,6 @@ import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.InAppMessage
 import com.github.premnirmal.ticker.Injector
-import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -313,7 +312,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           } else {
             preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply()
             startTimePref.summary = newValue.toString()
-            stocksProvider.fetch().subscribe(SimpleSubscriber())
+            stocksProvider.schedule()
             InAppMessage.showMessage(this@SettingsActivity, R.string.start_time_updated)
             return true
           }
@@ -341,7 +340,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           } else {
             preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply()
             endTimePref.summary = newValue.toString()
-            stocksProvider.fetch().subscribe(SimpleSubscriber())
+            stocksProvider.schedule()
             InAppMessage.showMessage(this@SettingsActivity, R.string.end_time_updated)
             return true
           }

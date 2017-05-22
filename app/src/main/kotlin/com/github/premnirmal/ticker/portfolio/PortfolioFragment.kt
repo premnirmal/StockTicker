@@ -18,11 +18,10 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
+import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
@@ -34,13 +33,12 @@ import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
 import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
 import rx.android.schedulers.AndroidSchedulers
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class PortfolioFragment : BaseFragment(), OnStockClickListener {
+open class PortfolioFragment : BaseFragment(), QuoteClickListener {
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
@@ -50,7 +48,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   /**
    * Using this injection holder because in unit tests, we use a mockito subclass of this fragment.
-   * Without this holder, dagger is unable to inject depedencies into this class.
+   * Without this holder, dagger is unable to inject dependencies into this class.
    */
   class InjectionHolder {
     @Inject
@@ -69,10 +67,10 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   private var attemptingFetch = false
   private var fetchCount = 0
   private val stocksAdapter by lazy {
-    StocksAdapter(holder.stocksProvider, this as OnStockClickListener)
+    StocksAdapter(holder.stocksProvider, this as QuoteClickListener)
   }
 
-  override fun onClick(view: View, quote: Quote, position: Int) {
+  override fun onClickQuote(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
     if (quote.isIndex()) {
@@ -108,17 +106,9 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   override fun onResume() {
     super.onResume()
-    bind(holder.bus.forEventType(NoNetworkEvent::class.java))
-        .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
-          noNetwork(event)
-          swipe_container.isRefreshing = false
-        }
-
     bind(holder.bus.forEventType(RefreshEvent::class.java))
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
+        .subscribe { _ ->
           update()
         }
     if (listViewState != null) {
@@ -131,7 +121,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
-    val view = inflater.inflate(R.layout.portfolio_fragment, null)
+    val view = inflater.inflate(R.layout.portfolio_fragment, container, false)
     return view
   }
 
@@ -167,9 +157,6 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
       }
     }
 
-    if (!Tools.isNetworkOnline(context.applicationContext)) {
-      noNetwork(NoNetworkEvent())
-    }
     if (savedInstanceState != null) {
       listViewState = savedInstanceState.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
     }
@@ -236,7 +223,7 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     }
   }
 
-  internal fun noNetwork(event: NoNetworkEvent) {
+  internal fun noNetwork() {
     InAppMessage.showMessage(fragment_root, getString(R.string.no_network_message))
   }
 

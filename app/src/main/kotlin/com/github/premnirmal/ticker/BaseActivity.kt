@@ -79,7 +79,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   protected fun showDialog(message: String): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
-        .setNeutralButton("OK", { dialogInterface: DialogInterface, i: Int -> }).show()
+        .setNeutralButton("OK", { _: DialogInterface, _: Int -> }).show()
   }
 
   protected fun showDialog(message: String,
