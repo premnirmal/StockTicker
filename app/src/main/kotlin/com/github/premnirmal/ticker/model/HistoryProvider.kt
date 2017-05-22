@@ -6,7 +6,7 @@ import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.QueryCreator
 import com.github.premnirmal.ticker.network.data.historicaldata.History
-import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.LocalDateTime
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -27,8 +27,8 @@ import javax.inject.Singleton
   }
 
   override fun getHistory(ticker: String, range: Range): Observable<History> {
-    val now = Tools.clock().todayZoned()
-    val from: ZonedDateTime
+    val now = Tools.clock().todayLocal()
+    val from: LocalDateTime
     when (range) {
       Range.ONE_MONTH -> from = now.minusMonths(1)
       Range.THREE_MONTH -> from = now.minusMonths(3)

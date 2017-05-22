@@ -42,22 +42,23 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     nameView.text = quote.name
 
     val change: Float = quote.change
-    val changeInPercent = itemView.findViewById(R.id.changePercent) as StockFieldView
-    changeInPercent.setText(quote.changePercentString())
-    val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
-    changeValue.setText(quote.changeString())
+    val changePercent: Float = quote.changeinPercent
+    val changeInPercentView = itemView.findViewById(R.id.changePercent) as StockFieldView
+    changeInPercentView.setText(quote.changePercentString())
+    val changeValueView = itemView.findViewById(R.id.changeValue) as StockFieldView
+    changeValueView.setText(quote.changeString())
     val totalValueText = itemView.findViewById(R.id.totalValue) as TextView
     totalValueText.text = quote.priceString()
 
     val color: Int
-    if (change >= 0) {
-      color = positiveColor
-    } else {
+    if (change < 0f || changePercent < 0f) {
       color = negativeColor
+    } else {
+      color = positiveColor
     }
 
-    changeInPercent.setTextColor(color)
-    changeValue.setTextColor(color)
+    changeInPercentView.setTextColor(color)
+    changeValueView.setTextColor(color)
 
     updateView(quote)
   }
@@ -78,7 +79,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
       val dayChangeAmountView = itemView.findViewById(R.id.day_change_amount) as StockFieldView
 
       val holdings = quote.holdingsString()
-      holdingsView.setText("$holdings")
+      holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
       if (gainLossAmount >= 0) {

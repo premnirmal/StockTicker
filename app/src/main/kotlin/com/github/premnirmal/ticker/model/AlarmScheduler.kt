@@ -63,7 +63,7 @@ internal class AlarmScheduler {
       } else if (!inverse && now.isBefore(startTime) && dayOfWeek <= FRIDAY) {
         mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
         msToNextAlarm = mutableDateTime.toInstant().toEpochMilli() -
-            Tools.clock().todayZoned().toInstant().toEpochMilli()
+            now.toInstant().toEpochMilli()
       } else {
         mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
         if (dayOfWeek == FRIDAY) {
@@ -74,7 +74,7 @@ internal class AlarmScheduler {
           mutableDateTime = mutableDateTime.plusDays(1)
         }
         msToNextAlarm = mutableDateTime.toInstant().toEpochMilli() -
-            Tools.clock().todayZoned().toInstant().toEpochMilli()
+            now.toInstant().toEpochMilli()
       }
       return msToNextAlarm
     }
