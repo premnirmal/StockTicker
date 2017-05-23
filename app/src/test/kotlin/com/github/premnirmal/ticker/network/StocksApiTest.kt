@@ -22,14 +22,12 @@ class StocksApiTest : BaseUnitTest() {
     val TEST_TICKER_LIST = arrayListOf<String>("SPY", "GOOG", "MSFT", "DIA", "AAPL")
   }
 
-  lateinit var yahooFinance: YahooFinance
   lateinit var robinhood: Robindahood
   lateinit var mockPrefs: SharedPreferences
 
   val stocksApi = StocksApi()
 
   @Before fun initMocks() {
-    yahooFinance = Mocker.provide(YahooFinance::class.java)
     robinhood = Mocker.provide(Robindahood::class.java)
     mockPrefs = Mocker.provide(SharedPreferences::class.java)
     val listType = object : TypeToken<List<QuoteNet>>() {}.type

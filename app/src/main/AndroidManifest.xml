@@ -39,11 +39,6 @@
         android:name="com.github.premnirmal.ticker.portfolio.EditPositionActivity"
         android:label="@string/edit_position"/>
     <activity
-        android:name="com.github.premnirmal.ticker.portfolio.GraphActivity"
-        android:label="@string/portfolio"
-        android:screenOrientation="landscape"
-        android:theme="@style/GraphActivityTheme"/>
-    <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
         android:label="@string/action_Settings">
       <intent-filter>

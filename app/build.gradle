@@ -191,7 +191,6 @@ dependencies {
   compile "com.jakewharton.threetenabp:threetenabp:1.0.5"
 
   compile "com.nbsp:library:1.2"
-  compile "com.github.PhilJay:MPAndroidChart:v2.2.3"
   compile "uk.co.chrisjenx:calligraphy:2.1.0"
   devCompile "com.jakewharton.timber:timber:4.3.1"
 

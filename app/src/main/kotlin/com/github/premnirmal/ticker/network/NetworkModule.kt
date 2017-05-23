@@ -2,8 +2,6 @@ package com.github.premnirmal.ticker.network
 
 import android.content.Context
 import com.github.premnirmal.ticker.RxBus
-import com.github.premnirmal.ticker.model.HistoryProvider
-import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
@@ -66,21 +64,6 @@ class NetworkModule {
   @Provides @Singleton
   internal fun provideStocksApi(): StocksApi {
     return StocksApi()
-  }
-
-  @Provides @Singleton
-  internal fun provideYahooFinance(context: Context,
-      @Named("yahooClient") okHttpClient: OkHttpClient,
-      converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): YahooFinance {
-    val Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(context.getString(R.string.yahoo_endpoint))
-        .addCallAdapterFactory(rxJavaFactory)
-        .addConverterFactory(converterFactory)
-        .build()
-    val yahooFinance = Retrofit.create(YahooFinance::class.java)
-    return yahooFinance
   }
 
   @Provides @Singleton
@@ -149,11 +132,6 @@ class NetworkModule {
   @Provides @Singleton
   internal fun provideStocksProvider(): IStocksProvider {
     return StocksProvider()
-  }
-
-  @Provides @Singleton
-  internal fun provideHistoryProvider(): IHistoryProvider {
-    return HistoryProvider()
   }
 
 }

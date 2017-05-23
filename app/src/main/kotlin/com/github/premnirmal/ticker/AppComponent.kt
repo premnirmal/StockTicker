@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker
 
-import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.RequestInterceptor
@@ -8,7 +7,6 @@ import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
-import com.github.premnirmal.ticker.portfolio.GraphActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.TickerSelectorActivity
 import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
@@ -33,8 +31,6 @@ interface AppComponent {
 
   fun inject(stocksProvider: StocksProvider)
 
-  fun inject(historyProvider: HistoryProvider)
-
   fun inject(stocksApi: StocksApi)
 
   fun inject(paranormalActivity: ParanormalActivity)
@@ -52,8 +48,6 @@ interface AppComponent {
   fun inject(updateReceiver: UpdateReceiver)
 
   fun inject(refreshReceiver: RefreshReceiver)
-
-  fun inject(graphActivity: GraphActivity)
 
   fun inject(rearrangeActivity: RearrangeActivity)
 

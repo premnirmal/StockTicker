@@ -73,23 +73,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener {
   override fun onClickQuote(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-    if (quote.isIndex()) {
-      popupWindow.menu.findItem(R.id.graph).isEnabled = false
-      popupWindow.menu.findItem(R.id.positions).isEnabled = false
-    } else {
-      popupWindow.menu.findItem(R.id.graph).isEnabled = true
-      popupWindow.menu.findItem(R.id.positions).isEnabled = true
-    }
     bind(RxPopupMenu.itemClicks(popupWindow))
         .subscribe(object : SimpleSubscriber<MenuItem>() {
           override fun onNext(result: MenuItem) {
             val itemId = result.itemId
             when (itemId) {
-              R.id.graph -> {
-                val intent = Intent(activity, GraphActivity::class.java)
-                intent.putExtra(GraphActivity.GRAPH_DATA, quote)
-                activity.startActivity(intent)
-              }
               R.id.positions -> {
                 val intent = Intent(activity, EditPositionActivity::class.java)
                 intent.putExtra(EditPositionActivity.TICKER, quote.symbol)

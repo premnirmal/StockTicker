@@ -18,7 +18,6 @@
   <string name="action_update">Refresh Now</string>
   <string name="are_you_sure">Are you sure?</string>
 
-  <string name="yahoo_endpoint">https://query.yahooapis.com/v1/public/</string>
   <string name="robindahood_endpoint">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint">https://s.yimg.com/aq/</string>
   <string name="add_ticker">Add Ticker</string>
@@ -50,9 +49,6 @@
   <string name="ticker_import_fail">Error importing quotes</string>
   <string name="no_network_message">No network connection</string>
   <string name="refresh_failed">Refresh failed</string>
-  <string name="one_month">1 month</string>
-  <string name="three_month">3 month</string>
-  <string name="one_year">1 year</string>
   <string name="error_fetching_suggestions">Error fetching suggestions</string>
   <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
   <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
@@ -83,7 +79,6 @@
   <string name="enable_google_finance">Enable alternate finance API?</string>
   <string name="enable_google_finance_desc">In beta. Please disable if it doesn\'t give accurate quotes.</string>
   <string name="edit_positions">Edit Positions</string>
-  <string name="view_graph">View Graph</string>
   <string name="add_stock">Add Stock</string>
   <string name="holdings">Holdings</string>
   <string name="gain_loss">Gain/Loss</string>
