@@ -27,9 +27,6 @@
       </intent-filter>
     </activity>
     <activity
-        android:name="com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity"
-        android:label="@string/portfolio"/>
-    <activity
         android:name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity"
         android:label="@string/add_ticker"/>
     <activity

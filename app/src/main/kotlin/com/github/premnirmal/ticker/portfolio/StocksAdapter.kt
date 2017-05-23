@@ -4,22 +4,26 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.premnirmal.ticker.CrashLogger
+import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
-import com.github.premnirmal.tickerwidget.BuildConfig
+import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperAdapter
+import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/29/16.
  */
-internal class StocksAdapter(stocksProvider: IStocksProvider,
-    private val listener: StocksAdapter.QuoteClickListener) : RecyclerView.Adapter<PortfolioVH>() {
+class StocksAdapter constructor(
+    private val listener: StocksAdapter.QuoteClickListener,
+    private val dragStartListener: OnStartDragListener)
+  : RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
 
-  internal interface QuoteClickListener {
+  interface QuoteClickListener {
     fun onClickQuote(view: View, quote: Quote, position: Int)
   }
 
@@ -31,7 +35,10 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
 
   private val quoteList: MutableList<Quote>
 
+  @Inject lateinit internal var stocksProvider: IStocksProvider
+
   init {
+    Injector.inject(this)
     quoteList = ArrayList(stocksProvider.getStocks())
   }
 
@@ -76,14 +83,10 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
   }
 
   override fun onBindViewHolder(holder: PortfolioVH, position: Int) {
-    try {
-      holder.update(quoteList[position], listener)
-    } catch (e: Exception) {
-      if (BuildConfig.DEBUG) {
-        throw e
-      } else {
-        CrashLogger.logException(e)
-      }
+    holder.update(quoteList[position], listener)
+    holder.itemView.setOnLongClickListener {
+      dragStartListener.onStartDrag(holder)
+      true
     }
   }
 
@@ -93,5 +96,17 @@ internal class StocksAdapter(stocksProvider: IStocksProvider,
 
   override fun getItemCount(): Int {
     return quoteList.size
+  }
+
+  override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+    quoteList.add(toPosition, quoteList.removeAt(fromPosition))
+    val newTickerList = quoteList.mapTo(ArrayList<String>()) { it.symbol }
+    stocksProvider.rearrange(newTickerList)
+    notifyItemMoved(fromPosition, toPosition)
+    return true
+  }
+
+  override fun onItemDismiss(position: Int) {
+
   }
 }

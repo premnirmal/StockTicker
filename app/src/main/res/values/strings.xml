@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <string name="portfolio">Portfolio</string>
-  <string name="widget_label">A StockWidget</string>
-  <string name="version">Version</string>
+  <string name="robindahood_endpoint">https://robindahood.com/api/</string>
+  <string name="suggestions_endpoint">https://s.yimg.com/aq/</string>
 
+  <string name="portfolio">Portfolio</string>
+  <string name="widget_label">StocksWidget</string>
   <string name="action_add">Add</string>
   <string name="action_export">Export Quotes</string>
   <string name="action_share">Share Portfolio</string>
@@ -17,9 +18,6 @@
   <string name="action_rearrage">Rearrange Stocks</string>
   <string name="action_update">Refresh Now</string>
   <string name="are_you_sure">Are you sure?</string>
-
-  <string name="robindahood_endpoint">https://robindahood.com/api/</string>
-  <string name="suggestions_endpoint">https://s.yimg.com/aq/</string>
   <string name="add_ticker">Add Ticker</string>
   <string name="dotdotdot">…</string>
   <string name="text_size">Text Size</string>
@@ -52,8 +50,6 @@
   <string name="error_fetching_suggestions">Error fetching suggestions</string>
   <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
   <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
-  <string name="autosort_disabled">Autosort has been disabled. You can re-enable autosort in settings.</string>
-  <string name="rearrange">Rearrange</string>
   <string name="only_updates_on_weekdays">Only updates on weekdays</string>
   <string name="end_time_updated">End time updated</string>
   <string name="start_time_updated">Start time updated</string>
@@ -70,7 +66,6 @@
   <string name="remove">Remove</string>
   <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
   <string name="no_symbols_in_portfolio">No symbols in portfolio.</string>
-
   <string name="like_our_app">Like our app?</string>
   <string name="please_rate">Please rate us on the PlayStore, we would love to hear what you have to say!</string>
   <string name="yes">Yes</string>

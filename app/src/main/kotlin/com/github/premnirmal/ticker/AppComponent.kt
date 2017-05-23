@@ -8,8 +8,8 @@ import com.github.premnirmal.ticker.network.UserAgentInterceptor
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
+import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.TickerSelectorActivity
-import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -49,8 +49,6 @@ interface AppComponent {
 
   fun inject(refreshReceiver: RefreshReceiver)
 
-  fun inject(rearrangeActivity: RearrangeActivity)
-
   fun inject(addPositionActivity: AddPositionActivity)
 
   fun inject(editPositionActivity: EditPositionActivity)
@@ -58,5 +56,7 @@ interface AppComponent {
   fun inject(interceptor: RequestInterceptor)
 
   fun inject(interceptor: UserAgentInterceptor)
+
+  fun inject(stocksAdapter: StocksAdapter)
 
 }

@@ -14,7 +14,6 @@
       android:layout_gravity="center_vertical"
       android:layout_marginBottom="2dp"
       android:layout_marginLeft="5dp"
-      android:layout_marginRight="5dp"
       android:orientation="horizontal"
       >
     <TextView
@@ -43,7 +42,6 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="right"
-          android:layout_marginRight="5dp"
           android:ellipsize="none"
           android:gravity="right"
           android:maxLines="1"
@@ -52,7 +50,7 @@
           tools:text="Last fetch: 10:00"
           />
       <FrameLayout
-          android:layout_width="12dp"
+          android:layout_width="22dp"
           android:layout_height="12dp"
           android:layout_gravity="center_vertical"
           >
@@ -60,6 +58,8 @@
             android:id="@+id/refresh_icon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:src="@drawable/ic_refresh"
             />
         <ProgressBar
@@ -67,6 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:indeterminateTint="@android:color/darker_gray"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:progressTint="@android:color/darker_gray"
             android:visibility="gone"
             />
