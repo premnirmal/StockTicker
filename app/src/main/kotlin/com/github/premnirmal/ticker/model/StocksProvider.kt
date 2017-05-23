@@ -116,6 +116,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           .observeOn(AndroidSchedulers.mainThread())
     } else {
       return api.getStocks(tickerList)
+          .doOnSubscribe {
+            Tools.setRefreshing(true)
+            AlarmScheduler.sendBroadcast(context)
+          }
           .map { stocks ->
             if (stocks.isEmpty()) {
               bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
@@ -133,12 +137,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             }
           }
           .doOnNext { stocks ->
+            Tools.setRefreshing(false)
             synchronized(quoteList, {
               backOffAttemptCount = 0
               sendBroadcast(true)
             })
           }
           .doOnError { t ->
+            Tools.setRefreshing(false)
             var scheduled = false
             if (t is CompositeException) {
               for (exception in t.exceptions) {
@@ -193,6 +199,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       nextFetch = updateTime.toInstant().toEpochMilli()
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
     }
+    Tools.setRefreshing(false)
     AlarmScheduler.sendBroadcast(context)
     if (refresh) {
       bus.post(RefreshEvent())

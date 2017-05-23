@@ -24,7 +24,6 @@ import org.threeten.bp.ZonedDateTime
 internal class AlarmScheduler {
 
   companion object {
-    val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
 
     /**
      * Takes care of weekends and after hours
@@ -84,7 +83,7 @@ internal class AlarmScheduler {
       Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
           "UpdateScheduled for " + nextAlarm / (1000 * 60) + " minutes")
       val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
-      updateReceiverIntent.action = UPDATE_FILTER
+      updateReceiverIntent.action = Tools.UPDATE_FILTER
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
           updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)

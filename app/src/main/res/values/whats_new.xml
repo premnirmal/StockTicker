@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Widget color fixes.</item>
-    <item>Fixes related to scheduling.</item>
+    <item>Added refresh icon to widget.</item>
     <item>Removed start time &lt; end time restriction.</item>
     <item>You can rearrange your stocks by going to Menu -> Rearrange Stocks.</item>
   </string-array>

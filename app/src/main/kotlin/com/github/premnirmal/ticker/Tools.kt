@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Environment
+import android.support.annotation.ColorRes
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import org.threeten.bp.format.DateTimeFormatter
@@ -45,6 +46,7 @@ class Tools private constructor() {
     const val SETTING_SHARE = "SETTING_IMPORT"
     const val SETTING_NUKE = "SETTING_NUKE"
     const val WIDGET_BG = "WIDGET_BG"
+    const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
     const val TEXT_COLOR = "TEXT_COLOR"
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
@@ -56,6 +58,8 @@ class Tools private constructor() {
     const val TRANSLUCENT = 1
     const val DARK = 2
     const val LIGHT = 3
+
+    const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
 
     val instance: Tools by lazy {
       Tools()
@@ -130,6 +134,29 @@ class Tools private constructor() {
         LIGHT -> return R.drawable.light_widget_bg
         else -> return R.drawable.transparent_widget_bg
       }
+    }
+
+    @ColorRes fun positiveTextColor(): Int {
+      val bgPref = instance.sharedPreferences.getInt(WIDGET_BG, TRANSPARENT)
+      when (bgPref) {
+        TRANSLUCENT -> return R.color.positive_green
+        DARK -> return R.color.positive_green
+        LIGHT -> return R.color.positive_green_dark
+        else -> return R.color.positive_green
+      }
+    }
+
+    @ColorRes fun negativeTextColor(): Int {
+      return R.color.negative_red
+    }
+
+    fun isRefreshing(): Boolean {
+      val isRefreshing = instance.sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
+      return isRefreshing
+    }
+
+    fun setRefreshing(refreshing: Boolean) {
+      instance.sharedPreferences.edit().putBoolean(WIDGET_REFRESHING, refreshing).apply()
     }
 
     fun getFontSize(context: Context): Float {

@@ -13,6 +13,7 @@ import android.widget.RemoteViews
 import com.github.premnirmal.ticker.Analytics
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
+import com.github.premnirmal.ticker.RefreshReceiver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -134,7 +135,20 @@ class StockWidget() : AppWidgetProvider() {
     }
     appWidgetManager.updateAppWidget(ComponentName(context, StockWidget::class.java), remoteViews)
     appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.list)
-    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource",
-        Tools.getBackgroundResource())
+    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", Tools.getBackgroundResource())
+    // Refresh icon and progress
+    val refreshing = Tools.isRefreshing()
+    if (refreshing) {
+      remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE)
+      remoteViews.setViewVisibility(R.id.refresh_icon, View.GONE)
+    } else {
+      remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
+      remoteViews.setViewVisibility(R.id.refresh_icon, View.VISIBLE)
+    }
+    val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
+    updateReceiverIntent.action = Tools.UPDATE_FILTER
+    val refreshPendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
+        updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+    remoteViews.setOnClickPendingIntent(R.id.refresh_icon, refreshPendingIntent)
   }
 }
