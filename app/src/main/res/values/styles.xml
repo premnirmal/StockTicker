@@ -32,6 +32,10 @@
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
+  <style name="AvenirTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Avenir-Bold.otf</item>
+  </style>
+
   <style name="ButtonStyle" parent="android:Widget.Button">
     <item name="android:textSize">@dimen/button_text</item>
     <item name="android:textColor">@android:color/white</item>
@@ -51,10 +55,6 @@
 
   <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
     <item name="android:textSize">34sp</item>
-  </style>
-
-  <style name="VersionNameText" parent="android:Widget.TextView">
-    <item name="fontPath">fonts/Avenir-Bold.otf</item>
   </style>
 
   <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">

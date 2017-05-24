@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperViewHolder
 import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
@@ -11,7 +12,8 @@ import com.github.premnirmal.tickerwidget.R.color
 /**
  * Created by premnirmal on 2/29/16.
  */
-internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
+    ItemTouchHelperViewHolder {
 
   protected val positiveColor: Int
   protected val negativeColor: Int
@@ -24,7 +26,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
   @Throws(Exception::class) abstract fun updateView(quote: Quote)
 
   @Throws(Exception::class)
-  fun update(quote: Quote?, listener: StocksAdapter.OnStockClickListener) {
+  fun update(quote: Quote?, listener: StocksAdapter.QuoteClickListener) {
     if (quote == null) {
       return
     }
@@ -32,7 +34,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     val position = adapterPosition
     itemView.findViewById(
         R.id.more_menu).setOnClickListener { v ->
-      listener.onClick(v, quote, position)
+      listener.onClickQuote(v, quote, position)
     }
 
     val tickerView = itemView.findViewById(R.id.ticker) as TextView
@@ -42,24 +44,33 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
     nameView.text = quote.name
 
     val change: Float = quote.change
-    val changeInPercent = itemView.findViewById(R.id.changePercent) as StockFieldView
-    changeInPercent.setText(quote.changePercentString())
-    val changeValue = itemView.findViewById(R.id.changeValue) as StockFieldView
-    changeValue.setText(quote.changeString())
+    val changePercent: Float = quote.changeinPercent
+    val changeInPercentView = itemView.findViewById(R.id.changePercent) as StockFieldView
+    changeInPercentView.setText(quote.changePercentString())
+    val changeValueView = itemView.findViewById(R.id.changeValue) as StockFieldView
+    changeValueView.setText(quote.changeString())
     val totalValueText = itemView.findViewById(R.id.totalValue) as TextView
     totalValueText.text = quote.priceString()
 
     val color: Int
-    if (change >= 0) {
-      color = positiveColor
-    } else {
+    if (change < 0f || changePercent < 0f) {
       color = negativeColor
+    } else {
+      color = positiveColor
     }
 
-    changeInPercent.setTextColor(color)
-    changeValue.setTextColor(color)
+    changeInPercentView.setTextColor(color)
+    changeValueView.setTextColor(color)
 
     updateView(quote)
+  }
+
+  override fun onItemSelected() {
+    itemView.alpha = 0.5f
+  }
+
+  override fun onItemClear() {
+    itemView.alpha = 1f
   }
 
   internal class StockVH(itemView: View) : PortfolioVH(itemView) {
@@ -78,7 +89,7 @@ internal abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(it
       val dayChangeAmountView = itemView.findViewById(R.id.day_change_amount) as StockFieldView
 
       val holdings = quote.holdingsString()
-      holdingsView.setText("$holdings")
+      holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
       if (gainLossAmount >= 0) {

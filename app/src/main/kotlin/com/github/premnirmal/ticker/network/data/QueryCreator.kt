@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network.data
 
-import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
 /**
@@ -10,7 +10,7 @@ object QueryCreator {
 
   val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")!!
 
-  fun buildHistoricalDataQuery(ticker: String, start: ZonedDateTime, end: ZonedDateTime): String {
+  fun buildHistoricalDataQuery(ticker: String, start: LocalDateTime, end: LocalDateTime): String {
     val stringBuilder = StringBuilder()
     stringBuilder.append(
         "select%20%2A%20from%20yahoo.finance.historicaldata%20where%20symbol%20=%20\"")

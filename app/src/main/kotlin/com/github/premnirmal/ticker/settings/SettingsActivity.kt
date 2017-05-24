@@ -105,7 +105,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false))
 
     val versionView = version
-    versionView.text = "v" + BuildConfig.VERSION_NAME
+    val vName = "v${BuildConfig.VERSION_NAME}"
+    versionView.text = vName
     setupSimplePreferencesScreen()
   }
 
@@ -125,8 +126,10 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       val nukePref = findPreference(Tools.SETTING_NUKE)
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), OnClickListener { dialog, which ->
+          val hasUserAlreadyRated = Tools.hasUserAlreadyRated()
           CrashLogger.logException(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
+          preferences.edit().putBoolean(Tools.DID_RATE, hasUserAlreadyRated).commit()
           System.exit(0)
         })
         true
@@ -284,19 +287,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     })
 
     run({
-      val refreshPreference = findPreference(Tools.SETTING_REFRESH_ON_UNLOCK) as CheckBoxPreference
-      val refresh = Tools.refreshEnabled()
-      refreshPreference.isChecked = refresh
-      refreshPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val checked = newValue as Boolean
-          preferences.edit().putBoolean(Tools.SETTING_REFRESH_ON_UNLOCK, checked).apply()
-          return true
-        }
-      }
-    })
-
-    run({
       val boldChangePreference = findPreference(Tools.BOLD_CHANGE) as CheckBoxPreference
       val bold = Tools.boldEnabled()
       boldChangePreference.isChecked = bold
@@ -315,13 +305,14 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       startTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
           val startTimez = Tools.timeAsIntArray(newValue.toString())
-          val timez = Tools.endTime()
-          if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
-            InAppMessage.showMessage(this@SettingsActivity, R.string.incorrect_time_update_error)
+          val endTimez = Tools.endTime()
+          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+            showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
             preferences.edit().putString(Tools.START_TIME, newValue.toString()).apply()
             startTimePref.summary = newValue.toString()
+            stocksProvider.schedule()
             InAppMessage.showMessage(this@SettingsActivity, R.string.start_time_updated)
             return true
           }
@@ -333,22 +324,23 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       val endTimePref = findPreference(Tools.END_TIME) as TimePreference
       endTimePref.summary = preferences.getString(Tools.END_TIME, "16:30")
       run({
-        val timez = Tools.endTime()
+        val endTimez = Tools.endTime()
         val startTimez = Tools.startTime()
-        if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
+        if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
           endTimePref.setSummary(R.string.incorrect_time_update_error)
         }
       })
       endTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val timez = Tools.timeAsIntArray(newValue.toString())
+          val endTimez = Tools.timeAsIntArray(newValue.toString())
           val startTimez = Tools.startTime()
-          if (timez[0] < startTimez[0] || (timez[0] == startTimez[0] && timez[1] <= startTimez[1])) {
-            InAppMessage.showMessage(this@SettingsActivity, R.string.incorrect_time_update_error)
+          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+            showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
             preferences.edit().putString(Tools.END_TIME, newValue.toString()).apply()
             endTimePref.summary = newValue.toString()
+            stocksProvider.schedule()
             InAppMessage.showMessage(this@SettingsActivity, R.string.end_time_updated)
             return true
           }
@@ -444,21 +436,21 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportTickers()
         } else {
-          showDialog("Cannot export tickers without permission to write to external storage")
+          showDialog("Cannot export quotes without permission to write to external storage")
         }
       }
       REQCODE_READ_EXTERNAL_STORAGE -> {
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           launchImportIntent()
         } else {
-          showDialog("Cannot import tickers without permission to read external storage")
+          showDialog("Cannot import quotes without permission to read external storage")
         }
       }
       REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportAndShareTickers()
         } else {
-          showDialog("Cannot share tickers without permission to write to external storage")
+          showDialog("Cannot share quotes without permission to write to external storage")
         }
       }
     }

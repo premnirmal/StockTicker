@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
-import java.util.Random
 import javax.inject.Inject
 
 /**
@@ -14,25 +13,20 @@ import javax.inject.Inject
  */
 class UpdateReceiver : BroadcastReceiver() {
 
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
-
-  @Inject
-  lateinit internal var preferences: SharedPreferences
-
-  internal val random = Random(System.currentTimeMillis())
+  @Inject lateinit internal var stocksProvider: IStocksProvider
+  @Inject lateinit internal var preferences: SharedPreferences
 
   override fun onReceive(context: Context, intent: Intent) {
     Injector.inject(this)
     val path = context.getString(R.string.package_replaced_string)
     val intentData = intent.dataString
-    if (path == intentData || "package:" + path == intentData) {
+    if (path == intentData ||
+        context.packageName == intentData ||
+        "package:" + path == intentData ||
+        "package:" + context.packageName == intentData
+        ) {
       stocksProvider.fetch().subscribe(SimpleSubscriber())
-      preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
       preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply()
-    } else if (random.nextInt() % 2 == 0) {
-      // randomly change this string so the user sees the animation
-      preferences.edit().putBoolean(Tools.FIRST_TIME_VIEWING_SWIPELAYOUT, true).apply()
     }
   }
 }

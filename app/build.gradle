@@ -152,7 +152,7 @@ kapt {
 }
 
 dependencies {
-  final SUPPORT_LIBRARY_VERSION = "25.2.0"
+  final SUPPORT_LIBRARY_VERSION = "25.3.1"
   final DAGGER_VERSION = "2.6.1"
   final DEXMAKER_VERSION = "1.4"
   final MOCKITO_VERSION = "2.7.5"
@@ -162,7 +162,7 @@ dependencies {
   final OKHTTP_VERSION = "3.5.0"
   final RXJAVA_VERSION = "2.1.0"
   final ROBOLECTRIC_VERSION = "3.2.2"
-  final PLAY_SERVICES_VERSION = "10.0.1"
+  final PLAY_SERVICES_VERSION = "10.2.1"
 
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
@@ -193,7 +193,6 @@ dependencies {
   compile "com.jakewharton.threetenabp:threetenabp:1.0.5"
 
   compile "com.nbsp:library:1.2"
-  compile "com.github.PhilJay:MPAndroidChart:v2.2.3"
   compile "uk.co.chrisjenx:calligraphy:2.1.0"
   devCompile "com.jakewharton.timber:timber:4.3.1"
 

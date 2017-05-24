@@ -31,4 +31,6 @@ interface IStocksProvider {
   fun nextFetch(): String
 
   fun fetch(): Observable<List<Quote>>
+
+  fun schedule()
 }

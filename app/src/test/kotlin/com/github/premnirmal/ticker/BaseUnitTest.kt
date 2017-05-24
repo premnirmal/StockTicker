@@ -4,7 +4,6 @@ import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.mock.RxSchedulersOverrideRule
 import com.github.premnirmal.ticker.mock.TestApplication
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.tools.Parser
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -16,6 +15,7 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.doNothing
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -54,13 +54,14 @@ abstract class BaseUnitTest : TestCase() {
   @Before override public fun setUp() {
     super.setUp()
     val iStocksProvider = Mocker.provide(IStocksProvider::class.java)
-    `when`(iStocksProvider.fetch()).thenReturn(Observable.never<List<Quote>>())
+    doNothing().`when`(iStocksProvider).schedule()
+    `when`(iStocksProvider.fetch()).thenReturn(Observable.never())
     `when`(iStocksProvider.getStocks()).thenReturn(emptyList())
     `when`(iStocksProvider.getTickers()).thenReturn(emptyList())
     `when`(iStocksProvider.addStock(ArgumentMatchers.anyString())).thenReturn(emptyList())
     `when`(iStocksProvider.removeStock(ArgumentMatchers.anyString())).thenReturn(emptyList())
-    `when`(iStocksProvider.lastFetched()).thenReturn("")
-    `when`(iStocksProvider.nextFetch()).thenReturn("")
+    `when`(iStocksProvider.lastFetched()).thenReturn("--")
+    `when`(iStocksProvider.nextFetch()).thenReturn("--")
   }
 
   fun parseJsonFile(fileName: String): JsonElement {

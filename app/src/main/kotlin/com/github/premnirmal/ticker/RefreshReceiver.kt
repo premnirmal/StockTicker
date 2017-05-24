@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.model.IStocksProvider
-import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle.MEDIUM
 import javax.inject.Inject
@@ -20,8 +19,8 @@ class RefreshReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     Injector.inject(this)
     Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
-        "RefreshReceived on " + DateTimeFormatter.ofLocalizedDateTime(MEDIUM).format(
-            LocalDateTime.now()))
+        "RefreshReceived on " + DateTimeFormatter.ofLocalizedDateTime(MEDIUM)
+            .format(Tools.clock().todayLocal()))
     stocksProvider.fetch().subscribe(SimpleSubscriber())
   }
 }

@@ -4,8 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.SystemClock
-import com.github.premnirmal.ticker.CrashLogger
 import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
@@ -26,6 +24,7 @@ import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.exceptions.CompositeException
 import io.reactivex.schedulers.Schedulers
+import retrofit2.HttpException
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
@@ -117,6 +116,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           .observeOn(AndroidSchedulers.mainThread())
     } else {
       return api.getStocks(tickerList)
+          .doOnSubscribe {
+            Tools.setRefreshing(true)
+            AlarmScheduler.sendBroadcast(context)
+          }
           .map { stocks ->
             if (stocks.isEmpty()) {
               bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
@@ -133,30 +136,51 @@ class StocksProvider @Inject constructor() : IStocksProvider {
               stocks
             }
           }
-          .doOnNext { stocks ->
+          .doOnNext { _ ->
+            Tools.setRefreshing(false)
             synchronized(quoteList, {
               backOffAttemptCount = 0
               sendBroadcast(true)
             })
           }
           .doOnError { t ->
-            CrashLogger.logException(
-                Exception("Encountered onError when fetching stocks", t))
-            val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
-            backOffAttemptCount++
-            scheduleUpdate(SystemClock.elapsedRealtime() + backOffTime)
+            Tools.setRefreshing(false)
+            var scheduled = false
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
                   bus.post(ErrorEvent(exception.message!!))
+                  if (exception.code < 500) {
+                    retryWithBackoff()
+                  }
+                  scheduled = true
                   break
                 }
+              }
+            }
+            if (!scheduled) {
+              if (t is HttpException) {
+                if (t.code() < 500) {
+                  retryWithBackoff()
+                }
+              } else {
+                retryWithBackoff()
               }
             }
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
     }
+  }
+
+  override fun schedule() {
+    sendBroadcast()
+  }
+
+  private fun retryWithBackoff() {
+    val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
+    backOffAttemptCount++
+    scheduleUpdate(Tools.clock().elapsedRealtime() + backOffTime)
   }
 
   internal fun sendBroadcast(refresh: Boolean = false) {
@@ -175,6 +199,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       nextFetch = updateTime.toInstant().toEpochMilli()
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
     }
+    Tools.setRefreshing(false)
     AlarmScheduler.sendBroadcast(context)
     if (refresh) {
       bus.post(RefreshEvent())
@@ -327,7 +352,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       fetched = createTimeString(time)
     } else {
-      fetched = ""
+      fetched = "--"
     }
     return fetched
   }
@@ -335,7 +360,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal fun createTimeString(time: ZonedDateTime): String {
     val fetched: String
     val fetchedDayOfWeek = time.dayOfWeek.value
-    val today = ZonedDateTime.now().dayOfWeek.value
+    val today = Tools.clock().todayZoned().dayOfWeek.value
     if (today == fetchedDayOfWeek) {
       fetched = Tools.TIME_FORMATTER.format(time)
     } else {

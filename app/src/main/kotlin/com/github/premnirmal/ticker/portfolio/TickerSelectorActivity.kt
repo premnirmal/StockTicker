@@ -17,10 +17,10 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_ticker_selector.toolbar
-import io.reactivex.Subscription
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.activity_ticker_selector.toolbar
 import javax.inject.Inject
 
 /**
@@ -34,7 +34,7 @@ class TickerSelectorActivity : BaseActivity() {
   @Inject
   lateinit internal var stocksProvider: IStocksProvider
 
-  internal var subscription: Subscription? = null
+  internal var disposable: Disposable? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -60,23 +60,30 @@ class TickerSelectorActivity : BaseActivity() {
       override fun afterTextChanged(s: Editable) {
         val query = s.toString().trim { it <= ' ' }.replace(" ".toRegex(), "")
         if (!query.isEmpty()) {
-          subscription?.unsubscribe()
+          disposable?.dispose()
+
           if (Tools.isNetworkOnline(applicationContext)) {
             val observable = suggestionApi.getSuggestions(query)
-            subscription = bind(observable)
+            bind(observable)
                 .map { suggestions -> suggestions.ResultSet?.Result }
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(object : SimpleSubscriber<List<Suggestion>>() {
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : SimpleSubscriber<List<Suggestion>?>() {
                   override fun onError(e: Throwable) {
                     CrashLogger.logException(e)
                     InAppMessage.showMessage(this@TickerSelectorActivity,
                         R.string.error_fetching_suggestions)
                   }
 
-                  override fun onNext(result: List<Suggestion>) {
-                    val suggestionList = result
-                    listView.adapter = SuggestionsAdapter(suggestionList)
+                  override fun onNext(result: List<Suggestion>?) {
+                    if (result != null) {
+                      val suggestionList = result
+                      listView.adapter = SuggestionsAdapter(suggestionList)
+                    }
+                  }
+
+                  override fun onSubscribe(d: Disposable) {
+                    disposable = d
                   }
                 })
           } else {

@@ -48,10 +48,7 @@ class ParanormalActivity : BaseActivity() {
           stringBuilder.append("\n")
         }
       }
-      AlertDialog.Builder(this).setTitle("What\'s new in Version " + BuildConfig.VERSION_NAME)
-          .setMessage(stringBuilder.toString())
-          .setNeutralButton("OK") { dialog, which -> dialog.dismiss() }
-          .show()
+      showDialog("What\'s new in v" + BuildConfig.VERSION_NAME, stringBuilder.toString())
     } else {
       maybeAskToRate()
     }

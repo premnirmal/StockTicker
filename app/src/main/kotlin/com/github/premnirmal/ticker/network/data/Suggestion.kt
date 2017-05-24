@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.network.data
 /**
  * Created by premnirmal on 3/30/17.
  */
-class Suggestion() {
+class Suggestion {
 
   //    symbol: "AAPL",
   //    name: "Apple Inc.",

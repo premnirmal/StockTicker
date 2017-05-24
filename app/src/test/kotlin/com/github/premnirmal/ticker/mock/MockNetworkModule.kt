@@ -2,12 +2,10 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import com.github.premnirmal.ticker.RxBus
-import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Robindahood
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.SuggestionApi
-import com.github.premnirmal.ticker.network.YahooFinance
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -31,14 +29,6 @@ class MockNetworkModule {
   @Provides @Singleton
   internal fun provideStocksApi(): StocksApi {
     return Mocker.provide(StocksApi::class.java)
-  }
-
-  @Provides @Singleton
-  internal fun provideYahooFinance(context: Context,
-      okHttpClient: OkHttpClient,
-      converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): YahooFinance {
-    return Mocker.provide(YahooFinance::class.java)
   }
 
   @Provides @Singleton
@@ -73,11 +63,6 @@ class MockNetworkModule {
   @Provides @Singleton
   internal fun provideStocksProvider(): IStocksProvider {
     return Mocker.provide(IStocksProvider::class.java)
-  }
-
-  @Provides @Singleton
-  internal fun provideHistoryProvider(): IHistoryProvider {
-    return Mocker.provide(IHistoryProvider::class.java)
   }
 
 }

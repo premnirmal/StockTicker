@@ -14,12 +14,15 @@
   <color name="translucent">#98000000</color>
   <color name="bg_gradient_center">#752a2a2a</color>
 
+  <color name="white">#ffffff</color>
   <color name="black">#000000</color>
   <color name="light">#fff3f3f3</color>
+  <color name="dark_progress">#323232</color>
   <color name="black_gradient_center">#3f3f3f</color>
 
   <color name="negative_red">#FF6666</color>
   <color name="positive_green">#CCFF66</color>
+  <color name="positive_green_dark">#009900</color>
 
   <color name="dark_text">#333333</color>
 

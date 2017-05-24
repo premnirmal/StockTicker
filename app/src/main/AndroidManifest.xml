@@ -27,9 +27,6 @@
       </intent-filter>
     </activity>
     <activity
-        android:name="com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity"
-        android:label="@string/portfolio"/>
-    <activity
         android:name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity"
         android:label="@string/add_ticker"/>
     <activity
@@ -38,11 +35,6 @@
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.EditPositionActivity"
         android:label="@string/edit_position"/>
-    <activity
-        android:name="com.github.premnirmal.ticker.portfolio.GraphActivity"
-        android:label="@string/portfolio"
-        android:screenOrientation="landscape"
-        android:theme="@style/GraphActivityTheme"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
         android:label="@string/action_Settings">
@@ -66,15 +58,6 @@
         <data
             android:path="@string/package_replaced_string"
             android:scheme="package"/>
-      </intent-filter>
-    </receiver>
-
-    <receiver
-        android:name="com.github.premnirmal.ticker.UnlockReceiver"
-        android:enabled="true"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.USER_PRESENT"/>
       </intent-filter>
     </receiver>
 

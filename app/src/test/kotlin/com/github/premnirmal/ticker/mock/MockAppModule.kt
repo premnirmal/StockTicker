@@ -2,10 +2,11 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.github.premnirmal.ticker.AppClock
 import com.github.premnirmal.ticker.RxBus
+import com.github.premnirmal.ticker.Tools
 import dagger.Module
 import dagger.Provides
-import org.mockito.Mockito.mock
 import javax.inject.Singleton
 
 /**
@@ -19,6 +20,10 @@ class MockAppModule(private val app: Context) {
     return app
   }
 
+  @Provides @Singleton internal fun provideClock(): AppClock {
+    return Mocker.provide(AppClock::class.java)
+  }
+
   @Provides
   @Singleton
   internal fun provideEventBus(): RxBus {
@@ -28,6 +33,7 @@ class MockAppModule(private val app: Context) {
   @Provides
   @Singleton
   internal fun provideSharedPreferences(context: Context): SharedPreferences {
-    return mock(SharedPreferences::class.java)
+    val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE)
+    return sharedPreferences
   }
 }

@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker
 
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
-import org.reactivestreams.Subscriber
 
 
 /**
@@ -14,7 +13,7 @@ open class SimpleSubscriber<T> : Observer<T> {
 
   }
 
-  override fun onSubscribe(d: Disposable?) {
+  override fun onSubscribe(d: Disposable) {
 
   }
 

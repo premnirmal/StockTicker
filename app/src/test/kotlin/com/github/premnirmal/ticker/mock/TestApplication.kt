@@ -1,9 +1,7 @@
 package com.github.premnirmal.ticker.mock;
 
-import android.util.Log
 import com.github.premnirmal.ticker.AppComponent
 import com.github.premnirmal.ticker.StocksApp
-import com.jakewharton.threetenabp.AndroidThreeTen
 
 /**
  * Created by premnirmal on 3/22/17.
@@ -26,10 +24,10 @@ class TestApplication : StocksApp() {
   }
 
   override fun initAnalytics() {
-    // No-op
+    super.initAnalytics()
   }
 
   override fun initCrashLogger() {
-    // No-op
+    super.initCrashLogger()
   }
 }

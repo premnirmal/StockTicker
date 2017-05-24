@@ -2,10 +2,13 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,14 +20,16 @@ import com.github.premnirmal.ticker.Injector
 import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.events.NoNetworkEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.portfolio.StocksAdapter.OnStockClickListener
-import com.github.premnirmal.ticker.portfolio.drag_drop.RearrangeActivity
+import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
+import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
+import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
+import javax.inject.Inject
+
 import com.github.premnirmal.tickerwidget.R.string
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
@@ -33,23 +38,20 @@ import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
 import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class PortfolioFragment : BaseFragment(), OnStockClickListener {
+open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
-    private val NO_NETWORK_THROTTLE_INTERVAL = 1000L
     private val SEQUENTIAL_REQUEST_COUNT = 3
   }
 
   /**
    * Using this injection holder because in unit tests, we use a mockito subclass of this fragment.
-   * Without this holder, dagger is unable to inject depedencies into this class.
+   * Without this holder, dagger is unable to inject dependencies into this class.
    */
   class InjectionHolder {
     @Inject
@@ -57,6 +59,9 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
     @Inject
     lateinit internal var bus: RxBus
+
+    @Inject
+    lateinit internal var preferences: SharedPreferences
 
     init {
       Injector.inject(this)
@@ -68,27 +73,16 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   private var attemptingFetch = false
   private var fetchCount = 0
   private val stocksAdapter by lazy {
-    StocksAdapter(holder.stocksProvider, this as OnStockClickListener)
+    StocksAdapter(this as QuoteClickListener, this as OnStartDragListener)
   }
+  private var itemTouchHelper: ItemTouchHelper? = null
 
-  override fun onClick(view: View, quote: Quote, position: Int) {
+  override fun onClickQuote(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-    if (quote.isIndex()) {
-      popupWindow.menu.findItem(R.id.graph).isEnabled = false
-      popupWindow.menu.findItem(R.id.positions).isEnabled = false
-    } else {
-      popupWindow.menu.findItem(R.id.graph).isEnabled = true
-      popupWindow.menu.findItem(R.id.positions).isEnabled = true
-    }
     popupWindow.setOnMenuItemClickListener { menuItem ->
       val itemId = menuItem.itemId
       when (itemId) {
-        R.id.graph -> {
-          val intent = Intent(activity, GraphActivity::class.java)
-          intent.putExtra(GraphActivity.GRAPH_DATA, quote)
-          activity.startActivity(intent)
-        }
         R.id.positions -> {
           val intent = Intent(activity, EditPositionActivity::class.java)
           intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
@@ -105,30 +99,20 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
 
   override fun onResume() {
     super.onResume()
-    bind(holder.bus.forEventType(NoNetworkEvent::class.java))
-        .throttleLast(NO_NETWORK_THROTTLE_INTERVAL, TimeUnit.MILLISECONDS)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
-          noNetwork(event)
-          swipe_container.isRefreshing = false
-        }
-
     bind(holder.bus.forEventType(RefreshEvent::class.java))
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
+        .subscribe { _ ->
           update()
         }
     if (listViewState != null) {
       stockList?.layoutManager?.onRestoreInstanceState(listViewState)
     }
-    val rearrangeItem = toolbar.menu.findItem(R.id.action_rearrange)
-    rearrangeItem.isEnabled = true
     update()
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
-    val view = inflater.inflate(R.layout.portfolio_fragment, null)
+    val view = inflater.inflate(R.layout.portfolio_fragment, container, false)
     return view
   }
 
@@ -144,6 +128,9 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
         PortfolioSpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing),
             gridLayoutManager))
     stockList.adapter = stocksAdapter
+    val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(stocksAdapter)
+    itemTouchHelper = ItemTouchHelper(callback)
+    itemTouchHelper?.attachToRecyclerView(stockList)
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener({
@@ -156,17 +143,11 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
         val intent = Intent(activity, SettingsActivity::class.java)
         startActivity(intent)
         true
-      } else if (itemId == R.id.action_rearrange) {
-        startActivity(Intent(activity, RearrangeActivity::class.java))
-        true
       } else {
         false
       }
     }
 
-    if (!Tools.isNetworkOnline(context.applicationContext)) {
-      noNetwork(NoNetworkEvent())
-    }
     if (savedInstanceState != null) {
       listViewState = savedInstanceState.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
     }
@@ -178,22 +159,27 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
   }
 
   internal fun fetch() {
-    fetchCount++
-    attemptingFetch = true
-    bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
-      override fun onError(e: Throwable) {
-        attemptingFetch = false
-        CrashLogger.logException(e)
-        swipe_container.isRefreshing = false
-        InAppMessage.showMessage(fragment_root, getString(string.refresh_failed))
-      }
+    if (Tools.isNetworkOnline(context)) {
+      fetchCount++
+      attemptingFetch = true
+      bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
+        override fun onError(e: Throwable) {
+          attemptingFetch = false
+          CrashLogger.logException(e)
+          swipe_container.isRefreshing = false
+          InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
+        }
 
-      override fun onNext(result: List<Quote>) {
-        attemptingFetch = false
-        swipe_container.isRefreshing = false
-        update()
-      }
-    })
+        override fun onNext(result: List<Quote>) {
+          attemptingFetch = false
+          swipe_container.isRefreshing = false
+          update()
+        }
+      })
+    } else {
+      InAppMessage.showMessage(fragment_root, getString(R.string.no_network_message))
+      swipe_container.isRefreshing = false
+    }
   }
 
   internal fun update() {
@@ -228,15 +214,18 @@ open class PortfolioFragment : BaseFragment(), OnStockClickListener {
     }
   }
 
-  internal fun noNetwork(event: NoNetworkEvent) {
-    InAppMessage.showMessage(fragment_root, getString(R.string.no_network_message))
-  }
-
   override fun onSaveInstanceState(outState: Bundle?) {
     super.onSaveInstanceState(outState)
     listViewState = stockList?.layoutManager?.onSaveInstanceState()
     if (listViewState != null) {
       outState?.putParcelable(LIST_INSTANCE_STATE, listViewState)
     }
+  }
+
+  override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+    if (Tools.autoSortEnabled()) {
+      holder.preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, false).apply()
+    }
+    itemTouchHelper?.startDrag(viewHolder)
   }
 }
