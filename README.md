@@ -8,7 +8,7 @@
 ![](https://lh3.googleusercontent.com/4TuJnPqSlW7HgtlKVpqu6vKfmSr9a2eGh0Cm-CdIy2CymTHhiyEWKbbryLqFuuP5qAQ=h600-rw)
 
 ## Motivation
-The main purpose of this app is to demonstrate usage of [Dagger2](https://github.com/google/dagger) and [RxJava](https://github.com/ReactiveX/RxJava)
+The main purpose of this app is to demonstrate usage of [Dagger2](https://github.com/google/dagger) and [RxJava2](https://github.com/ReactiveX/RxJava)
 
 - A homescreen widget that shows your stock portolio in a resizable grid.
 - This app fetches stock quotes from this API: https://www.robindahood.com

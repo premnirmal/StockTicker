@@ -1,41 +1,40 @@
 package com.github.premnirmal.ticker.mock
 
+import io.reactivex.Scheduler
+import io.reactivex.android.plugins.RxAndroidPlugins
+import io.reactivex.internal.schedulers.ExecutorScheduler
+import io.reactivex.plugins.RxJavaPlugins
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
-import io.reactivex.Scheduler
-import io.reactivex.android.plugins.RxAndroidPlugins
-import io.reactivex.android.plugins.RxAndroidSchedulersHook
-import io.reactivex.functions.Func1
-import io.reactivex.plugins.RxJavaHooks
-import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.Executor
 
 
 class RxSchedulersOverrideRule : TestRule {
 
-  private val androidSchedulersHook = object : RxAndroidSchedulersHook() {
-    override fun getMainThreadScheduler(): Scheduler {
-      return Schedulers.immediate()
+  private val immediate = object : Scheduler() {
+
+    override fun createWorker(): Worker {
+      return ExecutorScheduler.ExecutorWorker(Executor { it.run() })
     }
   }
-
-  internal val immediateScheduler = Func1<Scheduler, Scheduler> { Schedulers.immediate() }
 
   override fun apply(base: Statement, description: Description): Statement {
     return object : Statement() {
       @Throws(Throwable::class)
       override fun evaluate() {
-        RxAndroidPlugins.getInstance().reset()
-        RxAndroidPlugins.getInstance().registerSchedulersHook(androidSchedulersHook)
+        RxJavaPlugins.setInitIoSchedulerHandler { _ -> immediate }
+        RxJavaPlugins.setInitComputationSchedulerHandler { _ -> immediate }
+        RxJavaPlugins.setInitNewThreadSchedulerHandler { _ -> immediate }
+        RxJavaPlugins.setInitSingleSchedulerHandler { _ -> immediate }
+        RxAndroidPlugins.setInitMainThreadSchedulerHandler { _ -> immediate }
 
-        RxJavaHooks.reset()
-        RxJavaHooks.setOnIOScheduler(immediateScheduler)
-        RxJavaHooks.setOnNewThreadScheduler(immediateScheduler)
-
-        base.evaluate()
-
-        RxAndroidPlugins.getInstance().reset()
-        RxJavaHooks.reset()
+        try {
+          base.evaluate()
+        } finally {
+          RxJavaPlugins.reset()
+          RxAndroidPlugins.reset()
+        }
       }
     }
   }
