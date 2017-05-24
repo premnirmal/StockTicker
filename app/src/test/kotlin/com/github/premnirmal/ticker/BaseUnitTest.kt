@@ -14,6 +14,7 @@ import org.junit.Rule
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.`when`
+import org.mockito.Mockito.doNothing
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -53,6 +54,7 @@ abstract class BaseUnitTest : TestCase() {
   @Before override public fun setUp() {
     super.setUp()
     val iStocksProvider = Mocker.provide(IStocksProvider::class.java)
+    doNothing().`when`(iStocksProvider).schedule()
     `when`(iStocksProvider.fetch()).thenReturn(Observable.never())
     `when`(iStocksProvider.getStocks()).thenReturn(emptyList())
     `when`(iStocksProvider.getTickers()).thenReturn(emptyList())
