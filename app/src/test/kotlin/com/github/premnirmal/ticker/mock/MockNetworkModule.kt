@@ -11,7 +11,7 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -42,21 +42,21 @@ class MockNetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideRxJavaFactory(): RxJavaCallAdapterFactory {
-    return RxJavaCallAdapterFactory.create()
+  internal fun provideRxJavaFactory(): RxJava2CallAdapterFactory {
+    return RxJava2CallAdapterFactory.create()
   }
 
   @Provides @Singleton
   internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): Robindahood {
+      rxJavaFactory: RxJava2CallAdapterFactory): Robindahood {
     return Mocker.provide(Robindahood::class.java)
   }
 
   @Provides @Singleton
   internal fun provideSuggestionsApi(context: Context, okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJavaCallAdapterFactory): SuggestionApi {
+      rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi {
     return Mocker.provide(SuggestionApi::class.java)
   }
 

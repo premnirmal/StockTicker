@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AndroidRuntimeException
 import android.view.View
-import com.trello.rxlifecycle.FragmentEvent
-import com.trello.rxlifecycle.RxLifecycle
-import rx.Observable
-import rx.subjects.BehaviorSubject
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -20,7 +20,7 @@ abstract class BaseFragment : Fragment() {
   private var called: Boolean = false
 
   protected fun lifecycle(): Observable<FragmentEvent> {
-    return lifecycleSubject.asObservable()
+    return lifecycleSubject
   }
 
   override fun onAttach(activity: Activity?) {
@@ -82,6 +82,6 @@ abstract class BaseFragment : Fragment() {
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> {
-    return observable.compose(RxLifecycle.bindFragment<T>(lifecycle()));
+    return observable.compose(RxLifecycleAndroid.bindFragment(lifecycle()));
   }
 }

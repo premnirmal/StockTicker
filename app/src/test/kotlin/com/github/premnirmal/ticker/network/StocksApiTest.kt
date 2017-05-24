@@ -6,6 +6,8 @@ import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteNet
 import com.google.gson.reflect.TypeToken
+import io.reactivex.Observable
+import io.reactivex.observers.TestObserver
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -13,8 +15,6 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Matchers
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
-import rx.Observable
-import rx.observers.TestSubscriber
 
 class StocksApiTest : BaseUnitTest() {
 
@@ -44,13 +44,13 @@ class StocksApiTest : BaseUnitTest() {
   @Test
   fun testGetStocks() {
     val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestSubscriber<List<Quote>>()
+    val subscriber = TestObserver<List<Quote>>()
     stocksApi.getStocks(testTickerList).subscribe(subscriber)
     subscriber.assertNoErrors()
     verify(robinhood).getStocks(anyString())
-    val onNextEvents = subscriber.onNextEvents
+    val onNextEvents = subscriber.events[0]
     assertTrue(onNextEvents.size == 1)
-    val stocks = onNextEvents[0]
+    val stocks = onNextEvents[0] as List<*>
     assertEquals(testTickerList.size, stocks.size)
   }
 

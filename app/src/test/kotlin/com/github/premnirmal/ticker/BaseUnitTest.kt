@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.tools.Parser
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.JsonElement
+import io.reactivex.Observable
 import junit.framework.TestCase
 import org.junit.Before
 import org.junit.Rule
@@ -19,7 +20,6 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.util.ActivityController
-import rx.Observable
 import java.lang.reflect.Type
 
 

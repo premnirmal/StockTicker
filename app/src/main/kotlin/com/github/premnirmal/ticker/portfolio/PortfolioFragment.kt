@@ -10,7 +10,6 @@ import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
@@ -29,15 +28,16 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
-import com.jakewharton.rxbinding.widget.RxPopupMenu
+import javax.inject.Inject
+
+import com.github.premnirmal.tickerwidget.R.string
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
 import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
 import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
-import rx.android.schedulers.AndroidSchedulers
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -80,22 +80,20 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onClickQuote(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
-    bind(RxPopupMenu.itemClicks(popupWindow))
-        .subscribe(object : SimpleSubscriber<MenuItem>() {
-          override fun onNext(result: MenuItem) {
-            val itemId = result.itemId
-            when (itemId) {
-              R.id.positions -> {
-                val intent = Intent(activity, EditPositionActivity::class.java)
-                intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
-                activity.startActivity(intent)
-              }
-              R.id.remove -> {
-                promptRemove(quote, position)
-              }
-            }
-          }
-        })
+    popupWindow.setOnMenuItemClickListener { menuItem ->
+      val itemId = menuItem.itemId
+      when (itemId) {
+        R.id.positions -> {
+          val intent = Intent(activity, EditPositionActivity::class.java)
+          intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
+          activity.startActivity(intent)
+        }
+        R.id.remove -> {
+          promptRemove(quote, position)
+        }
+      }
+      true
+    }
     popupWindow.show()
   }
 

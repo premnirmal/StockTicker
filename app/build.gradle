@@ -160,7 +160,7 @@ dependencies {
   final RUNNER_VERSION = "0.5"
   final RETROFIT_VERSION = "2.2.0"
   final OKHTTP_VERSION = "3.5.0"
-  final RXJAVA_VERSION = "1.1.0"
+  final RXJAVA_VERSION = "2.1.0"
   final ROBOLECTRIC_VERSION = "3.2.2"
   final PLAY_SERVICES_VERSION = "10.2.1"
 
@@ -180,13 +180,15 @@ dependencies {
   compile "com.squareup.okhttp3:logging-interceptor:$OKHTTP_VERSION"
   compile "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
   compile "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
-  compile "com.squareup.retrofit2:adapter-rxjava:$RETROFIT_VERSION"
+  compile "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
 
-  compile "io.reactivex:rxandroid:$RXJAVA_VERSION"
-  compile "io.reactivex:rxjava:$RXJAVA_VERSION"
+  compile "io.reactivex.rxjava2:rxandroid:2.0.1"
+  compile "io.reactivex.rxjava2:rxjava:$RXJAVA_VERSION"
 
-  compile "com.trello:rxlifecycle:0.5.0"
-  compile "com.trello:rxlifecycle-kotlin:0.5.0"
+  compile "com.trello.rxlifecycle2:rxlifecycle:2.0.1"
+
+  compile "com.trello.rxlifecycle2:rxlifecycle-android:2.0.1"
+  compile "com.trello.rxlifecycle2:rxlifecycle-kotlin:2.0.1"
 
   compile "com.jakewharton.threetenabp:threetenabp:1.0.5"
 
@@ -210,7 +212,7 @@ dependencies {
   testCompile("com.android.support.test:runner:$RUNNER_VERSION") {
     exclude group: "com.android.support", module: "support-annotations"
   }
-  testCompile 'org.threeten:threetenbp:1.3.1'
+  testCompile "org.threeten:threetenbp:1.3.1"
   testCompile "com.android.tools:testutils:24.3.1"
   testCompile "org.mockito:mockito-core:$MOCKITO_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
@@ -220,7 +222,7 @@ dependencies {
   androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
-  testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+  testCompile "org.khronos:opengl-api:gl1.1-android-2.1_r1"
 }
 
 apply plugin: "com.google.gms.google-services"
