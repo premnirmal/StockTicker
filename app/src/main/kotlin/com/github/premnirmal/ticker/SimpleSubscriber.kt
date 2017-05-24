@@ -1,19 +1,14 @@
 package com.github.premnirmal.ticker
 
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
+import io.reactivex.observers.DisposableObserver
 
 
 /**
  * Created by premnirmal on 4/14/16.
  */
-open class SimpleSubscriber<T> : Observer<T> {
+open class SimpleSubscriber<T> : DisposableObserver<T>() {
 
   override fun onComplete() {
-
-  }
-
-  override fun onSubscribe(d: Disposable) {
 
   }
 

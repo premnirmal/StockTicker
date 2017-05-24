@@ -64,11 +64,11 @@ class TickerSelectorActivity : BaseActivity() {
 
           if (Tools.isNetworkOnline(applicationContext)) {
             val observable = suggestionApi.getSuggestions(query)
-            bind(observable)
+            disposable = bind(observable)
                 .map { suggestions -> suggestions.ResultSet?.Result }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : SimpleSubscriber<List<Suggestion>?>() {
+                .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {
                   override fun onError(e: Throwable) {
                     CrashLogger.logException(e)
                     InAppMessage.showMessage(this@TickerSelectorActivity,
@@ -80,10 +80,6 @@ class TickerSelectorActivity : BaseActivity() {
                       val suggestionList = result
                       listView.adapter = SuggestionsAdapter(suggestionList)
                     }
-                  }
-
-                  override fun onSubscribe(d: Disposable) {
-                    disposable = d
                   }
                 })
           } else {

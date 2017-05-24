@@ -10,8 +10,8 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.github.premnirmal.ticker.events.ErrorEvent
-import com.trello.rxlifecycle2.RxLifecycle
 import com.trello.rxlifecycle2.android.ActivityEvent
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -35,7 +35,7 @@ abstract class BaseActivity : AppCompatActivity() {
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> {
-    return observable.compose(RxLifecycle.bind(lifecycle()))
+    return observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
   }
 
   override fun attachBaseContext(newBase: Context) {
