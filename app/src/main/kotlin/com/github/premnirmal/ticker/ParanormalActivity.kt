@@ -63,13 +63,13 @@ class ParanormalActivity : BaseActivity() {
     if (!dialogShown && Tools.shouldPromptRate()) {
       AlertDialog.Builder(this).setTitle(R.string.like_our_app)
           .setMessage(R.string.please_rate)
-          .setPositiveButton(R.string.yes) { dialog, which ->
+          .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
             Analytics.trackRateYes()
             Tools.userDidRate()
             dialog.dismiss()
           }
-          .setNegativeButton(R.string.later) { dialog, which ->
+          .setNegativeButton(R.string.later) { dialog, _ ->
             Analytics.trackRateNo()
             dialog.dismiss()
           }

@@ -89,7 +89,7 @@ class TickerSelectorActivity : BaseActivity() {
       }
     })
 
-    listView.setOnItemClickListener({ parent, view, position, id ->
+    listView.setOnItemClickListener({ parent, _, position, _ ->
       val suggestionsAdapter = parent.adapter as SuggestionsAdapter
       val suggestion: Suggestion = suggestionsAdapter.getItem(position)
       val ticker = suggestion.symbol
@@ -100,12 +100,12 @@ class TickerSelectorActivity : BaseActivity() {
         if (!ticker.startsWith("^") && !ticker.contains("=") && !ticker.startsWith(".")) {
           showDialog("Do you want to add positions for $ticker?",
               true,
-              DialogInterface.OnClickListener { dialog, which ->
+              DialogInterface.OnClickListener { _, _ ->
                 val intent = Intent(this@TickerSelectorActivity, AddPositionActivity::class.java)
                 intent.putExtra(EditPositionActivity.TICKER, ticker)
                 startActivity(intent)
               },
-              DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+              DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() })
         }
       } else {
         showDialog("$ticker is already in your portfolio")

@@ -28,9 +28,6 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.tickerwidget.R
-import javax.inject.Inject
-
-import com.github.premnirmal.tickerwidget.R.string
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
 import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
@@ -38,6 +35,7 @@ import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
 import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -204,12 +202,12 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     if (quote != null) {
       AlertDialog.Builder(activity).setTitle("Remove")
           .setMessage("Are you sure you want to remove ${quote.symbol} from your portfolio?")
-          .setPositiveButton("Remove", { dialog, which ->
+          .setPositiveButton("Remove", { dialog, _ ->
             holder.stocksProvider.removeStock(quote.symbol)
             stocksAdapter.remove(quote)
             dialog.dismiss()
           })
-          .setNegativeButton("Cancel", { dialog, which -> dialog.dismiss() })
+          .setNegativeButton("Cancel", { dialog, _ -> dialog.dismiss() })
           .show()
     }
   }
@@ -224,8 +222,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
     if (Tools.autoSortEnabled()) {
-      holder.preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, false).apply()
+      Tools.enableAutosort(false)
+      update()
+      InAppMessage.showMessage(fragment_root, getString(R.string.autosort_disabled))
+    } else {
+      itemTouchHelper?.startDrag(viewHolder)
     }
-    itemTouchHelper?.startDrag(viewHolder)
   }
 }

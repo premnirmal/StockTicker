@@ -125,7 +125,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     run({
       val nukePref = findPreference(Tools.SETTING_NUKE)
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        showDialog(getString(R.string.are_you_sure), OnClickListener { dialog, which ->
+        showDialog(getString(R.string.are_you_sure), OnClickListener { _, _ ->
           val hasUserAlreadyRated = Tools.hasUserAlreadyRated()
           CrashLogger.logException(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
@@ -280,7 +280,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       autoSortPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
           val checked = newValue as Boolean
-          preferences.edit().putBoolean(Tools.SETTING_AUTOSORT, checked).apply()
+          Tools.enableAutosort(checked)
           return true
         }
       }
@@ -476,7 +476,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
 
   private fun showDialog(message: String) {
     AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK",
-        { dialog, which -> dialog.dismiss() }).show()
+        { dialog, _ -> dialog.dismiss() }).show()
   }
 
   private fun showDialog(message: String, listener: OnClickListener) {

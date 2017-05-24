@@ -126,6 +126,10 @@ class Tools private constructor() {
       return instance.sharedPreferences.getBoolean(SETTING_AUTOSORT, true)
     }
 
+    fun enableAutosort(enable: Boolean) {
+      instance.sharedPreferences.edit().putBoolean(Tools.SETTING_AUTOSORT, enable).apply()
+    }
+
     fun getBackgroundResource(): Int {
       val bgPref = instance.sharedPreferences.getInt(WIDGET_BG, TRANSPARENT)
       when (bgPref) {

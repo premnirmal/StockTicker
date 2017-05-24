@@ -1,6 +1,8 @@
 package com.github.premnirmal.ticker
 
 import android.app.Activity
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AndroidRuntimeException
@@ -83,5 +85,37 @@ abstract class BaseFragment : Fragment() {
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> {
     return observable.compose(RxLifecycleAndroid.bindFragment(lifecycle()));
+  }
+
+  // dialog
+
+
+  protected fun showDialog(message: String): AlertDialog {
+    val activity = activity as BaseActivity
+    return activity.showDialog(message)
+  }
+
+  protected fun showDialog(title: String, message: String): AlertDialog {
+    val activity = activity as BaseActivity
+    return activity.showDialog(title, message)
+  }
+
+  protected fun showDialog(message: String,
+      listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }): AlertDialog {
+    val activity = activity as BaseActivity
+    return activity.showDialog(message, listener)
+  }
+
+  protected fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
+      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+    val activity = activity as BaseActivity
+    return activity.showDialog(message, positiveOnClick, negativeOnClick)
+  }
+
+  protected fun showDialog(message: String, cancelable: Boolean,
+      positiveOnClick: DialogInterface.OnClickListener,
+      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+    val activity = activity as BaseActivity
+    return activity.showDialog(message, cancelable, positiveOnClick, negativeOnClick)
   }
 }

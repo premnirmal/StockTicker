@@ -47,8 +47,6 @@ class StocksAdapter constructor(
     val removed = quoteList.remove(quote)
     if (index >= 0 && removed) {
       notifyItemRemoved(index)
-      // Refresh last two so that the bottom spacing is fixed
-      notifyItemRangeChanged(itemCount - 3, 2)
     }
   }
 

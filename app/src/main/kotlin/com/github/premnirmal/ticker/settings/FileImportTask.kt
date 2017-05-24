@@ -36,7 +36,7 @@ internal open class FileImportTask(
     }
 
     val tickersFile = File(params[0])
-    var result = false
+    var result: Boolean
 
     if (!tickersFile.exists()) {
       return false

@@ -8,7 +8,6 @@ import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.shares
 import kotlinx.android.synthetic.main.activity_positions.skipButton
 import kotlinx.android.synthetic.main.activity_positions.toolbar
-import java.text.DecimalFormat
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -36,7 +35,7 @@ class EditPositionActivity : AddPositionActivity() {
       }
     } else {
       showDialog(getString(R.string.no_such_stock_in_portfolio),
-          DialogInterface.OnClickListener { dialog, which -> finish() })
+          DialogInterface.OnClickListener { _, _ -> finish() })
     }
   }
 

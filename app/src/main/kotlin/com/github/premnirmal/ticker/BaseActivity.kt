@@ -77,28 +77,28 @@ abstract class BaseActivity : AppCompatActivity() {
     lifecycleSubject.onNext(ActivityEvent.PAUSE)
   }
 
-  protected fun showDialog(message: String): AlertDialog {
+  fun showDialog(message: String): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
         .setNeutralButton("OK", { dialog: DialogInterface, _: Int -> dialog.dismiss() }).show()
   }
 
-  protected fun showDialog(title: String, message: String): AlertDialog {
+  fun showDialog(title: String, message: String): AlertDialog {
     return AlertDialog.Builder(this).setTitle(title).setMessage(message).setCancelable(false)
         .setNeutralButton("OK", { dialog: DialogInterface, _: Int -> dialog.dismiss() }).show()
   }
 
-  protected fun showDialog(message: String,
-      listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }): AlertDialog {
+  fun showDialog(message: String,
+      listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setNeutralButton("OK",
         listener).show()
   }
 
-  protected fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
+  fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
       negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
     return showDialog(message, false, positiveOnClick, negativeOnClick)
   }
 
-  protected fun showDialog(message: String, cancelable: Boolean,
+  fun showDialog(message: String, cancelable: Boolean,
       positiveOnClick: DialogInterface.OnClickListener,
       negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(
