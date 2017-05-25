@@ -42,10 +42,9 @@ class StocksAdapter constructor(
     quoteList = ArrayList(stocksProvider.getStocks())
   }
 
-  fun remove(quote: Quote) {
-    val index = quoteList.indexOf(quote)
-    val removed = quoteList.remove(quote)
-    if (index >= 0 && removed) {
+  fun remove(index: Int) {
+    if (index >= 0) {
+      quoteList.removeAt(index)
       notifyItemRemoved(index)
     }
   }

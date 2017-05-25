@@ -27,6 +27,7 @@ import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.settings.SettingsActivity
+import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
@@ -120,11 +121,10 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
       (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight(
           activity)
     }
+    stockList.addItemDecoration(
+        SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
-    stockList.addItemDecoration(
-        PortfolioSpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing),
-            gridLayoutManager))
     stockList.adapter = stocksAdapter
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(stocksAdapter)
     itemTouchHelper = ItemTouchHelper(callback)
@@ -204,7 +204,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
           .setMessage("Are you sure you want to remove ${quote.symbol} from your portfolio?")
           .setPositiveButton("Remove", { dialog, _ ->
             holder.stocksProvider.removeStock(quote.symbol)
-            stocksAdapter.remove(quote)
+            stocksAdapter.remove(position)
             dialog.dismiss()
           })
           .setNegativeButton("Cancel", { dialog, _ -> dialog.dismiss() })

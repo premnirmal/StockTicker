@@ -64,14 +64,14 @@
       android:id="@+id/swipe_container"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      app:layout_behavior="com.github.premnirmal.ticker.portfolio.FabBehavior"
       >
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/stockList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_behavior="com.github.premnirmal.ticker.portfolio.FabBehavior"
         />
   </android.support.v4.widget.SwipeRefreshLayout>
 
