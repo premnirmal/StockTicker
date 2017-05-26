@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>You can rearrange your stocks by long pressing on a stock right here.</item>
-    <item>Or you can choose auto-sort from settings.</item>
-    <item>Added refresh icon to widget.</item>
-    <item>Removed start time &lt; end time restriction.</item>
+    <item>UI fixes :)</item>
+    <item>Added refresh icon to widget</item>
   </string-array>
 </resources>

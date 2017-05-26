@@ -167,6 +167,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 retryWithBackoff()
               }
             }
+            AlarmScheduler.sendBroadcast(context)
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
