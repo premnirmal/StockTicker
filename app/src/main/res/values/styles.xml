@@ -32,8 +32,8 @@
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
-  <style name="AvenirTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Avenir-Bold.otf</item>
+  <style name="FooterTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Alegreya-Black-Italic.ttf</item>
   </style>
 
   <style name="ButtonStyle" parent="android:Widget.Button">

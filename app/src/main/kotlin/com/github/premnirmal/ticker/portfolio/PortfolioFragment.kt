@@ -31,11 +31,13 @@ import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
+import kotlinx.android.synthetic.main.portfolio_fragment.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
 import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
+import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
 
 /**
@@ -121,6 +123,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
       (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight(
           activity)
     }
+    collapsingToolbarLayout.setCollapsedTitleTypeface(TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Regular.ttf"))
+    collapsingToolbarLayout.setExpandedTitleTypeface(TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Bold.ttf"))
     stockList.addItemDecoration(
         SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
