@@ -6,8 +6,8 @@ import com.github.premnirmal.ticker.Tools
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
-import com.github.premnirmal.ticker.CrashLogger
-import com.github.premnirmal.ticker.Analytics
+import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.Analytics
 import java.util.*
 
 /**

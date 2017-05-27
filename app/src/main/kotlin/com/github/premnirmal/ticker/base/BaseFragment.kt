@@ -1,13 +1,24 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.base
 
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.DialogInterface.OnClickListener
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AndroidRuntimeException
 import android.view.View
 import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.android.FragmentEvent.ATTACH
+import com.trello.rxlifecycle2.android.FragmentEvent.CREATE
+import com.trello.rxlifecycle2.android.FragmentEvent.CREATE_VIEW
+import com.trello.rxlifecycle2.android.FragmentEvent.DESTROY
+import com.trello.rxlifecycle2.android.FragmentEvent.DESTROY_VIEW
+import com.trello.rxlifecycle2.android.FragmentEvent.DETACH
+import com.trello.rxlifecycle2.android.FragmentEvent.PAUSE
+import com.trello.rxlifecycle2.android.FragmentEvent.RESUME
+import com.trello.rxlifecycle2.android.FragmentEvent.START
+import com.trello.rxlifecycle2.android.FragmentEvent.STOP
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
@@ -27,23 +38,23 @@ abstract class BaseFragment : Fragment() {
 
   override fun onAttach(activity: Activity?) {
     super.onAttach(activity)
-    lifecycleSubject.onNext(FragmentEvent.ATTACH)
+    lifecycleSubject.onNext(ATTACH)
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    lifecycleSubject.onNext(FragmentEvent.CREATE)
+    lifecycleSubject.onNext(CREATE)
   }
 
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW)
+    lifecycleSubject.onNext(CREATE_VIEW)
     called = true
   }
 
   override fun onStart() {
     super.onStart()
-    lifecycleSubject.onNext(FragmentEvent.START)
+    lifecycleSubject.onNext(START)
   }
 
   override fun onResume() {
@@ -52,31 +63,31 @@ abstract class BaseFragment : Fragment() {
           "You didn't call super.onViewCreated() when in " + javaClass.simpleName)
     }
     super.onResume()
-    lifecycleSubject.onNext(FragmentEvent.RESUME)
+    lifecycleSubject.onNext(RESUME)
   }
 
   override fun onPause() {
-    lifecycleSubject.onNext(FragmentEvent.PAUSE)
+    lifecycleSubject.onNext(PAUSE)
     super.onPause()
   }
 
   override fun onStop() {
-    lifecycleSubject.onNext(FragmentEvent.STOP)
+    lifecycleSubject.onNext(STOP)
     super.onStop()
   }
 
   override fun onDestroyView() {
-    lifecycleSubject.onNext(FragmentEvent.DESTROY_VIEW)
+    lifecycleSubject.onNext(DESTROY_VIEW)
     super.onDestroyView()
   }
 
   override fun onDetach() {
-    lifecycleSubject.onNext(FragmentEvent.DETACH)
+    lifecycleSubject.onNext(DETACH)
     super.onDetach()
   }
 
   override fun onDestroy() {
-    lifecycleSubject.onNext(FragmentEvent.DESTROY)
+    lifecycleSubject.onNext(DESTROY)
     super.onDestroy()
   }
 
@@ -101,20 +112,20 @@ abstract class BaseFragment : Fragment() {
   }
 
   protected fun showDialog(message: String,
-      listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }): AlertDialog {
+      listener: OnClickListener = DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }): AlertDialog {
     val activity = activity as BaseActivity
     return activity.showDialog(message, listener)
   }
 
-  protected fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
-      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+  protected fun showDialog(message: String, positiveOnClick: OnClickListener,
+      negativeOnClick: OnClickListener): AlertDialog {
     val activity = activity as BaseActivity
     return activity.showDialog(message, positiveOnClick, negativeOnClick)
   }
 
   protected fun showDialog(message: String, cancelable: Boolean,
-      positiveOnClick: DialogInterface.OnClickListener,
-      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+      positiveOnClick: OnClickListener,
+      negativeOnClick: OnClickListener): AlertDialog {
     val activity = activity as BaseActivity
     return activity.showDialog(message, cancelable, positiveOnClick, negativeOnClick)
   }

@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.components
 
 import android.content.Context
 
@@ -10,7 +10,7 @@ abstract class Analytics protected constructor(context: Context) {
 
     private lateinit var INSTANCE: Analytics
 
-    internal fun init(context: Context) {
+    internal fun init(context: android.content.Context) {
       INSTANCE = AnalyticsImpl(context)
     }
 

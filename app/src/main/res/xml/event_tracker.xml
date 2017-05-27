@@ -9,7 +9,7 @@
   <screenName name="com.github.premnirmal.ticker.ParanormalActivity">
     Portfolio
   </screenName>
-  <screenName name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity">
+  <screenName name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity">
     TickerSelector
   </screenName>
   <screenName name="com.github.premnirmal.ticker.portfolio.GraphActivity">

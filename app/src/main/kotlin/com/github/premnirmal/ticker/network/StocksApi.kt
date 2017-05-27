@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.CrashLogger
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote

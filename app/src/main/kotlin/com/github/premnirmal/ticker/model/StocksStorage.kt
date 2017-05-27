@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

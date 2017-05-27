@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.mock;
 
-import com.github.premnirmal.ticker.AppComponent
+import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.StocksApp
 
 /**

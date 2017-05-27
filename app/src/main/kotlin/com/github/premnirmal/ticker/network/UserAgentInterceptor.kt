@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.network
 
 import android.content.Context
 import android.os.Build
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.BuildConfig
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain

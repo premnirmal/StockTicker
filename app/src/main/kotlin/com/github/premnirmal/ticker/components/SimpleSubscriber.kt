@@ -1,7 +1,6 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.components
 
 import io.reactivex.observers.DisposableObserver
-
 
 /**
  * Created by premnirmal on 4/14/16.

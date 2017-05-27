@@ -4,6 +4,12 @@ import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
+import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.AppComponent
+import com.github.premnirmal.ticker.components.AppModule
+import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.DaggerAppComponent
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig

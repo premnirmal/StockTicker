@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.Environment
 import android.support.annotation.ColorRes
+import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import org.threeten.bp.format.DateTimeFormatter

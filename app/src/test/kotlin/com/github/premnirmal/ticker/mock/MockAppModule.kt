@@ -2,9 +2,9 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.AppClock
-import com.github.premnirmal.ticker.RxBus
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.RxBus
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

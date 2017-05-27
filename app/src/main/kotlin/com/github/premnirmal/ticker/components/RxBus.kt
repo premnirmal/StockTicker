@@ -1,9 +1,8 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.components
 
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
-
 
 /**
  * Created by premnirmal on 2/26/16.

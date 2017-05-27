@@ -12,8 +12,8 @@
       android:name="com.github.premnirmal.ticker.StocksApp"
       android:allowBackup="true"
       android:icon="@mipmap/ic_launcher"
-      android:roundIcon="@mipmap/ic_launcher_round"
       android:label="@string/app_name"
+      android:roundIcon="@mipmap/ic_launcher_round"
       android:theme="@style/AppTheme"
       tools:replace="android:icon">
 
@@ -27,8 +27,9 @@
       </intent-filter>
     </activity>
     <activity
-        android:name="com.github.premnirmal.ticker.portfolio.TickerSelectorActivity"
-        android:label="@string/add_ticker"/>
+        android:name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity"
+        android:label="@string/add_ticker"
+        android:windowSoftInputMode="adjustResize"/>
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
         android:label="@string/add_position"/>
@@ -44,7 +45,7 @@
     </activity>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.UpdateReceiver"
+        android:name="com.github.premnirmal.ticker.components.UpdateReceiver"
         android:enabled="true"
         android:exported="true">
       <intent-filter>
@@ -62,12 +63,12 @@
     </receiver>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.RefreshReceiver"
+        android:name="com.github.premnirmal.ticker.components.RefreshReceiver"
         android:enabled="true"
         android:exported="false"/>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.WidgetClickReceiver"
+        android:name="com.github.premnirmal.ticker.components.WidgetClickReceiver"
         android:enabled="true"
         android:exported="false">
       <intent-filter>

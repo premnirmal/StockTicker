@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.StocksApp
 import okhttp3.CacheControl
 import okhttp3.Interceptor

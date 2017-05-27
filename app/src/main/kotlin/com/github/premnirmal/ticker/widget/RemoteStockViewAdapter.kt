@@ -10,9 +10,9 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.WidgetClickReceiver
+import com.github.premnirmal.ticker.components.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R

@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker
 
+import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.mock.RxSchedulersOverrideRule
 import com.github.premnirmal.ticker.mock.TestApplication
@@ -33,14 +34,15 @@ abstract class BaseUnitTest : TestCase() {
   companion object {
 
     /**
-     * Attach a fragment to a new instance of the given activity class.
+     * Attach a fragment to a new instance of {@link TestActivity.java}
      *
      * @param fragment Fragment to add to the activity.
      */
     fun attachFragmentToTestActivity(fragment: BaseFragment)
-        : ActivityController<out BaseActivity> {
-      val controller = Robolectric.buildActivity(
-          ParanormalActivity::class.java).create().start().resume()
+        : ActivityController<TestActivity> {
+      val controller = Robolectric.buildActivity(TestActivity::class.java).create()
+      controller.start()
+      controller.resume()
       val activity = controller.get()
       val fm = activity.supportFragmentManager
       fm.beginTransaction().add(R.id.fragment_container, fragment).commit()

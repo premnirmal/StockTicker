@@ -4,9 +4,9 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.Injector
-import com.github.premnirmal.ticker.RxBus
-import com.github.premnirmal.ticker.SimpleSubscriber
+import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent

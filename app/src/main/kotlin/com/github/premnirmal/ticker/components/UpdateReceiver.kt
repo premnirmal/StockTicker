@@ -1,9 +1,10 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.components
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject

@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
@@ -42,9 +42,10 @@ class StocksAdapter constructor(
     quoteList = ArrayList(stocksProvider.getStocks())
   }
 
-  fun remove(index: Int) {
-    if (index >= 0) {
-      quoteList.removeAt(index)
+  fun remove(quote: Quote) {
+    val index = quoteList.indexOf(quote)
+    val removed = quoteList.remove(quote)
+    if (index >= 0 && removed) {
       notifyItemRemoved(index)
     }
   }

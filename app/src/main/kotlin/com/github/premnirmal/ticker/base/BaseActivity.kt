@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.base
 
 import android.app.AlertDialog
 import android.content.Context
@@ -7,16 +7,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
-import android.view.MenuItem
+import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -25,7 +23,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-  @Inject lateinit var bus: RxBus
+  @javax.inject.Inject lateinit var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> {
     return lifecycleSubject
@@ -39,7 +37,7 @@ abstract class BaseActivity : AppCompatActivity() {
   }
 
   override fun attachBaseContext(newBase: Context) {
-    super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase))
+    super.attachBaseContext(uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper.wrap(newBase))
   }
 
   override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
@@ -106,7 +104,7 @@ abstract class BaseActivity : AppCompatActivity() {
         "YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
   }
 
-  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+  override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
     if (item.itemId == android.R.id.home) {
       onBackPressed()
       return true
@@ -114,9 +112,10 @@ abstract class BaseActivity : AppCompatActivity() {
     return super.onOptionsItemSelected(item)
   }
 
-  fun updateToolbar(toolbar: Toolbar) {
+  fun updateToolbar(toolbar: android.support.v7.widget.Toolbar) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(this),
+      toolbar.setPadding(toolbar.paddingLeft,
+          Tools.getStatusBarHeight(this),
           toolbar.paddingRight, toolbar.paddingBottom)
     }
   }

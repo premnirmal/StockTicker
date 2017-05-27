@@ -6,6 +6,9 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
+import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -27,10 +30,10 @@ class ParanormalActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    Injector.inject(this)
     if (savedInstanceState != null) {
       dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
     }
-    Injector.inject(this)
     setContentView(R.layout.activity_paranormal)
     if (savedInstanceState == null) {
       val fragment = PortfolioFragment()

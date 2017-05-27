@@ -35,13 +35,14 @@
       android:layout_marginLeft="15dp"
       android:layout_marginRight="15dp"
       android:layout_marginTop="10dp"
+      android:gravity="center_vertical"
       android:orientation="horizontal"
       >
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center_vertical"
         android:layout_weight="0.4"
         android:text="@string/number_of_shares"
         />
@@ -50,11 +51,12 @@
         android:id="@+id/shares"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
         android:layout_weight="0.6"
         android:gravity="end"
         android:inputType="number"
-        android:nextFocusForward="@+id/price"
         android:maxLines="1"
+        android:nextFocusForward="@+id/price"
         android:textAlignment="textEnd"
         />
 
@@ -66,13 +68,14 @@
       android:layout_marginLeft="15dp"
       android:layout_marginRight="15dp"
       android:layout_marginTop="10dp"
+      android:gravity="center_vertical"
       android:orientation="horizontal"
       >
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_gravity="center_vertical"
         android:layout_weight="0.4"
         android:text="@string/Price"
         />
@@ -81,7 +84,7 @@
         android:id="@id/price"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="center_vertical|right"
         android:layout_weight="0.6"
         android:gravity="end"
         android:inputType="numberDecimal"

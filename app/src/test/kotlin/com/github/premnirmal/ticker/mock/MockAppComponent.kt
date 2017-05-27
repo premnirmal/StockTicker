@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.mock
 
-import com.github.premnirmal.ticker.AppComponent
+import com.github.premnirmal.ticker.TestActivity
+import com.github.premnirmal.ticker.components.AppComponent
 import dagger.Component
 import javax.inject.Singleton
 
@@ -11,4 +12,7 @@ import javax.inject.Singleton
 @Component(
     modules = arrayOf(MockAppModule::class)
 )
-interface MockAppComponent : AppComponent
+interface MockAppComponent : AppComponent {
+
+  fun inject(activity: TestActivity)
+}

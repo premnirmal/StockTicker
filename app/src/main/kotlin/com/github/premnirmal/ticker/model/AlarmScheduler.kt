@@ -6,8 +6,8 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.Analytics
-import com.github.premnirmal.ticker.RefreshReceiver
+import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.RefreshReceiver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.tickerwidget.R

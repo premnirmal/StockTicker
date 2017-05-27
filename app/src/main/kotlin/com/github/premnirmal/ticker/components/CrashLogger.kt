@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.components
 
 import android.content.Context
 

@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import com.github.premnirmal.ticker.RxBus
+import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.tickerwidget.BuildConfig

@@ -1,9 +1,9 @@
 package com.github.premnirmal.ticker.portfolio
 
 import android.os.Bundle
-import com.github.premnirmal.ticker.BaseActivity
-import com.github.premnirmal.ticker.InAppMessage
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.components.InAppMessage
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.doneButton

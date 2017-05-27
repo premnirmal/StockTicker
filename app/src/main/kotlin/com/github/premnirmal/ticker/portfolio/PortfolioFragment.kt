@@ -13,19 +13,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import com.github.premnirmal.ticker.BaseFragment
-import com.github.premnirmal.ticker.CrashLogger
-import com.github.premnirmal.ticker.InAppMessage
-import com.github.premnirmal.ticker.Injector
-import com.github.premnirmal.ticker.RxBus
-import com.github.premnirmal.ticker.SimpleSubscriber
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.InAppMessage
+import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
+import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
@@ -120,11 +121,13 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = Tools.getStatusBarHeight(
-          activity)
+      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
+          Tools.getStatusBarHeight(activity)
     }
-    collapsingToolbarLayout.setCollapsedTitleTypeface(TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Regular.ttf"))
-    collapsingToolbarLayout.setExpandedTitleTypeface(TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Bold.ttf"))
+    collapsingToolbarLayout.setCollapsedTitleTypeface(
+        TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Regular.ttf"))
+    collapsingToolbarLayout.setExpandedTitleTypeface(
+        TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Bold.ttf"))
     stockList.addItemDecoration(
         SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
@@ -168,50 +171,46 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         override fun onError(e: Throwable) {
           attemptingFetch = false
           CrashLogger.logException(e)
-          swipe_container.isRefreshing = false
+          swipe_container?.isRefreshing = false
           InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
         }
 
         override fun onNext(result: List<Quote>) {
           attemptingFetch = false
-          swipe_container.isRefreshing = false
+          swipe_container?.isRefreshing = false
           update()
         }
       })
     } else {
       InAppMessage.showMessage(fragment_root, getString(R.string.no_network_message))
-      swipe_container.isRefreshing = false
+      swipe_container?.isRefreshing = false
     }
   }
 
   internal fun update() {
-    if (activity != null) {
-      // Don't attempt to make many requests in a row if the stocks don't fetch.
-      if (holder.stocksProvider.getStocks().isEmpty() && fetchCount < SEQUENTIAL_REQUEST_COUNT) {
-        if (!attemptingFetch) {
-          swipe_container.isRefreshing = true
-          fetch()
-          return
-        }
-      }
-      fetchCount = 0
-      if (stockList != null) {
-        stocksAdapter.refresh(holder.stocksProvider)
-        subtitle.text = "Last Fetch: ${holder.stocksProvider.lastFetched()}"
+    // Don't attempt to make many requests in a row if the stocks don't fetch.
+    if (holder.stocksProvider.getStocks().isEmpty() && fetchCount < SEQUENTIAL_REQUEST_COUNT) {
+      if (!attemptingFetch) {
+        swipe_container?.isRefreshing = true
+        fetch()
+        return
       }
     }
+    fetchCount = 0
+    stocksAdapter.refresh(holder.stocksProvider)
+    subtitle?.text = "Last Fetch: ${holder.stocksProvider.lastFetched()}"
   }
 
   internal fun promptRemove(quote: Quote?, position: Int) {
     if (quote != null) {
-      AlertDialog.Builder(activity).setTitle("Remove")
-          .setMessage("Are you sure you want to remove ${quote.symbol} from your portfolio?")
-          .setPositiveButton("Remove", { dialog, _ ->
+      AlertDialog.Builder(activity).setTitle(R.string.remove)
+          .setMessage(getString(R.string.remove_prompt, quote.symbol))
+          .setPositiveButton(R.string.remove, { dialog, _ ->
             holder.stocksProvider.removeStock(quote.symbol)
-            stocksAdapter.remove(position)
+            stocksAdapter.remove(quote)
             dialog.dismiss()
           })
-          .setNegativeButton("Cancel", { dialog, _ -> dialog.dismiss() })
+          .setNegativeButton(R.string.cancel, { dialog, _ -> dialog.dismiss() })
           .show()
     }
   }

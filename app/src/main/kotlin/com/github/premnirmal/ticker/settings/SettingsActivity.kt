@@ -21,10 +21,10 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.LayoutInflater
-import com.github.premnirmal.ticker.Analytics
-import com.github.premnirmal.ticker.CrashLogger
-import com.github.premnirmal.ticker.InAppMessage
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.InAppMessage
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -281,6 +281,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
           val checked = newValue as Boolean
           Tools.enableAutosort(checked)
+          broadcastUpdateWidget()
           return true
         }
       }
@@ -294,6 +295,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
           val checked = newValue as Boolean
           preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply()
+          broadcastUpdateWidget()
           return true
         }
       }

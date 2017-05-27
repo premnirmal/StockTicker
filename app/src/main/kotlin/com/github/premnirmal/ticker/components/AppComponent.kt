@@ -1,5 +1,7 @@
-package com.github.premnirmal.ticker
+package com.github.premnirmal.ticker.components
 
+import com.github.premnirmal.ticker.ParanormalActivity
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.RequestInterceptor
@@ -9,18 +11,16 @@ import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
-import com.github.premnirmal.ticker.portfolio.TickerSelectorActivity
+import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
-import dagger.Component
-import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 3/3/16.
  */
-@Singleton
-@Component(
+@javax.inject.Singleton
+@dagger.Component(
     modules = arrayOf(AppModule::class)
 )
 interface AppComponent {

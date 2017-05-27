@@ -10,12 +10,12 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
-import com.github.premnirmal.ticker.Analytics
-import com.github.premnirmal.ticker.Injector
+import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.ParanormalActivity
-import com.github.premnirmal.ticker.RefreshReceiver
+import com.github.premnirmal.ticker.components.RefreshReceiver
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.WidgetClickReceiver
+import com.github.premnirmal.ticker.components.WidgetClickReceiver
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject

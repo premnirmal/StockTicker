@@ -2,8 +2,8 @@ package com.github.premnirmal.ticker.settings
 
 import android.os.AsyncTask
 import android.text.TextUtils
-import com.github.premnirmal.ticker.Analytics
-import com.github.premnirmal.ticker.CrashLogger
+import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
 import java.io.BufferedReader
 import java.io.File
