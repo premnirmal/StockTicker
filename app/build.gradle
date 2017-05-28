@@ -4,7 +4,7 @@ apply plugin: "kotlin-android-extensions"
 apply plugin: "io.fabric"
 apply from: "../build.gradle"
 apply plugin: "com.getkeepsafe.dexcount"
-apply plugin: 'androlate'
+//apply plugin: 'androlate'
 
 buildscript {
   repositories {
@@ -46,16 +46,16 @@ dexcount {
   maxMethodCount = 64000
 }
 
-androlate {
-  final File parrotFile = file("file:translate.properties")
-  final Properties props = new Properties();
-  props.load(new FileInputStream(parrotFile));
+// androlate {
+//   final File parrotFile = file("file:translate.properties")
+//   final Properties props = new Properties();
+//   props.load(new FileInputStream(parrotFile));
 
-  appName 'StockTicker'
-  apiKey props.getProperty("GOOGLE_TRANSLATE_API_KEY").toString()
-  defaultLanguage 'en'
-  targetLanguages = ['es', 'fr', 'de']
-}
+//   appName 'StockTicker'
+//   apiKey props.getProperty("GOOGLE_TRANSLATE_API_KEY").toString()
+//   defaultLanguage 'en'
+//   targetLanguages = ['es', 'fr', 'de']
+// }
 
 android {
   compileSdkVersion 25
