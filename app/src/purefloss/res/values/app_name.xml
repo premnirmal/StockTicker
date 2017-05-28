@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <string name="app_name">Stocks Widget</string>
+<?xml version="1.0" encoding="UTF-8"?><resources xmlns:xandrolate="http://com.github.androlate">
+  <string name="app_name" xandrolate:md5="4c17cb971d37bd9133823c49d21259f9">Stocks Widget</string>
   <integer name="google_play_services_version">1</integer>
 </resources>

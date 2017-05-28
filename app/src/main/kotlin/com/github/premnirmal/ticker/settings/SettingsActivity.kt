@@ -21,15 +21,16 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.LayoutInflater
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.string
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
@@ -397,7 +398,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           showDialog(getString(R.string.error_exporting))
           CrashLogger.logException(Throwable("Error exporting tickers"))
         } else {
-          showDialog("Exported to $result")
+          showDialog(getString(R.string.exported_to, result))
         }
       }
     }.execute(stocksProvider.getTickers())
@@ -438,21 +439,21 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportTickers()
         } else {
-          showDialog("Cannot export quotes without permission to write to external storage")
+          showDialog(getString(string.cannot_export_msg))
         }
       }
       REQCODE_READ_EXTERNAL_STORAGE -> {
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           launchImportIntent()
         } else {
-          showDialog("Cannot import quotes without permission to read external storage")
+          showDialog(getString(string.cannot_import_msg))
         }
       }
       REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
         if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportAndShareTickers()
         } else {
-          showDialog("Cannot share quotes without permission to write to external storage")
+          showDialog(getString(string.cannot_share_msg))
         }
       }
     }

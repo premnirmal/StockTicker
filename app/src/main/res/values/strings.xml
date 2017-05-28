@@ -1,91 +1,97 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<?xml version="1.0" encoding="UTF-8"?><resources xmlns:xandrolate="http://com.github.androlate">
 
-  <string name="robindahood_endpoint">https://robindahood.com/api/</string>
-  <string name="suggestions_endpoint">https://s.yimg.com/aq/</string>
+  <string name="robindahood_endpoint" translatable="false" xandrolate:md5="685895906d3d2042c9afcf02cbbe4fe0">https://robindahood.com/api/</string>
+  <string name="suggestions_endpoint" translatable="false" xandrolate:md5="fdf9bf470dba2402d6060a730e7be74a">https://s.yimg.com/aq/</string>
 
-  <string name="portfolio">Portfolio</string>
-  <string name="widget_label">StocksWidget</string>
-  <string name="action_add">Add</string>
-  <string name="action_export">Export Quotes</string>
-  <string name="action_share">Share Portfolio</string>
-  <string name="action_nuke">Clear app data</string>
-  <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
-  <string name="export_desc">Export quotes to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
-  <string name="action_import">Import Quotes</string>
-  <string name="import_desc">Import quotes from a comma separated .txt file</string>
-  <string name="action_Settings">Widget Settings</string>
-  <string name="action_rearrage">Rearrange Stocks</string>
-  <string name="action_update">Refresh Now</string>
-  <string name="are_you_sure">Are you sure?</string>
-  <string name="add_ticker">Add Ticker</string>
-  <string name="dotdotdot">…</string>
-  <string name="text_size">Text Size</string>
-  <string name="bg">Widget Background</string>
-  <string name="layout_type">Widget Type</string>
-  <string name="text_color">Text Color</string>
-  <string name="start_time">Start Time</string>
-  <string name="end_time">End Time</string>
-  <string name="update_interval">Update Interval</string>
-  <string name="auto_sort">Autosort</string>
-  <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
-  <string name="refresh_on_screen_unlock">Refresh on unlock</string>
-  <string name="refresh_on_screen_unlock_desc">Refresh when the screen unlocks (only during set hours).</string>
-  <string name="bold_change">Bold text</string>
-  <string name="bold_change_desc">Show changes and market value in bold</string>
-  <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
-  <string name="choose_text_size">Text Size</string>
-  <string name="text_size_updated_message">Text size updated</string>
-  <string name="bg_updated_message">Background updated</string>
-  <string name="layout_updated_message">Layout type updated</string>
-  <string name="text_coor_updated_message">Text color updated</string>
-  <string name="refresh_updated_message">Refresh interval updated</string>
-  <string name="error_exporting">Error exporting file</string>
-  <string name="error_symbol">Invalid symbol</string>
-  <string name="error_sharing">Error sharing quotes</string>
-  <string name="ticker_import_success">Quotes imported successfully</string>
-  <string name="ticker_import_fail">Error importing quotes</string>
-  <string name="no_network_message">No network connection</string>
-  <string name="refresh_failed">Refresh failed</string>
-  <string name="error_fetching_suggestions">Error fetching suggestions</string>
-  <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
-  <string name="package_replaced_string">com.github.premnirmal.tickerwidget</string>
-  <string name="only_updates_on_weekdays">Only updates on weekdays</string>
-  <string name="end_time_updated">End time updated</string>
-  <string name="start_time_updated">Start time updated</string>
-  <string name="incorrect_time_update_error">Start time must not equal end time</string>
-  <string name="share_email_subject">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
-  <string name="my_stock_portfolio">My Stock Portfolio</string>
-  <string name="number_of_shares">No. of Shares</string>
-  <string name="Price">Price</string>
-  <string name="add_position">Add Position</string>
-  <string name="done">Done</string>
-  <string name="skip">Skip</string>
-  <string name="edit_position">Edit Position</string>
-  <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
-  <string name="remove">Remove</string>
-  <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
-  <string name="no_symbols_in_portfolio">No symbols in portfolio.</string>
-  <string name="like_our_app">Like our app?</string>
-  <string name="please_rate">Please rate us on the PlayStore, we would love to hear what you have to say!</string>
-  <string name="yes">Yes</string>
-  <string name="no">No</string>
-  <string name="later">Later</string>
-  <string name="enable_google_finance">Enable alternate finance API?</string>
-  <string name="enable_google_finance_desc">In beta. Please disable if it doesn\'t give accurate quotes.</string>
-  <string name="edit_positions">Edit Positions</string>
-  <string name="add_stock">Add Stock</string>
-  <string name="holdings">Holdings</string>
-  <string name="gain_loss">Gain/Loss</string>
-  <string name="change_percent">Change %</string>
-  <string name="change_amount">Change</string>
-  <string name="day_change_percent">Day change %</string>
-  <string name="day_change_amount">Day change</string>
-  <string name="autosort_disabled">Auto-sort has been disabled. You can now drag and drop to sort.</string>
-  <string name="remove_prompt">Are you sure you want to remove %1$s from your portfolio?</string>
-  <string name="cancel">Cancel</string>
-  <string name="add_positions_prompt">Do you want to add positions for %1$s?</string>
-  <string name="already_in_portfolio">%1$s is already in your portfolio</string>
-  <string name="added_to_list">%1$s added to your portfolio</string>
+  <string name="portfolio" xandrolate:md5="d4f859a96c13f551a2771b7fc3a78d38">Portfolio</string>
+  <string name="widget_label" xandrolate:md5="bc6aaabd87fe6af46175421aa65ecc42">StocksWidget</string>
+  <string name="action_add" xandrolate:md5="ec211f7c20af43e742bf2570c3cb84f9">Add</string>
+  <string name="action_export" xandrolate:md5="149c76064c471e03884e6be350d7a78c">Export Quotes</string>
+  <string name="action_share" xandrolate:md5="736f3a7c73a974f4c84413a69d6930c6">Share Portfolio</string>
+  <string name="action_nuke" xandrolate:md5="23e82ca4461c433da4477962172e4424">Clear app data</string>
+  <string name="nuke_desc" xandrolate:md5="58cde62b9bf8094a90bff30688380a69">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
+  <string name="export_desc" xandrolate:md5="c1fa120f9e067bab5b552e579d74c645">Export quotes to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
+  <string name="action_import" xandrolate:md5="7edfeb6bf0ed759bf5e4d00515234ab3">Import Quotes</string>
+  <string name="import_desc" xandrolate:md5="0931c43e9805b7fba272868024731ad1">Import quotes from a comma separated .txt file</string>
+  <string name="action_Settings" xandrolate:md5="92e81829dc5be1a5488735680ab4ceab">Widget Settings</string>
+  <string name="action_rearrage" xandrolate:md5="77d526ce21d892f1d5d691c2dcb8a10d">Rearrange Stocks</string>
+  <string name="action_update" xandrolate:md5="17f85a2730b3dd7b71e21b3d85c4c153">Refresh Now</string>
+  <string name="are_you_sure" xandrolate:md5="729a51874fe901b092899e9e8b31c97a">Are you sure?</string>
+  <string name="add_ticker" xandrolate:md5="e62e2e833c6e7361bd37fe05c00fa45f">Add Ticker</string>
+  <string name="dotdotdot" xandrolate:md5="2f8ed7fafd3c1784a3be4da8eb3d106a">…</string>
+  <string name="text_size" xandrolate:md5="aa51285376719885f6cbfb240ba8faf2">Text Size</string>
+  <string name="bg" xandrolate:md5="11501c5349bcf4cfffe9ede85f3cbd48">Widget Background</string>
+  <string name="layout_type" xandrolate:md5="e2a3b27fc23caaedda3dcd2ecbedae5c">Widget Type</string>
+  <string name="text_color" xandrolate:md5="8903861290617267b361478ab7f16f31">Text Color</string>
+  <string name="start_time" xandrolate:md5="2bbc845892f400626baab5af687527c5">Start Time</string>
+  <string name="end_time" xandrolate:md5="c91a577b72313356fad611c55f43c10f">End Time</string>
+  <string name="update_interval" xandrolate:md5="e73c7a05ff27da3bfc9c202c3388753d">Update Interval</string>
+  <string name="auto_sort" xandrolate:md5="9c1d32468dcef1c175383466c0292381">Autosort</string>
+  <string name="auto_sort_desc" xandrolate:md5="a9e437f311f97c1ef4abe5d85412fec9">Stocks will be sorted by percent change.</string>
+  <string name="refresh_on_screen_unlock" xandrolate:md5="9925112eb82c61b81176da42dd795a41">Refresh on unlock</string>
+  <string name="refresh_on_screen_unlock_desc" xandrolate:md5="17077686560097a07f2ac5cb90147abc">Refresh when the screen unlocks (only during set hours).</string>
+  <string name="bold_change" xandrolate:md5="da77091f0857719acccaeac900126758">Bold text</string>
+  <string name="bold_change_desc" xandrolate:md5="63c5310f1282f2d33255328a44f04855">Show changes and market value in bold</string>
+  <string name="checkout_open_source" xandrolate:md5="7c35688af5c89d8b7b1ccdb3e4ff5205">https://github.com/premnirmal/StockTicker</string>
+  <string name="choose_text_size" xandrolate:md5="aa51285376719885f6cbfb240ba8faf2">Text Size</string>
+  <string name="text_size_updated_message" xandrolate:md5="d9c26333536c0e659805752a0cfbbc66">Text size updated</string>
+  <string name="bg_updated_message" xandrolate:md5="30ef236f94db49842144f612aa28428b">Background updated</string>
+  <string name="layout_updated_message" xandrolate:md5="f8533f572d6ee13b6afd41f5e1251b4a">Layout type updated</string>
+  <string name="text_coor_updated_message" xandrolate:md5="dc18d1ed1237339235db0267f42cdb50">Text color updated</string>
+  <string name="refresh_updated_message" xandrolate:md5="9353ad1fac067e1019dd5b0ba8224ba3">Refresh interval updated</string>
+  <string name="error_exporting" xandrolate:md5="577d294ea0f8fd371538d8cae71718c3">Error exporting file</string>
+  <string name="error_symbol" xandrolate:md5="3b8004ac9c04e65259cdedc6936d6cc5">Invalid symbol</string>
+  <string name="error_sharing" xandrolate:md5="4a289afbb7a72c242b759fc7b416554d">Error sharing quotes</string>
+  <string name="ticker_import_success" xandrolate:md5="79ad7003ee2742627962eb1dbadb4f3b">Quotes imported successfully</string>
+  <string name="ticker_import_fail" xandrolate:md5="d195cf285eb9653fc79481d455aa9dbe">Error importing quotes</string>
+  <string name="no_network_message" xandrolate:md5="0790b39f37f7e8817ad39bf67172d647">No network connection</string>
+  <string name="refresh_failed" xandrolate:md5="27c0a5126998e98c27222011bad3d445">Refresh failed</string>
+  <string name="error_fetching_suggestions" xandrolate:md5="aae7a6d0d47be88419aa3e84c86f8150">Error fetching suggestions</string>
+  <string name="adblock" xandrolate:md5="957187fc7e53d7d48cb8ab835f00641d">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
+  <string name="package_replaced_string" translatable="false" xandrolate:md5="2564881430859daaeae795f0b71722d1">com.github.premnirmal.tickerwidget</string>
+  <string name="only_updates_on_weekdays" xandrolate:md5="78f9585f74946c034adf56f55c635593">Only updates on weekdays</string>
+  <string name="end_time_updated" xandrolate:md5="8c8ea779fb733f1989986727d1c2cdf0">End time updated</string>
+  <string name="start_time_updated" xandrolate:md5="eee5b0454ce4413e7e13249dacf831a2">Start time updated</string>
+  <string name="incorrect_time_update_error" xandrolate:md5="be807fbe922e3165d36f5e2bda6819d8">Start time must not equal end time</string>
+  <string name="share_email_subject" xandrolate:md5="9bcb4711db6dfcc0fdb6fdbc97551dac">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
+  <string name="my_stock_portfolio" xandrolate:md5="4ceecc8d5f3b3b9845b46791693fd72a">My Stock Portfolio</string>
+  <string name="number_of_shares" xandrolate:md5="2a9bce830276e644e7b4496e5ca422f3">No. of Shares</string>
+  <string name="Price" xandrolate:md5="3601146c4e948c32b6424d2c0a7f0118">Price</string>
+  <string name="add_position" xandrolate:md5="0089a0883cfb52440c9baad24481d367">Add Position</string>
+  <string name="done" xandrolate:md5="f92965e2c8a7afb3c1b9a5c09a263636">Done</string>
+  <string name="skip" xandrolate:md5="72ef2b9b6965d078e3c7f95487a82d1c">Skip</string>
+  <string name="edit_position" xandrolate:md5="8153a332a400955beb6327d275e1d9f3">Edit Position</string>
+  <string name="no_such_stock_in_portfolio" xandrolate:md5="366eb21f8d693f231310bc5b3ccbe08d">No such stock in your portfolio.</string>
+  <string name="remove" xandrolate:md5="1063e38cb53d94d386f21227fcd84717">Remove</string>
+  <string name="change_instructions" xandrolate:md5="3a5b8064e667cc5c3befa504357c99cb">On your widget, click on the change to switch between change percent and change value</string>
+  <string name="no_symbols_in_portfolio" xandrolate:md5="1d27a2c9c23de87eb56448e0f2d87831">No symbols in portfolio.</string>
+  <string name="like_our_app" xandrolate:md5="f4cba30c252cbf0ceb6de34464f10a5c">Like our app?</string>
+  <string name="please_rate" xandrolate:md5="862f946df59c66341061c32d504e7586">Please rate us on the PlayStore, we would love to hear what you have to say!</string>
+  <string name="yes" xandrolate:md5="93cba07454f06a4a960172bbd6e2a435">Yes</string>
+  <string name="no" xandrolate:md5="bafd7322c6e97d25b6299b5d6fe8920b">No</string>
+  <string name="later" xandrolate:md5="61057a0c84605444201929bdd72014f0">Later</string>
+  <string name="enable_google_finance" xandrolate:md5="5554ba9eed6837609865382401598b47">Enable alternate finance API?</string>
+  <string name="enable_google_finance_desc" xandrolate:md5="18f34b834d94394f6489ecb2ab4a6a25">In beta. Please disable if it doesn\'t give accurate quotes.</string>
+  <string name="edit_positions" xandrolate:md5="0c91b63322c5c45840412a6c5014eed7">Edit Positions</string>
+  <string name="add_stock" xandrolate:md5="eaeb862536fa65fc7d72ab1fc0ec2652">Add Stock</string>
+  <string name="holdings" xandrolate:md5="063215beb567e666b3c937ae83163e92">Holdings</string>
+  <string name="gain_loss" xandrolate:md5="9831e15454acc4204b87cbfcddf97845">Gain/Loss</string>
+  <string name="change_percent" xandrolate:md5="6005b3752cb751ece5c505bd64d41294">Change %</string>
+  <string name="change_amount" xandrolate:md5="f4ec5f57bd4d31b803312d873be40da9">Change</string>
+  <string name="day_change_percent" xandrolate:md5="b1b48bbcfa2dd8fe8fb82548d8fc24cd">Day change %</string>
+  <string name="day_change_amount" xandrolate:md5="65209fa282166e02a6920137f10fa79c">Day change</string>
+  <string name="autosort_disabled" xandrolate:md5="223bff883ec6c1e9a01c9f3a50ddd3e2">Auto-sort has been disabled. You can now drag and drop to sort.</string>
+  <string name="remove_prompt" xandrolate:md5="61b4c51f3694be306f16da9714de56bf">Are you sure you want to remove %1$s from your portfolio?</string>
+  <string name="cancel" xandrolate:md5="ea4788705e6873b424c65e91c2846b19">Cancel</string>
+  <string name="add_positions_prompt" xandrolate:md5="d3b0a66813f8473056140ea0037c7f4f">Do you want to add positions for %1$s?</string>
+  <string name="already_in_portfolio" xandrolate:md5="5eafd5dde31eb4a2f89c6867aa951d4c">%1$s is already in your portfolio</string>
+  <string name="added_to_list" xandrolate:md5="6d15af57bfa846e1ce1bd8a0950e338d">%1$s added to your portfolio</string>
+  <string name="next_fetch" xandrolate:md5="4f43d27e9366bf00d30a4fddd6dd40a4">Next fetch: %1$s</string>
+  <string name="last_fetch" xandrolate:md5="acba46d3882936a542d68ec518237da7">Last fetch: %1$s</string>
+  <string name="cannot_export_msg" xandrolate:md5="0f86b74aab9c8ff4a9369927d5fff46e">Cannot export quotes without permission to write to external storage</string>
+  <string name="cannot_import_msg" xandrolate:md5="29385a31e5fb48181e7144c9ee3c4a15">Cannot import quotes without permission to read external storage</string>
+  <string name="cannot_share_msg" xandrolate:md5="e42b482b40d5e60696fdd1f3a424167f">Cannot share quotes without permission to write to external storage</string>
+  <string name="exported_to" xandrolate:md5="9d3a64a07e047249cde8f94741668a50">Exported to %1$s</string>
+  <string name="whats_new_in" xandrolate:md5="adaaa978ddfa40f36cc32f441ae3f1f6">What\'s new in v%1$s</string>
 
 </resources>

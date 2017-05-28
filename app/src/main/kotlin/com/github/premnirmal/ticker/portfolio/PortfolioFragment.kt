@@ -198,7 +198,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
     fetchCount = 0
     stocksAdapter.refresh(holder.stocksProvider)
-    subtitle?.text = "Last Fetch: ${holder.stocksProvider.lastFetched()}"
+    subtitle?.text = getString(R.string.last_fetch, holder.stocksProvider.lastFetched())
   }
 
   internal fun promptRemove(quote: Quote?, position: Int) {

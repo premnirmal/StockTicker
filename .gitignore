@@ -11,7 +11,7 @@
 /captures
 app/build
 
-# ignore keystore and keystore.properties
+#ignore keystore and keystore.properties
 *.jks
 keystore.*
 app/keystore.*
@@ -26,3 +26,6 @@ app/src/main/res/values/com_crashlytics_export_strings.xml
 app/google-services.json
 app/src/dev/google-services.json
 app/src/prod/google-services.json
+
+#google translate secret
+app/translate.properties

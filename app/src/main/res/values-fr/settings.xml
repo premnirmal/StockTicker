@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><resources>
+  <string-array name="font_sizes">
+    <item>Petit</item>
+    <item>Moyen</item>
+    <item>Grand</item>
+  </string-array>
+  <string-array name="font_sizes_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+  <string-array name="layout_types">
+    <item>Animé</item>
+    <item>Onglets</item>
+    <item>Fixé</item>
+  </string-array>
+  <string-array name="layout_types_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+  <string-array name="backgrounds">
+    <item>Transparent</item>
+    <item>Translucide</item>
+    <item>Foncé</item>
+    <item>Lumière</item>
+  </string-array>
+  <string-array name="backgrounds_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+  </string-array>
+  <string-array name="text_colors">
+    <item>blanc</item>
+    <item>Noir</item>
+  </string-array>
+  <string-array name="sync_periods">
+    <item>15 minutes</item>
+    <item>30 minutes</item>
+    <item>45 minutes</item>
+    <item>1 heure</item>
+  </string-array>
+  <string-array name="sync_periods_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+  </string-array>
+</resources>

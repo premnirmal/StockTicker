@@ -123,11 +123,11 @@ class StockWidget() : AppWidgetProvider() {
         PendingIntent.FLAG_UPDATE_CURRENT)
     remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
     val lastFetched: String = stocksProvider.lastFetched()
-    val lastUpdatedText = "Last fetch: $lastFetched"
+    val lastUpdatedText = context.getString(R.string.last_fetch, lastFetched)
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
     if (nextFetchVisible) {
       val nextUpdate: String = stocksProvider.nextFetch()
-      val nextUpdateText: String = "Next fetch: $nextUpdate"
+      val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
       remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
       remoteViews.setViewVisibility(R.id.next_update, View.VISIBLE)
     } else {

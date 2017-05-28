@@ -51,7 +51,7 @@ class ParanormalActivity : BaseActivity() {
           stringBuilder.append("\n")
         }
       }
-      showDialog("What\'s new in v" + BuildConfig.VERSION_NAME, stringBuilder.toString())
+      showDialog(getString(R.string.whats_new_in,  BuildConfig.VERSION_NAME), stringBuilder.toString())
     } else {
       maybeAskToRate()
     }
