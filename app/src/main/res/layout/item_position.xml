@@ -67,6 +67,7 @@
       android:layout_marginBottom="5dp"
       android:layout_marginRight="5dp"
       android:ellipsize="end"
+      android:lines="2"
       android:maxLines="2"
       android:textColor="@android:color/white"
       android:textSize="@dimen/portfolio_position_vh_text_size"

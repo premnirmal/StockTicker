@@ -1,45 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/stock_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    >
+    android:fitsSystemWindows="true">
 
-  <android.support.v7.widget.Toolbar
-      android:id="@+id/toolbar"
+  <android.support.design.widget.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/color_primary"
-      app:navigationIcon="?attr/homeAsUpIndicator"
-      app:title="@string/add_stock"
-      app:titleTextAppearance="@style/ActionBarTitleText"
-      />
+      android:background="@color/transparent"
+      android:elevation="0dp"
+      app:elevation="0dp"
+      >
 
-  <EditText
-      android:id="@+id/search_view"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:paddingLeft="7dp"
-      android:paddingRight="7dp"
-      android:layout_marginLeft="5dp"
-      android:layout_marginRight="5dp"
-      android:layout_marginTop="@dimen/activity_horizontal_margin"
-      android:imeOptions="actionDone"
-      android:inputType="textNoSuggestions|textCapCharacters"
-      android:maxLines="1"
-      android:lines="1"
-      android:textAllCaps="true"
-      android:textSize="@dimen/large_text"
-      />
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_primary"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="@string/add_stock"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        />
+
+    <EditText
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:elevation="0dp"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions|textCapCharacters"
+        android:lines="1"
+        android:maxLines="1"
+        android:paddingLeft="7dp"
+        android:paddingRight="7dp"
+        android:textAllCaps="true"
+        android:textSize="@dimen/large_text"
+        app:elevation="0dp"
+        app:layout_scrollFlags="enterAlways|snap"
+        />
+  </android.support.design.widget.AppBarLayout>
 
   <android.support.v7.widget.RecyclerView
       android:id="@+id/recycler_view"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:scrollbars="none"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />
 
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

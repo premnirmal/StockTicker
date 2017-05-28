@@ -28,8 +28,7 @@ object InAppMessage {
     if (activity == null) {
       return
     }
-    val snackbar = createSnackbar(getRootView(activity), message)
-    snackbar.show()
+    showMessage(getRootView(activity), message)
   }
 
   fun showMessage(activity: Activity?, message: CharSequence, actionText: CharSequence,

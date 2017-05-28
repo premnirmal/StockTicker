@@ -69,6 +69,7 @@
       android:layout_marginRight="5dp"
       android:ellipsize="end"
       android:maxLines="2"
+      android:lines="2"
       android:textColor="@android:color/white"
       android:textSize="@dimen/portfolio_stock_vh_name_text_size"
       tools:text="Google Inc"
