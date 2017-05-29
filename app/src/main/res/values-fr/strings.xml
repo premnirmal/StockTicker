@@ -73,14 +73,14 @@
   <string name="gain_loss">Perte de profit</string>
   <string name="change_percent">Changer %</string>
   <string name="change_amount">Changement</string>
-  <string name="day_change_percent">% jour %</string>
+  <string name="day_change_percent">Changement de jour %</string>
   <string name="day_change_amount">Changement de jour</string>
   <string name="autosort_disabled">L\'auto-tri a été désactivé. Vous pouvez maintenant glisser-déposer pour trier.</string>
   <string name="remove_prompt">Êtes-vous sûr de vouloir%1$s de votre portefeuille?</string>
   <string name="cancel">Annuler</string>
   <string name="add_positions_prompt">Voulez-vous ajouter des positions pour%1$s?</string>
-  <string name="already_in_portfolio">% 1$s est déjà dans votre portefeuille</string>
-  <string name="added_to_list">% 1$s ajouté à votre portefeuille</string>
+  <string name="already_in_portfolio">%1$s est déjà dans votre portefeuille</string>
+  <string name="added_to_list">%1$s ajouté à votre portefeuille</string>
   <string name="next_fetch">Prochain: %1$s</string>
   <string name="last_fetch">Dernière: %1$s</string>
   <string name="cannot_export_msg">Impossible d\'exporter des guillemets sans autorisation pour écrire sur un stockage externe</string>

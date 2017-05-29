@@ -13,7 +13,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SuggestionApi
-import com.github.premnirmal.ticker.network.data.Suggestion
+import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.Callback
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -69,7 +69,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
       if (Tools.isNetworkOnline(applicationContext)) {
         val observable = suggestionApi.getSuggestions(query)
         disposable = bind(observable)
-            .map { suggestions -> suggestions.ResultSet?.Result }
+            .map { (resultSet) -> resultSet?.result }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {

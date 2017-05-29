@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import com.github.premnirmal.ticker.network.data.Suggestion
+import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionVH
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList

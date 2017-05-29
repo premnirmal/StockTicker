@@ -86,6 +86,8 @@
       app:borderWidth="0dp"
       app:elevation="5dp"
       app:rippleColor="@android:color/white"
+      android:layout_marginRight="8dp"
+      android:layout_marginEnd="8dp"
       />
 
 </android.support.design.widget.CoordinatorLayout>

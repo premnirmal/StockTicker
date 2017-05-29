@@ -79,8 +79,8 @@
   <string name="remove_prompt">Sind Sie sicher, dass Sie%1$s aus Ihrem Portfolio entfernen möchten?</string>
   <string name="cancel">Stornieren</string>
   <string name="add_positions_prompt">Möchten Sie Positionen für%1$s$?</string>
-  <string name="already_in_portfolio">% 1$s ist bereits in deinem portfolio</string>
-  <string name="added_to_list">% 1$s zu deinem Portfolio hinzugefügt</string>
+  <string name="already_in_portfolio">%1$s ist bereits in deinem portfolio</string>
+  <string name="added_to_list">%1$s zu deinem Portfolio hinzugefügt</string>
   <string name="next_fetch">Nächstes holen:%1$s</string>
   <string name="last_fetch">Letzter Abruf:%1$s</string>
   <string name="cannot_export_msg">Kann keine Anführungszeichen ohne Genehmigung exportieren, um auf externen Speicher zu schreiben</string>

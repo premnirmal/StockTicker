@@ -80,8 +80,8 @@
   <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de tu cartera?</string>
   <string name="cancel">Cancelar</string>
   <string name="add_positions_prompt">¿Quieres añadir empleos para%1$s?</string>
-  <string name="already_in_portfolio">% 1$s ya está en su cartera</string>
-  <string name="added_to_list">% 1$s añadido a su cartera</string>
+  <string name="already_in_portfolio">%1$s ya está en su cartera</string>
+  <string name="added_to_list">%1$s añadido a su cartera</string>
   <string name="next_fetch">Próxima: %1$s</string>
   <string name="last_fetch">Última: %1$s</string>
   <string name="cannot_export_msg">No se pueden exportar citas sin permiso para escribir en un almacenamiento externo</string>
