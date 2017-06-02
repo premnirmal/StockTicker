@@ -6,6 +6,8 @@ import io.reactivex.subjects.PublishSubject
 
 /**
  * Created by premnirmal on 2/26/16.
+ *
+ * The ghetto event bus!
  */
 class RxBus {
 
