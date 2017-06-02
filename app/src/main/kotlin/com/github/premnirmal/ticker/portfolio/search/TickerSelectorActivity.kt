@@ -81,7 +81,8 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
 
               override fun onNext(result: List<Suggestion>?) {
                 if (result != null) {
-                  val suggestionList = result
+                  val suggestionList = ArrayList(result)
+                  suggestionList.add(0, Suggestion(query))
                   adapter.setData(suggestionList)
                 }
               }

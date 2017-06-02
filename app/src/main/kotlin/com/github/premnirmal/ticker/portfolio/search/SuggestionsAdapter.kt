@@ -64,7 +64,17 @@ internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter
 
     fun update(item: Suggestion) {
       suggestion = item
-      val name = item.symbol + " - " + Html.fromHtml(item.name) + " (" + item.exchDisp + ")"
+      val builder = StringBuilder(item.symbol)
+      if (item.name.isNotBlank()) {
+        builder.append(" - ")
+        builder.append(Html.fromHtml(item.name))
+      }
+      if (!item.exchDisp.isNullOrBlank()) {
+        builder.append(" (")
+        builder.append(item.exchDisp)
+        builder.append(')')
+      }
+      val name = builder.toString()
       textView.text = name
     }
   }

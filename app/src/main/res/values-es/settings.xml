@@ -1,14 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
-  
-  
-  
-  
-  
-  
-  
-  
-  
-<string-array name="font_sizes">
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string-array name="font_sizes">
     <item>Pequeña</item>
     <item>Medio</item>
     <item>Grande</item>
