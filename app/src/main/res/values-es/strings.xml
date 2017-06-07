@@ -89,4 +89,5 @@
   <string name="cannot_share_msg">No puede compartir comillas sin permiso para escribir en un almacenamiento externo</string>
   <string name="exported_to">Se exporta a%1$s</string>
   <string name="whats_new_in">Qué es nuevo en v%1$s</string>
+  <string name="enter_a_symbol">Introduzca un símbolo</string>
 </resources>

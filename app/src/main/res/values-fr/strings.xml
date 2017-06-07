@@ -88,4 +88,5 @@
   <string name="cannot_share_msg">Impossible de partager des devis sans autorisation pour écrire sur un stockage externe</string>
   <string name="exported_to">Exporter vers%1$s</string>
   <string name="whats_new_in">Quoi de neuf dans v%1$s</string>
+  <string name="enter_a_symbol">Entrez un symbole</string>
 </resources>

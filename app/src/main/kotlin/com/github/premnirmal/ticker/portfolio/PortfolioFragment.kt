@@ -41,6 +41,8 @@ import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
 
+
+
 /**
  * Created by premnirmal on 2/25/16.
  */
@@ -106,9 +108,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         .subscribe { _ ->
           update()
         }
-    if (listViewState != null) {
-      stockList?.layoutManager?.onRestoreInstanceState(listViewState)
-    }
+    listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
     update()
   }
 
@@ -153,8 +153,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
       }
     }
 
-    if (savedInstanceState != null) {
-      listViewState = savedInstanceState.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
+    savedInstanceState?.let {
+      listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
     }
 
     add_ticker_button.setOnClickListener({ v ->
@@ -202,12 +202,12 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   internal fun promptRemove(quote: Quote?, position: Int) {
-    if (quote != null) {
+    quote?.let {
       AlertDialog.Builder(activity).setTitle(R.string.remove)
-          .setMessage(getString(R.string.remove_prompt, quote.symbol))
+          .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove, { dialog, _ ->
-            holder.stocksProvider.removeStock(quote.symbol)
-            stocksAdapter.remove(quote)
+            holder.stocksProvider.removeStock(it.symbol)
+            stocksAdapter.remove(it)
             dialog.dismiss()
           })
           .setNegativeButton(R.string.cancel, { dialog, _ -> dialog.dismiss() })
@@ -218,8 +218,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onSaveInstanceState(outState: Bundle?) {
     super.onSaveInstanceState(outState)
     listViewState = stockList?.layoutManager?.onSaveInstanceState()
-    if (listViewState != null) {
-      outState?.putParcelable(LIST_INSTANCE_STATE, listViewState)
+    listViewState?.let {
+      outState?.putParcelable(LIST_INSTANCE_STATE, it)
     }
   }
 

@@ -66,6 +66,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     Injector.inject(this)
     storage = StocksStorage()
     exponentialBackoff = ExponentialBackoff()
+    backOffAttemptCount = Tools.backOffAttemptCount()
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(
         *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
@@ -139,7 +140,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           .doOnNext { _ ->
             Tools.setRefreshing(false)
             synchronized(quoteList, {
-              backOffAttemptCount = 0
+              setBackOffAttemptCount(0)
               sendBroadcast(true)
             })
           }
@@ -149,7 +150,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
-                  bus.post(ErrorEvent(exception.message!!))
+                  exception.message?.let { bus.post(ErrorEvent(it)) }
                   if (exception.code < 500) {
                     retryWithBackoff()
                   }
@@ -180,8 +181,13 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   private fun retryWithBackoff() {
     val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
-    backOffAttemptCount++
+    setBackOffAttemptCount(++backOffAttemptCount)
     scheduleUpdate(Tools.clock().elapsedRealtime() + backOffTime)
+  }
+
+  private fun setBackOffAttemptCount(count: Int) {
+    backOffAttemptCount = count
+    Tools.setBackOffAttemptCount(backOffAttemptCount)
   }
 
   internal fun sendBroadcast(refresh: Boolean = false) {

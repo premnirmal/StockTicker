@@ -1,13 +1,13 @@
 package com.github.premnirmal.ticker.network
 
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote
 import com.google.gson.Gson
-import retrofit2.HttpException
 import io.reactivex.Observable
+import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,15 +48,12 @@ import javax.inject.Singleton
         }
         .doOnError { e ->
           if (e is HttpException) {
-            try {
-              val errorBody: ErrorBody? = gson.fromJson(e.response().errorBody().string(), ErrorBody::class.java)
-              if (errorBody != null) {
-                val robindahoodException = RobindahoodException(errorBody, e, e.code())
-                CrashLogger.logException(robindahoodException)
-                throw robindahoodException
-              }
-            } catch (ex: Exception) {
-              // ignored
+            val errorBody: ErrorBody? = gson.fromJson(e.response().errorBody().string(),
+                ErrorBody::class.java)
+            errorBody?.let {
+              val robindahoodException = RobindahoodException(it, e, e.code())
+              CrashLogger.logException(robindahoodException)
+              throw robindahoodException
             }
           }
         }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><resources xmlns:xandrolate="http://com.github.androlate">
   <string-array name="whats_new" xandrolate:md5="98efea0d0d0045769b36f8b9224ceacc">
-    <item>Support for Japanese symbols</item>
+    <item>UI fixes</item>
   </string-array>
 </resources>

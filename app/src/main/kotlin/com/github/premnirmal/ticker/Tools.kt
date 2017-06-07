@@ -56,10 +56,12 @@ class Tools private constructor() {
     const val WHATS_NEW = "WHATS_NEW"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"
+    const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"
     const val TRANSPARENT = 0
     const val TRANSLUCENT = 1
     const val DARK = 2
     const val LIGHT = 3
+    const val CIRCULAR_REVEAL_DURATION = 400L
 
     const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
 
@@ -120,7 +122,7 @@ class Tools private constructor() {
     }
 
     fun endTime(): IntArray {
-      val endTimeString = instance.sharedPreferences.getString(END_TIME, "16:30")
+      val endTimeString = instance.sharedPreferences.getString(END_TIME, "16:00")
       return timeAsIntArray(endTimeString)
     }
 
@@ -282,6 +284,14 @@ class Tools private constructor() {
 
     fun clock(): AppClock {
       return instance.clock
+    }
+
+    fun backOffAttemptCount(): Int {
+      return instance.sharedPreferences.getInt(BACKOFF_ATTEMPTS, 0)
+    }
+
+    fun setBackOffAttemptCount(count: Int) {
+      instance.sharedPreferences.edit().putInt(BACKOFF_ATTEMPTS, count).apply()
     }
   }
 }

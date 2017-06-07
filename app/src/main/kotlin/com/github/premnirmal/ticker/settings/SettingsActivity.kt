@@ -1,6 +1,11 @@
 package com.github.premnirmal.ticker.settings
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
+import android.animation.AnimatorListenerAdapter
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
@@ -12,15 +17,21 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.preference.CheckBoxPreference
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
+import android.support.annotation.RequiresApi
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewAnimationUtils
+import android.view.ViewTreeObserver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.CrashLogger
@@ -33,6 +44,7 @@ import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
+import kotlinx.android.synthetic.main.activity_preferences.activity_root
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
@@ -57,6 +69,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   @Inject
   lateinit internal var preferences: SharedPreferences
 
+  var isNotAddingWidget = false
+
   override fun onPause() {
     super.onPause()
     val intent = Intent(applicationContext, StockWidget::class.java)
@@ -71,6 +85,19 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    val extras: Bundle? = intent.extras
+    val widgetId: Int
+    if (extras != null) {
+      widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+          AppWidgetManager.INVALID_APPWIDGET_ID)
+      isNotAddingWidget = widgetId == AppWidgetManager.INVALID_APPWIDGET_ID
+    } else {
+      isNotAddingWidget = true
+      widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
+    }
+    if (isNotAddingWidget) {
+      overridePendingTransition(0, 0)
+    }
     super.onCreate(savedInstanceState)
     Injector.inject(this)
     setContentView(R.layout.activity_preferences)
@@ -78,18 +105,61 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(this),
           toolbar.paddingRight, toolbar.paddingBottom)
     }
-    val extras: Bundle? = intent.extras
-    val widgetId: Int
-    if (extras != null) {
-      widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-          AppWidgetManager.INVALID_APPWIDGET_ID)
-    } else {
-      widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-    }
     if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
       val result: Intent = Intent()
       result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
       setResult(Activity.RESULT_OK, result)
+    } else {
+      if (savedInstanceState == null && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+        activity_root.visibility = View.INVISIBLE
+
+        if (activity_root.viewTreeObserver.isAlive) {
+          activity_root.viewTreeObserver
+              .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                @TargetApi(VERSION_CODES.LOLLIPOP)
+                @RequiresApi(VERSION_CODES.LOLLIPOP)
+                override fun onGlobalLayout() {
+                  if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+                    activity_root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                  } else {
+                    activity_root.viewTreeObserver.removeGlobalOnLayoutListener(this)
+                  }
+                  circularReveal()
+                }
+              })
+        }
+      }
+    }
+  }
+
+  @TargetApi(VERSION_CODES.LOLLIPOP)
+  @RequiresApi(VERSION_CODES.LOLLIPOP)
+  fun circularReveal(reverse: Boolean = false,
+      listener: AnimatorListener? = null) {
+    val cx = resources.displayMetrics.widthPixels
+    val cy = toolbar.height / 2
+    val finalRadius = Math.max(activity_root.width, activity_root.height)
+    val circularRevealAnim = ViewAnimationUtils
+        .createCircularReveal(activity_root, cx, cy,
+            if (reverse) finalRadius.toFloat() else 0.toFloat(),
+            if (reverse) 0.toFloat() else finalRadius.toFloat())
+    circularRevealAnim.duration = Tools.CIRCULAR_REVEAL_DURATION
+    activity_root.visibility = View.VISIBLE
+    listener?.let { circularRevealAnim.addListener(it) }
+    circularRevealAnim.start()
+  }
+
+  override fun onBackPressed() {
+    if (isNotAddingWidget && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+      circularReveal(true, object : AnimatorListenerAdapter() {
+        override fun onAnimationEnd(animation: Animator?) {
+          activity_root.visibility = View.INVISIBLE
+          finish()
+          overridePendingTransition(0, 0)
+        }
+      })
+    } else {
+      super.onBackPressed()
     }
   }
 
@@ -100,7 +170,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
     val bar = toolbar
-    bar.setNavigationOnClickListener({ finish() })
+    bar.setNavigationOnClickListener({ onBackPressed() })
 
     listView.addFooterView(
         LayoutInflater.from(this).inflate(R.layout.preferences_footer, null, false))
@@ -116,6 +186,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
    * device configuration dictates that a simplified, single-pane UI should be
    * shown.
    */
+  @SuppressLint("CommitPrefEdits")
   private fun setupSimplePreferencesScreen() {
     // In the simplified UI, fragments are not used at all and we instead
     // use the older PreferenceActivity APIs.
@@ -385,10 +456,11 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
 
   private fun launchImportIntent() {
     MaterialFilePicker()
-    .withActivity(this)
-    .withRequestCode(REQCODE_FILE_WRITE)
-    .withFilter(Pattern.compile(".*\\.txt$")) // Filtering files and directories by file name using regexp
-    .start()
+        .withActivity(this)
+        .withRequestCode(REQCODE_FILE_WRITE)
+        .withFilter(Pattern.compile(
+            ".*\\.txt$")) // Filtering files and directories by file name using regexp
+        .start()
   }
 
   private fun exportTickers() {

@@ -31,9 +31,7 @@ class ParanormalActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.inject(this)
-    if (savedInstanceState != null) {
-      dialogShown = savedInstanceState.getBoolean(DIALOG_SHOWN, false)
-    }
+    savedInstanceState?.let { dialogShown = it.getBoolean(DIALOG_SHOWN, false) }
     setContentView(R.layout.activity_paranormal)
     if (savedInstanceState == null) {
       val fragment = PortfolioFragment()
@@ -84,7 +82,7 @@ class ParanormalActivity : BaseActivity() {
   private fun sendToPlayStore() {
     val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
     val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
-    if (marketIntent.resolveActivity(packageManager) != null) {
+    marketIntent.resolveActivity(packageManager)?.let {
       startActivity(marketIntent)
     }
   }

@@ -20,8 +20,8 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
 
   init {
     LayoutInflater.from(context).inflate(R.layout.stock_field_view, this, true)
-    if (attrs != null) {
-      val array = getContext().obtainStyledAttributes(attrs, R.styleable.StockFieldView)
+    attrs?.let {
+      val array = getContext().obtainStyledAttributes(it, R.styleable.StockFieldView)
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
       if (orientation == 0) {
         setOrientation(LinearLayout.HORIZONTAL)

@@ -56,9 +56,7 @@ internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter
 
     init {
       itemView.setOnClickListener { _ ->
-        if (suggestion != null) {
-          callback.onSuggestionClick(suggestion!!)
-        }
+        suggestion?.let { callback.onSuggestionClick(it) }
       }
     }
 

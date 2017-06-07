@@ -88,4 +88,5 @@
   <string name="cannot_share_msg">Kann keine Anführungszeichen ohne Genehmigung zum Schreiben auf externe Speicherung teilen</string>
   <string name="exported_to">In%1$s</string>
   <string name="whats_new_in">Was ist neu in v%1$s</string>
+  <string name="enter_a_symbol">Geben Sie ein Symbol ein</string>
 </resources>

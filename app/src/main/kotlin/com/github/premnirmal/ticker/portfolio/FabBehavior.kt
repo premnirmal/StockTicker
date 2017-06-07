@@ -30,16 +30,16 @@ class FabBehavior(context: Context,
         dyUnconsumed)
     if (dyConsumed > 0) {
       // User scrolled down -> hide the FAB
-      val dependencies = coordinatorLayout!!.getDependencies(child!!)
+      val dependencies = child?.let { coordinatorLayout?.getDependencies(it) }
       dependencies
-          .filterIsInstance<FloatingActionButton>()
-          .forEach { it.hide() }
+          ?.filterIsInstance<FloatingActionButton>()
+          ?.forEach { it.hide() }
     } else if (dyConsumed < 0) {
       // User scrolled up -> show the FAB
-      val dependencies = coordinatorLayout!!.getDependencies(child!!)
+      val dependencies = child?.let { coordinatorLayout?.getDependencies(it) }
       dependencies
-          .filterIsInstance<FloatingActionButton>()
-          .forEach { it.show() }
+          ?.filterIsInstance<FloatingActionButton>()
+          ?.forEach { it.show() }
     }
   }
 }

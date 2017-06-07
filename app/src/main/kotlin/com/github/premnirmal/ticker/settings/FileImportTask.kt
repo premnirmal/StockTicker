@@ -45,8 +45,8 @@ internal open class FileImportTask(
     try {
       val br = BufferedReader(FileReader(tickersFile))
       var line: String? = br.readLine()
-      while (line != null) {
-        text.append(line)
+      line?.let {
+        text.append(it)
         line = br.readLine()
       }
       val tickers = text.toString()

@@ -19,8 +19,14 @@
 
   <style name="ParanormalActivityTheme" parent="AppTheme"/>
 
-  <style name="GraphActivityTheme" parent="AppTheme">
-    <item name="colorPrimaryDark">@color/black</item>
+  <style name="SettingsActivityTheme" parent="AppTheme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+  </style>
+  
+  <style name="TickerSelectorActivityTheme" parent="AppTheme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
   </style>
 
   <style name="TextViewStyle" parent="android:Widget.TextView">

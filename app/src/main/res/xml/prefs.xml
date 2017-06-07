@@ -23,7 +23,7 @@
   <com.github.premnirmal.ticker.settings.TimePreference
       android:key="END_TIME"
       android:title="@string/end_time"
-      android:defaultValue="16:30"/>
+      android:defaultValue="16:00"/>
 
   <ListPreference
       android:key="LAYOUT_TYPE"

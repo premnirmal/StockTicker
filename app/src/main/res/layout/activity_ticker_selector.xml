@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/stock_search"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:background="@color/background_material_dark"
+    android:fitsSystemWindows="true"
+    tools:ignore="PrivateResource"
+    >
 
   <android.support.design.widget.AppBarLayout
       android:layout_width="match_parent"
@@ -35,6 +39,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:elevation="0dp"
+        android:hint="@string/enter_a_symbol"
         android:imeOptions="actionDone"
         android:inputType="textNoSuggestions|textCapCharacters"
         android:lines="1"

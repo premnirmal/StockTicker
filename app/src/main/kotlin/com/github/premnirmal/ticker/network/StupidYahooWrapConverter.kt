@@ -13,7 +13,7 @@ internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>
 
   override fun convert(value: ResponseBody?): Suggestions? {
     try {
-      val bodyString = getString(value!!.byteStream())
+      val bodyString = value?.let { getString(it.byteStream()) }
       val m = PATTERN_RESPONSE.matcher(bodyString)
       if (m.find()) {
         val suggestions = gson.fromJson(m.group(1), Suggestions::class.java)

@@ -9,7 +9,7 @@ object Mocker {
   private val mocks = HashMap<Class<*>, Any>()
 
   fun <T> setMock(clazz: Class<T>, mock: T): T {
-    mocks.put(clazz, mock!!)
+    mocks.put(clazz, mock as Any)
     return mock
   }
 
