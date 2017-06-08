@@ -33,6 +33,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -124,7 +125,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
                   } else {
                     activity_root.viewTreeObserver.removeGlobalOnLayoutListener(this)
                   }
-                  circularReveal()
+                  doCircularReveal()
                 }
               })
         }
@@ -134,24 +135,25 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
 
   @TargetApi(VERSION_CODES.LOLLIPOP)
   @RequiresApi(VERSION_CODES.LOLLIPOP)
-  fun circularReveal(reverse: Boolean = false,
-      listener: AnimatorListener? = null) {
-    val cx = resources.displayMetrics.widthPixels
-    val cy = toolbar.height / 2
+  fun doCircularReveal(reverse: Boolean = false, listener: AnimatorListener? = null) {
+    val cx = intent.getIntExtra(BaseActivity.EXTRA_CENTER_X, resources.displayMetrics.widthPixels)
+    val cy = intent.getIntExtra(BaseActivity.EXTRA_CENTER_Y,
+        Tools.getStatusBarHeight(this) + toolbar.height / 2)
     val finalRadius = Math.max(activity_root.width, activity_root.height)
     val circularRevealAnim = ViewAnimationUtils
         .createCircularReveal(activity_root, cx, cy,
             if (reverse) finalRadius.toFloat() else 0.toFloat(),
             if (reverse) 0.toFloat() else finalRadius.toFloat())
-    circularRevealAnim.duration = Tools.CIRCULAR_REVEAL_DURATION
+    circularRevealAnim.duration = resources.getInteger(
+        android.R.integer.config_mediumAnimTime).toLong()
     activity_root.visibility = View.VISIBLE
     listener?.let { circularRevealAnim.addListener(it) }
     circularRevealAnim.start()
   }
 
-  override fun onBackPressed() {
+  override fun finishAfterTransition() {
     if (isNotAddingWidget && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      circularReveal(true, object : AnimatorListenerAdapter() {
+      doCircularReveal(true, object : AnimatorListenerAdapter() {
         override fun onAnimationEnd(animation: Animator?) {
           activity_root.visibility = View.INVISIBLE
           finish()
@@ -159,7 +161,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         }
       })
     } else {
-      super.onBackPressed()
+      super.finishAfterTransition()
     }
   }
 

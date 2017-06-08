@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_material_dark"
-    tools:ignore="PrivateResource"
+    android:background="@color/default_dark_bg"
     >
 
   <!-- Header  -->

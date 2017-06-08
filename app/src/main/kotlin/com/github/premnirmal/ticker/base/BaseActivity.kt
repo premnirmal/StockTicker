@@ -21,6 +21,11 @@ import io.reactivex.subjects.BehaviorSubject
  */
 abstract class BaseActivity : AppCompatActivity() {
 
+  companion object {
+    val EXTRA_CENTER_X = "centerX"
+    val EXTRA_CENTER_Y = "centerY"
+  }
+
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
   @javax.inject.Inject lateinit var bus: RxBus

@@ -4,6 +4,7 @@
   <color name="color_accent">#17A697</color>
   <color name="color_primary">#0F5959</color>
   <color name="color_dark">#638ca6</color>
+  <color name="default_dark_bg">#ff303030</color>
   <color name="spicy_salmon">#ff5655</color>
   <color name="salmon">#ff8259</color>
   <color name="color_secondary">#0F5959</color>

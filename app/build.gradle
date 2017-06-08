@@ -59,7 +59,7 @@ dexcount {
 
 android {
   compileSdkVersion 25
-  buildToolsVersion "25.0.2"
+  buildToolsVersion "25.0.3"
 
   sourceSets {
     String testDir = "src/test/kotlin"

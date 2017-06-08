@@ -61,7 +61,6 @@ class Tools private constructor() {
     const val TRANSLUCENT = 1
     const val DARK = 2
     const val LIGHT = 3
-    const val CIRCULAR_REVEAL_DURATION = 400L
 
     const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
 
@@ -287,7 +286,7 @@ class Tools private constructor() {
     }
 
     fun backOffAttemptCount(): Int {
-      return instance.sharedPreferences.getInt(BACKOFF_ATTEMPTS, 0)
+      return instance.sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
     }
 
     fun setBackOffAttemptCount(count: Int) {

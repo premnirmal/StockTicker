@@ -46,7 +46,7 @@
   <style name="ButtonStyle" parent="android:Widget.Button">
     <item name="android:textSize">@dimen/button_text</item>
     <item name="android:textColor">@android:color/white</item>
-    <item name="fontPath">fonts/Avenir-Bold.otf</item>
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
     <item name="android:background">@drawable/button_bg</item>
   </style>
 
@@ -57,7 +57,7 @@
 
   <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
     <item name="android:textColor">@android:color/white</item>
-    <item name="fontPath">fonts/Avenir-Bold.otf</item>
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
   <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
@@ -71,7 +71,7 @@
     <item name="colorControlNormal">@color/color_accent</item>
     <item name="colorControlHighlight">@android:color/white</item>
     <item name="colorControlActivated">@android:color/white</item>
-    <item name="android:background">@color/background_material_dark</item>
+    <item name="android:background">@color/default_dark_bg</item>
   </style>
 
 </resources>

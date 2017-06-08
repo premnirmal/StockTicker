@@ -4,10 +4,10 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
+import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.SimpleSubscriber
-import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.RobindahoodException
@@ -15,16 +15,15 @@ import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.tickerwidget.R
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.exceptions.CompositeException
+import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.schedulers.Schedulers
-import retrofit2.HttpException
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
@@ -60,7 +59,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal var nextFetch: Long = 0L
   internal val storage: StocksStorage
   internal val exponentialBackoff: ExponentialBackoff
-  internal var backOffAttemptCount = 0
+  internal var backOffAttemptCount = 1
 
   init {
     Injector.inject(this)
@@ -140,34 +139,22 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           .doOnNext { _ ->
             Tools.setRefreshing(false)
             synchronized(quoteList, {
-              setBackOffAttemptCount(0)
+              backOffAttemptCount = 1
+              saveBackOffAttemptCount()
               sendBroadcast(true)
             })
           }
           .doOnError { t ->
             Tools.setRefreshing(false)
-            var scheduled = false
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
                   exception.message?.let { bus.post(ErrorEvent(it)) }
-                  if (exception.code < 500) {
-                    retryWithBackoff()
-                  }
-                  scheduled = true
                   break
                 }
               }
             }
-            if (!scheduled) {
-              if (t is HttpException) {
-                if (t.code() < 500) {
-                  retryWithBackoff()
-                }
-              } else {
-                retryWithBackoff()
-              }
-            }
+            retryWithBackoff()
             AlarmScheduler.sendBroadcast(context)
           }
           .subscribeOn(Schedulers.io())
@@ -180,13 +167,13 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   private fun retryWithBackoff() {
-    val backOffTime = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
-    setBackOffAttemptCount(++backOffAttemptCount)
-    scheduleUpdate(Tools.clock().elapsedRealtime() + backOffTime)
+    val backOffTimeMs = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
+    backOffAttemptCount++
+    saveBackOffAttemptCount()
+    scheduleUpdate(Tools.clock().elapsedRealtime() + backOffTimeMs)
   }
 
-  private fun setBackOffAttemptCount(count: Int) {
-    backOffAttemptCount = count
+  private fun saveBackOffAttemptCount() {
     Tools.setBackOffAttemptCount(backOffAttemptCount)
   }
 

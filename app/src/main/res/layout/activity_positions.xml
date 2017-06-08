@@ -2,12 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_dark_bg"
     android:orientation="vertical"
-    android:id="@+id/activity_root"
-    android:background="@color/background_material_dark"
-    tools:ignore="PrivateResource"
     >
 
   <android.support.v7.widget.Toolbar
@@ -58,6 +57,7 @@
         android:layout_weight="0.6"
         android:gravity="end"
         android:inputType="number"
+        android:maxLength="6"
         android:maxLines="1"
         android:nextFocusForward="@+id/price"
         android:textAlignment="textEnd"
@@ -91,6 +91,7 @@
         android:layout_weight="0.6"
         android:gravity="end"
         android:inputType="numberDecimal"
+        android:maxLength="8"
         android:maxLines="1"
         android:textAlignment="textEnd"
         />
@@ -112,6 +113,7 @@
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_gravity="right"
+        android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
         android:text="@string/done"
         />
@@ -122,6 +124,7 @@
         android:layout_height="40dp"
         android:layout_gravity="left"
         android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:text="@string/skip"
         />
 

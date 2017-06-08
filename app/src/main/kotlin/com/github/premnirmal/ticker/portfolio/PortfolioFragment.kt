@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -14,6 +15,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.base.BaseActivity.Companion.EXTRA_CENTER_X
+import com.github.premnirmal.ticker.base.BaseActivity.Companion.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -40,7 +43,6 @@ import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
 import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
-
 
 
 /**
@@ -146,6 +148,13 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
       val itemId = item.itemId
       if (itemId == R.id.action_settings) {
         val intent = Intent(activity, SettingsActivity::class.java)
+        val v = activity.findViewById(itemId)
+        val rect = Rect()
+        v.getGlobalVisibleRect(rect)
+        val centerX = (rect.right - ((rect.right - rect.left) / 2))
+        val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
+        intent.putExtra(EXTRA_CENTER_X, centerX)
+        intent.putExtra(EXTRA_CENTER_Y, centerY)
         startActivity(intent)
         true
       } else {
@@ -159,6 +168,12 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
     add_ticker_button.setOnClickListener({ v ->
       val intent = Intent(v.context, TickerSelectorActivity::class.java)
+      val rect = Rect()
+      v.getGlobalVisibleRect(rect)
+      val centerX = (rect.right - ((rect.right - rect.left) / 2))
+      val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
+      intent.putExtra(EXTRA_CENTER_X, centerX)
+      intent.putExtra(EXTRA_CENTER_Y, centerY)
       startActivity(intent)
     })
   }
