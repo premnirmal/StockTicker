@@ -1,7 +1,7 @@
 # Stocks Widget
 [![Circle CI](https://circleci.com/gh/premnirmal/StockTicker.svg?style=svg)](https://circleci.com/gh/premnirmal/StockTicker)
 
-[![Google play link](google-play-badge.png)](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
+[![Google play link](graphics/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
 
 [<img src="https://f-droid.org/badge/get-it-on.svg"
       alt="Get it on F-Droid"

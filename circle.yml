@@ -17,5 +17,5 @@ dependencies:
     - echo y | android update sdk --no-ui --all --filter "extra-google-m2repository"
 test:
   override:
-    - case $CIRCLE_NODE_INDEX in 0) sh build.sh ;; 1) sh test.sh ;; esac:
+    - case $CIRCLE_NODE_INDEX in 0) sh ./circle/build.sh ;; 1) sh ./circle/test.sh ;; esac:
         parallel: true
