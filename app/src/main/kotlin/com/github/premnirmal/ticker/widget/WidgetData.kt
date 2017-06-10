@@ -15,6 +15,7 @@ class WidgetData(private val widgetId: Int) : IWidgetData {
 
   companion object {
     val SORTED_STOCK_LIST = StocksProvider.SORTED_STOCK_LIST
+    val PREFS_NAME_PREFIX = "stocks_widget_"
   }
 
   @Inject lateinit var stocksProvider: IStocksProvider
@@ -25,10 +26,15 @@ class WidgetData(private val widgetId: Int) : IWidgetData {
 
   init {
     Injector.inject(this)
-    preferences = context.getSharedPreferences(widgetId.toString(), Context.MODE_PRIVATE)
-    val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
-    tickerList = java.util.ArrayList(Arrays.asList(
-        *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+    val prefsName = "$PREFS_NAME_PREFIX$widgetId"
+    preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+    if (widgetId == 0) {
+      tickerList = ArrayList(stocksProvider.getTickers())
+    } else {
+      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, StocksProvider.DEFAULT_STOCKS)
+      tickerList = java.util.ArrayList(Arrays.asList(
+          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+    }
   }
 
   override fun getStocks(): List<Quote> {
@@ -56,6 +62,13 @@ class WidgetData(private val widgetId: Int) : IWidgetData {
   override fun addTicker(ticker: String) {
     tickerList.add(ticker)
     stocksProvider.addStock(ticker)
+    save()
+    scheduleUpdate()
+  }
+
+  override fun removeStock(ticker: String) {
+    tickerList.remove(ticker)
+    stocksProvider.removeStock(ticker)
     save()
     scheduleUpdate()
   }

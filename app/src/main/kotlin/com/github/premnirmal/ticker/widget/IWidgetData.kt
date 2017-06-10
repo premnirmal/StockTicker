@@ -13,4 +13,6 @@ interface IWidgetData {
   fun addTicker(ticker: String)
 
   fun onWidgetRemoved()
+
+  fun removeStock(ticker: String)
 }

@@ -299,14 +299,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
-  override fun rearrange(tickers: List<String>): Collection<Quote> {
-    tickerList.clear()
-    tickerList.addAll(tickers)
-    save()
-    sendBroadcast()
-    return getStocks()
-  }
-
   override fun getStock(ticker: String): Quote? {
     synchronized(quoteList, {
       val dummy = Quote()

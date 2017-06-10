@@ -11,6 +11,7 @@ import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
 import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperAdapter
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
+import com.github.premnirmal.ticker.widget.IWidgetData
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList
 import javax.inject.Inject
@@ -19,6 +20,7 @@ import javax.inject.Inject
  * Created by premnirmal on 2/29/16.
  */
 class StocksAdapter constructor(
+    private val widgetData: IWidgetData,
     private val listener: StocksAdapter.QuoteClickListener,
     private val dragStartListener: OnStartDragListener)
   : RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
@@ -35,11 +37,8 @@ class StocksAdapter constructor(
 
   private val quoteList: MutableList<Quote>
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
-
   init {
-    Injector.inject(this)
-    quoteList = ArrayList(stocksProvider.getStocks())
+    quoteList = ArrayList()
   }
 
   fun remove(quote: Quote) {
@@ -50,9 +49,9 @@ class StocksAdapter constructor(
     }
   }
 
-  fun refresh(stocksProvider: IStocksProvider) {
+  fun refresh() {
     quoteList.clear()
-    quoteList.addAll(stocksProvider.getStocks())
+    quoteList.addAll(widgetData.getStocks())
     notifyDataSetChanged()
   }
 
@@ -99,7 +98,7 @@ class StocksAdapter constructor(
   override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
     quoteList.add(toPosition, quoteList.removeAt(fromPosition))
     val newTickerList = quoteList.mapTo(ArrayList<String>()) { it.symbol }
-    stocksProvider.rearrange(newTickerList)
+    widgetData.rearrange(newTickerList)
     notifyItemMoved(fromPosition, toPosition)
     return true
   }

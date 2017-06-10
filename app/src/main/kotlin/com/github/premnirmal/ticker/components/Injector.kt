@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.components
 
-import com.github.premnirmal.ticker.ParanormalActivity
+import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage

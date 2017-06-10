@@ -24,8 +24,6 @@ interface IStocksProvider {
 
   fun getTickers(): List<String>
 
-  fun rearrange(tickers: List<String>): Collection<Quote>
-
   fun lastFetched(): String
 
   fun nextFetch(): String

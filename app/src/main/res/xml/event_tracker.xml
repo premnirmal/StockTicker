@@ -5,7 +5,7 @@
   <bool name="ga_autoActivityTracking">true</bool>
 
   <!-- The screen names that will appear in reports -->
-  <screenName name="com.github.premnirmal.ticker.ParanormalActivity">
+  <screenName name="com.github.premnirmal.ticker.home.ParanormalActivity">
     Portfolio
   </screenName>
   <screenName name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity">

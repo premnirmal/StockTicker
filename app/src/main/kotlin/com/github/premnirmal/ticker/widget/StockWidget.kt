@@ -12,7 +12,7 @@ import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.ParanormalActivity
+import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.components.RefreshReceiver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.components.WidgetClickReceiver

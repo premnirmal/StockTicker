@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.ParanormalActivity
+import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.widget.StockWidget
 
