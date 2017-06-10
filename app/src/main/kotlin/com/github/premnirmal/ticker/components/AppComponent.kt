@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.ticker.widget.WidgetData
 
 /**
  * Created by premnirmal on 3/3/16.
@@ -30,6 +31,8 @@ interface AppComponent {
   fun inject(tools: Tools)
 
   fun inject(stocksProvider: StocksProvider)
+
+  fun inject(widgetData: WidgetData)
 
   fun inject(stocksApi: StocksApi)
 

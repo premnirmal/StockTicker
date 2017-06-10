@@ -44,7 +44,7 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
     nameView.text = quote.name
 
     val change: Float = quote.change
-    val changePercent: Float = quote.changeinPercent
+    val changePercent: Float = quote.changeInPercent
     val changeInPercentView = itemView.findViewById(R.id.changePercent) as StockFieldView
     changeInPercentView.setText(quote.changePercentString())
     val changeValueView = itemView.findViewById(R.id.changeValue) as StockFieldView

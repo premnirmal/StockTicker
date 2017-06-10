@@ -92,7 +92,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       quoteList.clear()
       quoteList.addAll(storage.readStocks())
       if (!quoteList.isEmpty()) {
-        sortStockList()
         sendBroadcast()
       } else {
         fetch().subscribe(SimpleSubscriber())
@@ -277,7 +276,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun getStocks(): Collection<Quote> {
     synchronized(quoteList, {
-      sortStockList()
 
       val newStockList = ArrayList<Quote>()
       var added: Boolean
@@ -298,18 +296,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         }
       }
       return newStockList
-    })
-  }
-
-  internal fun sortStockList() {
-    synchronized(quoteList, {
-      if (Tools.autoSortEnabled()) {
-        Collections.sort(quoteList)
-      } else {
-        Collections.sort(quoteList) { lhs, rhs ->
-          tickerList.indexOf(lhs.symbol).compareTo(tickerList.indexOf(rhs.symbol))
-        }
-      }
     })
   }
 

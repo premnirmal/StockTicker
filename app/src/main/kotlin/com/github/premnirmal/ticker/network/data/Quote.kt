@@ -6,19 +6,17 @@ import java.io.Serializable
 /**
  * Created by premnirmal on 3/30/17.
  */
-class Quote : Comparable<Quote>, Serializable {
+data class Quote(var symbol: String = "",
+    var name: String = "",
+    var lastTradePrice: Float = 0.toFloat(),
+    var changeInPercent: Float = 0.toFloat(),
+    var change: Float = 0.toFloat(),
+    var stockExchange: String = "",
+    var currency: String = "") : Comparable<Quote>, Serializable {
 
   companion object {
     private val serialVersionUID = -4235355L
   }
-
-  var symbol = ""
-  var name = ""
-  var lastTradePrice: Float = 0.toFloat()
-  var changeinPercent: Float = 0.toFloat()
-  var change: Float = 0.toFloat()
-  var stockExchange = ""
-  var currency = ""
 
   // Add Position fields
   var isPosition: Boolean = false
@@ -51,7 +49,7 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   fun changePercentString(): String {
-    return "${Tools.DECIMAL_FORMAT.format(changeinPercent)}%"
+    return "${Tools.DECIMAL_FORMAT.format(changeInPercent)}%"
   }
 
   fun priceString(): String {
@@ -91,6 +89,6 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   override operator fun compareTo(other: Quote): Int {
-    return java.lang.Float.compare(other.changeinPercent, changeinPercent)
+    return java.lang.Float.compare(other.changeInPercent, changeInPercent)
   }
 }

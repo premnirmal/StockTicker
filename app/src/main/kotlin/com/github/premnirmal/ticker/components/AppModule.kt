@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.network.NetworkModule
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 3/3/16.
@@ -19,15 +20,16 @@ class AppModule(private val app: Context) {
     return app
   }
 
-  @Provides @javax.inject.Singleton internal fun provideClock(): AppClock {
+  @Provides @Singleton internal fun provideClock(): AppClock {
     return AppClockImpl()
   }
 
-  @Provides @javax.inject.Singleton internal fun provideEventBus(): RxBus {
+  @Provides @Singleton internal fun provideEventBus(): RxBus {
     return RxBus()
   }
 
-  @Provides @javax.inject.Singleton internal fun provideSharedPreferences(context: Context): SharedPreferences {
+  @Provides @Singleton internal fun provideSharedPreferences(
+      context: Context): SharedPreferences {
     val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE)
     return sharedPreferences
   }

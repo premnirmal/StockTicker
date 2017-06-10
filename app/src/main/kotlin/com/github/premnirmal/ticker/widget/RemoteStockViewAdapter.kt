@@ -62,7 +62,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val changePercentFormatted = stock.changePercentString()
     val priceFormatted = stock.priceString()
     val change = stock.change
-    val changeInPercent = stock.changeinPercent
+    val changeInPercent = stock.changeInPercent
 
     val changePercentString = SpannableString(changePercentFormatted)
     val changeValueString = SpannableString(changeValueFormatted)

@@ -33,7 +33,14 @@ import javax.inject.Singleton
           quoteNets
         }
         .map { quoteNets ->
-          StockConverter.convertQuoteNets(quoteNets)
+          val quotesMap = HashMap<String, Quote>()
+          for ((symbol, name, lastTradePrice, changePercent, change, exchange, currency) in quoteNets) {
+            val quote = Quote(symbol ?: "", name ?: "",
+                lastTradePrice, changePercent, change, exchange ?: "",
+                currency ?: "US")
+            quotesMap.put(quote.symbol, quote)
+          }
+          quotesMap
         }
         // Try to keep original order of tickerList.
         .map { quotesMap ->

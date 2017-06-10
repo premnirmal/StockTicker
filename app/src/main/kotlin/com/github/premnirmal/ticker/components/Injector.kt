@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.ticker.widget.WidgetData
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -29,6 +30,8 @@ object Injector {
 
   fun inject(any: Any) {
     if (any is StocksProvider) {
+      Injector.appComponent.inject(any)
+    } else if (any is WidgetData) {
       Injector.appComponent.inject(any)
     } else if (any is StocksApi) {
       Injector.appComponent.inject(any)
