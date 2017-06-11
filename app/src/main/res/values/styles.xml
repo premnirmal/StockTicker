@@ -38,6 +38,10 @@
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
+  <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+  </style>
+
   <style name="FooterTextView" parent="TextViewStyle">
     <item name="fontPath">fonts/Alegreya-Black-Italic.ttf</item>
     <item name="android:textSize">28sp</item>

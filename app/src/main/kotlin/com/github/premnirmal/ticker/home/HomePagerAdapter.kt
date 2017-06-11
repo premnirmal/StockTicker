@@ -36,6 +36,14 @@ internal class HomePagerAdapter(fm: FragmentManager,
   }
 
   override fun getPageWidth(position: Int): Float {
-    return if (count == 1) 1.0f else 0.9f
+    return if (count == 1) 1.0f else 0.95f
+  }
+
+  override fun getPageTitle(position: Int): CharSequence {
+    if (count == 1) {
+      return ""
+    } else {
+      return "Widget #$position"
+    }
   }
 }

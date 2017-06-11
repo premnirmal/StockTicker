@@ -9,7 +9,7 @@
   <android.support.design.widget.AppBarLayout
       android:id="@+id/app_bar_layout"
       android:layout_width="match_parent"
-      android:layout_height="180dp"
+      android:layout_height="210dp"
       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
       >
 
@@ -20,7 +20,7 @@
         android:background="@color/color_primary"
         app:contentScrim="@color/color_primary"
         app:expandedTitleGravity="center_horizontal"
-        app:expandedTitleMarginBottom="50dp"
+        app:expandedTitleMarginBottom="60dp"
         app:expandedTitleTextAppearance="@style/ActionBarExpandedTitleText"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:title="@string/app_name"
@@ -35,17 +35,39 @@
           app:layout_collapseMode="parallax"
           />
 
-      <TextView
-          android:id="@+id/subtitle"
+      <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="bottom"
-          android:layout_marginBottom="15dp"
-          android:gravity="center_horizontal"
-          android:textColor="@android:color/white"
-          android:textSize="@dimen/text_size"
+          android:gravity="bottom"
+          android:orientation="vertical"
           app:layout_collapseMode="parallax"
-          />
+          >
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size"
+            app:layout_collapseMode="parallax"
+            />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_collapseMode="pin"
+            app:tabBackground="@color/transparent"
+            app:tabGravity="fill"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextAppearance="@style/BoldTextView"
+            app:tabTextColor="@color/light"
+            />
+      </LinearLayout>
 
       <android.support.v7.widget.Toolbar
           android:id="@+id/toolbar"
@@ -60,18 +82,33 @@
 
   </android.support.design.widget.AppBarLayout>
 
-
   <android.support.v4.widget.SwipeRefreshLayout
       android:id="@+id/swipe_container"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      app:layout_behavior="com.github.premnirmal.ticker.portfolio.FabBehavior"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
       >
     <android.support.v4.view.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
   </android.support.v4.widget.SwipeRefreshLayout>
+
+  <android.support.design.widget.FloatingActionButton
+      android:id="@+id/add_ticker_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|right|end"
+      android:layout_marginBottom="16dp"
+      android:layout_marginEnd="16dp"
+      android:layout_marginRight="16dp"
+      android:src="@drawable/ic_add"
+      app:backgroundTint="@color/color_accent"
+      app:borderWidth="0dp"
+      app:fabSize="mini"
+      app:rippleColor="@android:color/white"
+      />
 
 </android.support.design.widget.CoordinatorLayout>

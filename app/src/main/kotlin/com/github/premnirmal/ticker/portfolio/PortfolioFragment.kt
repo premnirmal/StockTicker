@@ -1,10 +1,8 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Rect
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
@@ -15,8 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.base.BaseActivity.Companion.EXTRA_CENTER_X
-import com.github.premnirmal.ticker.base.BaseActivity.Companion.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -26,14 +22,12 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
-import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.ui.SpacingDecoration
-import com.github.premnirmal.ticker.widget.WidgetDataFactory
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
-import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
+import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
 import javax.inject.Inject
 
 
@@ -41,10 +35,6 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
-
-  interface PortfolioFragmentCallback {
-    fun fetch()
-  }
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
@@ -74,7 +64,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   class InjectionHolder {
 
     @Inject
-    lateinit internal var widgetDataFactory: WidgetDataFactory
+    lateinit internal var widgetDataProvider: WidgetDataProvider
 
     @Inject
     lateinit internal var bus: RxBus
@@ -87,12 +77,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
-  private var callback: PortfolioFragmentCallback? = null
   private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
   private var widgetId = 0
   private val stocksAdapter by lazy {
-    val widgetData = holder.widgetDataFactory.dataForWidgetId(widgetId)
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     StocksAdapter(widgetData, this as QuoteClickListener, this as OnStartDragListener)
   }
   private var itemTouchHelper: ItemTouchHelper? = null
@@ -115,16 +104,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
       true
     }
     popupWindow.show()
-  }
-
-  override fun onAttach(activity: Activity?) {
-    super.onAttach(activity)
-    callback = activity as PortfolioFragmentCallback
-  }
-
-  override fun onDetach() {
-    super.onDetach()
-    callback = null
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,32 +142,21 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     savedInstanceState?.let {
       listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
     }
-
-    add_ticker_button.setOnClickListener({ v ->
-      val intent = Intent(v.context, TickerSelectorActivity::class.java)
-      val rect = Rect()
-      v.getGlobalVisibleRect(rect)
-      val centerX = (rect.right - ((rect.right - rect.left) / 2))
-      val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
-      intent.putExtra(EXTRA_CENTER_X, centerX)
-      intent.putExtra(EXTRA_CENTER_Y, centerY)
-      startActivity(intent)
-    })
   }
 
   internal fun update() {
-    val widgetData = holder.widgetDataFactory.dataForWidgetId(widgetId)
-    // Don't attempt to make many requests in a row if the stocks don't fetch.
-    if (widgetData.getStocks().isEmpty()) {
-      callback?.fetch()
-      return
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    if (widgetData.getTickers().isEmpty()) {
+      view_flipper.displayedChild = 0
+    } else {
+      view_flipper.displayedChild = 1
     }
     stocksAdapter.refresh()
   }
 
   internal fun promptRemove(quote: Quote?, position: Int) {
     quote?.let {
-      val widgetData = holder.widgetDataFactory.dataForWidgetId(widgetId)
+      val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
       AlertDialog.Builder(activity).setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove, { dialog, _ ->
@@ -213,7 +181,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     if (Tools.autoSortEnabled()) {
       Tools.enableAutosort(false)
       update()
-      InAppMessage.showMessage(fragment_root, getString(R.string.autosort_disabled))
+      InAppMessage.showMessage(activity, getString(R.string.autosort_disabled))
     } else {
       itemTouchHelper?.startDrag(viewHolder)
     }

@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.widget
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.Tools
@@ -28,10 +29,10 @@ class WidgetData(private val widgetId: Int) : IWidgetData {
     Injector.inject(this)
     val prefsName = "$PREFS_NAME_PREFIX$widgetId"
     preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-    if (widgetId == 0) {
+    if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
       tickerList = ArrayList(stocksProvider.getTickers())
     } else {
-      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, StocksProvider.DEFAULT_STOCKS)
+      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
       tickerList = java.util.ArrayList(Arrays.asList(
           *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }

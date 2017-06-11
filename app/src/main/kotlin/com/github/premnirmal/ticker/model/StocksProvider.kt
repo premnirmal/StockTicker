@@ -26,7 +26,6 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.Collections
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -91,11 +90,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList, {
       quoteList.clear()
       quoteList.addAll(storage.readStocks())
-      if (!quoteList.isEmpty()) {
-        sendBroadcast()
-      } else {
-        fetch().subscribe(SimpleSubscriber())
-      }
+      sendBroadcast()
     })
   }
 

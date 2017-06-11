@@ -89,4 +89,5 @@
   <string name="exported_to">In%1$s</string>
   <string name="whats_new_in">Was ist neu in v%1$s</string>
   <string name="enter_a_symbol">Geben Sie ein Symbol ein</string>
+  <string name="no_symbols">¯\\_(ツ)_/¯\nEs gibt keine Symbole</string>
 </resources>

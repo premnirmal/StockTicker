@@ -1,32 +1,31 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/fragment_root"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/view_flipper"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="com.github.premnirmal.ticker.portfolio.FabBehavior"
+    android:autoStart="false"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out"
     >
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="?attr/actionBarSize"
+      android:layout_gravity="center_horizontal"
+      android:gravity="center"
+      android:text="@string/no_symbols"
+      android:textColor="@color/colorAccent"
+      android:textSize="@dimen/large_text"
+      style="@style/BoldTextView"
+      />
 
   <android.support.v7.widget.RecyclerView
       android:id="@+id/stockList"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      app:layout_behavior="com.github.premnirmal.ticker.portfolio.FabBehavior"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />
 
-  <android.support.design.widget.FloatingActionButton
-      android:id="@+id/add_ticker_button"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="bottom|end"
-      android:layout_marginBottom="@dimen/borderW"
-      android:layout_marginEnd="8dp"
-      android:layout_marginRight="8dp"
-      android:src="@drawable/ic_add"
-      app:backgroundTint="@color/color_accent"
-      app:borderWidth="0dp"
-      app:elevation="5dp"
-      app:rippleColor="@android:color/white"
-      />
-
-</android.support.design.widget.CoordinatorLayout>
+</ViewFlipper>

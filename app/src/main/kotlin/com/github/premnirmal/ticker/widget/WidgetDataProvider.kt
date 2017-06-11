@@ -3,9 +3,9 @@ package com.github.premnirmal.ticker.widget
 import javax.inject.Singleton
 
 @Singleton
-class WidgetDataFactory {
+class WidgetDataProvider {
 
-  val widgets: MutableMap<Int, IWidgetData> = HashMap()
+  private val widgets: MutableMap<Int, IWidgetData> = HashMap()
 
   fun dataForWidgetId(widgetId: Int): IWidgetData {
     if (widgets.containsKey(widgetId)) {

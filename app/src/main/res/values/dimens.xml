@@ -25,5 +25,5 @@
   <dimen name="xlarge_text">20sp</dimen>
 
   <dimen name="scroll_threshold">2dp</dimen>
-  <dimen name="borderW">0dp</dimen>
+  <dimen name="portfolio_top_margin">20dp</dimen>
 </resources>

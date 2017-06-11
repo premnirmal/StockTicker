@@ -49,6 +49,7 @@ import kotlinx.android.synthetic.main.activity_preferences.activity_root
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
+import java.io.File
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -203,6 +204,11 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           val hasUserAlreadyRated = Tools.hasUserAlreadyRated()
           CrashLogger.logException(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
+          val sharedPreferenceFile = File("/data/data/$packageName/shared_prefs/")
+          val listFiles = sharedPreferenceFile.listFiles()
+          for (file in listFiles) {
+            file.delete()
+          }
           preferences.edit().putBoolean(Tools.DID_RATE, hasUserAlreadyRated).commit()
           System.exit(0)
         })

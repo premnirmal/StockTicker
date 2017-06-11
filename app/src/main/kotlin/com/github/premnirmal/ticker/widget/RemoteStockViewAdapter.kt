@@ -10,10 +10,9 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.WidgetClickReceiver
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList
@@ -22,16 +21,18 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.RemoteViewsFactory {
+class RemoteStockViewAdapter(private val context: Context,
+    private val widgetId: Int) : RemoteViewsService.RemoteViewsFactory {
 
   private val quotes: MutableList<Quote>
 
   @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  lateinit internal var widgetDataProvider: WidgetDataProvider
 
   init {
     Injector.inject(this)
-    val stocks = stocksProvider.getStocks()
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    val stocks = widgetData.getStocks()
     this.quotes = ArrayList(stocks)
   }
 
@@ -40,7 +41,8 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
   }
 
   override fun onDataSetChanged() {
-    val stocksList = stocksProvider.getStocks()
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    val stocksList = widgetData.getStocks()
     this.quotes.clear()
     this.quotes.addAll(stocksList)
   }

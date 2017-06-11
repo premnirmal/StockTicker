@@ -6,7 +6,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.Robindahood
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.SuggestionApi
-import com.github.premnirmal.ticker.widget.WidgetDataFactory
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -67,7 +67,7 @@ class MockNetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideWidgetDataFactory(): WidgetDataFactory {
-    return Mocker.provide(WidgetDataFactory::class.java)
+  internal fun provideWidgetDataFactory(): WidgetDataProvider {
+    return Mocker.provide(WidgetDataProvider::class.java)
   }
 }

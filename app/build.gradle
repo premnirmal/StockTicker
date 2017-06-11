@@ -1,10 +1,11 @@
+apply from: "../build.gradle"
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
 apply plugin: "io.fabric"
-apply from: "../build.gradle"
 apply plugin: "com.getkeepsafe.dexcount"
-//apply plugin: 'androlate'
+apply plugin: "kotlin-kapt"
+//apply plugin: "androlate"
 
 buildscript {
   repositories {
@@ -48,8 +49,8 @@ dexcount {
 
 // androlate {
 //   final File parrotFile = file("file:translate.properties")
-//   final Properties props = new Properties();
-//   props.load(new FileInputStream(parrotFile));
+//   final Properties props = new Properties()
+//   props.load(new FileInputStream(parrotFile))
 
 //   appName 'StockTicker'
 //   apiKey props.getProperty("GOOGLE_TRANSLATE_API_KEY").toString()
@@ -62,10 +63,10 @@ android {
   buildToolsVersion "25.0.3"
 
   final File versionFile = file("file:version.properties")
-  final Properties versionProps = new Properties();
-  versionProps.load(new FileInputStream(versionFile));
-  def final code = versionProps.getProperty("versionCode").toInteger();
-  def final name = versionProps.getProperty("versionName").toString();
+  final Properties versionProps = new Properties()
+  versionProps.load(new FileInputStream(versionFile))
+  def final code = versionProps.getProperty("versionCode").toInteger()
+  def final name = versionProps.getProperty("versionName").toString()
   def final appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
@@ -79,17 +80,12 @@ android {
   }
 
   sourceSets {
-    main.java.srcDirs += ['src/main/kotlin', 'src/main/kapt']
-
+    main.java.srcDirs += "src/main/kotlin"
     String testDir = "src/test/kotlin"
     test {
       resources.srcDirs += ['src/test/resources']
       java.srcDir testDir
     }
-  }
-
-  kapt {
-    generateStubs = true
   }
 
   dexOptions {
@@ -100,10 +96,10 @@ android {
     release {
       storeFile file("file:keystore.jks")
 
-      final File propsFile = file("file:keystore.properties");
+      final File propsFile = file("file:keystore.properties")
       if (propsFile.exists()) {
-        final Properties props = new Properties();
-        props.load(new FileInputStream(propsFile));
+        final Properties props = new Properties()
+        props.load(new FileInputStream(propsFile))
         storePassword props.getProperty("key.store.password")
         keyPassword props.getProperty("key.alias.password")
         keyAlias props.getProperty("key.alias.alias")
@@ -156,13 +152,9 @@ android {
   }
 }
 
-kapt {
-  generateStubs = true
-}
-
 dependencies {
   final SUPPORT_LIBRARY_VERSION = "25.3.1"
-  final DAGGER_VERSION = "2.6.1"
+  final DAGGER_VERSION = "2.6"
   final DEXMAKER_VERSION = "1.4"
   final MOCKITO_VERSION = "2.7.5"
   final JUNIT_VERSION = "4.12"
@@ -207,7 +199,7 @@ dependencies {
 
   prodCompile "com.google.android.gms:play-services-analytics:$PLAY_SERVICES_VERSION"
   prodCompile("com.crashlytics.sdk.android:crashlytics:2.6.7@aar") {
-    transitive = true;
+    transitive = true
   }
 
   testCompile "junit:junit:$JUNIT_VERSION"
