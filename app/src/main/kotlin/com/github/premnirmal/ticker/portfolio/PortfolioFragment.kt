@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.portfolio
 
 import android.app.AlertDialog
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -51,7 +52,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     fun newInstance(): PortfolioFragment {
       val fragment = PortfolioFragment()
       val args = Bundle()
-      args.putInt(KEY_WIDGET_ID, 0)
+      args.putInt(KEY_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
       fragment.arguments = args
       return fragment
     }
@@ -79,7 +80,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
-  private var widgetId = 0
+  private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     StocksAdapter(widgetData, this as QuoteClickListener, this as OnStartDragListener)

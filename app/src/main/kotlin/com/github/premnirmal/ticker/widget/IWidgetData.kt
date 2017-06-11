@@ -12,6 +12,8 @@ interface IWidgetData {
 
   fun addTicker(ticker: String)
 
+  fun addTickers(tickers: List<String>)
+
   fun onWidgetRemoved()
 
   fun removeStock(ticker: String)

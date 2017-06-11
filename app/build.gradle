@@ -152,19 +152,21 @@ android {
   }
 }
 
-dependencies {
-  final SUPPORT_LIBRARY_VERSION = "25.3.1"
-  final DAGGER_VERSION = "2.6"
-  final DEXMAKER_VERSION = "1.4"
-  final MOCKITO_VERSION = "2.7.5"
-  final JUNIT_VERSION = "4.12"
-  final RUNNER_VERSION = "0.5"
-  final RETROFIT_VERSION = "2.2.0"
-  final OKHTTP_VERSION = "3.5.0"
-  final RXJAVA_VERSION = "2.1.0"
-  final ROBOLECTRIC_VERSION = "3.2.2"
-  final PLAY_SERVICES_VERSION = "10.2.1"
+ext {
+  SUPPORT_LIBRARY_VERSION = "25.3.1"
+  DAGGER_VERSION = "2.6"
+  DEXMAKER_VERSION = "1.4"
+  MOCKITO_VERSION = "2.7.5"
+  JUNIT_VERSION = "4.12"
+  RUNNER_VERSION = "0.5"
+  RETROFIT_VERSION = "2.2.0"
+  OKHTTP_VERSION = "3.5.0"
+  RXJAVA_VERSION = "2.1.0"
+  ROBOLECTRIC_VERSION = "3.2.2"
+  PLAY_SERVICES_VERSION = "10.2.1"
+}
 
+dependencies {
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"

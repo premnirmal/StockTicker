@@ -67,6 +67,13 @@ class WidgetData(private val widgetId: Int) : IWidgetData {
     scheduleUpdate()
   }
 
+  override fun addTickers(tickers: List<String>) {
+    tickerList.addAll(tickers)
+    stocksProvider.addStocks(tickers)
+    save()
+    scheduleUpdate()
+  }
+
   override fun removeStock(ticker: String) {
     tickerList.remove(ticker)
     stocksProvider.removeStock(ticker)

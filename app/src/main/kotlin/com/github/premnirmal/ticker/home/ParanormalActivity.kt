@@ -118,7 +118,7 @@ class ParanormalActivity : BaseActivity() {
           ComponentName(packageName, StockWidget::class.java.name))
       val widgetId: Int
       if (appWidgetIds.isEmpty()) {
-        widgetId = 0
+        widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
       } else {
         widgetId = appWidgetIds[view_pager!!.currentItem]
       }
