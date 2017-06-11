@@ -39,8 +39,12 @@
         android:label="@string/edit_position"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
+        android:label="@string/app_settings"
+        android:theme="@style/SettingsActivityTheme"/>
+    <activity
+        android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
         android:label="@string/action_Settings"
-        android:theme="@style/SettingsActivityTheme">
+        android:theme="@style/WidgetSettingsActivityTheme">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
       </intent-filter>

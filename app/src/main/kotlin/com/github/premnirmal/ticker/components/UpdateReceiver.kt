@@ -37,9 +37,9 @@ class UpdateReceiver : BroadcastReceiver() {
         ) {
       stocksProvider.fetch().subscribe(SimpleSubscriber())
       preferences.edit().putBoolean(Tools.WHATS_NEW, true).apply()
-      preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false).apply()
-
-      performMigration(context)
+      if (!preferences.getBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false)) {
+        performMigration(context)
+      }
     }
   }
 
@@ -48,15 +48,8 @@ class UpdateReceiver : BroadcastReceiver() {
     val ids = manager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
     val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
     if (hasWidget) {
-      if (ids.size == 1) {
-        val data = widgetDataProvider.dataForWidgetId(ids[0])
-        data.addTickers(stocksProvider.getTickers())
-      } else {
-        ids.forEach {
-          val data = widgetDataProvider.dataForWidgetId(it)
-          data.addTickers(stocksProvider.getTickers())
-        }
-      }
+      val data = widgetDataProvider.dataForWidgetId(ids[0])
+      data.addTickers(stocksProvider.getTickers())
     }
     preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, true).apply()
   }

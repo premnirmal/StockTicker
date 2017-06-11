@@ -62,10 +62,12 @@
             app:layout_collapseMode="pin"
             app:tabBackground="@color/transparent"
             app:tabGravity="fill"
+            app:tabIndicatorColor="@color/sea"
+            app:tabIndicatorHeight="2dp"
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/white"
-            app:tabTextAppearance="@style/BoldTextView"
-            app:tabTextColor="@color/light"
+            app:tabTextAppearance="@style/TabTextAppearence"
+            app:tabTextColor="@color/grey_text"
             />
       </LinearLayout>
 
@@ -96,19 +98,91 @@
         />
   </android.support.v4.widget.SwipeRefreshLayout>
 
+  <View
+      android:id="@+id/fab_bg"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/translucent"
+      android:visibility="gone"
+      />
+
+  <LinearLayout
+      android:id="@+id/fab_add_stocks"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="@dimen/fab_margin"
+      android:layout_marginEnd="@dimen/fab_margin"
+      android:layout_marginRight="@dimen/fab_margin"
+      android:clipToPadding="false"
+      android:gravity="center_vertical"
+      android:visibility="gone"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
+      >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:text="FabTitle1"
+        android:textColor="@color/light"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/sea"
+        app:rippleColor="@color/white"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/fab_edit_widget"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="@dimen/fab_margin"
+      android:layout_marginEnd="@dimen/fab_margin"
+      android:layout_marginRight="@dimen/fab_margin"
+      android:clipToPadding="false"
+      android:gravity="center_vertical"
+      android:visibility="gone"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
+      >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:text="FabTitle2"
+        android:textColor="@color/light"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit"
+        app:backgroundTint="@color/sea"
+        app:rippleColor="@color/white"
+        />
+  </LinearLayout>
+
   <android.support.design.widget.FloatingActionButton
-      android:id="@+id/add_ticker_button"
+      android:id="@+id/fab_settings"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|right|end"
-      android:layout_marginBottom="16dp"
-      android:layout_marginEnd="16dp"
-      android:layout_marginRight="16dp"
-      android:src="@drawable/ic_add"
+      android:layout_marginBottom="@dimen/fab_margin"
+      android:layout_marginEnd="@dimen/fab_margin"
+      android:layout_marginRight="@dimen/fab_margin"
+      android:src="@drawable/ic_settings"
       app:backgroundTint="@color/color_accent"
       app:borderWidth="0dp"
-      app:fabSize="mini"
-      app:rippleColor="@android:color/white"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
+      app:rippleColor="@color/white"
       />
 
 </android.support.design.widget.CoordinatorLayout>

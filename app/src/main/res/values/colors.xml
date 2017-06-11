@@ -18,6 +18,7 @@
   <color name="white">#ffffff</color>
   <color name="black">#000000</color>
   <color name="light">#fff3f3f3</color>
+  <color name="grey_text">#d3d3d3</color>
   <color name="dark_progress">#323232</color>
   <color name="black_gradient_center">#3f3f3f</color>
 

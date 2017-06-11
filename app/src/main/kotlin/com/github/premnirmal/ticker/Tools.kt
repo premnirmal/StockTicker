@@ -217,7 +217,7 @@ class Tools private constructor() {
     fun positionsToString(quoteList: List<Quote>): String {
       val builder = StringBuilder()
       for (stock in quoteList) {
-        if (stock.isPosition == true) {
+        if (stock.isPosition) {
           builder.append(stock.symbol)
           builder.append(",")
           builder.append(stock.isPosition)
@@ -240,7 +240,7 @@ class Tools private constructor() {
       for (tickerCSV in tickerListCSV) {
         tickerFields = ArrayList(Arrays.asList(
             *tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-        if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1]) == true) {
+        if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1])) {
           tmpQuote = Quote()
           tmpQuote.isPosition = true
           tmpQuote.symbol = tickerFields[0]
@@ -265,8 +265,8 @@ class Tools private constructor() {
     }
 
     fun shouldPromptRate(): Boolean {
-      // if the user hasn't rated, try again on occasions
-      return (random.nextInt() % 3 == 0) && !hasUserAlreadyRated()
+      // if the user hasn't rated, ask them again but not too often.
+      return (random.nextInt() % 4 == 0) && !hasUserAlreadyRated()
     }
 
     fun getStatusBarHeight(context: Context): Int {

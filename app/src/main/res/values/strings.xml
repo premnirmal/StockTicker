@@ -13,6 +13,7 @@
   <string name="export_desc" xandrolate:md5="c1fa120f9e067bab5b552e579d74c645">Export quotes to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
   <string name="action_import" xandrolate:md5="7edfeb6bf0ed759bf5e4d00515234ab3">Import Quotes</string>
   <string name="import_desc" xandrolate:md5="0931c43e9805b7fba272868024731ad1">Import quotes from a comma separated .txt file</string>
+  <string name="app_settings">App Settings</string>
   <string name="action_Settings" xandrolate:md5="92e81829dc5be1a5488735680ab4ceab">Widget Settings</string>
   <string name="action_rearrage" xandrolate:md5="77d526ce21d892f1d5d691c2dcb8a10d">Rearrange Stocks</string>
   <string name="action_update" xandrolate:md5="17f85a2730b3dd7b71e21b3d85c4c153">Refresh Now</string>

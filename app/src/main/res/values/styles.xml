@@ -19,15 +19,16 @@
 
   <style name="ParanormalActivityTheme" parent="AppTheme"/>
 
-  <style name="SettingsActivityTheme" parent="AppTheme">
+  <style name="TranslucentTheme" parent="AppTheme">
     <item name="android:windowIsTranslucent">true</item>
     <item name="android:windowBackground">@android:color/transparent</item>
   </style>
-  
-  <style name="TickerSelectorActivityTheme" parent="AppTheme">
-    <item name="android:windowIsTranslucent">true</item>
-    <item name="android:windowBackground">@android:color/transparent</item>
-  </style>
+
+  <style name="SettingsActivityTheme" parent="TranslucentTheme"/>
+
+  <style name="WidgetSettingsActivityTheme" parent="TranslucentTheme"/>
+
+  <style name="TickerSelectorActivityTheme" parent="TranslucentTheme"/>
 
   <style name="TextViewStyle" parent="android:Widget.TextView">
     <item name="android:textSize">@dimen/text_size</item>

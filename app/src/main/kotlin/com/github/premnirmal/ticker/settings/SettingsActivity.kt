@@ -1,9 +1,7 @@
 package com.github.premnirmal.ticker.settings
 
 import android.Manifest
-import android.animation.Animator
 import android.animation.Animator.AnimatorListener
-import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.Activity
@@ -17,7 +15,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.preference.CheckBoxPreference
@@ -31,7 +28,6 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewAnimationUtils
-import android.view.ViewTreeObserver
 import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
@@ -40,6 +36,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
@@ -49,7 +46,6 @@ import kotlinx.android.synthetic.main.activity_preferences.activity_root
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
-import java.io.File
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -71,7 +67,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   @Inject
   lateinit internal var preferences: SharedPreferences
 
-  var isNotAddingWidget = false
+  @Inject
+  lateinit internal var widgetDataProvider: WidgetDataProvider
 
   override fun onPause() {
     super.onPause()
@@ -87,82 +84,12 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    val extras: Bundle? = intent.extras
-    val widgetId: Int
-    if (extras != null) {
-      widgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
-          AppWidgetManager.INVALID_APPWIDGET_ID)
-      isNotAddingWidget = widgetId == AppWidgetManager.INVALID_APPWIDGET_ID
-    } else {
-      isNotAddingWidget = true
-      widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-    }
-    if (isNotAddingWidget) {
-      overridePendingTransition(0, 0)
-    }
     super.onCreate(savedInstanceState)
     Injector.inject(this)
     setContentView(R.layout.activity_preferences)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       toolbar.setPadding(toolbar.paddingLeft, Tools.getStatusBarHeight(this),
           toolbar.paddingRight, toolbar.paddingBottom)
-    }
-    if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-      val result: Intent = Intent()
-      result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-      setResult(Activity.RESULT_OK, result)
-    } else {
-      if (savedInstanceState == null && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-        activity_root.visibility = View.INVISIBLE
-
-        if (activity_root.viewTreeObserver.isAlive) {
-          activity_root.viewTreeObserver
-              .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                @TargetApi(VERSION_CODES.LOLLIPOP)
-                @RequiresApi(VERSION_CODES.LOLLIPOP)
-                override fun onGlobalLayout() {
-                  if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-                    activity_root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                  } else {
-                    activity_root.viewTreeObserver.removeGlobalOnLayoutListener(this)
-                  }
-                  doCircularReveal()
-                }
-              })
-        }
-      }
-    }
-  }
-
-  @TargetApi(VERSION_CODES.LOLLIPOP)
-  @RequiresApi(VERSION_CODES.LOLLIPOP)
-  fun doCircularReveal(reverse: Boolean = false, listener: AnimatorListener? = null) {
-    val cx = intent.getIntExtra(BaseActivity.EXTRA_CENTER_X, resources.displayMetrics.widthPixels)
-    val cy = intent.getIntExtra(BaseActivity.EXTRA_CENTER_Y,
-        Tools.getStatusBarHeight(this) + toolbar.height / 2)
-    val finalRadius = Math.max(activity_root.width, activity_root.height)
-    val circularRevealAnim = ViewAnimationUtils
-        .createCircularReveal(activity_root, cx, cy,
-            if (reverse) finalRadius.toFloat() else 0.toFloat(),
-            if (reverse) 0.toFloat() else finalRadius.toFloat())
-    circularRevealAnim.duration = resources.getInteger(
-        android.R.integer.config_mediumAnimTime).toLong()
-    activity_root.visibility = View.VISIBLE
-    listener?.let { circularRevealAnim.addListener(it) }
-    circularRevealAnim.start()
-  }
-
-  override fun finishAfterTransition() {
-    if (isNotAddingWidget && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      doCircularReveal(true, object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator?) {
-          activity_root.visibility = View.INVISIBLE
-          finish()
-          overridePendingTransition(0, 0)
-        }
-      })
-    } else {
-      super.finishAfterTransition()
     }
   }
 
@@ -204,11 +131,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           val hasUserAlreadyRated = Tools.hasUserAlreadyRated()
           CrashLogger.logException(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
-          val sharedPreferenceFile = File("/data/data/$packageName/shared_prefs/")
-          val listFiles = sharedPreferenceFile.listFiles()
-          for (file in listFiles) {
-            file.delete()
-          }
+          widgetDataProvider.deleteAll()
           preferences.edit().putBoolean(Tools.DID_RATE, hasUserAlreadyRated).commit()
           System.exit(0)
         })
@@ -254,85 +177,85 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       }
     })
 
-    run({
-      val fontSizePreference = findPreference(Tools.FONT_SIZE) as ListPreference
-      val size = preferences.getInt(Tools.FONT_SIZE, 1)
-      fontSizePreference.setValueIndex(size)
-      fontSizePreference.summary = fontSizePreference.entries[size]
-      fontSizePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val stringValue = newValue.toString()
-          val listPreference = preference as ListPreference
-          val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply()
-          broadcastUpdateWidget()
-          fontSizePreference.summary = fontSizePreference.entries[index]
-          InAppMessage.showMessage(this@SettingsActivity, R.string.text_size_updated_message)
-          return true
-        }
-      }
-    })
-
-    run({
-      val bgPreference = findPreference(Tools.WIDGET_BG) as ListPreference
-      val bgIndex = preferences.getInt(Tools.WIDGET_BG, 0)
-      bgPreference.setValueIndex(bgIndex)
-      bgPreference.summary = bgPreference.entries[bgIndex]
-      bgPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val stringValue = newValue.toString()
-          val listPreference = preference as ListPreference
-          val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().putInt(Tools.WIDGET_BG, index).apply()
-          broadcastUpdateWidget()
-          bgPreference.summary = bgPreference.entries[index]
-          InAppMessage.showMessage(this@SettingsActivity, R.string.bg_updated_message)
-          return true
-        }
-      }
-    })
-
-    run({
-      val layoutTypePref = findPreference(Tools.LAYOUT_TYPE) as ListPreference
-      val typeIndex = preferences.getInt(Tools.LAYOUT_TYPE, 0)
-      layoutTypePref.setValueIndex(typeIndex)
-      layoutTypePref.summary = layoutTypePref.entries[typeIndex]
-      layoutTypePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val stringValue = newValue.toString()
-          val listPreference = preference as ListPreference
-          val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().putInt(Tools.LAYOUT_TYPE, index).apply()
-          broadcastUpdateWidget()
-          layoutTypePref.summary = layoutTypePref.entries[index]
-          InAppMessage.showMessage(this@SettingsActivity, R.string.layout_updated_message)
-          if (index == 2) {
-            showDialog(getString(R.string.change_instructions))
-          }
-          return true
-        }
-      }
-    })
-
-    run({
-      val textColorPreference = findPreference(Tools.TEXT_COLOR) as ListPreference
-      val colorIndex = preferences.getInt(Tools.TEXT_COLOR, 0)
-      textColorPreference.setValueIndex(colorIndex)
-      textColorPreference.summary = textColorPreference.entries[colorIndex]
-      textColorPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val stringValue = newValue.toString()
-          val listPreference = preference as ListPreference
-          val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().putInt(Tools.TEXT_COLOR, index).apply()
-          broadcastUpdateWidget()
-          val color = textColorPreference.entries[index]
-          textColorPreference.summary = color
-          InAppMessage.showMessage(this@SettingsActivity, R.string.text_coor_updated_message)
-          return true
-        }
-      }
-    })
+//    run({
+//      val fontSizePreference = findPreference(Tools.FONT_SIZE) as ListPreference
+//      val size = preferences.getInt(Tools.FONT_SIZE, 1)
+//      fontSizePreference.setValueIndex(size)
+//      fontSizePreference.summary = fontSizePreference.entries[size]
+//      fontSizePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+//        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+//          val stringValue = newValue.toString()
+//          val listPreference = preference as ListPreference
+//          val index = listPreference.findIndexOfValue(stringValue)
+//          preferences.edit().remove(Tools.FONT_SIZE).putInt(Tools.FONT_SIZE, index).apply()
+//          broadcastUpdateWidget()
+//          fontSizePreference.summary = fontSizePreference.entries[index]
+//          InAppMessage.showMessage(this@SettingsActivity, R.string.text_size_updated_message)
+//          return true
+//        }
+//      }
+//    })
+//
+//    run({
+//      val bgPreference = findPreference(Tools.WIDGET_BG) as ListPreference
+//      val bgIndex = preferences.getInt(Tools.WIDGET_BG, 0)
+//      bgPreference.setValueIndex(bgIndex)
+//      bgPreference.summary = bgPreference.entries[bgIndex]
+//      bgPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+//        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+//          val stringValue = newValue.toString()
+//          val listPreference = preference as ListPreference
+//          val index = listPreference.findIndexOfValue(stringValue)
+//          preferences.edit().putInt(Tools.WIDGET_BG, index).apply()
+//          broadcastUpdateWidget()
+//          bgPreference.summary = bgPreference.entries[index]
+//          InAppMessage.showMessage(this@SettingsActivity, R.string.bg_updated_message)
+//          return true
+//        }
+//      }
+//    })
+//
+//    run({
+//      val layoutTypePref = findPreference(Tools.LAYOUT_TYPE) as ListPreference
+//      val typeIndex = preferences.getInt(Tools.LAYOUT_TYPE, 0)
+//      layoutTypePref.setValueIndex(typeIndex)
+//      layoutTypePref.summary = layoutTypePref.entries[typeIndex]
+//      layoutTypePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+//        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+//          val stringValue = newValue.toString()
+//          val listPreference = preference as ListPreference
+//          val index = listPreference.findIndexOfValue(stringValue)
+//          preferences.edit().putInt(Tools.LAYOUT_TYPE, index).apply()
+//          broadcastUpdateWidget()
+//          layoutTypePref.summary = layoutTypePref.entries[index]
+//          InAppMessage.showMessage(this@SettingsActivity, R.string.layout_updated_message)
+//          if (index == 2) {
+//            showDialog(getString(R.string.change_instructions))
+//          }
+//          return true
+//        }
+//      }
+//    })
+//
+//    run({
+//      val textColorPreference = findPreference(Tools.TEXT_COLOR) as ListPreference
+//      val colorIndex = preferences.getInt(Tools.TEXT_COLOR, 0)
+//      textColorPreference.setValueIndex(colorIndex)
+//      textColorPreference.summary = textColorPreference.entries[colorIndex]
+//      textColorPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+//        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+//          val stringValue = newValue.toString()
+//          val listPreference = preference as ListPreference
+//          val index = listPreference.findIndexOfValue(stringValue)
+//          preferences.edit().putInt(Tools.TEXT_COLOR, index).apply()
+//          broadcastUpdateWidget()
+//          val color = textColorPreference.entries[index]
+//          textColorPreference.summary = color
+//          InAppMessage.showMessage(this@SettingsActivity, R.string.text_coor_updated_message)
+//          return true
+//        }
+//      }
+//    })
 
     run({
       val refreshPreference = findPreference(Tools.UPDATE_INTERVAL) as ListPreference
@@ -367,19 +290,19 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       }
     })
 
-    run({
-      val boldChangePreference = findPreference(Tools.BOLD_CHANGE) as CheckBoxPreference
-      val bold = Tools.boldEnabled()
-      boldChangePreference.isChecked = bold
-      boldChangePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val checked = newValue as Boolean
-          preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply()
-          broadcastUpdateWidget()
-          return true
-        }
-      }
-    })
+//    run({
+//      val boldChangePreference = findPreference(Tools.BOLD_CHANGE) as CheckBoxPreference
+//      val bold = Tools.boldEnabled()
+//      boldChangePreference.isChecked = bold
+//      boldChangePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+//        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+//          val checked = newValue as Boolean
+//          preferences.edit().putBoolean(Tools.BOLD_CHANGE, checked).apply()
+//          broadcastUpdateWidget()
+//          return true
+//        }
+//      }
+//    })
 
     run({
       val startTimePref = findPreference(Tools.START_TIME) as TimePreference

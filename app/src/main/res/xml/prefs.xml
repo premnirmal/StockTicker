@@ -25,48 +25,6 @@
       android:title="@string/end_time"
       android:defaultValue="16:00"/>
 
-  <ListPreference
-      android:key="LAYOUT_TYPE"
-      android:title="@string/layout_type"
-      android:defaultValue="0"
-      android:entries="@array/layout_types"
-      android:entryValues="@array/layout_types_values"
-      android:negativeButtonText="@null"
-      android:positiveButtonText="@null"/>
-
-  <ListPreference
-      android:key="WIDGET_BG"
-      android:title="@string/bg"
-      android:defaultValue="0"
-      android:entries="@array/backgrounds"
-      android:entryValues="@array/backgrounds_values"
-      android:negativeButtonText="@null"
-      android:positiveButtonText="@null"/>
-
-  <ListPreference
-      android:key="TEXT_COLOR"
-      android:title="@string/text_color"
-      android:defaultValue="0"
-      android:entries="@array/text_colors"
-      android:entryValues="@array/backgrounds_values"
-      android:negativeButtonText="@null"
-      android:positiveButtonText="@null"/>
-
-  <ListPreference
-      android:key="com.github.premnirmal.ticker.textsize"
-      android:title="@string/choose_text_size"
-      android:defaultValue="1"
-      android:entries="@array/font_sizes"
-      android:entryValues="@array/font_sizes_values"
-      android:negativeButtonText="@null"
-      android:positiveButtonText="@null"/>
-
-  <CheckBoxPreference
-      android:key="BOLD_CHANGE"
-      android:title="@string/bold_change"
-      android:summary="@string/bold_change_desc"
-      android:defaultValue="false"/>
-
   <Preference
       android:key="SETTING_SHARE"
       android:title="@string/action_share"

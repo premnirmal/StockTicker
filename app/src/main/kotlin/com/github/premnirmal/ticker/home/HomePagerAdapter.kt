@@ -11,7 +11,7 @@ import com.github.premnirmal.ticker.widget.StockWidget
 internal class HomePagerAdapter(fm: FragmentManager,
     val packageName: String,
     val widgetManager: AppWidgetManager)
-    : FragmentPagerAdapter(fm) {
+  : FragmentPagerAdapter(fm) {
 
 
   override fun getItem(position: Int): Fragment {
@@ -35,15 +35,12 @@ internal class HomePagerAdapter(fm: FragmentManager,
     if (appWidgetIds.isEmpty()) return 1 else return appWidgetIds.size
   }
 
-  override fun getPageWidth(position: Int): Float {
-    return if (count == 1) 1.0f else 0.95f
-  }
-
   override fun getPageTitle(position: Int): CharSequence {
     if (count == 1) {
       return ""
     } else {
-      return "Widget #$position"
+      val id = position + 1
+      return "Widget #$id"
     }
   }
 }

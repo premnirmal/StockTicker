@@ -4,11 +4,9 @@
     android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/default_dark_bg"
+    android:orientation="vertical"
     >
-
-  <!-- Header  -->
 
   <android.support.v7.widget.Toolbar
       xmlns:android="http://schemas.android.com/apk/res/android"
@@ -21,17 +19,13 @@
       app:navigationContentDescription="@string/abc_action_bar_up_description"
       app:navigationIcon="?attr/homeAsUpIndicator"
       app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-      app:title="@string/app_settings"
+      app:title="@string/action_Settings"
       />
 
-  <!-- Show Preference in ListView  -->
-
-  <ListView
-      android:id="@+id/android:list"
+  <android.support.v7.widget.RecyclerView
+      android:id="@+id/recycler_view"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      >
-  </ListView>
-
+      />
 
 </LinearLayout>

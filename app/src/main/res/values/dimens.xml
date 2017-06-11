@@ -26,4 +26,8 @@
 
   <dimen name="scroll_threshold">2dp</dimen>
   <dimen name="portfolio_top_margin">20dp</dimen>
+
+  <dimen name="fab_margin">12dp</dimen>
+  <dimen name="first_fab_margin">65dp</dimen>
+  <dimen name="second_fab_margin">130dp</dimen>
 </resources>

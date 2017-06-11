@@ -120,6 +120,12 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
           update()
         }
     listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    if (widgetData.getTickers().isEmpty()) {
+      view_flipper.displayedChild = 0
+    } else {
+      view_flipper.displayedChild = 1
+    }
     update()
   }
 
@@ -146,12 +152,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   internal fun update() {
-    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-    if (widgetData.getTickers().isEmpty()) {
-      view_flipper.displayedChild = 0
-    } else {
-      view_flipper.displayedChild = 1
-    }
     stocksAdapter.refresh()
   }
 
