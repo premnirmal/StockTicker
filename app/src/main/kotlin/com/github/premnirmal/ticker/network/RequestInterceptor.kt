@@ -1,8 +1,8 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.StocksApp
+import com.github.premnirmal.ticker.components.Injector
 import okhttp3.CacheControl
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
@@ -21,10 +21,10 @@ class RequestInterceptor : Interceptor {
     val SIGNATURE_HEADER = "XSignature-StockTicker"
   }
 
-  @Inject lateinit var context: Context
+  @Inject lateinit internal var context: Context
 
   init {
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
   }
 
   @Throws(IOException::class)

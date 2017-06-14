@@ -17,7 +17,7 @@ class UserAgentInterceptor : Interceptor {
     val USER_AGENT_KEY = "UserAgent"
   }
 
-  @Inject lateinit var context: Context
+  @Inject lateinit internal var context: Context
 
   val userAgent by lazy {
     String.format(USER_AGENT_FORMAT, context.packageName, BuildConfig.VERSION_NAME,
@@ -25,7 +25,7 @@ class UserAgentInterceptor : Interceptor {
   }
 
   init {
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
   }
 
   @Throws(IOException::class)

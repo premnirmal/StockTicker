@@ -3,18 +3,21 @@ package com.github.premnirmal.ticker.base
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
+import com.github.premnirmal.tickerwidget.R
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -24,11 +27,46 @@ abstract class BaseActivity : AppCompatActivity() {
   companion object {
     val EXTRA_CENTER_X = "centerX"
     val EXTRA_CENTER_Y = "centerY"
+
+    fun Context.isNetworkOnline(): Boolean {
+      try {
+        val connectivityManager = this.getSystemService(
+            Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val i = connectivityManager.activeNetworkInfo ?: return false
+        if (!i.isConnected) return false
+        if (!i.isAvailable) return false
+        return true
+      } catch (e: Exception) {
+        e.printStackTrace()
+        return false
+      }
+    }
+
+    fun Context.getStatusBarHeight(): Int {
+      val result: Int
+      val resourceId: Int = this.resources.getIdentifier("status_bar_height", "dimen",
+          "android")
+      if (resourceId > 0) {
+        result = this.resources.getDimensionPixelSize(resourceId)
+      } else {
+        result = 0
+      }
+      return result
+    }
+
+    fun Context.getFontSize(): Float {
+      val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
+      when (size) {
+        0 -> return this.resources.getInteger(R.integer.text_size_small).toFloat()
+        2 -> return this.resources.getInteger(R.integer.text_size_large).toFloat()
+        else -> return this.resources.getInteger(R.integer.text_size_medium).toFloat()
+      }
+    }
   }
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-  @javax.inject.Inject lateinit var bus: RxBus
+  @Inject lateinit internal var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> {
     return lifecycleSubject
@@ -119,8 +157,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   fun updateToolbar(toolbar: android.support.v7.widget.Toolbar) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft,
-          Tools.getStatusBarHeight(this),
+      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(),
           toolbar.paddingRight, toolbar.paddingBottom)
     }
   }

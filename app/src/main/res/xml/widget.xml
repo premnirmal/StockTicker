@@ -5,6 +5,6 @@
     android:updatePeriodMillis="7200000"
     android:previewImage="@drawable/widget_preview"
     android:resizeMode="horizontal|vertical"
-    android:configure="com.github.premnirmal.ticker.settings.SettingsActivity"
+    android:configure="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
     android:initialLayout="@layout/initial_widget_layout"
     android:widgetCategory="home_screen"/>

@@ -125,7 +125,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
-        android:text="FabTitle1"
+        android:text="@string/add_stock"
         android:textColor="@color/light"
         />
 
@@ -157,7 +157,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginRight="@dimen/fab_margin"
-        android:text="FabTitle2"
+        android:text="@string/action_Settings"
         android:textColor="@color/light"
         />
 

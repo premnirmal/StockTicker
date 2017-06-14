@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.AlertDialog.Builder
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Rect
@@ -14,7 +13,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
 import android.view.ViewGroup
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.CrashLogger
@@ -25,7 +24,8 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
-import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
@@ -49,31 +49,35 @@ import javax.inject.Inject
  */
 class ParanormalActivity : BaseActivity() {
 
-  @Inject
-  lateinit internal var preferences: SharedPreferences
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
-
-  private var dialogShown = false
-  private var attemptingFetch = false
-  private var isFABOpen = false
-  private var fetchCount = 0
-  private var adapter: HomePagerAdapter? = null
-
   companion object {
     val DIALOG_SHOWN: String = "DIALOG_SHOWN"
     val MAX_FETCH_COUNT = 3
     val FAB_ANIMATION_DURATION = 200L
   }
 
+  @Inject
+  lateinit internal var preferences: SharedPreferences
+  @Inject
+  lateinit internal var stocksProvider: IStocksProvider
+  @Inject
+  lateinit internal var widgetDataProvider: WidgetDataProvider
+
+  private var dialogShown = false
+  private var attemptingFetch = false
+  private var isFABOpen = false
+  private var fetchCount = 0
+  private val adapter: HomePagerAdapter by lazy {
+    HomePagerAdapter(supportFragmentManager)
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
     savedInstanceState?.let { dialogShown = it.getBoolean(DIALOG_SHOWN, false) }
     setContentView(R.layout.activity_paranormal)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-          Tools.getStatusBarHeight(this)
+          getStatusBarHeight()
     }
     collapsingToolbarLayout.setCollapsedTitleTypeface(
         TypefaceUtils.load(assets, "fonts/Ubuntu-Regular.ttf"))
@@ -98,8 +102,8 @@ class ParanormalActivity : BaseActivity() {
       fetch()
     })
 
-    if (preferences.getBoolean(Tools.WHATS_NEW, false)) {
-      preferences.edit().putBoolean(Tools.WHATS_NEW, false).apply()
+    if (preferences.getBoolean(AppPreferences.WHATS_NEW, false)) {
+      preferences.edit().putBoolean(AppPreferences.WHATS_NEW, false).apply()
       val stringBuilder = StringBuilder()
       val whatsNew = resources.getStringArray(R.array.whats_new)
       for (i in whatsNew.indices) {
@@ -116,9 +120,7 @@ class ParanormalActivity : BaseActivity() {
     }
 
     fab_settings.setOnClickListener({ v ->
-      val appWidgetIds = AppWidgetManager.getInstance(this).getAppWidgetIds(
-          ComponentName(packageName, StockWidget::class.java.name))
-      if (appWidgetIds.isEmpty()) {
+      if (!widgetDataProvider.hasWidget()) {
         val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
         openTickerSelector(v, widgetId)
       } else {
@@ -130,14 +132,15 @@ class ParanormalActivity : BaseActivity() {
       }
 
       fab_add_stocks.setOnClickListener { v ->
+        val appWidgetIds = widgetDataProvider.getAppWidgetIds()
         val widgetId = appWidgetIds[view_pager!!.currentItem]
         openTickerSelector(v, widgetId)
       }
 
-      fab_edit_widget.setOnClickListener { _ ->
-        closeFABMenu()
+      fab_edit_widget.setOnClickListener { v ->
+        val appWidgetIds = widgetDataProvider.getAppWidgetIds()
         val widgetId = appWidgetIds[view_pager!!.currentItem]
-        InAppMessage.showMessage(activity_root, "Please be patient")
+        openWidgetSettings(v, widgetId)
       }
 
     })
@@ -146,14 +149,12 @@ class ParanormalActivity : BaseActivity() {
       closeFABMenu()
     }
 
-    adapter = HomePagerAdapter(supportFragmentManager, packageName,
-        AppWidgetManager.getInstance(applicationContext))
     view_pager.adapter = adapter
     tabs?.setupWithViewPager(view_pager)
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
   }
 
-  private fun openTickerSelector(v: View, widgetId: Int) {
+  internal fun openTickerSelector(v: View, widgetId: Int) {
     val intent = TickerSelectorActivity.launchIntent(this, widgetId)
     val rect = Rect()
     v.getGlobalVisibleRect(rect)
@@ -164,7 +165,18 @@ class ParanormalActivity : BaseActivity() {
     startActivity(intent)
   }
 
-  private fun showFABMenu() {
+  internal fun openWidgetSettings(v: View, widgetId: Int) {
+    val intent = WidgetSettingsActivity.launchIntent(this, widgetId)
+    val rect = Rect()
+    v.getGlobalVisibleRect(rect)
+    val centerX = (rect.right - ((rect.right - rect.left) / 2))
+    val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
+    intent.putExtra(EXTRA_CENTER_X, centerX)
+    intent.putExtra(EXTRA_CENTER_Y, centerY)
+    startActivity(intent)
+  }
+
+  internal fun showFABMenu() {
     if (!isFABOpen) {
       isFABOpen = true
       fab_settings.animate().rotation(45f).setDuration(FAB_ANIMATION_DURATION).start()
@@ -178,7 +190,7 @@ class ParanormalActivity : BaseActivity() {
     }
   }
 
-  private fun closeFABMenu() {
+  internal fun closeFABMenu() {
     if (isFABOpen) {
       isFABOpen = false
       fab_settings.animate().rotation(0f).setDuration(FAB_ANIMATION_DURATION).start()
@@ -200,26 +212,23 @@ class ParanormalActivity : BaseActivity() {
 
   override fun onResume() {
     super.onResume()
-    updateHeader()
+    update()
     closeFABMenu()
   }
 
-  private fun updateHeader() {
-    val widgetManager = AppWidgetManager.getInstance(applicationContext)
-    val appWidgetIds = widgetManager.getAppWidgetIds(
-        ComponentName(packageName, StockWidget::class.java.name))
-    tabs.visibility = if (appWidgetIds.size > 1) View.VISIBLE else View.INVISIBLE
+  internal fun updateHeader() {
+    tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     subtitle?.text = getString(string.last_fetch, stocksProvider.lastFetched())
-    if (appWidgetIds.isEmpty()) {
+    if (!widgetDataProvider.hasWidget()) {
       fab_settings.setImageResource(R.drawable.ic_add)
     } else {
       fab_settings.setImageResource(R.drawable.ic_settings)
     }
   }
 
-  private fun fetch() {
+  internal fun fetch() {
     if (!attemptingFetch) {
-      if (Tools.isNetworkOnline(this)) {
+      if (isNetworkOnline()) {
         fetchCount++
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
@@ -251,8 +260,8 @@ class ParanormalActivity : BaseActivity() {
     }
   }
 
-  private fun update() {
-    adapter?.notifyDataSetChanged()
+  internal fun update() {
+    adapter.notifyDataSetChanged()
     updateHeader()
     fetchCount = 0
   }
@@ -262,14 +271,14 @@ class ParanormalActivity : BaseActivity() {
     outState?.putBoolean(DIALOG_SHOWN, dialogShown)
   }
 
-  private fun maybeAskToRate() {
-    if (!dialogShown && Tools.shouldPromptRate()) {
+  internal fun maybeAskToRate() {
+    if (!dialogShown && AppPreferences.shouldPromptRate()) {
       Builder(this).setTitle(R.string.like_our_app)
           .setMessage(R.string.please_rate)
           .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
             Analytics.trackRateYes()
-            Tools.userDidRate()
+            AppPreferences.userDidRate()
             dialog.dismiss()
           }
           .setNegativeButton(R.string.later) { dialog, _ ->
@@ -281,7 +290,7 @@ class ParanormalActivity : BaseActivity() {
     }
   }
 
-  private fun sendToPlayStore() {
+  internal fun sendToPlayStore() {
     val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
     val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
     marketIntent.resolveActivity(packageManager)?.let {

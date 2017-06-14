@@ -4,23 +4,20 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
 import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperAdapter
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
-import com.github.premnirmal.ticker.widget.IWidgetData
+import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/29/16.
  */
 class StocksAdapter constructor(
-    private val widgetData: IWidgetData,
+    private val widgetData: WidgetData,
     private val listener: StocksAdapter.QuoteClickListener,
     private val dragStartListener: OnStartDragListener)
   : RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
@@ -39,6 +36,7 @@ class StocksAdapter constructor(
 
   init {
     quoteList = ArrayList()
+    quoteList.addAll(widgetData.getStocks())
   }
 
   fun remove(quote: Quote) {

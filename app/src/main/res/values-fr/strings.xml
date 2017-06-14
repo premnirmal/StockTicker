@@ -90,4 +90,7 @@
   <string name="whats_new_in">Quoi de neuf dans v%1$s</string>
   <string name="enter_a_symbol">Entrez un symbole</string>
   <string name="no_symbols">¯\\_(ツ)_/¯\nIl n\'y a pas de symboles</string>
+  <string name="widget_name">Nom du widget</string>
+  <string name="widget_name_updated">Nom du widget mis à jour</string>
+  <string name="set">Ensemble</string>
 </resources>

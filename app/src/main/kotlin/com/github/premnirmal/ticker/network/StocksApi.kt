@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.ErrorBody
@@ -16,20 +16,20 @@ import javax.inject.Singleton
  */
 @Singleton class StocksApi @Inject constructor() {
 
-  @Inject internal lateinit var gson: Gson
-  @Inject internal lateinit var financeApi: Robindahood
+  @Inject lateinit internal var gson: Gson
+  @Inject lateinit internal var financeApi: Robindahood
 
   var lastFetched: Long = 0
 
   init {
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
   }
 
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
     val query = tickerList.joinToString(",")
     return financeApi.getStocks(query)
         .map { quoteNets ->
-          lastFetched = Tools.clock().currentTimeMillis()
+          lastFetched = AppPreferences.clock().currentTimeMillis()
           quoteNets
         }
         .map { quoteNets ->

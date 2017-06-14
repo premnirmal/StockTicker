@@ -20,6 +20,7 @@
     <activity
         android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
         android:label="@string/app_name"
+        android:launchMode="singleInstance"
         android:theme="@style/ParanormalActivityTheme">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>

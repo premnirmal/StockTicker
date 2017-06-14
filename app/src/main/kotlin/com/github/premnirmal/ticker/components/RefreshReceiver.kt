@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.components
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle
@@ -17,10 +17,10 @@ class RefreshReceiver : BroadcastReceiver() {
   lateinit internal var stocksProvider: IStocksProvider
 
   override fun onReceive(context: Context, intent: Intent) {
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
     Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
         "RefreshReceived on " + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-            .format(Tools.clock().todayLocal()))
+            .format(AppPreferences.clock().todayLocal()))
     stocksProvider.fetch().subscribe(SimpleSubscriber())
   }
 }

@@ -96,5 +96,8 @@
   <string name="whats_new_in" xandrolate:md5="adaaa978ddfa40f36cc32f441ae3f1f6">What\'s new in v%1$s</string>
   <string name="enter_a_symbol">Enter a symbol</string>
   <string name="no_symbols">¯\\_(ツ)_/¯\nNo symbols</string>
+  <string name="widget_name">Widget name</string>
+  <string name="widget_name_updated">Widget name updated</string>
+  <string name="set">Set</string>
 
 </resources>

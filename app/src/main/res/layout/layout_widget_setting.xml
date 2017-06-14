@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/setting_padding"
+    tools:layout_marginTop="100dp"
+    >
+
+  <TextView
+      android:id="@+id/setting_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:textColor="@color/light"
+      android:textSize="@dimen/large_text"
+      tools:text="Setting title"
+      />
+
+  <TextView
+      android:id="@+id/setting_subtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:textColor="@color/grey_text"
+      android:textSize="@dimen/text_size"
+      tools:text="Setting subtitle"
+      />
+
+</merge>

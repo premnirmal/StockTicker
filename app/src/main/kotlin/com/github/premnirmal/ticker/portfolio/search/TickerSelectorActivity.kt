@@ -17,7 +17,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
-import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -52,11 +51,9 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     }
   }
 
-  @Inject
-  lateinit internal var suggestionApi: SuggestionApi
+  @Inject lateinit internal var suggestionApi: SuggestionApi
 
-  @Inject
-  lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
   internal var disposable: Disposable? = null
 
@@ -68,7 +65,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     overridePendingTransition(0, 0)
     widgetId = intent.getIntExtra(ARG_WIDGET_ID, 0)
     super.onCreate(savedInstanceState)
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
     setContentView(R.layout.activity_ticker_selector)
     toolbar.setNavigationOnClickListener {
       onBackPressed()
@@ -110,7 +107,8 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
         .createCircularReveal(activity_root, cx, cy,
             if (reverse) finalRadius.toFloat() else 0.toFloat(),
             if (reverse) 0.toFloat() else finalRadius.toFloat())
-    circularRevealAnim.duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+    circularRevealAnim.duration = resources.getInteger(
+        android.R.integer.config_mediumAnimTime).toLong()
     activity_root.visibility = View.VISIBLE
     listener?.let { circularRevealAnim.addListener(it) }
     circularRevealAnim.start()
@@ -143,7 +141,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     if (!query.isEmpty()) {
       disposable?.dispose()
 
-      if (Tools.isNetworkOnline(applicationContext)) {
+      if (isNetworkOnline()) {
         val observable = suggestionApi.getSuggestions(query)
         disposable = bind(observable)
             .map { (resultSet) -> resultSet?.result }
@@ -177,11 +175,10 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     if (!widgetData.getTickers().contains(ticker)) {
       widgetData.addTicker(ticker)
-      InAppMessage.showMessage(this@TickerSelectorActivity,
-          getString(R.string.added_to_list, ticker))
+      widgetDataProvider.broadcastUpdateWidget(widgetId)
+      InAppMessage.showMessage(this, getString(R.string.added_to_list, ticker))
     } else {
       showDialog(getString(R.string.already_in_portfolio, ticker))
     }
   }
-
 }

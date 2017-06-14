@@ -1,10 +1,9 @@
 package com.github.premnirmal.ticker.model
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.SimpleSubscriber
@@ -13,7 +12,7 @@ import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.RobindahoodException
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -38,18 +37,57 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
+    fun List<Quote>.positionsToString(): String {
+      val builder = StringBuilder()
+      for (stock in this) {
+        if (stock.isPosition) {
+          builder.append(stock.symbol)
+          builder.append(",")
+          builder.append(stock.isPosition)
+          builder.append(",")
+          builder.append(stock.positionPrice)
+          builder.append(",")
+          builder.append(stock.positionShares)
+          builder.append("\n")
+        }
+      }
+      return builder.toString()
+    }
+
+    fun String.stringToPositions(): MutableList<Quote> {
+      val tickerListCSV = ArrayList(Arrays.asList(
+          *this.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
+      val stockList = ArrayList<Quote>()
+      var tickerFields: ArrayList<String>
+      var tmpQuote: Quote
+      for (tickerCSV in tickerListCSV) {
+        tickerFields = ArrayList(Arrays.asList(
+            *tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
+        if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1])) {
+          tmpQuote = Quote()
+          tmpQuote.isPosition = true
+          tmpQuote.symbol = tickerFields[0]
+          tmpQuote.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
+          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
+          stockList.add(tmpQuote)
+        }
+      }
+      return stockList
+    }
+
     internal val LAST_FETCHED = "LAST_FETCHED"
     internal val NEXT_FETCH = "NEXT_FETCH"
     internal val POSITION_LIST = "POSITION_LIST"
     internal val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
 
-    val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
+    val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
   }
 
-  @Inject internal lateinit var api: StocksApi
-  @Inject internal lateinit var context: Context
-  @Inject internal lateinit var preferences: SharedPreferences
-  @Inject internal lateinit var bus: RxBus
+  @Inject lateinit internal var api: StocksApi
+  @Inject lateinit internal var context: Context
+  @Inject lateinit internal var preferences: SharedPreferences
+  @Inject lateinit internal var bus: RxBus
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
   internal val tickerList: MutableList<String>
   internal val quoteList: MutableList<Quote> = ArrayList()
@@ -61,17 +99,17 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal var backOffAttemptCount = 1
 
   init {
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
     storage = StocksStorage()
     exponentialBackoff = ExponentialBackoff()
-    backOffAttemptCount = Tools.backOffAttemptCount()
+    backOffAttemptCount = AppPreferences.backOffAttemptCount()
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
     tickerList = ArrayList(Arrays.asList(
         *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
 
-    positionList = Tools.stringToPositions(preferences.getString(POSITION_LIST, ""))
+    positionList = preferences.getString(POSITION_LIST, "").stringToPositions()
 
-    val tickerList = Tools.toCommaSeparatedString(this.tickerList)
+    val tickerList = this.tickerList.toCommaSeparatedString()
     preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply()
     try {
       lastFetched = preferences.getLong(LAST_FETCHED, 0L)
@@ -95,8 +133,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   internal fun save() {
-    preferences.edit().putString(POSITION_LIST, Tools.positionsToString(positionList))
-        .putString(SORTED_STOCK_LIST, Tools.toCommaSeparatedString(tickerList))
+    preferences.edit().putString(POSITION_LIST, positionList.positionsToString())
+        .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
         .putLong(LAST_FETCHED, lastFetched)
         .apply()
     storage.saveStocks(quoteList)
@@ -111,8 +149,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     } else {
       return api.getStocks(tickerList)
           .doOnSubscribe {
-            Tools.setRefreshing(true)
-            AlarmScheduler.sendBroadcast(context)
+            AppPreferences.setRefreshing(true)
+            widgetDataProvider.broadcastUpdateWidget()
           }
           .map { stocks ->
             if (stocks.isEmpty()) {
@@ -131,7 +169,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             }
           }
           .doOnNext { _ ->
-            Tools.setRefreshing(false)
+            AppPreferences.setRefreshing(false)
             synchronized(quoteList, {
               backOffAttemptCount = 1
               saveBackOffAttemptCount()
@@ -139,7 +177,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             })
           }
           .doOnError { t ->
-            Tools.setRefreshing(false)
+            AppPreferences.setRefreshing(false)
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
@@ -149,7 +187,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
               }
             }
             retryWithBackoff()
-            AlarmScheduler.sendBroadcast(context)
+            widgetDataProvider.broadcastUpdateWidget()
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
@@ -164,11 +202,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     val backOffTimeMs = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
     backOffAttemptCount++
     saveBackOffAttemptCount()
-    scheduleUpdate(Tools.clock().elapsedRealtime() + backOffTimeMs)
+    scheduleUpdate(AppPreferences.clock().elapsedRealtime() + backOffTimeMs)
   }
 
   private fun saveBackOffAttemptCount() {
-    Tools.setBackOffAttemptCount(backOffAttemptCount)
+    AppPreferences.setBackOffAttemptCount(backOffAttemptCount)
   }
 
   internal fun sendBroadcast(refresh: Boolean = false) {
@@ -179,31 +217,28 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     get() = AlarmScheduler.msOfNextAlarm()
 
   internal fun scheduleUpdate(msToNextAlarm: Long, refresh: Boolean = false) {
-    val widgetManager = AppWidgetManager.getInstance(context)
-    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
-    val hasWidget = ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
+    val hasWidget = widgetDataProvider.hasWidget()
     if (hasWidget) {
       val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
       nextFetch = updateTime.toInstant().toEpochMilli()
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
     }
-    Tools.setRefreshing(false)
-    AlarmScheduler.sendBroadcast(context)
+    AppPreferences.setRefreshing(false)
+    widgetDataProvider.broadcastUpdateWidget()
     if (refresh) {
       bus.post(RefreshEvent())
     }
   }
 
   override fun addStock(ticker: String): Collection<String> {
-    if (tickerList.contains(ticker)) {
-      return tickerList
+    if (!tickerList.contains(ticker)) {
+      tickerList.add(ticker)
+      val quote = Quote()
+      quote.symbol = ticker
+      quoteList.add(quote)
+      save()
+      fetch().subscribe(SimpleSubscriber())
     }
-    tickerList.add(ticker)
-    val quote = Quote()
-    quote.symbol = ticker
-    quoteList.add(quote)
-    save()
-    fetch().subscribe(SimpleSubscriber())
     return tickerList
   }
 
@@ -269,28 +304,23 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
-  override fun getStocks(): Collection<Quote> {
+  override fun removeStocks(tickers: Collection<String>){
     synchronized(quoteList, {
-
-      val newStockList = ArrayList<Quote>()
-      var added: Boolean
-      // Set all positions
-      for (stock in quoteList) {
-        added = false
-        for (pos in positionList) {
-          if (!added && stock.symbol == pos.symbol) {
-            stock.isPosition = true
-            stock.positionShares = pos.positionShares
-            stock.positionPrice = pos.positionPrice
-            newStockList.add(stock)
-            added = true
-          }
-        }
-        if (!added) {
-          newStockList.add(stock)
-        }
+      tickers.forEach {
+        val ticker2 = "^" + it // in case it was an index
+        tickerList.remove(it)
+        tickerList.remove(ticker2)
+        val dummy = Quote()
+        val dummy2 = Quote()
+        dummy.symbol = it
+        dummy2.symbol = ticker2
+        quoteList.remove(dummy)
+        quoteList.remove(dummy2)
+        positionList.remove(dummy)
+        positionList.remove(dummy2)
       }
-      return newStockList
+      save()
+      scheduleUpdate(msToNextAlarm)
     })
   }
 
@@ -327,12 +357,12 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal fun createTimeString(time: ZonedDateTime): String {
     val fetched: String
     val fetchedDayOfWeek = time.dayOfWeek.value
-    val today = Tools.clock().todayZoned().dayOfWeek.value
+    val today = AppPreferences.clock().todayZoned().dayOfWeek.value
     if (today == fetchedDayOfWeek) {
-      fetched = Tools.TIME_FORMATTER.format(time)
+      fetched = AppPreferences.TIME_FORMATTER.format(time)
     } else {
       val day: String = DayOfWeek.from(time).getDisplayName(SHORT, Locale.getDefault())
-      val timeStr: String = Tools.TIME_FORMATTER.format(time)
+      val timeStr: String = AppPreferences.TIME_FORMATTER.format(time)
       fetched = "$timeStr $day"
     }
     return fetched

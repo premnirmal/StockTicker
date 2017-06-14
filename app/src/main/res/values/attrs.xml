@@ -2,13 +2,16 @@
 <resources>
 
   <declare-styleable name="StockFieldView">
-    <attr name="name" format="string|reference"/>
-    <attr name="value" format="string|reference"/>
-    <attr name="size" format="dimension"/>
-    <attr name="or" format="enum">
+    <attr format="string|reference" name="name"/>
+    <attr format="string|reference" name="value"/>
+    <attr format="dimension" name="size"/>
+    <attr format="enum" name="or">
       <enum name="horizontal" value="0"/>
       <enum name="vertical" value="1"/>
     </attr>
   </declare-styleable>
-
+  <declare-styleable name="SettingsTextView">
+    <attr format="string" name="title_text"/>
+    <attr format="string" name="subtitle_text"/>
+  </declare-styleable>
 </resources>

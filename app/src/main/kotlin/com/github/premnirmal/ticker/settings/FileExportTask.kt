@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.settings
 
 import android.os.AsyncTask
 import android.text.TextUtils
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
@@ -16,7 +16,7 @@ import java.util.*
 internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
 
   override fun doInBackground(vararg tickers: List<String>): String? {
-    val file = Tools.tickersFile
+    val file = AppPreferences.tickersFile
     val tickerList: List<String> = ArrayList(tickers[0])
     try {
       if (file.exists()) {

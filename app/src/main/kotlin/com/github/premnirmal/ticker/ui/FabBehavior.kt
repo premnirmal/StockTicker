@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.ui
 import android.content.Context
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
-import android.support.v4.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
 
@@ -21,12 +20,14 @@ class FabBehavior : CoordinatorLayout.Behavior<View> {
 
   override fun onDependentViewChanged(parent: CoordinatorLayout?, child: View?,
       dependency: View?): Boolean {
-    val translationY = Math.min(0f, ViewCompat.getTranslationY(dependency) - dependency!!.height)
-    ViewCompat.setTranslationY(child, translationY)
+    dependency?.let {
+      val translationY = Math.min(0f, it.translationY - it.height)
+      child?.translationY = translationY
+    }
     return true
   }
 
   override fun onDependentViewRemoved(parent: CoordinatorLayout?, child: View?, dependency: View?) {
-    ViewCompat.animate(child).translationY(0f).start()
+    child?.animate()?.translationY(0f)?.start()
   }
 }

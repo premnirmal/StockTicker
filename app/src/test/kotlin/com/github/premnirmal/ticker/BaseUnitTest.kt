@@ -58,7 +58,6 @@ abstract class BaseUnitTest : TestCase() {
     val iStocksProvider = Mocker.provide(IStocksProvider::class.java)
     doNothing().`when`(iStocksProvider).schedule()
     `when`(iStocksProvider.fetch()).thenReturn(Observable.never())
-    `when`(iStocksProvider.getStocks()).thenReturn(emptyList())
     `when`(iStocksProvider.getTickers()).thenReturn(emptyList())
     `when`(iStocksProvider.addStock(ArgumentMatchers.anyString())).thenReturn(emptyList())
     `when`(iStocksProvider.lastFetched()).thenReturn("--")

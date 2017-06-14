@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,23 +9,117 @@
     >
 
   <android.support.v7.widget.Toolbar
-      xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
       android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:background="@color/color_primary"
       android:minHeight="?attr/actionBarSize"
       app:navigationContentDescription="@string/abc_action_bar_up_description"
-      app:navigationIcon="?attr/homeAsUpIndicator"
+      app:navigationIcon="@drawable/ic_close"
       app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
       app:title="@string/action_Settings"
       />
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/recycler_view"
+  <ScrollView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      />
+      >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_widget_name"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/widget_name"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1px"
+          android:background="@color/divider"
+          />
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_layout_type"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/layout_type"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1px"
+          android:background="@color/divider"
+          />
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_background"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/bg"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1px"
+          android:background="@color/divider"
+          />
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_text_color"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/text_color"
+          />
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1px"
+          android:background="@color/divider"
+          />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          android:id="@+id/setting_bold"
+          >
+
+        <com.github.premnirmal.ticker.ui.SettingsTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:subtitle_text="@string/bold_change_desc"
+            app:title_text="@string/bold_change"
+            />
+
+        <CheckBox
+            android:id="@+id/setting_bold_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/setting_padding"
+            android:layout_marginRight="@dimen/setting_padding"
+            android:gravity="center"
+            android:focusable="false"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            />
+
+      </LinearLayout>
+
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="1px"
+          android:background="@color/divider"
+          />
+
+    </LinearLayout>
+
+  </ScrollView>
 
 </LinearLayout>

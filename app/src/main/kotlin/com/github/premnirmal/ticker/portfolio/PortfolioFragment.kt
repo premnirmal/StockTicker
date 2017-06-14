@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
@@ -13,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -70,11 +69,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     @Inject
     lateinit internal var bus: RxBus
 
-    @Inject
-    lateinit internal var preferences: SharedPreferences
-
     init {
-      Injector.inject(this)
+      Injector.appComponent.inject(this)
     }
   }
 
@@ -163,6 +159,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
           .setPositiveButton(R.string.remove, { dialog, _ ->
             widgetData.removeStock(it.symbol)
             stocksAdapter.remove(it)
+            holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
           })
           .setNegativeButton(R.string.cancel, { dialog, _ -> dialog.dismiss() })
@@ -179,9 +176,10 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-    if (Tools.autoSortEnabled()) {
-      Tools.enableAutosort(false)
+    if (AppPreferences.autoSortEnabled()) {
+      AppPreferences.enableAutosort(false)
       update()
+      holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
       InAppMessage.showMessage(activity, getString(R.string.autosort_disabled))
     } else {
       itemTouchHelper?.startDrag(viewHolder)

@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.RxBus
 import dagger.Module
@@ -32,8 +32,8 @@ class MockAppModule(private val app: Context) {
 
   @Provides
   @Singleton
-  internal fun provideSharedPreferences(context: Context): SharedPreferences {
-    val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, Context.MODE_PRIVATE)
+  internal fun provideDefaultSharedPreferences(context: Context): SharedPreferences {
+    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
     return sharedPreferences
   }
 }

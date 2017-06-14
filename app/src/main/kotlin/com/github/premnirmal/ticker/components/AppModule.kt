@@ -1,9 +1,10 @@
 package com.github.premnirmal.ticker.components
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.network.NetworkModule
 import dagger.Module
@@ -28,9 +29,13 @@ class AppModule(private val app: Context) {
     return RxBus()
   }
 
-  @Provides @Singleton internal fun provideSharedPreferences(
+  @Provides @Singleton internal fun provideDefaultSharedPreferences(
       context: Context): SharedPreferences {
-    val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE)
+    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
     return sharedPreferences
+  }
+
+  @Provides internal fun provideAppWidgetManager(): AppWidgetManager {
+    return AppWidgetManager.getInstance(app)
   }
 }

@@ -23,13 +23,12 @@ open class AddPositionActivity : BaseActivity() {
     const val TICKER = "TICKER"
   }
 
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  @Inject lateinit internal var stocksProvider: IStocksProvider
   lateinit protected var ticker: String
 
   public override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
     setContentView(R.layout.activity_positions)
     toolbar.setTitle(R.string.add_position)
     updateToolbar(toolbar)

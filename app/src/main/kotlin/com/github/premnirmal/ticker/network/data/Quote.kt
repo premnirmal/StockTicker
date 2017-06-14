@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import java.io.Serializable
 
 /**
@@ -45,15 +45,15 @@ data class Quote(var symbol: String = "",
   }
 
   fun changeString(): String {
-    return Tools.DECIMAL_FORMAT.format(change)
+    return AppPreferences.DECIMAL_FORMAT.format(change)
   }
 
   fun changePercentString(): String {
-    return "${Tools.DECIMAL_FORMAT.format(changeInPercent)}%"
+    return "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
   }
 
   fun priceString(): String {
-    return Tools.DECIMAL_FORMAT.format(lastTradePrice)
+    return AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
   }
 
   fun holdings(): Float {
@@ -61,7 +61,7 @@ data class Quote(var symbol: String = "",
   }
 
   fun holdingsString(): String {
-    return Tools.DECIMAL_FORMAT.format(holdings())
+    return AppPreferences.DECIMAL_FORMAT.format(holdings())
   }
 
   fun gainLoss(): Float {
@@ -69,7 +69,7 @@ data class Quote(var symbol: String = "",
   }
 
   fun gainLossString(): String {
-    return Tools.DECIMAL_FORMAT.format(gainLoss())
+    return AppPreferences.DECIMAL_FORMAT.format(gainLoss())
   }
 
   fun dayChange(): Float {
@@ -77,7 +77,7 @@ data class Quote(var symbol: String = "",
   }
 
   fun dayChangeString(): String {
-    return Tools.DECIMAL_FORMAT.format(dayChange())
+    return AppPreferences.DECIMAL_FORMAT.format(dayChange())
   }
 
   fun dayChangePercent(): Float {
@@ -85,7 +85,7 @@ data class Quote(var symbol: String = "",
   }
 
   fun dayChangePercentString(): String {
-    return "${Tools.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
+    return "${AppPreferences.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
   }
 
   override operator fun compareTo(other: Quote): Int {
