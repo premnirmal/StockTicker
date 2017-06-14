@@ -20,7 +20,6 @@ class WidgetDataProvider {
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap<Int, WidgetData>()
   }
-  private var random = AppPreferences.random.nextInt()
 
   init {
     Injector.appComponent.inject(this)

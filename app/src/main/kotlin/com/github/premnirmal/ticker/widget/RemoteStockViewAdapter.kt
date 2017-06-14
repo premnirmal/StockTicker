@@ -31,14 +31,15 @@ class RemoteStockViewAdapter(private val context: Context,
   lateinit internal var widgetDataProvider: WidgetDataProvider
 
   init {
-    Injector.appComponent.inject(this)
-    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    val stocks = widgetData.getStocks()
-    this.quotes = ArrayList(stocks)
+    this.quotes = ArrayList()
   }
 
   override fun onCreate() {
-
+    Injector.appComponent.inject(this)
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    val stocks = widgetData.getStocks()
+    quotes.clear()
+    quotes.addAll(stocks)
   }
 
   override fun onDataSetChanged() {
@@ -49,7 +50,7 @@ class RemoteStockViewAdapter(private val context: Context,
   }
 
   override fun onDestroy() {
-
+    quotes.clear()
   }
 
   override fun getCount(): Int {
