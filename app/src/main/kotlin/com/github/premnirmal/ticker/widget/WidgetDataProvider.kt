@@ -68,6 +68,6 @@ class WidgetDataProvider {
 
   fun hasWidget(): Boolean {
     val ids = getAppWidgetIds()
-    return ids.any { it != AppWidgetManager.INVALID_APPWIDGET_ID }
+    return ids.isNotEmpty()
   }
 }

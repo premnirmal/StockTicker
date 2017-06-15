@@ -35,16 +35,16 @@ class UpdateReceiver : BroadcastReceiver() {
       stocksProvider.fetch().subscribe(SimpleSubscriber())
       preferences.edit().putBoolean(AppPreferences.WHATS_NEW, true).apply()
       if (!preferences.getBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false)) {
-        performMigration(context)
+        performMigration()
       }
     }
   }
 
-  private fun performMigration(context: Context) {
+  private fun performMigration() {
     val ids = widgetDataProvider.getAppWidgetIds()
     if (widgetDataProvider.hasWidget()) {
-      val data = widgetDataProvider.dataForWidgetId(ids[0])
-      data.addTickers(stocksProvider.getTickers())
+      ids.map { widgetDataProvider.dataForWidgetId(it) }
+          .forEach { it.addTickers(stocksProvider.getTickers()) }
     }
     preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, true).apply()
   }

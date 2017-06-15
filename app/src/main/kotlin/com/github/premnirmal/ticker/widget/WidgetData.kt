@@ -86,7 +86,7 @@ class WidgetData(private val widgetId: Int) {
 
   var bgPref: Int = 0
     get() {
-      return preferences.getInt(WIDGET_BG, TRANSPARENT)
+      return preferences.getInt(WIDGET_BG, TRANSLUCENT)
     }
     set(value) {
       preferences.edit().putInt(WIDGET_BG, value).apply()
