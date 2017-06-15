@@ -22,7 +22,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -152,17 +151,6 @@ class ParanormalActivity : BaseActivity() {
     view_pager.adapter = adapter
     tabs?.setupWithViewPager(view_pager)
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
-  }
-
-  internal fun openTickerSelector(v: View, widgetId: Int) {
-    val intent = TickerSelectorActivity.launchIntent(this, widgetId)
-    val rect = Rect()
-    v.getGlobalVisibleRect(rect)
-    val centerX = (rect.right - ((rect.right - rect.left) / 2))
-    val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
-    intent.putExtra(EXTRA_CENTER_X, centerX)
-    intent.putExtra(EXTRA_CENTER_Y, centerY)
-    startActivity(intent)
   }
 
   internal fun openWidgetSettings(v: View, widgetId: Int) {

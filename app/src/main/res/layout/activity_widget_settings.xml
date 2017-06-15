@@ -30,6 +30,20 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
+
+      <TextView
+          android:id="@+id/setting_add_stock"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="@dimen/setting_padding"
+          android:layout_marginBottom="5dp"
+          android:textColor="@color/light"
+          android:textSize="@dimen/large_text"
+          android:text="@string/add_stock"
+          />
+
+      <include layout="@layout/divider"/>
+
       <com.github.premnirmal.ticker.ui.SettingsTextView
           android:id="@+id/setting_widget_name"
           android:layout_width="match_parent"
@@ -37,11 +51,7 @@
           app:title_text="@string/widget_name"
           />
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1px"
-          android:background="@color/divider"
-          />
+      <include layout="@layout/divider"/>
 
       <com.github.premnirmal.ticker.ui.SettingsTextView
           android:id="@+id/setting_layout_type"
@@ -50,11 +60,7 @@
           app:title_text="@string/layout_type"
           />
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1px"
-          android:background="@color/divider"
-          />
+      <include layout="@layout/divider"/>
 
       <com.github.premnirmal.ticker.ui.SettingsTextView
           android:id="@+id/setting_background"
@@ -63,11 +69,7 @@
           app:title_text="@string/bg"
           />
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1px"
-          android:background="@color/divider"
-          />
+      <include layout="@layout/divider"/>
 
       <com.github.premnirmal.ticker.ui.SettingsTextView
           android:id="@+id/setting_text_color"
@@ -76,11 +78,7 @@
           app:title_text="@string/text_color"
           />
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1px"
-          android:background="@color/divider"
-          />
+      <include layout="@layout/divider"/>
 
       <LinearLayout
           android:layout_width="match_parent"
@@ -112,11 +110,7 @@
 
       </LinearLayout>
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1px"
-          android:background="@color/divider"
-          />
+      <include layout="@layout/divider"/>
 
     </LinearLayout>
 

@@ -1,17 +1,20 @@
 package com.github.premnirmal.ticker.base
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.DialogInterface.OnClickListener
+import android.graphics.Rect
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
-import com.github.premnirmal.ticker.AppPreferences
+import android.view.View
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
-import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
@@ -28,7 +31,9 @@ abstract class BaseActivity : AppCompatActivity() {
     val EXTRA_CENTER_X = "centerX"
     val EXTRA_CENTER_Y = "centerY"
 
-    fun Context.isNetworkOnline(): Boolean {
+    // Extension functions.
+
+    fun Activity.isNetworkOnline(): Boolean {
       try {
         val connectivityManager = this.getSystemService(
             Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -42,7 +47,7 @@ abstract class BaseActivity : AppCompatActivity() {
       }
     }
 
-    fun Context.getStatusBarHeight(): Int {
+    fun Activity.getStatusBarHeight(): Int {
       val result: Int
       val resourceId: Int = this.resources.getIdentifier("status_bar_height", "dimen",
           "android")
@@ -54,13 +59,37 @@ abstract class BaseActivity : AppCompatActivity() {
       return result
     }
 
-    fun Context.getFontSize(): Float {
-      val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
-      when (size) {
-        0 -> return this.resources.getInteger(R.integer.text_size_small).toFloat()
-        2 -> return this.resources.getInteger(R.integer.text_size_large).toFloat()
-        else -> return this.resources.getInteger(R.integer.text_size_medium).toFloat()
-      }
+    fun Activity.openTickerSelector(v: View, widgetId: Int) {
+      val intent = TickerSelectorActivity.launchIntent(this, widgetId)
+      val rect = Rect()
+      v.getGlobalVisibleRect(rect)
+      val centerX = (rect.right - ((rect.right - rect.left) / 2))
+      val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
+      intent.putExtra(EXTRA_CENTER_X, centerX)
+      intent.putExtra(EXTRA_CENTER_Y, centerY)
+      startActivity(intent)
+    }
+
+    fun Activity.showDialog(message: String, listener: OnClickListener) {
+      AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK", listener).show()
+    }
+
+    fun Activity.showDialog(message: String): AlertDialog {
+      return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
+          .setNeutralButton("OK", { dialog: DialogInterface, _: Int -> dialog.dismiss() }).show()
+    }
+
+    fun Activity.showDialog(title: String, message: String): AlertDialog {
+      return AlertDialog.Builder(this).setTitle(title).setMessage(message).setCancelable(false)
+          .setNeutralButton("OK", { dialog: DialogInterface, _: Int -> dialog.dismiss() }).show()
+    }
+
+    fun Activity.showDialog(message: String, cancelable: Boolean,
+        positiveOnClick: DialogInterface.OnClickListener,
+        negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
+      return AlertDialog.Builder(this).setMessage(message).setCancelable(
+          cancelable).setPositiveButton(
+          "YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
     }
   }
 
@@ -116,35 +145,6 @@ abstract class BaseActivity : AppCompatActivity() {
   override fun onPause() {
     super.onPause()
     lifecycleSubject.onNext(ActivityEvent.PAUSE)
-  }
-
-  fun showDialog(message: String): AlertDialog {
-    return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
-        .setNeutralButton("OK", { dialog: DialogInterface, _: Int -> dialog.dismiss() }).show()
-  }
-
-  fun showDialog(title: String, message: String): AlertDialog {
-    return AlertDialog.Builder(this).setTitle(title).setMessage(message).setCancelable(false)
-        .setNeutralButton("OK", { dialog: DialogInterface, _: Int -> dialog.dismiss() }).show()
-  }
-
-  fun showDialog(message: String,
-      listener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }): AlertDialog {
-    return AlertDialog.Builder(this).setMessage(message).setCancelable(false).setNeutralButton("OK",
-        listener).show()
-  }
-
-  fun showDialog(message: String, positiveOnClick: DialogInterface.OnClickListener,
-      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
-    return showDialog(message, false, positiveOnClick, negativeOnClick)
-  }
-
-  fun showDialog(message: String, cancelable: Boolean,
-      positiveOnClick: DialogInterface.OnClickListener,
-      negativeOnClick: DialogInterface.OnClickListener): AlertDialog {
-    return AlertDialog.Builder(this).setMessage(message).setCancelable(
-        cancelable).setPositiveButton(
-        "YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
   }
 
   override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {

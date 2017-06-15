@@ -4,8 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.widget.RemoteViews
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject
@@ -54,7 +52,6 @@ class WidgetDataProvider {
     val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val ids = arrayOf(widgetId).toIntArray()
-    notifyAppWidgetUpdate(widgetId)
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     context.sendBroadcast(intent)
   }
@@ -64,17 +61,9 @@ class WidgetDataProvider {
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val ids = widgetManager.getAppWidgetIds(
         ComponentName(context, StockWidget::class.java))
-    widgetManager.notifyAppWidgetViewDataChanged(ids, R.id.list)
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     context.sendBroadcast(intent)
-  }
-
-  fun notifyAppWidgetUpdate(widgetId: Int) {
-    widgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.list)
-  }
-
-  fun updateAppWidget(widgetId: Int, view: RemoteViews) {
-    widgetManager.updateAppWidget(widgetId, view)
+    widgetManager.notifyAppWidgetViewDataChanged(ids, R.id.list)
   }
 
   fun hasWidget(): Boolean {

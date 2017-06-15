@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.settings
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface.OnClickListener
 import android.content.Intent
@@ -22,6 +21,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity.Companion.getStatusBarHeight
+import com.github.premnirmal.ticker.base.BaseActivity.Companion.showDialog
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -345,21 +345,21 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       grantResults: IntArray) {
     when (requestCode) {
       REQCODE_WRITE_EXTERNAL_STORAGE -> {
-        if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportTickers()
         } else {
           showDialog(getString(string.cannot_export_msg))
         }
       }
       REQCODE_READ_EXTERNAL_STORAGE -> {
-        if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           launchImportIntent()
         } else {
           showDialog(getString(string.cannot_import_msg))
         }
       }
       REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
-        if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportAndShareTickers()
         } else {
           showDialog(getString(string.cannot_share_msg))
@@ -384,14 +384,5 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       }
     }
     super.onActivityResult(requestCode, resultCode, data)
-  }
-
-  private fun showDialog(message: String) {
-    AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK",
-        { dialog, _ -> dialog.dismiss() }).show()
-  }
-
-  private fun showDialog(message: String, listener: OnClickListener) {
-    AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK", listener).show()
   }
 }

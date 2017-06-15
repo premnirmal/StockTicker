@@ -51,7 +51,6 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetIds: IntArray) {
-    super.onUpdate(context, appWidgetManager, appWidgetIds)
     Analytics.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       Timber.d("onUpdate" + widgetId)
@@ -63,17 +62,20 @@ class StockWidget() : AppWidgetProvider() {
         min_width = appWidgetManager.getAppWidgetInfo(widgetId).minWidth
       }
       val remoteViews: RemoteViews = createRemoteViews(context, min_width)
-      updateWidget(context, widgetId, remoteViews, min_width)
+      updateWidget(context, widgetId, remoteViews, min_width, appWidgetManager)
+      appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.list)
     }
+    super.onUpdate(context, appWidgetManager, appWidgetIds)
   }
 
   override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetId: Int, newOptions: Bundle) {
+    super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     Timber.d("onAppWidgetOptionsChanged" + appWidgetId.toString())
     val min_width = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
     Analytics.trackWidgetSizeUpdate("${min_width}px")
-    updateWidget(context, appWidgetId, remoteViews, min_width)
+    updateWidget(context, appWidgetId, remoteViews, min_width, appWidgetManager)
   }
 
   override fun onEnabled(context: Context?) {
@@ -123,7 +125,7 @@ class StockWidget() : AppWidgetProvider() {
   }
 
   private fun updateWidget(context: Context, appWidgetId: Int, remoteViews: RemoteViews,
-      min_width: Int) {
+      min_width: Int, appWidgetManager: AppWidgetManager) {
     val nextFetchVisible = min_width > 150
     val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
     val widgetAdapterIntent = Intent(context, RemoteStockProviderService::class.java)
@@ -165,7 +167,6 @@ class StockWidget() : AppWidgetProvider() {
     val refreshPendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
         updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
     remoteViews.setOnClickPendingIntent(R.id.refresh_icon, refreshPendingIntent)
-    widgetDataProvider.updateAppWidget(appWidgetId, remoteViews)
-    widgetDataProvider.notifyAppWidgetUpdate(appWidgetId)
+    appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
   }
 }

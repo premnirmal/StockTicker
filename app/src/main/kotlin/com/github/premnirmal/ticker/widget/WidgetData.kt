@@ -110,8 +110,8 @@ class WidgetData(private val widgetId: Int) {
     set(value) {
       preferences.edit().putInt(WIDGET_BG, value).apply()
       when (value) {
-        LIGHT -> textColorPref = 1
-        else -> textColorPref = 0
+        LIGHT -> setTextColorPref(1)
+        else -> setTextColorPref(0)
       }
       field = value
     }
@@ -132,14 +132,17 @@ class WidgetData(private val widgetId: Int) {
       return R.color.negative_red
     }
 
-  var textColorPref: Int = 0
-    get() {
-      return preferences.getInt(TEXT_COLOR, 0)
-    }
+  fun textColorPref(): Int {
+    return preferences.getInt(TEXT_COLOR, 0)
+  }
+
+  fun setTextColorPref(pref: Int) {
+    preferences.edit().putInt(TEXT_COLOR, pref).apply()
+  }
 
   var textColor: Int = 0
     @ColorInt get() {
-      val pref = textColorPref
+      val pref = textColorPref()
       return if (pref == 0) context.resources.getColor(R.color.white)
       else context.resources.getColor(R.color.dark_text)
     }

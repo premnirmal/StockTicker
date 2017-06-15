@@ -28,6 +28,7 @@ import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_widget_settings.activity_root
+import kotlinx.android.synthetic.main.activity_widget_settings.setting_add_stock
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_background
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_bold
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_bold_checkbox
@@ -86,7 +87,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     setTextColorSetting(widgetData)
     setBoldSetting(widgetData)
 
-    arrayOf(setting_widget_name, setting_layout_type,
+    arrayOf(setting_add_stock, setting_widget_name, setting_layout_type,
         setting_background, setting_text_color, setting_bold)
         .forEach { it.setOnClickListener(this@WidgetSettingsActivity) }
 
@@ -115,6 +116,9 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
   override fun onClick(v: View?) {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     when (v?.id) {
+      R.id.setting_add_stock -> {
+        openTickerSelector(v, widgetId)
+      }
       R.id.setting_widget_name -> {
         v.setOnClickListener(null)
         (v as SettingsTextView).setIsEditable(true, { s ->
@@ -122,7 +126,6 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
-          broadcastUpdateWidget()
           InAppMessage.showMessage(this, R.string.widget_name_updated)
         })
       }
@@ -151,7 +154,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
       R.id.setting_text_color -> {
         showDialogPreference(R.array.text_colors,
             DialogInterface.OnClickListener { dialog, which ->
-              widgetData.textColorPref = which
+              widgetData.setTextColorPref(which)
               setTextColorSetting(widgetData)
               dialog.dismiss()
               broadcastUpdateWidget()
@@ -193,7 +196,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
   }
 
   internal fun setTextColorSetting(widgetData: WidgetData) {
-    val textColorDesc = resources.getStringArray(R.array.text_colors)[widgetData.textColorPref]
+    val textColorDesc = resources.getStringArray(R.array.text_colors)[widgetData.textColorPref()]
     setting_text_color.setSubtitle(textColorDesc)
   }
 

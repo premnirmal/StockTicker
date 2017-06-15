@@ -10,7 +10,7 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import com.github.premnirmal.ticker.base.BaseActivity.Companion.getFontSize
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.WidgetClickReceiver
 import com.github.premnirmal.ticker.network.data.Quote
@@ -24,6 +24,15 @@ import javax.inject.Inject
  */
 class RemoteStockViewAdapter(private val context: Context,
     private val widgetId: Int) : RemoteViewsService.RemoteViewsFactory {
+
+  fun Context.getFontSize(): Float {
+    val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
+    when (size) {
+      0 -> return this.resources.getInteger(R.integer.text_size_small).toFloat()
+      2 -> return this.resources.getInteger(R.integer.text_size_large).toFloat()
+      else -> return this.resources.getInteger(R.integer.text_size_medium).toFloat()
+    }
+  }
 
   private val quotes: MutableList<Quote>
 
