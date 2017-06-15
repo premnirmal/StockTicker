@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.components
 
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.StocksProvider
@@ -15,8 +16,10 @@ import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
+import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
+import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 

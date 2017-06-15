@@ -13,8 +13,6 @@ import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.RefreshReceiver
-import com.github.premnirmal.ticker.components.WidgetClickReceiver
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
@@ -42,6 +40,7 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
+    Timber.d("onReceive")
     super.onReceive(context, intent)
     Analytics.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
@@ -84,15 +83,18 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
+    Timber.d("onEnabled")
     stocksProvider.schedule()
   }
 
   override fun onDisabled(context: Context?) {
     super.onDisabled(context)
+    Timber.d("onDisabled")
   }
 
   override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
     super.onDeleted(context, appWidgetIds)
+    Timber.d("onDeleted")
     appWidgetIds?.let {
       for (widgetId in it) {
         widgetDataProvider.widgetRemoved(widgetId)
@@ -152,7 +154,7 @@ class StockWidget() : AppWidgetProvider() {
     } else {
       remoteViews.setViewVisibility(R.id.next_update, View.GONE)
     }
-    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource)
+    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())
     // Refresh icon and progress
     val refreshing = AppPreferences.isRefreshing()
     if (refreshing) {

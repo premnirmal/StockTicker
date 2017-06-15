@@ -94,4 +94,5 @@
   <string name="widget_name">Nombre del widget</string>
   <string name="widget_name_updated">Nombre del widget actualizado</string>
   <string name="set">Fijado</string>
+  <string name="app_settings">Ajustes de Aplicacion</string>
 </resources>

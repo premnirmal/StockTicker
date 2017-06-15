@@ -39,12 +39,13 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
   override fun getPageTitle(position: Int): CharSequence {
     val appWidgetIds = appWidgetIds()
-    if (appWidgetIds[position] == AppWidgetManager.INVALID_APPWIDGET_ID) {
+    if (appWidgetIds.isEmpty() ||
+        appWidgetIds[position] == AppWidgetManager.INVALID_APPWIDGET_ID) {
       return ""
     } else {
       val widgetData = widgetDataProvider.dataForWidgetId(appWidgetIds[position])
-      if (widgetData.widgetName.isNotBlank()) {
-        return widgetData.widgetName
+      if (widgetData.widgetName().isNotBlank()) {
+        return widgetData.widgetName()
       } else {
         val index = position + 1
         return "Widget #$index"

@@ -48,7 +48,7 @@ class AppPreferences private constructor() {
     const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"
-    const val SETTING_SHARE = "SETTING_IMPORT"
+    const val SETTING_SHARE = "SETTING_SHARE"
     const val SETTING_NUKE = "SETTING_NUKE"
     const val WIDGET_BG = "WIDGET_BG"
     const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
@@ -97,14 +97,6 @@ class AppPreferences private constructor() {
     fun endTime(): IntArray {
       val endTimeString = INSTANCE.sharedPreferences.getString(END_TIME, "16:00")
       return timeAsIntArray(endTimeString)
-    }
-
-    fun autoSortEnabled(): Boolean {
-      return INSTANCE.sharedPreferences.getBoolean(SETTING_AUTOSORT, true)
-    }
-
-    fun enableAutosort(enable: Boolean) {
-      INSTANCE.sharedPreferences.edit().putBoolean(AppPreferences.SETTING_AUTOSORT, enable).apply()
     }
 
     fun isRefreshing(): Boolean {

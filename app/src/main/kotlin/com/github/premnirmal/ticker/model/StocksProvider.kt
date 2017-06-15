@@ -133,7 +133,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   internal fun save() {
-    preferences.edit().putString(POSITION_LIST, positionList.positionsToString())
+    preferences.edit()
+        .putString(POSITION_LIST, positionList.positionsToString())
         .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
         .putLong(LAST_FETCHED, lastFetched)
         .apply()

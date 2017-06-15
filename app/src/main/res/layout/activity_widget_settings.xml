@@ -35,11 +35,11 @@
           android:id="@+id/setting_add_stock"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:padding="@dimen/setting_padding"
           android:layout_marginBottom="5dp"
+          android:padding="@dimen/setting_padding"
+          android:text="@string/add_stock"
           android:textColor="@color/light"
           android:textSize="@dimen/large_text"
-          android:text="@string/add_stock"
           />
 
       <include layout="@layout/divider"/>
@@ -50,6 +50,38 @@
           android:layout_height="wrap_content"
           app:title_text="@string/widget_name"
           />
+
+      <include layout="@layout/divider"/>
+
+      <LinearLayout
+          android:id="@+id/setting_autosort"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          >
+
+        <com.github.premnirmal.ticker.ui.SettingsTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:subtitle_text="@string/auto_sort_desc"
+            app:title_text="@string/auto_sort"
+            />
+
+        <CheckBox
+            android:id="@+id/setting_autosort_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/setting_padding"
+            android:layout_marginRight="@dimen/setting_padding"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:gravity="center"
+            />
+
+      </LinearLayout>
 
       <include layout="@layout/divider"/>
 
@@ -81,10 +113,10 @@
       <include layout="@layout/divider"/>
 
       <LinearLayout
+          android:id="@+id/setting_bold"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="horizontal"
-          android:id="@+id/setting_bold"
           >
 
         <com.github.premnirmal.ticker.ui.SettingsTextView
@@ -102,10 +134,10 @@
             android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/setting_padding"
             android:layout_marginRight="@dimen/setting_padding"
-            android:gravity="center"
-            android:focusable="false"
             android:clickable="false"
             android:duplicateParentState="true"
+            android:focusable="false"
+            android:gravity="center"
             />
 
       </LinearLayout>

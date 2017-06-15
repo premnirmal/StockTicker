@@ -12,7 +12,6 @@ import android.widget.RemoteViews
 import android.widget.RemoteViewsService
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.WidgetClickReceiver
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType
 import com.github.premnirmal.tickerwidget.R
@@ -68,7 +67,7 @@ class RemoteStockViewAdapter(private val context: Context,
 
   override fun getViewAt(position: Int): RemoteViews {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    val stockViewLayout = widgetData.stockViewLayout
+    val stockViewLayout = widgetData.stockViewLayout()
     val remoteViews = RemoteViews(context.packageName, stockViewLayout)
     val stock = quotes[position]
 
@@ -84,7 +83,7 @@ class RemoteStockViewAdapter(private val context: Context,
 
     remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
-    if (widgetData.isBoldEnabled) {
+    if (widgetData.isBoldEnabled()) {
       changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,
@@ -123,8 +122,8 @@ class RemoteStockViewAdapter(private val context: Context,
       remoteViews.setTextColor(R.id.changeValue, color)
     }
 
-    remoteViews.setTextColor(R.id.ticker, widgetData.textColor)
-    remoteViews.setTextColor(R.id.totalValue, widgetData.textColor)
+    remoteViews.setTextColor(R.id.ticker, widgetData.textColor())
+    remoteViews.setTextColor(R.id.totalValue, widgetData.textColor())
 
     val fontSize = context.getFontSize()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -152,7 +151,7 @@ class RemoteStockViewAdapter(private val context: Context,
   override fun getLoadingView(): RemoteViews {
     val loadingView = RemoteViews(context.packageName, R.layout.loadview)
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    loadingView.setTextColor(R.id.loadingText, widgetData.textColor)
+    loadingView.setTextColor(R.id.loadingText, widgetData.textColor())
     return loadingView
   }
 

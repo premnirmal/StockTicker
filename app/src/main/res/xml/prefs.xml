@@ -1,11 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-  <CheckBoxPreference
-      android:key="SETTING_AUTOSORT"
-      android:title="@string/auto_sort"
-      android:summary="@string/auto_sort_desc"
-      android:defaultValue="true"/>
-
   <ListPreference
       android:key="com.github.premnirmal.ticker.textsize"
       android:title="@string/choose_text_size"

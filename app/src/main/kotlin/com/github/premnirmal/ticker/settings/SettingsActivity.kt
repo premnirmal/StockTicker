@@ -11,7 +11,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.preference.CheckBoxPreference
 import android.preference.ListPreference
 import android.preference.Preference
 import android.preference.PreferenceActivity
@@ -198,20 +197,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           broadcastUpdateWidget()
           refreshPreference.summary = refreshPreference.entries[index]
           InAppMessage.showMessage(this@SettingsActivity, R.string.refresh_updated_message)
-          return true
-        }
-      }
-    })
-
-    run({
-      val autoSortPreference = findPreference(AppPreferences.SETTING_AUTOSORT) as CheckBoxPreference
-      val autoSort = AppPreferences.autoSortEnabled()
-      autoSortPreference.isChecked = autoSort
-      autoSortPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val checked = newValue as Boolean
-          AppPreferences.enableAutosort(checked)
-          broadcastUpdateWidget()
           return true
         }
       }

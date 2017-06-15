@@ -11,6 +11,6 @@ class TestActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     (Injector.appComponent as MockAppComponent).inject(this)
-    setContentView(R.layout.activity_paranormal)
+    setContentView(R.layout.activity_test)
   }
 }

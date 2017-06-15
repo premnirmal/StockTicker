@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.RefreshReceiver
+import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.DayOfWeek.FRIDAY
 import org.threeten.bp.DayOfWeek.SATURDAY
 import org.threeten.bp.DayOfWeek.SUNDAY

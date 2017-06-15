@@ -52,7 +52,7 @@
     </activity>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.components.UpdateReceiver"
+        android:name="com.github.premnirmal.ticker.UpdateReceiver"
         android:enabled="true"
         android:exported="true">
       <intent-filter>
@@ -70,12 +70,12 @@
     </receiver>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.components.RefreshReceiver"
+        android:name="com.github.premnirmal.ticker.widget.RefreshReceiver"
         android:enabled="true"
         android:exported="false"/>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.components.WidgetClickReceiver"
+        android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"
         android:enabled="true"
         android:exported="false">
       <intent-filter>

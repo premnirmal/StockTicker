@@ -29,6 +29,8 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_widget_settings.activity_root
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_add_stock
+import kotlinx.android.synthetic.main.activity_widget_settings.setting_autosort
+import kotlinx.android.synthetic.main.activity_widget_settings.setting_autosort_checkbox
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_background
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_bold
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_bold_checkbox
@@ -86,9 +88,10 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     setBgSetting(widgetData)
     setTextColorSetting(widgetData)
     setBoldSetting(widgetData)
+    setAutoSortSetting(widgetData)
 
     arrayOf(setting_add_stock, setting_widget_name, setting_layout_type,
-        setting_background, setting_text_color, setting_bold)
+        setting_background, setting_text_color, setting_bold, setting_autosort)
         .forEach { it.setOnClickListener(this@WidgetSettingsActivity) }
 
     if (savedInstanceState == null && shouldPerformTransition &&
@@ -122,7 +125,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
       R.id.setting_widget_name -> {
         v.setOnClickListener(null)
         (v as SettingsTextView).setIsEditable(true, { s ->
-          widgetData.widgetName = s
+          widgetData.setWidgetName(s)
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
@@ -132,7 +135,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
       R.id.setting_layout_type -> {
         showDialogPreference(R.array.layout_types,
             DialogInterface.OnClickListener { dialog, which ->
-              widgetData.layoutPref = which
+              widgetData.setLayoutPref(which)
               setLayoutTypeSetting(widgetData)
               dialog.dismiss()
               broadcastUpdateWidget()
@@ -144,7 +147,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
       R.id.setting_background -> {
         showDialogPreference(R.array.backgrounds,
             DialogInterface.OnClickListener { dialog, which ->
-              widgetData.bgPref = which
+              widgetData.setBgPref(which)
               setBgSetting(widgetData)
               dialog.dismiss()
               broadcastUpdateWidget()
@@ -163,8 +166,14 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
       }
       R.id.setting_bold -> {
         val isChecked = !setting_bold_checkbox.isChecked
-        setting_bold_checkbox.isChecked = isChecked
-        widgetData.isBoldEnabled = isChecked
+        widgetData.setBoldEnabled(isChecked)
+        setBoldSetting(widgetData)
+        broadcastUpdateWidget()
+      }
+      R.id.setting_autosort -> {
+        val isChecked = !setting_autosort_checkbox.isChecked
+        widgetData.setAutoSort(isChecked)
+        setAutoSortSetting(widgetData)
         broadcastUpdateWidget()
       }
     }
@@ -182,16 +191,16 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
   }
 
   internal fun setWidgetNameSetting(widgetData: WidgetData) {
-    setting_widget_name.setSubtitle(widgetData.widgetName)
+    setting_widget_name.setSubtitle(widgetData.widgetName())
   }
 
   internal fun setLayoutTypeSetting(widgetData: WidgetData) {
-    val layoutTypeDesc = resources.getStringArray(R.array.layout_types)[widgetData.layoutPref]
+    val layoutTypeDesc = resources.getStringArray(R.array.layout_types)[widgetData.layoutPref()]
     setting_layout_type.setSubtitle(layoutTypeDesc)
   }
 
   internal fun setBgSetting(widgetData: WidgetData) {
-    val bgDesc = resources.getStringArray(R.array.backgrounds)[widgetData.bgPref]
+    val bgDesc = resources.getStringArray(R.array.backgrounds)[widgetData.bgPref()]
     setting_background.setSubtitle(bgDesc)
   }
 
@@ -201,7 +210,11 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
   }
 
   internal fun setBoldSetting(widgetData: WidgetData) {
-    setting_bold_checkbox.isEnabled = widgetData.isBoldEnabled
+    setting_bold_checkbox.isChecked = widgetData.isBoldEnabled()
+  }
+
+  internal fun setAutoSortSetting(widgetData: WidgetData) {
+    setting_autosort_checkbox.isChecked = widgetData.autoSortEnabled()
   }
 
   override fun finishAfterTransition() {

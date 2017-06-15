@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -176,8 +175,9 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-    if (AppPreferences.autoSortEnabled()) {
-      AppPreferences.enableAutosort(false)
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    if (widgetData.autoSortEnabled()) {
+      widgetData.setAutoSort(false)
       update()
       holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
       InAppMessage.showMessage(activity, getString(R.string.autosort_disabled))

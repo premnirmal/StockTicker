@@ -1,11 +1,11 @@
-package com.github.premnirmal.ticker.components
+package com.github.premnirmal.ticker.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
 /**

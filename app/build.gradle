@@ -221,6 +221,7 @@ dependencies {
   androidTestCompile "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker-dx:$DEXMAKER_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker-mockito:$DEXMAKER_VERSION"
+  kaptTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
   kaptAndroidTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
   androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 

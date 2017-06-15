@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.mock
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
@@ -15,8 +16,7 @@ import javax.inject.Singleton
 @Module(includes = arrayOf(MockNetworkModule::class))
 class MockAppModule(private val app: Context) {
 
-  @Provides
-  internal fun provideApplicationContext(): Context {
+  @Provides internal fun provideApplicationContext(): Context {
     return app
   }
 
@@ -24,16 +24,18 @@ class MockAppModule(private val app: Context) {
     return Mocker.provide(AppClock::class.java)
   }
 
-  @Provides
-  @Singleton
-  internal fun provideEventBus(): RxBus {
+  @Provides @Singleton internal fun provideEventBus(): RxBus {
     return RxBus()
   }
 
-  @Provides
-  @Singleton
-  internal fun provideDefaultSharedPreferences(context: Context): SharedPreferences {
-    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
+  @Provides @Singleton internal fun provideDefaultSharedPreferences(
+      context: Context): SharedPreferences {
+    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME,
+        Context.MODE_PRIVATE)
     return sharedPreferences
+  }
+
+  @Provides internal fun provideAppWidgetManager(): AppWidgetManager {
+    return AppWidgetManager.getInstance(app)
   }
 }
