@@ -68,7 +68,7 @@
   <string name="enable_google_finance">Aktivieren Sie alternative Finanz-API?</string>
   <string name="enable_google_finance_desc">In beta Bitte deaktivieren Sie, wenn es keine genauen Zitate gibt.</string>
   <string name="edit_positions">Positionen bearbeiten</string>
-  <string name="add_stock">Hinzufügen Stock</string>
+  <string name="add_stock">Hinzufügen Stocks</string>
   <string name="holdings">Holdings</string>
   <string name="gain_loss">Verstärkungsverlust</string>
   <string name="change_percent">Ändern Sie %</string>

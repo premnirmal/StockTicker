@@ -68,7 +68,7 @@
   <string name="enable_google_finance">Activer une autre API de financement?</string>
   <string name="enable_google_finance_desc">En version bêta. Veuillez désactiver s\'il ne fournit pas de devis précis.</string>
   <string name="edit_positions">Modifier les positions</string>
-  <string name="add_stock">Ajouter un stock</string>
+  <string name="add_stock">Ajouter des stocks</string>
   <string name="holdings">Titres</string>
   <string name="gain_loss">Perte de profit</string>
   <string name="change_percent">Changer %</string>
