@@ -13,14 +13,14 @@ import io.fabric.sdk.android.Fabric
  */
 internal class CrashLoggerImpl : CrashLogger {
 
-  constructor(context: Context) : super(context) {
+  constructor(context: Context) {
     val kit = Crashlytics.Builder()
-        .core( CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+        .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
         .build()
     Fabric.with(context, kit, Answers())
   }
 
-  override fun log(throwable: Throwable) {
+  override fun logException(throwable: Throwable) {
     Crashlytics.logException(throwable)
   }
 

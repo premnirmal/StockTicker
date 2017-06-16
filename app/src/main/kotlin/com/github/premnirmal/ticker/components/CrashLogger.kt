@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.components
 
 import android.content.Context
 
-abstract class CrashLogger constructor(context: Context) {
+interface CrashLogger {
 
   companion object {
     lateinit var INSTANCE: CrashLogger
@@ -10,16 +10,8 @@ abstract class CrashLogger constructor(context: Context) {
     internal fun init(context: Context) {
       INSTANCE = CrashLoggerImpl(context)
     }
-
-    fun logException(throwable: Throwable) {
-      INSTANCE.log(throwable)
-    }
-
-    fun log(msg: String) {
-      INSTANCE.log(msg)
-    }
   }
 
-  abstract fun log(throwable: Throwable)
-  abstract fun log(msg: String)
+  fun logException(throwable: Throwable)
+  fun log(msg: String)
 }

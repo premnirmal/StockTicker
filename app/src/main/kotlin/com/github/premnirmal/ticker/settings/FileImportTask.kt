@@ -27,7 +27,7 @@ internal open class FileImportTask(
     try {
       uri = URI(params[0])
     } catch (e: URISyntaxException) {
-      CrashLogger.logException(e)
+      CrashLogger.INSTANCE.logException(e)
       return false
     }
 
@@ -56,9 +56,9 @@ internal open class FileImportTask(
           .toTypedArray()
       stocksProvider.addStocks(Arrays.asList(*tickers))
       result = true
-      Analytics.trackSettingsChange("IMPORT", TextUtils.join(",", tickers))
+      Analytics.INSTANCE.trackSettingsChange("IMPORT", TextUtils.join(",", tickers))
     } catch (e: IOException) {
-      CrashLogger.logException(e)
+      CrashLogger.INSTANCE.logException(e)
       result = false
     }
 

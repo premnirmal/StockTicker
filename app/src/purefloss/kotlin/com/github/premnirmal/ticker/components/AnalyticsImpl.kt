@@ -5,37 +5,37 @@ import android.content.Context
 /**
  * Created by premnirmal on 2/28/16.
  */
-internal class AnalyticsImpl(context: Context) : Analytics(context = context) {
+internal class AnalyticsImpl(context: Context) : Analytics {
 
-  override fun internalTrackUpdate(action: String, label: String) {
-
-  }
-
-  override fun internalTrackWidgetUpdate(action: String) {
+  override fun trackUpdate(action: String, label: String) {
 
   }
 
-  override fun internalTrackWidgetSizeUpdate(value: String) {
+  override fun trackWidgetUpdate(action: String) {
 
   }
 
-  override fun internalTrackUI(action: String, label: String) {
+  override fun trackWidgetSizeUpdate(value: String) {
 
   }
 
-  override fun internalTrackIntialSettings(action: String, label: String) {
+  override fun trackUI(action: String, label: String) {
 
   }
 
-  override fun internalTrackSettingsChange(action: String, label: String) {
+  override fun trackIntialSettings(action: String, label: String) {
 
   }
 
-  override fun internalTrackRateYes() {
+  override fun trackSettingsChange(action: String, label: String) {
 
   }
 
-  override fun internalTrackRateNo() {
+  override fun trackRateYes() {
+
+  }
+
+  override fun trackRateNo() {
 
   }
 }

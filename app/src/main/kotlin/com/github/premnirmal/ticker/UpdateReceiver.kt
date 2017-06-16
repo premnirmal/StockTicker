@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker
 
+import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -8,7 +9,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.github.premnirmal.tickerwidget.R.string
+import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject
 
 /**
@@ -26,7 +27,7 @@ class UpdateReceiver : BroadcastReceiver() {
 
   override fun onReceive(context: Context, intent: Intent) {
     Injector.appComponent.inject(this)
-    val path = context.getString(string.package_replaced_string)
+    val path = context.getString(R.string.package_replaced_string)
     val intentData = intent.dataString
     if (path == intentData ||
         context.packageName == intentData ||
@@ -34,8 +35,34 @@ class UpdateReceiver : BroadcastReceiver() {
         "package:" + context.packageName == intentData
         ) {
       preferences.edit().putBoolean(AppPreferences.WHATS_NEW, true).apply()
-      preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false).apply()
+      if (!preferences.getBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false)) {
+        performWidgetMigration()
+      }
       stocksProvider.fetch().subscribe(SimpleSubscriber())
     }
+  }
+
+  private fun performWidgetMigration() {
+    val ids = widgetDataProvider.getAppWidgetIds()
+    if (widgetDataProvider.hasWidget()) {
+      ids.map { widgetDataProvider.dataForWidgetId(it) }
+          .forEach {
+            if (it.getTickers().isEmpty()) {
+              it.addTickers(stocksProvider.getTickers())
+              it.setLayoutPref(preferences.getInt(AppPreferences.LAYOUT_TYPE, 0))
+              it.setBgPref(preferences.getInt(AppPreferences.WIDGET_BG, 1))
+              it.setTextColorPref(preferences.getInt(AppPreferences.TEXT_COLOR, 0))
+              it.setBoldEnabled(preferences.getBoolean(AppPreferences.BOLD_CHANGE, false))
+              it.setAutoSort(preferences.getBoolean(AppPreferences.SETTING_AUTOSORT, false))
+            }
+          }
+    } else {
+      val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
+      if (widgetData.getTickers().isEmpty()) {
+        widgetData.addTickers(stocksProvider.getTickers())
+        widgetData.setAutoSort(preferences.getBoolean(AppPreferences.SETTING_AUTOSORT, false))
+      }
+    }
+    preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, true).apply()
   }
 }

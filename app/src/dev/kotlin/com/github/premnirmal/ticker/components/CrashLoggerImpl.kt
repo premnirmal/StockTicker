@@ -8,11 +8,11 @@ import timber.log.Timber
  */
 internal class CrashLoggerImpl : CrashLogger {
 
-  constructor(context: Context) : super(context) {
+  constructor(context: Context) {
     Timber.plant(Timber.DebugTree())
   }
 
-  override fun log(throwable: Throwable) {
+  override fun logException(throwable: Throwable) {
     Timber.w(throwable)
   }
 

@@ -95,18 +95,16 @@ class ParanormalActivity : BaseActivity() {
 
     swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
         R.color.sea)
-    swipe_container.setOnRefreshListener({
-      fetch()
-    })
+    swipe_container.setOnRefreshListener { fetch() }
 
     if (preferences.getBoolean(AppPreferences.WHATS_NEW, false)) {
       preferences.edit().putBoolean(AppPreferences.WHATS_NEW, false).apply()
       val stringBuilder = StringBuilder()
       val whatsNew = resources.getStringArray(R.array.whats_new)
-      for (i in whatsNew.indices) {
+      whatsNew.indices.forEach {
         stringBuilder.append("- ")
-        stringBuilder.append(whatsNew[i])
-        if (i != whatsNew.size - 1) {
+        stringBuilder.append(whatsNew[it])
+        if (it != whatsNew.size - 1) {
           stringBuilder.append("\n")
         }
       }
@@ -229,7 +227,7 @@ class ParanormalActivity : BaseActivity() {
           bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
             override fun onError(e: Throwable) {
               attemptingFetch = false
-              CrashLogger.logException(e)
+              CrashLogger.INSTANCE.logException(e)
               swipe_container?.isRefreshing = false
               InAppMessage.showMessage(activity_root, getString(R.string.refresh_failed))
             }
@@ -270,12 +268,12 @@ class ParanormalActivity : BaseActivity() {
           .setMessage(R.string.please_rate)
           .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
-            Analytics.trackRateYes()
+            Analytics.INSTANCE.trackRateYes()
             AppPreferences.userDidRate()
             dialog.dismiss()
           }
           .setNegativeButton(R.string.later) { dialog, _ ->
-            Analytics.trackRateNo()
+            Analytics.INSTANCE.trackRateNo()
             dialog.dismiss()
           }
           .create().show()

@@ -108,13 +108,14 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), OnClickListener { _, _ ->
           val hasUserAlreadyRated = AppPreferences.hasUserAlreadyRated()
-          CrashLogger.logException(RuntimeException("Nuked from settings!"))
+          Analytics.INSTANCE.trackSettingsChange("NUKE", "CLICKED")
+          CrashLogger.INSTANCE.logException(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
           val directory = filesDir.path + "$packageName/shared_prefs/"
           val sharedPreferenceFile = File(directory)
           val listFiles = sharedPreferenceFile.listFiles()
-          for (file in listFiles) {
-            file.delete()
+          listFiles?.forEach { file ->
+            file?.delete()
           }
           preferences.edit().putBoolean(AppPreferences.DID_RATE, hasUserAlreadyRated).commit()
           System.exit(0)
@@ -138,7 +139,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     run({
       val sharePref = findPreference(AppPreferences.SETTING_SHARE)
       sharePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        Analytics.trackSettingsChange("SHARE",
+        Analytics.INSTANCE.trackSettingsChange("SHARE",
             TextUtils.join(",", stocksProvider.getTickers().toTypedArray()))
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE_SHARE)
@@ -171,7 +172,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().remove(AppPreferences.FONT_SIZE).putInt(AppPreferences.FONT_SIZE, index).apply()
+          preferences.edit().remove(AppPreferences.FONT_SIZE).putInt(AppPreferences.FONT_SIZE,
+              index).apply()
           broadcastUpdateWidget()
           fontSizePreference.summary = fontSizePreference.entries[index]
           InAppMessage.showMessage(this@SettingsActivity, R.string.text_size_updated_message)
@@ -271,7 +273,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         override fun onPostExecute(result: String?) {
           if (result == null) {
             showDialog(getString(R.string.error_sharing))
-            CrashLogger.logException(Throwable("Error sharing tickers"))
+            CrashLogger.INSTANCE.logException(Throwable("Error sharing tickers"))
           } else {
             shareTickers()
           }
@@ -294,7 +296,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       override fun onPostExecute(result: String?) {
         if (result == null) {
           showDialog(getString(R.string.error_exporting))
-          CrashLogger.logException(Throwable("Error exporting tickers"))
+          CrashLogger.INSTANCE.logException(Throwable("Error exporting tickers"))
         } else {
           showDialog(getString(R.string.exported_to, result))
         }
@@ -311,7 +313,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     val file = AppPreferences.tickersFile
     if (!file.exists() || !file.canRead()) {
       showDialog(getString(R.string.error_sharing))
-      CrashLogger.logException(Throwable("Error sharing tickers"))
+      CrashLogger.INSTANCE.logException(Throwable("Error sharing tickers"))
       return
     }
     val uri = Uri.fromFile(file)

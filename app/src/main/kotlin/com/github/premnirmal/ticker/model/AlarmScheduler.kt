@@ -74,7 +74,7 @@ object AlarmScheduler {
 
   internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
     val nextAlarm = msToNextAlarm - AppPreferences.clock().elapsedRealtime()
-    Analytics.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
+    Analytics.INSTANCE.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
         "UpdateScheduled for " + nextAlarm / (1000 * 60) + " minutes")
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER

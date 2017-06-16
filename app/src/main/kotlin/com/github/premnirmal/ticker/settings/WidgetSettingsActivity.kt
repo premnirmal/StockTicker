@@ -150,6 +150,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
             DialogInterface.OnClickListener { dialog, which ->
               widgetData.setBgPref(which)
               setBgSetting(widgetData)
+              setTextColorSetting(widgetData)
               dialog.dismiss()
               broadcastUpdateWidget()
               InAppMessage.showMessage(this, R.string.bg_updated_message)

@@ -149,7 +149,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {
               override fun onError(e: Throwable) {
-                CrashLogger.logException(e)
+                CrashLogger.INSTANCE.logException(e)
                 InAppMessage.showMessage(this@TickerSelectorActivity,
                     R.string.error_fetching_suggestions)
               }

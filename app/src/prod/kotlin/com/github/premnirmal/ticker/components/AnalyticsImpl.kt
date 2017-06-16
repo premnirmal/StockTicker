@@ -11,7 +11,7 @@ import com.google.android.gms.analytics.Tracker
 /**
  * Created by premnirmal on 2/26/16.
  */
-internal class AnalyticsImpl(context: Context) : Analytics(context = context) {
+internal class AnalyticsImpl(context: Context) : Analytics {
 
   private val tracker: Tracker
 
@@ -23,46 +23,46 @@ internal class AnalyticsImpl(context: Context) : Analytics(context = context) {
     tracker = googleAnalytics.newTracker(R.xml.event_tracker)
   }
 
-  override fun internalTrackUpdate(action: String, label: String) {
+  override fun trackUpdate(action: String, label: String) {
     tracker.send(
         HitBuilders.EventBuilder().setCategory("WidgetStatus")
             .setAction(action).setLabel(label).build())
   }
 
-  override fun internalTrackWidgetUpdate(action: String) {
+  override fun trackWidgetUpdate(action: String) {
     tracker.send(
         HitBuilders.EventBuilder().setCategory("WidgetStatus")
             .setAction(action).build())
   }
 
-  override fun internalTrackWidgetSizeUpdate(value: String) {
+  override fun trackWidgetSizeUpdate(value: String) {
     tracker.send(HitBuilders.EventBuilder().setCategory("WidgetStatus")
         .setAction("onOptionsChanged").setLabel(value).build())
   }
 
-  override fun internalTrackUI(action: String, label: String) {
+  override fun trackUI(action: String, label: String) {
     tracker.send(
         HitBuilders.EventBuilder().setCategory("AppView").setAction(action)
             .setLabel(label).build())
   }
 
-  override fun internalTrackIntialSettings(action: String, label: String) {
+  override fun trackIntialSettings(action: String, label: String) {
     tracker.send(
         HitBuilders.EventBuilder().setCategory("AppSettings").setAction(action)
             .setLabel(label).build())
   }
 
-  override fun internalTrackSettingsChange(action: String, label: String) {
+  override fun trackSettingsChange(action: String, label: String) {
     tracker.send(
         HitBuilders.EventBuilder().setCategory("AppSettingsChange").setAction(action)
             .setLabel(label).build())
   }
 
-  override fun internalTrackRateYes() {
+  override fun trackRateYes() {
 
   }
 
-  override fun internalTrackRateNo() {
+  override fun trackRateNo() {
 
   }
 }

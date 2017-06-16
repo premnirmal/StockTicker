@@ -59,7 +59,7 @@ import javax.inject.Singleton
                 ErrorBody::class.java)
             errorBody?.let {
               val robindahoodException = RobindahoodException(it, e, e.code())
-              CrashLogger.logException(robindahoodException)
+              CrashLogger.INSTANCE.logException(robindahoodException)
               throw robindahoodException
             }
           }

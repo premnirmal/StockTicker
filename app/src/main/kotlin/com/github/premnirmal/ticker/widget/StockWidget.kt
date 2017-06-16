@@ -31,8 +31,6 @@ class StockWidget() : AppWidgetProvider() {
   @Inject lateinit internal var stocksProvider: IStocksProvider
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
-  var randomNumber = AppPreferences.random.nextInt(20)
-
   var injected = false
 
   override fun onReceive(context: Context, intent: Intent) {
@@ -42,7 +40,7 @@ class StockWidget() : AppWidgetProvider() {
     }
     Timber.d("onReceive")
     super.onReceive(context, intent)
-    Analytics.trackWidgetUpdate("onReceive")
+    Analytics.INSTANCE.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
       context.startActivity(Intent(context, ParanormalActivity::class.java))
     }
@@ -50,7 +48,7 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetIds: IntArray) {
-    Analytics.trackWidgetUpdate("onUpdate")
+    Analytics.INSTANCE.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       Timber.d("onUpdate" + widgetId)
       val min_width: Int
@@ -73,7 +71,7 @@ class StockWidget() : AppWidgetProvider() {
     Timber.d("onAppWidgetOptionsChanged" + appWidgetId.toString())
     val min_width = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
-    Analytics.trackWidgetSizeUpdate("${min_width}px")
+    Analytics.INSTANCE.trackWidgetSizeUpdate("${min_width}px")
     updateWidget(context, appWidgetId, remoteViews, min_width, appWidgetManager)
   }
 
@@ -96,7 +94,7 @@ class StockWidget() : AppWidgetProvider() {
     super.onDeleted(context, appWidgetIds)
     Timber.d("onDeleted")
     appWidgetIds?.let {
-      for (widgetId in it) {
+      it.forEach { widgetId ->
         widgetDataProvider.widgetRemoved(widgetId)
       }
     }
@@ -132,9 +130,6 @@ class StockWidget() : AppWidgetProvider() {
     val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
     val widgetAdapterIntent = Intent(context, RemoteStockProviderService::class.java)
     widgetAdapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-
-    // Hack to prevent the OS from caching these intents
-    widgetAdapterIntent.putExtra("random", randomNumber++)
     widgetAdapterIntent.data = Uri.parse(widgetAdapterIntent.toUri(Intent.URI_INTENT_SCHEME))
 
     remoteViews.setRemoteAdapter(R.id.list, widgetAdapterIntent)

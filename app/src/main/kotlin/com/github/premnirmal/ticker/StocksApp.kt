@@ -28,14 +28,14 @@ open class StocksApp : Application() {
       try {
         val packageInfo = context.packageManager
             .getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES)
-        for (signature in packageInfo.signatures) {
+        packageInfo.signatures.forEach {
           val md = MessageDigest.getInstance("SHA")
-          md.update(signature.toByteArray())
+          md.update(it.toByteArray())
           val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT).trim()
           return currentSignature
         }
       } catch (e: Exception) {
-        CrashLogger.logException(e)
+        CrashLogger.INSTANCE.logException(e)
       }
       return null
     }
