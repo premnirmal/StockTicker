@@ -7,7 +7,7 @@ import android.util.Base64
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
-import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
@@ -35,7 +35,7 @@ open class StocksApp : Application() {
           return currentSignature
         }
       } catch (e: Exception) {
-        CrashLogger.INSTANCE.logException(e)
+        ILogIt.INSTANCE.logException(e)
       }
       return null
     }
@@ -43,7 +43,7 @@ open class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    initCrashLogger()
+    initLogger()
     initThreeTen()
     CalligraphyConfig.initDefault(
         CalligraphyConfig.Builder()
@@ -70,7 +70,7 @@ open class StocksApp : Application() {
     Analytics.init(this)
   }
 
-  protected open fun initCrashLogger() {
-    CrashLogger.init(this)
+  protected open fun initLogger() {
+    ILogIt.init(this)
   }
 }

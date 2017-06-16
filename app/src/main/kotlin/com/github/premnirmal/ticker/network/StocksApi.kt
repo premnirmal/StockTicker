@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote
@@ -59,7 +59,7 @@ import javax.inject.Singleton
                 ErrorBody::class.java)
             errorBody?.let {
               val robindahoodException = RobindahoodException(it, e, e.code())
-              CrashLogger.INSTANCE.logException(robindahoodException)
+              ILogIt.INSTANCE.logException(robindahoodException)
               throw robindahoodException
             }
           }

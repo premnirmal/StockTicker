@@ -2,13 +2,13 @@ package com.github.premnirmal.ticker.components
 
 import android.content.Context
 
-interface CrashLogger {
+interface ILogIt {
 
   companion object {
-    lateinit var INSTANCE: CrashLogger
+    lateinit var INSTANCE: ILogIt
 
     internal fun init(context: Context) {
-      INSTANCE = CrashLoggerImpl(context)
+      INSTANCE = LogIt(context)
     }
   }
 

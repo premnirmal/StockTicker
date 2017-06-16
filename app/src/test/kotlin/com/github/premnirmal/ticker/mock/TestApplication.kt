@@ -27,7 +27,7 @@ class TestApplication : StocksApp() {
     super.initAnalytics()
   }
 
-  override fun initCrashLogger() {
-    super.initCrashLogger()
+  override fun initLogger() {
+    super.initLogger()
   }
 }

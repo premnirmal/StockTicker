@@ -16,7 +16,7 @@ import android.view.ViewGroup
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
@@ -42,7 +42,6 @@ import kotlinx.android.synthetic.main.activity_paranormal.toolbar
 import kotlinx.android.synthetic.main.activity_paranormal.view_pager
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
-
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -227,7 +226,7 @@ class ParanormalActivity : BaseActivity() {
           bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
             override fun onError(e: Throwable) {
               attemptingFetch = false
-              CrashLogger.INSTANCE.logException(e)
+              ILogIt.INSTANCE.logException(e)
               swipe_container?.isRefreshing = false
               InAppMessage.showMessage(activity_root, getString(R.string.refresh_failed))
             }

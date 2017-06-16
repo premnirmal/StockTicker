@@ -6,7 +6,7 @@ import timber.log.Timber
 /**
  * Created by premnirmal on 2/28/16.
  */
-internal class CrashLoggerImpl : CrashLogger {
+internal class LogIt : ILogIt {
 
   constructor(context: Context) {
     Timber.plant(Timber.DebugTree())

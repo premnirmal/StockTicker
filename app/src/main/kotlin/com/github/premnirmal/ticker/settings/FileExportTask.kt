@@ -4,7 +4,7 @@ import android.os.AsyncTask
 import android.text.TextUtils
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.CrashLogger
+import com.github.premnirmal.ticker.components.ILogIt
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
@@ -30,10 +30,10 @@ internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
       fileOutputStream.flush()
       fileOutputStream.close()
     } catch (e: FileNotFoundException) {
-      CrashLogger.INSTANCE.logException(RuntimeException(e))
+      ILogIt.INSTANCE.logException(RuntimeException(e))
       return null
     } catch (e: IOException) {
-      CrashLogger.INSTANCE.logException(RuntimeException(e))
+      ILogIt.INSTANCE.logException(RuntimeException(e))
       return null
     }
 

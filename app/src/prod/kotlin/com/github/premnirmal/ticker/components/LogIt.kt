@@ -7,11 +7,10 @@ import com.crashlytics.android.core.CrashlyticsCore
 import com.github.premnirmal.tickerwidget.BuildConfig
 import io.fabric.sdk.android.Fabric
 
-
 /**
  * Created by premnirmal on 2/28/16.
  */
-internal class CrashLoggerImpl : CrashLogger {
+internal class LogIt : ILogIt {
 
   constructor(context: Context) {
     val kit = Crashlytics.Builder()
