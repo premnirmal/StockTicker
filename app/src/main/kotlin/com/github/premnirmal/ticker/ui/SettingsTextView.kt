@@ -48,6 +48,7 @@ class SettingsTextView : LinearLayout {
   }
 
   fun setIsEditable(isEditable: Boolean, callback: (s: String) -> Unit = {}) {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     if (isEditable != editable) {
       editable = isEditable
       if (editable) {
@@ -63,9 +64,9 @@ class SettingsTextView : LinearLayout {
           }
         }
         setting_edit_text.requestFocus()
+        imm.showSoftInput(setting_edit_text, 0)
       } else {
         setting_edit_text.setOnEditorActionListener(null)
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(setting_edit_text.windowToken, 0)
         setting_edit_text.clearFocus()
         text_flipper.displayedChild = 2

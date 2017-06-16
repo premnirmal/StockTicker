@@ -11,8 +11,7 @@ import javax.inject.Inject
 
 class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
-  @Inject
-  lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
   init {
     Injector.appComponent.inject(this)

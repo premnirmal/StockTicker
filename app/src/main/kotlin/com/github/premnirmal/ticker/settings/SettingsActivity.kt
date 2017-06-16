@@ -51,14 +51,11 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     private val REQCODE_FILE_WRITE = 853
   }
 
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  @Inject lateinit internal var stocksProvider: IStocksProvider
 
-  @Inject
-  lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
-  @Inject
-  lateinit internal var preferences: SharedPreferences
+  @Inject lateinit internal var preferences: SharedPreferences
 
   override fun onPause() {
     super.onPause()

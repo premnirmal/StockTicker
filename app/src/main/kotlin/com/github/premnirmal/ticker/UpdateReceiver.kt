@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker
 
-import android.appwidget.AppWidgetManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -35,31 +34,8 @@ class UpdateReceiver : BroadcastReceiver() {
         "package:" + context.packageName == intentData
         ) {
       preferences.edit().putBoolean(AppPreferences.WHATS_NEW, true).apply()
-      if (!preferences.getBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false)) {
-        performWidgetMigration()
-      }
+      preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false).apply()
       stocksProvider.fetch().subscribe(SimpleSubscriber())
     }
-  }
-
-  private fun performWidgetMigration() {
-    val ids = widgetDataProvider.getAppWidgetIds()
-    if (widgetDataProvider.hasWidget()) {
-      ids.map { widgetDataProvider.dataForWidgetId(it) }
-          .forEach {
-            it.addTickers(stocksProvider.getTickers())
-            it.setLayoutPref(preferences.getInt(AppPreferences.LAYOUT_TYPE, 0))
-            it.setBgPref(preferences.getInt(AppPreferences.WIDGET_BG, 1))
-            it.setTextColorPref(preferences.getInt(AppPreferences.TEXT_COLOR, 0))
-            it.setBoldEnabled(preferences.getBoolean(AppPreferences.BOLD_CHANGE, false))
-            it.setAutoSort(preferences.getBoolean(AppPreferences.SETTING_AUTOSORT, false))
-          }
-    } else {
-      val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
-      widgetData.addTickers(stocksProvider.getTickers())
-      widgetData.setAutoSort(preferences.getBoolean(AppPreferences.SETTING_AUTOSORT, false))
-
-    }
-    preferences.edit().putBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, true).apply()
   }
 }

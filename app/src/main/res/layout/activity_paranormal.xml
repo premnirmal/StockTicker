@@ -9,7 +9,7 @@
   <android.support.design.widget.AppBarLayout
       android:id="@+id/app_bar_layout"
       android:layout_width="match_parent"
-      android:layout_height="210dp"
+      android:layout_height="200dp"
       android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
       >
 
@@ -20,7 +20,7 @@
         android:background="@color/color_primary"
         app:contentScrim="@color/color_primary"
         app:expandedTitleGravity="center_horizontal"
-        app:expandedTitleMarginBottom="60dp"
+        app:expandedTitleMarginBottom="70dp"
         app:expandedTitleTextAppearance="@style/ActionBarExpandedTitleText"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:title="@string/app_name"
@@ -107,7 +107,7 @@
       />
 
   <LinearLayout
-      android:id="@+id/fab_add_stocks"
+      android:id="@+id/add_stocks_container"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|end"
@@ -130,6 +130,7 @@
         />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add_stocks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add"
@@ -139,7 +140,7 @@
   </LinearLayout>
 
   <LinearLayout
-      android:id="@+id/fab_edit_widget"
+      android:id="@+id/edit_widget_container"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|end"
@@ -162,6 +163,7 @@
         />
 
     <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_edit_widget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_edit"

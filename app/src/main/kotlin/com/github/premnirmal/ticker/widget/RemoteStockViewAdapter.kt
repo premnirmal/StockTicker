@@ -21,8 +21,8 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class RemoteStockViewAdapter(private val context: Context,
-    private val widgetId: Int) : RemoteViewsService.RemoteViewsFactory {
+class RemoteStockViewAdapter(private val widgetId: Int)
+  : RemoteViewsService.RemoteViewsFactory {
 
   fun Context.getFontSize(): Float {
     val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
@@ -35,8 +35,8 @@ class RemoteStockViewAdapter(private val context: Context,
 
   private val quotes: MutableList<Quote>
 
-  @Inject
-  lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var context: Context
 
   init {
     this.quotes = ArrayList()

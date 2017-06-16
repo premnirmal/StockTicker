@@ -142,6 +142,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
               if (which == 2) {
                 showDialog(getString(R.string.change_instructions))
               }
+              InAppMessage.showMessage(this, R.string.layout_updated_message)
             })
       }
       R.id.setting_background -> {

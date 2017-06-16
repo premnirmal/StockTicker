@@ -27,9 +27,10 @@ import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.string
 import kotlinx.android.synthetic.main.activity_paranormal.activity_root
+import kotlinx.android.synthetic.main.activity_paranormal.add_stocks_container
 import kotlinx.android.synthetic.main.activity_paranormal.collapsingToolbarLayout
+import kotlinx.android.synthetic.main.activity_paranormal.edit_widget_container
 import kotlinx.android.synthetic.main.activity_paranormal.fab_add_stocks
 import kotlinx.android.synthetic.main.activity_paranormal.fab_bg
 import kotlinx.android.synthetic.main.activity_paranormal.fab_edit_widget
@@ -54,12 +55,9 @@ class ParanormalActivity : BaseActivity() {
     val FAB_ANIMATION_DURATION = 200L
   }
 
-  @Inject
-  lateinit internal var preferences: SharedPreferences
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
-  @Inject
-  lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var preferences: SharedPreferences
+  @Inject lateinit internal var stocksProvider: IStocksProvider
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
   private var dialogShown = false
   private var attemptingFetch = false
@@ -129,20 +127,19 @@ class ParanormalActivity : BaseActivity() {
           showFABMenu()
         }
       }
-
-      fab_add_stocks.setOnClickListener { v ->
-        val appWidgetIds = widgetDataProvider.getAppWidgetIds()
-        val widgetId = appWidgetIds[view_pager!!.currentItem]
-        openTickerSelector(v, widgetId)
-      }
-
-      fab_edit_widget.setOnClickListener { v ->
-        val appWidgetIds = widgetDataProvider.getAppWidgetIds()
-        val widgetId = appWidgetIds[view_pager!!.currentItem]
-        openWidgetSettings(v, widgetId)
-      }
-
     })
+
+    fab_add_stocks.setOnClickListener { v ->
+      val appWidgetIds = widgetDataProvider.getAppWidgetIds()
+      val widgetId = appWidgetIds[view_pager!!.currentItem]
+      openTickerSelector(v, widgetId)
+    }
+
+    fab_edit_widget.setOnClickListener { v ->
+      val appWidgetIds = widgetDataProvider.getAppWidgetIds()
+      val widgetId = appWidgetIds[view_pager!!.currentItem]
+      openWidgetSettings(v, widgetId)
+    }
 
     fab_bg.setOnClickListener {
       closeFABMenu()
@@ -167,13 +164,15 @@ class ParanormalActivity : BaseActivity() {
   internal fun showFABMenu() {
     if (!isFABOpen) {
       isFABOpen = true
-      fab_settings.animate().rotation(45f).setDuration(FAB_ANIMATION_DURATION).start()
-      fab_add_stocks.visibility = View.VISIBLE
-      fab_edit_widget.visibility = View.VISIBLE
+      fab_settings.animate().rotationBy(45f).setDuration(FAB_ANIMATION_DURATION).start()
+      add_stocks_container.visibility = View.VISIBLE
+      edit_widget_container.visibility = View.VISIBLE
       fab_bg.visibility = View.VISIBLE
-      fab_add_stocks.animate().translationY(-resources.getDimension(R.dimen.first_fab_margin))
+      fab_bg.animate().alpha(1f).setDuration(FAB_ANIMATION_DURATION).setListener(null).start()
+      add_stocks_container.animate().translationY(-resources.getDimension(R.dimen.first_fab_margin))
           .setDuration(FAB_ANIMATION_DURATION).start()
-      fab_edit_widget.animate().translationY(-resources.getDimension(R.dimen.second_fab_margin))
+      edit_widget_container.animate().translationY(
+          -resources.getDimension(R.dimen.second_fab_margin))
           .setDuration(FAB_ANIMATION_DURATION).start()
     }
   }
@@ -181,22 +180,28 @@ class ParanormalActivity : BaseActivity() {
   internal fun closeFABMenu() {
     if (isFABOpen) {
       isFABOpen = false
-      fab_settings.animate().rotation(0f).setDuration(FAB_ANIMATION_DURATION).start()
-      fab_bg.visibility = View.GONE
-      fab_add_stocks.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION).start()
-      fab_edit_widget.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION).setListener(
+      fab_settings.animate().rotationBy(-45f).setDuration(FAB_ANIMATION_DURATION).start()
+      fab_bg.visibility = View.VISIBLE
+      fab_bg.animate().alpha(0f).setDuration(FAB_ANIMATION_DURATION)
+          .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+              fab_bg.visibility = View.GONE
+            }
+          }).start()
+      add_stocks_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION).start()
+      edit_widget_container.animate().translationY(0f).setDuration(
+          FAB_ANIMATION_DURATION).setListener(
           object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animator: Animator) {
               if (!isFABOpen) {
-                fab_add_stocks.visibility = View.GONE
-                fab_edit_widget.visibility = View.GONE
+                add_stocks_container.visibility = View.GONE
+                edit_widget_container.visibility = View.GONE
               }
 
             }
           }).start()
     }
   }
-
 
   override fun onResume() {
     super.onResume()
@@ -206,7 +211,7 @@ class ParanormalActivity : BaseActivity() {
 
   internal fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
-    subtitle?.text = getString(string.last_fetch, stocksProvider.lastFetched())
+    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
     if (!widgetDataProvider.hasWidget()) {
       fab_settings.setImageResource(R.drawable.ic_add)
     } else {
