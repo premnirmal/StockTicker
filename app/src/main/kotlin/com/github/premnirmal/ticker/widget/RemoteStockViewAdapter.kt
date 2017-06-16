@@ -10,11 +10,10 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.components.WidgetClickReceiver
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType
 import com.github.premnirmal.tickerwidget.R
 import java.util.ArrayList
 import javax.inject.Inject
@@ -22,31 +21,44 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.RemoteViewsFactory {
+class RemoteStockViewAdapter(private val context: Context,
+    private val widgetId: Int) : RemoteViewsService.RemoteViewsFactory {
+
+  fun Context.getFontSize(): Float {
+    val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
+    when (size) {
+      0 -> return this.resources.getInteger(R.integer.text_size_small).toFloat()
+      2 -> return this.resources.getInteger(R.integer.text_size_large).toFloat()
+      else -> return this.resources.getInteger(R.integer.text_size_medium).toFloat()
+    }
+  }
 
   private val quotes: MutableList<Quote>
 
   @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  lateinit internal var widgetDataProvider: WidgetDataProvider
 
   init {
-    Injector.inject(this)
-    val stocks = stocksProvider.getStocks()
-    this.quotes = ArrayList(stocks)
+    this.quotes = ArrayList()
   }
 
   override fun onCreate() {
-
+    Injector.appComponent.inject(this)
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    val stocks = widgetData.getStocks()
+    quotes.clear()
+    quotes.addAll(stocks)
   }
 
   override fun onDataSetChanged() {
-    val stocksList = stocksProvider.getStocks()
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    val stocksList = widgetData.getStocks()
     this.quotes.clear()
     this.quotes.addAll(stocksList)
   }
 
   override fun onDestroy() {
-
+    quotes.clear()
   }
 
   override fun getCount(): Int {
@@ -54,7 +66,8 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
   }
 
   override fun getViewAt(position: Int): RemoteViews {
-    val stockViewLayout = Tools.stockViewLayout()
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    val stockViewLayout = widgetData.stockViewLayout()
     val remoteViews = RemoteViews(context.packageName, stockViewLayout)
     val stock = quotes[position]
 
@@ -62,7 +75,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     val changePercentFormatted = stock.changePercentString()
     val priceFormatted = stock.priceString()
     val change = stock.change
-    val changeInPercent = stock.changeinPercent
+    val changeInPercent = stock.changeInPercent
 
     val changePercentString = SpannableString(changePercentFormatted)
     val changeValueString = SpannableString(changeValueFormatted)
@@ -70,16 +83,21 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
 
     remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
-    if (Tools.boldEnabled()) {
+    if (widgetData.isBoldEnabled()) {
       changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,
           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    } else {
+      changePercentString.setSpan(StyleSpan(Typeface.NORMAL), 0, changePercentString.length,
+          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+      changeValueString.setSpan(StyleSpan(Typeface.NORMAL), 0, changeValueString.length,
+          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     if (stockViewLayout == R.layout.stockview3) {
-      val changeType = Tools.changeType
-      if (changeType === Tools.ChangeType.percent) {
+      val changeType = widgetData.changeType()
+      if (changeType === ChangeType.percent) {
         remoteViews.setTextViewText(R.id.change, changePercentString)
       } else {
         remoteViews.setTextViewText(R.id.change, changeValueString)
@@ -93,9 +111,9 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
 
     val color: Int
     if (change < 0f || changeInPercent < 0f) {
-      color = context.resources.getColor(Tools.negativeTextColor())
+      color = context.resources.getColor(widgetData.negativeTextColor)
     } else {
-      color = context.resources.getColor(Tools.positiveTextColor())
+      color = context.resources.getColor(widgetData.positiveTextColor)
     }
     if (stockViewLayout == R.layout.stockview3) {
       remoteViews.setTextColor(R.id.change, color)
@@ -104,10 +122,10 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
       remoteViews.setTextColor(R.id.changeValue, color)
     }
 
-    remoteViews.setTextColor(R.id.ticker, Tools.getTextColor(context))
-    remoteViews.setTextColor(R.id.totalValue, Tools.getTextColor(context))
+    remoteViews.setTextColor(R.id.ticker, widgetData.textColor())
+    remoteViews.setTextColor(R.id.totalValue, widgetData.textColor())
 
-    val fontSize = Tools.getFontSize(context)
+    val fontSize = context.getFontSize()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       if (stockViewLayout == R.layout.stockview3) {
         remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize)
@@ -122,6 +140,7 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
     if (stockViewLayout == R.layout.stockview3) {
       val intent = Intent()
       intent.putExtra(WidgetClickReceiver.FLIP, true)
+      intent.putExtra(WidgetClickReceiver.WIDGET_ID, widgetId)
       remoteViews.setOnClickFillInIntent(R.id.change, intent)
     }
     remoteViews.setOnClickFillInIntent(R.id.ticker, Intent())
@@ -131,7 +150,8 @@ class RemoteStockViewAdapter(private val context: Context) : RemoteViewsService.
 
   override fun getLoadingView(): RemoteViews {
     val loadingView = RemoteViews(context.packageName, R.layout.loadview)
-    loadingView.setTextColor(R.id.loadingText, Tools.getTextColor(context))
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    loadingView.setTextColor(R.id.loadingText, widgetData.textColor())
     return loadingView
   }
 

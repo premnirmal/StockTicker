@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_dark_bg"
+    android:orientation="vertical"
+    >
+
+  <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@color/color_primary"
+      android:minHeight="?attr/actionBarSize"
+      app:navigationContentDescription="@string/abc_action_bar_up_description"
+      app:navigationIcon="@drawable/ic_close"
+      app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+      app:title="@string/action_Settings"
+      />
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+      <TextView
+          android:id="@+id/setting_add_stock"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          android:padding="@dimen/setting_padding"
+          android:text="@string/add_stock"
+          android:textColor="@color/light"
+          android:textSize="@dimen/large_text"
+          />
+
+      <include layout="@layout/divider"/>
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_widget_name"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/widget_name"
+          />
+
+      <include layout="@layout/divider"/>
+
+      <LinearLayout
+          android:id="@+id/setting_autosort"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          >
+
+        <com.github.premnirmal.ticker.ui.SettingsTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:subtitle_text="@string/auto_sort_desc"
+            app:title_text="@string/auto_sort"
+            />
+
+        <CheckBox
+            android:id="@+id/setting_autosort_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/setting_padding"
+            android:layout_marginRight="@dimen/setting_padding"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:gravity="center"
+            />
+
+      </LinearLayout>
+
+      <include layout="@layout/divider"/>
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_layout_type"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/layout_type"
+          />
+
+      <include layout="@layout/divider"/>
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_background"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/bg"
+          />
+
+      <include layout="@layout/divider"/>
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:id="@+id/setting_text_color"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          app:title_text="@string/text_color"
+          />
+
+      <include layout="@layout/divider"/>
+
+      <LinearLayout
+          android:id="@+id/setting_bold"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          >
+
+        <com.github.premnirmal.ticker.ui.SettingsTextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:subtitle_text="@string/bold_change_desc"
+            app:title_text="@string/bold_change"
+            />
+
+        <CheckBox
+            android:id="@+id/setting_bold_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="@dimen/setting_padding"
+            android:layout_marginRight="@dimen/setting_padding"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:gravity="center"
+            />
+
+      </LinearLayout>
+
+      <include layout="@layout/divider"/>
+
+    </LinearLayout>
+
+  </ScrollView>
+
+</LinearLayout>

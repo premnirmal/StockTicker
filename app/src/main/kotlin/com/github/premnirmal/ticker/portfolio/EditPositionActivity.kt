@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.content.DialogInterface
 import android.os.Bundle
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.shares
@@ -29,7 +29,7 @@ class EditPositionActivity : AddPositionActivity() {
         val skipButton = skipButton
         skipButton.setText(R.string.remove)
         sharesView.setText(stock.positionShares.toString())
-        val value = Tools.DECIMAL_FORMAT.format(stock.positionPrice)
+        val value = AppPreferences.DECIMAL_FORMAT.format(stock.positionPrice)
         priceView.setText(value)
         priceView.setSelection(value.length)
       }

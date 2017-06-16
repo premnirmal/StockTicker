@@ -21,7 +21,7 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
   init {
     LayoutInflater.from(context).inflate(R.layout.stock_field_view, this, true)
     attrs?.let {
-      val array = getContext().obtainStyledAttributes(it, R.styleable.StockFieldView)
+      val array = context.obtainStyledAttributes(it, R.styleable.StockFieldView)
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
       if (orientation == 0) {
         setOrientation(LinearLayout.HORIZONTAL)
@@ -29,14 +29,14 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
             0.5f)
         fieldvalue.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT,
             0.5f)
-        fieldvalue.gravity = Gravity.RIGHT
+        fieldvalue.gravity = Gravity.END
       } else {
         setOrientation(LinearLayout.VERTICAL)
         fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0,
             0.5f)
         fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0,
             0.5f)
-        fieldvalue.gravity = Gravity.LEFT
+        fieldvalue.gravity = Gravity.START
       }
       weightSum = 1f
       val name = getStringValue(context, array, R.styleable.StockFieldView_name)

@@ -1,10 +1,8 @@
 package com.github.premnirmal.ticker.portfolio
 
 import android.app.AlertDialog
+import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.content.SharedPreferences
-import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.widget.GridLayoutManager
@@ -14,34 +12,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
-import com.github.premnirmal.ticker.Tools
-import com.github.premnirmal.ticker.base.BaseActivity.Companion.EXTRA_CENTER_X
-import com.github.premnirmal.ticker.base.BaseActivity.Companion.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
-import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
-import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
-import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.ui.SpacingDecoration
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.portfolio_fragment.add_ticker_button
-import kotlinx.android.synthetic.main.portfolio_fragment.collapsingToolbarLayout
-import kotlinx.android.synthetic.main.portfolio_fragment.fragment_root
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
-import kotlinx.android.synthetic.main.portfolio_fragment.subtitle
-import kotlinx.android.synthetic.main.portfolio_fragment.swipe_container
-import kotlinx.android.synthetic.main.portfolio_fragment.toolbar
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
+import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
 import javax.inject.Inject
 
 
@@ -52,7 +37,23 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
-    private val SEQUENTIAL_REQUEST_COUNT = 3
+    private val KEY_WIDGET_ID = "KEY_WIDGET_ID"
+
+    fun newInstance(widgetId: Int): PortfolioFragment {
+      val fragment = PortfolioFragment()
+      val args = Bundle()
+      args.putInt(KEY_WIDGET_ID, widgetId)
+      fragment.arguments = args
+      return fragment
+    }
+
+    fun newInstance(): PortfolioFragment {
+      val fragment = PortfolioFragment()
+      val args = Bundle()
+      args.putInt(KEY_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+      fragment.arguments = args
+      return fragment
+    }
   }
 
   /**
@@ -60,26 +61,24 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
    * Without this holder, dagger is unable to inject dependencies into this class.
    */
   class InjectionHolder {
+
     @Inject
-    lateinit internal var stocksProvider: IStocksProvider
+    lateinit internal var widgetDataProvider: WidgetDataProvider
 
     @Inject
     lateinit internal var bus: RxBus
 
-    @Inject
-    lateinit internal var preferences: SharedPreferences
-
     init {
-      Injector.inject(this)
+      Injector.appComponent.inject(this)
     }
   }
 
   private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
-  private var attemptingFetch = false
-  private var fetchCount = 0
+  private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
-    StocksAdapter(this as QuoteClickListener, this as OnStartDragListener)
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    StocksAdapter(widgetData, this as QuoteClickListener, this as OnStartDragListener)
   }
   private var itemTouchHelper: ItemTouchHelper? = null
 
@@ -103,6 +102,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     popupWindow.show()
   }
 
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    widgetId = arguments.getInt(KEY_WIDGET_ID)
+  }
+
   override fun onResume() {
     super.onResume()
     bind(holder.bus.forEventType(RefreshEvent::class.java))
@@ -111,6 +115,12 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
           update()
         }
     listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    if (widgetData.getTickers().isEmpty()) {
+      view_flipper.displayedChild = 0
+    } else {
+      view_flipper.displayedChild = 1
+    }
     update()
   }
 
@@ -122,14 +132,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
-          Tools.getStatusBarHeight(activity)
-    }
-    collapsingToolbarLayout.setCollapsedTitleTypeface(
-        TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Regular.ttf"))
-    collapsingToolbarLayout.setExpandedTitleTypeface(
-        TypefaceUtils.load(activity.assets, "fonts/Ubuntu-Bold.ttf"))
     stockList.addItemDecoration(
         SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
@@ -138,91 +140,25 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(stocksAdapter)
     itemTouchHelper = ItemTouchHelper(callback)
     itemTouchHelper?.attachToRecyclerView(stockList)
-    swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
-        R.color.sea)
-    swipe_container.setOnRefreshListener({
-      fetch()
-    })
-    toolbar.inflateMenu(R.menu.menu_paranormal)
-    toolbar.setOnMenuItemClickListener { item ->
-      val itemId = item.itemId
-      if (itemId == R.id.action_settings) {
-        val intent = Intent(activity, SettingsActivity::class.java)
-        val v = activity.findViewById(itemId)
-        val rect = Rect()
-        v.getGlobalVisibleRect(rect)
-        val centerX = (rect.right - ((rect.right - rect.left) / 2))
-        val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
-        intent.putExtra(EXTRA_CENTER_X, centerX)
-        intent.putExtra(EXTRA_CENTER_Y, centerY)
-        startActivity(intent)
-        true
-      } else {
-        false
-      }
-    }
 
     savedInstanceState?.let {
       listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
     }
-
-    add_ticker_button.setOnClickListener({ v ->
-      val intent = Intent(v.context, TickerSelectorActivity::class.java)
-      val rect = Rect()
-      v.getGlobalVisibleRect(rect)
-      val centerX = (rect.right - ((rect.right - rect.left) / 2))
-      val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
-      intent.putExtra(EXTRA_CENTER_X, centerX)
-      intent.putExtra(EXTRA_CENTER_Y, centerY)
-      startActivity(intent)
-    })
-  }
-
-  internal fun fetch() {
-    if (Tools.isNetworkOnline(context)) {
-      fetchCount++
-      attemptingFetch = true
-      bind(holder.stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
-        override fun onError(e: Throwable) {
-          attemptingFetch = false
-          CrashLogger.logException(e)
-          swipe_container?.isRefreshing = false
-          InAppMessage.showMessage(fragment_root, getString(R.string.refresh_failed))
-        }
-
-        override fun onNext(result: List<Quote>) {
-          attemptingFetch = false
-          swipe_container?.isRefreshing = false
-          update()
-        }
-      })
-    } else {
-      InAppMessage.showMessage(fragment_root, getString(R.string.no_network_message))
-      swipe_container?.isRefreshing = false
-    }
   }
 
   internal fun update() {
-    // Don't attempt to make many requests in a row if the stocks don't fetch.
-    if (holder.stocksProvider.getStocks().isEmpty() && fetchCount < SEQUENTIAL_REQUEST_COUNT) {
-      if (!attemptingFetch) {
-        swipe_container?.isRefreshing = true
-        fetch()
-        return
-      }
-    }
-    fetchCount = 0
-    stocksAdapter.refresh(holder.stocksProvider)
-    subtitle?.text = getString(R.string.last_fetch, holder.stocksProvider.lastFetched())
+    stocksAdapter.refresh()
   }
 
   internal fun promptRemove(quote: Quote?, position: Int) {
     quote?.let {
+      val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
       AlertDialog.Builder(activity).setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove, { dialog, _ ->
-            holder.stocksProvider.removeStock(it.symbol)
+            widgetData.removeStock(it.symbol)
             stocksAdapter.remove(it)
+            holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
           })
           .setNegativeButton(R.string.cancel, { dialog, _ -> dialog.dismiss() })
@@ -239,10 +175,12 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-    if (Tools.autoSortEnabled()) {
-      Tools.enableAutosort(false)
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    if (widgetData.autoSortEnabled()) {
+      widgetData.setAutoSort(false)
       update()
-      InAppMessage.showMessage(fragment_root, getString(R.string.autosort_disabled))
+      holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
+      InAppMessage.showMessage(activity, getString(R.string.autosort_disabled))
     } else {
       itemTouchHelper?.startDrag(viewHolder)
     }

@@ -1,12 +1,188 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
 
-  <FrameLayout
-      android:id="@+id/fragment_container"
+  <android.support.design.widget.AppBarLayout
+      android:id="@+id/app_bar_layout"
+      android:layout_width="match_parent"
+      android:layout_height="210dp"
+      android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+      >
+
+    <android.support.design.widget.CollapsingToolbarLayout
+        android:id="@+id/collapsingToolbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_primary"
+        app:contentScrim="@color/color_primary"
+        app:expandedTitleGravity="center_horizontal"
+        app:expandedTitleMarginBottom="60dp"
+        app:expandedTitleTextAppearance="@style/ActionBarExpandedTitleText"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed"
+        app:title="@string/app_name"
+        >
+
+      <ImageView
+          android:id="@+id/headerImage"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:scaleType="centerCrop"
+          android:src="@drawable/header_image"
+          app:layout_collapseMode="parallax"
+          />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_gravity="bottom"
+          android:gravity="bottom"
+          android:orientation="vertical"
+          app:layout_collapseMode="parallax"
+          >
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size"
+            app:layout_collapseMode="parallax"
+            />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_collapseMode="pin"
+            app:tabBackground="@color/transparent"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/sea"
+            app:tabIndicatorHeight="2dp"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/white"
+            app:tabTextAppearance="@style/TabTextAppearence"
+            app:tabTextColor="@color/grey_text"
+            />
+      </LinearLayout>
+
+      <android.support.v7.widget.Toolbar
+          android:id="@+id/toolbar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          app:layout_collapseMode="pin"
+          app:title="@string/app_name"
+          app:titleTextAppearance="@style/ActionBarTitleText"
+          />
+
+    </android.support.design.widget.CollapsingToolbarLayout>
+
+  </android.support.design.widget.AppBarLayout>
+
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipe_container"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      >
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+  </android.support.v4.widget.SwipeRefreshLayout>
+
+  <View
+      android:id="@+id/fab_bg"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/translucent"
+      android:visibility="gone"
       />
-</FrameLayout>
+
+  <LinearLayout
+      android:id="@+id/fab_add_stocks"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="@dimen/fab_margin"
+      android:layout_marginEnd="@dimen/fab_margin"
+      android:layout_marginRight="@dimen/fab_margin"
+      android:clipToPadding="false"
+      android:gravity="center_vertical"
+      android:visibility="gone"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
+      >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:text="@string/add_stock"
+        android:textColor="@color/light"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add"
+        app:backgroundTint="@color/sea"
+        app:rippleColor="@color/white"
+        />
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/fab_edit_widget"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|end"
+      android:layout_marginBottom="@dimen/fab_margin"
+      android:layout_marginEnd="@dimen/fab_margin"
+      android:layout_marginRight="@dimen/fab_margin"
+      android:clipToPadding="false"
+      android:gravity="center_vertical"
+      android:visibility="gone"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
+      >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:text="@string/action_Settings"
+        android:textColor="@color/light"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_edit"
+        app:backgroundTint="@color/sea"
+        app:rippleColor="@color/white"
+        />
+  </LinearLayout>
+
+  <android.support.design.widget.FloatingActionButton
+      android:id="@+id/fab_settings"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="bottom|right|end"
+      android:layout_marginBottom="@dimen/fab_margin"
+      android:layout_marginEnd="@dimen/fab_margin"
+      android:layout_marginRight="@dimen/fab_margin"
+      android:src="@drawable/ic_settings"
+      app:backgroundTint="@color/color_accent"
+      app:borderWidth="0dp"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
+      app:rippleColor="@color/white"
+      />
+
+</android.support.design.widget.CoordinatorLayout>

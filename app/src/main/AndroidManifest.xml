@@ -18,8 +18,9 @@
       tools:replace="android:icon">
 
     <activity
-        android:name="com.github.premnirmal.ticker.ParanormalActivity"
+        android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
         android:label="@string/app_name"
+        android:launchMode="singleInstance"
         android:theme="@style/ParanormalActivityTheme">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -39,15 +40,19 @@
         android:label="@string/edit_position"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
+        android:label="@string/app_settings"
+        android:theme="@style/SettingsActivityTheme"/>
+    <activity
+        android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
         android:label="@string/action_Settings"
-        android:theme="@style/SettingsActivityTheme">
+        android:theme="@style/WidgetSettingsActivityTheme">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
       </intent-filter>
     </activity>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.components.UpdateReceiver"
+        android:name="com.github.premnirmal.ticker.UpdateReceiver"
         android:enabled="true"
         android:exported="true">
       <intent-filter>
@@ -65,12 +70,12 @@
     </receiver>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.components.RefreshReceiver"
+        android:name="com.github.premnirmal.ticker.widget.RefreshReceiver"
         android:enabled="true"
         android:exported="false"/>
 
     <receiver
-        android:name="com.github.premnirmal.ticker.components.WidgetClickReceiver"
+        android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"
         android:enabled="true"
         android:exported="false">
       <intent-filter>

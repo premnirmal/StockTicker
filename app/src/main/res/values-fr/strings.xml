@@ -68,7 +68,7 @@
   <string name="enable_google_finance">Activer une autre API de financement?</string>
   <string name="enable_google_finance_desc">En version bêta. Veuillez désactiver s\'il ne fournit pas de devis précis.</string>
   <string name="edit_positions">Modifier les positions</string>
-  <string name="add_stock">Ajouter un stock</string>
+  <string name="add_stock">Ajouter des stocks</string>
   <string name="holdings">Titres</string>
   <string name="gain_loss">Perte de profit</string>
   <string name="change_percent">Changer %</string>
@@ -89,4 +89,9 @@
   <string name="exported_to">Exporter vers%1$s</string>
   <string name="whats_new_in">Quoi de neuf dans v%1$s</string>
   <string name="enter_a_symbol">Entrez un symbole</string>
+  <string name="no_symbols">¯\\_(ツ)_/¯\nIl n\'y a pas de symboles</string>
+  <string name="widget_name">Nom du widget</string>
+  <string name="widget_name_updated">Nom du widget mis à jour</string>
+  <string name="set">Ensemble</string>
+  <string name="app_settings">Paramètres de l\'application</string>
 </resources>

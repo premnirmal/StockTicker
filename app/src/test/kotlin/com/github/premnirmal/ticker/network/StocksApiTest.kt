@@ -22,8 +22,8 @@ class StocksApiTest : BaseUnitTest() {
     val TEST_TICKER_LIST = arrayListOf<String>("SPY", "GOOG", "MSFT", "DIA", "AAPL")
   }
 
-  lateinit var robinhood: Robindahood
-  lateinit var mockPrefs: SharedPreferences
+  lateinit internal var robinhood: Robindahood
+  lateinit internal var mockPrefs: SharedPreferences
 
   val stocksApi = StocksApi()
 

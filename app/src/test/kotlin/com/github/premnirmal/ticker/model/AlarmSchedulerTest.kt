@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.BaseUnitTest
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import org.junit.Test
 import org.mockito.Mockito.`when`
 import org.threeten.bp.Instant
@@ -26,9 +26,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
   }
 
   private fun setStartAndEndTime(startTime: String, endTime: String) {
-    val preferences = Tools.instance.sharedPreferences
-    preferences.edit().putString(Tools.START_TIME, startTime).apply()
-    preferences.edit().putString(Tools.END_TIME, endTime).apply()
+    val preferences = AppPreferences.INSTANCE.sharedPreferences
+    preferences.edit().putString(AppPreferences.START_TIME, startTime).apply()
+    preferences.edit().putString(AppPreferences.END_TIME, endTime).apply()
   }
 
   private fun setNow(now: ZonedDateTime) {
@@ -39,7 +39,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     val instant = Instant.ofEpochMilli(now)
     val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
     val localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC)
-    val clock = Tools.clock()
+    val clock = AppPreferences.clock()
     `when`(clock.currentTimeMillis()).thenReturn(now)
     `when`(clock.elapsedRealtime()).thenReturn(now)
     `when`(clock.todayLocal()).thenReturn(localDateTime)
@@ -52,7 +52,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(TIME_1)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    assertEquals(Tools.updateInterval, msToNextAlarm)
+    assertEquals(AppPreferences.updateInterval, msToNextAlarm)
   }
 
   @Test
@@ -61,9 +61,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(TIME_4)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val nextDay = Tools.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
+    val nextDay = AppPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
     val expectedNext = nextDay.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -73,9 +73,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(TIME_5)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val followingMonday = Tools.clock().todayZoned().withHour(9).withMinute(30).plusDays(3)
+    val followingMonday = AppPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(3)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -85,9 +85,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(TIME_2)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val followingMonday = Tools.clock().todayZoned().withHour(9).withMinute(30).plusDays(2)
+    val followingMonday = AppPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(2)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
-          Tools.clock().currentTimeMillis()
+          AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -97,9 +97,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(TIME_3)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val followingMonday = Tools.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
+    val followingMonday = AppPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -113,7 +113,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(FLIP_TIME_1)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    assertEquals(Tools.updateInterval, msToNextAlarm)
+    assertEquals(AppPreferences.updateInterval, msToNextAlarm)
   }
 
   @Test
@@ -122,9 +122,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(FLIP_TIME_4)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val nextDay = Tools.clock().todayZoned().withHour(21).withMinute(0)
+    val nextDay = AppPreferences.clock().todayZoned().withHour(21).withMinute(0)
     val expectedNext = nextDay.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -134,9 +134,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(FLIP_TIME_5)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val followingMonday = Tools.clock().todayZoned().withHour(21).withMinute(0).plusDays(3)
+    val followingMonday = AppPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(3)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -146,9 +146,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(FLIP_TIME_2)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val followingMonday = Tools.clock().todayZoned().withHour(21).withMinute(0).plusDays(2)
+    val followingMonday = AppPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(2)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 
@@ -158,9 +158,9 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(FLIP_TIME_3)
 
     val msToNextAlarm = AlarmScheduler.msToNextAlarm()
-    val followingMonday = Tools.clock().todayZoned().withHour(21).withMinute(0).plusDays(1)
+    val followingMonday = AppPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(1)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
-        Tools.clock().currentTimeMillis()
+        AppPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
 

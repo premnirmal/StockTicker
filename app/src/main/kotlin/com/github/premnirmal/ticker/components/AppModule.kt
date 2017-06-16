@@ -1,13 +1,15 @@
 package com.github.premnirmal.ticker.components
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.network.NetworkModule
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 3/3/16.
@@ -19,16 +21,21 @@ class AppModule(private val app: Context) {
     return app
   }
 
-  @Provides @javax.inject.Singleton internal fun provideClock(): AppClock {
+  @Provides @Singleton internal fun provideClock(): AppClock {
     return AppClockImpl()
   }
 
-  @Provides @javax.inject.Singleton internal fun provideEventBus(): RxBus {
+  @Provides @Singleton internal fun provideEventBus(): RxBus {
     return RxBus()
   }
 
-  @Provides @javax.inject.Singleton internal fun provideSharedPreferences(context: Context): SharedPreferences {
-    val sharedPreferences = context.getSharedPreferences(Tools.PREFS_NAME, MODE_PRIVATE)
+  @Provides @Singleton internal fun provideDefaultSharedPreferences(
+      context: Context): SharedPreferences {
+    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
     return sharedPreferences
+  }
+
+  @Provides internal fun provideAppWidgetManager(): AppWidgetManager {
+    return AppWidgetManager.getInstance(app)
   }
 }

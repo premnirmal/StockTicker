@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/setting_padding"
+    tools:layout_marginTop="100dp"
+    >
+
+  <TextView
+      android:id="@+id/setting_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="5dp"
+      android:ellipsize="end"
+      android:lines="1"
+      android:maxLines="1"
+      android:textColor="@color/light"
+      android:textSize="@dimen/large_text"
+      tools:text="Setting title"
+      />
+
+  <ViewFlipper
+      android:id="@+id/text_flipper"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:autoStart="false"
+      android:inAnimation="@anim/fade_in_fast"
+      android:outAnimation="@anim/fade_out_fast"
+      >
+
+    <TextView
+        android:id="@+id/setting_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@color/grey_text"
+        android:textSize="@dimen/text_size"
+        tools:text="Setting subtitle"
+        />
+
+    <EditText
+        android:id="@+id/setting_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_setting_edit_text"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions|textCapWords"
+        android:lines="1"
+        android:maxLines="1"
+        android:paddingBottom="4dp"
+        android:textSize="@dimen/text_size"
+        />
+
+  </ViewFlipper>
+
+</merge>

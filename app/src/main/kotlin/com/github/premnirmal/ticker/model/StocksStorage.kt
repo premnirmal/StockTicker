@@ -21,7 +21,7 @@ class StocksStorage() {
   @Inject lateinit internal var gson: Gson
 
   init {
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
   }
 
   fun readStocks(): MutableList<Quote> {

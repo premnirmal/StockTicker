@@ -4,6 +4,8 @@ import android.animation.Animator
 import android.animation.Animator.AnimatorListener
 import android.animation.AnimatorListenerAdapter
 import android.annotation.TargetApi
+import android.content.Context
+import android.content.Intent
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -15,16 +17,15 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
-import com.github.premnirmal.ticker.Tools
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.CrashLogger
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.Callback
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -40,20 +41,31 @@ import javax.inject.Inject
  */
 class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
 
-  @Inject
-  lateinit internal var suggestionApi: SuggestionApi
+  companion object {
+    val ARG_WIDGET_ID = "WIDGET_ID"
 
-  @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+    fun launchIntent(context: Context, widgetId: Int): Intent {
+      val intent = Intent(context, TickerSelectorActivity::class.java)
+      intent.putExtra(ARG_WIDGET_ID, widgetId)
+      return intent
+    }
+  }
+
+  @Inject lateinit internal var suggestionApi: SuggestionApi
+
+  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
   internal var disposable: Disposable? = null
+
+  private var widgetId = 0
 
   private val adapter = SuggestionsAdapter(this@TickerSelectorActivity)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     overridePendingTransition(0, 0)
+    widgetId = intent.getIntExtra(ARG_WIDGET_ID, 0)
     super.onCreate(savedInstanceState)
-    Injector.inject(this)
+    Injector.appComponent.inject(this)
     setContentView(R.layout.activity_ticker_selector)
     toolbar.setNavigationOnClickListener {
       onBackPressed()
@@ -95,7 +107,8 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
         .createCircularReveal(activity_root, cx, cy,
             if (reverse) finalRadius.toFloat() else 0.toFloat(),
             if (reverse) 0.toFloat() else finalRadius.toFloat())
-    circularRevealAnim.duration = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong()
+    circularRevealAnim.duration = resources.getInteger(
+        android.R.integer.config_mediumAnimTime).toLong()
     activity_root.visibility = View.VISIBLE
     listener?.let { circularRevealAnim.addListener(it) }
     circularRevealAnim.start()
@@ -128,7 +141,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     if (!query.isEmpty()) {
       disposable?.dispose()
 
-      if (Tools.isNetworkOnline(applicationContext)) {
+      if (isNetworkOnline()) {
         val observable = suggestionApi.getSuggestions(query)
         disposable = bind(observable)
             .map { (resultSet) -> resultSet?.result }
@@ -159,13 +172,13 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
 
   override fun onSuggestionClick(suggestion: Suggestion) {
     val ticker = suggestion.symbol
-    if (!stocksProvider.getTickers().contains(ticker)) {
-      stocksProvider.addStock(ticker)
-      InAppMessage.showMessage(this@TickerSelectorActivity,
-          getString(R.string.added_to_list, ticker))
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    if (!widgetData.getTickers().contains(ticker)) {
+      widgetData.addTicker(ticker)
+      widgetDataProvider.broadcastUpdateWidget(widgetId)
+      InAppMessage.showMessage(this, getString(R.string.added_to_list, ticker))
     } else {
       showDialog(getString(R.string.already_in_portfolio, ticker))
     }
   }
-
 }

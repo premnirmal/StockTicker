@@ -1,24 +1,22 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.github.premnirmal.ticker.Tools
+import com.github.premnirmal.ticker.AppPreferences
 import java.io.Serializable
 
 /**
  * Created by premnirmal on 3/30/17.
  */
-class Quote : Comparable<Quote>, Serializable {
+data class Quote(var symbol: String = "",
+    var name: String = "",
+    var lastTradePrice: Float = 0.toFloat(),
+    var changeInPercent: Float = 0.toFloat(),
+    var change: Float = 0.toFloat(),
+    var stockExchange: String = "",
+    var currency: String = "") : Comparable<Quote>, Serializable {
 
   companion object {
     private val serialVersionUID = -4235355L
   }
-
-  var symbol = ""
-  var name = ""
-  var lastTradePrice: Float = 0.toFloat()
-  var changeinPercent: Float = 0.toFloat()
-  var change: Float = 0.toFloat()
-  var stockExchange = ""
-  var currency = ""
 
   // Add Position fields
   var isPosition: Boolean = false
@@ -47,15 +45,15 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   fun changeString(): String {
-    return Tools.DECIMAL_FORMAT.format(change)
+    return AppPreferences.DECIMAL_FORMAT.format(change)
   }
 
   fun changePercentString(): String {
-    return "${Tools.DECIMAL_FORMAT.format(changeinPercent)}%"
+    return "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
   }
 
   fun priceString(): String {
-    return Tools.DECIMAL_FORMAT.format(lastTradePrice)
+    return AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
   }
 
   fun holdings(): Float {
@@ -63,7 +61,7 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   fun holdingsString(): String {
-    return Tools.DECIMAL_FORMAT.format(holdings())
+    return AppPreferences.DECIMAL_FORMAT.format(holdings())
   }
 
   fun gainLoss(): Float {
@@ -71,7 +69,7 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   fun gainLossString(): String {
-    return Tools.DECIMAL_FORMAT.format(gainLoss())
+    return AppPreferences.DECIMAL_FORMAT.format(gainLoss())
   }
 
   fun dayChange(): Float {
@@ -79,7 +77,7 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   fun dayChangeString(): String {
-    return Tools.DECIMAL_FORMAT.format(dayChange())
+    return AppPreferences.DECIMAL_FORMAT.format(dayChange())
   }
 
   fun dayChangePercent(): Float {
@@ -87,10 +85,10 @@ class Quote : Comparable<Quote>, Serializable {
   }
 
   fun dayChangePercentString(): String {
-    return "${Tools.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
+    return "${AppPreferences.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
   }
 
   override operator fun compareTo(other: Quote): Int {
-    return java.lang.Float.compare(other.changeinPercent, changeinPercent)
+    return java.lang.Float.compare(other.changeInPercent, changeInPercent)
   }
 }

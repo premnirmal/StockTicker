@@ -1,10 +1,11 @@
+apply from: "../build.gradle"
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
 apply plugin: "io.fabric"
-apply from: "../build.gradle"
 apply plugin: "com.getkeepsafe.dexcount"
-//apply plugin: 'androlate'
+apply plugin: "kotlin-kapt"
+//apply plugin: "androlate"
 
 buildscript {
   repositories {
@@ -48,8 +49,8 @@ dexcount {
 
 // androlate {
 //   final File parrotFile = file("file:translate.properties")
-//   final Properties props = new Properties();
-//   props.load(new FileInputStream(parrotFile));
+//   final Properties props = new Properties()
+//   props.load(new FileInputStream(parrotFile))
 
 //   appName 'StockTicker'
 //   apiKey props.getProperty("GOOGLE_TRANSLATE_API_KEY").toString()
@@ -61,18 +62,11 @@ android {
   compileSdkVersion 25
   buildToolsVersion "25.0.3"
 
-  sourceSets {
-    String testDir = "src/test/kotlin"
-    test {
-      java.srcDir testDir
-    }
-  }
-
   final File versionFile = file("file:version.properties")
-  final Properties versionProps = new Properties();
-  versionProps.load(new FileInputStream(versionFile));
-  def final code = versionProps.getProperty("versionCode").toInteger();
-  def final name = versionProps.getProperty("versionName").toString();
+  final Properties versionProps = new Properties()
+  versionProps.load(new FileInputStream(versionFile))
+  def final code = versionProps.getProperty("versionCode").toInteger()
+  def final name = versionProps.getProperty("versionName").toString()
   def final appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
@@ -87,13 +81,11 @@ android {
 
   sourceSets {
     main.java.srcDirs += "src/main/kotlin"
+    String testDir = "src/test/kotlin"
     test {
       resources.srcDirs += ['src/test/resources']
+      java.srcDir testDir
     }
-  }
-
-  kapt {
-    generateStubs = true
   }
 
   dexOptions {
@@ -104,10 +96,10 @@ android {
     release {
       storeFile file("file:keystore.jks")
 
-      final File propsFile = file("file:keystore.properties");
+      final File propsFile = file("file:keystore.properties")
       if (propsFile.exists()) {
-        final Properties props = new Properties();
-        props.load(new FileInputStream(propsFile));
+        final Properties props = new Properties()
+        props.load(new FileInputStream(propsFile))
         storePassword props.getProperty("key.store.password")
         keyPassword props.getProperty("key.alias.password")
         keyAlias props.getProperty("key.alias.alias")
@@ -160,23 +152,21 @@ android {
   }
 }
 
-kapt {
-  generateStubs = true
+ext {
+  SUPPORT_LIBRARY_VERSION = "25.3.1"
+  DAGGER_VERSION = "2.6"
+  DEXMAKER_VERSION = "1.4"
+  MOCKITO_VERSION = "2.7.5"
+  JUNIT_VERSION = "4.12"
+  RUNNER_VERSION = "0.5"
+  RETROFIT_VERSION = "2.2.0"
+  OKHTTP_VERSION = "3.5.0"
+  RXJAVA_VERSION = "2.1.0"
+  ROBOLECTRIC_VERSION = "3.2.2"
+  PLAY_SERVICES_VERSION = "10.2.1"
 }
 
 dependencies {
-  final SUPPORT_LIBRARY_VERSION = "25.3.1"
-  final DAGGER_VERSION = "2.6.1"
-  final DEXMAKER_VERSION = "1.4"
-  final MOCKITO_VERSION = "2.7.5"
-  final JUNIT_VERSION = "4.12"
-  final RUNNER_VERSION = "0.5"
-  final RETROFIT_VERSION = "2.2.0"
-  final OKHTTP_VERSION = "3.5.0"
-  final RXJAVA_VERSION = "2.1.0"
-  final ROBOLECTRIC_VERSION = "3.2.2"
-  final PLAY_SERVICES_VERSION = "10.2.1"
-
   compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
   compile "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
@@ -207,11 +197,11 @@ dependencies {
 
   compile "com.nbsp:library:1.6"
   compile "uk.co.chrisjenx:calligraphy:2.1.0"
-  devCompile "com.jakewharton.timber:timber:4.3.1"
+  compile "com.jakewharton.timber:timber:4.3.1"
 
   prodCompile "com.google.android.gms:play-services-analytics:$PLAY_SERVICES_VERSION"
   prodCompile("com.crashlytics.sdk.android:crashlytics:2.6.7@aar") {
-    transitive = true;
+    transitive = true
   }
 
   testCompile "junit:junit:$JUNIT_VERSION"
@@ -231,6 +221,7 @@ dependencies {
   androidTestCompile "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker-dx:$DEXMAKER_VERSION"
   androidTestCompile "com.crittercism.dexmaker:dexmaker-mockito:$DEXMAKER_VERSION"
+  kaptTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
   kaptAndroidTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
   androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
