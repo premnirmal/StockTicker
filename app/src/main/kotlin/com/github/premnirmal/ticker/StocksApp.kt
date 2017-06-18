@@ -7,8 +7,8 @@ import android.util.Base64
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
-import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.DaggerAppComponent
+import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -38,6 +38,14 @@ open class StocksApp : Application() {
         ILogIt.INSTANCE.logException(e)
       }
       return null
+    }
+
+    fun Context.getNavigationBarHeight(): Int {
+      val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+      if (resourceId > 0) {
+        return resources.getDimensionPixelSize(resourceId)
+      }
+      return 0
     }
   }
 

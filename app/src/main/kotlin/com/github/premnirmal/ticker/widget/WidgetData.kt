@@ -17,7 +17,7 @@ import java.util.Arrays
 import java.util.Collections
 import javax.inject.Inject
 
-class WidgetData(private val widgetId: Int) {
+class WidgetData {
 
   companion object {
     val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
@@ -42,8 +42,30 @@ class WidgetData(private val widgetId: Int) {
   @Inject lateinit internal var stocksProvider: IStocksProvider
   @Inject lateinit internal var context: Context
 
+  private val widgetId: Int
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
+
+  constructor(widgetId: Int) {
+    this.widgetId = widgetId
+    Injector.appComponent.inject(this)
+    val prefsName = "$PREFS_NAME_PREFIX$widgetId"
+    preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
+    if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+      tickerList = ArrayList(stocksProvider.getTickers())
+    } else {
+      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
+      tickerList = java.util.ArrayList(Arrays.asList(
+          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+    }
+    save()
+  }
+
+  constructor(widgetId: Int, isFirstWidget: Boolean) : this(widgetId) {
+    if (isFirstWidget && tickerList.isEmpty()) {
+      addTickers(stocksProvider.getTickers())
+    }
+  }
 
   var positiveTextColor: Int = 0
     @ColorRes get() {
@@ -60,20 +82,6 @@ class WidgetData(private val widgetId: Int) {
     @ColorRes get() {
       return R.color.negative_red
     }
-
-  init {
-    Injector.appComponent.inject(this)
-    val prefsName = "$PREFS_NAME_PREFIX$widgetId"
-    preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-    if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-      tickerList = ArrayList(stocksProvider.getTickers())
-    } else {
-      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
-      tickerList = java.util.ArrayList(Arrays.asList(
-          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
-    }
-    save()
-  }
 
   fun widgetName(): String {
     return preferences.getString(WIDGET_NAME, "")

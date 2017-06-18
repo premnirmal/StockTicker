@@ -27,7 +27,6 @@ import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_paranormal.activity_root
 import kotlinx.android.synthetic.main.activity_paranormal.add_stocks_container
 import kotlinx.android.synthetic.main.activity_paranormal.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.activity_paranormal.edit_widget_container
@@ -228,7 +227,7 @@ class ParanormalActivity : BaseActivity() {
               attemptingFetch = false
               ILogIt.INSTANCE.logException(e)
               swipe_container?.isRefreshing = false
-              InAppMessage.showMessage(activity_root, getString(R.string.refresh_failed))
+              InAppMessage.showMessage(this@ParanormalActivity, getString(R.string.refresh_failed))
             }
 
             override fun onNext(result: List<Quote>) {
@@ -239,12 +238,12 @@ class ParanormalActivity : BaseActivity() {
           })
         } else {
           attemptingFetch = false
-          InAppMessage.showMessage(activity_root, getString(R.string.refresh_failed))
+          InAppMessage.showMessage(this, getString(R.string.refresh_failed))
           swipe_container?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
-        InAppMessage.showMessage(activity_root, getString(R.string.no_network_message))
+        InAppMessage.showMessage(this, getString(R.string.no_network_message))
         swipe_container?.isRefreshing = false
       }
     }

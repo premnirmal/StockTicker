@@ -2,16 +2,28 @@ package com.github.premnirmal.ticker.components
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.support.design.widget.Snackbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import com.github.premnirmal.ticker.StocksApp.Companion.getNavigationBarHeight
+import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.tickerwidget.R
 
 /**
  * Created by premnirmal on 2/26/16.
  */
 object InAppMessage {
+
+  private fun Activity.isTranslucentNavigationBar(): Boolean {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
+        && this is ParanormalActivity
+  }
+
+  private fun Activity.getRootView(): View {
+    return (this.findViewById(android.R.id.content) as ViewGroup).getChildAt(0)
+  }
 
   fun showToast(context: Context, messageResId: Int) {
     Toast.makeText(context, messageResId, Toast.LENGTH_SHORT).show()
@@ -28,7 +40,9 @@ object InAppMessage {
     if (activity == null) {
       return
     }
-    showMessage(getRootView(activity), message)
+    val snackbar = createSnackbar(activity.getRootView(), message,
+        activity.isTranslucentNavigationBar())
+    snackbar.show()
   }
 
   fun showMessage(activity: Activity?, message: CharSequence, actionText: CharSequence,
@@ -36,31 +50,26 @@ object InAppMessage {
     if (activity == null) {
       return
     }
-    val snackbar = createSnackbar(getRootView(activity), message)
+    val snackbar = createSnackbar(activity.getRootView(), message,
+        activity.isTranslucentNavigationBar())
     snackbar.setAction(actionText, actionClick)
     snackbar.show()
   }
 
-  fun showMessage(view: View?, message: CharSequence) {
-    if (view == null) {
-      return
-    }
-    val snackbar = createSnackbar(view, message)
-    snackbar.show()
-  }
-
-  private fun createSnackbar(view: View, message: CharSequence): Snackbar {
+  private fun createSnackbar(view: View, message: CharSequence,
+      padBottom: Boolean = false): Snackbar {
     val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
     val snackBarView = snackbar.view
     snackBarView.setBackgroundColor(getSnackbarColor(view.context))
+    if (padBottom) {
+      snackBarView.setPadding(snackBarView.paddingLeft, snackBarView.paddingTop,
+          snackBarView.paddingRight,
+          snackBarView.paddingBottom + snackBarView.context.getNavigationBarHeight())
+    }
     return snackbar
   }
 
   private fun getSnackbarColor(context: Context): Int {
     return context.resources.getColor(R.color.color_primary)
-  }
-
-  private fun getRootView(activity: Activity): View {
-    return (activity.findViewById(android.R.id.content) as ViewGroup).getChildAt(0)
   }
 }
