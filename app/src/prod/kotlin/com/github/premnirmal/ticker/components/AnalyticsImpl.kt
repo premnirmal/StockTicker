@@ -40,18 +40,6 @@ internal class AnalyticsImpl(context: Context) : Analytics {
         .setAction("onOptionsChanged").setLabel(value).build())
   }
 
-  override fun trackUI(action: String, label: String) {
-    tracker.send(
-        HitBuilders.EventBuilder().setCategory("AppView").setAction(action)
-            .setLabel(label).build())
-  }
-
-  override fun trackIntialSettings(action: String, label: String) {
-    tracker.send(
-        HitBuilders.EventBuilder().setCategory("AppSettings").setAction(action)
-            .setLabel(label).build())
-  }
-
   override fun trackSettingsChange(action: String, label: String) {
     tracker.send(
         HitBuilders.EventBuilder().setCategory("AppSettingsChange").setAction(action)

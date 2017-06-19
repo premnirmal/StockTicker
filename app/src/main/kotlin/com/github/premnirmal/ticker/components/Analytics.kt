@@ -21,10 +21,6 @@ interface Analytics {
 
   fun trackWidgetSizeUpdate(value: String)
 
-  fun trackUI(action: String, label: String)
-
-  fun trackIntialSettings(action: String, label: String)
-
   fun trackSettingsChange(action: String, label: String)
 
   fun trackRateYes()

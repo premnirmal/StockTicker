@@ -19,14 +19,6 @@ internal class AnalyticsImpl(context: Context) : Analytics {
 
   }
 
-  override fun trackUI(action: String, label: String) {
-
-  }
-
-  override fun trackIntialSettings(action: String, label: String) {
-
-  }
-
   override fun trackSettingsChange(action: String, label: String) {
 
   }
