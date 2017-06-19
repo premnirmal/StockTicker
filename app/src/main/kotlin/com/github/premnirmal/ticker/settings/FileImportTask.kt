@@ -20,7 +20,7 @@ internal open class FileImportTask(
     private val stocksProvider: IStocksProvider) : AsyncTask<String, Void, Boolean>() {
 
   override fun doInBackground(vararg params: String?): Boolean? {
-    if (params.size == 0 || params[0] == null) {
+    if (params.isEmpty() || params[0] == null) {
       return false
     }
     val uri: URI
