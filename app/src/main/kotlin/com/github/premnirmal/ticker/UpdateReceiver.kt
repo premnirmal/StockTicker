@@ -35,9 +35,9 @@ class UpdateReceiver : BroadcastReceiver() {
         "package:" + context.packageName == intentData
         ) {
       preferences.edit().putBoolean(AppPreferences.WHATS_NEW, true).apply()
-      if (!preferences.getBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false)) {
-        performWidgetMigration()
-      }
+//      if (!preferences.getBoolean(MIGRATED_TO_MULTIPLE_WIDGETS, false)) {
+//        performWidgetMigration()
+//      }
       stocksProvider.fetch().subscribe(SimpleSubscriber())
     }
   }

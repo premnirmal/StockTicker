@@ -127,14 +127,18 @@ class ParanormalActivity : BaseActivity() {
 
     fab_add_stocks.setOnClickListener { v ->
       val appWidgetIds = widgetDataProvider.getAppWidgetIds()
-      val widgetId = appWidgetIds[view_pager!!.currentItem]
-      openTickerSelector(v, widgetId)
+      if (appWidgetIds.isNotEmpty()) {
+        val widgetId = appWidgetIds[view_pager!!.currentItem]
+        openTickerSelector(v, widgetId)
+      }
     }
 
     fab_edit_widget.setOnClickListener { v ->
       val appWidgetIds = widgetDataProvider.getAppWidgetIds()
-      val widgetId = appWidgetIds[view_pager!!.currentItem]
-      openWidgetSettings(v, widgetId)
+      if (appWidgetIds.isNotEmpty()) {
+        val widgetId = appWidgetIds[view_pager!!.currentItem]
+        openWidgetSettings(v, widgetId)
+      }
     }
 
     fab_bg.setOnClickListener {
