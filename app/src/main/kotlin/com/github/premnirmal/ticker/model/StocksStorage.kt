@@ -29,9 +29,9 @@ class StocksStorage() {
     if (data.isNotEmpty()) {
       val listType = object : TypeToken<List<Quote>>() {}.type
       val stocks = gson.fromJson<List<Quote>>(data, listType)
-      return ArrayList<Quote>(stocks)
+      return ArrayList(stocks)
     } else {
-      return ArrayList<Quote>()
+      return ArrayList()
     }
   }
 

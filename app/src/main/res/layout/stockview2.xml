@@ -4,19 +4,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingLeft="3dp"
-    android:paddingRight="3dp"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
     >
 
   <TextView
       android:id="@+id/ticker"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginRight="2dp"
       android:layout_weight="0.30"
       android:ellipsize="end"
       android:maxLines="1"
-      android:textColor="@android:color/white"
+      android:textColor="@color/white"
       android:textSize="12sp"
       android:textStyle="bold"
       />
@@ -29,7 +28,7 @@
       android:ellipsize="none"
       android:gravity="end"
       android:maxLines="1"
-      android:textColor="@android:color/white"
+      android:textColor="@color/white"
       android:textSize="12sp"
       />
 
@@ -38,12 +37,11 @@
       android:id="@+id/changeValue"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_marginRight="2dp"
       android:layout_weight="0.25"
       android:ellipsize="none"
       android:gravity="end"
       android:maxLines="1"
-      android:textColor="@android:color/holo_green_dark"
+      android:textColor="@color/positive_green"
       android:textSize="12sp"
       />
 
@@ -55,7 +53,7 @@
       android:ellipsize="none"
       android:gravity="end"
       android:maxLines="1"
-      android:textColor="@android:color/holo_green_dark"
+      android:textColor="@color/positive_green"
       android:textSize="12sp"
       />
 

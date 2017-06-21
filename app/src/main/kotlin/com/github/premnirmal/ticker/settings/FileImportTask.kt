@@ -1,10 +1,11 @@
 package com.github.premnirmal.ticker.settings
 
+import android.appwidget.AppWidgetManager
 import android.os.AsyncTask
 import android.text.TextUtils
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.ILogIt
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -17,7 +18,7 @@ import java.util.Arrays
  * Created by premnirmal on 2/27/16.
  */
 internal open class FileImportTask(
-    private val stocksProvider: IStocksProvider) : AsyncTask<String, Void, Boolean>() {
+    private val widgetDataProvider: WidgetDataProvider) : AsyncTask<String, Void, Boolean>() {
 
   override fun doInBackground(vararg params: String?): Boolean? {
     if (params.isEmpty() || params[0] == null) {
@@ -54,7 +55,15 @@ internal open class FileImportTask(
           .split(",".toRegex())
           .dropLastWhile(String::isEmpty)
           .toTypedArray()
-      stocksProvider.addStocks(Arrays.asList(*tickers))
+      if (widgetDataProvider.hasWidget()) {
+        widgetDataProvider.getAppWidgetIds().forEach { widgetId ->
+          val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+          widgetData.addTickers(Arrays.asList(*tickers))
+        }
+      } else {
+        val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
+        widgetData.addTickers(Arrays.asList(*tickers))
+      }
       result = true
       Analytics.INSTANCE.trackSettingsChange("IMPORT", TextUtils.join(",", tickers))
     } catch (e: IOException) {

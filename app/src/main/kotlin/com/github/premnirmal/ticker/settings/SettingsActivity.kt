@@ -356,7 +356,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
       val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
       if (filePath != null) {
-        object : FileImportTask(stocksProvider) {
+        object : FileImportTask(widgetDataProvider) {
           override fun onPostExecute(result: Boolean?) {
             if (result != null && result) {
               showDialog(getString(R.string.ticker_import_success))

@@ -12,11 +12,7 @@ data class Quote(var symbol: String = "",
     var changeInPercent: Float = 0.toFloat(),
     var change: Float = 0.toFloat(),
     var stockExchange: String = "",
-    var currency: String = "") : Comparable<Quote>, Serializable {
-
-  companion object {
-    private val serialVersionUID = -4235355L
-  }
+    var currency: String = "") : Comparable<Quote> {
 
   // Add Position fields
   var isPosition: Boolean = false
@@ -34,10 +30,6 @@ data class Quote(var symbol: String = "",
 
   override fun hashCode(): Int {
     return symbol.hashCode()
-  }
-
-  override fun toString(): String {
-    return symbol
   }
 
   fun isIndex(): Boolean {
