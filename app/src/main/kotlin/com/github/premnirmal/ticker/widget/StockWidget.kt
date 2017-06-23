@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
@@ -120,7 +122,11 @@ class StockWidget() : AppWidgetProvider() {
     if (options == null || !options.containsKey(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
       return 0 // 2x1
     } else {
-      return options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) as Int
+      if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+        return options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) as Int
+      } else {
+        return 0
+      }
     }
   }
 
@@ -133,6 +139,7 @@ class StockWidget() : AppWidgetProvider() {
     widgetAdapterIntent.data = Uri.parse(widgetAdapterIntent.toUri(Intent.URI_INTENT_SCHEME))
 
     remoteViews.setRemoteAdapter(R.id.list, widgetAdapterIntent)
+    remoteViews.setEmptyView(R.id.list, R.layout.widget_empty_view)
     val intent = Intent(context, WidgetClickReceiver::class.java)
     intent.action = WidgetClickReceiver.CLICK_BCAST_INTENTFILTER
     val flipIntent = PendingIntent.getBroadcast(context, 0, intent,

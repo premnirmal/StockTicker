@@ -322,7 +322,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   }
 
   private fun broadcastUpdateWidget() {
-    widgetDataProvider.broadcastUpdateWidget()
+    widgetDataProvider.broadcastUpdateAllWidgets()
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,

@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -61,14 +60,13 @@ class WidgetDataProvider {
     context.sendBroadcast(intent)
   }
 
-  fun broadcastUpdateWidget() {
+  fun broadcastUpdateAllWidgets() {
     val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val ids = widgetManager.getAppWidgetIds(
         ComponentName(context, StockWidget::class.java))
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     context.sendBroadcast(intent)
-    widgetManager.notifyAppWidgetViewDataChanged(ids, R.id.list)
   }
 
   fun hasWidget(): Boolean {

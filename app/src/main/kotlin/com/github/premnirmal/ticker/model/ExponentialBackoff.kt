@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.model
 
-internal class ExponentialBackoff() {
+internal class ExponentialBackoff {
 
   private val baseMs: Long = 1000 * 60 * 1 // 1 minutes
   private val backoffFactor: Int = 2 // Linear backoff

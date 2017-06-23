@@ -151,7 +151,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       return api.getStocks(tickerList)
           .doOnSubscribe {
             AppPreferences.setRefreshing(true)
-            widgetDataProvider.broadcastUpdateWidget()
+            widgetDataProvider.broadcastUpdateAllWidgets()
           }
           .map { stocks ->
             if (stocks.isEmpty()) {
@@ -188,7 +188,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
               }
             }
             retryWithBackoff()
-            widgetDataProvider.broadcastUpdateWidget()
+            widgetDataProvider.broadcastUpdateAllWidgets()
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
@@ -225,7 +225,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
     }
     AppPreferences.setRefreshing(false)
-    widgetDataProvider.broadcastUpdateWidget()
+    widgetDataProvider.broadcastUpdateAllWidgets()
     if (refresh) {
       bus.post(RefreshEvent())
     }

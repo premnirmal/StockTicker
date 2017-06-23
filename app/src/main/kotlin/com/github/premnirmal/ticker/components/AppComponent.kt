@@ -17,7 +17,6 @@ import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.RefreshReceiver
-import com.github.premnirmal.ticker.widget.RemoteStockProviderService
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.WidgetClickReceiver
@@ -54,8 +53,6 @@ interface AppComponent {
   fun inject(settingsActivity: SettingsActivity)
 
   fun inject(tickerSelectorActivity: TickerSelectorActivity)
-
-  fun inject(remoteStockViewProviderService: RemoteStockProviderService)
 
   fun inject(remoteStockViewAdapter: RemoteStockViewAdapter)
 

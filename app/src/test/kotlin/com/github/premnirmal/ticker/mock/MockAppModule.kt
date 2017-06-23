@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.RxBus
-import com.github.premnirmal.ticker.widget.WidgetAdapterFactory
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -38,9 +37,5 @@ class MockAppModule(private val app: Context) {
 
   @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager {
     return AppWidgetManager.getInstance(app)
-  }
-
-  @Provides @Singleton internal fun provideWidgetAdapterFactory(): WidgetAdapterFactory {
-    return WidgetAdapterFactory()
   }
 }

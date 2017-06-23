@@ -11,7 +11,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/28/16.
  */
-class StocksStorage() {
+class StocksStorage {
 
   companion object {
     val KEY_STOCKS_LIST = "STOCKS_LIST"
