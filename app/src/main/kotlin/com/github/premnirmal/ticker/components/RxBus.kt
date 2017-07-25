@@ -13,8 +13,9 @@ class RxBus {
 
   private val _bus = PublishSubject.create<Any>()
 
-  fun post(o: Any) {
+  fun post(o: Any): Boolean {
     _bus.onNext(o)
+    return _bus.hasObservers()
   }
 
   /**

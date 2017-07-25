@@ -144,7 +144,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
       if (isNetworkOnline()) {
         val observable = suggestionApi.getSuggestions(query)
         disposable = bind(observable)
-            .map { (resultSet) -> resultSet?.result }
+            .map { (resultSet) -> resultSet?.result!! }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {

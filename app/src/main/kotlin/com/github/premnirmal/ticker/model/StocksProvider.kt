@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
+import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.SimpleSubscriber
@@ -182,7 +183,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             if (t is CompositeException) {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
-                  exception.message?.let { bus.post(ErrorEvent(it)) }
+                  exception.message?.let {
+                    if (!bus.post(ErrorEvent(it)))
+                      InAppMessage.showToast(context, it)
+                  }
                   break
                 }
               }

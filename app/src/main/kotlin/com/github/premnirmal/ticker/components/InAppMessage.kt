@@ -26,7 +26,11 @@ object InAppMessage {
   }
 
   fun showToast(context: Context, messageResId: Int) {
-    Toast.makeText(context, messageResId, Toast.LENGTH_SHORT).show()
+    showToast(context, context.getString(messageResId))
+  }
+
+  fun showToast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
   }
 
   fun showMessage(activity: Activity?, messageResId: Int) {
