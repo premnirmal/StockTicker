@@ -3,7 +3,7 @@
 
 [![Google play link](graphics/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget)
 
-[<img src="https://f-droid.org/badge/get-it-on.svg"
+[<img src="https://i.imgur.com/u6kj7yf.png"
       alt="Get it on F-Droid"
       height="80">](https://f-droid.org/app/com.github.premnirmal.tickerwidget)
 
