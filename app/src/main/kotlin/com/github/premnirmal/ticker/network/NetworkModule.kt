@@ -36,7 +36,7 @@ class NetworkModule {
   }
 
   @Provides @Singleton @Named("yahooClient")
-  internal fun provideHttpClientForYahoo(context: Context, bus: RxBus): OkHttpClient {
+  internal fun provideHttpClientForYahoo(): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient = OkHttpClient.Builder()
@@ -131,13 +131,9 @@ class NetworkModule {
   }
 
   @Provides @Singleton
-  internal fun provideStocksProvider(): IStocksProvider {
-    return StocksProvider()
-  }
+  internal fun provideStocksProvider(): IStocksProvider = StocksProvider()
 
   @Provides @Singleton
-  internal fun provideWidgetDataFactory(): WidgetDataProvider {
-    return WidgetDataProvider()
-  }
+  internal fun provideWidgetDataFactory(): WidgetDataProvider = WidgetDataProvider()
 
 }

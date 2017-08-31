@@ -21,9 +21,8 @@ object InAppMessage {
         && this is ParanormalActivity
   }
 
-  private fun Activity.getRootView(): View {
-    return (this.findViewById(android.R.id.content) as ViewGroup).getChildAt(0)
-  }
+  private fun Activity.getRootView(): View =
+      (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0)
 
   fun showToast(context: Context, messageResId: Int) {
     showToast(context, context.getString(messageResId))
@@ -73,7 +72,6 @@ object InAppMessage {
     return snackbar
   }
 
-  private fun getSnackbarColor(context: Context): Int {
-    return context.resources.getColor(R.color.color_primary)
-  }
+  private fun getSnackbarColor(context: Context): Int =
+      context.resources.getColor(R.color.color_primary)
 }

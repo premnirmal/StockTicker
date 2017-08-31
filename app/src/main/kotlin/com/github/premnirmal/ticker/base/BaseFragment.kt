@@ -29,9 +29,7 @@ abstract class BaseFragment : Fragment() {
 
   private var called: Boolean = false
 
-  protected fun lifecycle(): Observable<FragmentEvent> {
-    return lifecycleSubject
-  }
+  protected fun lifecycle(): Observable<FragmentEvent> = lifecycleSubject
 
   override fun onAttach(activity: Activity?) {
     super.onAttach(activity)
@@ -91,7 +89,6 @@ abstract class BaseFragment : Fragment() {
   /**
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
-  protected fun <T> bind(observable: Observable<T>): Observable<T> {
-    return observable.compose(RxLifecycleAndroid.bindFragment(lifecycle()));
-  }
+  protected fun <T> bind(observable: Observable<T>): Observable<T> =
+      observable.compose(RxLifecycleAndroid.bindFragment(lifecycle()))
 }

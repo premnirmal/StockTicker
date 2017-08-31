@@ -7,7 +7,5 @@ import android.preference.Preference
  */
 internal open class DefaultPreferenceChangeListener : Preference.OnPreferenceChangeListener {
 
-  override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-    return false
-  }
+  override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean = false
 }

@@ -32,31 +32,30 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
     }
 
     val position = adapterPosition
-    itemView.findViewById(
+    itemView.findViewById<View>(
         R.id.more_menu).setOnClickListener { v ->
       listener.onClickQuote(v, quote, position)
     }
 
-    val tickerView = itemView.findViewById(R.id.ticker) as TextView
-    val nameView = itemView.findViewById(R.id.name) as TextView
+    val tickerView = itemView.findViewById<View>(R.id.ticker) as TextView
+    val nameView = itemView.findViewById<View>(R.id.name) as TextView
 
     tickerView.text = quote.symbol
     nameView.text = quote.name
 
     val change: Float = quote.change
     val changePercent: Float = quote.changeInPercent
-    val changeInPercentView = itemView.findViewById(R.id.changePercent) as StockFieldView
+    val changeInPercentView = itemView.findViewById<View>(R.id.changePercent) as StockFieldView
     changeInPercentView.setText(quote.changePercentString())
-    val changeValueView = itemView.findViewById(R.id.changeValue) as StockFieldView
+    val changeValueView = itemView.findViewById<View>(R.id.changeValue) as StockFieldView
     changeValueView.setText(quote.changeString())
-    val totalValueText = itemView.findViewById(R.id.totalValue) as TextView
+    val totalValueText = itemView.findViewById<View>(R.id.totalValue) as TextView
     totalValueText.text = quote.priceString()
 
-    val color: Int
-    if (change < 0f || changePercent < 0f) {
-      color = negativeColor
+    val color = if (change < 0f || changePercent < 0f) {
+      negativeColor
     } else {
-      color = positiveColor
+      positiveColor
     }
 
     changeInPercentView.setTextColor(color)
@@ -83,10 +82,10 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
   internal class PositionVH(itemView: View) : PortfolioVH(itemView) {
 
     override fun updateView(quote: Quote) {
-      val holdingsView = itemView.findViewById(R.id.holdings) as StockFieldView
-      val gainLossView = itemView.findViewById(R.id.gain_loss) as StockFieldView
-      val dayChangePercentView = itemView.findViewById(R.id.day_change_percent) as StockFieldView
-      val dayChangeAmountView = itemView.findViewById(R.id.day_change_amount) as StockFieldView
+      val holdingsView = itemView.findViewById<View>(R.id.holdings) as StockFieldView
+      val gainLossView = itemView.findViewById<View>(R.id.gain_loss) as StockFieldView
+      val dayChangePercentView = itemView.findViewById<View>(R.id.day_change_percent) as StockFieldView
+      val dayChangeAmountView = itemView.findViewById<View>(R.id.day_change_amount) as StockFieldView
 
       val holdings = quote.holdingsString()
       holdingsView.setText(holdings)

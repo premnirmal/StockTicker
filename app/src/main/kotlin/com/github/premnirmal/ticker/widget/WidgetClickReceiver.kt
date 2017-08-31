@@ -31,7 +31,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
 
   companion object {
 
-    val CLICK_BCAST_INTENTFILTER = "com.github.premnirmal.ticker.widgetclick"
+    val CLICK_BCAST_INTENTFILTER = "com.github.premnirmal.ticker.WIDGET_CLICK"
     val FLIP = "FLIP"
     val WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
   }

@@ -29,6 +29,7 @@ repositories {
   maven { url "https://maven.fabric.io/public" }
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
+  maven { url "https://maven.google.com" }
   maven { url "http://dl.bintray.com/lukaville/maven" }
 }
 
@@ -59,8 +60,8 @@ dexcount {
 // }
 
 android {
-  compileSdkVersion 25
-  buildToolsVersion "25.0.3"
+  compileSdkVersion 26
+  buildToolsVersion "26.0.0"
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -72,7 +73,7 @@ android {
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 15
-    targetSdkVersion 25
+    targetSdkVersion 26
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code
@@ -153,8 +154,8 @@ android {
 }
 
 ext {
-  SUPPORT_LIBRARY_VERSION = "25.3.1"
-  DAGGER_VERSION = "2.6"
+  SUPPORT_LIBRARY_VERSION = "26.0.0"
+  DAGGER_VERSION = "2.7"
   DEXMAKER_VERSION = "1.4"
   MOCKITO_VERSION = "2.7.5"
   JUNIT_VERSION = "4.12"
@@ -163,7 +164,7 @@ ext {
   OKHTTP_VERSION = "3.5.0"
   RXJAVA_VERSION = "2.1.0"
   ROBOLECTRIC_VERSION = "3.2.2"
-  PLAY_SERVICES_VERSION = "10.2.1"
+  PLAY_SERVICES_VERSION = "10.2.6"
 }
 
 dependencies {

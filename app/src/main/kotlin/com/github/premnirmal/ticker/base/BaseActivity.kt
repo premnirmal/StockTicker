@@ -50,10 +50,10 @@ abstract class BaseActivity : AppCompatActivity() {
     fun Activity.getStatusBarHeight(): Int {
       val result: Int
       val resourceId: Int = this.resources.getIdentifier("status_bar_height", "dimen", "android")
-      if (resourceId > 0) {
-        result = this.resources.getDimensionPixelSize(resourceId)
+      result = if (resourceId > 0) {
+        this.resources.getDimensionPixelSize(resourceId)
       } else {
-        result = 0
+        0
       }
       return result
     }
@@ -96,16 +96,13 @@ abstract class BaseActivity : AppCompatActivity() {
 
   @Inject lateinit internal var bus: RxBus
 
-  private fun lifecycle(): Observable<ActivityEvent> {
-    return lifecycleSubject
-  }
+  private fun lifecycle(): Observable<ActivityEvent> = lifecycleSubject
 
   /**
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
-  protected fun <T> bind(observable: Observable<T>): Observable<T> {
-    return observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
-  }
+  protected fun <T> bind(observable: Observable<T>): Observable<T> =
+      observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper.wrap(newBase))

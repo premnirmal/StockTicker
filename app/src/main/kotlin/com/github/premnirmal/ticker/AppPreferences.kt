@@ -123,22 +123,14 @@ class AppPreferences private constructor() {
       INSTANCE.sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
     }
 
-    fun hasUserAlreadyRated(): Boolean {
-      return INSTANCE.sharedPreferences.getBoolean(DID_RATE, false)
-    }
+    fun hasUserAlreadyRated(): Boolean = INSTANCE.sharedPreferences.getBoolean(DID_RATE, false)
 
-    fun shouldPromptRate(): Boolean {
-      // if the user hasn't rated, ask them again but not too often.
-      return (random.nextInt() % 4 == 0) && !hasUserAlreadyRated()
-    }
+    fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
+        (random.nextInt() % 4 == 0) && !hasUserAlreadyRated()
 
-    fun clock(): AppClock {
-      return INSTANCE.clock
-    }
+    fun clock(): AppClock = INSTANCE.clock
 
-    fun backOffAttemptCount(): Int {
-      return INSTANCE.sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
-    }
+    fun backOffAttemptCount(): Int = INSTANCE.sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
 
     fun setBackOffAttemptCount(count: Int) {
       INSTANCE.sharedPreferences.edit().putInt(BACKOFF_ATTEMPTS, count).apply()

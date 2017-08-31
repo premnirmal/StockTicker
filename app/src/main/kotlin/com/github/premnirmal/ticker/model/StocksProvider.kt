@@ -112,10 +112,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
     val tickerList = this.tickerList.toCommaSeparatedString()
     preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply()
-    try {
-      lastFetched = preferences.getLong(LAST_FETCHED, 0L)
+    lastFetched = try {
+      preferences.getLong(LAST_FETCHED, 0L)
     } catch (e: Exception) {
-      lastFetched = 0L
+      0L
     }
     nextFetch = preferences.getLong(NEXT_FETCH, 0)
     if (lastFetched == 0L) {
@@ -204,10 +204,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   private fun retryWithBackoff() {
-    val backOffTimeMs = exponentialBackoff.getBackoffDuration(backOffAttemptCount)
+    val backOffTimeMs = exponentialBackoff.getBackoffDurationMs(backOffAttemptCount)
     backOffAttemptCount++
     saveBackOffAttemptCount()
-    scheduleUpdate(AppPreferences.clock().elapsedRealtime() + backOffTimeMs)
+    scheduleUpdate(backOffTimeMs)
   }
 
   private fun saveBackOffAttemptCount() {
@@ -219,15 +219,12 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   internal val msToNextAlarm: Long
-    get() = AlarmScheduler.msOfNextAlarm()
+    get() = AlarmScheduler.msToNextAlarm()
 
   internal fun scheduleUpdate(msToNextAlarm: Long, refresh: Boolean = false) {
-    val hasWidget = widgetDataProvider.hasWidget()
-    if (hasWidget) {
-      val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
-      nextFetch = updateTime.toInstant().toEpochMilli()
-      preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
-    }
+    val updateTime = AlarmScheduler.scheduleUpdate(msToNextAlarm, context)
+    nextFetch = updateTime.toInstant().toEpochMilli()
+    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
     AppPreferences.setRefreshing(false)
     widgetDataProvider.broadcastUpdateAllWidgets()
     if (refresh) {
@@ -309,7 +306,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
-  override fun removeStocks(tickers: Collection<String>){
+  override fun removeStocks(tickers: Collection<String>) {
     synchronized(quoteList, {
       tickers.forEach {
         val ticker2 = "^" + it // in case it was an index
@@ -334,27 +331,25 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       val dummy = Quote()
       dummy.symbol = ticker
       val index = quoteList.indexOf(dummy)
-      if (index >= 0) {
+      return if (index >= 0) {
         val stock = quoteList[index]
-        return stock
+        stock
       } else {
-        return null
+        null
       }
     })
   }
 
-  override fun getTickers(): List<String> {
-    return ArrayList(tickerList)
-  }
+  override fun getTickers(): List<String> = ArrayList(tickerList)
 
   override fun lastFetched(): String {
     val fetched: String
-    if (lastFetched > 0L) {
+    fetched = if (lastFetched > 0L) {
       val instant = Instant.ofEpochMilli(lastFetched)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-      fetched = createTimeString(time)
+      createTimeString(time)
     } else {
-      fetched = "--"
+      "--"
     }
     return fetched
   }
@@ -363,24 +358,24 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     val fetched: String
     val fetchedDayOfWeek = time.dayOfWeek.value
     val today = AppPreferences.clock().todayZoned().dayOfWeek.value
-    if (today == fetchedDayOfWeek) {
-      fetched = AppPreferences.TIME_FORMATTER.format(time)
+    fetched = if (today == fetchedDayOfWeek) {
+      AppPreferences.TIME_FORMATTER.format(time)
     } else {
       val day: String = DayOfWeek.from(time).getDisplayName(SHORT, Locale.getDefault())
       val timeStr: String = AppPreferences.TIME_FORMATTER.format(time)
-      fetched = "$timeStr $day"
+      "$timeStr $day"
     }
     return fetched
   }
 
   override fun nextFetch(): String {
     val fetch: String
-    if (nextFetch > 0) {
+    fetch = if (nextFetch > 0) {
       val instant = Instant.ofEpochMilli(nextFetch)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-      fetch = createTimeString(time)
+      createTimeString(time)
     } else {
-      fetch = "--"
+      "--"
     }
     return fetch
   }

@@ -4,8 +4,11 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.DayOfWeek.FRIDAY
 import org.threeten.bp.DayOfWeek.SATURDAY
@@ -21,13 +24,7 @@ object AlarmScheduler {
 
   /**
    * Takes care of weekends and after hours
-
-   * @return
    */
-  internal fun msOfNextAlarm(): Long {
-    return AppPreferences.clock().elapsedRealtime() + msToNextAlarm()
-  }
-
   internal fun msToNextAlarm(): Long {
     val dayOfWeek = AppPreferences.clock().todayLocal().dayOfWeek
 
@@ -73,17 +70,22 @@ object AlarmScheduler {
   }
 
   internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
-    val nextAlarm = msToNextAlarm - AppPreferences.clock().elapsedRealtime()
     Analytics.INSTANCE.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
-        "UpdateScheduled for " + nextAlarm / (1000 * 60) + " minutes")
+        "UpdateScheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
+    ILogIt.INSTANCE.log("Scheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
-        updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-    val instant = Instant.ofEpochMilli(AppPreferences.clock().currentTimeMillis() + nextAlarm)
+    val instant = Instant.ofEpochMilli(AppPreferences.clock().currentTimeMillis() + msToNextAlarm)
     val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, msToNextAlarm, pendingIntent)
+    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+      AlarmSchedulerLollipop.scheduleUpdate(msToNextAlarm, context)
+    } else {
+      val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+      val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
+          updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+          AppPreferences.clock().elapsedRealtime() + msToNextAlarm, pendingIntent)
+    }
     return nextAlarmDate
   }
 }

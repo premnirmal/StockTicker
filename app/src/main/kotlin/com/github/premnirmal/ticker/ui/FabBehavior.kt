@@ -14,9 +14,7 @@ class FabBehavior : CoordinatorLayout.Behavior<View> {
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
   override fun layoutDependsOn(parent: CoordinatorLayout?, child: View?,
-      dependency: View?): Boolean {
-    return dependency is Snackbar.SnackbarLayout
-  }
+      dependency: View?): Boolean = dependency is Snackbar.SnackbarLayout
 
   override fun onDependentViewChanged(parent: CoordinatorLayout?, child: View?,
       dependency: View?): Boolean {

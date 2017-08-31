@@ -67,12 +67,12 @@ class StocksAdapter constructor(
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PortfolioVH {
     val context = parent.context
     val portfolioVH: PortfolioVH
-    if (viewType == TYPE_POSITION) {
+    portfolioVH = if (viewType == TYPE_POSITION) {
       val itemView = LayoutInflater.from(context).inflate(R.layout.item_position, parent, false)
-      portfolioVH = PositionVH(itemView)
+      PositionVH(itemView)
     } else {
       val itemView = LayoutInflater.from(context).inflate(R.layout.item_stock, parent, false)
-      portfolioVH = StockVH(itemView)
+      StockVH(itemView)
     }
     return portfolioVH
   }
@@ -85,13 +85,9 @@ class StocksAdapter constructor(
     }
   }
 
-  override fun getItemId(position: Int): Long {
-    return position.toLong()
-  }
+  override fun getItemId(position: Int): Long = position.toLong()
 
-  override fun getItemCount(): Int {
-    return quoteList.size
-  }
+  override fun getItemCount(): Int = quoteList.size
 
   override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
     quoteList.add(toPosition, quoteList.removeAt(fromPosition))

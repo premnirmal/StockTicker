@@ -79,13 +79,9 @@ class WidgetData {
     }
 
   val negativeTextColor: Int
-    @ColorRes get() {
-      return R.color.negative_red
-    }
+    @ColorRes get() = R.color.negative_red
 
-  fun widgetName(): String {
-    return preferences.getString(WIDGET_NAME, "")
-  }
+  fun widgetName(): String = preferences.getString(WIDGET_NAME, "")
 
   fun setWidgetName(value: String) {
     preferences.edit().putString(WIDGET_NAME, value).apply()
@@ -101,9 +97,7 @@ class WidgetData {
     preferences.edit().putBoolean(PERCENT, !state).apply()
   }
 
-  fun layoutPref(): Int {
-    return preferences.getInt(LAYOUT_TYPE, 0)
-  }
+  fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)
 
   fun setLayoutPref(value: Int) {
     preferences.edit().putInt(LAYOUT_TYPE, value).apply()
@@ -126,9 +120,7 @@ class WidgetData {
     }
   }
 
-  fun bgPref(): Int {
-    return preferences.getInt(WIDGET_BG, TRANSLUCENT)
-  }
+  fun bgPref(): Int = preferences.getInt(WIDGET_BG, TRANSLUCENT)
 
   fun setBgPref(value: Int) {
     preferences.edit().putInt(WIDGET_BG, value).apply()
@@ -140,25 +132,21 @@ class WidgetData {
 
   @DrawableRes fun backgroundResource(): Int {
     val bgPref = bgPref()
-    when (bgPref) {
-      TRANSLUCENT -> return R.drawable.translucent_widget_bg
-      DARK -> return R.drawable.dark_widget_bg
-      LIGHT -> return R.drawable.light_widget_bg
-      else -> return R.drawable.transparent_widget_bg
+    return when (bgPref) {
+      TRANSLUCENT -> R.drawable.translucent_widget_bg
+      DARK -> R.drawable.dark_widget_bg
+      LIGHT -> R.drawable.light_widget_bg
+      else -> R.drawable.transparent_widget_bg
     }
   }
 
-  fun textColorPref(): Int {
-    return preferences.getInt(TEXT_COLOR, 0)
-  }
+  fun textColorPref(): Int = preferences.getInt(TEXT_COLOR, 0)
 
   fun setTextColorPref(pref: Int) {
     preferences.edit().putInt(TEXT_COLOR, pref).apply()
   }
 
-  fun autoSortEnabled(): Boolean {
-    return preferences.getBoolean(AUTOSORT, false)
-  }
+  fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
 
   fun setAutoSort(autoSort: Boolean) {
     preferences.edit().putBoolean(AUTOSORT, autoSort).apply()
@@ -183,9 +171,7 @@ class WidgetData {
     return quoteList
   }
 
-  fun getTickers(): List<String> {
-    return tickerList
-  }
+  fun getTickers(): List<String> = tickerList
 
   fun rearrange(tickers: List<String>) {
     tickerList.clear()

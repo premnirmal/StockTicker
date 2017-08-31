@@ -80,13 +80,11 @@ internal class PriceTextChangeListener : TextWatcher {
   }
 
   private fun hasSeparator(s: CharSequence, start: Int, count: Int): Boolean {
-    return (start..start + count - 1)
+    return (start until start + count)
         .map { s[it] }
         .none { isNonSeparator(it) }
   }
 
-  private fun isNonSeparator(c: Char): Boolean {
-    return c in '0'..'9' || c == '.'
-  }
+  private fun isNonSeparator(c: Char): Boolean = c in '0'..'9' || c == '.'
 }
 

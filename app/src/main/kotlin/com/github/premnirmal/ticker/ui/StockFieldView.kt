@@ -71,10 +71,10 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
     var name = array.getString(stylelable)
     if (name == null) {
       val stringId = array.getResourceId(stylelable, -1)
-      if (stringId > 0) {
-        name = context.getString(stringId)
+      name = if (stringId > 0) {
+        context.getString(stringId)
       } else {
-        name = ""
+        ""
       }
     }
     return name

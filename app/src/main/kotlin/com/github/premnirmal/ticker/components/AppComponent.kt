@@ -4,6 +4,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
+import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.RequestInterceptor
@@ -61,6 +62,8 @@ interface AppComponent {
   fun inject(updateReceiver: UpdateReceiver)
 
   fun inject(refreshReceiver: RefreshReceiver)
+
+  fun inject(refreshService: RefreshService)
 
   fun inject(addPositionActivity: AddPositionActivity)
 

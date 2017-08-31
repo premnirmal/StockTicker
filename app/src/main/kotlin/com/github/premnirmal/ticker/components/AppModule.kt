@@ -17,17 +17,11 @@ import javax.inject.Singleton
 @Module(includes = arrayOf(NetworkModule::class))
 class AppModule(private val app: Context) {
 
-  @Provides internal fun provideApplicationContext(): Context {
-    return app
-  }
+  @Provides internal fun provideApplicationContext(): Context = app
 
-  @Provides @Singleton internal fun provideClock(): AppClock {
-    return AppClockImpl()
-  }
+  @Provides @Singleton internal fun provideClock(): AppClock = AppClockImpl()
 
-  @Provides @Singleton internal fun provideEventBus(): RxBus {
-    return RxBus()
-  }
+  @Provides @Singleton internal fun provideEventBus(): RxBus = RxBus()
 
   @Provides @Singleton internal fun provideDefaultSharedPreferences(
       context: Context): SharedPreferences {
@@ -35,7 +29,6 @@ class AppModule(private val app: Context) {
     return sharedPreferences
   }
 
-  @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager {
-    return AppWidgetManager.getInstance(app)
-  }
+  @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
+      AppWidgetManager.getInstance(app)
 }

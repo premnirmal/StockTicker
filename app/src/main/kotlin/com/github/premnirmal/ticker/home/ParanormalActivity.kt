@@ -91,7 +91,7 @@ class ParanormalActivity : BaseActivity() {
       }
     }
 
-    swipe_container.setColorSchemeResources(R.color.color_secondary, R.color.spicy_salmon,
+    swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
 

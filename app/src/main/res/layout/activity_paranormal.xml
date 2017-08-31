@@ -4,6 +4,7 @@
     android:id="@+id/activity_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/default_dark_bg"
     >
 
   <android.support.design.widget.AppBarLayout
@@ -17,7 +18,7 @@
         android:id="@+id/collapsingToolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/color_primary"
+        android:background="@color/color_primary_dark"
         app:contentScrim="@color/color_primary"
         app:expandedTitleGravity="center_horizontal"
         app:expandedTitleMarginBottom="70dp"
@@ -62,7 +63,7 @@
             app:layout_collapseMode="pin"
             app:tabBackground="@color/transparent"
             app:tabGravity="fill"
-            app:tabIndicatorColor="@color/sea"
+            app:tabIndicatorColor="@color/color_accent"
             app:tabIndicatorHeight="2dp"
             app:tabMode="fixed"
             app:tabSelectedTextColor="@color/white"
@@ -134,7 +135,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/sea"
+        app:backgroundTint="@color/color_accent"
         app:rippleColor="@color/white"
         />
   </LinearLayout>
@@ -167,7 +168,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_edit"
-        app:backgroundTint="@color/sea"
+        app:backgroundTint="@color/color_accent"
         app:rippleColor="@color/white"
         />
   </LinearLayout>

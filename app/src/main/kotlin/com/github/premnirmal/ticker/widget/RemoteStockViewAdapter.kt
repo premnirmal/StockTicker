@@ -26,10 +26,10 @@ class RemoteStockViewAdapter(private val widgetId: Int)
 
   fun Context.getFontSize(): Float {
     val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
-    when (size) {
-      0 -> return this.resources.getInteger(R.integer.text_size_small).toFloat()
-      2 -> return this.resources.getInteger(R.integer.text_size_large).toFloat()
-      else -> return this.resources.getInteger(R.integer.text_size_medium).toFloat()
+    return when (size) {
+      0 -> this.resources.getInteger(R.integer.text_size_small).toFloat()
+      2 -> this.resources.getInteger(R.integer.text_size_large).toFloat()
+      else -> this.resources.getInteger(R.integer.text_size_medium).toFloat()
     }
   }
 
@@ -110,10 +110,10 @@ class RemoteStockViewAdapter(private val widgetId: Int)
 
 
     val color: Int
-    if (change < 0f || changeInPercent < 0f) {
-      color = context.resources.getColor(widgetData.negativeTextColor)
+    color = if (change < 0f || changeInPercent < 0f) {
+      context.resources.getColor(widgetData.negativeTextColor)
     } else {
-      color = context.resources.getColor(widgetData.positiveTextColor)
+      context.resources.getColor(widgetData.positiveTextColor)
     }
     if (stockViewLayout == R.layout.stockview3) {
       remoteViews.setTextColor(R.id.change, color)
@@ -155,15 +155,9 @@ class RemoteStockViewAdapter(private val widgetId: Int)
     return loadingView
   }
 
-  override fun getViewTypeCount(): Int {
-    return 3
-  }
+  override fun getViewTypeCount(): Int = 3
 
-  override fun getItemId(position: Int): Long {
-    return position.toLong()
-  }
+  override fun getItemId(position: Int): Long = position.toLong()
 
-  override fun hasStableIds(): Boolean {
-    return true
-  }
+  override fun hasStableIds(): Boolean = true
 }

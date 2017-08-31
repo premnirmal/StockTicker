@@ -26,12 +26,12 @@ class StocksStorage {
 
   fun readStocks(): MutableList<Quote> {
     val data = preferences.getString(KEY_STOCKS_LIST, "")
-    if (data.isNotEmpty()) {
+    return if (data.isNotEmpty()) {
       val listType = object : TypeToken<List<Quote>>() {}.type
       val stocks = gson.fromJson<List<Quote>>(data, listType)
-      return ArrayList(stocks)
+      ArrayList(stocks)
     } else {
-      return ArrayList()
+      ArrayList()
     }
   }
 

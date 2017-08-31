@@ -16,8 +16,7 @@ internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>
       val bodyString = value?.let { getString(it.byteStream()) }
       val m = PATTERN_RESPONSE.matcher(bodyString)
       if (m.find()) {
-        val suggestions = gson.fromJson(m.group(1), Suggestions::class.java)
-        return suggestions
+        return gson.fromJson(m.group(1), Suggestions::class.java)
       }
       throw error("Invalid response")
     } catch (e: IOException) {

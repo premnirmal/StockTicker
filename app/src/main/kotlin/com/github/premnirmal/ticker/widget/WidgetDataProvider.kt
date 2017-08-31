@@ -30,17 +30,16 @@ class WidgetDataProvider {
 
   fun dataForWidgetId(widgetId: Int): WidgetData {
     synchronized(widgets, {
-      if (widgets.containsKey(widgetId)) {
-        return widgets[widgetId]!!
+      return if (widgets.containsKey(widgetId)) {
+        widgets[widgetId]!!
       } else {
-        val widgetData: WidgetData
-        if (getAppWidgetIds().size == 1) {
-          widgetData = WidgetData(widgetId, true)
+        val widgetData: WidgetData = if (getAppWidgetIds().size == 1) {
+          WidgetData(widgetId, true)
         } else {
-          widgetData = WidgetData(widgetId)
+          WidgetData(widgetId)
         }
         widgets.put(widgetId, widgetData)
-        return widgetData
+        widgetData
       }
     })
   }

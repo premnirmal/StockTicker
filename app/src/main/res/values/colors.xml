@@ -3,15 +3,18 @@
   <color name="sea">#00AADD</color>
   <color name="color_accent">#17A697</color>
   <color name="color_primary">#0F5959</color>
-  <color name="color_dark">#638ca6</color>
+  <color name="color_primary_dark">#0a3e3e</color>
+  <color name="button_pressed">@color/sea</color>
+  <color name="button_disabled">#638ca6</color>
+  <color name="button_enabled">@color/color_accent</color>
   <color name="default_dark_bg">#ff303030</color>
   <color name="spicy_salmon">#ff5655</color>
-  <color name="salmon">#ff8259</color>
-  <color name="color_secondary">#0F5959</color>
   <color name="dark">#575757</color>
   <color name="divider">#AAAA</color>
-  <color name="grey_bg">#262b2b</color>
+  <color name="card_bg">#262b2b</color>
+  <color name="dark_text">#333333</color>
 
+  <color name="transparent">#00000000</color>
   <color name="translucent">#98000000</color>
   <color name="bg_gradient_center">#752a2a2a</color>
 
@@ -19,14 +22,11 @@
   <color name="black">#000000</color>
   <color name="light">#fff3f3f3</color>
   <color name="grey_text">#d3d3d3</color>
-  <color name="dark_progress">#323232</color>
   <color name="black_gradient_center">#3f3f3f</color>
 
   <color name="negative_red">#FF6666</color>
   <color name="positive_green">#CCFF66</color>
   <color name="positive_green_dark">#009900</color>
-
-  <color name="dark_text">#333333</color>
 
   <!-- For the file picker library -->
   <color name="colorPrimary">@color/color_primary</color>
