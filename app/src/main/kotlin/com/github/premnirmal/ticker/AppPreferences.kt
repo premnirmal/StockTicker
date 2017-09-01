@@ -56,10 +56,10 @@ class AppPreferences private constructor() {
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
     const val BOLD_CHANGE = "BOLD_CHANGE"
-    const val WHATS_NEW = "WHATS_NEW"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"
     const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"
+    const val APP_VERSION_CODE = "APP_VERSION_CODE"
     const val TRANSPARENT = 0
     const val TRANSLUCENT = 1
     const val DARK = 2
@@ -75,6 +75,11 @@ class AppPreferences private constructor() {
 
     // Not using clock here because this doesn't need a specific time.
     val random = Random(System.currentTimeMillis())
+
+    fun getLastSavedVersionCode(): Int = INSTANCE.sharedPreferences.getInt(APP_VERSION_CODE, -1)
+    fun saveVersionCode(code: Int) {
+      INSTANCE.sharedPreferences.edit().putInt(APP_VERSION_CODE, code).apply()
+    }
 
     val updateInterval: Long
       get() {

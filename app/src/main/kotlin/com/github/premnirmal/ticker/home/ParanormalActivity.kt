@@ -11,8 +11,13 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.DisplayMetrics
+import android.view.KeyCharacterMap
+import android.view.KeyEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
@@ -41,6 +46,7 @@ import kotlinx.android.synthetic.main.activity_paranormal.toolbar
 import kotlinx.android.synthetic.main.activity_paranormal.view_pager
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
+
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -74,6 +80,14 @@ class ParanormalActivity : BaseActivity() {
       (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
           getStatusBarHeight()
     }
+
+    if (!hasNavBar()) {
+      val margin = resources.getDimensionPixelSize(R.dimen.fab_margin_bottom_without_nav)
+      (fab_settings.layoutParams as MarginLayoutParams).bottomMargin = margin
+      (add_stocks_container.layoutParams as MarginLayoutParams).bottomMargin = margin
+      (edit_widget_container.layoutParams as MarginLayoutParams).bottomMargin = margin
+    }
+
     collapsingToolbarLayout.setCollapsedTitleTypeface(
         TypefaceUtils.load(assets, "fonts/Ubuntu-Regular.ttf"))
     collapsingToolbarLayout.setExpandedTitleTypeface(
@@ -95,8 +109,8 @@ class ParanormalActivity : BaseActivity() {
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
 
-    if (preferences.getBoolean(AppPreferences.WHATS_NEW, false)) {
-      preferences.edit().putBoolean(AppPreferences.WHATS_NEW, false).apply()
+    if (AppPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+      AppPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
       val stringBuilder = StringBuilder()
       val whatsNew = resources.getStringArray(R.array.whats_new)
       whatsNew.indices.forEach {
@@ -150,7 +164,7 @@ class ParanormalActivity : BaseActivity() {
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
   }
 
-  internal fun openWidgetSettings(v: View, widgetId: Int) {
+  private fun openWidgetSettings(v: View, widgetId: Int) {
     val intent = WidgetSettingsActivity.launchIntent(this, widgetId)
     val rect = Rect()
     v.getGlobalVisibleRect(rect)
@@ -161,7 +175,7 @@ class ParanormalActivity : BaseActivity() {
     startActivity(intent)
   }
 
-  internal fun showFABMenu() {
+  private fun showFABMenu() {
     if (!isFABOpen) {
       isFABOpen = true
       fab_settings.animate().rotationBy(45f).setDuration(FAB_ANIMATION_DURATION).start()
@@ -177,7 +191,7 @@ class ParanormalActivity : BaseActivity() {
     }
   }
 
-  internal fun closeFABMenu() {
+  private fun closeFABMenu() {
     if (isFABOpen) {
       isFABOpen = false
       fab_settings.animate().rotationBy(-45f).setDuration(FAB_ANIMATION_DURATION).start()
@@ -209,7 +223,7 @@ class ParanormalActivity : BaseActivity() {
     closeFABMenu()
   }
 
-  internal fun updateHeader() {
+  private fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
     if (!widgetDataProvider.hasWidget()) {
@@ -264,7 +278,7 @@ class ParanormalActivity : BaseActivity() {
     outState?.putBoolean(DIALOG_SHOWN, dialogShown)
   }
 
-  internal fun maybeAskToRate() {
+  private fun maybeAskToRate() {
     if (!dialogShown && AppPreferences.shouldPromptRate()) {
       Builder(this).setTitle(R.string.like_our_app)
           .setMessage(R.string.please_rate)
@@ -283,11 +297,36 @@ class ParanormalActivity : BaseActivity() {
     }
   }
 
-  internal fun sendToPlayStore() {
+  private fun sendToPlayStore() {
     val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
-    val marketIntent: Intent = Intent(Intent.ACTION_VIEW, marketUri)
+    val marketIntent = Intent(Intent.ACTION_VIEW, marketUri)
     marketIntent.resolveActivity(packageManager)?.let {
       startActivity(marketIntent)
     }
+  }
+
+  private fun hasNavBar(): Boolean {
+    val hasSoftwareKeys: Boolean
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      val display = windowManager.defaultDisplay
+      val realDisplayMetrics = DisplayMetrics()
+      display.getRealMetrics(realDisplayMetrics)
+
+      val realHeight = realDisplayMetrics.heightPixels
+      val realWidth = realDisplayMetrics.widthPixels
+
+      val displayMetrics = DisplayMetrics()
+      display.getMetrics(displayMetrics)
+
+      val displayHeight = displayMetrics.heightPixels
+      val displayWidth = displayMetrics.widthPixels
+
+      hasSoftwareKeys = realWidth - displayWidth > 0 || realHeight - displayHeight > 0
+    } else {
+      val hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey()
+      val hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
+      hasSoftwareKeys = !hasMenuKey && !hasBackKey
+    }
+    return hasSoftwareKeys
   }
 }

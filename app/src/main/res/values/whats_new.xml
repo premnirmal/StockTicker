@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:xandrolate="http://com.github.androlate">
   <string-array name="whats_new" xandrolate:md5="98efea0d0d0045769b36f8b9224ceacc">
-    <item>Bug fixes :)</item>
+    <item>Target android oreo :)</item>
   </string-array>
 </resources>

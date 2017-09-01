@@ -30,6 +30,7 @@
   <dimen name="setting_padding">16dp</dimen>
   <dimen name="fab_margin">12dp</dimen>
   <dimen name="fab_margin_bottom">12dp</dimen>
+  <dimen name="fab_margin_bottom_without_nav">16dp</dimen>
   <dimen name="first_fab_margin">65dp</dimen>
   <dimen name="second_fab_margin">130dp</dimen>
 </resources>

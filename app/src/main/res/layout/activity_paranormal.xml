@@ -135,7 +135,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/color_accent"
+        app:backgroundTint="@color/sea"
         app:rippleColor="@color/white"
         />
   </LinearLayout>
@@ -168,7 +168,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_edit"
-        app:backgroundTint="@color/color_accent"
+        app:backgroundTint="@color/spicy_salmon"
         app:rippleColor="@color/white"
         />
   </LinearLayout>

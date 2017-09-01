@@ -58,9 +58,6 @@
         android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-        <data
-            android:path="@string/package_replaced_string"
-            android:scheme="package"/>
       </intent-filter>
     </receiver>
 

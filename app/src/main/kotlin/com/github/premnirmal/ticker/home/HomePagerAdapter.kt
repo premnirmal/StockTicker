@@ -51,4 +51,7 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
       }
     }
   }
+
+  override fun getPageWidth(position: Int): Float =
+      if (count > 1) 0.95f else super.getPageWidth(position)
 }

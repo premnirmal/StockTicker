@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="sea">#00AADD</color>
-  <color name="color_accent">#17A697</color>
-  <color name="color_primary">#0F5959</color>
-  <color name="color_primary_dark">#0a3e3e</color>
+  <color name="sea">#05668D</color>
+  <color name="color_accent">#00A896</color>
+  <color name="color_primary">#02525C</color>
+  <color name="color_primary_dark">#003E37</color>
   <color name="button_pressed">@color/sea</color>
   <color name="button_disabled">#638ca6</color>
   <color name="button_enabled">@color/color_accent</color>
@@ -17,12 +17,12 @@
   <color name="transparent">#00000000</color>
   <color name="translucent">#98000000</color>
   <color name="bg_gradient_center">#752a2a2a</color>
+  <color name="black_gradient_center">#3f3f3f</color>
 
   <color name="white">#ffffff</color>
   <color name="black">#000000</color>
   <color name="light">#fff3f3f3</color>
   <color name="grey_text">#d3d3d3</color>
-  <color name="black_gradient_center">#3f3f3f</color>
 
   <color name="negative_red">#FF6666</color>
   <color name="positive_green">#CCFF66</color>
