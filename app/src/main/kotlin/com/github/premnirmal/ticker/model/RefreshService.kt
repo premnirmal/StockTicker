@@ -5,7 +5,7 @@ import android.app.job.JobParameters
 import android.app.job.JobService
 import android.os.Build.VERSION_CODES
 import android.support.annotation.RequiresApi
-import com.github.premnirmal.ticker.components.ILogIt
+import timber.log.Timber
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
@@ -24,7 +24,7 @@ class RefreshService : JobService() {
   }
 
   override fun onStartJob(params: JobParameters): Boolean {
-    ILogIt.INSTANCE.log("onStartJob " + params.jobId)
+    Timber.i("onStartJob " + params.jobId)
     stocksProvider.fetch().subscribe(
         object : SimpleSubscriber<List<Quote>>() {
           override fun onError(e: Throwable) {
@@ -44,7 +44,7 @@ class RefreshService : JobService() {
   }
 
   override fun onStopJob(params: JobParameters): Boolean {
-    ILogIt.INSTANCE.log("onStopJob " + params.jobId)
+    Timber.i("onStopJob " + params.jobId)
     // doesn't need reschedule
     return false
   }

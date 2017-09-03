@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources>
 <string-array name="whats_new">
+    <item>Arreglado el error visual</item>
     <item>Objetivo android oreo :)</item>
   </string-array>
 </resources>

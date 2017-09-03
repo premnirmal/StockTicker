@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.os.AsyncTask
 import android.text.TextUtils
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.ILogIt
+import timber.log.Timber
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import java.io.BufferedReader
 import java.io.File
@@ -28,7 +28,7 @@ internal open class FileImportTask(
     try {
       uri = URI(params[0])
     } catch (e: URISyntaxException) {
-      ILogIt.INSTANCE.logException(e)
+      Timber.w(e)
       return false
     }
 
@@ -67,7 +67,7 @@ internal open class FileImportTask(
       result = true
       Analytics.INSTANCE.trackSettingsChange("IMPORT", TextUtils.join(",", tickers))
     } catch (e: IOException) {
-      ILogIt.INSTANCE.logException(e)
+      Timber.w(e)
       result = false
     }
 

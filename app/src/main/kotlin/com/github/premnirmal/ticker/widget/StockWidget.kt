@@ -14,7 +14,7 @@ import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.ILogIt
+import timber.log.Timber
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -40,7 +40,7 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    ILogIt.INSTANCE.log("onReceive")
+    Timber.i("onReceive")
     super.onReceive(context, intent)
     Analytics.INSTANCE.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
@@ -52,7 +52,7 @@ class StockWidget() : AppWidgetProvider() {
       appWidgetIds: IntArray) {
     Analytics.INSTANCE.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
-      ILogIt.INSTANCE.log("onUpdate" + widgetId)
+      Timber.i("onUpdate" + widgetId)
       val min_width: Int
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
@@ -70,7 +70,7 @@ class StockWidget() : AppWidgetProvider() {
   override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetId: Int, newOptions: Bundle) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-    ILogIt.INSTANCE.log("onAppWidgetOptionsChanged" + appWidgetId.toString())
+    Timber.i("onAppWidgetOptionsChanged" + appWidgetId.toString())
     val min_width = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
     Analytics.INSTANCE.trackWidgetSizeUpdate("${min_width}px")
@@ -83,18 +83,18 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    ILogIt.INSTANCE.log("onEnabled")
+    Timber.i("onEnabled")
     stocksProvider.schedule()
   }
 
   override fun onDisabled(context: Context?) {
     super.onDisabled(context)
-    ILogIt.INSTANCE.log("onDisabled")
+    Timber.i("onDisabled")
   }
 
   override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
     super.onDeleted(context, appWidgetIds)
-    ILogIt.INSTANCE.log("onDeleted")
+    Timber.i("onDeleted")
     appWidgetIds?.let {
       it.forEach { widgetId ->
         widgetDataProvider.widgetRemoved(widgetId)

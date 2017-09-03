@@ -49,7 +49,7 @@
   <string name="end_time_updated">Hora de finalización actualizada</string>
   <string name="start_time_updated">Hora de inicio actualizada</string>
   <string name="incorrect_time_update_error">La hora de inicio no debe ser igual a la hora de finalización</string>
-  <string name="share_email_subject">Aquí están mis tickers que creé usando StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget\n\n Puede importar estos tickers mediante la\nentrando en la\n\n \"Importar\"</string>
+  <string name="share_email_subject">Aquí están mis tickers que creé usando StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget\n\n Puede importar estos tickers mediante la\nentrando en la\n\n \"Importar\"</string>
   <string name="my_stock_portfolio">Mi cartera de valores</string>
   <string name="number_of_shares">Número de Acciones</string>
   <string name="Price">Precio</string>

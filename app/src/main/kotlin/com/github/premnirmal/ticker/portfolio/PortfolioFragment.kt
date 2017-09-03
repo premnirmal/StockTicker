@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.portfolio
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
@@ -29,11 +30,15 @@ import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
 import javax.inject.Inject
 
-
 /**
  * Created by premnirmal on 2/25/16.
  */
 open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
+
+  interface Callback {
+    fun onDragStarted()
+    fun onDragEnded()
+  }
 
   companion object {
     private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
@@ -71,6 +76,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
+  private var callback: Callback? = null
   private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -103,6 +109,16 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     widgetId = arguments.getInt(KEY_WIDGET_ID)
+  }
+
+  override fun onAttach(activity: Activity?) {
+    super.onAttach(activity)
+    callback = activity as Callback
+  }
+
+  override fun onDetach() {
+    super.onDetach()
+    callback = null
   }
 
   override fun onResume() {
@@ -173,6 +189,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+    callback?.onDragStarted()
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     if (widgetData.autoSortEnabled()) {
       widgetData.setAutoSort(false)
@@ -182,5 +199,9 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     } else {
       itemTouchHelper?.startDrag(viewHolder)
     }
+  }
+
+  override fun onStopDrag() {
+    callback?.onDragEnded()
   }
 }

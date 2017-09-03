@@ -22,7 +22,6 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity.Companion.getStatusBarHeight
 import com.github.premnirmal.ticker.base.BaseActivity.Companion.showDialog
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -34,6 +33,7 @@ import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
 import kotlinx.android.synthetic.main.preferences_footer.version
+import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper
 import java.io.File
 import java.util.regex.Pattern
@@ -109,7 +109,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         showDialog(getString(R.string.are_you_sure), OnClickListener { _, _ ->
           val hasUserAlreadyRated = AppPreferences.hasUserAlreadyRated()
           Analytics.INSTANCE.trackSettingsChange("NUKE", "CLICKED")
-          ILogIt.INSTANCE.logException(RuntimeException("Nuked from settings!"))
+          Timber.w(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
           val directory = filesDir.path + "$packageName/shared_prefs/"
           val sharedPreferenceFile = File(directory)
@@ -273,7 +273,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         override fun onPostExecute(result: String?) {
           if (result == null) {
             showDialog(getString(R.string.error_sharing))
-            ILogIt.INSTANCE.logException(Throwable("Error sharing tickers"))
+            Timber.w(Throwable("Error sharing tickers"))
           } else {
             shareTickers()
           }
@@ -296,7 +296,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       override fun onPostExecute(result: String?) {
         if (result == null) {
           showDialog(getString(R.string.error_exporting))
-          ILogIt.INSTANCE.logException(Throwable("Error exporting tickers"))
+          Timber.w(Throwable("Error exporting tickers"))
         } else {
           showDialog(getString(R.string.exported_to, result))
         }
@@ -313,7 +313,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     val file = AppPreferences.tickersFile
     if (!file.exists() || !file.canRead()) {
       showDialog(getString(R.string.error_sharing))
-      ILogIt.INSTANCE.logException(Throwable("Error sharing tickers"))
+      Timber.w(Throwable("Error sharing tickers"))
       return
     }
     val uri = Uri.fromFile(file)

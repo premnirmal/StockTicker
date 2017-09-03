@@ -21,12 +21,12 @@ import android.view.ViewGroup.MarginLayoutParams
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.settings.SettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -44,14 +44,14 @@ import kotlinx.android.synthetic.main.activity_paranormal.swipe_container
 import kotlinx.android.synthetic.main.activity_paranormal.tabs
 import kotlinx.android.synthetic.main.activity_paranormal.toolbar
 import kotlinx.android.synthetic.main.activity_paranormal.view_pager
+import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
-
 
 /**
  * Created by premnirmal on 2/25/16.
  */
-class ParanormalActivity : BaseActivity() {
+class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
 
   companion object {
     val DIALOG_SHOWN: String = "DIALOG_SHOWN"
@@ -243,7 +243,7 @@ class ParanormalActivity : BaseActivity() {
           bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
             override fun onError(e: Throwable) {
               attemptingFetch = false
-              ILogIt.INSTANCE.logException(e)
+              Timber.w(e)
               swipe_container?.isRefreshing = false
               InAppMessage.showMessage(this@ParanormalActivity, getString(R.string.refresh_failed))
             }
@@ -328,5 +328,16 @@ class ParanormalActivity : BaseActivity() {
       hasSoftwareKeys = !hasMenuKey && !hasBackKey
     }
     return hasSoftwareKeys
+  }
+
+
+  // PortfolioFragment.Callback
+
+  override fun onDragStarted() {
+    swipe_container.isEnabled = false
+  }
+
+  override fun onDragEnded() {
+    swipe_container.isEnabled = true
   }
 }

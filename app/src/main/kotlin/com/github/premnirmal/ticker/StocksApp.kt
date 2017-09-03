@@ -8,10 +8,11 @@ import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
-import com.github.premnirmal.ticker.components.ILogIt
+import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
+import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import java.security.MessageDigest
 
@@ -35,7 +36,7 @@ open class StocksApp : Application() {
           return currentSignature
         }
       } catch (e: Exception) {
-        ILogIt.INSTANCE.logException(e)
+        Timber.e(e)
       }
       return null
     }
@@ -79,6 +80,6 @@ open class StocksApp : Application() {
   }
 
   protected open fun initLogger() {
-    ILogIt.init(this)
+    Timber.plant(LoggingTree(this))
   }
 }

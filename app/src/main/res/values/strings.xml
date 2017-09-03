@@ -54,7 +54,7 @@
   <string name="end_time_updated" xandrolate:md5="8c8ea779fb733f1989986727d1c2cdf0">End time updated</string>
   <string name="start_time_updated" xandrolate:md5="eee5b0454ce4413e7e13249dacf831a2">Start time updated</string>
   <string name="incorrect_time_update_error" xandrolate:md5="be807fbe922e3165d36f5e2bda6819d8">Start time must not equal end time</string>
-  <string name="share_email_subject" xandrolate:md5="9bcb4711db6dfcc0fdb6fdbc97551dac">Here are my tickers I created using StockTicker - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
+  <string name="share_email_subject" xandrolate:md5="9bcb4711db6dfcc0fdb6fdbc97551dac">Here are my tickers I created using StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
   <string name="my_stock_portfolio" xandrolate:md5="4ceecc8d5f3b3b9845b46791693fd72a">My Stock Portfolio</string>
   <string name="number_of_shares" xandrolate:md5="2a9bce830276e644e7b4496e5ca422f3">No. of Shares</string>
   <string name="Price" xandrolate:md5="3601146c4e948c32b6424d2c0a7f0118">Price</string>

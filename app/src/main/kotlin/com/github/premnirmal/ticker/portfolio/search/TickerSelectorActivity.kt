@@ -18,7 +18,7 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
 import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.components.ILogIt
+import timber.log.Timber
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.SimpleSubscriber
@@ -149,7 +149,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {
               override fun onError(e: Throwable) {
-                ILogIt.INSTANCE.logException(e)
+                Timber.w(e)
                 InAppMessage.showMessage(this@TickerSelectorActivity,
                     R.string.error_fetching_suggestions)
               }

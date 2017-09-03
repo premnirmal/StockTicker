@@ -8,7 +8,6 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
-import com.github.premnirmal.ticker.components.ILogIt
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.DayOfWeek.FRIDAY
 import org.threeten.bp.DayOfWeek.SATURDAY
@@ -16,6 +15,7 @@ import org.threeten.bp.DayOfWeek.SUNDAY
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
+import timber.log.Timber
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -72,7 +72,7 @@ object AlarmScheduler {
   internal fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
     Analytics.INSTANCE.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
         "UpdateScheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
-    ILogIt.INSTANCE.log("Scheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
+    Timber.i("Scheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val instant = Instant.ofEpochMilli(AppPreferences.clock().currentTimeMillis() + msToNextAlarm)

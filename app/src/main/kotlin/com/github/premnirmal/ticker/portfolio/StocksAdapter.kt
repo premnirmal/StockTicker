@@ -55,12 +55,10 @@ class StocksAdapter constructor(
 
   override fun getItemViewType(position: Int): Int {
     val stock = quoteList[position]
-    if (stock.isPosition) {
-      return TYPE_POSITION
-    } else if (stock.isIndex()) {
-      return TYPE_INDEX
-    } else {
-      return TYPE_STOCK
+    return when {
+      stock.isPosition -> TYPE_POSITION
+      stock.isIndex() -> TYPE_INDEX
+      else -> TYPE_STOCK
     }
   }
 
@@ -98,6 +96,6 @@ class StocksAdapter constructor(
   }
 
   override fun onItemDismiss(position: Int) {
-
+    dragStartListener.onStopDrag()
   }
 }
