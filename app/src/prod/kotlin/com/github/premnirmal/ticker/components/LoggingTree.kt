@@ -19,7 +19,6 @@ class LoggingTree(context: Context) : Timber.Tree() {
         .core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
         .build()
     Fabric.with(context, kit, Answers())
-    Timber.plant(this)
   }
 
   override fun log(priority: Int, tag: String?, message: String?, t: Throwable?) {

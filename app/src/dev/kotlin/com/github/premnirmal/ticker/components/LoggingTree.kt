@@ -9,6 +9,6 @@ import timber.log.Timber
 class LoggingTree : Timber.DebugTree {
 
   constructor(context: Context) {
-    Timber.plant(this)
+    // Do nothing.
   }
 }
