@@ -7,8 +7,6 @@
       alt="Get it on F-Droid"
       height="80">](https://f-droid.org/app/com.github.premnirmal.tickerwidget)
 
-[iOS version](https://itunes.apple.com/us/app/todaystocks/id993467855?ls=1&mt=8) available on [github](https://github.com/premnirmal/TodayStocks) too
-
 ![](https://lh3.googleusercontent.com/R9khJ5kNzXHUjO4BxNw1cNKTx62grZ7FtLRT_F2H0BhC99iuMWDxvuGTYvyydtqE3w=h400-rw)
 
 ## Motivation
@@ -33,4 +31,4 @@ This app also shows how to write android unit tests using [mockito](https://gith
 MIT
 
 ### Author
-> [Prem Nirmal](http://premnirmal.me/)
+[Prem Nirmal](http://premnirmal.me/)

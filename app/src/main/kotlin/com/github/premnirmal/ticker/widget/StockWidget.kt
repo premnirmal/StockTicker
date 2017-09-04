@@ -40,7 +40,7 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    Timber.i("onReceive")
+    Timber.d("onReceive")
     super.onReceive(context, intent)
     Analytics.INSTANCE.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
@@ -52,7 +52,7 @@ class StockWidget() : AppWidgetProvider() {
       appWidgetIds: IntArray) {
     Analytics.INSTANCE.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
-      Timber.i("onUpdate" + widgetId)
+      Timber.d("onUpdate" + widgetId)
       val min_width: Int
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
@@ -70,7 +70,7 @@ class StockWidget() : AppWidgetProvider() {
   override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetId: Int, newOptions: Bundle) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-    Timber.i("onAppWidgetOptionsChanged" + appWidgetId.toString())
+    Timber.d("onAppWidgetOptionsChanged" + appWidgetId.toString())
     val min_width = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, min_width)
     Analytics.INSTANCE.trackWidgetSizeUpdate("${min_width}px")
@@ -83,18 +83,18 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    Timber.i("onEnabled")
+    Timber.d("onEnabled")
     stocksProvider.schedule()
   }
 
   override fun onDisabled(context: Context?) {
     super.onDisabled(context)
-    Timber.i("onDisabled")
+    Timber.d("onDisabled")
   }
 
   override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
     super.onDeleted(context, appWidgetIds)
-    Timber.i("onDeleted")
+    Timber.d("onDeleted")
     appWidgetIds?.let {
       it.forEach { widgetId ->
         widgetDataProvider.widgetRemoved(widgetId)

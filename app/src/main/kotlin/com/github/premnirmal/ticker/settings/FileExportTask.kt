@@ -30,10 +30,10 @@ internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
       fileOutputStream.flush()
       fileOutputStream.close()
     } catch (e: FileNotFoundException) {
-      Timber.w(RuntimeException(e))
+      Timber.w(Exception(e))
       return null
     } catch (e: IOException) {
-      Timber.w(RuntimeException(e))
+      Timber.w(Exception(e))
       return null
     }
 
