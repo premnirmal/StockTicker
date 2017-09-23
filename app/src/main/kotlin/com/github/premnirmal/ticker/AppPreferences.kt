@@ -11,17 +11,76 @@ import java.text.DecimalFormat
 import java.text.Format
 import java.util.Random
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-class AppPreferences private constructor() {
+@Singleton
+class AppPreferences @Inject constructor() {
 
   @Inject lateinit internal var sharedPreferences: SharedPreferences
   @Inject lateinit internal var clock: AppClock
 
+  // Not using clock here because this doesn't need a specific time.
+  val random = Random(System.currentTimeMillis())
+
   init {
     Injector.appComponent.inject(this)
+  }
+
+  fun getLastSavedVersionCode(): Int = sharedPreferences.getInt(APP_VERSION_CODE, -1)
+  fun saveVersionCode(code: Int) {
+    sharedPreferences.edit().putInt(APP_VERSION_CODE, code).apply()
+  }
+
+  val updateIntervalMs: Long
+    get() {
+      val pref = sharedPreferences.getInt(UPDATE_INTERVAL, 1)
+      val ms = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
+      return ms
+    }
+
+  fun timeAsIntArray(time: String): IntArray {
+    val split = time.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    val times = intArrayOf(split[0].toInt(), split[1].toInt())
+    return times
+  }
+
+  fun startTime(): IntArray {
+    val startTimeString = sharedPreferences.getString(START_TIME, "09:30")
+    return timeAsIntArray(startTimeString)
+  }
+
+  fun endTime(): IntArray {
+    val endTimeString = sharedPreferences.getString(END_TIME, "16:00")
+    return timeAsIntArray(endTimeString)
+  }
+
+  fun isRefreshing(): Boolean {
+    val isRefreshing = sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
+    return isRefreshing
+  }
+
+  fun setRefreshing(refreshing: Boolean) {
+    sharedPreferences.edit().putBoolean(WIDGET_REFRESHING, refreshing).apply()
+  }
+
+  fun userDidRate() {
+    sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
+  }
+
+  fun hasUserAlreadyRated(): Boolean = sharedPreferences.getBoolean(DID_RATE, false)
+
+  fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
+      (random.nextInt() % 4 == 0) && !hasUserAlreadyRated()
+
+  fun clock(): AppClock = clock
+
+  fun backOffAttemptCount(): Int = sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
+
+  fun setBackOffAttemptCount(count: Int) {
+    sharedPreferences.edit().putInt(BACKOFF_ATTEMPTS, count).apply()
   }
 
   companion object {
@@ -65,53 +124,9 @@ class AppPreferences private constructor() {
     const val DARK = 2
     const val LIGHT = 3
 
-    val INSTANCE: AppPreferences by lazy {
-      AppPreferences()
-    }
-
     val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")!!
 
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
-
-    // Not using clock here because this doesn't need a specific time.
-    val random = Random(System.currentTimeMillis())
-
-    fun getLastSavedVersionCode(): Int = INSTANCE.sharedPreferences.getInt(APP_VERSION_CODE, -1)
-    fun saveVersionCode(code: Int) {
-      INSTANCE.sharedPreferences.edit().putInt(APP_VERSION_CODE, code).apply()
-    }
-
-    val updateInterval: Long
-      get() {
-        val pref = INSTANCE.sharedPreferences.getInt(UPDATE_INTERVAL, 1)
-        val ms = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
-        return ms
-      }
-
-    fun timeAsIntArray(time: String): IntArray {
-      val split = time.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-      val times = intArrayOf(Integer.valueOf(split[0])!!, Integer.valueOf(split[1])!!)
-      return times
-    }
-
-    fun startTime(): IntArray {
-      val startTimeString = INSTANCE.sharedPreferences.getString(START_TIME, "09:30")
-      return timeAsIntArray(startTimeString)
-    }
-
-    fun endTime(): IntArray {
-      val endTimeString = INSTANCE.sharedPreferences.getString(END_TIME, "16:00")
-      return timeAsIntArray(endTimeString)
-    }
-
-    fun isRefreshing(): Boolean {
-      val isRefreshing = INSTANCE.sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
-      return isRefreshing
-    }
-
-    fun setRefreshing(refreshing: Boolean) {
-      INSTANCE.sharedPreferences.edit().putBoolean(WIDGET_REFRESHING, refreshing).apply()
-    }
 
     val tickersFile: File
       get() {
@@ -123,22 +138,5 @@ class AppPreferences private constructor() {
         val file = File(dir, fileName)
         return file
       }
-
-    fun userDidRate() {
-      INSTANCE.sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
-    }
-
-    fun hasUserAlreadyRated(): Boolean = INSTANCE.sharedPreferences.getBoolean(DID_RATE, false)
-
-    fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-        (random.nextInt() % 4 == 0) && !hasUserAlreadyRated()
-
-    fun clock(): AppClock = INSTANCE.clock
-
-    fun backOffAttemptCount(): Int = INSTANCE.sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
-
-    fun setBackOffAttemptCount(count: Int) {
-      INSTANCE.sharedPreferences.edit().putInt(BACKOFF_ATTEMPTS, count).apply()
-    }
   }
 }

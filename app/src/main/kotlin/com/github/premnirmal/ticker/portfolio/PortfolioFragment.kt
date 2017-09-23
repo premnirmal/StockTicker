@@ -76,8 +76,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
+  private lateinit var holder: InjectionHolder
   private var callback: Callback? = null
-  private val holder = InjectionHolder()
   private var listViewState: Parcelable? = null
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
@@ -108,6 +108,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    holder = InjectionHolder()
     widgetId = arguments.getInt(KEY_WIDGET_ID)
   }
 
@@ -164,7 +165,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     stocksAdapter.refresh()
   }
 
-  internal fun promptRemove(quote: Quote?, position: Int) {
+  private fun promptRemove(quote: Quote?, position: Int) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
       AlertDialog.Builder(activity).setTitle(R.string.remove)

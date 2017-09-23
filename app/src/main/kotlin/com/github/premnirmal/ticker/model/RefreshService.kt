@@ -1,18 +1,16 @@
 package com.github.premnirmal.ticker.model
 
-import android.annotation.TargetApi
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.os.Build.VERSION_CODES
 import android.support.annotation.RequiresApi
-import timber.log.Timber
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.SimpleSubscriber
+import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
+import timber.log.Timber
 import javax.inject.Inject
 
 @RequiresApi(VERSION_CODES.LOLLIPOP)
-@TargetApi(VERSION_CODES.LOLLIPOP)
 class RefreshService : JobService() {
 
   @Inject
@@ -28,8 +26,8 @@ class RefreshService : JobService() {
     stocksProvider.fetch().subscribe(
         object : SimpleSubscriber<List<Quote>>() {
           override fun onError(e: Throwable) {
-            // needs reschedule
-            val needsReschedule = true
+            // StocksProvider will handle rescheduling the job
+            val needsReschedule = false
             jobFinished(params, needsReschedule)
           }
 

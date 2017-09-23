@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.portfolio.search
 import android.animation.Animator
 import android.animation.Animator.AnimatorListener
 import android.animation.AnimatorListenerAdapter
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.os.Build.VERSION
@@ -18,10 +17,9 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
 import com.github.premnirmal.ticker.base.BaseActivity
-import timber.log.Timber
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.SimpleSubscriber
+import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.Callback
@@ -34,6 +32,7 @@ import kotlinx.android.synthetic.main.activity_ticker_selector.activity_root
 import kotlinx.android.synthetic.main.activity_ticker_selector.recycler_view
 import kotlinx.android.synthetic.main.activity_ticker_selector.search_view
 import kotlinx.android.synthetic.main.activity_ticker_selector.toolbar
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -82,7 +81,6 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
       if (activity_root.viewTreeObserver.isAlive) {
         activity_root.viewTreeObserver
             .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-              @TargetApi(VERSION_CODES.LOLLIPOP)
               @RequiresApi(VERSION_CODES.LOLLIPOP)
               override fun onGlobalLayout() {
                 if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
@@ -97,7 +95,6 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     }
   }
 
-  @TargetApi(VERSION_CODES.LOLLIPOP)
   @RequiresApi(VERSION_CODES.LOLLIPOP)
   fun doCircularReveal(reverse: Boolean = false, listener: AnimatorListener? = null) {
     val cx = intent.getIntExtra(EXTRA_CENTER_X, resources.displayMetrics.widthPixels)

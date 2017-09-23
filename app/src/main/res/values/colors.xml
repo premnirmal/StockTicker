@@ -32,4 +32,6 @@
   <color name="colorPrimary">@color/color_primary</color>
   <color name="colorPrimaryDark">@color/color_primary</color>
   <color name="colorAccent">@color/color_accent</color>
+
+  <color name="black_overlay">#66000000</color>
 </resources>

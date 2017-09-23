@@ -1,13 +1,13 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.AppPreferences
-import timber.log.Timber
+import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote
 import com.google.gson.Gson
 import io.reactivex.Observable
 import retrofit2.HttpException
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +18,7 @@ import javax.inject.Singleton
 
   @Inject lateinit internal var gson: Gson
   @Inject lateinit internal var financeApi: Robindahood
+  @Inject lateinit internal var clock: AppClock
 
   var lastFetched: Long = 0
 
@@ -29,7 +30,7 @@ import javax.inject.Singleton
     val query = tickerList.joinToString(",")
     return financeApi.getStocks(query)
         .map { quoteNets ->
-          lastFetched = AppPreferences.clock().currentTimeMillis()
+          lastFetched = clock.currentTimeMillis()
           quoteNets
         }
         .map { quoteNets ->

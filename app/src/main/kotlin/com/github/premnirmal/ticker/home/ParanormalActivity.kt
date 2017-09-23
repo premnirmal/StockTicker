@@ -23,8 +23,8 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.SimpleSubscriber
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.settings.SettingsActivity
@@ -44,7 +44,6 @@ import kotlinx.android.synthetic.main.activity_paranormal.swipe_container
 import kotlinx.android.synthetic.main.activity_paranormal.tabs
 import kotlinx.android.synthetic.main.activity_paranormal.toolbar
 import kotlinx.android.synthetic.main.activity_paranormal.view_pager
-import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
 
@@ -62,6 +61,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
   @Inject lateinit internal var preferences: SharedPreferences
   @Inject lateinit internal var stocksProvider: IStocksProvider
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var appPreferences: AppPreferences
 
   private var dialogShown = false
   private var attemptingFetch = false
@@ -73,9 +73,10 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_paranormal)
     Injector.appComponent.inject(this)
     savedInstanceState?.let { dialogShown = it.getBoolean(DIALOG_SHOWN, false) }
-    setContentView(R.layout.activity_paranormal)
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin =
           getStatusBarHeight()
@@ -93,24 +94,16 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     collapsingToolbarLayout.setExpandedTitleTypeface(
         TypefaceUtils.load(assets, "fonts/Ubuntu-Bold.ttf"))
 
-    toolbar.inflateMenu(R.menu.menu_paranormal)
-    toolbar.setOnMenuItemClickListener { item ->
-      val itemId = item.itemId
-      if (itemId == R.id.action_settings) {
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
-        true
-      } else {
-        false
-      }
-    }
-
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
 
-    if (AppPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
-      AppPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
+    view_pager.adapter = adapter
+    tabs?.setupWithViewPager(view_pager)
+    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
+
+    if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+      appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
       val stringBuilder = StringBuilder()
       val whatsNew = resources.getStringArray(R.array.whats_new)
       whatsNew.indices.forEach {
@@ -124,6 +117,18 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           stringBuilder.toString())
     } else {
       maybeAskToRate()
+    }
+
+    toolbar.inflateMenu(R.menu.menu_paranormal)
+    toolbar.setOnMenuItemClickListener { item ->
+      val itemId = item.itemId
+      if (itemId == R.id.action_settings) {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
+        true
+      } else {
+        false
+      }
     }
 
     fab_settings.setOnClickListener({ v ->
@@ -158,10 +163,6 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     fab_bg.setOnClickListener {
       closeFABMenu()
     }
-
-    view_pager.adapter = adapter
-    tabs?.setupWithViewPager(view_pager)
-    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
   }
 
   private fun openWidgetSettings(v: View, widgetId: Int) {
@@ -243,7 +244,6 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
             override fun onError(e: Throwable) {
               attemptingFetch = false
-              Timber.w(e)
               swipe_container?.isRefreshing = false
               InAppMessage.showMessage(this@ParanormalActivity, getString(R.string.refresh_failed))
             }
@@ -279,13 +279,13 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
   }
 
   private fun maybeAskToRate() {
-    if (!dialogShown && AppPreferences.shouldPromptRate()) {
+    if (!dialogShown && appPreferences.shouldPromptRate()) {
       Builder(this).setTitle(R.string.like_our_app)
           .setMessage(R.string.please_rate)
           .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
             Analytics.INSTANCE.trackRateYes()
-            AppPreferences.userDidRate()
+            appPreferences.userDidRate()
             dialog.dismiss()
           }
           .setNegativeButton(R.string.later) { dialog, _ ->

@@ -46,20 +46,17 @@ class TimePreference(ctxt: Context, attrs: AttributeSet) : DialogPreference(ctxt
     }
   }
 
-  override fun onGetDefaultValue(a: TypedArray, index: Int): Any {
-    return a.getString(index)
-  }
+  override fun onGetDefaultValue(a: TypedArray, index: Int): Any = a.getString(index)
 
   override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
-    val time: String
-    if (restoreValue) {
+    val time: String = if (restoreValue) {
       if (defaultValue == null) {
-        time = getPersistedString("00:00")
+        getPersistedString("00:00")
       } else {
-        time = getPersistedString(defaultValue.toString())
+        getPersistedString(defaultValue.toString())
       }
     } else {
-      time = defaultValue.toString()
+      defaultValue.toString()
     }
     lastHour = getHour(time)
     lastMinute = getMinute(time)

@@ -25,7 +25,7 @@ class StocksApiTest : BaseUnitTest() {
   lateinit internal var robinhood: Robindahood
   lateinit internal var mockPrefs: SharedPreferences
 
-  val stocksApi = StocksApi()
+  private val stocksApi = StocksApi()
 
   @Before fun initMocks() {
     robinhood = Mocker.provide(Robindahood::class.java)

@@ -16,17 +16,11 @@ import javax.inject.Singleton
 @Module(includes = arrayOf(MockNetworkModule::class))
 class MockAppModule(private val app: Context) {
 
-  @Provides internal fun provideApplicationContext(): Context {
-    return app
-  }
+  @Provides internal fun provideApplicationContext(): Context = app
 
-  @Provides @Singleton internal fun provideClock(): AppClock {
-    return Mocker.provide(AppClock::class.java)
-  }
+  @Provides @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class.java)
 
-  @Provides @Singleton internal fun provideEventBus(): RxBus {
-    return RxBus()
-  }
+  @Provides @Singleton internal fun provideEventBus(): RxBus = RxBus()
 
   @Provides @Singleton internal fun provideDefaultSharedPreferences(
       context: Context): SharedPreferences {
@@ -35,7 +29,8 @@ class MockAppModule(private val app: Context) {
     return sharedPreferences
   }
 
-  @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager {
-    return AppWidgetManager.getInstance(app)
-  }
+  @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
+      AppWidgetManager.getInstance(app)
+
+  @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 }

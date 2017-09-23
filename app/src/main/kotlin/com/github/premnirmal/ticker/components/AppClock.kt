@@ -12,20 +12,12 @@ interface AppClock {
 
   class AppClockImpl : AppClock {
 
-    override fun todayZoned(): ZonedDateTime {
-      return ZonedDateTime.now()
-    }
+    override fun todayZoned(): ZonedDateTime = ZonedDateTime.now()
 
-    override fun todayLocal(): LocalDateTime {
-      return LocalDateTime.now()
-    }
+    override fun todayLocal(): LocalDateTime = LocalDateTime.now()
 
-    override fun currentTimeMillis(): Long {
-      return System.currentTimeMillis()
-    }
+    override fun currentTimeMillis(): Long = System.currentTimeMillis()
 
-    override fun elapsedRealtime(): Long {
-      return SystemClock.elapsedRealtime()
-    }
+    override fun elapsedRealtime(): Long = SystemClock.elapsedRealtime()
   }
 }

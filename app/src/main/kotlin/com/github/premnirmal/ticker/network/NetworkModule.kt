@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.network
 
 import android.content.Context
 import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -132,6 +133,9 @@ class NetworkModule {
 
   @Provides @Singleton
   internal fun provideStocksProvider(): IStocksProvider = StocksProvider()
+
+  @Provides @Singleton
+  internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()
 
   @Provides @Singleton
   internal fun provideWidgetDataFactory(): WidgetDataProvider = WidgetDataProvider()

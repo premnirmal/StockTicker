@@ -4,4 +4,10 @@
   <style name="ParanormalActivityTheme" parent="AppTheme">
     <item name="android:windowTranslucentNavigation">true</item>
   </style>
+
+  <style name="SplashTheme" parent="AppTheme">
+    <item name="android:windowBackground">@drawable/bg_splash</item>
+    <item name="android:windowTranslucentNavigation">true</item>
+    <item name="android:windowTranslucentStatus">true</item>
+  </style>
 </resources>

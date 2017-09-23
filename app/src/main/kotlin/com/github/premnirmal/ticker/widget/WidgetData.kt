@@ -51,11 +51,11 @@ class WidgetData {
     Injector.appComponent.inject(this)
     val prefsName = "$PREFS_NAME_PREFIX$widgetId"
     preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-    if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
-      tickerList = ArrayList(stocksProvider.getTickers())
+    tickerList = if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+      ArrayList(stocksProvider.getTickers())
     } else {
       val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
-      tickerList = java.util.ArrayList(Arrays.asList(
+      java.util.ArrayList(Arrays.asList(
           *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }
     save()
@@ -70,11 +70,11 @@ class WidgetData {
   var positiveTextColor: Int = 0
     @ColorRes get() {
       val bgPref = preferences.getInt(WIDGET_BG, TRANSPARENT)
-      when (bgPref) {
-        TRANSLUCENT -> return R.color.positive_green
-        DARK -> return R.color.positive_green
-        LIGHT -> return R.color.positive_green_dark
-        else -> return R.color.positive_green
+      return when (bgPref) {
+        TRANSLUCENT -> R.color.positive_green
+        DARK -> R.color.positive_green
+        LIGHT -> R.color.positive_green_dark
+        else -> R.color.positive_green
       }
     }
 
@@ -111,12 +111,12 @@ class WidgetData {
 
   @LayoutRes fun stockViewLayout(): Int {
     val pref = layoutPref()
-    if (pref == 0) {
-      return R.layout.stockview
+    return if (pref == 0) {
+      R.layout.stockview
     } else if (pref == 1) {
-      return R.layout.stockview2
+      R.layout.stockview2
     } else {
-      return R.layout.stockview3
+      R.layout.stockview3
     }
   }
 
@@ -152,9 +152,7 @@ class WidgetData {
     preferences.edit().putBoolean(AUTOSORT, autoSort).apply()
   }
 
-  fun isBoldEnabled(): Boolean {
-    return preferences.getBoolean(BOLD_CHANGE, false)
-  }
+  fun isBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
 
   fun setBoldEnabled(value: Boolean) {
     preferences.edit().putBoolean(BOLD_CHANGE, value).apply()
@@ -208,13 +206,13 @@ class WidgetData {
     preferences.edit().clear().apply()
   }
 
-  internal fun save() {
+  private fun save() {
     preferences.edit()
         .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
         .apply()
   }
 
-  internal fun scheduleUpdate() {
+  private fun scheduleUpdate() {
     stocksProvider.schedule()
   }
 }

@@ -14,11 +14,11 @@ import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Analytics
-import timber.log.Timber
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -32,6 +32,7 @@ class StockWidget() : AppWidgetProvider() {
 
   @Inject lateinit internal var stocksProvider: IStocksProvider
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit internal var appPreferences: AppPreferences
 
   var injected = false
 
@@ -158,7 +159,7 @@ class StockWidget() : AppWidgetProvider() {
     }
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())
     // Refresh icon and progress
-    val refreshing = AppPreferences.isRefreshing()
+    val refreshing = appPreferences.isRefreshing()
     if (refreshing) {
       remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE)
       remoteViews.setViewVisibility(R.id.refresh_icon, View.GONE)

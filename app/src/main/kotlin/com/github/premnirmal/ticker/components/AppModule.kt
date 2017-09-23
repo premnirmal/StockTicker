@@ -31,4 +31,6 @@ class AppModule(private val app: Context) {
 
   @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
       AppWidgetManager.getInstance(app)
+
+  @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 }

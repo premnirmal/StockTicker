@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources xmlns:xandrolate="http://com.github.androlate">
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:xandrolate="http://com.github.androlate">
 
   <string name="robindahood_endpoint" translatable="false" xandrolate:md5="685895906d3d2042c9afcf02cbbe4fe0">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint" translatable="false" xandrolate:md5="fdf9bf470dba2402d6060a730e7be74a">https://s.yimg.com/aq/</string>

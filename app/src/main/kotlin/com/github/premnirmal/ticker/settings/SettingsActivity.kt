@@ -16,6 +16,7 @@ import android.preference.Preference
 import android.preference.PreferenceActivity
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.text.TextUtils
 import android.view.LayoutInflater
 import com.github.premnirmal.ticker.AppPreferences
@@ -52,10 +53,9 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
   }
 
   @Inject lateinit internal var stocksProvider: IStocksProvider
-
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
-
   @Inject lateinit internal var preferences: SharedPreferences
+  @Inject lateinit internal var appPreferences: AppPreferences
 
   override fun onPause() {
     super.onPause()
@@ -107,7 +107,7 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       val nukePref = findPreference(AppPreferences.SETTING_NUKE)
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), OnClickListener { _, _ ->
-          val hasUserAlreadyRated = AppPreferences.hasUserAlreadyRated()
+          val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
           Analytics.INSTANCE.trackSettingsChange("NUKE", "CLICKED")
           Timber.w(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
@@ -206,8 +206,8 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       startTimePref.summary = preferences.getString(AppPreferences.START_TIME, "09:30")
       startTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val startTimez = AppPreferences.timeAsIntArray(newValue.toString())
-          val endTimez = AppPreferences.endTime()
+          val startTimez = appPreferences.timeAsIntArray(newValue.toString())
+          val endTimez = appPreferences.endTime()
           if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
@@ -226,16 +226,16 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       val endTimePref = findPreference(AppPreferences.END_TIME) as TimePreference
       endTimePref.summary = preferences.getString(AppPreferences.END_TIME, "16:30")
       run({
-        val endTimez = AppPreferences.endTime()
-        val startTimez = AppPreferences.startTime()
+        val endTimez = appPreferences.endTime()
+        val startTimez = appPreferences.startTime()
         if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
           endTimePref.setSummary(R.string.incorrect_time_update_error)
         }
       })
       endTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-          val endTimez = AppPreferences.timeAsIntArray(newValue.toString())
-          val startTimez = AppPreferences.startTime()
+          val endTimez = appPreferences.timeAsIntArray(newValue.toString())
+          val startTimez = appPreferences.startTime()
           if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
@@ -316,9 +316,17 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       Timber.w(Throwable("Error sharing tickers"))
       return
     }
-    val uri = Uri.fromFile(file)
+    val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
+    } else {
+      Uri.fromFile(file)
+    }
     intent.putExtra(Intent.EXTRA_STREAM, uri)
-    startActivity(Intent.createChooser(intent, getString(R.string.action_share)))
+    val launchIntent = Intent.createChooser(intent, getString(R.string.action_share))
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      launchIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    startActivity(launchIntent)
   }
 
   private fun broadcastUpdateWidget() {

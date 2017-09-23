@@ -89,7 +89,7 @@ class StocksAdapter constructor(
 
   override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
     quoteList.add(toPosition, quoteList.removeAt(fromPosition))
-    val newTickerList = quoteList.mapTo(ArrayList<String>()) { it.symbol }
+    val newTickerList = quoteList.mapTo(ArrayList()) { it.symbol }
     widgetData.rearrange(newTickerList)
     notifyItemMoved(fromPosition, toPosition)
     return true

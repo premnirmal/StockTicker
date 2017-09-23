@@ -23,19 +23,14 @@ import javax.inject.Singleton
 class MockNetworkModule {
 
   @Provides @Singleton
-  internal fun provideHttpClient(context: Context, bus: RxBus): OkHttpClient {
-    return Mocker.provide(OkHttpClient::class.java)
-  }
+  internal fun provideHttpClient(context: Context, bus: RxBus): OkHttpClient =
+      Mocker.provide(OkHttpClient::class.java)
 
   @Provides @Singleton
-  internal fun provideStocksApi(): StocksApi {
-    return Mocker.provide(StocksApi::class.java)
-  }
+  internal fun provideStocksApi(): StocksApi = Mocker.provide(StocksApi::class.java)
 
   @Provides @Singleton
-  internal fun provideGson(): Gson {
-    return GsonBuilder().create()
-  }
+  internal fun provideGson(): Gson = GsonBuilder().create()
 
   @Provides @Singleton
   internal fun provideGsonFactory(gson: Gson): GsonConverterFactory {
@@ -50,24 +45,20 @@ class MockNetworkModule {
   @Provides @Singleton
   internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJava2CallAdapterFactory): Robindahood {
-    return Mocker.provide(Robindahood::class.java)
-  }
+      rxJavaFactory: RxJava2CallAdapterFactory): Robindahood =
+      Mocker.provide(Robindahood::class.java)
 
   @Provides @Singleton
   internal fun provideSuggestionsApi(context: Context, okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
-      rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi {
-    return Mocker.provide(SuggestionApi::class.java)
-  }
+      rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi =
+      Mocker.provide(SuggestionApi::class.java)
 
   @Provides @Singleton
-  internal fun provideStocksProvider(): IStocksProvider {
-    return Mocker.provide(IStocksProvider::class.java)
-  }
+  internal fun provideStocksProvider(): IStocksProvider =
+      Mocker.provide(IStocksProvider::class.java)
 
   @Provides @Singleton
-  internal fun provideWidgetDataFactory(): WidgetDataProvider {
-    return Mocker.provide(WidgetDataProvider::class.java)
-  }
+  internal fun provideWidgetDataFactory(): WidgetDataProvider =
+      Mocker.provide(WidgetDataProvider::class.java)
 }

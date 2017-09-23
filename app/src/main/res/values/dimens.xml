@@ -1,5 +1,7 @@
 <resources>
   <dimen name="activity_horizontal_margin">12dp</dimen>
+  <dimen name="activity_vertical_margin">12dp</dimen>
+  <dimen name="activity_vertical_margin_x2">24dp</dimen>
 
   <integer name="flip_time">8000</integer>
   <dimen name="text_padding">2dp</dimen>

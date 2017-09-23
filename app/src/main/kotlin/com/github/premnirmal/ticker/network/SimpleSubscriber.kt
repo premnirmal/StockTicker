@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.components
+package com.github.premnirmal.ticker.network
 
 import io.reactivex.observers.DisposableObserver
 

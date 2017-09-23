@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.widget
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.os.Build
 import android.text.SpannableString
@@ -21,22 +22,13 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class RemoteStockViewAdapter(private val widgetId: Int)
-  : RemoteViewsService.RemoteViewsFactory {
-
-  fun Context.getFontSize(): Float {
-    val size = AppPreferences.INSTANCE.sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
-    return when (size) {
-      0 -> this.resources.getInteger(R.integer.text_size_small).toFloat()
-      2 -> this.resources.getInteger(R.integer.text_size_large).toFloat()
-      else -> this.resources.getInteger(R.integer.text_size_medium).toFloat()
-    }
-  }
+class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.RemoteViewsFactory {
 
   private val quotes: MutableList<Quote>
 
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
   @Inject lateinit internal var context: Context
+  @Inject lateinit internal var sharedPreferences: SharedPreferences
 
   init {
     this.quotes = ArrayList()
@@ -61,9 +53,7 @@ class RemoteStockViewAdapter(private val widgetId: Int)
     quotes.clear()
   }
 
-  override fun getCount(): Int {
-    return quotes.size
-  }
+  override fun getCount(): Int = quotes.size
 
   override fun getViewAt(position: Int): RemoteViews {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
@@ -125,7 +115,7 @@ class RemoteStockViewAdapter(private val widgetId: Int)
     remoteViews.setTextColor(R.id.ticker, widgetData.textColor())
     remoteViews.setTextColor(R.id.totalValue, widgetData.textColor())
 
-    val fontSize = context.getFontSize()
+    val fontSize = getFontSize()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       if (stockViewLayout == R.layout.stockview3) {
         remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize)
@@ -160,4 +150,13 @@ class RemoteStockViewAdapter(private val widgetId: Int)
   override fun getItemId(position: Int): Long = position.toLong()
 
   override fun hasStableIds(): Boolean = true
+
+  private fun getFontSize(): Float {
+    val size = sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
+    return when (size) {
+      0 -> this.context.resources.getInteger(R.integer.text_size_small).toFloat()
+      2 -> this.context.resources.getInteger(R.integer.text_size_large).toFloat()
+      else -> this.context.resources.getInteger(R.integer.text_size_medium).toFloat()
+    }
+  }
 }

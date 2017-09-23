@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.settings
 import android.animation.Animator
 import android.animation.Animator.AnimatorListener
 import android.animation.AnimatorListenerAdapter
-import android.annotation.TargetApi
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
@@ -101,7 +100,6 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
       if (activity_root.viewTreeObserver.isAlive) {
         activity_root.viewTreeObserver
             .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-              @TargetApi(VERSION_CODES.LOLLIPOP)
               @RequiresApi(VERSION_CODES.LOLLIPOP)
               override fun onGlobalLayout() {
                 if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
@@ -181,41 +179,41 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     }
   }
 
-  internal fun broadcastUpdateWidget() {
+  private fun broadcastUpdateWidget() {
     widgetDataProvider.broadcastUpdateWidget(widgetId)
   }
 
-  internal fun showDialogPreference(@ArrayRes itemRes: Int,
+  private fun showDialogPreference(@ArrayRes itemRes: Int,
       listener: DialogInterface.OnClickListener) {
     AlertDialog.Builder(this)
         .setItems(itemRes, listener)
         .create().show()
   }
 
-  internal fun setWidgetNameSetting(widgetData: WidgetData) {
+  private fun setWidgetNameSetting(widgetData: WidgetData) {
     setting_widget_name.setSubtitle(widgetData.widgetName())
   }
 
-  internal fun setLayoutTypeSetting(widgetData: WidgetData) {
+  private fun setLayoutTypeSetting(widgetData: WidgetData) {
     val layoutTypeDesc = resources.getStringArray(R.array.layout_types)[widgetData.layoutPref()]
     setting_layout_type.setSubtitle(layoutTypeDesc)
   }
 
-  internal fun setBgSetting(widgetData: WidgetData) {
+  private fun setBgSetting(widgetData: WidgetData) {
     val bgDesc = resources.getStringArray(R.array.backgrounds)[widgetData.bgPref()]
     setting_background.setSubtitle(bgDesc)
   }
 
-  internal fun setTextColorSetting(widgetData: WidgetData) {
+  private fun setTextColorSetting(widgetData: WidgetData) {
     val textColorDesc = resources.getStringArray(R.array.text_colors)[widgetData.textColorPref()]
     setting_text_color.setSubtitle(textColorDesc)
   }
 
-  internal fun setBoldSetting(widgetData: WidgetData) {
+  private fun setBoldSetting(widgetData: WidgetData) {
     setting_bold_checkbox.isChecked = widgetData.isBoldEnabled()
   }
 
-  internal fun setAutoSortSetting(widgetData: WidgetData) {
+  private fun setAutoSortSetting(widgetData: WidgetData) {
     setting_autosort_checkbox.isChecked = widgetData.autoSortEnabled()
   }
 
@@ -233,7 +231,6 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     }
   }
 
-  @TargetApi(VERSION_CODES.LOLLIPOP)
   @RequiresApi(VERSION_CODES.LOLLIPOP)
   internal fun doCircularReveal(reverse: Boolean = false, listener: AnimatorListener? = null) {
     val cx = intent.getIntExtra(EXTRA_CENTER_X, resources.displayMetrics.widthPixels)

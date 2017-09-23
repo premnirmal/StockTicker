@@ -4,6 +4,8 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
+import com.github.premnirmal.ticker.home.SplashActivity
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage
@@ -33,31 +35,31 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 )
 interface AppComponent {
 
+  // Activities
+
+  fun inject(paranormalActivity: ParanormalActivity)
+
+  fun inject(settingsActivity: SettingsActivity)
+
+  fun inject(tickerSelectorActivity: TickerSelectorActivity)
+
+  fun inject(addPositionActivity: AddPositionActivity)
+
+  fun inject(editPositionActivity: EditPositionActivity)
+
+  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
+
+  fun inject(splashActivity: SplashActivity)
+
+  // Components
+
   fun inject(stocksStorage: StocksStorage)
 
   fun inject(appPreferences: AppPreferences)
 
   fun inject(stocksProvider: StocksProvider)
 
-  fun inject(widgetDataProvider: WidgetDataProvider)
-
-  fun inject(widgetData: WidgetData)
-
-  fun inject(stocksApi: StocksApi)
-
-  fun inject(paranormalActivity: ParanormalActivity)
-
-  fun inject(homeAdapter: HomePagerAdapter)
-
-  fun inject(holder: PortfolioFragment.InjectionHolder)
-
-  fun inject(settingsActivity: SettingsActivity)
-
-  fun inject(tickerSelectorActivity: TickerSelectorActivity)
-
-  fun inject(remoteStockViewAdapter: RemoteStockViewAdapter)
-
-  fun inject(stockWidget: StockWidget)
+  fun inject(alarmScheduler: AlarmScheduler)
 
   fun inject(updateReceiver: UpdateReceiver)
 
@@ -65,18 +67,32 @@ interface AppComponent {
 
   fun inject(refreshService: RefreshService)
 
-  fun inject(addPositionActivity: AddPositionActivity)
+  // Network
 
-  fun inject(editPositionActivity: EditPositionActivity)
+  fun inject(stocksApi: StocksApi)
 
   fun inject(interceptor: RequestInterceptor)
 
   fun inject(interceptor: UserAgentInterceptor)
 
-  fun inject(stocksAdapter: StocksAdapter)
+  // Widget
 
-  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
+  fun inject(stockWidget: StockWidget)
 
   fun inject(widgetClickReceiver: WidgetClickReceiver)
+
+  fun inject(widgetDataProvider: WidgetDataProvider)
+
+  fun inject(widgetData: WidgetData)
+
+  fun inject(remoteStockViewAdapter: RemoteStockViewAdapter)
+
+  // UI
+
+  fun inject(holder: PortfolioFragment.InjectionHolder)
+
+  fun inject(homeAdapter: HomePagerAdapter)
+
+  fun inject(stocksAdapter: StocksAdapter)
 
 }
