@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.AppClock
@@ -94,6 +95,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
   @Inject lateinit internal var alarmScheduler: AlarmScheduler
   @Inject lateinit internal var clock: AppClock
+  @Inject lateinit internal var mainThreadHandler: Handler
 
   private val tickerList: MutableList<String>
   private val quoteList: MutableList<Quote> = ArrayList()
@@ -189,8 +191,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
               for (exception in t.exceptions) {
                 if (exception is RobindahoodException) {
                   exception.message?.let {
-                    if (!bus.post(ErrorEvent(it)))
-                      InAppMessage.showToast(context, it)
+                    if (!bus.post(ErrorEvent(it))) {
+                      mainThreadHandler.post {
+                        InAppMessage.showToast(context, it)
+                      }
+                    }
                   }
                   break
                 }

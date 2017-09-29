@@ -23,7 +23,7 @@ class AppPreferences @Inject constructor() {
   @Inject lateinit internal var clock: AppClock
 
   // Not using clock here because this doesn't need a specific time.
-  val random = Random(System.currentTimeMillis())
+  private val random = Random(System.currentTimeMillis())
 
   init {
     Injector.appComponent.inject(this)
