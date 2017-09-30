@@ -31,12 +31,20 @@ class WidgetDataProvider {
   fun dataForWidgetId(widgetId: Int): WidgetData {
     synchronized(widgets, {
       return if (widgets.containsKey(widgetId)) {
-        widgets[widgetId]!!
+        val widgetData = widgets[widgetId]!!
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+          widgetData.addAllFromStocksProvider()
+        }
+        widgetData
       } else {
+        // check if size is 1 because the first widget just got added
         val widgetData: WidgetData = if (getAppWidgetIds().size == 1) {
           WidgetData(widgetId, true)
         } else {
           WidgetData(widgetId)
+        }
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+          widgetData.addAllFromStocksProvider()
         }
         widgets.put(widgetId, widgetData)
         widgetData

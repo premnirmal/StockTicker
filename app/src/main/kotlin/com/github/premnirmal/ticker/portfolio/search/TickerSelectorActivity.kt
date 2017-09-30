@@ -54,7 +54,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
 
   @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
 
-  internal var disposable: Disposable? = null
+  private var disposable: Disposable? = null
 
   private var widgetId = 0
 

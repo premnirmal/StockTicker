@@ -103,13 +103,15 @@ class WidgetData {
     preferences.edit().putInt(LAYOUT_TYPE, value).apply()
   }
 
-  @ColorInt fun textColor(): Int {
+  @ColorInt
+  fun textColor(): Int {
     val pref = textColorPref()
     return if (pref == 0) context.resources.getColor(R.color.white)
     else context.resources.getColor(R.color.dark_text)
   }
 
-  @LayoutRes fun stockViewLayout(): Int {
+  @LayoutRes
+  fun stockViewLayout(): Int {
     val pref = layoutPref()
     return if (pref == 0) {
       R.layout.stockview
@@ -130,7 +132,8 @@ class WidgetData {
     }
   }
 
-  @DrawableRes fun backgroundResource(): Int {
+  @DrawableRes
+  fun backgroundResource(): Int {
     val bgPref = bgPref()
     return when (bgPref) {
       TRANSLUCENT -> R.drawable.translucent_widget_bg
@@ -201,8 +204,11 @@ class WidgetData {
     scheduleUpdate()
   }
 
+  fun addAllFromStocksProvider() {
+    addTickers(stocksProvider.getTickers())
+  }
+
   fun onWidgetRemoved() {
-    stocksProvider.removeStocks(tickerList)
     preferences.edit().clear().apply()
   }
 
