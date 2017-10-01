@@ -141,12 +141,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   private fun save() {
-    preferences.edit()
-        .putString(POSITION_LIST, positionList.positionsToString())
-        .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
-        .putLong(LAST_FETCHED, lastFetched)
-        .apply()
-    storage.saveStocks(quoteList)
+    synchronized(quoteList, {
+      preferences.edit()
+          .putString(POSITION_LIST, positionList.positionsToString())
+          .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
+          .putLong(LAST_FETCHED, lastFetched)
+          .apply()
+      storage.saveStocks(quoteList)
+    })
   }
 
   override fun fetch(): Observable<List<Quote>> {
@@ -244,14 +246,16 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   override fun addStock(ticker: String): Collection<String> {
-    if (!tickerList.contains(ticker)) {
-      tickerList.add(ticker)
-      val quote = Quote()
-      quote.symbol = ticker
-      quoteList.add(quote)
-      save()
-      fetch().subscribe(SimpleSubscriber())
-    }
+    synchronized(quoteList, {
+      if (!tickerList.contains(ticker)) {
+        tickerList.add(ticker)
+        val quote = Quote()
+        quote.symbol = ticker
+        quoteList.add(quote)
+        save()
+        fetch().subscribe(SimpleSubscriber())
+      }
+    })
     return tickerList
   }
 
@@ -281,20 +285,24 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   override fun removePosition(ticker: String) {
-    val position = getStock(ticker) ?: return
-    position.isPosition = false
-    position.positionPrice = 0f
-    position.positionShares = 0
-    positionList.remove(position)
-    save()
+    synchronized(positionList, {
+      val position = getStock(ticker) ?: return
+      position.isPosition = false
+      position.positionPrice = 0f
+      position.positionShares = 0
+      positionList.remove(position)
+      save()
+    })
   }
 
   override fun addStocks(tickers: Collection<String>): Collection<String> {
-    tickers
-        .filterNot { tickerList.contains(it) }
-        .forEach { tickerList.add(it) }
-    save()
-    fetch().subscribe(SimpleSubscriber())
+    synchronized(tickerList, {
+      tickers
+          .filterNot { tickerList.contains(it) }
+          .forEach { tickerList.add(it) }
+      save()
+      fetch().subscribe(SimpleSubscriber())
+    })
     return tickerList
   }
 

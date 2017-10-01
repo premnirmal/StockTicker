@@ -16,7 +16,7 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "io.fabric.tools:gradle:1.21.6"
+    classpath "io.fabric.tools:gradle:1.24.2"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3"
     classpath('com.github.ayvazj.gradle.plugins.androlate:androlate:0.1')
