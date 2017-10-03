@@ -14,7 +14,8 @@ import javax.inject.Singleton
 /**
  * Created by premnirmal on 3/3/16.
  */
-@Singleton class StocksApi @Inject constructor() {
+@Singleton
+class StocksApi @Inject constructor() {
 
   @Inject lateinit internal var gson: Gson
   @Inject lateinit internal var financeApi: Robindahood
@@ -29,9 +30,8 @@ import javax.inject.Singleton
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
     val query = tickerList.joinToString(",")
     return financeApi.getStocks(query)
-        .map { quoteNets ->
+        .doOnNext {
           lastFetched = clock.currentTimeMillis()
-          quoteNets
         }
         .map { quoteNets ->
           val quotesMap = HashMap<String, Quote>()

@@ -70,8 +70,7 @@ class WidgetDataProvider {
   fun broadcastUpdateAllWidgets() {
     val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-    val ids = widgetManager.getAppWidgetIds(
-        ComponentName(context, StockWidget::class.java))
+    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     context.sendBroadcast(intent)
   }

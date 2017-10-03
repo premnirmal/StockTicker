@@ -178,7 +178,6 @@ class WidgetData {
     tickerList.clear()
     tickerList.addAll(tickers)
     save()
-    scheduleUpdate()
   }
 
   fun addTicker(ticker: String) {
@@ -187,21 +186,18 @@ class WidgetData {
     }
     stocksProvider.addStock(ticker)
     save()
-    scheduleUpdate()
   }
 
   fun addTickers(tickers: List<String>) {
     tickerList.addAll(tickers.filter { !tickerList.contains(it) })
     stocksProvider.addStocks(tickers)
     save()
-    scheduleUpdate()
   }
 
   fun removeStock(ticker: String) {
     tickerList.remove(ticker)
     stocksProvider.removeStock(ticker)
     save()
-    scheduleUpdate()
   }
 
   fun addAllFromStocksProvider() {
@@ -216,9 +212,5 @@ class WidgetData {
     preferences.edit()
         .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
         .apply()
-  }
-
-  private fun scheduleUpdate() {
-    stocksProvider.schedule()
   }
 }

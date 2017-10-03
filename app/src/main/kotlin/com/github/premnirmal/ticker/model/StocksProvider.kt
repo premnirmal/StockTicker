@@ -41,7 +41,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
-    fun List<Quote>.positionsToString(): String {
+    private fun List<Quote>.positionsToString(): String {
       val builder = StringBuilder()
       for (stock in this) {
         if (stock.isPosition) {
@@ -58,7 +58,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       return builder.toString()
     }
 
-    fun String.stringToPositions(): MutableList<Quote> {
+    private fun String.stringToPositions(): MutableList<Quote> {
       val tickerListCSV = ArrayList(Arrays.asList(
           *this.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
       val stockList = ArrayList<Quote>()
@@ -79,12 +79,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       return stockList
     }
 
-    internal val LAST_FETCHED = "LAST_FETCHED"
-    internal val NEXT_FETCH = "NEXT_FETCH"
-    internal val POSITION_LIST = "POSITION_LIST"
-    internal val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
-
-    val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
+    private val LAST_FETCHED = "LAST_FETCHED"
+    private val NEXT_FETCH = "NEXT_FETCH"
+    private val POSITION_LIST = "POSITION_LIST"
+    private val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
+    private val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
   }
 
   @Inject lateinit internal var api: StocksApi
@@ -151,6 +150,52 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     })
   }
 
+  private fun retryWithBackoff() {
+    val backOffTimeMs = exponentialBackoff.getBackoffDurationMs(backOffAttemptCount++)
+    saveBackOffAttemptCount()
+    scheduleUpdateWithMs(backOffTimeMs)
+  }
+
+  private fun saveBackOffAttemptCount() {
+    appPreferences.setBackOffAttemptCount(backOffAttemptCount)
+  }
+
+  private fun scheduleUpdate(refresh: Boolean = false) {
+    scheduleUpdateWithMs(msToNextAlarm, refresh)
+  }
+
+  private val msToNextAlarm: Long
+    get() = alarmScheduler.msToNextAlarm(lastFetched)
+
+  private fun scheduleUpdateWithMs(msToNextAlarm: Long, refresh: Boolean = false) {
+    val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
+    nextFetch = updateTime.toInstant().toEpochMilli()
+    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
+    appPreferences.setRefreshing(false)
+    widgetDataProvider.broadcastUpdateAllWidgets()
+    if (refresh) {
+      bus.post(RefreshEvent())
+    }
+  }
+
+  private fun ZonedDateTime.createTimeString(): String {
+    val fetched: String
+    val fetchedDayOfWeek = dayOfWeek.value
+    val today = clock.todayZoned().dayOfWeek.value
+    fetched = if (today == fetchedDayOfWeek) {
+      AppPreferences.TIME_FORMATTER.format(this)
+    } else {
+      val day: String = DayOfWeek.from(this).getDisplayName(SHORT, Locale.getDefault())
+      val timeStr: String = AppPreferences.TIME_FORMATTER.format(this)
+      "$timeStr $day"
+    }
+    return fetched
+  }
+
+  /////////////////////
+  // public api
+  /////////////////////
+
   override fun fetch(): Observable<List<Quote>> {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
@@ -163,7 +208,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             appPreferences.setRefreshing(true)
             widgetDataProvider.broadcastUpdateAllWidgets()
           }
-          .map { stocks ->
+          .doOnNext { stocks ->
             if (stocks.isEmpty()) {
               bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
               throw RuntimeException("No symbols in portfolio")
@@ -176,16 +221,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 lastFetched = api.lastFetched
                 save()
               })
-              stocks
             }
-          }
-          .doOnNext { _ ->
-            appPreferences.setRefreshing(false)
-            synchronized(quoteList, {
-              backOffAttemptCount = 1
-              saveBackOffAttemptCount()
-              scheduleUpdate(true)
-            })
           }
           .doOnError { t ->
             appPreferences.setRefreshing(false)
@@ -206,7 +242,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
               Timber.e(t)
             }
             retryWithBackoff()
-            widgetDataProvider.broadcastUpdateAllWidgets()
+          }
+          .doOnComplete {
+            appPreferences.setRefreshing(false)
+            synchronized(quoteList, {
+              backOffAttemptCount = 1
+              saveBackOffAttemptCount()
+              scheduleUpdate(true)
+            })
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())
@@ -215,34 +258,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun schedule() {
     scheduleUpdate()
-  }
-
-  private fun retryWithBackoff() {
-    val backOffTimeMs = exponentialBackoff.getBackoffDurationMs(backOffAttemptCount++)
-    saveBackOffAttemptCount()
-    scheduleUpdateWithMs(backOffTimeMs)
-  }
-
-  private fun saveBackOffAttemptCount() {
-    appPreferences.setBackOffAttemptCount(backOffAttemptCount)
-  }
-
-  private fun scheduleUpdate(refresh: Boolean = false) {
-    scheduleUpdateWithMs(msToNextAlarm, refresh)
-  }
-
-  private val msToNextAlarm: Long
-    get() = alarmScheduler.msToNextAlarm()
-
-  private fun scheduleUpdateWithMs(msToNextAlarm: Long, refresh: Boolean = false) {
-    val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
-    nextFetch = updateTime.toInstant().toEpochMilli()
-    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
-    appPreferences.setRefreshing(false)
-    widgetDataProvider.broadcastUpdateAllWidgets()
-    if (refresh) {
-      bus.post(RefreshEvent())
-    }
   }
 
   override fun addStock(ticker: String): Collection<String> {
@@ -320,7 +335,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       positionList.remove(dummy)
       positionList.remove(dummy2)
       save()
-      scheduleUpdateWithMs(msToNextAlarm)
+      scheduleUpdate()
       return tickerList
     })
   }
@@ -341,7 +356,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         positionList.remove(dummy2)
       }
       save()
-      scheduleUpdateWithMs(msToNextAlarm)
+      scheduleUpdate()
     })
   }
 
@@ -366,23 +381,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     fetched = if (lastFetched > 0L) {
       val instant = Instant.ofEpochMilli(lastFetched)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-      createTimeString(time)
+      time.createTimeString()
     } else {
       "--"
-    }
-    return fetched
-  }
-
-  private fun createTimeString(time: ZonedDateTime): String {
-    val fetched: String
-    val fetchedDayOfWeek = time.dayOfWeek.value
-    val today = clock.todayZoned().dayOfWeek.value
-    fetched = if (today == fetchedDayOfWeek) {
-      AppPreferences.TIME_FORMATTER.format(time)
-    } else {
-      val day: String = DayOfWeek.from(time).getDisplayName(SHORT, Locale.getDefault())
-      val timeStr: String = AppPreferences.TIME_FORMATTER.format(time)
-      "$timeStr $day"
     }
     return fetched
   }
@@ -392,7 +393,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     fetch = if (nextFetch > 0) {
       val instant = Instant.ofEpochMilli(nextFetch)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-      createTimeString(time)
+      time.createTimeString()
     } else {
       "--"
     }

@@ -17,12 +17,16 @@ class AlarmSchedulerTest : BaseUnitTest() {
     private const val TIME_3 = 1494756300000L // Sunday 05/14/2017 10:05
     private const val TIME_4 = 1494957600000L // Tuesday 05/16/2017 18:00
     private const val TIME_5 = 1494612000000L // Friday 05/12/2017 18:00
+    private const val TIME_6 = 1494951600000L // Tuesday 05/16/2017 16:20
+    private const val TIME_7 = 1494950100000L // Tuesday 05/16/2017 15:55
 
     private const val FLIP_TIME_1 = 1494885600000L // Monday 05/15/2017 22:00
     private const val FLIP_TIME_2 = 1494712800000L // Saturday 05/13/2017 22:00
     private const val FLIP_TIME_3 = 1494799200000L // Sunday 05/14/2017 22:00
     private const val FLIP_TIME_4 = 1494914400000L // Tuesday 05/16/2017 06:00
     private const val FLIP_TIME_5 = 1494568800000L // Friday 05/12/2017 06:00
+
+    private const val ONE_MINUTE_MS = 60 * 1000L
 
     private val alarmScheduler: AlarmScheduler = AlarmScheduler()
     private val appPreferences: AppPreferences = alarmScheduler.appPreferences
@@ -43,6 +47,19 @@ class AlarmSchedulerTest : BaseUnitTest() {
     `when`(clock.elapsedRealtime()).thenReturn(now)
     `when`(clock.todayLocal()).thenReturn(localDateTime)
     `when`(clock.todayZoned()).thenReturn(zonedDateTime)
+  }
+
+  @Test
+  fun testAlarmTime_pastEndTime_withLastFetched_beforeEndTime() {
+    setStartAndEndTime("09:30", "16:00")
+    // Tuesday 16:20. Set the current time to be after the end time
+    setNow(TIME_6)
+    // Set last fetched to be before the end time
+    val lastFetched = TIME_7 // 15:55
+
+    // The next update should be in one minute
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(lastFetched)
+    assertEquals(ONE_MINUTE_MS, msToNextAlarm)
   }
 
   @Test

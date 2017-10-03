@@ -9,8 +9,8 @@ class ExponentialBackoffTest : BaseUnitTest() {
 
   @Test
   fun testBackoffValue() {
-    // Test backoff attempts 1-5
-    for (count in 1..5) {
+    // Test backoff attempts 1-3
+    for (count in 1..3) {
       assertEquals(exponentialBackoff.baseMs *
           Math.pow(exponentialBackoff.backoffFactor.toDouble(), count.toDouble()).toLong(),
           exponentialBackoff.getBackoffDurationMs(count))

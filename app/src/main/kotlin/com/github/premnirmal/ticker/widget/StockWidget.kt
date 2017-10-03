@@ -54,15 +54,15 @@ class StockWidget() : AppWidgetProvider() {
     Analytics.INSTANCE.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       Timber.d("onUpdate" + widgetId)
-      val min_width: Int
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      val minimumWidth: Int
+      minimumWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
-        min_width = getMinWidgetWidth(options)
+        getMinWidgetWidth(options)
       } else {
-        min_width = appWidgetManager.getAppWidgetInfo(widgetId).minWidth
+        appWidgetManager.getAppWidgetInfo(widgetId).minWidth
       }
-      val remoteViews: RemoteViews = createRemoteViews(context, min_width)
-      updateWidget(context, widgetId, remoteViews, min_width, appWidgetManager)
+      val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
+      updateWidget(context, widgetId, remoteViews, minimumWidth, appWidgetManager)
       appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.list)
     }
     super.onUpdate(context, appWidgetManager, appWidgetIds)
@@ -72,10 +72,10 @@ class StockWidget() : AppWidgetProvider() {
       appWidgetId: Int, newOptions: Bundle) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     Timber.d("onAppWidgetOptionsChanged" + appWidgetId.toString())
-    val min_width = getMinWidgetWidth(newOptions)
-    val remoteViews: RemoteViews = createRemoteViews(context, min_width)
-    Analytics.INSTANCE.trackWidgetSizeUpdate("${min_width}px")
-    updateWidget(context, appWidgetId, remoteViews, min_width, appWidgetManager)
+    val minimumWidth = getMinWidgetWidth(newOptions)
+    val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
+    Analytics.INSTANCE.trackWidgetSizeUpdate("${minimumWidth}px")
+    updateWidget(context, appWidgetId, remoteViews, minimumWidth, appWidgetManager)
   }
 
   override fun onEnabled(context: Context?) {
