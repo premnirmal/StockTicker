@@ -82,7 +82,7 @@ class AlarmScheduler @Inject constructor() {
       } else {
         mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
         if (dayOfWeek == FRIDAY) {
-          mutableDateTime.plusDays(3)
+          mutableDateTime = mutableDateTime.plusDays(3)
         } else if (dayOfWeek == SATURDAY) {
           mutableDateTime = mutableDateTime.plusDays(2)
         } else if (dayOfWeek == SUNDAY || !inverse) {
