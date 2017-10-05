@@ -135,7 +135,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList, {
       quoteList.clear()
       quoteList.addAll(storage.readStocks())
-      scheduleUpdate()
     })
   }
 
@@ -377,26 +376,26 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun getTickers(): List<String> = ArrayList(tickerList)
 
   override fun lastFetched(): String {
-    val fetched: String
-    fetched = if (lastFetched > 0L) {
+    return if (lastFetched > 0L) {
       val instant = Instant.ofEpochMilli(lastFetched)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       time.createTimeString()
     } else {
       "--"
     }
-    return fetched
   }
 
   override fun nextFetch(): String {
-    val fetch: String
-    fetch = if (nextFetch > 0) {
+    return if (nextFetch > 0) {
       val instant = Instant.ofEpochMilli(nextFetch)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       time.createTimeString()
     } else {
       "--"
     }
-    return fetch
+  }
+
+  override fun nextFetchMs(): Long {
+    return nextFetch
   }
 }

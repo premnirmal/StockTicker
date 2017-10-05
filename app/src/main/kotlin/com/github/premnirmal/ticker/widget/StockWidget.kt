@@ -85,7 +85,9 @@ class StockWidget() : AppWidgetProvider() {
       injected = true
     }
     Timber.d("onEnabled")
-    stocksProvider.schedule()
+    if (stocksProvider.nextFetchMs() <= 0) {
+      stocksProvider.schedule()
+    }
   }
 
   override fun onDisabled(context: Context?) {
@@ -104,29 +106,25 @@ class StockWidget() : AppWidgetProvider() {
   }
 
   private fun createRemoteViews(context: Context, min_width: Int): RemoteViews {
-    val remoteViews: RemoteViews
-    if (min_width > 750) {
-      remoteViews = RemoteViews(context.packageName, R.layout.widget_4x1)
-    } else if (min_width > 500) {
-      remoteViews = RemoteViews(context.packageName, R.layout.widget_3x1)
-    } else if (min_width > 250) {
-      // 3x2
-      remoteViews = RemoteViews(context.packageName, R.layout.widget_2x1)
-    } else {
-      // 2x1
-      remoteViews = RemoteViews(context.packageName, R.layout.widget_1x1)
+    val remoteViews: RemoteViews = when {
+      min_width > 750 -> RemoteViews(context.packageName, R.layout.widget_4x1)
+      min_width > 500 -> RemoteViews(context.packageName, R.layout.widget_3x1)
+      min_width > 250 -> // 3x2
+        RemoteViews(context.packageName, R.layout.widget_2x1)
+      else -> // 2x1
+        RemoteViews(context.packageName, R.layout.widget_1x1)
     }
     return remoteViews
   }
 
   private fun getMinWidgetWidth(options: Bundle?): Int {
-    if (options == null || !options.containsKey(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
-      return 0 // 2x1
+    return if (options == null || !options.containsKey(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
+      0 // 2x1
     } else {
       if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-        return options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) as Int
+        options.get(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH) as Int
       } else {
-        return 0
+        0
       }
     }
   }
