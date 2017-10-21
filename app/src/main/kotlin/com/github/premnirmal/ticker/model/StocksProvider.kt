@@ -216,7 +216,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 tickerList.clear()
                 stocks.mapTo(tickerList) { it.symbol }
                 quoteList.clear()
-                quoteList.addAll(stocks)
+                for (stock in stocks) {
+                  if (positionList.contains(stock)) {
+                    stock.isPosition = positionList[positionList.indexOf(stock)].isPosition
+                    stock.positionPrice = positionList[positionList.indexOf(stock)].positionPrice
+                    stock.positionShares = positionList[positionList.indexOf(stock)].positionShares
+                  }
+                  quoteList.add(stock)
+                }
                 lastFetched = api.lastFetched
                 save()
               })
@@ -244,11 +251,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           }
           .doOnComplete {
             appPreferences.setRefreshing(false)
-            synchronized(quoteList, {
-              backOffAttemptCount = 1
-              saveBackOffAttemptCount()
-              scheduleUpdate(true)
-            })
+            backOffAttemptCount = 1
+            saveBackOffAttemptCount()
+            scheduleUpdate(true)
           }
           .subscribeOn(Schedulers.io())
           .observeOn(AndroidSchedulers.mainThread())

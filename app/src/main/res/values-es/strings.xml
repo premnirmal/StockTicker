@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
   <string name="portfolio">Portafolio</string>
   <string name="widget_label">StocksWidget</string>
   <string name="action_add">Añadir</string>

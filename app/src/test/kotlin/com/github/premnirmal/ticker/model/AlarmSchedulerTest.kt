@@ -67,7 +67,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("09:30", "16:30")
     setNow(TIME_1)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     assertEquals(appPreferences.updateIntervalMs, msToNextAlarm)
   }
 
@@ -76,7 +76,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("09:30", "16:30")
     setNow(TIME_4)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val nextDay = appPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
     val expectedNext = nextDay.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -88,7 +88,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("09:30", "16:30")
     setNow(TIME_5)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val followingMonday = appPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(3)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -100,7 +100,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("09:30", "16:30")
     setNow(TIME_2)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val followingMonday = appPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(2)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -112,7 +112,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("09:30", "16:30")
     setNow(TIME_3)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val followingMonday = appPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -128,7 +128,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("21:00", "04:00")
     setNow(FLIP_TIME_1)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     assertEquals(appPreferences.updateIntervalMs, msToNextAlarm)
   }
 
@@ -137,7 +137,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("21:00", "04:00")
     setNow(FLIP_TIME_4)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val nextDay = appPreferences.clock().todayZoned().withHour(21).withMinute(0)
     val expectedNext = nextDay.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -149,7 +149,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("21:00", "04:00")
     setNow(FLIP_TIME_5)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val followingMonday = appPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(3)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -161,7 +161,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("21:00", "04:00")
     setNow(FLIP_TIME_2)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val followingMonday = appPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(2)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()
@@ -173,7 +173,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setStartAndEndTime("21:00", "04:00")
     setNow(FLIP_TIME_3)
 
-    val msToNextAlarm = alarmScheduler.msToNextAlarm()
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
     val followingMonday = appPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(1)
     val expectedNext = followingMonday.toInstant().toEpochMilli() -
         appPreferences.clock().currentTimeMillis()

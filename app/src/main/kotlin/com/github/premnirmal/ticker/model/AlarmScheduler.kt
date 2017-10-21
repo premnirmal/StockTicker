@@ -38,7 +38,7 @@ class AlarmScheduler @Inject constructor() {
   /**
    * Takes care of weekends and after hours
    */
-  fun msToNextAlarm(lastFetchedMs: Long = 0L): Long {
+  fun msToNextAlarm(lastFetchedMs: Long): Long {
     val dayOfWeek = clock.todayLocal().dayOfWeek
     val startTimez = appPreferences.startTime()
     val endTimez = appPreferences.endTime()
@@ -57,8 +57,8 @@ class AlarmScheduler @Inject constructor() {
       endTime = endTime.plusDays(1)
     }
 
-    val instant = Instant.ofEpochMilli(lastFetchedMs)
-    val lastFetchedTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val lastFetchedTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(lastFetchedMs), ZoneId.systemDefault())
 
     val msToNextAlarm: Long
     if (now.isBefore(endTime)
