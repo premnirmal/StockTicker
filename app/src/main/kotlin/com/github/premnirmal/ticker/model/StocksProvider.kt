@@ -218,9 +218,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 quoteList.clear()
                 for (stock in stocks) {
                   if (positionList.contains(stock)) {
-                    stock.isPosition = positionList[positionList.indexOf(stock)].isPosition
-                    stock.positionPrice = positionList[positionList.indexOf(stock)].positionPrice
-                    stock.positionShares = positionList[positionList.indexOf(stock)].positionShares
+                    val index = positionList.indexOf(stock)
+                    stock.isPosition = positionList[index].isPosition
+                    stock.positionPrice = positionList[index].positionPrice
+                    stock.positionShares = positionList[index].positionShares
                   }
                   quoteList.add(stock)
                 }
