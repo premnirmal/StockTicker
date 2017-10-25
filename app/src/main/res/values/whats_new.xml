@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Fixed issue with positions disappearing</item>
+    <item>Optimizations :)</item>
   </string-array>
 </resources>
