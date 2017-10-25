@@ -11,9 +11,7 @@ import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.widget.RefreshReceiver
-import org.threeten.bp.DayOfWeek.FRIDAY
-import org.threeten.bp.DayOfWeek.SATURDAY
-import org.threeten.bp.DayOfWeek.SUNDAY
+import org.threeten.bp.DayOfWeek.*
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -108,8 +106,13 @@ class AlarmScheduler @Inject constructor() {
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
           updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-          clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+      if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
+        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+      } else {
+        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+      }
     }
     return nextAlarmDate
   }
