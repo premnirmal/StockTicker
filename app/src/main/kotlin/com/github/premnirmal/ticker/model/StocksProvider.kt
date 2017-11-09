@@ -195,6 +195,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   // public api
   /////////////////////
 
+  override fun hasTicker(ticker: String): Boolean {
+    return tickerList.contains(ticker)
+  }
+
   override fun fetch(): Observable<List<Quote>> {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
@@ -231,6 +235,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
             }
           }
           .doOnError { t ->
+            var errorPosted = false
             appPreferences.setRefreshing(false)
             if (t is CompositeException) {
               for (exception in t.exceptions) {
@@ -240,6 +245,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                       mainThreadHandler.post {
                         InAppMessage.showToast(context, it)
                       }
+                      errorPosted = true
                     }
                   }
                   break
@@ -247,6 +253,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
               }
             } else {
               Timber.e(t)
+            }
+            if (!errorPosted) {
+              mainThreadHandler.post {
+                InAppMessage.showToast(context, R.string.refresh_failed)
+              }
             }
             retryWithBackoff()
           }

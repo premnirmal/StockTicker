@@ -170,7 +170,7 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
   override fun onSuggestionClick(suggestion: Suggestion) {
     val ticker = suggestion.symbol
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    if (!widgetData.getTickers().contains(ticker)) {
+    if (!widgetData.hasTicker(ticker)) {
       widgetData.addTicker(ticker)
       widgetDataProvider.broadcastUpdateWidget(widgetId)
       InAppMessage.showMessage(this, getString(R.string.added_to_list, ticker))

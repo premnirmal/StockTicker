@@ -174,6 +174,19 @@ class WidgetData {
 
   fun getTickers(): List<String> = tickerList
 
+  fun hasTicker(symbol: String): Boolean {
+    for (ticker in tickerList) {
+      if (!stocksProvider.hasTicker(ticker)) {
+        tickerList.remove(ticker)
+      } else {
+        if (ticker == symbol) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   fun rearrange(tickers: List<String>) {
     tickerList.clear()
     tickerList.addAll(tickers)

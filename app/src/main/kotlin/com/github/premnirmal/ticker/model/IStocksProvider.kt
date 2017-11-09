@@ -26,6 +26,8 @@ interface IStocksProvider {
 
   fun removeStocks(tickers: Collection<String>)
 
+  fun hasTicker(ticker: String): Boolean
+
   fun addStock(ticker: String): Collection<String>
 
   fun addStocks(tickers: Collection<String>): Collection<String>

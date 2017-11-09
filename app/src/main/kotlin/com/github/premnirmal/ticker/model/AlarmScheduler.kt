@@ -11,7 +11,9 @@ import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.widget.RefreshReceiver
-import org.threeten.bp.DayOfWeek.*
+import org.threeten.bp.DayOfWeek.FRIDAY
+import org.threeten.bp.DayOfWeek.SATURDAY
+import org.threeten.bp.DayOfWeek.SUNDAY
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -69,7 +71,7 @@ class AlarmScheduler @Inject constructor() {
         mutableDateTime.plusSeconds(appPreferences.updateIntervalMs / 1000L)
       }
     } else if (!inverse && now.isBefore(startTime) && dayOfWeek <= FRIDAY) {
-      mutableDateTime = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
+      mutableDateTime = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
         mutableDateTime.plusMinutes(1)
       } else {
         mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
