@@ -196,7 +196,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   /////////////////////
 
   override fun hasTicker(ticker: String): Boolean {
-    return tickerList.contains(ticker)
+    synchronized(tickerList, {
+      return tickerList.contains(ticker)
+    })
   }
 
   override fun fetch(): Observable<List<Quote>> {
