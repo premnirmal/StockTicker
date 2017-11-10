@@ -113,12 +113,10 @@ class WidgetData {
   @LayoutRes
   fun stockViewLayout(): Int {
     val pref = layoutPref()
-    return if (pref == 0) {
-      R.layout.stockview
-    } else if (pref == 1) {
-      R.layout.stockview2
-    } else {
-      R.layout.stockview3
+    return when (pref) {
+      0 -> R.layout.stockview
+      1 -> R.layout.stockview2
+      else -> R.layout.stockview3
     }
   }
 
@@ -175,42 +173,55 @@ class WidgetData {
   fun getTickers(): List<String> = tickerList
 
   fun hasTicker(symbol: String): Boolean {
-    for (ticker in tickerList) {
-      if (!stocksProvider.hasTicker(ticker)) {
-        tickerList.remove(ticker)
-      } else {
-        if (ticker == symbol) {
-          return true
+    synchronized(tickerList, {
+      var found = false
+      val toRemove: MutableList<String> = ArrayList()
+      for (ticker in tickerList) {
+        if (!stocksProvider.hasTicker(ticker)) {
+          toRemove.add(ticker)
+        } else {
+          if (ticker == symbol) {
+            found = true
+          }
         }
       }
-    }
-    return false
+      tickerList.removeAll(toRemove)
+      return found
+    })
   }
 
   fun rearrange(tickers: List<String>) {
-    tickerList.clear()
-    tickerList.addAll(tickers)
-    save()
+    synchronized(tickerList, {
+      tickerList.clear()
+      tickerList.addAll(tickers)
+      save()
+    })
   }
 
   fun addTicker(ticker: String) {
-    if (!tickerList.contains(ticker)) {
-      tickerList.add(ticker)
-    }
-    stocksProvider.addStock(ticker)
-    save()
+    synchronized(tickerList, {
+      if (!tickerList.contains(ticker)) {
+        tickerList.add(ticker)
+      }
+      stocksProvider.addStock(ticker)
+      save()
+    })
   }
 
   fun addTickers(tickers: List<String>) {
-    tickerList.addAll(tickers.filter { !tickerList.contains(it) })
-    stocksProvider.addStocks(tickers)
-    save()
+    synchronized(tickerList, {
+      tickerList.addAll(tickers.filter { !tickerList.contains(it) })
+      stocksProvider.addStocks(tickers)
+      save()
+    })
   }
 
   fun removeStock(ticker: String) {
-    tickerList.remove(ticker)
-    stocksProvider.removeStock(ticker)
-    save()
+    synchronized(tickerList, {
+      tickerList.remove(ticker)
+      stocksProvider.removeStock(ticker)
+      save()
+    })
   }
 
   fun addAllFromStocksProvider() {
@@ -222,8 +233,10 @@ class WidgetData {
   }
 
   private fun save() {
-    preferences.edit()
-        .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
-        .apply()
+    synchronized(tickerList, {
+      preferences.edit()
+          .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
+          .apply()
+    })
   }
 }

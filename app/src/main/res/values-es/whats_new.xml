@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><resources>
 <string-array name="whats_new">
+    <item>Crashfix para cuando se agregan símbolos</item>
     <item>El símbolo de reparación ya está en el error de cartera</item>
   </string-array>
 </resources>
