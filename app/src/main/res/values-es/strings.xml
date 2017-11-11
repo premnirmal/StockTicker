@@ -10,6 +10,7 @@
   <string name="export_desc">Exportar citas a un archivo .txt separado por comas. El archivo se almacenará en StockTickers/Tickers.txt</string>
   <string name="action_import">Importar cotizaciones</string>
   <string name="import_desc">Importar citas de un archivo .txt separado por comas</string>
+  <string name="app_settings">Ajustes de Aplicacion</string>
   <string name="action_Settings">Configuración del widget</string>
   <string name="action_rearrage">Reorganizar Acciones</string>
   <string name="action_update">Refresca ahora</string>
@@ -88,11 +89,15 @@
   <string name="cannot_import_msg">No se puede importar comillas sin permiso para leer almacenamiento externo</string>
   <string name="cannot_share_msg">No puede compartir comillas sin permiso para escribir en un almacenamiento externo</string>
   <string name="exported_to">Se exporta a%1$s</string>
+  <string name="whats_new">Qué es nuevo</string>
   <string name="whats_new_in">Qué es nuevo en v%1$s</string>
   <string name="enter_a_symbol">Introduzca un símbolo</string>
   <string name="no_symbols">¯\\_(ツ)_/¯\nNo hay símbolos</string>
   <string name="widget_name">Nombre del widget</string>
   <string name="widget_name_updated">Nombre del widget actualizado</string>
   <string name="set">Fijado</string>
-  <string name="app_settings">Ajustes de Aplicacion</string>
+
+  <string name="tutorial">Tutorial</string>
+  <string name="how_to_title">Cómo agregar un widget</string>
+  <string name="how_to">- Mantenga pulsado un espacio en blanco en su pantalla de inicio para que aparezca el menú\n\n- Ahora seleccione la opción \'Widgets\'.\n\n- Seleccione el elemento \'Stocks Widget\' de la lista de widgets.\n\n- Puede agregar múltiples widgets, cada uno con su propio portafolio.</string>
 </resources>

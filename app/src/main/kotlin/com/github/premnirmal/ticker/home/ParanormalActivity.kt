@@ -32,6 +32,8 @@ import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.array
+import com.github.premnirmal.tickerwidget.R.string
 import kotlinx.android.synthetic.main.activity_paranormal.add_stocks_container
 import kotlinx.android.synthetic.main.activity_paranormal.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.activity_paranormal.edit_widget_container
@@ -102,19 +104,13 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     tabs?.setupWithViewPager(view_pager)
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
 
+    val tutorialShown = appPreferences.tutorialShown()
+    if (!tutorialShown) {
+      showTutorial()
+    }
+
     if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
-      appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-      val stringBuilder = StringBuilder()
-      val whatsNew = resources.getStringArray(R.array.whats_new)
-      whatsNew.indices.forEach {
-        stringBuilder.append("- ")
-        stringBuilder.append(whatsNew[it])
-        if (it != whatsNew.size - 1) {
-          stringBuilder.append("\n")
-        }
-      }
-      showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
-          stringBuilder.toString())
+      showWhatsNew()
     } else {
       maybeAskToRate()
     }
@@ -122,12 +118,21 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     toolbar.inflateMenu(R.menu.menu_paranormal)
     toolbar.setOnMenuItemClickListener { item ->
       val itemId = item.itemId
-      if (itemId == R.id.action_settings) {
-        val intent = Intent(this, SettingsActivity::class.java)
-        startActivity(intent)
-        true
-      } else {
-        false
+      when (itemId) {
+        R.id.action_settings -> {
+          val intent = Intent(this, SettingsActivity::class.java)
+          startActivity(intent)
+          true
+        }
+        R.id.action_tutorial -> {
+          showTutorial()
+          true
+        }
+        R.id.action_whats_new -> {
+          showWhatsNew()
+          true
+        }
+        else -> false
       }
     }
 
@@ -163,6 +168,26 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     fab_bg.setOnClickListener {
       closeFABMenu()
     }
+  }
+
+  private fun showTutorial() {
+    showDialog(getString(string.how_to_title), getString(string.how_to))
+    appPreferences.setTutorialShown(true)
+  }
+
+  private fun showWhatsNew() {
+    appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
+    val stringBuilder = StringBuilder()
+    val whatsNew = resources.getStringArray(array.whats_new)
+    whatsNew.indices.forEach {
+      stringBuilder.append("- ")
+      stringBuilder.append(whatsNew[it])
+      if (it != whatsNew.size - 1) {
+        stringBuilder.append("\n")
+      }
+    }
+    showDialog(getString(string.whats_new_in, BuildConfig.VERSION_NAME),
+        stringBuilder.toString())
   }
 
   private fun openWidgetSettings(v: View, widgetId: Int) {

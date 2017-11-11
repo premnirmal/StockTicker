@@ -66,6 +66,14 @@ class AppPreferences @Inject constructor() {
     sharedPreferences.edit().putBoolean(WIDGET_REFRESHING, refreshing).apply()
   }
 
+  fun tutorialShown(): Boolean {
+    return sharedPreferences.getBoolean(TUTORIAL_SHOWN, false)
+  }
+
+  fun setTutorialShown(shown: Boolean) {
+    sharedPreferences.edit().putBoolean(TUTORIAL_SHOWN, shown).apply()
+  }
+
   fun userDidRate() {
     sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
   }
@@ -104,6 +112,7 @@ class AppPreferences @Inject constructor() {
     const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
     const val START_TIME = "START_TIME"
     const val END_TIME = "END_TIME"
+    const val TUTORIAL_SHOWN = "TUTORIAL_SHOWN"
     const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"
