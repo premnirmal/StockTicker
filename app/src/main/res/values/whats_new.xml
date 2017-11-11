@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Minor drag and drop fix</item>
     <item>Crashfix for when adding symbols</item>
     <item>Fixing symbol already in portfolio error</item>
   </string-array>

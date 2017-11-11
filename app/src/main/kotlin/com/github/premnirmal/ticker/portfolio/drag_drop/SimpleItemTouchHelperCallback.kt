@@ -22,7 +22,8 @@ internal class SimpleItemTouchHelperCallback(
   override fun getMovementFlags(recyclerView: RecyclerView,
       viewHolder: RecyclerView.ViewHolder): Int {
     return if (recyclerView.layoutManager is GridLayoutManager) {
-      val dragFlags: Int = ItemTouchHelper.UP or (ItemTouchHelper.DOWN) or (ItemTouchHelper.LEFT) or (ItemTouchHelper.RIGHT)
+      val dragFlags: Int = ItemTouchHelper.UP or (ItemTouchHelper.DOWN) or
+          (ItemTouchHelper.LEFT) or (ItemTouchHelper.RIGHT)
       val swipeFlags = 0
       makeMovementFlags(dragFlags, swipeFlags)
     } else {
@@ -34,9 +35,6 @@ internal class SimpleItemTouchHelperCallback(
 
   override fun onMove(recyclerView: RecyclerView, source: RecyclerView.ViewHolder,
       target: RecyclerView.ViewHolder): Boolean {
-    if (source.itemViewType != target.itemViewType) {
-      return false
-    }
     adapter.onItemMove(source.adapterPosition, target.adapterPosition)
     return true
   }
