@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network.data
 
 import com.github.premnirmal.ticker.AppPreferences
-import java.io.Serializable
 
 /**
  * Created by premnirmal on 3/30/17.
@@ -17,7 +16,7 @@ data class Quote(var symbol: String = "",
   // Add Position fields
   var isPosition: Boolean = false
   var positionPrice: Float = 0.toFloat()
-  var positionShares: Int = 0
+  var positionShares: Float = 0.toFloat()
 
   override fun equals(other: Any?): Boolean {
     if (other is Quote) {

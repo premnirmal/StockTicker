@@ -1,6 +1,8 @@
 package com.github.premnirmal.ticker.portfolio
 
 import android.os.Bundle
+import android.text.InputFilter
+import android.text.Spanned
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -12,7 +14,9 @@ import kotlinx.android.synthetic.main.activity_positions.shares
 import kotlinx.android.synthetic.main.activity_positions.skipButton
 import kotlinx.android.synthetic.main.activity_positions.tickerName
 import kotlinx.android.synthetic.main.activity_positions.toolbar
+import java.util.regex.Pattern
 import javax.inject.Inject
+
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -21,6 +25,17 @@ open class AddPositionActivity : BaseActivity() {
 
   companion object {
     const val TICKER = "TICKER"
+    private val PATTERN: Pattern = Pattern.compile(
+        "[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (1) + "})?)||(\\.)?")
+
+    private class DecimalDigitsInputFilter() : InputFilter {
+
+      override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dStart: Int,
+          dEnd: Int): CharSequence? {
+        val matcher = PATTERN.matcher(dest)
+        return if (!matcher.matches()) "" else null
+      }
+    }
   }
 
   @Inject lateinit internal var stocksProvider: IStocksProvider
@@ -49,7 +64,8 @@ open class AddPositionActivity : BaseActivity() {
 
     skipButton.setOnClickListener { skip() }
 
-    price.addTextChangedListener(PriceTextChangeListener())
+    price.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter())
+    shares.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter())
   }
 
   protected open fun skip() {
@@ -63,7 +79,7 @@ open class AddPositionActivity : BaseActivity() {
     val sharesText = sharesView.text.toString()
     if (!priceText.isEmpty() && !sharesText.isEmpty()) {
       val price = java.lang.Float.parseFloat(priceText)
-      val shares = java.lang.Integer.parseInt(sharesText)
+      val shares = java.lang.Float.parseFloat(sharesText)
       stocksProvider.addPosition(ticker, shares, price)
     }
     finish()

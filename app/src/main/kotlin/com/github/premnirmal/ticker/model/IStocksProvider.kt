@@ -32,7 +32,7 @@ interface IStocksProvider {
 
   fun addStocks(tickers: Collection<String>): Collection<String>
 
-  fun addPosition(ticker: String, shares: Int, price: Float)
+  fun addPosition(ticker: String, shares: Float, price: Float)
 
   fun removePosition(ticker: String)
 }

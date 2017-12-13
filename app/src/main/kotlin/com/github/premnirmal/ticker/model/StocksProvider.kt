@@ -72,7 +72,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           tmpQuote.isPosition = true
           tmpQuote.symbol = tickerFields[0]
           tmpQuote.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
-          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3]).toInt()
+          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3])
           stockList.add(tmpQuote)
         }
       }
@@ -292,7 +292,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     return tickerList
   }
 
-  override fun addPosition(ticker: String, shares: Int, price: Float) {
+  override fun addPosition(ticker: String, shares: Float, price: Float) {
     synchronized(quoteList, {
       var position = getStock(ticker)
       if (position == null) {
@@ -322,7 +322,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       val position = getStock(ticker) ?: return
       position.isPosition = false
       position.positionPrice = 0f
-      position.positionShares = 0
+      position.positionShares = 0f
       positionList.remove(position)
       save()
     })

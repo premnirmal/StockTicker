@@ -56,8 +56,8 @@
         android:layout_gravity="center_vertical|right"
         android:layout_weight="0.6"
         android:gravity="end"
-        android:inputType="number"
-        android:maxLength="6"
+        android:inputType="numberDecimal"
+        android:maxLength="9"
         android:maxLines="1"
         android:nextFocusForward="@+id/price"
         android:textAlignment="textEnd"
@@ -91,7 +91,7 @@
         android:layout_weight="0.6"
         android:gravity="end"
         android:inputType="numberDecimal"
-        android:maxLength="8"
+        android:maxLength="9"
         android:maxLines="1"
         android:textAlignment="textEnd"
         />
@@ -125,7 +125,7 @@
         android:layout_gravity="left"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:text="@string/skip"
+        android:text="@string/cancel"
         />
 
   </LinearLayout>
