@@ -10,7 +10,9 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.doneButton
 import kotlinx.android.synthetic.main.activity_positions.price
+import kotlinx.android.synthetic.main.activity_positions.priceInputLayout
 import kotlinx.android.synthetic.main.activity_positions.shares
+import kotlinx.android.synthetic.main.activity_positions.sharesInputLayout
 import kotlinx.android.synthetic.main.activity_positions.skipButton
 import kotlinx.android.synthetic.main.activity_positions.tickerName
 import kotlinx.android.synthetic.main.activity_positions.toolbar
@@ -78,10 +80,27 @@ open class AddPositionActivity : BaseActivity() {
     val priceText = priceView.text.toString()
     val sharesText = sharesView.text.toString()
     if (!priceText.isEmpty() && !sharesText.isEmpty()) {
-      val price = java.lang.Float.parseFloat(priceText)
-      val shares = java.lang.Float.parseFloat(sharesText)
-      stocksProvider.addPosition(ticker, shares, price)
+      var price = 0f
+      var shares = 0f
+      var success = true
+      try {
+        price = priceText.toFloat()
+      } catch (e: NumberFormatException) {
+        priceInputLayout.error = getString(R.string.invalid_number)
+        success = false
+      }
+      try {
+        shares = sharesText.toFloat()
+      } catch (e: NumberFormatException) {
+        sharesInputLayout.error = getString(R.string.invalid_number)
+        success = false
+      }
+      if (success) {
+        priceInputLayout.error = null
+        sharesInputLayout.error = null
+        stocksProvider.addPosition(ticker, shares, price)
+        finish()
+      }
     }
-    finish()
   }
 }

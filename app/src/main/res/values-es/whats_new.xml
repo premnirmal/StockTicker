@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?><resources>
-<string-array name="whats_new">
-    <item>Actualización de posiciones: ahora permite compartir partes</item>
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string-array name="whats_new">
+    <item>Arreglos de falla</item>
+    <item>Actualización de posiciones</item>
   </string-array>
 </resources>

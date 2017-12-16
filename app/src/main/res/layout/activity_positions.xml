@@ -49,19 +49,26 @@
         android:text="@string/number_of_shares"
         />
 
-    <EditText
-        android:id="@+id/shares"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/sharesInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"
         android:layout_weight="0.6"
-        android:gravity="end"
-        android:inputType="numberDecimal"
-        android:maxLength="9"
-        android:maxLines="1"
-        android:nextFocusForward="@+id/price"
-        android:textAlignment="textEnd"
-        />
+        >
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/shares"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="end"
+          android:inputType="numberDecimal"
+          android:maxLength="9"
+          android:maxLines="1"
+          android:nextFocusDown="@+id/price"
+          android:nextFocusForward="@+id/price"
+          android:textAlignment="textEnd"
+          />
+    </android.support.design.widget.TextInputLayout>
 
   </LinearLayout>
 
@@ -83,18 +90,25 @@
         android:text="@string/Price"
         />
 
-    <EditText
-        android:id="@id/price"
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/priceInputLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical|right"
         android:layout_weight="0.6"
-        android:gravity="end"
-        android:inputType="numberDecimal"
-        android:maxLength="9"
-        android:maxLines="1"
-        android:textAlignment="textEnd"
-        />
+        >
+      <android.support.design.widget.TextInputEditText
+          android:id="@+id/price"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:gravity="end"
+          android:imeOptions="actionDone"
+          android:inputType="numberDecimal"
+          android:maxLength="9"
+          android:maxLines="1"
+          android:textAlignment="textEnd"
+          />
+    </android.support.design.widget.TextInputLayout>
   </LinearLayout>
 
   <LinearLayout
