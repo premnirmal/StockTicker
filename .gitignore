@@ -17,6 +17,7 @@ keystore.*
 app/keystore.*
 
 #crashlytics secret
+fabric.properties
 crashlytics.properties
 app/src/prod/AndroidManifest.xml
 app/src/main/assets/crashlytics-build.properties

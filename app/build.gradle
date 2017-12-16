@@ -169,7 +169,6 @@ ext {
   OKHTTP_VERSION = "3.5.0"
   RXJAVA_VERSION = "2.1.0"
   ROBOLECTRIC_VERSION = "3.2.2"
-  PLAY_SERVICES_VERSION = "10.2.6"
 }
 
 dependencies {
@@ -205,7 +204,6 @@ dependencies {
   implementation"uk.co.chrisjenx:calligraphy:2.1.0"
   implementation"com.jakewharton.timber:timber:4.3.1"
 
-  prodImplementation "com.google.android.gms:play-services-analytics:$PLAY_SERVICES_VERSION"
   prodImplementation("com.crashlytics.sdk.android:crashlytics:2.6.7@aar") {
     transitive = true
   }
@@ -234,5 +232,3 @@ dependencies {
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation "org.khronos:opengl-api:gl1.1-android-2.1_r1"
 }
-
-apply plugin: "com.google.gms.google-services"

@@ -17,12 +17,10 @@ import android.preference.PreferenceActivity
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.FileProvider
-import android.text.TextUtils
 import android.view.LayoutInflater
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity.Companion.getStatusBarHeight
 import com.github.premnirmal.ticker.base.BaseActivity.Companion.showDialog
-import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -108,7 +106,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), OnClickListener { _, _ ->
           val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
-          Analytics.INSTANCE.trackSettingsChange("NUKE", "CLICKED")
           Timber.w(RuntimeException("Nuked from settings!"))
           preferences.edit().clear().commit()
           val directory = filesDir.path + "$packageName/shared_prefs/"
@@ -139,8 +136,6 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
     run({
       val sharePref = findPreference(AppPreferences.SETTING_SHARE)
       sharePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        Analytics.INSTANCE.trackSettingsChange("SHARE",
-            TextUtils.join(",", stocksProvider.getTickers().toTypedArray()))
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE_SHARE)
         } else {

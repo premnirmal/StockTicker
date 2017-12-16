@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -43,7 +42,6 @@ class StockWidget() : AppWidgetProvider() {
     }
     Timber.d("onReceive")
     super.onReceive(context, intent)
-    Analytics.INSTANCE.trackWidgetUpdate("onReceive")
     if (intent.action == ACTION_NAME) {
       context.startActivity(Intent(context, ParanormalActivity::class.java))
     }
@@ -51,7 +49,6 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
       appWidgetIds: IntArray) {
-    Analytics.INSTANCE.trackWidgetUpdate("onUpdate")
     for (widgetId in appWidgetIds) {
       Timber.d("onUpdate" + widgetId)
       val minimumWidth: Int
@@ -74,7 +71,6 @@ class StockWidget() : AppWidgetProvider() {
     Timber.d("onAppWidgetOptionsChanged" + appWidgetId.toString())
     val minimumWidth = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
-    Analytics.INSTANCE.trackWidgetSizeUpdate("${minimumWidth}px")
     updateWidget(context, appWidgetId, remoteViews, minimumWidth, appWidgetManager)
   }
 

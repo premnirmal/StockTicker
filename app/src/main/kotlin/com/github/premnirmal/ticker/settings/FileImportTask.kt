@@ -2,8 +2,6 @@ package com.github.premnirmal.ticker.settings
 
 import android.appwidget.AppWidgetManager
 import android.os.AsyncTask
-import android.text.TextUtils
-import com.github.premnirmal.ticker.components.Analytics
 import timber.log.Timber
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import java.io.BufferedReader
@@ -65,7 +63,6 @@ internal open class FileImportTask(
         widgetData.addTickers(Arrays.asList(*tickers))
       }
       result = true
-      Analytics.INSTANCE.trackSettingsChange("IMPORT", TextUtils.join(",", tickers))
     } catch (e: IOException) {
       Timber.w(e)
       result = false

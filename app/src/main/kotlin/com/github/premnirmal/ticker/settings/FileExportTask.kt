@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.settings
 import android.os.AsyncTask
 import android.text.TextUtils
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.Analytics
 import timber.log.Timber
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -37,7 +36,6 @@ internal open class FileExportTask : AsyncTask<List<String>, Void, String>() {
       return null
     }
 
-    Analytics.INSTANCE.trackSettingsChange("EXPORT", TextUtils.join(",", tickerList))
     return file.path
   }
 }

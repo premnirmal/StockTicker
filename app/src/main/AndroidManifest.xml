@@ -110,9 +110,6 @@
     </provider>
 
     <meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version"/>
-    <meta-data
         android:name="com.crashlytics.ApiKey"
         android:value="856c59cfad291a9403df034e02e90219acfdedb1"/>
   </application>

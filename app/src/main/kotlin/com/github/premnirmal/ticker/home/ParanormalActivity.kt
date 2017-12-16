@@ -20,7 +20,6 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -309,12 +308,10 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           .setMessage(R.string.please_rate)
           .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
-            Analytics.INSTANCE.trackRateYes()
             appPreferences.userDidRate()
             dialog.dismiss()
           }
           .setNegativeButton(R.string.later) { dialog, _ ->
-            Analytics.INSTANCE.trackRateNo()
             dialog.dismiss()
           }
           .create().show()

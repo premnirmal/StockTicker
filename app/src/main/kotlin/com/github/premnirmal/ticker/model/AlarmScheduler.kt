@@ -7,7 +7,6 @@ import android.content.Intent
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.widget.RefreshReceiver
@@ -95,8 +94,6 @@ class AlarmScheduler @Inject constructor() {
   }
 
   fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
-    Analytics.INSTANCE.trackUpdate(Analytics.SCHEDULE_UPDATE_ACTION,
-        "UpdateScheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
     Timber.i("Scheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
