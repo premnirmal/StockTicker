@@ -11,6 +11,7 @@
   <string name="action_import">Importar cotizaciones</string>
   <string name="import_desc">Importar citas de un archivo .txt separado por comas</string>
   <string name="app_settings">Ajustes de Aplicacion</string>
+  <string name="news_feed">Noticias</string>
   <string name="action_Settings">Configuración del widget</string>
   <string name="action_rearrage">Reorganizar Acciones</string>
   <string name="action_update">Refresca ahora</string>

@@ -58,6 +58,7 @@ open class AddPositionActivity : BaseActivity() {
       ticker = ""
       InAppMessage.showToast(this, R.string.error_symbol)
       finish()
+      return
     }
     val name = tickerName
     name.text = ticker

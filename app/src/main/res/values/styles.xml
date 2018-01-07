@@ -32,6 +32,8 @@
 
   <style name="WidgetSettingsActivityTheme" parent="TranslucentTheme"/>
 
+  <style name="NewsFeedActivityTheme" parent="TranslucentTheme"/>
+
   <style name="TickerSelectorActivityTheme" parent="TranslucentTheme"/>
 
   <style name="TextViewStyle" parent="android:Widget.TextView">

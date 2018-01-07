@@ -32,7 +32,7 @@ data class Quote(var symbol: String = "",
   }
 
   fun isIndex(): Boolean {
-    return symbol.startsWith("^") || symbol.contains("=")
+    return symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
   }
 
   fun changeString(): String {

@@ -49,6 +49,19 @@ class NetworkModule {
     return okHttpClient
   }
 
+  @Provides @Singleton @Named("newsClient")
+  internal fun provideHttpClientForNews(): OkHttpClient {
+    val logger = HttpLoggingInterceptor()
+    logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(UserAgentInterceptor())
+        .addInterceptor(logger)
+        .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+        .build()
+    return okHttpClient
+  }
+
   @Provides @Singleton @Named("robindahoodClient")
   internal fun provideHttpClientForRobindahood(context: Context, bus: RxBus): OkHttpClient {
     val logger = HttpLoggingInterceptor()
@@ -129,6 +142,21 @@ class NetworkModule {
         .build()
     val robindahood = Retrofit.create(Robindahood::class.java)
     return robindahood
+  }
+
+  @Provides @Singleton
+  internal fun provideNewsApi(context: Context,
+      @Named("newsClient") okHttpClient: OkHttpClient,
+      gson: Gson, converterFactory: GsonConverterFactory,
+      rxJavaFactory: RxJava2CallAdapterFactory): NewsApi {
+    val Retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.news_endpoint))
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(converterFactory)
+        .build()
+    val newsApi = Retrofit.create(NewsApi::class.java)
+    return newsApi
   }
 
   @Provides @Singleton

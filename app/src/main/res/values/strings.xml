@@ -3,6 +3,7 @@
 
   <string name="robindahood_endpoint" translatable="false">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
+  <string name="news_endpoint" translatable="false">https://newsapi.org/</string>
 
   <string name="portfolio">Portfolio</string>
   <string name="widget_label">StocksWidget</string>
@@ -15,6 +16,7 @@
   <string name="action_import">Import Quotes</string>
   <string name="import_desc">Import quotes from a comma separated .txt file</string>
   <string name="app_settings">App Settings</string>
+  <string name="news_feed">News Feed</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange Stocks</string>
   <string name="action_update">Refresh Now</string>

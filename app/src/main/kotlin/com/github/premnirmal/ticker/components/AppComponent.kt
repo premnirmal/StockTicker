@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
+import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
@@ -50,6 +51,8 @@ interface AppComponent {
   fun inject(widgetSettingsActivity: WidgetSettingsActivity)
 
   fun inject(splashActivity: SplashActivity)
+
+  fun inject(newsFeedActivity: NewsFeedActivity)
 
   // Components
 
