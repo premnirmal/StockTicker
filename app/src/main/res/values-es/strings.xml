@@ -54,6 +54,8 @@
   <string name="share_email_subject">Aquí están mis tickers que creé usando StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget\n\n Puede importar estos tickers mediante la\nentrando en la\n\n \"Importar\"</string>
   <string name="my_stock_portfolio">Mi cartera de valores</string>
   <string name="number_of_shares">Número de Acciones</string>
+  <string name="shares">Acciones</string>
+  <string name="equity_value">Valor de Equidad</string>
   <string name="Price">Precio</string>
   <string name="add_position">Añadir Posición</string>
   <string name="done">Hecho</string>
@@ -98,6 +100,7 @@
   <string name="widget_name">Nombre del widget</string>
   <string name="widget_name_updated">Nombre del widget actualizado</string>
   <string name="set">Fijado</string>
+  <string name="positions">Posiciones</string>
 
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">Cómo agregar un widget</string>

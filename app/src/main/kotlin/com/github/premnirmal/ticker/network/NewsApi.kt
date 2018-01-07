@@ -13,6 +13,7 @@ interface NewsApi {
    *
    * @param query the query String
    * @param apiKey your news api key
+   * @param language the language code. Default is english (en).
    * @param page the page number. Default is {@code 1}.
    *
    * @return the news feed for the given query.
@@ -20,5 +21,6 @@ interface NewsApi {
   @GET("v2/everything")
   @Headers("Accept: application/json")
   fun getNewsFeed(@Query(value = "apiKey") apiKey: String, @Query(value = "q") query: String,
+      @Query(value = "language") language: String = "en",
       @Query(value = "page") page: Int = 1): Observable<NewsFeed>
 }

@@ -27,59 +27,35 @@ data class Quote(var symbol: String = "",
     return false
   }
 
-  override fun hashCode(): Int {
-    return symbol.hashCode()
-  }
+  override fun hashCode(): Int = symbol.hashCode()
 
-  fun isIndex(): Boolean {
-    return symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
-  }
+  fun isIndex(): Boolean = symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
 
-  fun changeString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(change)
-  }
+  fun changeString(): String = AppPreferences.DECIMAL_FORMAT.format(change)
 
-  fun changePercentString(): String {
-    return "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
-  }
+  fun changePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
 
-  fun priceString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
-  }
+  fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
 
-  fun holdings(): Float {
-    return lastTradePrice * positionShares
-  }
+  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(positionShares)
 
-  fun holdingsString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(holdings())
-  }
+  private fun holdings(): Float = lastTradePrice * positionShares
 
-  fun gainLoss(): Float {
-    return holdings() - positionShares * positionPrice
-  }
+  fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
 
-  fun gainLossString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(gainLoss())
-  }
+  fun gainLoss(): Float = holdings() - positionShares * positionPrice
 
-  fun dayChange(): Float {
-    return lastTradePrice - positionPrice
-  }
+  fun gainLossString(): String = AppPreferences.DECIMAL_FORMAT.format(gainLoss())
 
-  fun dayChangeString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(dayChange())
-  }
+  fun dayChange(): Float = lastTradePrice - positionPrice
 
-  fun dayChangePercent(): Float {
-    return dayChange() / positionPrice
-  }
+  fun dayChangeString(): String = AppPreferences.DECIMAL_FORMAT.format(dayChange())
 
-  fun dayChangePercentString(): String {
-    return "${AppPreferences.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
-  }
+  fun dayChangePercent(): Float = dayChange() / positionPrice
 
-  override operator fun compareTo(other: Quote): Int {
-    return java.lang.Float.compare(other.changeInPercent, changeInPercent)
-  }
+  fun dayChangePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(
+      dayChangePercent() * 100)}%"
+
+  override operator fun compareTo(other: Quote): Int = java.lang.Float.compare(
+      other.changeInPercent, changeInPercent)
 }

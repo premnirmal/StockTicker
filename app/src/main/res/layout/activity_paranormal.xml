@@ -167,7 +167,7 @@
         android:id="@+id/fab_edit_widget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_edit"
+        android:src="@drawable/ic_design"
         app:backgroundTint="@color/spicy_salmon"
         app:rippleColor="@color/white"
         />

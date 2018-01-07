@@ -43,7 +43,7 @@ open class AddPositionActivity : BaseActivity() {
   @Inject lateinit internal var stocksProvider: IStocksProvider
   lateinit protected var ticker: String
 
-  public override fun onCreate(savedInstanceState: Bundle?) {
+  override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
     setContentView(R.layout.activity_positions)

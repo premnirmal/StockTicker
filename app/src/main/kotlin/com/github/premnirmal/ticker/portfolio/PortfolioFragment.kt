@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
@@ -86,7 +87,13 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
   private var itemTouchHelper: ItemTouchHelper? = null
 
-  override fun onClickQuote(view: View, quote: Quote, position: Int) {
+  override fun onOpenQuote(view: View, quote: Quote, position: Int) {
+    val intent = Intent(view.context, NewsFeedActivity::class.java)
+    intent.putExtra(NewsFeedActivity.TICKER, quote.symbol)
+    startActivity(intent)
+  }
+
+  override fun onClickQuoteOptions(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
     popupWindow.setOnMenuItemClickListener { menuItem ->

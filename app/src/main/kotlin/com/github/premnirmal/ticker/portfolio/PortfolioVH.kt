@@ -32,9 +32,12 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
     }
 
     val position = adapterPosition
+    itemView.setOnClickListener { v ->
+      listener.onOpenQuote(v, quote, position)
+    }
     itemView.findViewById<View>(
         R.id.more_menu).setOnClickListener { v ->
-      listener.onClickQuote(v, quote, position)
+      listener.onClickQuoteOptions(v, quote, position)
     }
 
     val tickerView = itemView.findViewById<View>(R.id.ticker) as TextView
@@ -84,8 +87,10 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
     override fun updateView(quote: Quote) {
       val holdingsView = itemView.findViewById<View>(R.id.holdings) as StockFieldView
       val gainLossView = itemView.findViewById<View>(R.id.gain_loss) as StockFieldView
-      val dayChangePercentView = itemView.findViewById<View>(R.id.day_change_percent) as StockFieldView
-      val dayChangeAmountView = itemView.findViewById<View>(R.id.day_change_amount) as StockFieldView
+      val dayChangePercentView = itemView.findViewById<View>(
+          R.id.day_change_percent) as StockFieldView
+      val dayChangeAmountView = itemView.findViewById<View>(
+          R.id.day_change_amount) as StockFieldView
 
       val holdings = quote.holdingsString()
       holdingsView.setText(holdings)
