@@ -8,6 +8,7 @@
     android:background="@drawable/card_bg"
     android:orientation="vertical"
     android:paddingBottom="10dp"
+    android:paddingStart="5dp"
     android:paddingLeft="5dp"
     android:paddingTop="7dp"
     tools:layout_height="150dp"

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/newsContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_bg"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:layout_marginTop="100dp"
+    >
+
+  <TextView
+      android:id="@+id/news_source"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
+      android:textColor="@color/light_grey_text"
+      android:textSize="@dimen/small_text"
+      android:textStyle="italic"
+      tools:text="Stock market rises!"
+      />
+
+  <TextView
+      android:id="@+id/news_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
+      android:textSize="@dimen/larger_text"
+      tools:text="Stock market rises!"
+      style="@style/BoldTextView"
+      />
+
+  <TextView
+      android:id="@+id/news_subtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="2"
+      android:textColor="@color/light_grey_text"
+      android:textSize="@dimen/medium_text"
+      tools:text="Lorem ipsum"
+      />
+
+
+</LinearLayout>

@@ -160,6 +160,9 @@ class NetworkModule {
   }
 
   @Provides @Singleton
+  internal fun provideNewsProvider(): NewsProvider = NewsProvider()
+
+  @Provides @Singleton
   internal fun provideStocksProvider(): IStocksProvider = StocksProvider()
 
   @Provides @Singleton
