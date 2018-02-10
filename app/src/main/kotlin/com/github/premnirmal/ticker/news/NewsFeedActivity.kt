@@ -5,11 +5,12 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.NewsApi
+import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
 import kotlinx.android.synthetic.main.activity_news_feed.change
+import kotlinx.android.synthetic.main.activity_news_feed.description
 import kotlinx.android.synthetic.main.activity_news_feed.equityValue
 import kotlinx.android.synthetic.main.activity_news_feed.exchange
 import kotlinx.android.synthetic.main.activity_news_feed.lastTradePrice
@@ -25,7 +26,7 @@ class NewsFeedActivity : BaseActivity() {
   }
 
   @Inject lateinit internal var stocksProvider: IStocksProvider
-  @Inject lateinit var newsApi: NewsApi
+  @Inject lateinit var newsProvider: NewsProvider
   private lateinit var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +52,7 @@ class NewsFeedActivity : BaseActivity() {
     exchange.text = quote.stockExchange
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
+    description.text = quote.description
   }
 
   private fun showErrorAndFinish() {

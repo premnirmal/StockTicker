@@ -11,7 +11,8 @@ data class Quote(var symbol: String = "",
     var changeInPercent: Float = 0.toFloat(),
     var change: Float = 0.toFloat(),
     var stockExchange: String = "",
-    var currency: String = "") : Comparable<Quote> {
+    var currency: String = "",
+    var description: String = "") : Comparable<Quote> {
 
   // Add Position fields
   var isPosition: Boolean = false

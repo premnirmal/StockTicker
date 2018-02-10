@@ -35,10 +35,10 @@ class StocksApi @Inject constructor() {
         }
         .map { quoteNets ->
           val quotesMap = HashMap<String, Quote>()
-          for ((symbol, name, lastTradePrice, changePercent, change, exchange, currency) in quoteNets) {
+          for ((symbol, name, lastTradePrice, changePercent, change, exchange, currency, description) in quoteNets) {
             val quote = Quote(symbol ?: "", name ?: "",
                 lastTradePrice, changePercent, change, exchange ?: "",
-                currency ?: "US")
+                currency ?: "US", description ?: "")
             quotesMap.put(quote.symbol, quote)
           }
           quotesMap
