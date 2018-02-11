@@ -102,7 +102,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         R.id.positions -> {
           val intent = Intent(activity, EditPositionActivity::class.java)
           intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
-          activity.startActivity(intent)
+          activity?.startActivity(intent)
         }
         R.id.remove -> {
           promptRemove(quote, position)
@@ -116,7 +116,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     holder = InjectionHolder()
-    widgetId = arguments.getInt(KEY_WIDGET_ID)
+    widgetId = arguments!!.getInt(KEY_WIDGET_ID)
   }
 
   override fun onAttach(activity: Activity?) {
@@ -152,10 +152,10 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     return view
   }
 
-  override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(
-        SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
+        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
@@ -188,11 +188,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
-  override fun onSaveInstanceState(outState: Bundle?) {
+  override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     listViewState = stockList?.layoutManager?.onSaveInstanceState()
     listViewState?.let {
-      outState?.putParcelable(LIST_INSTANCE_STATE, it)
+      outState.putParcelable(LIST_INSTANCE_STATE, it)
     }
   }
 

@@ -23,5 +23,6 @@ interface NewsApi {
   fun getNewsFeed(@Query(value = "apiKey") apiKey: String,
       @Query(value = "q") query: String,
       @Query(value = "language") language: String = "en",
+      @Query(value = "pageSize") count: Int = 5,
       @Query(value = "page") page: Int = 1): Observable<NewsFeed>
 }
