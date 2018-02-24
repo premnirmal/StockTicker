@@ -28,8 +28,8 @@ class StocksApiTest : BaseUnitTest() {
   private val stocksApi = StocksApi()
 
   @Before fun initMocks() {
-    robinhood = Mocker.provide(Robindahood::class.java)
-    mockPrefs = Mocker.provide(SharedPreferences::class.java)
+    robinhood = Mocker.provide(Robindahood::class)
+    mockPrefs = Mocker.provide(SharedPreferences::class)
     val listType = object : TypeToken<List<QuoteNet>>() {}.type
     val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
     val stocks = Observable.just(stockList)
