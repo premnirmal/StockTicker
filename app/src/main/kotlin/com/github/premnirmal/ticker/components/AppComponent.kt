@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.components
 
+import android.content.Context
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.home.HomePagerAdapter
@@ -100,5 +101,7 @@ interface AppComponent {
   fun inject(homeAdapter: HomePagerAdapter)
 
   fun inject(stocksAdapter: StocksAdapter)
+
+  fun appContext(): Context
 
 }

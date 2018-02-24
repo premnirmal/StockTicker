@@ -4,6 +4,7 @@
   <string name="robindahood_endpoint" translatable="false">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
   <string name="news_endpoint" translatable="false">https://newsapi.org/</string>
+  <string name="news_api_key" translatable="false">05bb573fdcc943f0a34bb0517f05e09b</string>
 
   <string name="portfolio">Portfolio</string>
   <string name="widget_label">StocksWidget</string>
@@ -107,6 +108,7 @@
   <string name="widget_name_updated">Widget name updated</string>
   <string name="set">Set</string>
   <string name="positions">Positions</string>
+  <string name="recent_news">Recent News</string>
 
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">How to add a widget</string>

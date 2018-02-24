@@ -45,6 +45,10 @@
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
+  <style name="ItalicTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Ubuntu-MediumItalic.ttf</item>
+  </style>
+
   <style name="ThinTitleTextView" parent="TextViewStyle">
     <item name="fontPath">fonts/Raleway-Light.ttf</item>
     <item name="android:textSize">@dimen/thin_title_text</item>

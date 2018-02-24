@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -33,6 +34,7 @@ import kotlinx.android.synthetic.main.activity_news_feed.news_container
 import kotlinx.android.synthetic.main.activity_news_feed.numShares
 import kotlinx.android.synthetic.main.activity_news_feed.tickerName
 import kotlinx.android.synthetic.main.activity_news_feed.toolbar
+import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
 import saschpe.android.customtabs.CustomTabsHelper
 import saschpe.android.customtabs.WebViewFallback
 import timber.log.Timber
@@ -45,8 +47,10 @@ class NewsFeedActivity : BaseActivity() {
     const val TICKER = "TICKER"
   }
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
-  @Inject lateinit var newsProvider: NewsProvider
+  @Inject
+  lateinit internal var stocksProvider: IStocksProvider
+  @Inject
+  lateinit var newsProvider: NewsProvider
   private lateinit var ticker: String
   private lateinit var quote: Quote
 
@@ -75,6 +79,13 @@ class NewsFeedActivity : BaseActivity() {
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
     change.text = quote.changeString() + " (" + quote.changePercentString() + ")"
+    if (quote.changeInPercent >= 0) {
+      change.setTextColor(resources.getColor(R.color.positive_green))
+      lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
+    } else {
+      change.setTextColor(resources.getColor(R.color.negative_red))
+      lastTradePrice.setTextColor(resources.getColor(R.color.negative_red))
+    }
     exchange.text = quote.stockExchange
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
@@ -85,8 +96,8 @@ class NewsFeedActivity : BaseActivity() {
       startActivity(intent)
     }
 
-    if (news_container.childCount == 0) {
-      bind(newsProvider.getNews(quote.name)).subscribe(
+    if (news_container.childCount <= 1) {
+      bind(newsProvider.getNews(quote.newsQuery())).subscribe(
           object : SimpleSubscriber<List<NewsArticle>>() {
             override fun onNext(result: List<NewsArticle>) {
               setUpArticles(result)
@@ -106,11 +117,13 @@ class NewsFeedActivity : BaseActivity() {
       val sourceView: TextView = layout.findViewById(R.id.news_source)
       val titleView: TextView = layout.findViewById(R.id.news_title)
       val subTitleView: TextView = layout.findViewById(R.id.news_subtitle)
+      val dateView: TextView = layout.findViewById(R.id.published_at)
       newsArticle.getSourceName()?.let { source ->
         sourceView.text = source
       }
       titleView.text = newsArticle.title
       subTitleView.text = newsArticle.description
+      dateView.text = newsArticle.dateString()
       val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
           ViewGroup.LayoutParams.WRAP_CONTENT)
       params.bottomMargin = resources.getDimensionPixelSize(R.dimen.activity_vertical_margin)
@@ -133,6 +146,17 @@ class NewsFeedActivity : BaseActivity() {
     super.onResume()
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
+    if (quote.isPosition) {
+      total_gain_loss.visibility = View.VISIBLE
+      total_gain_loss.setText(quote.gainLossString())
+      if (quote.gainLoss() >= 0) {
+        total_gain_loss.setTextColor(resources.getColor(R.color.positive_green))
+      } else {
+        total_gain_loss.setTextColor(resources.getColor(R.color.negative_red))
+      }
+    } else {
+      total_gain_loss.visibility = View.GONE
+    }
   }
 
   private fun showErrorAndFinish() {

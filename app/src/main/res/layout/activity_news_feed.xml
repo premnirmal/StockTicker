@@ -186,6 +186,18 @@
 
         </LinearLayout>
 
+        <com.github.premnirmal.ticker.ui.StockFieldView
+            android:id="@+id/total_gain_loss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_weight="1"
+            app:name="@string/gain_loss"
+            app:or="horizontal"
+            app:size="@dimen/larger_text"
+            app:center_text="true"
+            />
+
       </LinearLayout>
 
       <LinearLayout
@@ -193,21 +205,35 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical"
-          android:paddingStart="8dp"
-          android:paddingLeft="8dp"
           android:paddingEnd="8dp"
+          android:paddingLeft="8dp"
           android:paddingRight="8dp"
-          />
+          android:paddingStart="8dp"
+          >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/recent_news"
+            android:textSize="@dimen/thin_title_text"
+            style="@style/ThinTitleTextView"
+            android:layout_margin="8dp"
+            />
+
+      </LinearLayout>
 
       <TextView
           android:id="@+id/description"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginLeft="16dp"
-          android:layout_marginStart="16dp"
-          android:layout_marginRight="16dp"
-          android:layout_marginEnd="16dp"
           android:layout_marginBottom="16dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginLeft="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginStart="16dp"
           android:textSize="@dimen/medium_text"
           tools:text="Description"
           />

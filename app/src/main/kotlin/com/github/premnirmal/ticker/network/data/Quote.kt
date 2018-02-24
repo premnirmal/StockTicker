@@ -57,6 +57,16 @@ data class Quote(var symbol: String = "",
   fun dayChangePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(
       dayChangePercent() * 100)}%"
 
+  fun newsQuery(): String {
+    if (name.isEmpty()) return symbol + " stock"
+    val split = name.replace("[^\\w\\s]","").split(" ")
+    return if (split.size <= 3) {
+      name
+    } else {
+      split.subList(0,2).joinToString(separator = " ") + " stock"
+    }
+  }
+
   override operator fun compareTo(other: Quote): Int = java.lang.Float.compare(
       other.changeInPercent, changeInPercent)
 }
