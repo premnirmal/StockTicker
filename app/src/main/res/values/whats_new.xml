@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Crashfixes</item>
-    <item>Positions update</item>
+    <item>Check out the News Feed for your stocks!</item>
   </string-array>
 </resources>

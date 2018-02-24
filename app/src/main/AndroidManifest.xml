@@ -55,6 +55,10 @@
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
       </intent-filter>
     </activity>
+    <activity
+        android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
+        android:label="@string/news_feed"
+        android:theme="@style/NewsFeedActivityTheme"/>
 
     <receiver
         android:name="com.github.premnirmal.ticker.UpdateReceiver"

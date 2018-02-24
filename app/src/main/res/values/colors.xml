@@ -22,6 +22,7 @@
   <color name="white">#ffffff</color>
   <color name="black">#000000</color>
   <color name="light">#fff3f3f3</color>
+  <color name="light_grey_text">#90d3d3d3</color>
   <color name="grey_text">#d3d3d3</color>
 
   <color name="negative_red">#FF6666</color>

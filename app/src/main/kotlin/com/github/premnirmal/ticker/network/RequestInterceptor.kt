@@ -37,5 +37,4 @@ class RequestInterceptor : Interceptor {
         .build()
     return chain.proceed(request)
   }
-
 }

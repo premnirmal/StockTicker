@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
@@ -86,7 +87,13 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
   private var itemTouchHelper: ItemTouchHelper? = null
 
-  override fun onClickQuote(view: View, quote: Quote, position: Int) {
+  override fun onOpenQuote(view: View, quote: Quote, position: Int) {
+    val intent = Intent(view.context, NewsFeedActivity::class.java)
+    intent.putExtra(NewsFeedActivity.TICKER, quote.symbol)
+    startActivity(intent)
+  }
+
+  override fun onClickQuoteOptions(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
     popupWindow.setOnMenuItemClickListener { menuItem ->
@@ -95,7 +102,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         R.id.positions -> {
           val intent = Intent(activity, EditPositionActivity::class.java)
           intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
-          activity.startActivity(intent)
+          activity?.startActivity(intent)
         }
         R.id.remove -> {
           promptRemove(quote, position)
@@ -109,7 +116,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     holder = InjectionHolder()
-    widgetId = arguments.getInt(KEY_WIDGET_ID)
+    widgetId = arguments!!.getInt(KEY_WIDGET_ID)
   }
 
   override fun onAttach(activity: Activity?) {
@@ -145,10 +152,10 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     return view
   }
 
-  override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(
-        SpacingDecoration(context.resources.getDimensionPixelSize(R.dimen.list_spacing)))
+        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
@@ -181,11 +188,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
-  override fun onSaveInstanceState(outState: Bundle?) {
+  override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
     listViewState = stockList?.layoutManager?.onSaveInstanceState()
     listViewState?.let {
-      outState?.putParcelable(LIST_INSTANCE_STATE, it)
+      outState.putParcelable(LIST_INSTANCE_STATE, it)
     }
   }
 

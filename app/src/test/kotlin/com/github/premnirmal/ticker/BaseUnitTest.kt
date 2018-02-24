@@ -55,7 +55,7 @@ abstract class BaseUnitTest : TestCase() {
 
   @Before override public fun setUp() {
     super.setUp()
-    val iStocksProvider = Mocker.provide(IStocksProvider::class.java)
+    val iStocksProvider = Mocker.provide(IStocksProvider::class)
     doNothing().`when`(iStocksProvider).schedule()
     `when`(iStocksProvider.fetch()).thenReturn(Observable.never())
     `when`(iStocksProvider.getTickers()).thenReturn(emptyList())

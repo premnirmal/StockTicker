@@ -3,6 +3,8 @@
 
   <string name="robindahood_endpoint" translatable="false">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
+  <string name="news_endpoint" translatable="false">https://newsapi.org/</string>
+  <string name="news_api_key" translatable="false">05bb573fdcc943f0a34bb0517f05e09b</string>
 
   <string name="portfolio">Portfolio</string>
   <string name="widget_label">StocksWidget</string>
@@ -15,6 +17,7 @@
   <string name="action_import">Import Quotes</string>
   <string name="import_desc">Import quotes from a comma separated .txt file</string>
   <string name="app_settings">App Settings</string>
+  <string name="news_feed">News Feed</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange Stocks</string>
   <string name="action_update">Refresh Now</string>
@@ -58,6 +61,8 @@
   <string name="share_email_subject">Here are my tickers I created using StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
   <string name="my_stock_portfolio">My Stock Portfolio</string>
   <string name="number_of_shares">No. of Shares</string>
+  <string name="shares">Shares</string>
+  <string name="equity_value">Equity Value</string>
   <string name="Price">Price</string>
   <string name="add_position">Add Position</string>
   <string name="done">Done</string>
@@ -102,6 +107,8 @@
   <string name="widget_name">Widget name</string>
   <string name="widget_name_updated">Widget name updated</string>
   <string name="set">Set</string>
+  <string name="positions">Positions</string>
+  <string name="recent_news">Recent News</string>
 
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">How to add a widget</string>

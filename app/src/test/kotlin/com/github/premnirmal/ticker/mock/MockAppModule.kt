@@ -22,7 +22,7 @@ class MockAppModule(private val app: StocksApp) {
   @Provides internal fun provideApplicationContext(): Context = app
 
   @Provides
-  @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class.java)
+  @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class)
 
   @Provides
   @Singleton internal fun provideEventBus(): RxBus = RxBus()

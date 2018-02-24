@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?><resources xmlns:xandrolate="http://com.github.androlate">
 
 
-  <string-array name="font_sizes" xandrolate:md5="d5c55b9fa7e0e06b7c25f62bc2d7452e">
+  <string-array name="font_sizes">
     <item>Small</item>
     <item>Medium</item>
     <item>Large</item>
   </string-array>
-  <string-array name="font_sizes_values" xandrolate:md5="d2490f048dc3b77a457e3e450ab4eb38">
+  <string-array name="font_sizes_values">
     <item>0</item>
     <item>1</item>
     <item>2</item>
   </string-array>
 
-  <string-array name="layout_types" xandrolate:md5="13541e8d2d0f69c14f4c3013864025c8">
+  <string-array name="layout_types">
     <item>Animated</item>
     <item>Tabs</item>
     <item>Fixed</item>
   </string-array>
 
-  <string-array name="layout_types_values" xandrolate:md5="d2490f048dc3b77a457e3e450ab4eb38">
+  <string-array name="layout_types_values">
     <item>0</item>
     <item>1</item>
     <item>2</item>
   </string-array>
 
-  <string-array name="backgrounds" xandrolate:md5="c392832a40018a382d8d25f85428bc74">
+  <string-array name="backgrounds">
     <item>Transparent</item>
     <item>Translucent</item>
     <item>Dark</item>
     <item>Light</item>
   </string-array>
 
-  <string-array name="backgrounds_values" xandrolate:md5="eb62f6b9306db575c2d596b1279627a4">
+  <string-array name="backgrounds_values">
     <item>0</item>
     <item>1</item>
     <item>2</item>
     <item>3</item>
   </string-array>
 
-  <string-array name="text_colors" xandrolate:md5="f8a2f5def932ad953350bbb8c9183dfa">
+  <string-array name="text_colors">
     <item>White</item>
     <item>Black</item>
   </string-array>
 
-  <string-array name="sync_periods" xandrolate:md5="e8ed12f037fbfcac18fec3581af812ef">
+  <string-array name="sync_periods">
     <item>15 minutes</item>
     <item>30 minutes</item>
     <item>45 minutes</item>
     <item>1 hour</item>
   </string-array>
-  <string-array name="sync_periods_values" xandrolate:md5="eb62f6b9306db575c2d596b1279627a4">
+  <string-array name="sync_periods_values">
     <item>0</item>
     <item>1</item>
     <item>2</item>

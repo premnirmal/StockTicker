@@ -23,8 +23,11 @@
 
   <dimen name="small_text">10sp</dimen>
   <dimen name="xsmall_text">8sp</dimen>
+  <dimen name="medium_text">15sp</dimen>
   <dimen name="large_text">16sp</dimen>
+  <dimen name="larger_text">18sp</dimen>
   <dimen name="xlarge_text">20sp</dimen>
+  <dimen name="thin_title_text">14sp</dimen>
 
   <dimen name="scroll_threshold">2dp</dimen>
   <dimen name="portfolio_top_margin">20dp</dimen>

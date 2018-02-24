@@ -44,6 +44,14 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
       val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20).toFloat()
       fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
       fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
+      val centerText = array.getBoolean(R.styleable.StockFieldView_center_text, false)
+      if (centerText) {
+        fieldname.gravity = Gravity.CENTER
+        fieldvalue.gravity = Gravity.CENTER
+      } else {
+        fieldname.gravity = Gravity.LEFT
+        fieldvalue.gravity = Gravity.RIGHT
+      }
       array.recycle()
     }
   }

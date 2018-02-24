@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/newsContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/card_bg"
+    android:orientation="vertical"
+    android:padding="@dimen/activity_vertical_margin"
+    tools:layout_marginTop="100dp"
+    >
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
+      android:orientation="horizontal"
+      >
+
+    <TextView
+        android:id="@+id/news_source"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="2dp"
+        android:layout_marginRight="2dp"
+        android:layout_weight="0.5"
+        android:textColor="@color/light_grey_text"
+        android:textSize="@dimen/small_text"
+        android:textStyle="italic"
+        tools:text="Stock market rises!"
+        style="@style/ItalicTextView"
+        />
+
+    <TextView
+        android:id="@+id/published_at"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginStart="2dp"
+        android:layout_weight="0.5"
+        android:gravity="right"
+        android:textColor="@color/light_grey_text"
+        android:textSize="@dimen/small_text"
+        tools:text="January 5th"
+        />
+  </LinearLayout>
+
+  <TextView
+      android:id="@+id/news_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="4dp"
+      android:textSize="@dimen/larger_text"
+      tools:text="Stock market rises!"
+      style="@style/BoldTextView"
+      />
+
+  <TextView
+      android:id="@+id/news_subtitle"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:ellipsize="end"
+      android:maxLines="2"
+      android:textColor="@color/light_grey_text"
+      android:textSize="@dimen/medium_text"
+      tools:text="Lorem ipsum"
+      />
+
+
+</LinearLayout>

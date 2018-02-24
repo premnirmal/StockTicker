@@ -11,6 +11,7 @@
   <string name="action_import">Importar cotizaciones</string>
   <string name="import_desc">Importar citas de un archivo .txt separado por comas</string>
   <string name="app_settings">Ajustes de Aplicacion</string>
+  <string name="news_feed">Noticias</string>
   <string name="action_Settings">Configuración del widget</string>
   <string name="action_rearrage">Reorganizar Acciones</string>
   <string name="action_update">Refresca ahora</string>
@@ -53,6 +54,8 @@
   <string name="share_email_subject">Aquí están mis tickers que creé usando StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget\n\n Puede importar estos tickers mediante la\nentrando en la\n\n \"Importar\"</string>
   <string name="my_stock_portfolio">Mi cartera de valores</string>
   <string name="number_of_shares">Número de Acciones</string>
+  <string name="shares">Acciones</string>
+  <string name="equity_value">Valor de Equidad</string>
   <string name="Price">Precio</string>
   <string name="add_position">Añadir Posición</string>
   <string name="done">Hecho</string>
@@ -97,6 +100,8 @@
   <string name="widget_name">Nombre del widget</string>
   <string name="widget_name_updated">Nombre del widget actualizado</string>
   <string name="set">Fijado</string>
+  <string name="positions">Posiciones</string>
+  <string name="recent_news">Noticias recientes</string>
 
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">Cómo agregar un widget</string>

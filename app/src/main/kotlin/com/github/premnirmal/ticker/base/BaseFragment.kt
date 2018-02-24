@@ -41,7 +41,7 @@ abstract class BaseFragment : Fragment() {
     lifecycleSubject.onNext(CREATE)
   }
 
-  override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     lifecycleSubject.onNext(CREATE_VIEW)
     called = true

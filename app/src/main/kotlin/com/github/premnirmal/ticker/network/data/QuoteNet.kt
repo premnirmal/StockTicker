@@ -8,4 +8,5 @@ data class QuoteNet(@SerializedName("symbol") var symbol: String? = "",
     @SerializedName("change_percent") var changePercent: Float = 0.toFloat(),
     @SerializedName("change") var change: Float = 0.toFloat(),
     @SerializedName("exchange") var exchange: String? = "",
-    @SerializedName("currency") var currency: String? = "")
+    @SerializedName("currency") var currency: String? = "",
+    @SerializedName("description") var description: String? = "")

@@ -23,7 +23,8 @@ class StocksAdapter constructor(
   : RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
 
   interface QuoteClickListener {
-    fun onClickQuote(view: View, quote: Quote, position: Int)
+    fun onClickQuoteOptions(view: View, quote: Quote, position: Int)
+    fun onOpenQuote(view: View, quote: Quote, position: Int)
   }
 
   companion object {

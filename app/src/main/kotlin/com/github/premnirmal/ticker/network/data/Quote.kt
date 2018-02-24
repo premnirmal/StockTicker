@@ -11,7 +11,8 @@ data class Quote(var symbol: String = "",
     var changeInPercent: Float = 0.toFloat(),
     var change: Float = 0.toFloat(),
     var stockExchange: String = "",
-    var currency: String = "") : Comparable<Quote> {
+    var currency: String = "",
+    var description: String = "") : Comparable<Quote> {
 
   // Add Position fields
   var isPosition: Boolean = false
@@ -27,59 +28,45 @@ data class Quote(var symbol: String = "",
     return false
   }
 
-  override fun hashCode(): Int {
-    return symbol.hashCode()
+  override fun hashCode(): Int = symbol.hashCode()
+
+  fun isIndex(): Boolean = symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
+
+  fun changeString(): String = AppPreferences.DECIMAL_FORMAT.format(change)
+
+  fun changePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
+
+  fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
+
+  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(positionShares)
+
+  private fun holdings(): Float = lastTradePrice * positionShares
+
+  fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
+
+  fun gainLoss(): Float = holdings() - positionShares * positionPrice
+
+  fun gainLossString(): String = AppPreferences.DECIMAL_FORMAT.format(gainLoss())
+
+  fun dayChange(): Float = lastTradePrice - positionPrice
+
+  fun dayChangeString(): String = AppPreferences.DECIMAL_FORMAT.format(dayChange())
+
+  fun dayChangePercent(): Float = dayChange() / positionPrice
+
+  fun dayChangePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(
+      dayChangePercent() * 100)}%"
+
+  fun newsQuery(): String {
+    if (name.isEmpty()) return symbol + " stock"
+    val split = name.replace("[^\\w\\s]","").split(" ")
+    return if (split.size <= 3) {
+      name
+    } else {
+      split.subList(0,2).joinToString(separator = " ") + " stock"
+    }
   }
 
-  fun isIndex(): Boolean {
-    return symbol.startsWith("^") || symbol.contains("=")
-  }
-
-  fun changeString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(change)
-  }
-
-  fun changePercentString(): String {
-    return "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
-  }
-
-  fun priceString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
-  }
-
-  fun holdings(): Float {
-    return lastTradePrice * positionShares
-  }
-
-  fun holdingsString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(holdings())
-  }
-
-  fun gainLoss(): Float {
-    return holdings() - positionShares * positionPrice
-  }
-
-  fun gainLossString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(gainLoss())
-  }
-
-  fun dayChange(): Float {
-    return lastTradePrice - positionPrice
-  }
-
-  fun dayChangeString(): String {
-    return AppPreferences.DECIMAL_FORMAT.format(dayChange())
-  }
-
-  fun dayChangePercent(): Float {
-    return dayChange() / positionPrice
-  }
-
-  fun dayChangePercentString(): String {
-    return "${AppPreferences.DECIMAL_FORMAT.format(dayChangePercent() * 100)}%"
-  }
-
-  override operator fun compareTo(other: Quote): Int {
-    return java.lang.Float.compare(other.changeInPercent, changeInPercent)
-  }
+  override operator fun compareTo(other: Quote): Int = java.lang.Float.compare(
+      other.changeInPercent, changeInPercent)
 }

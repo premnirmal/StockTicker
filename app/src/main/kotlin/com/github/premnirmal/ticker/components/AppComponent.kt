@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.components
 
+import android.content.Context
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.home.HomePagerAdapter
@@ -9,9 +10,11 @@ import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage
+import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
+import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
@@ -51,6 +54,8 @@ interface AppComponent {
 
   fun inject(splashActivity: SplashActivity)
 
+  fun inject(newsFeedActivity: NewsFeedActivity)
+
   // Components
 
   fun inject(stocksStorage: StocksStorage)
@@ -70,6 +75,8 @@ interface AppComponent {
   // Network
 
   fun inject(stocksApi: StocksApi)
+
+  fun inject(newsProvider: NewsProvider)
 
   fun inject(interceptor: RequestInterceptor)
 
@@ -94,5 +101,7 @@ interface AppComponent {
   fun inject(homeAdapter: HomePagerAdapter)
 
   fun inject(stocksAdapter: StocksAdapter)
+
+  fun appContext(): Context
 
 }
