@@ -128,16 +128,17 @@ class NewsFeedActivity : BaseActivity() {
           ViewGroup.LayoutParams.WRAP_CONTENT)
       params.bottomMargin = resources.getDimensionPixelSize(R.dimen.activity_vertical_margin)
       news_container.addView(layout, params)
-      news_container.setOnClickListener {
+      layout.tag = newsArticle
+      layout.setOnClickListener {
+        val article = it.tag as NewsArticle
         val customTabsIntent = CustomTabsIntent.Builder()
             .addDefaultShareMenuItem()
             .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
             .setShowTitle(true)
             .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
             .build()
-        CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
         CustomTabsHelper.openCustomTab(this, customTabsIntent,
-            Uri.parse(newsArticle.url), WebViewFallback())
+            Uri.parse(article.url), WebViewFallback())
       }
     }
   }
