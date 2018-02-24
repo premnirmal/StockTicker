@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Arreglos de falla</item>
-    <item>Actualización de posiciones</item>
+    <item>Ahora tiene noticias para sus valores!</item>
   </string-array>
 </resources>
