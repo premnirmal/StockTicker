@@ -158,6 +158,10 @@ android {
   }
 }
 
+kapt {
+  useBuildCache = true
+}
+
 ext {
   SUPPORT_LIBRARY_VERSION = "26.0.0"
   DAGGER_VERSION = "2.7"
