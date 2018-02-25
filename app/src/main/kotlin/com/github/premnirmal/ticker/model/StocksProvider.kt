@@ -86,15 +86,15 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     private val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
   }
 
-  @Inject lateinit internal var api: StocksApi
-  @Inject lateinit internal var context: Context
-  @Inject lateinit internal var preferences: SharedPreferences
-  @Inject lateinit internal var appPreferences: AppPreferences
-  @Inject lateinit internal var bus: RxBus
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
-  @Inject lateinit internal var alarmScheduler: AlarmScheduler
-  @Inject lateinit internal var clock: AppClock
-  @Inject lateinit internal var mainThreadHandler: Handler
+  @Inject internal lateinit var api: StocksApi
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var preferences: SharedPreferences
+  @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var alarmScheduler: AlarmScheduler
+  @Inject internal lateinit var clock: AppClock
+  @Inject internal lateinit var mainThreadHandler: Handler
 
   private val tickerList: MutableList<String>
   private val quoteList: MutableList<Quote> = ArrayList()

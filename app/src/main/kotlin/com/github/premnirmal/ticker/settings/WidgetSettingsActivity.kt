@@ -51,7 +51,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     }
   }
 
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   internal var widgetId = 0
   internal var shouldPerformTransition = false

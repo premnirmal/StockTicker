@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class WidgetClickReceiver : BroadcastReceiver() {
 
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   override fun onReceive(context: Context, intent: Intent) {
     Injector.appComponent.inject(this)

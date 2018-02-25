@@ -68,9 +68,9 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
    */
   class InjectionHolder {
 
-    @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-    @Inject lateinit internal var bus: RxBus
+    @Inject internal lateinit var bus: RxBus
 
     init {
       Injector.appComponent.inject(this)

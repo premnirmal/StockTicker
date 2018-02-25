@@ -13,7 +13,7 @@ import javax.inject.Inject
  */
 class RefreshReceiver : BroadcastReceiver() {
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
 
   override fun onReceive(context: Context, intent: Intent) {
     Injector.appComponent.inject(this)

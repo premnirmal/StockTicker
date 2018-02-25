@@ -59,10 +59,10 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     val FAB_ANIMATION_DURATION = 200L
   }
 
-  @Inject lateinit internal var preferences: SharedPreferences
-  @Inject lateinit internal var stocksProvider: IStocksProvider
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
-  @Inject lateinit internal var appPreferences: AppPreferences
+  @Inject internal lateinit var preferences: SharedPreferences
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var appPreferences: AppPreferences
 
   private var dialogShown = false
   private var attemptingFetch = false

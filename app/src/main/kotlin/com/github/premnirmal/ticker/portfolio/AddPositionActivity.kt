@@ -40,7 +40,7 @@ open class AddPositionActivity : BaseActivity() {
     }
   }
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
   lateinit protected var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {

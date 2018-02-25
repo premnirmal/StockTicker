@@ -2,5 +2,7 @@
 <resources>
   <string-array name="whats_new">
     <item>Check out the News Feed for your stocks!</item>
+    <item>Bug fixes and UI fixes</item>
+    <item>Updated news feed to be more recent</item>
   </string-array>
 </resources>

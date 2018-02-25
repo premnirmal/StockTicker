@@ -29,9 +29,9 @@ class StockWidget() : AppWidgetProvider() {
     val ACTION_NAME = "OPEN_APP"
   }
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
-  @Inject lateinit internal var appPreferences: AppPreferences
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var appPreferences: AppPreferences
 
   var injected = false
 

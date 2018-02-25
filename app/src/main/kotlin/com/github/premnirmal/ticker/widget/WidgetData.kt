@@ -39,8 +39,8 @@ class WidgetData {
     }
   }
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
-  @Inject lateinit internal var context: Context
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var context: Context
 
   private val widgetId: Int
   private val tickerList: MutableList<String>

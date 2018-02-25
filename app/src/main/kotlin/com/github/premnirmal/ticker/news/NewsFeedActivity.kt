@@ -48,7 +48,7 @@ class NewsFeedActivity : BaseActivity() {
   }
 
   @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  internal lateinit var stocksProvider: IStocksProvider
   @Inject
   lateinit var newsProvider: NewsProvider
   private lateinit var ticker: String
@@ -78,7 +78,7 @@ class NewsFeedActivity : BaseActivity() {
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
-    change.text = quote.changeString() + " (" + quote.changePercentString() + ")"
+    change.text = "${quote.changeString()} ( ${quote.changePercentString()})"
     if (quote.changeInPercent >= 0) {
       change.setTextColor(resources.getColor(R.color.positive_green))
       lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
@@ -111,34 +111,40 @@ class NewsFeedActivity : BaseActivity() {
   }
 
   private fun setUpArticles(articles: List<NewsArticle>) {
-    for (newsArticle in articles) {
-      val layout = LayoutInflater.from(this)
-          .inflate(R.layout.item_news, news_container, false)
-      val sourceView: TextView = layout.findViewById(R.id.news_source)
-      val titleView: TextView = layout.findViewById(R.id.news_title)
-      val subTitleView: TextView = layout.findViewById(R.id.news_subtitle)
-      val dateView: TextView = layout.findViewById(R.id.published_at)
-      newsArticle.getSourceName()?.let { source ->
-        sourceView.text = source
-      }
-      titleView.text = newsArticle.title
-      subTitleView.text = newsArticle.description
-      dateView.text = newsArticle.dateString()
-      val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-          ViewGroup.LayoutParams.WRAP_CONTENT)
-      params.bottomMargin = resources.getDimensionPixelSize(R.dimen.activity_vertical_margin)
-      news_container.addView(layout, params)
-      layout.tag = newsArticle
-      layout.setOnClickListener {
-        val article = it.tag as NewsArticle
-        val customTabsIntent = CustomTabsIntent.Builder()
-            .addDefaultShareMenuItem()
-            .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
-            .setShowTitle(true)
-            .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
-            .build()
-        CustomTabsHelper.openCustomTab(this, customTabsIntent,
-            Uri.parse(article.url), WebViewFallback())
+    if (articles.isEmpty()) {
+      news_container.visibility = View.GONE
+    } else {
+      news_container.visibility = View.VISIBLE
+      for (newsArticle in articles) {
+        val layout = LayoutInflater.from(this)
+            .inflate(R.layout.item_news, news_container, false)
+        val sourceView: TextView = layout.findViewById(R.id.news_source)
+        val titleView: TextView = layout.findViewById(R.id.news_title)
+        val subTitleView: TextView = layout.findViewById(R.id.news_subtitle)
+        val dateView: TextView = layout.findViewById(R.id.published_at)
+        newsArticle.getSourceName()?.let { source ->
+          sourceView.text = source
+        }
+        titleView.text = newsArticle.title
+        subTitleView.text = newsArticle.description
+        dateView.text = newsArticle.dateString()
+        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.bottomMargin = resources.getDimensionPixelSize(R.dimen.activity_vertical_margin)
+        news_container.addView(layout, params)
+        layout.tag = newsArticle
+        layout.setOnClickListener {
+          val article = it.tag as NewsArticle
+          val customTabsIntent = CustomTabsIntent.Builder()
+              .addDefaultShareMenuItem()
+              .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
+              .setShowTitle(true)
+              .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
+              .build()
+          CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
+          CustomTabsHelper.openCustomTab(this, customTabsIntent,
+              Uri.parse(article.url), WebViewFallback())
+        }
       }
     }
   }
@@ -149,7 +155,7 @@ class NewsFeedActivity : BaseActivity() {
     equityValue.text = quote.holdingsString()
     if (quote.isPosition) {
       total_gain_loss.visibility = View.VISIBLE
-      total_gain_loss.setText(quote.gainLossString())
+      total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
       if (quote.gainLoss() >= 0) {
         total_gain_loss.setTextColor(resources.getColor(R.color.positive_green))
       } else {

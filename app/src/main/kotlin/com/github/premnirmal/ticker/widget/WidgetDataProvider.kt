@@ -11,8 +11,8 @@ import javax.inject.Singleton
 @Singleton
 class WidgetDataProvider {
 
-  @Inject lateinit internal var widgetManager: AppWidgetManager
-  @Inject lateinit internal var context: Context
+  @Inject internal lateinit var widgetManager: AppWidgetManager
+  @Inject internal lateinit var context: Context
 
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap<Int, WidgetData>()

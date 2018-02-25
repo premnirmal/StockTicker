@@ -19,8 +19,8 @@ import javax.inject.Singleton
 @Singleton
 class AppPreferences @Inject constructor() {
 
-  @Inject lateinit internal var sharedPreferences: SharedPreferences
-  @Inject lateinit internal var clock: AppClock
+  @Inject internal lateinit var sharedPreferences: SharedPreferences
+  @Inject internal lateinit var clock: AppClock
 
   // Not using clock here because this doesn't need a specific time.
   private val random = Random(System.currentTimeMillis())

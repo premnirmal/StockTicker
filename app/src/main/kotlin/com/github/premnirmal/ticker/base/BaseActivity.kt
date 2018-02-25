@@ -94,7 +94,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-  @Inject lateinit internal var bus: RxBus
+  @Inject internal lateinit var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> = lifecycleSubject
 

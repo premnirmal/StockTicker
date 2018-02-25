@@ -17,8 +17,8 @@ class StocksStorage {
     val KEY_STOCKS_LIST = "STOCKS_LIST"
   }
 
-  @Inject lateinit internal var preferences: SharedPreferences
-  @Inject lateinit internal var gson: Gson
+  @Inject internal lateinit var preferences: SharedPreferences
+  @Inject internal lateinit var gson: Gson
 
   init {
     Injector.appComponent.inject(this)

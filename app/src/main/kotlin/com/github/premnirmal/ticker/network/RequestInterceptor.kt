@@ -21,7 +21,7 @@ class RequestInterceptor : Interceptor {
     val SIGNATURE_HEADER = "XSignature-StockTicker"
   }
 
-  @Inject lateinit internal var context: Context
+  @Inject internal lateinit var context: Context
 
   init {
     Injector.appComponent.inject(this)

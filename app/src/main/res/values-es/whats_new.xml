@@ -2,5 +2,7 @@
 <resources>
   <string-array name="whats_new">
     <item>Ahora tiene noticias para sus valores!</item>
+    <item>Corrección de errores</item>
+    <item>Hecho noticias más recientes</item>
   </string-array>
 </resources>

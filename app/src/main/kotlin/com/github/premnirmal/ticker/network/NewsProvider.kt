@@ -31,7 +31,7 @@ class NewsProvider @Inject constructor() {
 
   fun getNews(query: String): Observable<List<NewsArticle>> {
     val language = "en"//Locale.getDefault().language
-    val from = clock.todayLocal().minusMonths(1).format(FORMATTER)
+    val from = clock.todayLocal().minusWeeks(1).format(FORMATTER)
     val to = clock.todayLocal().format(FORMATTER)
     return newsApi.getNewsFeed(apiKey = apiKey, query = query, language = language,
         from = from, to = to)

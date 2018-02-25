@@ -50,9 +50,9 @@ class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
     }
   }
 
-  @Inject lateinit internal var suggestionApi: SuggestionApi
+  @Inject internal lateinit var suggestionApi: SuggestionApi
 
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   private var disposable: Disposable? = null
 

@@ -27,8 +27,8 @@ import javax.inject.Singleton
 @Singleton
 class AlarmScheduler @Inject constructor() {
 
-  @Inject lateinit internal var appPreferences: AppPreferences
-  @Inject lateinit internal var clock: AppClock
+  @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var clock: AppClock
 
   init {
     Injector.appComponent.inject(this)

@@ -17,7 +17,7 @@ class UpdateReceiver : BroadcastReceiver() {
 //    private val MIGRATED_TO_MULTIPLE_WIDGETS = "HAS_MIGRATED_TO_MULTIPLE_WIDGETS"
 //  }
 
-  @Inject lateinit internal var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
 
   override fun onReceive(context: Context, intent: Intent) {
     Injector.appComponent.inject(this)

@@ -48,6 +48,10 @@ data class Quote(var symbol: String = "",
 
   fun gainLossString(): String = AppPreferences.DECIMAL_FORMAT.format(gainLoss())
 
+  fun gainLossPercent(): Float = (gainLoss() / holdings()) * 100f
+
+  fun gainLossPercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(gainLossPercent())}%"
+
   fun dayChange(): Float = lastTradePrice - positionPrice
 
   fun dayChangeString(): String = AppPreferences.DECIMAL_FORMAT.format(dayChange())

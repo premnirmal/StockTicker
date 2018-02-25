@@ -26,9 +26,9 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
   private val quotes: MutableList<Quote>
 
-  @Inject lateinit internal var widgetDataProvider: WidgetDataProvider
-  @Inject lateinit internal var context: Context
-  @Inject lateinit internal var sharedPreferences: SharedPreferences
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var sharedPreferences: SharedPreferences
 
   init {
     this.quotes = ArrayList()

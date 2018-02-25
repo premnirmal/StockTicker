@@ -14,7 +14,7 @@ import javax.inject.Inject
 class RefreshService : JobService() {
 
   @Inject
-  lateinit internal var stocksProvider: IStocksProvider
+  internal lateinit var stocksProvider: IStocksProvider
 
   override fun onCreate() {
     super.onCreate()
