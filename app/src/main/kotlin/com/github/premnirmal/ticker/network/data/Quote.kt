@@ -14,7 +14,7 @@ data class Quote(var symbol: String = "",
     var currency: String = "",
     var description: String = "") : Comparable<Quote> {
 
-  // Add Position fields
+  // Position fields
   var isPosition: Boolean = false
   var positionPrice: Float = 0.toFloat()
   var positionShares: Float = 0.toFloat()
@@ -40,7 +40,7 @@ data class Quote(var symbol: String = "",
 
   fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(positionShares)
 
-  private fun holdings(): Float = lastTradePrice * positionShares
+  fun holdings(): Float = lastTradePrice * positionShares
 
   fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
 
@@ -51,15 +51,6 @@ data class Quote(var symbol: String = "",
   fun gainLossPercent(): Float = (gainLoss() / holdings()) * 100f
 
   fun gainLossPercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(gainLossPercent())}%"
-
-  fun dayChange(): Float = lastTradePrice - positionPrice
-
-  fun dayChangeString(): String = AppPreferences.DECIMAL_FORMAT.format(dayChange())
-
-  fun dayChangePercent(): Float = dayChange() / positionPrice
-
-  fun dayChangePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(
-      dayChangePercent() * 100)}%"
 
   fun newsQuery(): String {
     if (name.isEmpty()) return symbol + " stock"

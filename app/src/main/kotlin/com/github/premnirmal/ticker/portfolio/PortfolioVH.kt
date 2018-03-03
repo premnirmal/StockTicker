@@ -87,10 +87,6 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
     override fun updateView(quote: Quote) {
       val holdingsView = itemView.findViewById<View>(R.id.holdings) as StockFieldView
       val gainLossView = itemView.findViewById<View>(R.id.gain_loss) as StockFieldView
-      val dayChangePercentView = itemView.findViewById<View>(
-          R.id.day_change_percent) as StockFieldView
-      val dayChangeAmountView = itemView.findViewById<View>(
-          R.id.day_change_amount) as StockFieldView
 
       val holdings = quote.holdingsString()
       holdingsView.setText(holdings)
@@ -100,17 +96,6 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
         gainLossView.setTextColor(positiveColor)
       } else {
         gainLossView.setTextColor(negativeColor)
-      }
-
-      val dayChangeAmount = quote.dayChange()
-      dayChangeAmountView.setText(quote.dayChangeString())
-      dayChangePercentView.setText(quote.dayChangePercentString())
-      if (dayChangeAmount >= 0) {
-        dayChangeAmountView.setTextColor(positiveColor)
-        dayChangePercentView.setTextColor(positiveColor)
-      } else {
-        dayChangeAmountView.setTextColor(negativeColor)
-        dayChangePercentView.setTextColor(negativeColor)
       }
     }
   }

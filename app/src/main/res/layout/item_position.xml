@@ -139,24 +139,6 @@
           sfw:size="@dimen/portfolio_position_vh_text_size"
           />
 
-
-      <com.github.premnirmal.ticker.ui.StockFieldView
-          android:id="@+id/day_change_percent"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="5dp"
-          sfw:name="@string/day_change_percent"
-          sfw:size="@dimen/portfolio_position_vh_text_size"
-          />
-
-      <com.github.premnirmal.ticker.ui.StockFieldView
-          android:id="@+id/day_change_amount"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          sfw:name="@string/day_change_amount"
-          sfw:size="@dimen/portfolio_position_vh_text_size"
-          />
-
     </LinearLayout>
   </LinearLayout>
 
