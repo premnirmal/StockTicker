@@ -42,7 +42,7 @@ import javax.inject.Inject
 class WidgetSettingsActivity : BaseActivity(), OnClickListener {
 
   companion object {
-    val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
 
     fun launchIntent(context: Context, widgetId: Int): Intent {
       val intent = Intent(context, WidgetSettingsActivity::class.java)

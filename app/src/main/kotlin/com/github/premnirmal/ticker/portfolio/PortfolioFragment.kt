@@ -42,8 +42,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   companion object {
-    private val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
-    private val KEY_WIDGET_ID = "KEY_WIDGET_ID"
+    private const val LIST_INSTANCE_STATE = "LIST_INSTANCE_STATE"
+    private const val KEY_WIDGET_ID = "KEY_WIDGET_ID"
 
     fun newInstance(widgetId: Int): PortfolioFragment {
       val fragment = PortfolioFragment()
@@ -79,7 +79,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   private lateinit var holder: InjectionHolder
   private var callback: Callback? = null
-  private var listViewState: Parcelable? = null
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -136,14 +135,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         .subscribe { _ ->
           update()
         }
-    listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
-    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-    if (widgetData.getTickers().isEmpty()) {
-      view_flipper.displayedChild = 0
-    } else {
-      view_flipper.displayedChild = 1
-    }
-    update()
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -164,7 +155,14 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     itemTouchHelper?.attachToRecyclerView(stockList)
 
     savedInstanceState?.let {
-      listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
+      val listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
+      listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
+    }
+    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    if (widgetData.getTickers().isEmpty()) {
+      view_flipper.displayedChild = 0
+    } else {
+      view_flipper.displayedChild = 1
     }
   }
 
@@ -190,7 +188,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
-    listViewState = stockList?.layoutManager?.onSaveInstanceState()
+    val listViewState = stockList?.layoutManager?.onSaveInstanceState()
     listViewState?.let {
       outState.putParcelable(LIST_INSTANCE_STATE, it)
     }

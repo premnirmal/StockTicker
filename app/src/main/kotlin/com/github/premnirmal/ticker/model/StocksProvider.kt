@@ -79,22 +79,31 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       return stockList
     }
 
-    private val LAST_FETCHED = "LAST_FETCHED"
-    private val NEXT_FETCH = "NEXT_FETCH"
-    private val POSITION_LIST = "POSITION_LIST"
-    private val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
-    private val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
+    private const val LAST_FETCHED = "LAST_FETCHED"
+    private const val NEXT_FETCH = "NEXT_FETCH"
+    private const val POSITION_LIST = "POSITION_LIST"
+    private const val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
+    private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
   }
 
-  @Inject internal lateinit var api: StocksApi
-  @Inject internal lateinit var context: Context
-  @Inject internal lateinit var preferences: SharedPreferences
-  @Inject internal lateinit var appPreferences: AppPreferences
-  @Inject internal lateinit var bus: RxBus
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var alarmScheduler: AlarmScheduler
-  @Inject internal lateinit var clock: AppClock
-  @Inject internal lateinit var mainThreadHandler: Handler
+  @Inject
+  internal lateinit var api: StocksApi
+  @Inject
+  internal lateinit var context: Context
+  @Inject
+  internal lateinit var preferences: SharedPreferences
+  @Inject
+  internal lateinit var appPreferences: AppPreferences
+  @Inject
+  internal lateinit var bus: RxBus
+  @Inject
+  internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject
+  internal lateinit var alarmScheduler: AlarmScheduler
+  @Inject
+  internal lateinit var clock: AppClock
+  @Inject
+  internal lateinit var mainThreadHandler: Handler
 
   private val tickerList: MutableList<String>
   private val quoteList: MutableList<Quote> = ArrayList()
@@ -330,11 +339,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun addStocks(tickers: Collection<String>): Collection<String> {
     synchronized(tickerList, {
-      tickers
+      val filterNot = tickers
           .filterNot { tickerList.contains(it) }
+      filterNot
           .forEach { tickerList.add(it) }
       save()
-      fetch().subscribe(SimpleSubscriber())
+      if (filterNot.isNotEmpty()) {
+        fetch().subscribe(SimpleSubscriber())
+      }
     })
     return tickerList
   }

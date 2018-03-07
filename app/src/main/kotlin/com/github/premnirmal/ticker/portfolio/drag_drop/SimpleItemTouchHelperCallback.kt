@@ -12,7 +12,7 @@ internal class SimpleItemTouchHelperCallback(
     private val adapter: ItemTouchHelperAdapter) : ItemTouchHelper.Callback() {
 
   companion object {
-    val ALPHA_FULL: Float = 1.0f
+    const val ALPHA_FULL: Float = 1.0f
   }
 
   override fun isLongPressDragEnabled(): Boolean = true

@@ -26,7 +26,7 @@ import javax.inject.Inject
 class StockWidget() : AppWidgetProvider() {
 
   companion object {
-    val ACTION_NAME = "OPEN_APP"
+    const val ACTION_NAME = "OPEN_APP"
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider

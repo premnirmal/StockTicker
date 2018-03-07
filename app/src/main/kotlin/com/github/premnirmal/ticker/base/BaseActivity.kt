@@ -28,8 +28,8 @@ import javax.inject.Inject
 abstract class BaseActivity : AppCompatActivity() {
 
   companion object {
-    val EXTRA_CENTER_X = "centerX"
-    val EXTRA_CENTER_Y = "centerY"
+    const val EXTRA_CENTER_X = "centerX"
+    const val EXTRA_CENTER_Y = "centerY"
 
     // Extension functions.
 

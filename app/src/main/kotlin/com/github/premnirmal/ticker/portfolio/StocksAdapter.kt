@@ -28,9 +28,9 @@ class StocksAdapter constructor(
   }
 
   companion object {
-    val TYPE_STOCK = 1
-    val TYPE_INDEX = 2
-    val TYPE_POSITION = 3
+    const val TYPE_STOCK = 1
+    const val TYPE_INDEX = 2
+    const val TYPE_POSITION = 3
   }
 
   private val quoteList: MutableList<Quote>

@@ -54,9 +54,9 @@ import javax.inject.Inject
 class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
 
   companion object {
-    val DIALOG_SHOWN: String = "DIALOG_SHOWN"
-    val MAX_FETCH_COUNT = 3
-    val FAB_ANIMATION_DURATION = 200L
+    const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+    const val MAX_FETCH_COUNT = 3
+    const val FAB_ANIMATION_DURATION = 200L
   }
 
   @Inject internal lateinit var preferences: SharedPreferences

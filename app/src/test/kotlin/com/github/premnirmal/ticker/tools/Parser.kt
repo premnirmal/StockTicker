@@ -10,10 +10,6 @@ import java.lang.reflect.Type
 
 class Parser {
 
-  companion object {
-    private val JSON_CONTENT_TYPE = "application/json; charset=utf-8"
-  }
-
   val parser = JsonParser()
   val gson = Gson()
 

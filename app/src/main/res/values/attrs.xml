@@ -15,13 +15,7 @@
     <attr format="string" name="title_text"/>
     <attr format="string" name="subtitle_text"/>
   </declare-styleable>
-
-  <!-- Declare custom theme attributes that allow changing which styles are
-         used for button bars depending on the API level.
-         ?android:attr/buttonBarStyle is new as of API 11 so this is
-         necessary to support previous API levels. -->
-  <declare-styleable name="ButtonBarContainerTheme">
-    <attr format="reference" name="metaButtonBarStyle"/>
-    <attr format="reference" name="metaButtonBarButtonStyle"/>
+  <declare-styleable name="MaxHeightLinearLayout">
+    <attr format="dimension" name="maxheight"/>>
   </declare-styleable>
 </resources>

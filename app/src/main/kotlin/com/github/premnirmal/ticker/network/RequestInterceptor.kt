@@ -17,8 +17,8 @@ import javax.inject.Inject
 class RequestInterceptor : Interceptor {
 
   companion object {
-    val PACKAGE_HEADER = "XPackage-StockTicker"
-    val SIGNATURE_HEADER = "XSignature-StockTicker"
+    const val PACKAGE_HEADER = "XPackage-StockTicker"
+    const val SIGNATURE_HEADER = "XSignature-StockTicker"
   }
 
   @Inject internal lateinit var context: Context

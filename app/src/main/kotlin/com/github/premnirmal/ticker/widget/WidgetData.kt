@@ -20,19 +20,19 @@ import javax.inject.Inject
 class WidgetData {
 
   companion object {
-    val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
-    val PREFS_NAME_PREFIX = "stocks_widget_"
-    val WIDGET_NAME = "WIDGET_NAME"
-    val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
-    val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
-    val WIDGET_BG = AppPreferences.WIDGET_BG
-    val TEXT_COLOR = AppPreferences.TEXT_COLOR
-    val PERCENT = AppPreferences.PERCENT
-    val TRANSPARENT = AppPreferences.TRANSPARENT
-    val TRANSLUCENT = AppPreferences.TRANSLUCENT
-    val DARK = AppPreferences.DARK
-    val LIGHT = AppPreferences.LIGHT
-    val AUTOSORT = AppPreferences.SETTING_AUTOSORT
+    const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
+    const val PREFS_NAME_PREFIX = "stocks_widget_"
+    const val WIDGET_NAME = "WIDGET_NAME"
+    const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
+    const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
+    const val WIDGET_BG = AppPreferences.WIDGET_BG
+    const val TEXT_COLOR = AppPreferences.TEXT_COLOR
+    const val PERCENT = AppPreferences.PERCENT
+    const val TRANSPARENT = AppPreferences.TRANSPARENT
+    const val TRANSLUCENT = AppPreferences.TRANSLUCENT
+    const val DARK = AppPreferences.DARK
+    const val LIGHT = AppPreferences.LIGHT
+    const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
 
     enum class ChangeType {
       value, percent
@@ -210,8 +210,9 @@ class WidgetData {
 
   fun addTickers(tickers: List<String>) {
     synchronized(tickerList, {
-      tickerList.addAll(tickers.filter { !tickerList.contains(it) })
-      stocksProvider.addStocks(tickers)
+      val filtered = tickers.filter { !tickerList.contains(it) }
+      tickerList.addAll(filtered)
+      stocksProvider.addStocks(filtered.filter { !stocksProvider.hasTicker(it)})
       save()
     })
   }

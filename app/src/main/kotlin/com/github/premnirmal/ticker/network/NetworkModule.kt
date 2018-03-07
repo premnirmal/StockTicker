@@ -32,8 +32,8 @@ import javax.inject.Singleton
 class NetworkModule {
 
   companion object {
-    internal val CONNECTION_TIMEOUT: Long = 20000
-    internal val READ_TIMEOUT: Long = 20000
+    internal const val CONNECTION_TIMEOUT: Long = 20000
+    internal const val READ_TIMEOUT: Long = 20000
   }
 
   @Provides @Singleton @Named("yahooClient")

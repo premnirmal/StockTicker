@@ -41,7 +41,7 @@ import javax.inject.Inject
 class TickerSelectorActivity : BaseActivity(), Callback, TextWatcher {
 
   companion object {
-    val ARG_WIDGET_ID = "WIDGET_ID"
+    const val ARG_WIDGET_ID = "WIDGET_ID"
 
     fun launchIntent(context: Context, widgetId: Int): Intent {
       val intent = Intent(context, TickerSelectorActivity::class.java)

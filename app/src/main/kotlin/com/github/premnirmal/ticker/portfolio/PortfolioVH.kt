@@ -15,13 +15,8 @@ import com.github.premnirmal.tickerwidget.R.color
 abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
     ItemTouchHelperViewHolder {
 
-  protected val positiveColor: Int
-  protected val negativeColor: Int
-
-  init {
-    positiveColor = itemView.resources.getColor(color.positive_green)
-    negativeColor = itemView.resources.getColor(color.negative_red)
-  }
+  protected val positiveColor: Int = itemView.resources.getColor(color.positive_green)
+  protected val negativeColor: Int = itemView.resources.getColor(color.negative_red)
 
   @Throws(Exception::class) abstract fun updateView(quote: Quote)
 

@@ -14,7 +14,7 @@ import javax.inject.Inject
 class StocksStorage {
 
   companion object {
-    val KEY_STOCKS_LIST = "STOCKS_LIST"
+    const val KEY_STOCKS_LIST = "STOCKS_LIST"
   }
 
   @Inject internal lateinit var preferences: SharedPreferences

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Corrección de errores en las posiciones</item>
-    <item>Noticias para sus valores</item>
+    <item>Correcciones visuales</item>
   </string-array>
 </resources>

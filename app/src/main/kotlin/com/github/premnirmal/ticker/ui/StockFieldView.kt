@@ -56,12 +56,10 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
     }
   }
 
-  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : this(context, attrs) {
-  }
+  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : this(context, attrs)
 
   constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : this(
-      context, attrs) {
-  }
+      context, attrs)
 
   fun setLabel(text: CharSequence?) {
     fieldname.text = text

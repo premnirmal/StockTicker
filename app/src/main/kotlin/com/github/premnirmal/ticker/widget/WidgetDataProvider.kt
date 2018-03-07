@@ -11,8 +11,10 @@ import javax.inject.Singleton
 @Singleton
 class WidgetDataProvider {
 
-  @Inject internal lateinit var widgetManager: AppWidgetManager
-  @Inject internal lateinit var context: Context
+  @Inject
+  internal lateinit var widgetManager: AppWidgetManager
+  @Inject
+  internal lateinit var context: Context
 
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap<Int, WidgetData>()
@@ -32,7 +34,8 @@ class WidgetDataProvider {
     synchronized(widgets, {
       return if (widgets.containsKey(widgetId)) {
         val widgetData = widgets[widgetId]!!
-        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID
+            && widgetData.getTickers().isEmpty()) {
           widgetData.addAllFromStocksProvider()
         }
         widgetData
@@ -43,10 +46,11 @@ class WidgetDataProvider {
         } else {
           WidgetData(widgetId)
         }
-        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID
+            && widgetData.getTickers().isEmpty()) {
           widgetData.addAllFromStocksProvider()
         }
-        widgets.put(widgetId, widgetData)
+        widgets[widgetId] = widgetData
         widgetData
       }
     })
