@@ -34,9 +34,27 @@ data class Quote(var symbol: String = "",
 
   fun changeString(): String = AppPreferences.DECIMAL_FORMAT.format(change)
 
+  fun changeStringWithSign(): String {
+    val changeString = AppPreferences.DECIMAL_FORMAT.format(change)
+    if (change >= 0) {
+      return "+$changeString"
+    }
+    return changeString
+  }
+
   fun changePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
 
+  fun changePercentStringWithSign(): String {
+    val changeString = "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
+    if (changeInPercent >= 0) {
+      return "+$changeString"
+    }
+    return changeString
+  }
+
   fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
+
+  fun positionPriceString(): String = AppPreferences.DECIMAL_FORMAT.format(positionPrice)
 
   fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(positionShares)
 
@@ -46,19 +64,33 @@ data class Quote(var symbol: String = "",
 
   fun gainLoss(): Float = holdings() - positionShares * positionPrice
 
-  fun gainLossString(): String = AppPreferences.DECIMAL_FORMAT.format(gainLoss())
+  fun gainLossString(): String {
+    val gainLoss = gainLoss()
+    val gainLossString = AppPreferences.DECIMAL_FORMAT.format(gainLoss)
+    if (gainLoss >= 0) {
+      return "+$gainLossString"
+    }
+    return gainLossString
+  }
 
   fun gainLossPercent(): Float = (gainLoss() / holdings()) * 100f
 
-  fun gainLossPercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(gainLossPercent())}%"
+  fun gainLossPercentString(): String {
+    val gainLossPercent = gainLossPercent()
+    val gainLossString = "${AppPreferences.DECIMAL_FORMAT.format(gainLossPercent)}%"
+    if (gainLossPercent >= 0) {
+      return "+$gainLossString"
+    }
+    return gainLossString
+  }
 
   fun newsQuery(): String {
     if (name.isEmpty()) return symbol + " stock"
-    val split = name.replace("[^\\w\\s]","").split(" ")
+    val split = name.replace("[^\\w\\s]", "").split(" ")
     return if (split.size <= 3) {
       name
     } else {
-      split.subList(0,2).joinToString(separator = " ") + " stock"
+      split.subList(0, 2).joinToString(separator = " ") + " stock"
     }
   }
 

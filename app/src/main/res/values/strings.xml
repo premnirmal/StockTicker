@@ -82,6 +82,7 @@
   <string name="edit_positions">Edit Positions</string>
   <string name="add_stock">Add Stocks</string>
   <string name="holdings">Holdings</string>
+  <string name="average_price">Average Price</string>
   <string name="gain_loss">Gain/Loss</string>
   <string name="change_percent">Change %</string>
   <string name="change_amount">Change</string>

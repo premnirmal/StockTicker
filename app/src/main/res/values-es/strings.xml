@@ -75,6 +75,7 @@
   <string name="edit_positions">Editar Posiciones</string>
   <string name="add_stock">Añadir acciones</string>
   <string name="holdings">Valores en cartera</string>
+  <string name="average_price">Precio Promedio</string>
   <string name="gain_loss">Perdida de ganancia</string>
   <string name="change_percent">Cambiar %</string>
   <string name="change_amount">Cambio</string>

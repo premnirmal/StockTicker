@@ -24,6 +24,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
+import kotlinx.android.synthetic.main.activity_news_feed.average_price
 import kotlinx.android.synthetic.main.activity_news_feed.change
 import kotlinx.android.synthetic.main.activity_news_feed.description
 import kotlinx.android.synthetic.main.activity_news_feed.edit_positions
@@ -78,7 +79,7 @@ class NewsFeedActivity : BaseActivity() {
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
-    change.text = "${quote.changeString()} ( ${quote.changePercentString()})"
+    change.text = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
     if (quote.changeInPercent >= 0) {
       change.setTextColor(resources.getColor(R.color.positive_green))
       lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
@@ -161,8 +162,11 @@ class NewsFeedActivity : BaseActivity() {
       } else {
         total_gain_loss.setTextColor(resources.getColor(R.color.negative_red))
       }
+      average_price.visibility = View.VISIBLE
+      average_price.setText(quote.positionPriceString())
     } else {
       total_gain_loss.visibility = View.GONE
+      average_price.visibility = View.GONE
     }
   }
 
