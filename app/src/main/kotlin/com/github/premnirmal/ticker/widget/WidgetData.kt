@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.widget
 
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.support.annotation.ColorInt
@@ -14,7 +13,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import java.util.Arrays
-import java.util.Collections
 import javax.inject.Inject
 
 class WidgetData {
@@ -39,8 +37,10 @@ class WidgetData {
     }
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var context: Context
+  @Inject
+  internal lateinit var stocksProvider: IStocksProvider
+  @Inject
+  internal lateinit var context: Context
 
   private val widgetId: Int
   private val tickerList: MutableList<String>
@@ -51,10 +51,10 @@ class WidgetData {
     Injector.appComponent.inject(this)
     val prefsName = "$PREFS_NAME_PREFIX$widgetId"
     preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
-    tickerList = if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+    val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
+    tickerList = if (tickerListVars.isNullOrEmpty()) {
       ArrayList(stocksProvider.getTickers())
     } else {
-      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
       java.util.ArrayList(Arrays.asList(
           *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }
@@ -165,7 +165,7 @@ class WidgetData {
         .map { stocksProvider.getStock(it) }
         .forEach { quote -> quote?.let { quoteList.add(it) } }
     if (autoSortEnabled()) {
-      Collections.sort(quoteList)
+      quoteList.sort()
     }
     return quoteList
   }
@@ -212,7 +212,7 @@ class WidgetData {
     synchronized(tickerList, {
       val filtered = tickers.filter { !tickerList.contains(it) }
       tickerList.addAll(filtered)
-      stocksProvider.addStocks(filtered.filter { !stocksProvider.hasTicker(it)})
+      stocksProvider.addStocks(filtered.filter { !stocksProvider.hasTicker(it) })
       save()
     })
   }
