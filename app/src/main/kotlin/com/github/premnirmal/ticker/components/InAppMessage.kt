@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.support.design.widget.Snackbar
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.Toast
 import com.github.premnirmal.ticker.StocksApp.Companion.getNavigationBarHeight
@@ -16,9 +17,9 @@ import com.github.premnirmal.tickerwidget.R
  */
 object InAppMessage {
 
-  private fun Activity.isTranslucentNavigationBar(): Boolean {
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-        && this is ParanormalActivity
+  private fun Context.isTranslucentNavigationBar(): Boolean {
+    val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
+    return id > 0 && resources.getBoolean(id)
   }
 
   private fun Activity.getRootView(): View =

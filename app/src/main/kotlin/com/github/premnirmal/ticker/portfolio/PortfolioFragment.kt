@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
@@ -68,9 +69,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
    */
   class InjectionHolder {
 
-    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+    @Inject
+    internal lateinit var widgetDataProvider: WidgetDataProvider
 
-    @Inject internal lateinit var bus: RxBus
+    @Inject
+    internal lateinit var bus: RxBus
 
     init {
       Injector.appComponent.inject(this)
@@ -118,9 +121,9 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     widgetId = arguments!!.getInt(KEY_WIDGET_ID)
   }
 
-  override fun onAttach(activity: Activity?) {
-    super.onAttach(activity)
-    callback = activity as Callback
+  override fun onAttach(context: Context?) {
+    super.onAttach(context)
+    callback = context as Callback
   }
 
   override fun onDetach() {
@@ -128,8 +131,9 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     callback = null
   }
 
-  override fun onResume() {
-    super.onResume()
+  override fun onStart() {
+    super.onStart()
+    update()
     bind(holder.bus.forEventType(RefreshEvent::class.java))
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe { _ ->
@@ -139,8 +143,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
       savedInstanceState: Bundle?): View? {
-    val view = inflater.inflate(R.layout.portfolio_fragment, container, false)
-    return view
+    return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
