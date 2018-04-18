@@ -8,6 +8,8 @@
       height="80">](https://f-droid.org/app/com.github.premnirmal.tickerwidget)
 
 ![](https://lh3.googleusercontent.com/R9khJ5kNzXHUjO4BxNw1cNKTx62grZ7FtLRT_F2H0BhC99iuMWDxvuGTYvyydtqE3w=h400-rw)
+![](https://lh3.googleusercontent.com/5bJo7sEfgkI5KX2rhvOwugq42B5lPY3FcNWIHschi-ek5Rqo_p6_ajxxAiiJ6cXI2cU=h400-rw)
+![](https://lh3.googleusercontent.com/pKI7tibPnU4HS92l-ubpphJVS_7wCJdteg6td6gnAnbx8sqiVFJZEjTiQe4hBiPU5W0=h400-rw)
 
 ## Motivation
 
