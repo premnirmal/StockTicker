@@ -13,9 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.components.InAppMessage
+import com.github.mikephil.charting.charts.LineChart
+import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.data.DataPoint
+import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
@@ -23,37 +25,39 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.string
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
 import kotlinx.android.synthetic.main.activity_news_feed.change
 import kotlinx.android.synthetic.main.activity_news_feed.description
 import kotlinx.android.synthetic.main.activity_news_feed.edit_positions
 import kotlinx.android.synthetic.main.activity_news_feed.equityValue
 import kotlinx.android.synthetic.main.activity_news_feed.exchange
+import kotlinx.android.synthetic.main.activity_news_feed.graphView
+import kotlinx.android.synthetic.main.activity_news_feed.graph_container
 import kotlinx.android.synthetic.main.activity_news_feed.lastTradePrice
 import kotlinx.android.synthetic.main.activity_news_feed.news_container
 import kotlinx.android.synthetic.main.activity_news_feed.numShares
+import kotlinx.android.synthetic.main.activity_news_feed.progress
 import kotlinx.android.synthetic.main.activity_news_feed.tickerName
 import kotlinx.android.synthetic.main.activity_news_feed.toolbar
 import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
 import saschpe.android.customtabs.CustomTabsHelper
 import saschpe.android.customtabs.WebViewFallback
-import timber.log.Timber
 import javax.inject.Inject
 
-
-class NewsFeedActivity : BaseActivity() {
+class NewsFeedActivity : BaseGraphActivity() {
 
   companion object {
     const val TICKER = "TICKER"
+    private const val DATA_POINTS = "DATA_POINTS"
   }
 
   @Inject
   internal lateinit var stocksProvider: IStocksProvider
   @Inject
-  lateinit var newsProvider: NewsProvider
+  internal lateinit var newsProvider: NewsProvider
+  @Inject
+  internal lateinit var historyProvider: IHistoryProvider
   private lateinit var ticker: String
-  private lateinit var quote: Quote
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -63,6 +67,9 @@ class NewsFeedActivity : BaseActivity() {
     toolbar.setNavigationOnClickListener {
       finish()
     }
+    graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
+    graph_container.requestLayout()
+    setupGraphView(graphView)
     val q: Quote?
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
       ticker = intent.getStringExtra(TICKER)
@@ -96,18 +103,30 @@ class NewsFeedActivity : BaseActivity() {
       intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
       startActivity(intent)
     }
+    savedInstanceState?.let {
+      dataPoints = it.getParcelableArrayList(DATA_POINTS)
+    }
+  }
 
-    if (news_container.childCount <= 1) {
-      bind(newsProvider.getNews(quote.newsQuery())).subscribe(
-          object : SimpleSubscriber<List<NewsArticle>>() {
-            override fun onNext(result: List<NewsArticle>) {
-              setUpArticles(result)
-            }
+  private fun fetchData() {
+    bind(historyProvider.getHistoricalDataShort(quote.symbol)).subscribe(
+        object : SimpleSubscriber<List<DataPoint>>() {
+          override fun onNext(result: List<DataPoint>) {
+            dataPoints = result
+            loadGraph(graphView)
+          }
 
-            override fun onError(e: Throwable) {
-              Timber.w(e)
-            }
-          })
+          override fun onError(e: Throwable) {
+            progress.visibility = View.GONE
+            graphView.setNoDataText(getString(R.string.no_data))
+          }
+        })
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    dataPoints?.let {
+      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
     }
   }
 
@@ -150,6 +169,18 @@ class NewsFeedActivity : BaseActivity() {
     }
   }
 
+  override fun onStart() {
+    super.onStart()
+    if (news_container.childCount <= 1) {
+      fetchNews()
+    }
+    if (dataPoints == null) {
+      fetchData()
+    } else {
+      loadGraph(graphView)
+    }
+  }
+
   override fun onResume() {
     super.onResume()
     numShares.text = quote.numSharesString()
@@ -170,9 +201,34 @@ class NewsFeedActivity : BaseActivity() {
     }
   }
 
-  private fun showErrorAndFinish() {
-    InAppMessage.showToast(this, string.error_symbol)
-    finish()
+  private fun fetchNews() {
+    bind(newsProvider.getNews(quote.newsQuery())).subscribe(
+        object : SimpleSubscriber<List<NewsArticle>>() {
+          override fun onNext(result: List<NewsArticle>) {
+            setUpArticles(result)
+          }
+
+          override fun onError(e: Throwable) {
+            news_container.visibility = View.GONE
+          }
+        })
+  }
+
+  override fun onGraphDataAdded(graphView: LineChart) {
+    progress.visibility = View.GONE
+  }
+
+  override fun onNoGraphData(graphView: LineChart) {
+    progress.visibility = View.GONE
+  }
+
+  /**
+   * Called via xml
+   */
+  fun openGraph(v: View) {
+    val intent = Intent(this, GraphActivity::class.java)
+    intent.putExtra(GraphActivity.TICKER, ticker)
+    startActivity(intent)
   }
 
   private fun Drawable.toBitmap(): Bitmap {

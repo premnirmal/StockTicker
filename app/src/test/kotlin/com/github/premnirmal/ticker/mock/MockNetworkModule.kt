@@ -2,7 +2,9 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.network.HistoricalDataApi
 import com.github.premnirmal.ticker.network.NewsApi
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.Robindahood
@@ -71,4 +73,13 @@ class MockNetworkModule {
 
   @Provides @Singleton
   internal fun provideNewsProvider(): NewsProvider = Mocker.provide(NewsProvider::class)
+
+  @Provides @Singleton
+  internal fun provideHistoricalDataApi(context: Context, okHttpClient: OkHttpClient,
+      gson: Gson, converterFactory: GsonConverterFactory,
+      rxJavaFactory: RxJava2CallAdapterFactory): HistoricalDataApi = Mocker.provide(HistoricalDataApi::class)
+
+  @Provides @Singleton
+  internal fun provideHistoricalDataProvider(): IHistoryProvider =
+      Mocker.provide(IHistoryProvider::class)
 }

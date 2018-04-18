@@ -22,6 +22,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
@@ -269,7 +270,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
             override fun onError(e: Throwable) {
               attemptingFetch = false
               swipe_container?.isRefreshing = false
-              InAppMessage.showMessage(this@ParanormalActivity, getString(R.string.refresh_failed))
+              InAppMessage.showMessage(this@ParanormalActivity, getString(string.refresh_failed))
             }
 
             override fun onNext(result: List<Quote>) {
@@ -280,12 +281,12 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           })
         } else {
           attemptingFetch = false
-          InAppMessage.showMessage(this, getString(R.string.refresh_failed))
+          InAppMessage.showMessage(this, getString(string.refresh_failed))
           swipe_container?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
-        InAppMessage.showMessage(this, getString(R.string.no_network_message))
+        InAppMessage.showMessage(this, getString(string.no_network_message))
         swipe_container?.isRefreshing = false
       }
     }

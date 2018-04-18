@@ -133,7 +133,9 @@ class AppPreferences @Inject constructor() {
     const val DARK = 2
     const val LIGHT = 3
 
-    val TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm")!!
+    val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yy")
+    val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd-yyyy")
 
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
 
