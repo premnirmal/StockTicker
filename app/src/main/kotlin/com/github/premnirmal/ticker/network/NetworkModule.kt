@@ -3,6 +3,8 @@ package com.github.premnirmal.ticker.network
 import android.content.Context
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.model.AlarmScheduler
+import com.github.premnirmal.ticker.model.HistoryProvider
+import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -36,21 +38,8 @@ class NetworkModule {
     internal const val READ_TIMEOUT: Long = 20000
   }
 
-  @Provides @Singleton @Named("yahooClient")
+  @Provides @Singleton @Named("client")
   internal fun provideHttpClientForYahoo(): OkHttpClient {
-    val logger = HttpLoggingInterceptor()
-    logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
-    val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(UserAgentInterceptor())
-        .addInterceptor(logger)
-        .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
-        .build()
-    return okHttpClient
-  }
-
-  @Provides @Singleton @Named("newsClient")
-  internal fun provideHttpClientForNews(): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient = OkHttpClient.Builder()
@@ -98,7 +87,7 @@ class NetworkModule {
 
   @Provides @Singleton
   internal fun provideSuggestionsApi(context: Context,
-      @Named("yahooClient") okHttpClient: OkHttpClient,
+      @Named("client") okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
       rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi {
     val Retrofit = Retrofit.Builder()
@@ -146,7 +135,7 @@ class NetworkModule {
 
   @Provides @Singleton
   internal fun provideNewsApi(context: Context,
-      @Named("newsClient") okHttpClient: OkHttpClient,
+      @Named("client") okHttpClient: OkHttpClient,
       gson: Gson, converterFactory: GsonConverterFactory,
       rxJavaFactory: RxJava2CallAdapterFactory): NewsApi {
     val Retrofit = Retrofit.Builder()
@@ -160,10 +149,28 @@ class NetworkModule {
   }
 
   @Provides @Singleton
+  internal fun provideHistoricalDataApi(context: Context,
+      @Named("client") okHttpClient: OkHttpClient,
+      gson: Gson, converterFactory: GsonConverterFactory,
+      rxJavaFactory: RxJava2CallAdapterFactory): HistoricalDataApi {
+    val Retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.alpha_vantage_endpoint))
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(converterFactory)
+        .build()
+    val api = Retrofit.create(HistoricalDataApi::class.java)
+    return api
+  }
+
+  @Provides @Singleton
   internal fun provideNewsProvider(): NewsProvider = NewsProvider()
 
   @Provides @Singleton
   internal fun provideStocksProvider(): IStocksProvider = StocksProvider()
+
+  @Provides @Singleton
+  internal fun provideHistoricalDataProvider(): IHistoryProvider = HistoryProvider()
 
   @Provides @Singleton
   internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()

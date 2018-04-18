@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
+import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksStorage
@@ -63,6 +64,8 @@ interface AppComponent {
   fun inject(appPreferences: AppPreferences)
 
   fun inject(stocksProvider: StocksProvider)
+
+  fun inject(historicalDataProvider: HistoryProvider)
 
   fun inject(alarmScheduler: AlarmScheduler)
 

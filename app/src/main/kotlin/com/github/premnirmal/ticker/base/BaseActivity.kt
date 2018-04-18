@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.graphics.Rect
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -32,20 +31,6 @@ abstract class BaseActivity : AppCompatActivity() {
     const val EXTRA_CENTER_Y = "centerY"
 
     // Extension functions.
-
-    fun Activity.isNetworkOnline(): Boolean {
-      try {
-        val connectivityManager = this.getSystemService(
-            Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val i = connectivityManager.activeNetworkInfo ?: return false
-        if (!i.isConnected) return false
-        if (!i.isAvailable) return false
-        return true
-      } catch (e: Exception) {
-        e.printStackTrace()
-        return false
-      }
-    }
 
     fun Activity.getStatusBarHeight(): Int {
       val result: Int

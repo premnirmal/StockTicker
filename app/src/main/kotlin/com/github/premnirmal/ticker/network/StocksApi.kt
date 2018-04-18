@@ -17,10 +17,12 @@ import javax.inject.Singleton
 @Singleton
 class StocksApi @Inject constructor() {
 
-  @Inject internal lateinit var gson: Gson
-  @Inject internal lateinit var financeApi: Robindahood
-  @Inject internal lateinit var clock: AppClock
-
+  @Inject
+  internal lateinit var gson: Gson
+  @Inject
+  internal lateinit var financeApi: Robindahood
+  @Inject
+  internal lateinit var clock: AppClock
   var lastFetched: Long = 0
 
   init {
@@ -66,5 +68,4 @@ class StocksApi @Inject constructor() {
           }
         }
   }
-
 }

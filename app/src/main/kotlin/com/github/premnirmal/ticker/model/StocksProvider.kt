@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.minutesInMs
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.RobindahoodException
@@ -285,6 +286,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun schedule() {
     scheduleUpdate()
+  }
+
+  override fun scheduleSoon() {
+    scheduleUpdateWithMs(5L.minutesInMs(), true)
   }
 
   override fun addStock(ticker: String): Collection<String> {

@@ -94,6 +94,6 @@ data class Quote(var symbol: String = "",
     }
   }
 
-  override operator fun compareTo(other: Quote): Int = java.lang.Float.compare(
-      other.changeInPercent, changeInPercent)
+  override operator fun compareTo(other: Quote): Int =
+      other.changeInPercent.compareTo(changeInPercent)
 }
