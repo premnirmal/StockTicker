@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.model
+package com.github.premnirmal.ticker.network.data
 
 import android.os.Parcel
 import android.os.Parcelable
@@ -16,14 +16,13 @@ class DataPoint : Entry, Serializable, Comparable<DataPoint> {
 
   constructor(source: Parcel) : super(source)
 
-  val date: String
-    get() = FMT.format(LocalDate.ofEpochDay(x.toLong()))
+  fun getDate(): LocalDate = LocalDate.ofEpochDay(x.toLong())
 
   override fun compareTo(other: DataPoint): Int = x.compareTo(other.x)
 
   companion object {
 
-    private val FMT = DateTimeFormatter.ofPattern("MMMM d")
+    private val FORMATTER: DateTimeFormatter by lazy { DateTimeFormatter.ofPattern("MMMM d") }
     private const val serialVersionUID = 42L
 
     val CREATOR: Parcelable.Creator<DataPoint> = object : Parcelable.Creator<DataPoint> {

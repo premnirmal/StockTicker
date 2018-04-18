@@ -103,6 +103,13 @@
   <string name="set">Fijado</string>
   <string name="positions">Posiciones</string>
   <string name="recent_news">Noticias recientes</string>
+  <string name="no_data">No datos</string>
+  <string name="expand">Expande</string>
+  <string name="one_month">1 Mes</string>
+  <string name="three_month">3 Meses</string>
+  <string name="one_year">1 Año</string>
+  <string name="max">Max</string>
+  <string name="error_loading_graph">Error al cargar los datos del gráfico</string>
 
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">Cómo agregar un widget</string>

@@ -6,13 +6,17 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 const val TIME_SERIES_DAILY = "TIME_SERIES_DAILY"
-const val TIME_SERIES_WEEKLY = "TIME_SERIES_WEEKLY"
-const val TIME_SERIES_MONTHLY = "TIME_SERIES_MONTHLY"
 
 interface HistoricalDataApi {
 
   @GET("query")
-  fun query(@Query(value = "function") function: String = TIME_SERIES_DAILY,
+  fun getHistoricalData(@Query(value = "function") function: String = TIME_SERIES_DAILY,
+      @Query(value = "apikey") apiKey: String,
+      @Query(value = "symbol") symbol: String): Observable<HistoricalData>
+
+  @GET("query")
+  fun getHistoricalDataFull(@Query(value = "function") function: String = TIME_SERIES_DAILY,
+      @Query(value = "outputsize") outputSize: String = "full",
       @Query(value = "apikey") apiKey: String,
       @Query(value = "symbol") symbol: String): Observable<HistoricalData>
 }

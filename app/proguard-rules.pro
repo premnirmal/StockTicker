@@ -72,3 +72,6 @@
 -keepattributes Exceptions
 -dontwarn okio.**
 -keepattributes EnclosingMethod
+
+# MPAndroidChart
+-keep class com.github.mikephil.charting.** { *; }

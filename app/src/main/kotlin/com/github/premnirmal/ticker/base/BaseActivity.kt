@@ -11,9 +11,11 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
+import com.github.premnirmal.tickerwidget.R.string
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
@@ -79,7 +81,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-  @Inject internal lateinit var bus: RxBus
+  @Inject
+  internal lateinit var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> = lifecycleSubject
 
@@ -141,5 +144,10 @@ abstract class BaseActivity : AppCompatActivity() {
       toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(),
           toolbar.paddingRight, toolbar.paddingBottom)
     }
+  }
+
+  protected fun showErrorAndFinish() {
+    InAppMessage.showToast(this, string.error_symbol)
+    finish()
   }
 }

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class HistoricalData(
     @field:SerializedName("Time Series (Daily)")
-    var weeklyTimeSeries: LinkedHashMap<String, HistoricalValue> = LinkedHashMap()) {
+    var timeSeries: Map<String, HistoricalValue> = LinkedHashMap()) {
 
   data class HistoricalValue(
       @field:SerializedName("1. open")

@@ -21,6 +21,7 @@
     <activity
         android:name="com.github.premnirmal.ticker.home.SplashActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
+        android:screenOrientation="portrait"
         android:theme="@style/SplashTheme">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -31,25 +32,31 @@
         android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
         android:label="@string/app_name"
         android:launchMode="singleTask"
+        android:screenOrientation="portrait"
         android:theme="@style/ParanormalActivityTheme"/>
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity"
         android:label="@string/add_ticker"
+        android:screenOrientation="portrait"
         android:theme="@style/TickerSelectorActivityTheme"
         android:windowSoftInputMode="adjustResize"/>
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
-        android:label="@string/add_position"/>
+        android:label="@string/add_position"
+        android:screenOrientation="portrait"/>
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.EditPositionActivity"
-        android:label="@string/edit_position"/>
+        android:label="@string/edit_position"
+        android:screenOrientation="portrait"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
         android:label="@string/app_settings"
+        android:screenOrientation="portrait"
         android:theme="@style/SettingsActivityTheme"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
         android:label="@string/action_Settings"
+        android:screenOrientation="portrait"
         android:theme="@style/WidgetSettingsActivityTheme">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
@@ -58,7 +65,12 @@
     <activity
         android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
         android:label="@string/news_feed"
+        android:screenOrientation="portrait"
         android:theme="@style/NewsFeedActivityTheme"/>
+    <activity
+        android:name="com.github.premnirmal.ticker.news.GraphActivity"
+        android:screenOrientation="landscape"
+        android:theme="@style/GraphActivityTheme"/>
 
     <receiver
         android:name="com.github.premnirmal.ticker.UpdateReceiver"

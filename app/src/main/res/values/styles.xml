@@ -36,6 +36,8 @@
 
   <style name="NewsFeedActivityTheme" parent="AppTheme"/>
 
+  <style name="GraphActivityTheme" parent="AppTheme"/>
+
   <style name="TextViewStyle" parent="android:Widget.TextView">
     <item name="android:textSize">@dimen/text_size</item>
     <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
