@@ -2,5 +2,6 @@
 <resources>
   <string-array name="whats_new">
     <item>Graphs are back! Check out the news feed.</item>
+    <item>Crash fixes.</item>
   </string-array>
 </resources>

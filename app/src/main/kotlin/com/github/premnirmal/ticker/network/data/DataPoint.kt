@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.network.data
 import android.os.Parcel
 import android.os.Parcelable
 import com.github.mikephil.charting.data.Entry
-import com.github.premnirmal.ticker.network.data.HistoricalData.HistoricalValue
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.Serializable

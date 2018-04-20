@@ -4,10 +4,12 @@
 
 # Retain the names of all classes in the data package for gson to deserialize
 -keepnames class com.github.premnirmal.ticker.network.data.** { *; }
+# Keep models package
+-keepnames class com.github.premnirmal.ticker.model.** { *; }
 
-# Get rid of kotlin's run-time nullchecks
--assumenosideeffects class kotlin.jvm.internal.Intrinsics {
-    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+# Kotlin
+-keepclassmembers class **$WhenMappings {
+    <fields>;
 }
 
 # Android support

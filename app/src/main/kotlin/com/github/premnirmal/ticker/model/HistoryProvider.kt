@@ -27,9 +27,9 @@ class HistoryProvider : IHistoryProvider {
   override fun getHistoricalDataShort(symbol: String): Observable<List<DataPoint>> {
     return historicalDataApi.getHistoricalData(apiKey = apiKey, symbol = symbol).map {
       val points = ArrayList<DataPoint>()
-      it.timeSeries.forEach { k, v ->
-        val epochDate = LocalDate.parse(k, DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()
-        points.add(DataPoint(epochDate.toFloat(), v.close.toFloat()))
+      it.timeSeries.forEach { entry ->
+        val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()
+        points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
       }
       points.sort()
       points as List<DataPoint>
@@ -51,10 +51,9 @@ class HistoryProvider : IHistoryProvider {
       cachedData = null
       observable = historicalDataApi.getHistoricalDataFull(apiKey = apiKey, symbol = symbol).map {
         val points = ArrayList<DataPoint>()
-        it.timeSeries.forEach { k, v ->
-          val epochDate = LocalDate.parse(k, DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()
-          points.add(DataPoint(epochDate.toFloat(),
-              v.close.toFloat()))
+        it.timeSeries.forEach {entry ->
+          val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()
+          points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
         }
         cachedData = Pair(symbol, points)
         val filtered = points.filter { it.getDate().isAfter(range.end) }.toMutableList()
