@@ -105,7 +105,7 @@
               android:layout_weight="1"
               android:gravity="end|center_vertical"
               android:lines="1"
-              android:textSize="@dimen/medium_text"
+              android:textSize="@dimen/xlarge_text"
               tools:text="+4.50 (2.00%)"
               />
         </LinearLayout>
@@ -239,6 +239,18 @@
             android:layout_weight="1"
             app:center_text="true"
             app:name="@string/gain_loss"
+            app:or="horizontal"
+            app:size="@dimen/larger_text"
+            />
+
+        <com.github.premnirmal.ticker.ui.StockFieldView
+            android:id="@+id/day_change"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            app:center_text="true"
+            app:name="@string/day_change_amount"
             app:or="horizontal"
             app:size="@dimen/larger_text"
             />

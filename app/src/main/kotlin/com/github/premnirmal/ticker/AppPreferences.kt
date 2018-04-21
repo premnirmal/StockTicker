@@ -6,6 +6,7 @@ import android.os.Environment
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import org.threeten.bp.format.DateTimeFormatter
+import org.threeten.bp.format.FormatStyle.MEDIUM
 import java.io.File
 import java.text.DecimalFormat
 import java.text.Format
@@ -134,8 +135,8 @@ class AppPreferences @Inject constructor() {
     const val LIGHT = 3
 
     val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-    val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yy")
-    val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd-yyyy")
+    val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)
+    val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd-yyyy")
 
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
 

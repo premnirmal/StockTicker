@@ -22,7 +22,7 @@ class TextMarkerView(context: Context) : MarkerView(context, R.layout.text_marke
     if (e is DataPoint) {
       val price = AppPreferences.DECIMAL_FORMAT.format(e.y)
       val date = e.getDate().format(DATE_FORMATTER)
-      tvContent.text = "$${price}\n$date"
+      tvContent.text = "${price}\n$date"
     } else {
       tvContent.text = ""
     }

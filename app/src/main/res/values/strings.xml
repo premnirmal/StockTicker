@@ -89,7 +89,7 @@
   <string name="change_percent">Change %</string>
   <string name="change_amount">Change</string>
   <string name="day_change_percent">Day change %</string>
-  <string name="day_change_amount">Day change</string>
+  <string name="day_change_amount">DayChange</string>
   <string name="autosort_disabled">Auto-sort has been disabled. You can now drag and drop to sort.</string>
   <string name="remove_prompt">Are you sure you want to remove %1$s from your portfolio?</string>
   <string name="cancel">Cancel</string>

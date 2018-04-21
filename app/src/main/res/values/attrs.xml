@@ -15,7 +15,4 @@
     <attr format="string" name="title_text"/>
     <attr format="string" name="subtitle_text"/>
   </declare-styleable>
-  <declare-styleable name="MaxHeightLinearLayout">
-    <attr format="dimension" name="maxheight"/>>
-  </declare-styleable>
 </resources>

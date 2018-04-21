@@ -84,6 +84,17 @@ data class Quote(var symbol: String = "",
     return gainLossString
   }
 
+  fun dayChange(): Float = positionShares * change
+
+  fun dayChangeString(): String {
+    val dayChange = dayChange()
+    val dayChangeString = AppPreferences.DECIMAL_FORMAT.format(dayChange)
+    if (dayChange > 0) {
+      return "+$dayChangeString"
+    }
+    return dayChangeString
+  }
+
   fun newsQuery(): String {
     if (name.isEmpty()) return symbol + " stock"
     val split = name.replace("[^\\w\\s]", "").split(" ")

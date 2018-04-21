@@ -21,7 +21,7 @@ class LoggingTree(context: Context) : Timber.Tree() {
     Fabric.with(context, kit, Answers())
   }
 
-  override fun log(priority: Int, tag: String?, message: String?, t: Throwable?) {
+  override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
     if (priority == Log.VERBOSE || priority == Log.DEBUG) {
       return
     }

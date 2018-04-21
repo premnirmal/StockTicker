@@ -2,6 +2,7 @@
 <resources>
   <string-array name="whats_new">
     <item>¡Los gráficos están de vuelta!</item>
+    <item>Correccion de algunas vistas</item>
     <item>Correccion de errores</item>
   </string-array>
 </resources>

@@ -32,9 +32,9 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
         fieldvalue.gravity = Gravity.END
       } else {
         setOrientation(LinearLayout.VERTICAL)
-        fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0,
+        fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0,
             0.5f)
-        fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0,
+        fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0,
             0.5f)
         fieldvalue.gravity = Gravity.START
       }

@@ -35,19 +35,19 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
       listener.onClickQuoteOptions(v, quote, position)
     }
 
-    val tickerView = itemView.findViewById<View>(R.id.ticker) as TextView
-    val nameView = itemView.findViewById<View>(R.id.name) as TextView
+    val tickerView = itemView.findViewById<TextView>(R.id.ticker)
+    val nameView = itemView.findViewById<TextView>(R.id.name)
 
     tickerView.text = quote.symbol
     nameView.text = quote.name
 
     val change: Float = quote.change
     val changePercent: Float = quote.changeInPercent
-    val changeInPercentView = itemView.findViewById<View>(R.id.changePercent) as StockFieldView
+    val changeInPercentView = itemView.findViewById<StockFieldView>(R.id.changePercent)
     changeInPercentView.setText(quote.changePercentString())
-    val changeValueView = itemView.findViewById<View>(R.id.changeValue) as StockFieldView
+    val changeValueView = itemView.findViewById<StockFieldView>(R.id.changeValue)
     changeValueView.setText(quote.changeString())
-    val totalValueText = itemView.findViewById<View>(R.id.totalValue) as TextView
+    val totalValueText = itemView.findViewById<TextView>(R.id.totalValue)
     totalValueText.text = quote.priceString()
 
     val color = if (change < 0f || changePercent < 0f) {
@@ -80,17 +80,21 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
   internal class PositionVH(itemView: View) : PortfolioVH(itemView) {
 
     override fun updateView(quote: Quote) {
-      val holdingsView = itemView.findViewById<View>(R.id.holdings) as StockFieldView
-      val gainLossView = itemView.findViewById<View>(R.id.gain_loss) as StockFieldView
+      val holdingsView = itemView.findViewById<StockFieldView>(R.id.holdings)
+      val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
 
       val holdings = quote.holdingsString()
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
+      val dayChangeView = itemView.findViewById<StockFieldView>(R.id.dayChange)
+      dayChangeView.setText(quote.dayChangeString())
       if (gainLossAmount >= 0) {
         gainLossView.setTextColor(positiveColor)
+        dayChangeView.setTextColor(positiveColor)
       } else {
         gainLossView.setTextColor(negativeColor)
+        dayChangeView.setTextColor(negativeColor)
       }
     }
   }

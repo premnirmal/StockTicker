@@ -16,17 +16,18 @@ import android.widget.TextView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
+import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
 import kotlinx.android.synthetic.main.activity_news_feed.change
+import kotlinx.android.synthetic.main.activity_news_feed.day_change
 import kotlinx.android.synthetic.main.activity_news_feed.description
 import kotlinx.android.synthetic.main.activity_news_feed.edit_positions
 import kotlinx.android.synthetic.main.activity_news_feed.equityValue
@@ -87,7 +88,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
     change.text = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
-    if (quote.changeInPercent >= 0) {
+    if (quote.change > 0 || quote.changeInPercent >= 0) {
       change.setTextColor(resources.getColor(R.color.positive_green))
       lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
     } else {
@@ -195,8 +196,16 @@ class NewsFeedActivity : BaseGraphActivity() {
       }
       average_price.visibility = View.VISIBLE
       average_price.setText(quote.positionPriceString())
+      day_change.visibility = View.VISIBLE
+      day_change.setText(quote.dayChangeString())
+      if (quote.change > 0 || quote.changeInPercent >= 0) {
+        day_change.setTextColor(resources.getColor(R.color.positive_green))
+      } else {
+        day_change.setTextColor(resources.getColor(R.color.negative_red))
+      }
     } else {
       total_gain_loss.visibility = View.GONE
+      day_change.visibility = View.GONE
       average_price.visibility = View.GONE
     }
   }

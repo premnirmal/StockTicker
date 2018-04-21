@@ -23,7 +23,7 @@ class DateAxisFormatter : IAxisValueFormatter {
 class ValueAxisFormatter : IAxisValueFormatter {
 
   override fun getFormattedValue(value: Float,
-      axis: AxisBase): String = "$${AppPreferences.DECIMAL_FORMAT.format(value)}"
+      axis: AxisBase): String = AppPreferences.DECIMAL_FORMAT.format(value)
 }
 
 class MultilineXAxisRenderer(viewPortHandler: ViewPortHandler?, xAxis: XAxis?,
