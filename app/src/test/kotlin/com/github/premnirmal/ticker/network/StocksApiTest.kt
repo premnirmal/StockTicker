@@ -19,7 +19,7 @@ import org.mockito.Mockito.verify
 class StocksApiTest : BaseUnitTest() {
 
   companion object {
-    val TEST_TICKER_LIST = arrayListOf<String>("SPY", "GOOG", "MSFT", "DIA", "AAPL")
+    val TEST_TICKER_LIST = arrayListOf("SPY", "GOOG", "MSFT", "DIA", "AAPL")
   }
 
   internal lateinit var robinhood: Robindahood

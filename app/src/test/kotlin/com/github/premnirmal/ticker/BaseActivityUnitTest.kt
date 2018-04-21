@@ -9,9 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.robolectric.Robolectric
 import org.robolectric.RuntimeEnvironment
-import org.robolectric.util.ActivityController
-
-
+import org.robolectric.android.controller.ActivityController
 
 /**
  * Created by premnirmal on 3/22/17.
@@ -38,7 +36,7 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
 
   protected fun setIntent(intent: Intent) {
     assertNull("Cannot set intent after starting the activity", mActivity)
-    mController.withIntent(intent)
+    mController.newIntent(intent)
   }
 
   protected fun createWithStringExtra(key: String, value: String) {

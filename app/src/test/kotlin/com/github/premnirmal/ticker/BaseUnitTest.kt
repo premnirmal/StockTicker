@@ -19,8 +19,8 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.doNothing
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.Config
-import org.robolectric.util.ActivityController
 import java.lang.reflect.Type
 
 
