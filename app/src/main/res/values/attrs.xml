@@ -9,6 +9,11 @@
       <enum name="horizontal" value="0"/>
       <enum name="vertical" value="1"/>
     </attr>
+    <attr format="enum" name="text_gravity">
+      <enum name="left" value="0"/>
+      <enum name="right" value="1"/>
+      <enum name="center" value="2"/>
+    </attr>
     <attr format="boolean" name="center_text"/>
   </declare-styleable>
   <declare-styleable name="SettingsTextView">

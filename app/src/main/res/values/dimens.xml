@@ -20,6 +20,7 @@
   <dimen name="portfolio_stock_vh_text_size">15sp</dimen>
   <dimen name="portfolio_stock_vh_name_text_size">12sp</dimen>
   <dimen name="portfolio_position_vh_text_size">11sp</dimen>
+  <dimen name="portfolio_position_vh_value_text_size">10sp</dimen>
 
   <dimen name="small_text">10sp</dimen>
   <dimen name="xsmall_text">8sp</dimen>

@@ -53,6 +53,8 @@
   <string name="ticker_import_fail">Error importing quotes</string>
   <string name="no_network_message">No network connection</string>
   <string name="refresh_failed">Refresh failed</string>
+  <string name="news_fetch_failed">Failed to fetch news</string>
+  <string name="graph_fetch_failed">Failed to fetch data</string>
   <string name="error_fetching_suggestions">Error fetching suggestions</string>
   <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
   <string name="package_replaced_string" translatable="false">com.github.premnirmal.tickerwidget</string>
@@ -85,11 +87,13 @@
   <string name="add_stock">Add Stocks</string>
   <string name="holdings">Holdings</string>
   <string name="average_price">Average Price</string>
+  <string name="gain">Gain</string>
+  <string name="loss">Loss</string>
   <string name="gain_loss">Gain/Loss</string>
-  <string name="change_percent">Change %</string>
+  <string name="change_percent">% Change</string>
   <string name="change_amount">Change</string>
-  <string name="day_change_percent">Day change %</string>
-  <string name="day_change_amount">DayChange</string>
+  <string name="day_change_percent">% Day Change</string>
+  <string name="day_change_amount">Day Change</string>
   <string name="autosort_disabled">Auto-sort has been disabled. You can now drag and drop to sort.</string>
   <string name="remove_prompt">Are you sure you want to remove %1$s from your portfolio?</string>
   <string name="cancel">Cancel</string>

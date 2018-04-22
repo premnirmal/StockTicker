@@ -15,7 +15,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
+import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -77,13 +79,14 @@ class NewsFeedActivity : BaseGraphActivity() {
       q = stocksProvider.getStock(ticker)
       if (q == null) {
         showErrorAndFinish()
+        return
       }
     } else {
       ticker = ""
       showErrorAndFinish()
       return
     }
-    quote = q!!
+    quote = q
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
@@ -110,18 +113,23 @@ class NewsFeedActivity : BaseGraphActivity() {
   }
 
   private fun fetchData() {
-    bind(historyProvider.getHistoricalDataShort(quote.symbol)).subscribe(
-        object : SimpleSubscriber<List<DataPoint>>() {
-          override fun onNext(result: List<DataPoint>) {
-            dataPoints = result
-            loadGraph(graphView)
-          }
+    if (isNetworkOnline()) {
+      bind(historyProvider.getHistoricalDataShort(quote.symbol)).subscribe(
+          object : SimpleSubscriber<List<DataPoint>>() {
+            override fun onNext(result: List<DataPoint>) {
+              dataPoints = result
+              loadGraph(graphView)
+            }
 
-          override fun onError(e: Throwable) {
-            progress.visibility = View.GONE
-            graphView.setNoDataText(getString(R.string.no_data))
-          }
-        })
+            override fun onError(e: Throwable) {
+              progress.visibility = View.GONE
+              graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+              InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
+            }
+          })
+    } else {
+      InAppMessage.showMessage(this, getString(R.string.no_network_message))
+    }
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
@@ -211,16 +219,21 @@ class NewsFeedActivity : BaseGraphActivity() {
   }
 
   private fun fetchNews() {
-    bind(newsProvider.getNews(quote.newsQuery())).subscribe(
-        object : SimpleSubscriber<List<NewsArticle>>() {
-          override fun onNext(result: List<NewsArticle>) {
-            setUpArticles(result)
-          }
+    if (isNetworkOnline()) {
+      bind(newsProvider.getNews(quote.newsQuery())).subscribe(
+          object : SimpleSubscriber<List<NewsArticle>>() {
+            override fun onNext(result: List<NewsArticle>) {
+              setUpArticles(result)
+            }
 
-          override fun onError(e: Throwable) {
-            news_container.visibility = View.GONE
-          }
-        })
+            override fun onError(e: Throwable) {
+              news_container.visibility = View.GONE
+              InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
+            }
+          })
+    } else {
+      InAppMessage.showMessage(this, getString(R.string.no_network_message))
+    }
   }
 
   override fun onGraphDataAdded(graphView: LineChart) {

@@ -15,7 +15,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
-import com.github.premnirmal.tickerwidget.R.string
+import com.github.premnirmal.tickerwidget.R
 import com.trello.rxlifecycle2.android.ActivityEvent
 import com.trello.rxlifecycle2.android.RxLifecycleAndroid
 import io.reactivex.Observable
@@ -147,7 +147,7 @@ abstract class BaseActivity : AppCompatActivity() {
   }
 
   protected fun showErrorAndFinish() {
-    InAppMessage.showToast(this, string.error_symbol)
+    InAppMessage.showToast(this, R.string.error_symbol)
     finish()
   }
 }

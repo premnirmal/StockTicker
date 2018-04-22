@@ -45,6 +45,8 @@
   <string name="ticker_import_fail">Error al importar las cotizaciones</string>
   <string name="no_network_message">No hay conexion de red</string>
   <string name="refresh_failed">Error de actualización</string>
+  <string name="news_fetch_failed">Error al buscar noticias</string>
+  <string name="graph_fetch_failed">Error al buscar datos</string>
   <string name="error_fetching_suggestions">Error al obtener sugerencias</string>
   <string name="adblock">Error al obtener sugerencias. ¿Está seguro de que no está usando un adblocker? Si está usando un Adblocker, por favor agregue d.yimg.com a su lista blanca.</string>
   <string name="only_updates_on_weekdays">Sólo actualizaciones los días laborables</string>
@@ -76,10 +78,12 @@
   <string name="add_stock">Añadir acciones</string>
   <string name="holdings">Valores en cartera</string>
   <string name="average_price">Precio Promedio</string>
-  <string name="gain_loss">Perdida de ganancia</string>
-  <string name="change_percent">Cambiar %</string>
+  <string name="gain">Ganancia</string>
+  <string name="loss">Pérdida</string>
+  <string name="gain_loss">Ganancia/Pérdida</string>
+  <string name="change_percent">% Cambiar</string>
   <string name="change_amount">Cambio</string>
-  <string name="day_change_percent">Cambio de día %</string>
+  <string name="day_change_percent">% cambio de día</string>
   <string name="day_change_amount">Cambio de día</string>
   <string name="autosort_disabled">La clasificación automática se ha deshabilitado. Ahora puede arrastrar y soltar para ordenar.</string>
   <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de tu cartera?</string>

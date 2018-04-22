@@ -18,12 +18,21 @@ import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 class StockFieldView @JvmOverloads
 constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
 
+  companion object {
+    const val ORIENTATION_HORIZONTAL = 0
+    const val ORIENTATION_VERTICAL = 1
+
+    const val GRAVITY_LEFT = 0
+    const val GRAVITY_RIGHT = 1
+    const val GRAVITY_CENTER = 2
+  }
+
   init {
     LayoutInflater.from(context).inflate(R.layout.stock_field_view, this, true)
     attrs?.let {
       val array = context.obtainStyledAttributes(it, R.styleable.StockFieldView)
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
-      if (orientation == 0) {
+      if (orientation == ORIENTATION_HORIZONTAL) {
         setOrientation(LinearLayout.HORIZONTAL)
         fieldname.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT,
             0.5f)
@@ -32,10 +41,10 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
         fieldvalue.gravity = Gravity.END
       } else {
         setOrientation(LinearLayout.VERTICAL)
-        fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0,
-            0.5f)
-        fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0,
-            0.5f)
+        fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
+        fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
         fieldvalue.gravity = Gravity.START
       }
       weightSum = 1f
@@ -45,12 +54,32 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
       fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
       fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
       val centerText = array.getBoolean(R.styleable.StockFieldView_center_text, false)
-      if (centerText) {
-        fieldname.gravity = Gravity.CENTER
-        fieldvalue.gravity = Gravity.CENTER
-      } else {
-        fieldname.gravity = Gravity.LEFT
-        fieldvalue.gravity = Gravity.RIGHT
+      when {
+        centerText -> {
+          fieldname.gravity = Gravity.CENTER
+          fieldvalue.gravity = Gravity.CENTER
+        }
+        orientation == ORIENTATION_HORIZONTAL -> {
+          fieldname.gravity = Gravity.LEFT
+          fieldvalue.gravity = Gravity.RIGHT
+        }
+        orientation == ORIENTATION_VERTICAL -> {
+          val textGravity = array.getInt(R.styleable.StockFieldView_text_gravity, 0)
+          when (textGravity) {
+            GRAVITY_LEFT -> {
+              fieldname.gravity = Gravity.LEFT
+              fieldvalue.gravity = Gravity.LEFT
+            }
+            GRAVITY_RIGHT -> {
+              fieldname.gravity = Gravity.RIGHT
+              fieldvalue.gravity = Gravity.RIGHT
+            }
+            GRAVITY_CENTER -> {
+              fieldname.gravity = Gravity.CENTER
+              fieldvalue.gravity = Gravity.CENTER
+            }
+          }
+        }
       }
       array.recycle()
     }

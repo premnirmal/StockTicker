@@ -69,13 +69,14 @@ class GraphActivity : BaseGraphActivity() {
       q = stocksProvider.getStock(ticker)
       if (q == null) {
         showErrorAndFinish()
+        return
       }
     } else {
       ticker = ""
       showErrorAndFinish()
       return
     }
-    quote = q!!
+    quote = q
     tickerName.text = ticker
     desc.text = quote.name
 

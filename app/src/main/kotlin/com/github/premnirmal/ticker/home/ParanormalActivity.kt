@@ -32,8 +32,6 @@ import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.array
-import com.github.premnirmal.tickerwidget.R.string
 import kotlinx.android.synthetic.main.activity_paranormal.add_stocks_container
 import kotlinx.android.synthetic.main.activity_paranormal.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.activity_paranormal.edit_widget_container
@@ -171,14 +169,14 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
   }
 
   private fun showTutorial() {
-    showDialog(getString(string.how_to_title), getString(string.how_to))
+    showDialog(getString(R.string.how_to_title), getString(R.string.how_to))
     appPreferences.setTutorialShown(true)
   }
 
   private fun showWhatsNew() {
     appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
     val stringBuilder = StringBuilder()
-    val whatsNew = resources.getStringArray(array.whats_new)
+    val whatsNew = resources.getStringArray(R.array.whats_new)
     whatsNew.indices.forEach {
       stringBuilder.append("- ")
       stringBuilder.append(whatsNew[it])
@@ -186,7 +184,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
         stringBuilder.append("\n")
       }
     }
-    showDialog(getString(string.whats_new_in, BuildConfig.VERSION_NAME),
+    showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
         stringBuilder.toString())
   }
 
@@ -270,7 +268,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
             override fun onError(e: Throwable) {
               attemptingFetch = false
               swipe_container?.isRefreshing = false
-              InAppMessage.showMessage(this@ParanormalActivity, getString(string.refresh_failed))
+              InAppMessage.showMessage(this@ParanormalActivity, getString(R.string.refresh_failed))
             }
 
             override fun onNext(result: List<Quote>) {
@@ -281,12 +279,12 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           })
         } else {
           attemptingFetch = false
-          InAppMessage.showMessage(this, getString(string.refresh_failed))
+          InAppMessage.showMessage(this, getString(R.string.refresh_failed))
           swipe_container?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
-        InAppMessage.showMessage(this, getString(string.no_network_message))
+        InAppMessage.showMessage(this, getString(R.string.no_network_message))
         swipe_container?.isRefreshing = false
       }
     }

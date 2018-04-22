@@ -90,11 +90,16 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
       val dayChangeView = itemView.findViewById<StockFieldView>(R.id.dayChange)
       dayChangeView.setText(quote.dayChangeString())
       if (gainLossAmount >= 0) {
+        gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
         gainLossView.setTextColor(positiveColor)
-        dayChangeView.setTextColor(positiveColor)
       } else {
+        gainLossView.setLabel(gainLossView.context.getString(R.string.loss))
         gainLossView.setTextColor(negativeColor)
+      }
+      if (quote.change < 0f || quote.changeInPercent < 0f) {
         dayChangeView.setTextColor(negativeColor)
+      } else {
+        dayChangeView.setTextColor(positiveColor)
       }
     }
   }

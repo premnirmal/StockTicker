@@ -27,7 +27,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.string
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.activity_preferences.toolbar
@@ -335,21 +334,21 @@ class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissio
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportTickers()
         } else {
-          showDialog(getString(string.cannot_export_msg))
+          showDialog(getString(R.string.cannot_export_msg))
         }
       }
       REQCODE_READ_EXTERNAL_STORAGE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           launchImportIntent()
         } else {
-          showDialog(getString(string.cannot_import_msg))
+          showDialog(getString(R.string.cannot_import_msg))
         }
       }
       REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
           exportAndShareTickers()
         } else {
-          showDialog(getString(string.cannot_share_msg))
+          showDialog(getString(R.string.cannot_share_msg))
         }
       }
     }
