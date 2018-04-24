@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Graphs are back! Check out the news feed</item>
-    <item>UI tweaks</item>
-    <item>Crash fixes</item>
+    <item>Fixed bug where new widgets include the same symbols as the previous widget</item>
+    <item>Graphs are back!</item>
   </string-array>
 </resources>

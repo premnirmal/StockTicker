@@ -53,9 +53,9 @@ class WidgetData {
     preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
     tickerList = if (tickerListVars.isNullOrEmpty()) {
-      ArrayList(stocksProvider.getTickers())
+      ArrayList()
     } else {
-      java.util.ArrayList(Arrays.asList(
+      ArrayList(Arrays.asList(
           *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }
     save()
@@ -63,7 +63,7 @@ class WidgetData {
 
   constructor(widgetId: Int, isFirstWidget: Boolean) : this(widgetId) {
     if (isFirstWidget && tickerList.isEmpty()) {
-      addTickers(stocksProvider.getTickers())
+      addAllFromStocksProvider()
     }
   }
 
