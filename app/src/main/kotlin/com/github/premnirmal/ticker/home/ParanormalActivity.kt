@@ -11,11 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.DisplayMetrics
-import android.view.KeyCharacterMap
-import android.view.KeyEvent
 import android.view.View
-import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import com.github.premnirmal.ticker.AppPreferences
@@ -23,6 +19,7 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
@@ -32,6 +29,7 @@ import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_paranormal.add_stocks_container
 import kotlinx.android.synthetic.main.activity_paranormal.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.activity_paranormal.edit_widget_container
@@ -245,6 +243,11 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     super.onResume()
     update()
     closeFABMenu()
+    bind(bus.forEventType(RefreshEvent::class.java))
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe { _ ->
+          update()
+        }
   }
 
   private fun updateHeader() {
@@ -274,7 +277,6 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
             override fun onNext(result: List<Quote>) {
               attemptingFetch = false
               swipe_container?.isRefreshing = false
-              update()
             }
           })
         } else {
@@ -325,32 +327,6 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
       startActivity(marketIntent)
     }
   }
-
-  private fun hasNavBar(): Boolean {
-    val hasSoftwareKeys: Boolean
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      val display = windowManager.defaultDisplay
-      val realDisplayMetrics = DisplayMetrics()
-      display.getRealMetrics(realDisplayMetrics)
-
-      val realHeight = realDisplayMetrics.heightPixels
-      val realWidth = realDisplayMetrics.widthPixels
-
-      val displayMetrics = DisplayMetrics()
-      display.getMetrics(displayMetrics)
-
-      val displayHeight = displayMetrics.heightPixels
-      val displayWidth = displayMetrics.widthPixels
-
-      hasSoftwareKeys = realWidth - displayWidth > 0 || realHeight - displayHeight > 0
-    } else {
-      val hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey()
-      val hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
-      hasSoftwareKeys = !hasMenuKey && !hasBackKey
-    }
-    return hasSoftwareKeys
-  }
-
 
   // PortfolioFragment.Callback
 

@@ -10,7 +10,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.v7.app.AppCompatActivity
+import android.util.DisplayMetrics
+import android.view.KeyCharacterMap
+import android.view.KeyEvent
 import android.view.View
+import android.view.ViewConfiguration
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
@@ -76,6 +80,31 @@ abstract class BaseActivity : AppCompatActivity() {
       return AlertDialog.Builder(this).setMessage(message).setCancelable(
           cancelable).setPositiveButton(
           "YES", positiveOnClick).setNegativeButton("NO", negativeOnClick).show()
+    }
+
+    fun Activity.hasNavBar(): Boolean {
+      val hasSoftwareKeys: Boolean
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        val display = windowManager.defaultDisplay
+        val realDisplayMetrics = DisplayMetrics()
+        display.getRealMetrics(realDisplayMetrics)
+
+        val realHeight = realDisplayMetrics.heightPixels
+        val realWidth = realDisplayMetrics.widthPixels
+
+        val displayMetrics = DisplayMetrics()
+        display.getMetrics(displayMetrics)
+
+        val displayHeight = displayMetrics.heightPixels
+        val displayWidth = displayMetrics.widthPixels
+
+        hasSoftwareKeys = realWidth - displayWidth > 0 || realHeight - displayHeight > 0
+      } else {
+        val hasMenuKey = ViewConfiguration.get(this).hasPermanentMenuKey()
+        val hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK)
+        hasSoftwareKeys = !hasMenuKey && !hasBackKey
+      }
+      return hasSoftwareKeys
     }
   }
 

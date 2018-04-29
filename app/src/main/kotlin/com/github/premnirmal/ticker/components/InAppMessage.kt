@@ -2,13 +2,12 @@ package com.github.premnirmal.ticker.components
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import android.support.design.widget.Snackbar
 import android.view.View
-import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.Toast
 import com.github.premnirmal.ticker.StocksApp.Companion.getNavigationBarHeight
+import com.github.premnirmal.ticker.base.BaseActivity.Companion.hasNavBar
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.tickerwidget.R
 
@@ -17,9 +16,8 @@ import com.github.premnirmal.tickerwidget.R
  */
 object InAppMessage {
 
-  private fun Context.isTranslucentNavigationBar(): Boolean {
-    val id = resources.getIdentifier("config_showNavigationBar", "bool", "android")
-    return id > 0 && resources.getBoolean(id)
+  private fun Activity.shouldAddBottomPadding(): Boolean {
+    return hasNavBar() && this is ParanormalActivity
   }
 
   private fun Activity.getRootView(): View =
@@ -45,7 +43,7 @@ object InAppMessage {
       return
     }
     val snackbar = createSnackbar(activity.getRootView(), message,
-        activity.isTranslucentNavigationBar())
+        activity.shouldAddBottomPadding())
     snackbar.show()
   }
 
@@ -55,7 +53,7 @@ object InAppMessage {
       return
     }
     val snackbar = createSnackbar(activity.getRootView(), message,
-        activity.isTranslucentNavigationBar())
+        activity.shouldAddBottomPadding())
     snackbar.setAction(actionText, actionClick)
     snackbar.show()
   }

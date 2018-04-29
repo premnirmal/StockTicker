@@ -128,6 +128,8 @@ class NewsFeedActivity : BaseGraphActivity() {
             }
           })
     } else {
+      progress.visibility = View.GONE
+      graphView.setNoDataText(getString(R.string.graph_fetch_failed))
       InAppMessage.showMessage(this, getString(R.string.no_network_message))
     }
   }
@@ -232,6 +234,7 @@ class NewsFeedActivity : BaseGraphActivity() {
             }
           })
     } else {
+      news_container.visibility = View.GONE
       InAppMessage.showMessage(this, getString(R.string.no_network_message))
     }
   }

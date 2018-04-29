@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Fixed bug where new widgets include the same symbols as the previous widget</item>
-    <item>Graphs are back!</item>
+    <item>Minor UI tweaks</item>
   </string-array>
 </resources>
