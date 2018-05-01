@@ -358,17 +358,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun removeStock(ticker: String): Collection<String> {
     synchronized(quoteList, {
-      val ticker2 = "^$ticker" // in case it was an index
       tickerList.remove(ticker)
-      tickerList.remove(ticker2)
       val dummy = Quote()
-      val dummy2 = Quote()
       dummy.symbol = ticker
-      dummy2.symbol = ticker2
       quoteList.remove(dummy)
-      quoteList.remove(dummy2)
       positionList.remove(dummy)
-      positionList.remove(dummy2)
       save()
       scheduleUpdate()
       return tickerList
@@ -378,17 +372,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun removeStocks(tickers: Collection<String>) {
     synchronized(quoteList, {
       tickers.forEach {
-        val ticker2 = "^$it" // in case it was an index
         tickerList.remove(it)
-        tickerList.remove(ticker2)
         val dummy = Quote()
-        val dummy2 = Quote()
         dummy.symbol = it
-        dummy2.symbol = ticker2
         quoteList.remove(dummy)
-        quoteList.remove(dummy2)
         positionList.remove(dummy)
-        positionList.remove(dummy2)
       }
       save()
       scheduleUpdate()

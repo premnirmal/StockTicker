@@ -29,8 +29,7 @@ class StocksAdapter constructor(
 
   companion object {
     const val TYPE_STOCK = 1
-    const val TYPE_INDEX = 2
-    const val TYPE_POSITION = 3
+    const val TYPE_POSITION = 2
   }
 
   private val quoteList: MutableList<Quote>
@@ -58,7 +57,6 @@ class StocksAdapter constructor(
     val stock = quoteList[position]
     return when {
       stock.isPosition -> TYPE_POSITION
-      stock.isIndex() -> TYPE_INDEX
       else -> TYPE_STOCK
     }
   }

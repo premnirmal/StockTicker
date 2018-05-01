@@ -5,30 +5,34 @@ import com.github.premnirmal.ticker.AppPreferences
 /**
  * Created by premnirmal on 3/30/17.
  */
-data class Quote(var symbol: String = "",
-    var name: String = "",
-    var lastTradePrice: Float = 0.toFloat(),
-    var changeInPercent: Float = 0.toFloat(),
-    var change: Float = 0.toFloat(),
-    var stockExchange: String = "",
-    var currency: String = "",
-    var description: String = "") : Comparable<Quote> {
+data class Quote(var symbol: String = "") : Comparable<Quote> {
+
+  companion object {
+    fun fromQuoteNet(quoteNet: QuoteNet): Quote {
+      val quote = Quote(quoteNet.symbol ?: "")
+      quote.name = quoteNet.name ?: ""
+      quote.lastTradePrice = quoteNet.lastTradePrice
+      quote.changeInPercent = quoteNet.changePercent
+      quote.change = quoteNet.change
+      quote.stockExchange = quoteNet.exchange ?: ""
+      quote.currency = quoteNet.currency ?: "US"
+      quote.description = quoteNet.description ?: ""
+      return quote
+    }
+  }
+
+  var name: String = ""
+  var lastTradePrice: Float = 0.toFloat()
+  var changeInPercent: Float = 0.toFloat()
+  var change: Float = 0.toFloat()
+  var stockExchange: String = ""
+  var currency: String = ""
+  var description: String = ""
 
   // Position fields
   var isPosition: Boolean = false
   var positionPrice: Float = 0.toFloat()
   var positionShares: Float = 0.toFloat()
-
-  override fun equals(other: Any?): Boolean {
-    if (other is Quote) {
-      return symbol.equals(other.symbol, ignoreCase = true)
-    } else if (other is String) {
-      return other.equals(symbol, ignoreCase = true)
-    }
-    return false
-  }
-
-  override fun hashCode(): Int = symbol.hashCode()
 
   fun isIndex(): Boolean = symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
 
