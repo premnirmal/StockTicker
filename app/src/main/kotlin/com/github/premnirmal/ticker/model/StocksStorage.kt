@@ -38,7 +38,7 @@ class StocksStorage {
     } else {
       ArrayList()
     }
-    return Paper.book().read(KEY_POSITIONS, oldStocks)
+    return Paper.book().read(KEY_STOCKS, oldStocks)
   }
 
   fun saveStocks(quotes: List<Quote>) {
