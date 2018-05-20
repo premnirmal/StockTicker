@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.github.premnirmal.ticker.ui.MaxHeightLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:sfw="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/stockContainer"
@@ -12,6 +13,7 @@
     android:paddingLeft="5dp"
     android:paddingStart="5dp"
     android:paddingTop="7dp"
+    app:maxHeightDp="150"
     tools:layout_height="150dp"
     tools:layout_marginTop="100dp"
     >
@@ -107,4 +109,4 @@
         sfw:size="@dimen/portfolio_stock_vh_text_size"
         />
   </LinearLayout>
-</LinearLayout>
+</com.github.premnirmal.ticker.ui.MaxHeightLinearLayout>
