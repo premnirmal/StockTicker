@@ -13,6 +13,7 @@ import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
+import io.paperdb.Paper
 import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import java.security.MessageDigest
@@ -61,8 +62,13 @@ open class StocksApp : Application() {
             .setFontAttrId(R.attr.fontPath)
             .build())
     Injector.init(createAppComponent())
+    initPaper()
     initAnalytics()
     SIGNATURE = getAppSignature(this)
+  }
+
+  open fun initPaper() {
+    Paper.init(this)
   }
 
   open fun initThreeTen() {

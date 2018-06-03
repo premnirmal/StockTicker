@@ -210,6 +210,9 @@ dependencies {
   implementation "saschpe.android:customtabs:1.1.1"
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
+  implementation 'io.paperdb:paperdb:2.6'
+  implementation 'com.github.pakoito:RxPaper2:1.2.0'
+
   prodImplementation("com.crashlytics.sdk.android:crashlytics:2.6.7@aar") {
     transitive = true
   }
