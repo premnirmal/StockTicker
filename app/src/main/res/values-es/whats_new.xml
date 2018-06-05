@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Corrección de error con ^DJI</item>
+    <item>Corrección de almacenamiento de datos</item>
   </string-array>
 </resources>

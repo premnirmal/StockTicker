@@ -5,6 +5,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.paperdb.Paper
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -14,29 +15,49 @@ import javax.inject.Inject
 class StocksStorage {
 
   companion object {
-    const val KEY_STOCKS_LIST = "STOCKS_LIST"
+    const val KEY_STOCKS = "STOCKS"
+    const val KEY_POSITIONS = "POSITIONS"
+    const val KEY_TICKERS = "TICKERS"
   }
 
-  @Inject internal lateinit var preferences: SharedPreferences
-  @Inject internal lateinit var gson: Gson
+  @Inject
+  internal lateinit var preferences: SharedPreferences
+  @Inject
+  internal lateinit var gson: Gson
 
   init {
     Injector.appComponent.inject(this)
   }
 
   fun readStocks(): MutableList<Quote> {
-    val data = preferences.getString(KEY_STOCKS_LIST, "")
-    return if (data.isNotEmpty()) {
+    val data = preferences.getString(KEY_STOCKS, "")
+    val oldStocks = if (data.isNotEmpty()) {
       val listType = object : TypeToken<List<Quote>>() {}.type
       val stocks = gson.fromJson<List<Quote>>(data, listType)
       ArrayList(stocks)
     } else {
       ArrayList()
     }
+    return Paper.book().read(KEY_POSITIONS, oldStocks)
   }
 
   fun saveStocks(quotes: List<Quote>) {
-    val data = gson.toJson(quotes)
-    preferences.edit().putString(KEY_STOCKS_LIST, data).apply()
+    Paper.book().write(KEY_STOCKS, quotes)
+  }
+
+  fun readPositions(): MutableList<Quote> {
+    return Paper.book().read(KEY_POSITIONS, ArrayList())
+  }
+
+  fun savePositions(positions: List<Quote>) {
+    Paper.book().write(KEY_POSITIONS, positions)
+  }
+
+  fun readTickers(): MutableList<String> {
+    return Paper.book().read(KEY_TICKERS, ArrayList())
+  }
+
+  fun saveTickers(positions: List<String>) {
+    Paper.book().write(KEY_TICKERS, positions)
   }
 }

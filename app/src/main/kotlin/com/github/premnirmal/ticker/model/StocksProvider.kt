@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Handler
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -42,23 +41,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
-    private fun List<Quote>.positionsToString(): String {
-      val builder = StringBuilder()
-      for (stock in this) {
-        if (stock.isPosition) {
-          builder.append(stock.symbol)
-          builder.append(",")
-          builder.append(stock.isPosition)
-          builder.append(",")
-          builder.append(stock.positionPrice)
-          builder.append(",")
-          builder.append(stock.positionShares)
-          builder.append("\n")
-        }
-      }
-      return builder.toString()
-    }
-
+    @Deprecated("Remove after version update")
     private fun String.stringToPositions(): MutableList<Quote> {
       val tickerListCSV = ArrayList(Arrays.asList(
           *this.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
@@ -83,7 +66,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
     private const val POSITION_LIST = "POSITION_LIST"
-    private const val DEFAULT_STOCKS = "SPY,DIA,GOOG,AAPL,MSFT"
+    private const val DEFAULT_STOCKS = "^GSPC,^DJI,GOOG,AAPL,MSFT"
     private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
   }
 
@@ -105,35 +88,30 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   internal lateinit var clock: AppClock
   @Inject
   internal lateinit var mainThreadHandler: Handler
+  @Inject
+  internal lateinit var storage: StocksStorage
 
-  private val tickerList: MutableList<String>
+  private val tickerList: MutableList<String> = ArrayList()
   private val quoteList: MutableList<Quote> = ArrayList()
-  private val positionList: MutableList<Quote>
+  private val positionList: MutableList<Quote> = ArrayList()
+
   private var lastFetched: Long = 0L
   private var nextFetch: Long = 0L
-  private val storage: StocksStorage
+
   private val exponentialBackoff: ExponentialBackoff
-  private var backOffAttemptCount = 1
 
   init {
     Injector.appComponent.inject(this)
-    storage = StocksStorage()
     exponentialBackoff = ExponentialBackoff()
-    backOffAttemptCount = appPreferences.backOffAttemptCount()
-    val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
-    tickerList = ArrayList(Arrays.asList(
-        *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
-
-    positionList = preferences.getString(POSITION_LIST, "").stringToPositions()
-
-    val tickerList = this.tickerList.toCommaSeparatedString()
-    preferences.edit().putString(SORTED_STOCK_LIST, tickerList).apply()
-    lastFetched = try {
-      preferences.getLong(LAST_FETCHED, 0L)
-    } catch (e: Exception) {
-      0L
+    tickerList.addAll(storage.readTickers())
+    // Remove when version updates.
+    if (tickerList.isEmpty()) {
+      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
+      tickerList.addAll(Arrays.asList(
+          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }
-    nextFetch = preferences.getLong(NEXT_FETCH, 0)
+    lastFetched = preferences.getLong(LAST_FETCHED, 0L)
+    nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     if (lastFetched == 0L) {
       fetch().subscribe(SimpleSubscriber())
     } else {
@@ -145,28 +123,29 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList, {
       quoteList.clear()
       quoteList.addAll(storage.readStocks())
+      positionList.clear()
+      positionList.addAll(storage.readPositions())
+      if (positionList.isEmpty()) {
+        val positions = preferences.getString(POSITION_LIST, "").stringToPositions()
+        positionList.addAll(positions)
+      }
     })
   }
 
   private fun save() {
     synchronized(quoteList, {
       preferences.edit()
-          .putString(POSITION_LIST, positionList.positionsToString())
-          .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
           .putLong(LAST_FETCHED, lastFetched)
           .apply()
+      storage.saveTickers(tickerList)
       storage.saveStocks(quoteList)
+      storage.savePositions(positionList)
     })
   }
 
   private fun retryWithBackoff() {
-    val backOffTimeMs = exponentialBackoff.getBackoffDurationMs(backOffAttemptCount++)
-    saveBackOffAttemptCount()
+    val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
     scheduleUpdateWithMs(backOffTimeMs)
-  }
-
-  private fun saveBackOffAttemptCount() {
-    appPreferences.setBackOffAttemptCount(backOffAttemptCount)
   }
 
   private fun scheduleUpdate(refresh: Boolean = false) {
@@ -235,7 +214,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 for (stock in stocks) {
                   if (positionList.contains(stock)) {
                     val index = positionList.indexOf(stock)
-                    stock.isPosition = positionList[index].isPosition
+                    stock.isPosition = true
                     stock.positionPrice = positionList[index].positionPrice
                     stock.positionShares = positionList[index].positionShares
                   }
@@ -275,8 +254,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           }
           .doOnComplete {
             appPreferences.setRefreshing(false)
-            backOffAttemptCount = 1
-            saveBackOffAttemptCount()
+            exponentialBackoff.reset()
             scheduleUpdate(true)
           }
           .subscribeOn(Schedulers.io())
