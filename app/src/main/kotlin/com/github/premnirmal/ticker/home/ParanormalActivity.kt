@@ -107,8 +107,6 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
 
     if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
       showWhatsNew()
-    } else {
-      maybeAskToRate()
     }
 
     toolbar.inflateMenu(R.menu.menu_paranormal)
@@ -163,6 +161,12 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
 
     fab_bg.setOnClickListener {
       closeFABMenu()
+    }
+  }
+
+  override fun onBackPressed() {
+    if (!maybeAskToRate()) {
+      super.onBackPressed()
     }
   }
 
@@ -303,7 +307,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     outState?.putBoolean(DIALOG_SHOWN, dialogShown)
   }
 
-  private fun maybeAskToRate() {
+  private fun maybeAskToRate(): Boolean {
     if (!dialogShown && appPreferences.shouldPromptRate()) {
       Builder(this).setTitle(R.string.like_our_app)
           .setMessage(R.string.please_rate)
@@ -317,11 +321,13 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           }
           .create().show()
       dialogShown = true
+      return true
     }
+    return false
   }
 
   private fun sendToPlayStore() {
-    val marketUri: Uri = Uri.parse("market://details?id=" + packageName)
+    val marketUri: Uri = Uri.parse("market://details?id=$packageName")
     val marketIntent = Intent(Intent.ACTION_VIEW, marketUri)
     marketIntent.resolveActivity(packageManager)?.let {
       startActivity(marketIntent)

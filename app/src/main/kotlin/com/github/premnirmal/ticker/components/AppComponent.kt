@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
+import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
@@ -77,6 +78,8 @@ interface AppComponent {
   fun inject(refreshReceiver: RefreshReceiver)
 
   fun inject(refreshService: RefreshService)
+
+  fun inject(exponentialBackoff: ExponentialBackoff)
 
   // Network
 

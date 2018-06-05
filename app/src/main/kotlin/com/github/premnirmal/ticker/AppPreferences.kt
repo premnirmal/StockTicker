@@ -82,7 +82,7 @@ class AppPreferences @Inject constructor() {
   fun hasUserAlreadyRated(): Boolean = sharedPreferences.getBoolean(DID_RATE, false)
 
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-      (random.nextInt() % 4 == 0) && !hasUserAlreadyRated()
+      !hasUserAlreadyRated() && (random.nextInt() % 4 == 0)
 
   fun clock(): AppClock = clock
 
@@ -147,8 +147,7 @@ class AppPreferences @Inject constructor() {
           dir.mkdir()
         }
         val fileName = "Tickers.txt"
-        val file = File(dir, fileName)
-        return file
+        return File(dir, fileName)
       }
   }
 }

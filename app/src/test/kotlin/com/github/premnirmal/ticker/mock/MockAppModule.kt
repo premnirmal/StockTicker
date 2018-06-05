@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.model.StocksStorage
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -44,4 +45,7 @@ class MockAppModule(private val app: StocksApp) {
 
   @Provides
   @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
+
+  @Provides
+  @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
 }

@@ -15,7 +15,9 @@ import javax.inject.Inject
 class StocksStorage {
 
   companion object {
-    const val KEY_STOCKS_LIST = "STOCKS"
+    const val KEY_STOCKS = "STOCKS"
+    const val KEY_POSITIONS = "POSITIONS"
+    const val KEY_TICKERS = "TICKERS"
   }
 
   @Inject
@@ -28,7 +30,7 @@ class StocksStorage {
   }
 
   fun readStocks(): MutableList<Quote> {
-    val data = preferences.getString(KEY_STOCKS_LIST, "")
+    val data = preferences.getString(KEY_STOCKS, "")
     val oldStocks = if (data.isNotEmpty()) {
       val listType = object : TypeToken<List<Quote>>() {}.type
       val stocks = gson.fromJson<List<Quote>>(data, listType)
@@ -36,10 +38,26 @@ class StocksStorage {
     } else {
       ArrayList()
     }
-    return Paper.book().read(KEY_STOCKS_LIST, oldStocks)
+    return Paper.book().read(KEY_POSITIONS, oldStocks)
   }
 
   fun saveStocks(quotes: List<Quote>) {
-    Paper.book().write(KEY_STOCKS_LIST, quotes)
+    Paper.book().write(KEY_STOCKS, quotes)
+  }
+
+  fun readPositions(): MutableList<Quote> {
+    return Paper.book().read(KEY_POSITIONS, ArrayList())
+  }
+
+  fun savePositions(positions: List<Quote>) {
+    Paper.book().write(KEY_POSITIONS, positions)
+  }
+
+  fun readTickers(): MutableList<String> {
+    return Paper.book().read(KEY_TICKERS, ArrayList())
+  }
+
+  fun saveTickers(positions: List<String>) {
+    Paper.book().write(KEY_TICKERS, positions)
   }
 }
