@@ -30,7 +30,7 @@ class StocksStorage {
   }
 
   fun readStocks(): MutableList<Quote> {
-    val data = preferences.getString(KEY_STOCKS, "")
+    val data = preferences.getString("STOCKS_LIST", "")
     val oldStocks = if (data.isNotEmpty()) {
       val listType = object : TypeToken<List<Quote>>() {}.type
       val stocks = gson.fromJson<List<Quote>>(data, listType)

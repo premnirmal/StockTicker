@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType
 import com.github.premnirmal.tickerwidget.R
+import timber.log.Timber
 import java.util.ArrayList
 import javax.inject.Inject
 
@@ -26,9 +27,12 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
   private val quotes: MutableList<Quote>
 
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var context: Context
-  @Inject internal lateinit var sharedPreferences: SharedPreferences
+  @Inject
+  internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject
+  internal lateinit var context: Context
+  @Inject
+  internal lateinit var sharedPreferences: SharedPreferences
 
   init {
     this.quotes = ArrayList()
@@ -59,82 +63,85 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     val stockViewLayout = widgetData.stockViewLayout()
     val remoteViews = RemoteViews(context.packageName, stockViewLayout)
-    val stock = quotes[position]
+    try {
+      val stock = quotes[position]
 
-    val changeValueFormatted = stock.changeString()
-    val changePercentFormatted = stock.changePercentString()
-    val priceFormatted = stock.priceString()
-    val change = stock.change
-    val changeInPercent = stock.changeInPercent
+      val changeValueFormatted = stock.changeString()
+      val changePercentFormatted = stock.changePercentString()
+      val priceFormatted = stock.priceString()
+      val change = stock.change
+      val changeInPercent = stock.changeInPercent
 
-    val changePercentString = SpannableString(changePercentFormatted)
-    val changeValueString = SpannableString(changeValueFormatted)
-    val priceString = SpannableString(priceFormatted)
+      val changePercentString = SpannableString(changePercentFormatted)
+      val changeValueString = SpannableString(changeValueFormatted)
+      val priceString = SpannableString(priceFormatted)
 
-    remoteViews.setTextViewText(R.id.ticker, stock.symbol)
+      remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
-    if (widgetData.isBoldEnabled()) {
-      changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
-          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-      changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,
-          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    } else {
-      changePercentString.setSpan(StyleSpan(Typeface.NORMAL), 0, changePercentString.length,
-          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-      changeValueString.setSpan(StyleSpan(Typeface.NORMAL), 0, changeValueString.length,
-          Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-    }
-
-    if (stockViewLayout == R.layout.stockview3) {
-      val changeType = widgetData.changeType()
-      if (changeType === ChangeType.percent) {
-        remoteViews.setTextViewText(R.id.change, changePercentString)
+      if (widgetData.isBoldEnabled()) {
+        changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       } else {
-        remoteViews.setTextViewText(R.id.change, changeValueString)
+        changePercentString.setSpan(StyleSpan(Typeface.NORMAL), 0, changePercentString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        changeValueString.setSpan(StyleSpan(Typeface.NORMAL), 0, changeValueString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
       }
-    } else {
-      remoteViews.setTextViewText(R.id.changePercent, changePercentString)
-      remoteViews.setTextViewText(R.id.changeValue, changeValueString)
-    }
-    remoteViews.setTextViewText(R.id.totalValue, priceString)
 
-
-    val color: Int
-    color = if (change < 0f || changeInPercent < 0f) {
-      context.resources.getColor(widgetData.negativeTextColor)
-    } else {
-      context.resources.getColor(widgetData.positiveTextColor)
-    }
-    if (stockViewLayout == R.layout.stockview3) {
-      remoteViews.setTextColor(R.id.change, color)
-    } else {
-      remoteViews.setTextColor(R.id.changePercent, color)
-      remoteViews.setTextColor(R.id.changeValue, color)
-    }
-
-    remoteViews.setTextColor(R.id.ticker, widgetData.textColor())
-    remoteViews.setTextColor(R.id.totalValue, widgetData.textColor())
-
-    val fontSize = getFontSize()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
       if (stockViewLayout == R.layout.stockview3) {
-        remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        val changeType = widgetData.changeType()
+        if (changeType === ChangeType.percent) {
+          remoteViews.setTextViewText(R.id.change, changePercentString)
+        } else {
+          remoteViews.setTextViewText(R.id.change, changeValueString)
+        }
       } else {
-        remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_SP, fontSize)
-        remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        remoteViews.setTextViewText(R.id.changePercent, changePercentString)
+        remoteViews.setTextViewText(R.id.changeValue, changeValueString)
       }
-      remoteViews.setTextViewTextSize(R.id.ticker, TypedValue.COMPLEX_UNIT_SP, fontSize)
-      remoteViews.setTextViewTextSize(R.id.totalValue, TypedValue.COMPLEX_UNIT_SP, fontSize)
-    }
+      remoteViews.setTextViewText(R.id.totalValue, priceString)
 
-    if (stockViewLayout == R.layout.stockview3) {
-      val intent = Intent()
-      intent.putExtra(WidgetClickReceiver.FLIP, true)
-      intent.putExtra(WidgetClickReceiver.WIDGET_ID, widgetId)
-      remoteViews.setOnClickFillInIntent(R.id.change, intent)
-    }
-    remoteViews.setOnClickFillInIntent(R.id.ticker, Intent())
 
+      val color: Int
+      color = if (change < 0f || changeInPercent < 0f) {
+        context.resources.getColor(widgetData.negativeTextColor)
+      } else {
+        context.resources.getColor(widgetData.positiveTextColor)
+      }
+      if (stockViewLayout == R.layout.stockview3) {
+        remoteViews.setTextColor(R.id.change, color)
+      } else {
+        remoteViews.setTextColor(R.id.changePercent, color)
+        remoteViews.setTextColor(R.id.changeValue, color)
+      }
+
+      remoteViews.setTextColor(R.id.ticker, widgetData.textColor())
+      remoteViews.setTextColor(R.id.totalValue, widgetData.textColor())
+
+      val fontSize = getFontSize()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (stockViewLayout == R.layout.stockview3) {
+          remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        } else {
+          remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_SP, fontSize)
+          remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        }
+        remoteViews.setTextViewTextSize(R.id.ticker, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        remoteViews.setTextViewTextSize(R.id.totalValue, TypedValue.COMPLEX_UNIT_SP, fontSize)
+      }
+
+      if (stockViewLayout == R.layout.stockview3) {
+        val intent = Intent()
+        intent.putExtra(WidgetClickReceiver.FLIP, true)
+        intent.putExtra(WidgetClickReceiver.WIDGET_ID, widgetId)
+        remoteViews.setOnClickFillInIntent(R.id.change, intent)
+      }
+      remoteViews.setOnClickFillInIntent(R.id.ticker, Intent())
+    } catch (t: Throwable) {
+      Timber.w(t)
+    }
     return remoteViews
   }
 
