@@ -3,8 +3,8 @@
   <string name="portfolio">Portafolio</string>
   <string name="widget_label">StocksWidget</string>
   <string name="action_add">Añadir</string>
-  <string name="action_export">Cotizaciones de exportación</string>
-  <string name="action_share">Cartera de acciones</string>
+  <string name="action_export">Exportar su cartera</string>
+  <string name="action_share">Comparte su portafolio</string>
   <string name="action_nuke">Borrar datos de la aplicación</string>
   <string name="nuke_desc">Restablecer la aplicación a la configuración predeterminada. Use esto si tiene problemas con su cartera.</string>
   <string name="export_desc">Exportar citas a un archivo .txt separado por comas. El archivo se almacenará en StockTickers/Tickers.txt</string>
@@ -76,12 +76,12 @@
   <string name="enable_google_finance_desc">En beta. Deshabilite por favor si no da cotizaciones exactas.</string>
   <string name="edit_positions">Editar Posiciones</string>
   <string name="add_stock">Añadir acciones</string>
-  <string name="holdings">Valores en cartera</string>
+  <string name="holdings">Valor</string>
   <string name="average_price">Precio Promedio</string>
   <string name="gain">Ganancia</string>
   <string name="loss">Pérdida</string>
   <string name="gain_loss">Ganancia/Pérdida</string>
-  <string name="change_percent">% Cambiar</string>
+  <string name="change_percent">% Cambio</string>
   <string name="change_amount">Cambio</string>
   <string name="day_change_percent">% cambio de día</string>
   <string name="day_change_amount">Cambio de día</string>
@@ -109,9 +109,9 @@
   <string name="recent_news">Noticias recientes</string>
   <string name="no_data">No datos</string>
   <string name="expand">Expande</string>
-  <string name="one_month">1 Mes</string>
-  <string name="three_month">3 Meses</string>
-  <string name="one_year">1 Año</string>
+  <string name="one_month">1 mes</string>
+  <string name="three_month">3 meses</string>
+  <string name="one_year">1 año</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Error al cargar los datos del gráfico</string>
 

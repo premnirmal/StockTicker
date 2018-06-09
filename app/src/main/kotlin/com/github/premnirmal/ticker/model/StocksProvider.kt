@@ -65,9 +65,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
-    private const val POSITION_LIST = "POSITION_LIST"
-    private const val DEFAULT_STOCKS = "^GSPC,^DJI,GOOG,AAPL,MSFT"
-    private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
+    private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
   }
 
   @Inject
@@ -104,11 +102,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     Injector.appComponent.inject(this)
     exponentialBackoff = ExponentialBackoff()
     tickerList.addAll(storage.readTickers())
-    // Remove when version updates.
     if (tickerList.isEmpty()) {
-      val tickerListVars = preferences.getString(SORTED_STOCK_LIST, DEFAULT_STOCKS)
-      tickerList.addAll(Arrays.asList(
-          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+      tickerList.addAll(DEFAULT_STOCKS)
     }
     lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
@@ -125,10 +120,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       quoteList.addAll(storage.readStocks())
       positionList.clear()
       positionList.addAll(storage.readPositions())
-      if (positionList.isEmpty()) {
-        val positions = preferences.getString(POSITION_LIST, "").stringToPositions()
-        positionList.addAll(positions)
-      }
     })
   }
 

@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.paperdb.Paper
 import java.util.ArrayList
 import javax.inject.Inject
@@ -30,15 +29,7 @@ class StocksStorage {
   }
 
   fun readStocks(): MutableList<Quote> {
-    val data = preferences.getString("STOCKS_LIST", "")
-    val oldStocks = if (data.isNotEmpty()) {
-      val listType = object : TypeToken<List<Quote>>() {}.type
-      val stocks = gson.fromJson<List<Quote>>(data, listType)
-      ArrayList(stocks)
-    } else {
-      ArrayList()
-    }
-    return Paper.book().read(KEY_STOCKS, oldStocks)
+    return Paper.book().read(KEY_STOCKS, ArrayList())
   }
 
   fun saveStocks(quotes: List<Quote>) {
