@@ -262,7 +262,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       }
       if (shares > 0) {
         position.addPosition(price, shares)
-        position.totalPosition = shares
         positionList.remove(position)
         positionList.add(position)
         quoteList.remove(position)
