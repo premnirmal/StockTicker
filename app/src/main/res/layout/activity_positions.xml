@@ -32,6 +32,7 @@
       />
 
   <TextView
+      android:id="@+id/currentPositionText"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginLeft="16dp"
@@ -44,6 +45,7 @@
       />
 
   <LinearLayout
+      android:id="@+id/currentPositionBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginLeft="16dp"
@@ -51,6 +53,7 @@
       android:layout_marginTop="20dp"
       android:gravity="center_vertical"
       android:orientation="horizontal"
+      android:visibility="@={}"
       >
 
     <TextView
@@ -73,6 +76,7 @@
   </LinearLayout>
 
   <LinearLayout
+      android:id="@+id/averagePriceBox"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginLeft="16dp"

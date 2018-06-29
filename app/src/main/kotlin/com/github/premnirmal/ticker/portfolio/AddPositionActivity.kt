@@ -11,6 +11,9 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.addButton
 import kotlinx.android.synthetic.main.activity_positions.addRemoveText
+import kotlinx.android.synthetic.main.activity_positions.averagePriceBox
+import kotlinx.android.synthetic.main.activity_positions.currentPositionBox
+import kotlinx.android.synthetic.main.activity_positions.currentPositionText
 import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.priceInputLayout
 import kotlinx.android.synthetic.main.activity_positions.removeButton
@@ -70,6 +73,10 @@ open class AddPositionActivity : BaseActivity() {
 
     addRemoveText.setText(R.string.add_position)
     removeButton.visibility = View.GONE
+    currentPositionBox.visibility = View.GONE
+    currentPositionText.visibility = View.GONE
+    averagePriceBox.visibility = View.GONE
+
 
     skipButton.setOnClickListener { skip() }
 
