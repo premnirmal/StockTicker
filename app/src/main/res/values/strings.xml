@@ -65,15 +65,19 @@
   <string name="share_email_subject">Here are my tickers I created using StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
   <string name="my_stock_portfolio">My Stock Portfolio</string>
   <string name="number_of_shares">No. of Shares</string>
+  <string name="current_position">Current Position</string>
   <string name="shares">Shares</string>
   <string name="equity_value">Equity Value</string>
   <string name="Price">Price</string>
   <string name="add_position">Add Position</string>
+  <string name="add_remove_position">Add/Decrease Position</string>
   <string name="done">Done</string>
   <string name="skip">Skip</string>
   <string name="edit_position">Edit Position</string>
   <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
   <string name="remove">Remove</string>
+  <string name="decrease">Decrease</string>
+  <string name="add">Add</string>
   <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
   <string name="no_symbols_in_portfolio">No symbols in portfolio.</string>
   <string name="like_our_app">Like our app?</string>

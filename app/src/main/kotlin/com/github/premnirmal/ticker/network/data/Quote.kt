@@ -51,12 +51,12 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   fun decreasePosition(shares: Float){
+    _totalPositionPrice -= shares * averagePositionPrice
     this._totalPosition -= shares
+
     if(totalPosition < 1.toFloat() ){
       _totalPositionPrice = 0.toFloat()
       _totalPosition = 0.toFloat()
-    }else{
-      _totalPositionPrice -= shares * averagePositionPrice
     }
   }
 
