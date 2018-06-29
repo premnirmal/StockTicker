@@ -32,7 +32,7 @@ class EditPositionActivity : AddPositionActivity() {
     if (stock != null) {
       if (stock.isPosition) {
         currentPosition.text = stock.totalPosition.toString()
-        averagePositionPrice.text = stock.averagePositionPrice.toString();
+        averagePositionPrice.text = String.format("%.2f",stock.averagePositionPrice);
         removeButton.setOnClickListener{ onRemoveClicked() }
         removeButton.visibility = View.VISIBLE
         addRemoveText.setText(R.string.add_remove_position)
