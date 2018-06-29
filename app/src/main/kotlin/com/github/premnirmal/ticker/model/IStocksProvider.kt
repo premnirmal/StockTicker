@@ -37,4 +37,6 @@ interface IStocksProvider {
   fun addPosition(ticker: String, shares: Float, price: Float)
 
   fun removePosition(ticker: String)
+
+  fun decreasePosition(ticker: String, shares: Float)
 }

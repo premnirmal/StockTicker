@@ -23,13 +23,13 @@ class EditPositionActivity : AddPositionActivity() {
     toolbar.setTitle(R.string.edit_position)
     val stock = stocksProvider.getStock(ticker)
     if (stock != null) {
-      if (stock.positionShares > 0 && stock.positionPrice > 0) {
+      if (stock.isPosition) {
         val sharesView = shares
         val priceView = price
         val skipButton = skipButton
         skipButton.setText(R.string.remove)
-        sharesView.setText(stock.positionShares.toString())
-        val value = AppPreferences.DECIMAL_FORMAT.format(stock.positionPrice)
+        sharesView.setText(stock.totalPosition.toString())
+        val value = AppPreferences.DECIMAL_FORMAT.format(stock.totalPositionPrice)
         priceView.setText(value)
         priceView.setSelection(value.length)
       }

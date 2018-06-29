@@ -28,7 +28,6 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,28 +39,6 @@ import javax.inject.Singleton
 class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
-
-    @Deprecated("Remove after version update")
-    private fun String.stringToPositions(): MutableList<Quote> {
-      val tickerListCSV = ArrayList(Arrays.asList(
-          *this.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-      val stockList = ArrayList<Quote>()
-      var tickerFields: ArrayList<String>
-      var tmpQuote: Quote
-      for (tickerCSV in tickerListCSV) {
-        tickerFields = ArrayList(Arrays.asList(
-            *tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-        if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1])) {
-          tmpQuote = Quote()
-          tmpQuote.isPosition = true
-          tmpQuote.symbol = tickerFields[0]
-          tmpQuote.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
-          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3])
-          stockList.add(tmpQuote)
-        }
-      }
-      return stockList
-    }
 
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
@@ -205,9 +182,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 for (stock in stocks) {
                   if (positionList.contains(stock)) {
                     val index = positionList.indexOf(stock)
-                    stock.isPosition = true
-                    stock.positionPrice = positionList[index].positionPrice
-                    stock.positionShares = positionList[index].positionShares
+                    stock.addPosition(positionList[index].averagePositionPrice, positionList[index].totalPosition)
                   }
                   quoteList.add(stock)
                 }
@@ -286,27 +261,27 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         tickerList.add(ticker)
       }
       if (shares > 0) {
-        position.isPosition = true
-        position.positionPrice = price
-        position.positionShares = shares
+        position.addPosition(price, shares)
+        position.totalPosition = shares
         positionList.remove(position)
         positionList.add(position)
         quoteList.remove(position)
         quoteList.add(position)
         save()
-      } else {
-        removePosition(ticker)
       }
     })
   }
 
   override fun removePosition(ticker: String) {
+    val position = getStock(ticker) ?: return
+    decreasePosition(ticker, position.totalPosition)
+  }
+
+  override fun decreasePosition(ticker: String, shares: Float) {
     synchronized(positionList, {
       val position = getStock(ticker) ?: return
-      position.isPosition = false
-      position.positionPrice = 0f
-      position.positionShares = 0f
-      positionList.remove(position)
+      position.decreasePosition(shares)
+      if(!position.isPosition){ positionList.remove(position) }
       save()
     })
   }
