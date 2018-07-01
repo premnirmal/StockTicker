@@ -232,7 +232,7 @@
         android:layout_gravity="center"
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
-        android:text="@string/decrease"
+        android:text="@string/remove"
         />
 
     <Button
