@@ -33,9 +33,9 @@ class EditPositionActivity : AddPositionActivity() {
     toolbar.setTitle(R.string.edit_position)
     val stock = stocksProvider.getStock(ticker)
     if (stock != null) {
-      if (stock.isPosition) {
-        currentPosition.text = stock.totalPosition.toString()
-        averagePositionPrice.text = String.format("%.2f",stock.averagePositionPrice);
+      if (stock.isPosition()) {
+        currentPosition.text = stock.totalPosition().toString()
+        averagePositionPrice.text = String.format("%.2f",stock.averagePositionPrice());
         removeButton.setOnClickListener{ onRemoveClicked() }
         removeButton.visibility = View.VISIBLE
         currentPositionBox.visibility = View.VISIBLE

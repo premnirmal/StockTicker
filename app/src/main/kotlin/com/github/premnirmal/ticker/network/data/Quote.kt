@@ -38,17 +38,21 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   private var _totalPositionPrice : Float = 0.toFloat()
 
   // Position fields
-  val isPosition: Boolean
-    get(){ return  totalPosition > 0}
+  fun isPosition() : Boolean {
+    return  totalPosition() > 0
+  }
 
-  val totalPositionPrice: Float
-    get() {return this._totalPositionPrice}
+  fun totalPositionPrice() : Float {
+    return this._totalPositionPrice
+  }
 
-  val totalPosition: Float
-    get() {return this._totalShares}
+  fun totalPosition() : Float {
+    return this._totalShares
+  }
 
-  val averagePositionPrice: Float
-    get(){ return totalPositionPrice / totalPosition }
+  fun averagePositionPrice() : Float {
+    return totalPositionPrice() / totalPosition()
+  }
 
   fun addPosition(price: Float, shares: Float){
     _totalPositionPrice += price * shares
@@ -56,10 +60,10 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   fun decreasePosition(shares: Float){
-    _totalPositionPrice -= shares * averagePositionPrice
+    _totalPositionPrice -= shares * averagePositionPrice()
     this._totalShares -= shares
 
-    if(totalPosition < 1.toFloat() ){
+    if(totalPosition() < 1.toFloat() ){
       _totalPositionPrice = 0.toFloat()
       _totalShares = 0.toFloat()
     }
@@ -89,15 +93,15 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
 
-  fun positionPriceString(): String = AppPreferences.DECIMAL_FORMAT.format(averagePositionPrice)
+  fun positionPriceString(): String = AppPreferences.DECIMAL_FORMAT.format(averagePositionPrice())
 
-  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPosition)
+  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPosition())
 
-  fun holdings(): Float = lastTradePrice * totalPosition
+  fun holdings(): Float = lastTradePrice * totalPosition()
 
   fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
 
-  fun gainLoss(): Float = holdings() - totalPositionPrice
+  fun gainLoss(): Float = holdings() - totalPositionPrice()
 
   fun gainLossString(): String {
     val gainLoss = gainLoss()
@@ -119,7 +123,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
     return gainLossString
   }
 
-  fun dayChange(): Float = totalPosition * change
+  fun dayChange(): Float = totalPosition() * change
 
   fun dayChangeString(): String {
     val dayChange = dayChange()

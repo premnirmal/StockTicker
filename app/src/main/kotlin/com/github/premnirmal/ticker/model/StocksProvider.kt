@@ -186,7 +186,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                     if(positionList[index].positionShares > 0.toFloat()){
                       stock.addPosition(positionList[index].positionPrice, positionList[index].positionShares)
                     }
-                    stock.addPosition(positionList[index].averagePositionPrice, positionList[index].totalPosition)
+                    stock.addPosition(positionList[index].averagePositionPrice(), positionList[index].totalPosition())
                   }
                   quoteList.add(stock)
                 }
@@ -277,14 +277,14 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun removePosition(ticker: String) {
     val position = getStock(ticker) ?: return
-    decreasePosition(ticker, position.totalPosition)
+    decreasePosition(ticker, position.totalPosition())
   }
 
   override fun decreasePosition(ticker: String, shares: Float) {
     synchronized(positionList, {
       val position = getStock(ticker) ?: return
       position.decreasePosition(shares)
-      if(!position.isPosition){ positionList.remove(position) }
+      if(!position.isPosition()){ positionList.remove(position) }
       save()
     })
   }
