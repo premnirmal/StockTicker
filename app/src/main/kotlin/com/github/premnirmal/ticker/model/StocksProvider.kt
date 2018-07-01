@@ -182,6 +182,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
                 for (stock in stocks) {
                   if (positionList.contains(stock)) {
                     val index = positionList.indexOf(stock)
+                    //upgrade excisting positions
+                    if(positionList[index].positionShares > 0.toFloat()){
+                      stock.addPosition(positionList[index].positionPrice, positionList[index].positionShares)
+                    }
                     stock.addPosition(positionList[index].averagePositionPrice, positionList[index].totalPosition)
                   }
                   quoteList.add(stock)

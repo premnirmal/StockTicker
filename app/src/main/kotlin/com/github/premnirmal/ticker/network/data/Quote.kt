@@ -29,34 +29,39 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   var currency: String = ""
   var description: String = ""
 
-  private var _totalPosition : Float = 0.toFloat()
+  @Deprecated("please use addPosition / decreasePosition")
+  var positionPrice: Float = 0.toFloat()
+  @Deprecated("please use addPosition / decreasePosition")
+  var positionShares: Float = 0.toFloat()
+
+  private var _totalShares : Float = 0.toFloat()
   private var _totalPositionPrice : Float = 0.toFloat()
 
   // Position fields
-  var isPosition: Boolean = false
+  val isPosition: Boolean
     get(){ return  totalPosition > 0}
 
   val totalPositionPrice: Float
     get() {return this._totalPositionPrice}
 
   val totalPosition: Float
-    get() {return this._totalPosition}
+    get() {return this._totalShares}
 
-  var averagePositionPrice: Float = 0.toFloat()
+  val averagePositionPrice: Float
     get(){ return totalPositionPrice / totalPosition }
 
   fun addPosition(price: Float, shares: Float){
     _totalPositionPrice += price * shares
-    this._totalPosition += shares
+    this._totalShares += shares
   }
 
   fun decreasePosition(shares: Float){
     _totalPositionPrice -= shares * averagePositionPrice
-    this._totalPosition -= shares
+    this._totalShares -= shares
 
     if(totalPosition < 1.toFloat() ){
       _totalPositionPrice = 0.toFloat()
-      _totalPosition = 0.toFloat()
+      _totalShares = 0.toFloat()
     }
   }
 
