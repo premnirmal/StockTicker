@@ -19,11 +19,6 @@ class RxBus {
   }
 
   /**
-   * Subscribe to any event
-   */
-  fun forAnyEvent(): Observable<Any> = _bus.observeOn(AndroidSchedulers.mainThread())
-
-  /**
    * Subscribe to a specific event type
    */
   fun <T> forEventType(eventType: Class<T>): Observable<T> =

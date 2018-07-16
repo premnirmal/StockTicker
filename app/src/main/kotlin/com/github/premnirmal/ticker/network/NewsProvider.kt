@@ -20,9 +20,9 @@ class NewsProvider @Inject constructor() {
   }
 
   @Inject
-  lateinit var newsApi: NewsApi
+  internal lateinit var newsApi: NewsApi
   @Inject
-  lateinit var clock: AppClock
+  internal lateinit var clock: AppClock
   private val apiKey = Injector.appComponent.appContext().getString(R.string.news_api_key)
 
   init {

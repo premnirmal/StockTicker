@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -15,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.base.LifeCycleDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
@@ -81,7 +81,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   private lateinit var holder: InjectionHolder
-  private var callback: Callback? = null
+  private var callback: Callback by LifeCycleDelegate(this, this)
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -121,16 +121,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     widgetId = arguments!!.getInt(KEY_WIDGET_ID)
   }
 
-  override fun onAttach(context: Context?) {
-    super.onAttach(context)
-    callback = context as Callback
-  }
-
-  override fun onDetach() {
-    super.onDetach()
-    callback = null
-  }
-
   override fun onStart() {
     super.onStart()
     update()
@@ -141,15 +131,13 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         }
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?): View? {
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    stockList.addItemDecoration(
-        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
+    stockList.addItemDecoration(SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
@@ -176,15 +164,16 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   private fun promptRemove(quote: Quote?, position: Int) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-      AlertDialog.Builder(activity).setTitle(R.string.remove)
+      AlertDialog.Builder(activity)
+          .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
-          .setPositiveButton(R.string.remove, { dialog, _ ->
+          .setPositiveButton(R.string.remove) { dialog, _ ->
             widgetData.removeStock(it.symbol)
             stocksAdapter.remove(it)
             holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
-          })
-          .setNegativeButton(R.string.cancel, { dialog, _ -> dialog.dismiss() })
+          }
+          .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
           .show()
     }
   }
@@ -198,7 +187,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-    callback?.onDragStarted()
+    callback.onDragStarted()
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     if (widgetData.autoSortEnabled()) {
       widgetData.setAutoSort(false)
@@ -211,6 +200,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStopDrag() {
-    callback?.onDragEnded()
+    callback.onDragEnded()
   }
 }

@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.base
 
-import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.AndroidRuntimeException
@@ -23,33 +23,31 @@ import io.reactivex.subjects.BehaviorSubject
 /**
  * Created by premnirmal on 2/25/16.
  */
-abstract class BaseFragment : Fragment() {
+abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
 
-  private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
+  override val lifecycle: BehaviorSubject<FragmentEvent> = BehaviorSubject.create<FragmentEvent>()
 
   private var called: Boolean = false
 
-  protected fun lifecycle(): Observable<FragmentEvent> = lifecycleSubject
-
-  override fun onAttach(activity: Activity?) {
-    super.onAttach(activity)
-    lifecycleSubject.onNext(ATTACH)
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    lifecycle.onNext(ATTACH)
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    lifecycleSubject.onNext(CREATE)
+    lifecycle.onNext(CREATE)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    lifecycleSubject.onNext(CREATE_VIEW)
+    lifecycle.onNext(CREATE_VIEW)
     called = true
   }
 
   override fun onStart() {
     super.onStart()
-    lifecycleSubject.onNext(START)
+    lifecycle.onNext(START)
   }
 
   override fun onResume() {
@@ -58,31 +56,31 @@ abstract class BaseFragment : Fragment() {
           "You didn't call super.onViewCreated() when in " + javaClass.simpleName)
     }
     super.onResume()
-    lifecycleSubject.onNext(RESUME)
+    lifecycle.onNext(RESUME)
   }
 
   override fun onPause() {
-    lifecycleSubject.onNext(PAUSE)
+    lifecycle.onNext(PAUSE)
     super.onPause()
   }
 
   override fun onStop() {
-    lifecycleSubject.onNext(STOP)
+    lifecycle.onNext(STOP)
     super.onStop()
   }
 
   override fun onDestroyView() {
-    lifecycleSubject.onNext(DESTROY_VIEW)
+    lifecycle.onNext(DESTROY_VIEW)
     super.onDestroyView()
   }
 
   override fun onDetach() {
-    lifecycleSubject.onNext(DETACH)
+    lifecycle.onNext(DETACH)
     super.onDetach()
   }
 
   override fun onDestroy() {
-    lifecycleSubject.onNext(DESTROY)
+    lifecycle.onNext(DESTROY)
     super.onDestroy()
   }
 
@@ -90,5 +88,5 @@ abstract class BaseFragment : Fragment() {
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> =
-      observable.compose(RxLifecycleAndroid.bindFragment(lifecycle()))
+      observable.compose(RxLifecycleAndroid.bindFragment(lifecycle))
 }

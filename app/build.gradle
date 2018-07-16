@@ -203,6 +203,9 @@ dependencies {
     transitive = true
   }
 
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+
   testImplementation "junit:junit:$JUNIT_VERSION"
   testImplementation "org.assertj:assertj-core:3.8.0"
   testImplementation "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"

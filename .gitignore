@@ -6,6 +6,7 @@
 /.idea/libraries
 /.idea/kotlinc.xml
 /.idea/caches/
+/.idea/.codeStyles/
 /projectFilesBackup/
 .DS_Store
 /build

@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.components
 import android.content.Context
 import android.net.ConnectivityManager
 
-
 fun Context.isNetworkOnline(): Boolean {
   try {
     val connectivityManager = this.getSystemService(

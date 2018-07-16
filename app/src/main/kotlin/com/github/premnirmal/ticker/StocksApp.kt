@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import android.net.ConnectivityManager
 import android.util.Base64
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
@@ -13,6 +12,7 @@ import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.squareup.leakcanary.LeakCanary
 import io.paperdb.Paper
 import timber.log.Timber
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig
@@ -54,6 +54,12 @@ open class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
+    if (LeakCanary.isInAnalyzerProcess(this)) {
+      // This process is dedicated to LeakCanary for heap analysis.
+      // You should not init your app in this process.
+      return
+    }
+    LeakCanary.install(this)
     initLogger()
     initThreeTen()
     CalligraphyConfig.initDefault(
