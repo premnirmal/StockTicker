@@ -54,12 +54,7 @@ open class StocksApp : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    if (LeakCanary.isInAnalyzerProcess(this)) {
-      // This process is dedicated to LeakCanary for heap analysis.
-      // You should not init your app in this process.
-      return
-    }
-    LeakCanary.install(this)
+    if (!initLeakCanary()) return
     initLogger()
     initThreeTen()
     CalligraphyConfig.initDefault(
@@ -71,6 +66,16 @@ open class StocksApp : Application() {
     initPaper()
     initAnalytics()
     SIGNATURE = getAppSignature(this)
+  }
+
+  open fun initLeakCanary(): Boolean {
+    if (LeakCanary.isInAnalyzerProcess(this)) {
+      // This process is dedicated to LeakCanary for heap analysis.
+      // You should not init your app in this process.
+      return false
+    }
+    LeakCanary.install(this)
+    return true
   }
 
   open fun initPaper() {

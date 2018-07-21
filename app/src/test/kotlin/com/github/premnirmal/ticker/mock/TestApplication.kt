@@ -12,6 +12,8 @@ class TestApplication : StocksApp() {
     super.onCreate()
   }
 
+  override fun initLeakCanary(): Boolean = true
+
   override fun createAppComponent(): AppComponent {
     val component: MockAppComponent = DaggerMockAppComponent.builder()
         .mockAppModule(MockAppModule(this))
