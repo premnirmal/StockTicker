@@ -7,7 +7,7 @@ defaults: &defaults
     JVM_OPTS: -Xmx3200m
 
 jobs:
-  build:
+  initialize:
     <<: *defaults
     steps:
       - checkout
@@ -20,6 +20,9 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+  build:
+    <<: *defaults
+    steps:
       - run:
           name: Build APK
           command: ./gradlew assemblePureflossDebug -PdisablePreDex
@@ -28,16 +31,6 @@ jobs:
   test:
     <<: *defaults
     steps:
-      - checkout
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
-      - save_cache:
-          paths:
-            - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Run unit tests
           command: ./gradlew testPureflossDebug -PdisablePreDex --no-daemon
@@ -51,8 +44,13 @@ workflows:
   version: 2
   build_and_test:
     jobs:
-      - build
-      - test
+      - initialize
+      - build:
+        requires:
+          - initialize
+      - test:
+        requires:
+          - initialize
 
 
 
