@@ -1,0 +1,34 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/android:api-26-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+      - run:
+          name: Run unit tests
+          command: ./gradlew testPureflossDebug -PdisablePreDex --no-daemon
+      - store_artifacts:
+          path: app/build/reports/tests
+          destination: reports/junit/
+      - store_test_results:
+          path: app/build/test-results/testPureflossDebugUnitTest/
+          destination: reports/junit/
+      - run:
+          name: Build APK
+          commmand: ./gradlew assemblePureflossDebug -PdisablePreDex
+      - store_artifacts:
+          path: app/build/outputs/
+
