@@ -46,11 +46,11 @@ workflows:
     jobs:
       - initialize
       - build:
-        requires:
-          - initialize
+          requires:
+            - initialize
       - test:
-        requires:
-          - initialize
+          requires:
+            - initialize
 
 
 
