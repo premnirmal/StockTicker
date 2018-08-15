@@ -25,8 +25,6 @@ jobs:
   build:
     <<: *defaults
     steps:
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Build APK
           command: ./gradlew assemblePureflossDebug -PdisablePreDex
@@ -35,8 +33,6 @@ jobs:
   test:
     <<: *defaults
     steps:
-      - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Run unit tests
           command: ./gradlew testPureflossDebug -PdisablePreDex --no-daemon
