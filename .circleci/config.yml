@@ -33,6 +33,7 @@ jobs:
           command: ./gradlew assemblePureflossDebug -PdisablePreDex
       - store_artifacts:
           path: app/build/outputs/
+          destination: outputs/
   test:
     <<: *defaults
     steps:
