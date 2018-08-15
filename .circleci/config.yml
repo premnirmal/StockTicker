@@ -25,6 +25,7 @@ jobs:
   build:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name: Build APK
           command: ./gradlew assemblePureflossDebug -PdisablePreDex
@@ -33,6 +34,7 @@ jobs:
   test:
     <<: *defaults
     steps:
+      - checkout
       - run:
           name: Run unit tests
           command: ./gradlew testPureflossDebug -PdisablePreDex --no-daemon
