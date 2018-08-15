@@ -1,10 +1,12 @@
 version: 2
 
-defaults: &defaults
-  docker:
-    - image: circleci/android:api-26-alpha
-  environment:
-    JVM_OPTS: -Xmx3200m
+references:
+  defaults: &defaults
+    working_directory: ~/code
+    docker:
+      - image: circleci/android:api-26-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
 
 jobs:
   initialize:
