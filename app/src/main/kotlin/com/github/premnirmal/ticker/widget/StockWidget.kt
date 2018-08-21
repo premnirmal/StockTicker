@@ -17,21 +17,23 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StockWidget() : AppWidgetProvider() {
+class StockWidget : AppWidgetProvider() {
 
   companion object {
     const val ACTION_NAME = "OPEN_APP"
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject
+  internal lateinit var stocksProvider: IStocksProvider
+  @Inject
+  internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject
+  internal lateinit var appPreferences: AppPreferences
 
   var injected = false
 
@@ -40,7 +42,6 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    Timber.d("onReceive")
     super.onReceive(context, intent)
     if (intent.action == ACTION_NAME) {
       context.startActivity(Intent(context, ParanormalActivity::class.java))
@@ -48,9 +49,8 @@ class StockWidget() : AppWidgetProvider() {
   }
 
   override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
-      appWidgetIds: IntArray) {
+                        appWidgetIds: IntArray) {
     for (widgetId in appWidgetIds) {
-      Timber.d("onUpdate" + widgetId)
       val minimumWidth: Int
       minimumWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
@@ -59,19 +59,18 @@ class StockWidget() : AppWidgetProvider() {
         appWidgetManager.getAppWidgetInfo(widgetId).minWidth
       }
       val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
-      updateWidget(context, widgetId, remoteViews, minimumWidth, appWidgetManager)
+      updateWidget(context, widgetId, remoteViews, appWidgetManager)
       appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.list)
     }
     super.onUpdate(context, appWidgetManager, appWidgetIds)
   }
 
   override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
-      appWidgetId: Int, newOptions: Bundle) {
+                                         appWidgetId: Int, newOptions: Bundle) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
-    Timber.d("onAppWidgetOptionsChanged" + appWidgetId.toString())
     val minimumWidth = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
-    updateWidget(context, appWidgetId, remoteViews, minimumWidth, appWidgetManager)
+    updateWidget(context, appWidgetId, remoteViews, appWidgetManager)
   }
 
   override fun onEnabled(context: Context?) {
@@ -80,7 +79,6 @@ class StockWidget() : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    Timber.d("onEnabled")
     if (stocksProvider.nextFetchMs() <= 0) {
       stocksProvider.schedule()
     }
@@ -88,12 +86,10 @@ class StockWidget() : AppWidgetProvider() {
 
   override fun onDisabled(context: Context?) {
     super.onDisabled(context)
-    Timber.d("onDisabled")
   }
 
   override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
     super.onDeleted(context, appWidgetIds)
-    Timber.d("onDeleted")
     appWidgetIds?.let {
       it.forEach { widgetId ->
         widgetDataProvider.widgetRemoved(widgetId)
@@ -126,8 +122,7 @@ class StockWidget() : AppWidgetProvider() {
   }
 
   private fun updateWidget(context: Context, appWidgetId: Int, remoteViews: RemoteViews,
-      min_width: Int, appWidgetManager: AppWidgetManager) {
-    val nextFetchVisible = min_width > 150
+                           appWidgetManager: AppWidgetManager) {
     val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
     val widgetAdapterIntent = Intent(context, RemoteStockProviderService::class.java)
     widgetAdapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -143,14 +138,9 @@ class StockWidget() : AppWidgetProvider() {
     val lastFetched: String = stocksProvider.lastFetched()
     val lastUpdatedText = context.getString(R.string.last_fetch, lastFetched)
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
-    if (nextFetchVisible) {
-      val nextUpdate: String = stocksProvider.nextFetch()
-      val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
-      remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
-      remoteViews.setViewVisibility(R.id.next_update, View.VISIBLE)
-    } else {
-      remoteViews.setViewVisibility(R.id.next_update, View.GONE)
-    }
+    val nextUpdate: String = stocksProvider.nextFetch()
+    val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
+    remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())
     // Refresh icon and progress
     val refreshing = appPreferences.isRefreshing()
