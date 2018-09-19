@@ -63,7 +63,7 @@
 
   <style name="FooterTextView" parent="TextViewStyle">
     <item name="fontPath">fonts/Alegreya-Black-Italic.ttf</item>
-    <item name="android:textSize">28sp</item>
+    <item name="android:textSize">24sp</item>
   </style>
 
   <style name="ButtonStyle" parent="android:Widget.Button">

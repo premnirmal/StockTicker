@@ -49,4 +49,9 @@
       android:key="SETTING_NUKE"
       android:title="@string/action_nuke"
       android:selectable="true"/>
+
+  <Preference
+      android:key="SETTING_PRIVACY_POLICY"
+      android:title="@string/privacy_policy"
+      android:selectable="true"/>
 </PreferenceScreen>

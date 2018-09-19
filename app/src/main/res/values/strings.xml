@@ -7,6 +7,8 @@
   <string name="news_api_key" translatable="false">05bb573fdcc943f0a34bb0517f05e09b</string>
   <string name="alpha_vantage_endpoint" translatable="false">https://www.alphavantage.co/</string>
   <string name="alpha_vantage_api_key" translatable="false">9VQGQDBGD0L1B3IH</string>
+  <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
+  <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/StockTicker/blob/master/PRIVACY_POLICY.md</string>
 
   <string name="portfolio">Portfolio</string>
   <string name="widget_label">StocksWidget</string>
@@ -14,6 +16,7 @@
   <string name="action_export">Export Quotes</string>
   <string name="action_share">Share Portfolio</string>
   <string name="action_nuke">Clear app data</string>
+  <string name="privacy_policy">Privacy Policy</string>
   <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
   <string name="export_desc">Export quotes to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
   <string name="action_import">Import Quotes</string>
@@ -39,7 +42,6 @@
   <string name="refresh_on_screen_unlock_desc">Refresh when the screen unlocks (only during set hours).</string>
   <string name="bold_change">Bold text</string>
   <string name="bold_change_desc">Show changes and market value in bold</string>
-  <string name="checkout_open_source">https://github.com/premnirmal/StockTicker</string>
   <string name="choose_text_size">Text Size</string>
   <string name="text_size_updated_message">Text size updated</string>
   <string name="bg_updated_message">Background updated</string>

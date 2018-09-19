@@ -119,6 +119,7 @@ class AppPreferences @Inject constructor() {
     const val SETTING_IMPORT = "SETTING_IMPORT"
     const val SETTING_SHARE = "SETTING_SHARE"
     const val SETTING_NUKE = "SETTING_NUKE"
+    const val SETTING_PRIVACY_POLICY = "SETTING_PRIVACY_POLICY"
     const val WIDGET_BG = "WIDGET_BG"
     const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
     const val TEXT_COLOR = "TEXT_COLOR"
