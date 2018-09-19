@@ -20,8 +20,6 @@ class StocksStorage {
   }
 
   @Inject
-  internal lateinit var preferences: SharedPreferences
-  @Inject
   internal lateinit var gson: Gson
 
   init {

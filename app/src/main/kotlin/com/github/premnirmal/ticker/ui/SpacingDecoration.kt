@@ -19,9 +19,9 @@ open class SpacingDecoration(private val spacing: Int) : RecyclerView.ItemDecora
     outRect.left = spacing
     outRect.right = spacing
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-      val lastItem = parent.adapter.itemCount - 1
+      val lastItem = parent.adapter!!.itemCount - 1
       val itemPosition = parent.getChildAdapterPosition(view)
-      val isLastTwo = ((parent.adapter.itemCount % 2 == 0)
+      val isLastTwo = ((parent.adapter!!.itemCount % 2 == 0)
           && (itemPosition == lastItem || itemPosition == lastItem - 1))
           || itemPosition == lastItem
       if (isLastTwo) {

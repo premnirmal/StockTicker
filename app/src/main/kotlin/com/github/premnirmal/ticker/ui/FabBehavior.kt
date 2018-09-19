@@ -13,19 +13,19 @@ class FabBehavior : CoordinatorLayout.Behavior<View> {
 
   constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
 
-  override fun layoutDependsOn(parent: CoordinatorLayout?, child: View?,
-      dependency: View?): Boolean = dependency is Snackbar.SnackbarLayout
+  override fun layoutDependsOn(parent: CoordinatorLayout, child: View,
+      dependency: View): Boolean = dependency is Snackbar.SnackbarLayout
 
-  override fun onDependentViewChanged(parent: CoordinatorLayout?, child: View?,
-      dependency: View?): Boolean {
-    dependency?.let {
+  override fun onDependentViewChanged(parent: CoordinatorLayout, child: View,
+      dependency: View): Boolean {
+    dependency.let {
       val translationY = Math.min(0f, it.translationY - it.height)
-      child?.translationY = translationY
+      child.translationY = translationY
     }
     return true
   }
 
-  override fun onDependentViewRemoved(parent: CoordinatorLayout?, child: View?, dependency: View?) {
-    child?.animate()?.translationY(0f)?.start()
+  override fun onDependentViewRemoved(parent: CoordinatorLayout, child: View, dependency: View) {
+    child.animate().translationY(0f).start()
   }
 }

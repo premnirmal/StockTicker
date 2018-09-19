@@ -14,9 +14,9 @@ import java.util.ArrayList
 /**
  * Created by premnirmal on 2/26/16.
  */
-internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter<SuggestionVH>() {
+internal class SuggestionsAdapter(private val callback: Callback) : RecyclerView.Adapter<SuggestionVH>() {
 
-  val suggestions: MutableList<Suggestion> = ArrayList()
+  private val suggestions: MutableList<Suggestion> = ArrayList()
 
   interface Callback {
     fun onSuggestionClick(suggestion: Suggestion)
@@ -26,7 +26,7 @@ internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter
     return suggestions.size
   }
 
-  fun getItem(position: Int): Suggestion {
+  private fun getItem(position: Int): Suggestion {
     return suggestions[position]
   }
 
@@ -40,8 +40,8 @@ internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter
     return position.toLong()
   }
 
-  override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): SuggestionVH {
-    val inflater = LayoutInflater.from(parent?.context)
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionVH {
+    val inflater = LayoutInflater.from(parent.context)
     return SuggestionVH(inflater.inflate(R.layout.item_suggestion, parent, false), callback)
   }
 
@@ -49,10 +49,10 @@ internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter
     holder.update(getItem(position))
   }
 
-  class SuggestionVH(itemView: View, val callback: Callback) : RecyclerView.ViewHolder(itemView) {
+  class SuggestionVH(itemView: View, private val callback: Callback) : RecyclerView.ViewHolder(itemView) {
 
-    val textView: TextView = itemView as TextView
-    var suggestion: Suggestion? = null
+    private val textView: TextView = itemView as TextView
+    private var suggestion: Suggestion? = null
 
     init {
       itemView.setOnClickListener { _ ->
@@ -67,7 +67,7 @@ internal class SuggestionsAdapter(val callback: Callback) : RecyclerView.Adapter
         builder.append(" - ")
         builder.append(Html.fromHtml(item.name))
       }
-      if (!item.exchDisp.isNullOrBlank()) {
+      if (!item.exchDisp.isBlank()) {
         builder.append(" (")
         builder.append(item.exchDisp)
         builder.append(')')
