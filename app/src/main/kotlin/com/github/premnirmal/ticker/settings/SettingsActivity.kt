@@ -48,10 +48,10 @@ import javax.inject.Inject
 class SettingsActivity : PreferenceActivity(), ActivityCompat.OnRequestPermissionsResultCallback {
 
   companion object {
-    private val REQCODE_WRITE_EXTERNAL_STORAGE = 850
-    private val REQCODE_READ_EXTERNAL_STORAGE = 851
-    private val REQCODE_WRITE_EXTERNAL_STORAGE_SHARE = 852
-    private val REQCODE_FILE_WRITE = 853
+    private const val REQCODE_WRITE_EXTERNAL_STORAGE = 850
+    private const val REQCODE_READ_EXTERNAL_STORAGE = 851
+    private const val REQCODE_WRITE_EXTERNAL_STORAGE_SHARE = 852
+    private const val REQCODE_FILE_WRITE = 853
   }
 
   @Inject

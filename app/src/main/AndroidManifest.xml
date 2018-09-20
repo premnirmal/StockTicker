@@ -21,7 +21,6 @@
     <activity
         android:name="com.github.premnirmal.ticker.home.SplashActivity"
         android:configChanges="orientation|keyboardHidden|screenSize"
-        android:screenOrientation="portrait"
         android:theme="@style/SplashTheme">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
@@ -37,7 +36,6 @@
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity"
         android:label="@string/add_ticker"
-        android:screenOrientation="portrait"
         android:theme="@style/TickerSelectorActivityTheme"
         android:windowSoftInputMode="adjustResize"/>
     <activity
@@ -50,13 +48,10 @@
         android:screenOrientation="portrait"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
-        android:label="@string/app_settings"
-        android:screenOrientation="portrait"
-        android:theme="@style/SettingsActivityTheme"/>
+        android:label="@string/app_settings"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
         android:label="@string/action_Settings"
-        android:screenOrientation="portrait"
         android:theme="@style/WidgetSettingsActivityTheme">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
