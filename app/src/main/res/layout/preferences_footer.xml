@@ -15,7 +15,6 @@
       android:layout_marginTop="8dp"
       android:autoLink="all"
       android:gravity="center"
-      android:linksClickable="true"
       android:text="@string/checkout_open_source"
       android:textSize="16sp"
       />

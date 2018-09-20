@@ -33,14 +33,14 @@ class WidgetData {
     const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
 
     enum class ChangeType {
-      value, percent
+      value,
+      percent
     }
   }
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
-  @Inject
-  internal lateinit var context: Context
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   private val widgetId: Int
   private val tickerList: MutableList<String>
@@ -55,8 +55,11 @@ class WidgetData {
     tickerList = if (tickerListVars.isNullOrEmpty()) {
       ArrayList()
     } else {
-      ArrayList(Arrays.asList(
-          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+      ArrayList(
+          Arrays.asList(
+              *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
+          )
+      )
     }
     save()
   }
@@ -81,7 +84,7 @@ class WidgetData {
   val negativeTextColor: Int
     @ColorRes get() = R.color.negative_red
 
-  fun widgetName(): String = preferences.getString(WIDGET_NAME, "")
+  fun widgetName(): String = preferences.getString(WIDGET_NAME, "")!!
 
   fun setWidgetName(value: String) {
     preferences.edit().putString(WIDGET_NAME, value).apply()
@@ -103,15 +106,13 @@ class WidgetData {
     preferences.edit().putInt(LAYOUT_TYPE, value).apply()
   }
 
-  @ColorInt
-  fun textColor(): Int {
+  @ColorInt fun textColor(): Int {
     val pref = textColorPref()
     return if (pref == 0) context.resources.getColor(R.color.white)
     else context.resources.getColor(R.color.dark_text)
   }
 
-  @LayoutRes
-  fun stockViewLayout(): Int {
+  @LayoutRes fun stockViewLayout(): Int {
     val pref = layoutPref()
     return when (pref) {
       0 -> R.layout.stockview
@@ -130,8 +131,7 @@ class WidgetData {
     }
   }
 
-  @DrawableRes
-  fun backgroundResource(): Int {
+  @DrawableRes fun backgroundResource(): Int {
     val bgPref = bgPref()
     return when (bgPref) {
       TRANSLUCENT -> R.drawable.translucent_widget_bg
@@ -161,8 +161,7 @@ class WidgetData {
 
   fun getStocks(): List<Quote> {
     val quoteList = ArrayList<Quote>()
-    tickerList
-        .map { stocksProvider.getStock(it) }
+    tickerList.map { stocksProvider.getStock(it) }
         .forEach { quote -> quote?.let { quoteList.add(it) } }
     if (autoSortEnabled()) {
       quoteList.sort()
@@ -173,7 +172,7 @@ class WidgetData {
   fun getTickers(): List<String> = tickerList
 
   fun hasTicker(symbol: String): Boolean {
-    synchronized(tickerList, {
+    synchronized(tickerList) {
       var found = false
       val toRemove: MutableList<String> = ArrayList()
       for (ticker in tickerList) {
@@ -187,42 +186,44 @@ class WidgetData {
       }
       tickerList.removeAll(toRemove)
       return found
-    })
+    }
   }
 
   fun rearrange(tickers: List<String>) {
-    synchronized(tickerList, {
+    synchronized(tickerList) {
       tickerList.clear()
       tickerList.addAll(tickers)
       save()
-    })
+    }
   }
 
   fun addTicker(ticker: String) {
-    synchronized(tickerList, {
+    synchronized(tickerList) {
       if (!tickerList.contains(ticker)) {
         tickerList.add(ticker)
       }
       stocksProvider.addStock(ticker)
       save()
-    })
+    }
   }
 
   fun addTickers(tickers: List<String>) {
-    synchronized(tickerList, {
+    synchronized(tickerList) {
       val filtered = tickers.filter { !tickerList.contains(it) }
       tickerList.addAll(filtered)
       stocksProvider.addStocks(filtered.filter { !stocksProvider.hasTicker(it) })
       save()
-    })
+    }
   }
 
   fun removeStock(ticker: String) {
-    synchronized(tickerList, {
+    synchronized(tickerList) {
       tickerList.remove(ticker)
-      stocksProvider.removeStock(ticker)
+      if (!widgetDataProvider.containsTicker(ticker)) {
+        stocksProvider.removeStock(ticker)
+      }
       save()
-    })
+    }
   }
 
   fun addAllFromStocksProvider() {
@@ -234,10 +235,8 @@ class WidgetData {
   }
 
   private fun save() {
-    synchronized(tickerList, {
-      preferences.edit()
-          .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
-          .apply()
-    })
+    synchronized(tickerList) {
+      preferences.edit().putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString()).apply()
+    }
   }
 }

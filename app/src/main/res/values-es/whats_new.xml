@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Política de privacidad añadida</item>
+    <item>Eliminación de ticker fijo de todos los widgets</item>
   </string-array>
 </resources>

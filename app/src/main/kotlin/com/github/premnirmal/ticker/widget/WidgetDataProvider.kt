@@ -11,10 +11,8 @@ import javax.inject.Singleton
 @Singleton
 class WidgetDataProvider {
 
-  @Inject
-  internal lateinit var widgetManager: AppWidgetManager
-  @Inject
-  internal lateinit var context: Context
+  @Inject internal lateinit var widgetManager: AppWidgetManager
+  @Inject internal lateinit var context: Context
 
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap<Int, WidgetData>()
@@ -24,18 +22,14 @@ class WidgetDataProvider {
     Injector.appComponent.inject(this)
   }
 
-  fun getAppWidgetIds(): IntArray {
-    val appWidgetIds = widgetManager
-        .getAppWidgetIds(ComponentName(context, StockWidget::class.java))
-    return appWidgetIds
-  }
+  fun getAppWidgetIds(): IntArray =
+    widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
 
   fun dataForWidgetId(widgetId: Int): WidgetData {
-    synchronized(widgets, {
+    synchronized(widgets) {
       return if (widgets.containsKey(widgetId)) {
         val widgetData = widgets[widgetId]!!
-        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID
-            && widgetData.getTickers().isEmpty()) {
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID && widgetData.getTickers().isEmpty()) {
           widgetData.addAllFromStocksProvider()
         }
         widgetData
@@ -46,21 +40,20 @@ class WidgetDataProvider {
         } else {
           WidgetData(widgetId)
         }
-        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID
-            && widgetData.getTickers().isEmpty()) {
+        if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID && widgetData.getTickers().isEmpty()) {
           widgetData.addAllFromStocksProvider()
         }
         widgets[widgetId] = widgetData
         widgetData
       }
-    })
+    }
   }
 
   fun widgetRemoved(widgetId: Int) {
-    synchronized(widgets, {
+    synchronized(widgets) {
       val removed = widgets.remove(widgetId)
       removed?.onWidgetRemoved()
-    })
+    }
   }
 
   fun broadcastUpdateWidget(widgetId: Int) {
@@ -79,8 +72,7 @@ class WidgetDataProvider {
     context.sendBroadcast(intent)
   }
 
-  fun hasWidget(): Boolean {
-    val ids = getAppWidgetIds()
-    return ids.isNotEmpty()
-  }
+  fun hasWidget(): Boolean = getAppWidgetIds().isNotEmpty()
+
+  fun containsTicker(ticker: String): Boolean = widgets.any { it.value.hasTicker(ticker) }
 }
