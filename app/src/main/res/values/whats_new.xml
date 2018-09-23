@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Crashfix on 4.0</item>
     <item>Fixed crash on Oreo and above</item>
     <item>Fixed ticker removal from all widgets</item>
   </string-array>
