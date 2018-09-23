@@ -29,10 +29,45 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   var currency: String = ""
   var description: String = ""
 
-  // Position fields
-  var isPosition: Boolean = false
+  @Deprecated("please use addPosition / decreasePosition")
   var positionPrice: Float = 0.toFloat()
+  @Deprecated("please use addPosition / decreasePosition")
   var positionShares: Float = 0.toFloat()
+
+  private var _totalShares : Float = 0.toFloat()
+  private var _totalPositionPrice : Float = 0.toFloat()
+
+  // Position fields
+  fun isPosition() : Boolean {
+    return  totalPosition() > 0
+  }
+
+  fun totalPositionPrice() : Float {
+    return this._totalPositionPrice
+  }
+
+  fun totalPosition() : Float {
+    return this._totalShares
+  }
+
+  fun averagePositionPrice() : Float {
+    return totalPositionPrice() / totalPosition()
+  }
+
+  fun addPosition(price: Float, shares: Float){
+    _totalPositionPrice += price * shares
+    this._totalShares += shares
+  }
+
+  fun decreasePosition(shares: Float){
+    _totalPositionPrice -= shares * averagePositionPrice()
+    this._totalShares -= shares
+
+    if(totalPosition() < 1.toFloat() ){
+      _totalPositionPrice = 0.toFloat()
+      _totalShares = 0.toFloat()
+    }
+  }
 
   fun isIndex(): Boolean = symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
 
@@ -58,15 +93,15 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
 
-  fun positionPriceString(): String = AppPreferences.DECIMAL_FORMAT.format(positionPrice)
+  fun positionPriceString(): String = AppPreferences.DECIMAL_FORMAT.format(averagePositionPrice())
 
-  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(positionShares)
+  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPosition())
 
-  fun holdings(): Float = lastTradePrice * positionShares
+  fun holdings(): Float = lastTradePrice * totalPosition()
 
   fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
 
-  fun gainLoss(): Float = holdings() - positionShares * positionPrice
+  fun gainLoss(): Float = holdings() - totalPositionPrice()
 
   fun gainLossString(): String {
     val gainLoss = gainLoss()
@@ -88,7 +123,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
     return gainLossString
   }
 
-  fun dayChange(): Float = positionShares * change
+  fun dayChange(): Float = totalPosition() * change
 
   fun dayChangeString(): String {
     val dayChange = dayChange()
@@ -110,5 +145,5 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   override operator fun compareTo(other: Quote): Int =
-      other.changeInPercent.compareTo(changeInPercent)
+    other.changeInPercent.compareTo(changeInPercent)
 }

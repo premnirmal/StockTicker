@@ -31,6 +31,99 @@
       style="@style/BoldTextView"
       />
 
+  <TextView
+      android:id="@+id/currentPositionText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginTop="20dp"
+      android:gravity="center"
+      android:textSize="@dimen/large_text"
+      style="@style/BoldTextView"
+      android:text="@string/current_position"
+      />
+
+  <LinearLayout
+      android:id="@+id/currentPositionBox"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginTop="20dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      >
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="0.4"
+        android:text="@string/number_of_shares"
+        />
+
+    <TextView
+        android:id="@+id/currentPosition"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="0.4"
+        tools:text="50"
+        />
+
+  </LinearLayout>
+
+  <LinearLayout
+      android:id="@+id/averagePriceBox"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginTop="10dp"
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      >
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="0.2"
+        android:text="@string/average_price"
+        />
+
+    <TextView
+        android:id="@+id/averagePositionPrice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_weight="0.2"
+        tools:text="50.66"
+        />
+
+  </LinearLayout>
+
+  <android.support.v4.widget.Space
+      android:layout_width="20dp"
+      android:layout_height="30dp"
+      />
+
+  <TextView
+      android:id="@+id/addRemoveText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="16dp"
+      android:layout_marginRight="16dp"
+      android:layout_marginTop="20dp"
+      android:gravity="center"
+      android:textSize="@dimen/large_text"
+      style="@style/BoldTextView"
+      android:text="@string/add_remove_position"
+      />
+
+
+
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
@@ -123,13 +216,23 @@
       >
 
     <Button
-        android:id="@+id/doneButton"
+        android:id="@+id/addButton"
         android:layout_width="100dp"
         android:layout_height="40dp"
         android:layout_gravity="right"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        android:text="@string/done"
+        android:text="@string/add"
+        />
+
+    <Button
+        android:id="@+id/removeButton"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp"
+        android:text="@string/remove"
         />
 
     <Button

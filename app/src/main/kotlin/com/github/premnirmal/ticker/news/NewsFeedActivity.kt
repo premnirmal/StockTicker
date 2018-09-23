@@ -193,7 +193,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     super.onResume()
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
-    if (quote.isPosition) {
+    if (quote.isPosition()) {
       total_gain_loss.visibility = View.VISIBLE
       total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
       if (quote.gainLoss() >= 0) {

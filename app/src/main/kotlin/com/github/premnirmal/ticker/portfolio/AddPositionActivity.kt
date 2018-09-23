@@ -3,14 +3,20 @@ package com.github.premnirmal.ticker.portfolio
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
+import android.view.View
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_positions.doneButton
+import kotlinx.android.synthetic.main.activity_positions.addButton
+import kotlinx.android.synthetic.main.activity_positions.addRemoveText
+import kotlinx.android.synthetic.main.activity_positions.averagePriceBox
+import kotlinx.android.synthetic.main.activity_positions.currentPositionBox
+import kotlinx.android.synthetic.main.activity_positions.currentPositionText
 import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.priceInputLayout
+import kotlinx.android.synthetic.main.activity_positions.removeButton
 import kotlinx.android.synthetic.main.activity_positions.shares
 import kotlinx.android.synthetic.main.activity_positions.sharesInputLayout
 import kotlinx.android.synthetic.main.activity_positions.skipButton
@@ -63,7 +69,14 @@ open class AddPositionActivity : BaseActivity() {
     val name = tickerName
     name.text = ticker
 
-    doneButton.setOnClickListener { onDoneClicked() }
+    addButton.setOnClickListener { onAddClicked() }
+
+    addRemoveText.setText(R.string.add_position)
+    removeButton.visibility = View.GONE
+    currentPositionBox.visibility = View.GONE
+    currentPositionText.visibility = View.GONE
+    averagePriceBox.visibility = View.GONE
+
 
     skipButton.setOnClickListener { skip() }
 
@@ -75,7 +88,7 @@ open class AddPositionActivity : BaseActivity() {
     finish()
   }
 
-  protected fun onDoneClicked() {
+  protected fun onAddClicked() {
     val sharesView = shares
     val priceView = price
     val priceText = priceView.text.toString()
