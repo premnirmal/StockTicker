@@ -43,10 +43,6 @@
         android:label="@string/add_position"
         android:screenOrientation="portrait"/>
     <activity
-        android:name="com.github.premnirmal.ticker.portfolio.EditPositionActivity"
-        android:label="@string/edit_position"
-        android:screenOrientation="portrait"/>
-    <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
         android:label="@string/app_settings"/>
     <activity

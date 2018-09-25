@@ -36,6 +36,7 @@ class StocksStorage {
     Paper.book().write(KEY_STOCKS, quotes)
   }
 
+  @Deprecated("remove after upgrade")
   fun readPositionsLegacy(): MutableList<Quote> {
     return Paper.book().read(KEY_POSITIONS, ArrayList())
   }

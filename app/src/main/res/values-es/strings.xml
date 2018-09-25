@@ -60,6 +60,7 @@
   <string name="equity_value">Valor de Equidad</string>
   <string name="Price">Precio</string>
   <string name="add_position">Añadir Posición</string>
+  <string name="add">Añadir</string>
   <string name="done">Hecho</string>
   <string name="skip">Omitir</string>
   <string name="edit_position">Editar posición</string>

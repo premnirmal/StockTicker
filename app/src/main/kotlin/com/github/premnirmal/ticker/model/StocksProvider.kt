@@ -127,8 +127,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       }
       val positions = storage.readPositionsNew()
       for (position in positions) {
-        positionList[position.symbol] = position
+        if (!position.holdings.isEmpty()) {
+          positionList[position.symbol] = position
+        }
       }
+      save()
     }
   }
 
@@ -198,52 +201,52 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
       }.doOnNext { stocks ->
-            if (stocks.isEmpty()) {
-              bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-              throw RuntimeException("No symbols in portfolio")
-            } else {
-              synchronized(quoteList) {
-                tickerList.clear()
-                stocks.mapTo(tickerList) { it.symbol }
-                quoteList.clear()
-                for (stock in stocks) {
-                  quoteList.add(stock)
-                }
-                lastFetched = api.lastFetched
-                save()
-              }
+        if (stocks.isEmpty()) {
+          bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+          throw RuntimeException("No symbols in portfolio")
+        } else {
+          synchronized(quoteList) {
+            tickerList.clear()
+            stocks.mapTo(tickerList) { it.symbol }
+            quoteList.clear()
+            for (stock in stocks) {
+              quoteList.add(stock)
             }
-          }.doOnError { t ->
-            var errorPosted = false
-            appPreferences.setRefreshing(false)
-            if (t is CompositeException) {
-              for (exception in t.exceptions) {
-                if (exception is RobindahoodException) {
-                  exception.message?.let {
-                    if (!bus.post(ErrorEvent(it))) {
-                      mainThreadHandler.post {
-                        InAppMessage.showToast(context, it)
-                      }
-                      errorPosted = true
-                    }
+            lastFetched = api.lastFetched
+            save()
+          }
+        }
+      }.doOnError { t ->
+        var errorPosted = false
+        appPreferences.setRefreshing(false)
+        if (t is CompositeException) {
+          for (exception in t.exceptions) {
+            if (exception is RobindahoodException) {
+              exception.message?.let {
+                if (!bus.post(ErrorEvent(it))) {
+                  mainThreadHandler.post {
+                    InAppMessage.showToast(context, it)
                   }
-                  break
+                  errorPosted = true
                 }
               }
-            } else {
-              Timber.e(t)
+              break
             }
-            if (!errorPosted) {
-              mainThreadHandler.post {
-                InAppMessage.showToast(context, R.string.refresh_failed)
-              }
-            }
-            retryWithBackoff()
-          }.doOnComplete {
-            appPreferences.setRefreshing(false)
-            exponentialBackoff.reset()
-            scheduleUpdate(true)
-          }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+          }
+        } else {
+          Timber.e(t)
+        }
+        if (!errorPosted) {
+          mainThreadHandler.post {
+            InAppMessage.showToast(context, R.string.refresh_failed)
+          }
+        }
+        retryWithBackoff()
+      }.doOnComplete {
+        appPreferences.setRefreshing(false)
+        exponentialBackoff.reset()
+        scheduleUpdate(true)
+      }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }
   }
 
@@ -273,7 +276,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun getPosition(ticker: String): Position? = positionList[ticker]
 
-  override fun addPosition(ticker: String, shares: Float, price: Float) {
+  override fun addPosition(ticker: String, shares: Float, price: Float): Holding {
     synchronized(quoteList) {
       var position = positionList[ticker]
       if (position == null) {
@@ -283,11 +286,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       if (!tickerList.contains(ticker)) {
         tickerList.add(ticker)
       }
-      if (shares > 0) {
-        val holding = Holding(shares, price)
-        position.add(holding)
-        save()
-      }
+      val holding = Holding(shares, price)
+      position.add(holding)
+      save()
+      return holding
     }
   }
 

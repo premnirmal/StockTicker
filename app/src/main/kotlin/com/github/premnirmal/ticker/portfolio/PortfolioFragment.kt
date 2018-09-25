@@ -101,11 +101,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     popupWindow.setOnMenuItemClickListener { menuItem ->
       val itemId = menuItem.itemId
       when (itemId) {
-        R.id.positions -> {
-          val intent = Intent(activity, EditPositionActivity::class.java)
-          intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
-          activity?.startActivity(intent)
-        }
         R.id.remove -> {
           promptRemove(quote, position)
         }

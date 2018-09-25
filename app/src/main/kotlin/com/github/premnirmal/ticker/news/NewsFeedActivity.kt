@@ -21,7 +21,7 @@ import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.portfolio.EditPositionActivity
+import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
@@ -100,8 +100,8 @@ class NewsFeedActivity : BaseGraphActivity() {
     equityValue.text = quote.holdingsString()
     description.text = quote.description
     edit_positions.setOnClickListener {
-      val intent = Intent(this, EditPositionActivity::class.java)
-      intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
+      val intent = Intent(this, AddPositionActivity::class.java)
+      intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
       startActivity(intent)
     }
     savedInstanceState?.let {
