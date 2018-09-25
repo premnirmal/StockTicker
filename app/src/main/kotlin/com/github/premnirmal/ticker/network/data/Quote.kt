@@ -30,9 +30,10 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   var description: String = ""
 
   // Position fields
-  var isPosition: Boolean = false
-  var positionPrice: Float = 0.toFloat()
-  var positionShares: Float = 0.toFloat()
+
+  @Deprecated("remove after migration") var isPosition: Boolean = false
+  @Deprecated("remove after migration") var positionPrice: Float = 0.toFloat()
+  @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
 
   fun isIndex(): Boolean = symbol.startsWith("^") || symbol.startsWith(".") || symbol.contains("=")
 
@@ -110,5 +111,5 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   override operator fun compareTo(other: Quote): Int =
-      other.changeInPercent.compareTo(changeInPercent)
+    other.changeInPercent.compareTo(changeInPercent)
 }

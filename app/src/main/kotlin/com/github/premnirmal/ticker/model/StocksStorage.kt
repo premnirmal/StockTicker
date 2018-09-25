@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.model
 
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.google.gson.Gson
 import io.paperdb.Paper
@@ -16,6 +17,7 @@ class StocksStorage {
   companion object {
     const val KEY_STOCKS = "STOCKS"
     const val KEY_POSITIONS = "POSITIONS"
+    const val KEY_POSITIONS_NEW = "POSITIONS_NEW"
     const val KEY_TICKERS = "TICKERS"
   }
 
@@ -34,12 +36,16 @@ class StocksStorage {
     Paper.book().write(KEY_STOCKS, quotes)
   }
 
-  fun readPositions(): MutableList<Quote> {
+  fun readPositionsLegacy(): MutableList<Quote> {
     return Paper.book().read(KEY_POSITIONS, ArrayList())
   }
 
-  fun savePositions(positions: List<Quote>) {
-    Paper.book().write(KEY_POSITIONS, positions)
+  fun readPositionsNew(): MutableList<Position> {
+    return Paper.book().read(KEY_POSITIONS_NEW, ArrayList())
+  }
+
+  fun savePositions(positions: Collection<Position>) {
+    Paper.book().write(KEY_POSITIONS_NEW, positions)
   }
 
   fun readTickers(): MutableList<String> {

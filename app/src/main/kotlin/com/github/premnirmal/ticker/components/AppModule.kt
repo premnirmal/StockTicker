@@ -18,34 +18,26 @@ import javax.inject.Singleton
 /**
  * Created by premnirmal on 3/3/16.
  */
-@Module(includes = arrayOf(NetworkModule::class))
+@Module(includes = [NetworkModule::class])
 class AppModule(private val app: StocksApp) {
 
   @Provides internal fun provideApplicationContext(): Context = app
 
-  @Provides
-  @Singleton internal fun provideClock(): AppClock = AppClockImpl()
+  @Provides @Singleton internal fun provideClock(): AppClock = AppClockImpl()
 
-  @Provides
-  @Singleton internal fun provideEventBus(): RxBus = RxBus()
+  @Provides @Singleton internal fun provideEventBus(): RxBus = RxBus()
 
-  @Provides
-  @Singleton internal fun provideMainThreadHandler(): Handler = Handler(Looper.getMainLooper())
+  @Provides @Singleton internal fun provideMainThreadHandler(): Handler =
+    Handler(Looper.getMainLooper())
 
-  @Provides
-  @Singleton internal fun provideDefaultSharedPreferences(
-      context: Context): SharedPreferences {
-    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
-    return sharedPreferences
-  }
+  @Provides @Singleton internal fun provideDefaultSharedPreferences(
+    context: Context
+  ): SharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
 
-  @Provides
-  @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
-      AppWidgetManager.getInstance(app)
+  @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
+    AppWidgetManager.getInstance(app)
 
-  @Provides
-  @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
+  @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 
-  @Provides
-  @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
+  @Provides @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
 }
