@@ -34,7 +34,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   @Deprecated("remove after migration") var isPosition: Boolean = false
   @Deprecated("remove after migration") var positionPrice: Float = 0.toFloat()
   @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
-  @Transient var position: Position? = null
+  var position: Position? = null
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
