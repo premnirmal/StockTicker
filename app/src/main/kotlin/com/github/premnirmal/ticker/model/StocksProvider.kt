@@ -43,28 +43,6 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
-    @Deprecated("Remove after version update")
-    private fun String.stringToPositions(): MutableList<Quote> {
-      val tickerListCSV =
-        ArrayList(Arrays.asList(*this.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-      val stockList = ArrayList<Quote>()
-      var tickerFields: ArrayList<String>
-      var tmpQuote: Quote
-      for (tickerCSV in tickerListCSV) {
-        tickerFields =
-            ArrayList(Arrays.asList(*tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-        if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1])) {
-          tmpQuote = Quote()
-          tmpQuote.isPosition = true
-          tmpQuote.symbol = tickerFields[0]
-          tmpQuote.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
-          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3])
-          stockList.add(tmpQuote)
-        }
-      }
-      return stockList
-    }
-
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
     private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
@@ -83,7 +61,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   @Inject internal lateinit var storage: StocksStorage
 
   private val tickerList: MutableList<String> = ArrayList()
-  private val quoteList: MutableList<Quote> = ArrayList()
+  private val quoteList: MutableMap<String, Quote> = HashMap()
   private val positionList: MutableMap<String, Position> = HashMap()
 
   private var lastFetched: Long = 0L
@@ -111,7 +89,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList) {
       quoteList.clear()
       val quotes = storage.readStocks()
-      quoteList.addAll(quotes)
+      for (quote in quotes) {
+        quoteList[quote.symbol] = quote
+      }
       positionList.clear()
       val hasMigratedPositions = preferences.getBoolean(HAS_MIGRATED_POSITIONS, false)
       if (!hasMigratedPositions) {
@@ -121,6 +101,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           val position =
             Position(quote.symbol, arrayListOf(Holding(quote.positionShares, quote.positionPrice)))
           newPositions.add(position)
+          quote.position = position
         }
         storage.savePositions(newPositions)
         preferences.edit().putBoolean(HAS_MIGRATED_POSITIONS, true).apply()
@@ -139,7 +120,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList) {
       preferences.edit().putLong(LAST_FETCHED, lastFetched).apply()
       storage.saveTickers(tickerList)
-      storage.saveStocks(quoteList)
+      storage.saveStocks(quoteList.values)
       storage.savePositions(positionList.values)
     }
   }
@@ -203,14 +184,15 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       }.doOnNext { stocks ->
         if (stocks.isEmpty()) {
           bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-          throw RuntimeException("No symbols in portfolio")
+          throw IllegalStateException("No symbols in portfolio")
         } else {
           synchronized(quoteList) {
             tickerList.clear()
             stocks.mapTo(tickerList) { it.symbol }
             quoteList.clear()
             for (stock in stocks) {
-              quoteList.add(stock)
+              stock.position = getPosition(stock.symbol)
+              quoteList[stock.symbol] = stock
             }
             lastFetched = api.lastFetched
             save()
@@ -264,7 +246,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
         tickerList.add(ticker)
         val quote = Quote()
         quote.symbol = ticker
-        quoteList.add(quote)
+        quoteList[ticker] = quote
         save()
         fetch().subscribe(SimpleSubscriber())
       }
@@ -278,7 +260,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun addPosition(ticker: String, shares: Float, price: Float): Holding {
     synchronized(quoteList) {
-      var position = positionList[ticker]
+      val quote = getStock(ticker)
+      var position = getPosition(ticker)
       if (position == null) {
         position = Position(ticker, ArrayList())
         positionList[ticker] = position
@@ -288,6 +271,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
       }
       val holding = Holding(shares, price)
       position.add(holding)
+      quote?.position = position
       save()
       return holding
     }
@@ -295,8 +279,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun removePosition(ticker: String, holding: Holding) {
     synchronized(positionList) {
-      val position = positionList[ticker]
+      val position = getPosition(ticker)
+      val quote = getStock(ticker)
       position?.remove(holding)
+      quote?.position = position
       save()
     }
   }
@@ -316,9 +302,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun removeStock(ticker: String): Collection<String> {
     synchronized(quoteList) {
       tickerList.remove(ticker)
-      val dummy = Quote()
-      dummy.symbol = ticker
-      quoteList.remove(dummy)
+      quoteList.remove(ticker)
       positionList.remove(ticker)
       save()
       scheduleUpdate()
@@ -330,9 +314,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList) {
       tickers.forEach {
         tickerList.remove(it)
-        val dummy = Quote()
-        dummy.symbol = it
-        quoteList.remove(dummy)
+        quoteList.remove(it)
         positionList.remove(it)
       }
       save()
@@ -340,19 +322,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
   }
 
-  override fun getStock(ticker: String): Quote? {
-    synchronized(quoteList) {
-      val dummy = Quote()
-      dummy.symbol = ticker
-      val index = quoteList.indexOf(dummy)
-      return if (index >= 0) {
-        val stock = quoteList[index]
-        stock
-      } else {
-        null
-      }
-    }
-  }
+  override fun getStock(ticker: String): Quote? = quoteList[ticker]
 
   override fun getTickers(): List<String> = ArrayList(tickerList)
 

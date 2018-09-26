@@ -87,7 +87,8 @@ class NewsFeedActivity : BaseGraphActivity() {
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
-    change.text = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
+    val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
+    change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
       change.setTextColor(resources.getColor(R.color.positive_green))
       lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
@@ -193,7 +194,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     super.onResume()
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
-    if (quote.isPosition) {
+    if (quote.hasPositions()) {
       total_gain_loss.visibility = View.VISIBLE
       total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
       if (quote.gainLoss() >= 0) {

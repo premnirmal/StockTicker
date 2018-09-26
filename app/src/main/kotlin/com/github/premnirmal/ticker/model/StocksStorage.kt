@@ -16,7 +16,7 @@ class StocksStorage {
 
   companion object {
     const val KEY_STOCKS = "STOCKS"
-    const val KEY_POSITIONS = "POSITIONS"
+    @Deprecated("remove after upgrade") const val KEY_POSITIONS_LEGACY = "POSITIONS"
     const val KEY_POSITIONS_NEW = "POSITIONS_NEW"
     const val KEY_TICKERS = "TICKERS"
   }
@@ -32,13 +32,13 @@ class StocksStorage {
     return Paper.book().read(KEY_STOCKS, ArrayList())
   }
 
-  fun saveStocks(quotes: List<Quote>) {
+  fun saveStocks(quotes: Collection<Quote>) {
     Paper.book().write(KEY_STOCKS, quotes)
   }
 
   @Deprecated("remove after upgrade")
   fun readPositionsLegacy(): MutableList<Quote> {
-    return Paper.book().read(KEY_POSITIONS, ArrayList())
+    return Paper.book().read(KEY_POSITIONS_LEGACY, ArrayList())
   }
 
   fun readPositionsNew(): MutableList<Position> {
@@ -53,7 +53,7 @@ class StocksStorage {
     return Paper.book().read(KEY_TICKERS, ArrayList())
   }
 
-  fun saveTickers(positions: List<String>) {
-    Paper.book().write(KEY_TICKERS, positions)
+  fun saveTickers(tickers: List<String>) {
+    Paper.book().write(KEY_TICKERS, tickers)
   }
 }
