@@ -8,7 +8,7 @@
     >
 
   <TextView
-      android:id="@+id/numShares"
+      android:id="@+id/positionShares"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
@@ -17,7 +17,7 @@
       />
 
   <TextView
-      android:id="@+id/price"
+      android:id="@+id/positionPrice"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
@@ -26,7 +26,7 @@
       />
 
   <TextView
-      android:id="@+id/vava"lu
+      android:id="@+id/positionTotalValue"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"

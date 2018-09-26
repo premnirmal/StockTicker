@@ -26,10 +26,7 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     }
   }
 
-  private fun appWidgetIds(): IntArray {
-    val appWidgetIds = widgetDataProvider.getAppWidgetIds()
-    return appWidgetIds
-  }
+  private fun appWidgetIds(): IntArray = widgetDataProvider.getAppWidgetIds()
 
   override fun getCount(): Int {
     val appWidgetIds = appWidgetIds()
@@ -43,12 +40,7 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
       ""
     } else {
       val widgetData = widgetDataProvider.dataForWidgetId(appWidgetIds[position])
-      if (widgetData.widgetName().isNotBlank()) {
-        widgetData.widgetName()
-      } else {
-        val index = position + 1
-        "Widget #$index"
-      }
+      widgetData.widgetName()
     }
   }
 

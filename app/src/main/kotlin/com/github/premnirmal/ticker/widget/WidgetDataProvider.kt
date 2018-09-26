@@ -5,14 +5,17 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.data.Quote
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class WidgetDataProvider {
 
-  @Inject internal lateinit var widgetManager: AppWidgetManager
-  @Inject internal lateinit var context: Context
+  @Inject
+  internal lateinit var widgetManager: AppWidgetManager
+  @Inject
+  internal lateinit var context: Context
 
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap<Int, WidgetData>()
@@ -23,7 +26,7 @@ class WidgetDataProvider {
   }
 
   fun getAppWidgetIds(): IntArray =
-    widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+      widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
 
   fun dataForWidgetId(widgetId: Int): WidgetData {
     synchronized(widgets) {
@@ -34,11 +37,13 @@ class WidgetDataProvider {
         }
         widgetData
       } else {
+        val appWidgetIds = getAppWidgetIds()
         // check if size is 1 because the first widget just got added
-        val widgetData: WidgetData = if (getAppWidgetIds().size == 1) {
-          WidgetData(widgetId, true)
+        val position = appWidgetIds.indexOf(widgetId) + 1
+        val widgetData: WidgetData = if (appWidgetIds.size == 1) {
+          WidgetData(position, widgetId, true)
         } else {
-          WidgetData(widgetId)
+          WidgetData(position, widgetId)
         }
         if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID && widgetData.getTickers().isEmpty()) {
           widgetData.addAllFromStocksProvider()
@@ -75,4 +80,12 @@ class WidgetDataProvider {
   fun hasWidget(): Boolean = getAppWidgetIds().isNotEmpty()
 
   fun containsTicker(ticker: String): Boolean = widgets.any { it.value.hasTicker(ticker) }
+
+  fun moveQuoteToDifferentWidget(oldWidgetId: Int, quote: Quote, newWidgetId: Int) {
+    val oldWidget = widgets[oldWidgetId]!!
+    val newWidget = widgets[newWidgetId]!!
+    newWidget.addTicker(quote.symbol)
+    oldWidget.removeStock(quote.symbol)
+    broadcastUpdateAllWidgets()
+  }
 }

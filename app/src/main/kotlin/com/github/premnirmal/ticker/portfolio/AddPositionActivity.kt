@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.addButton
+import kotlinx.android.synthetic.main.activity_positions.averagePrice
 import kotlinx.android.synthetic.main.activity_positions.positionsHolder
 import kotlinx.android.synthetic.main.activity_positions.price
 import kotlinx.android.synthetic.main.activity_positions.priceInputLayout
@@ -19,6 +20,8 @@ import kotlinx.android.synthetic.main.activity_positions.shares
 import kotlinx.android.synthetic.main.activity_positions.sharesInputLayout
 import kotlinx.android.synthetic.main.activity_positions.tickerName
 import kotlinx.android.synthetic.main.activity_positions.toolbar
+import kotlinx.android.synthetic.main.activity_positions.totalShares
+import kotlinx.android.synthetic.main.activity_positions.totalValue
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -42,7 +45,8 @@ open class AddPositionActivity : BaseActivity() {
     }
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject
+  internal lateinit var stocksProvider: IStocksProvider
   internal lateinit var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,8 +66,7 @@ open class AddPositionActivity : BaseActivity() {
       finish()
       return
     }
-    val name = tickerName
-    name.text = ticker
+    tickerName.text = ticker
 
     addButton.setOnClickListener { onAddClicked() }
 
@@ -77,6 +80,7 @@ open class AddPositionActivity : BaseActivity() {
         addPositionView(holding)
       }
     }
+    updateTotal()
   }
 
   private fun onAddClicked() {
@@ -107,19 +111,33 @@ open class AddPositionActivity : BaseActivity() {
         priceView.setText("")
         sharesView.setText("")
         addPositionView(holding)
+        updateTotal()
       }
     }
+    dismissKeyboard()
   }
 
   private fun addPositionView(holding: Holding) {
     val view = layoutInflater.inflate(R.layout.layout_position_holding, null)
-    val positionText = view.findViewById<TextView>(R.id.position_text)
-    positionText.text = holding.holdingsText()
+    val positionNumShares = view.findViewById<TextView>(R.id.positionShares)
+    val positionPrice = view.findViewById<TextView>(R.id.positionPrice)
+    val positionTotalValue = view.findViewById<TextView>(R.id.positionTotalValue)
+    positionNumShares.text = AppPreferences.DECIMAL_FORMAT.format(holding.shares)
+    positionPrice.text = AppPreferences.DECIMAL_FORMAT.format(holding.price)
+    positionTotalValue.text = AppPreferences.DECIMAL_FORMAT.format(holding.totalValue())
     positionsHolder.addView(view)
     view.tag = holding
     view.setOnClickListener {
       stocksProvider.removePosition(ticker, holding)
       positionsHolder.removeView(view)
+      updateTotal()
     }
+  }
+
+  private fun updateTotal() {
+    val quote = stocksProvider.getStock(ticker)!!
+    totalShares.text = quote.numSharesString()
+    averagePrice.text = quote.averagePositionPrice()
+    totalValue.text = quote.totalSpentString()
   }
 }

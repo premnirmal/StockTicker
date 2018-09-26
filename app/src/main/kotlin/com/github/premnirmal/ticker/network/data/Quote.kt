@@ -31,9 +31,12 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   // Position fields
 
-  @Deprecated("remove after migration") var isPosition: Boolean = false
-  @Deprecated("remove after migration") var positionPrice: Float = 0.toFloat()
-  @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
+  @Deprecated("remove after migration")
+  var isPosition: Boolean = false
+  @Deprecated("remove after migration")
+  var positionPrice: Float = 0.toFloat()
+  @Deprecated("remove after migration")
+  var positionShares: Float = 0.toFloat()
   var position: Position? = null
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
@@ -59,24 +62,30 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   private fun positionPrice(): Float = position?.let { it ->
-    it.holdings.sumByDouble { it.totalValue().toDouble() }.div(positionShares()).toFloat()
+    it.averagePrice()
   } ?: 0f
 
-  private fun positionShares(): Float = position?.let { it ->
-    it.holdings.sumByDouble { it.shares.toDouble() }.toFloat()
+  private fun totalPositionShares(): Float = position?.let { it ->
+    it.totalShares()
+  } ?: 0f
+
+  private fun totalPositionPrice(): Float = position?.let { it ->
+    it.totalPaidPrice()
   } ?: 0f
 
   fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
 
-  fun positionPriceString(): String = AppPreferences.DECIMAL_FORMAT.format(positionPrice())
+  fun averagePositionPrice(): String = AppPreferences.DECIMAL_FORMAT.format(positionPrice())
 
-  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(positionShares())
+  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPositionShares())
 
-  fun holdings(): Float = lastTradePrice * positionShares()
+  fun totalSpentString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPositionPrice())
+
+  fun holdings(): Float = lastTradePrice * totalPositionShares()
 
   fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
 
-  fun gainLoss(): Float = holdings() - positionShares() * positionPrice()
+  fun gainLoss(): Float = holdings() - totalPositionShares() * positionPrice()
 
   fun gainLossString(): String {
     val gainLoss = gainLoss()
@@ -98,7 +107,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
     return gainLossString
   }
 
-  fun dayChange(): Float = positionShares() * change
+  fun dayChange(): Float = totalPositionShares() * change
 
   fun dayChangeString(): String {
     val dayChange = dayChange()
@@ -120,5 +129,5 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   override operator fun compareTo(other: Quote): Int =
-    other.changeInPercent.compareTo(changeInPercent)
+      other.changeInPercent.compareTo(changeInPercent)
 }

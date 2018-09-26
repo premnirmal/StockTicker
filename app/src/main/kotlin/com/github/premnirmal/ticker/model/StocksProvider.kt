@@ -30,7 +30,6 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -120,8 +119,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     synchronized(quoteList) {
       preferences.edit().putLong(LAST_FETCHED, lastFetched).apply()
       storage.saveTickers(tickerList)
-      storage.saveStocks(quoteList.values)
-      storage.savePositions(positionList.values)
+      storage.saveStocks(quoteList.values.toList())
+      storage.savePositions(positionList.values.toList())
     }
   }
 

@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.model
 
-import android.content.SharedPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
@@ -32,7 +31,7 @@ class StocksStorage {
     return Paper.book().read(KEY_STOCKS, ArrayList())
   }
 
-  fun saveStocks(quotes: Collection<Quote>) {
+  fun saveStocks(quotes: List<Quote>) {
     Paper.book().write(KEY_STOCKS, quotes)
   }
 
@@ -45,7 +44,7 @@ class StocksStorage {
     return Paper.book().read(KEY_POSITIONS_NEW, ArrayList())
   }
 
-  fun savePositions(positions: Collection<Position>) {
+  fun savePositions(positions: List<Position>) {
     Paper.book().write(KEY_POSITIONS_NEW, positions)
   }
 

@@ -203,7 +203,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         total_gain_loss.setTextColor(resources.getColor(R.color.negative_red))
       }
       average_price.visibility = View.VISIBLE
-      average_price.setText(quote.positionPriceString())
+      average_price.setText(quote.averagePositionPrice())
       day_change.visibility = View.VISIBLE
       day_change.setText(quote.dayChangeString())
       if (quote.change > 0 || quote.changeInPercent >= 0) {

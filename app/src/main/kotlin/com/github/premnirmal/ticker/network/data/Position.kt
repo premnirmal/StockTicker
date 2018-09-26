@@ -11,16 +11,16 @@ data class Position(var symbol: String = "", var holdings: MutableList<Holding> 
   fun remove(holding: Holding) {
     holdings.remove(holding)
   }
+
+  fun averagePrice(): Float = holdings.sumByDouble { it.totalValue().toDouble() }
+      .div(totalShares()).toFloat()
+
+  fun totalShares(): Float = holdings.sumByDouble { it.shares.toDouble() }.toFloat()
+
+  fun totalPaidPrice(): Float = holdings.sumByDouble { it.totalValue().toDouble() }.toFloat()
 }
 
 data class Holding(var shares: Float = 0.0f, var price: Float = 0.0f) {
 
   fun totalValue(): Float = shares * price
-
-  fun holdingsText(): String {
-    val shares = AppPreferences.DECIMAL_FORMAT.format(shares)
-    val price = AppPreferences.DECIMAL_FORMAT.format(price)
-    val total = AppPreferences.DECIMAL_FORMAT.format(totalValue())
-    return "$shares x $price = $total"
-  }
 }

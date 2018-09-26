@@ -41,7 +41,8 @@
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
         android:label="@string/add_position"
-        android:screenOrientation="portrait"/>
+        android:screenOrientation="portrait"
+        android:windowSoftInputMode="adjustResize"/>
     <activity
         android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
         android:label="@string/app_settings"/>
