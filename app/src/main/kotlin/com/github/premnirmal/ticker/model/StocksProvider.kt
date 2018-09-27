@@ -100,7 +100,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           val position =
             Position(quote.symbol, arrayListOf(Holding(quote.positionShares, quote.positionPrice)))
           newPositions.add(position)
-          quote.position = position
+          quoteList[quote.symbol]?.position = position
         }
         storage.savePositions(newPositions)
         preferences.edit().putBoolean(HAS_MIGRATED_POSITIONS, true).apply()
