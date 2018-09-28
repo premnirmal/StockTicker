@@ -166,6 +166,8 @@ ext {
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
+  implementation "com.android.support:multidex:1.0.3"
+
   implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
   implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
   implementation "com.android.support:design:$SUPPORT_LIBRARY_VERSION"
