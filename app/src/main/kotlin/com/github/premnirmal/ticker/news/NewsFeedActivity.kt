@@ -21,7 +21,7 @@ import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.portfolio.EditPositionActivity
+import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
@@ -87,7 +87,8 @@ class NewsFeedActivity : BaseGraphActivity() {
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
-    change.text = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
+    val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
+    change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
       change.setTextColor(resources.getColor(R.color.positive_green))
       lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
@@ -100,8 +101,8 @@ class NewsFeedActivity : BaseGraphActivity() {
     equityValue.text = quote.holdingsString()
     description.text = quote.description
     edit_positions.setOnClickListener {
-      val intent = Intent(this, EditPositionActivity::class.java)
-      intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
+      val intent = Intent(this, AddPositionActivity::class.java)
+      intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
       startActivity(intent)
     }
     savedInstanceState?.let {
@@ -193,7 +194,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     super.onResume()
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
-    if (quote.isPosition) {
+    if (quote.hasPositions()) {
       total_gain_loss.visibility = View.VISIBLE
       total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
       if (quote.gainLoss() >= 0) {
@@ -202,7 +203,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         total_gain_loss.setTextColor(resources.getColor(R.color.negative_red))
       }
       average_price.visibility = View.VISIBLE
-      average_price.setText(quote.positionPriceString())
+      average_price.setText(quote.averagePositionPrice())
       day_change.visibility = View.VISIBLE
       day_change.setText(quote.dayChangeString())
       if (quote.change > 0 || quote.changeInPercent >= 0) {

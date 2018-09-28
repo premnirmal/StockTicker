@@ -38,15 +38,20 @@ class WidgetData {
     }
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var context: Context
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject
+  internal lateinit var stocksProvider: IStocksProvider
+  @Inject
+  internal lateinit var context: Context
+  @Inject
+  internal lateinit var widgetDataProvider: WidgetDataProvider
 
+  private val position: Int
   private val widgetId: Int
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
 
-  constructor(widgetId: Int) {
+  constructor(position: Int, widgetId: Int) {
+    this.position = position
     this.widgetId = widgetId
     Injector.appComponent.inject(this)
     val prefsName = "$PREFS_NAME_PREFIX$widgetId"
@@ -64,7 +69,7 @@ class WidgetData {
     save()
   }
 
-  constructor(widgetId: Int, isFirstWidget: Boolean) : this(widgetId) {
+  constructor(position: Int, widgetId: Int, isFirstWidget: Boolean) : this(position, widgetId) {
     if (isFirstWidget && tickerList.isEmpty()) {
       addAllFromStocksProvider()
     }
@@ -84,7 +89,14 @@ class WidgetData {
   val negativeTextColor: Int
     @ColorRes get() = R.color.negative_red
 
-  fun widgetName(): String = preferences.getString(WIDGET_NAME, "")!!
+  fun widgetName(): String {
+    var name = preferences.getString(WIDGET_NAME, "")!!
+    if (name.isEmpty()) {
+      name = "Widget #$position"
+      setWidgetName(name)
+    }
+    return name
+  }
 
   fun setWidgetName(value: String) {
     preferences.edit().putString(WIDGET_NAME, value).apply()
@@ -106,13 +118,15 @@ class WidgetData {
     preferences.edit().putInt(LAYOUT_TYPE, value).apply()
   }
 
-  @ColorInt fun textColor(): Int {
+  @ColorInt
+  fun textColor(): Int {
     val pref = textColorPref()
     return if (pref == 0) context.resources.getColor(R.color.white)
     else context.resources.getColor(R.color.dark_text)
   }
 
-  @LayoutRes fun stockViewLayout(): Int {
+  @LayoutRes
+  fun stockViewLayout(): Int {
     val pref = layoutPref()
     return when (pref) {
       0 -> R.layout.stockview
@@ -131,7 +145,8 @@ class WidgetData {
     }
   }
 
-  @DrawableRes fun backgroundResource(): Int {
+  @DrawableRes
+  fun backgroundResource(): Int {
     val bgPref = bgPref()
     return when (bgPref) {
       TRANSLUCENT -> R.drawable.translucent_widget_bg

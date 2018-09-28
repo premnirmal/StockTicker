@@ -15,6 +15,8 @@ import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewConfiguration
+import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
@@ -178,5 +180,13 @@ abstract class BaseActivity : AppCompatActivity() {
   protected fun showErrorAndFinish() {
     InAppMessage.showToast(this, R.string.error_symbol)
     finish()
+  }
+
+  protected fun dismissKeyboard() {
+    val view = currentFocus
+    if (view is TextView) {
+      val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+      imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
   }
 }

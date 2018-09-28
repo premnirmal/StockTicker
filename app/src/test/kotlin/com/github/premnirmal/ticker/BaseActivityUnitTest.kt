@@ -56,7 +56,7 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
   }
 
   protected fun findFragment(tag: String): Fragment {
-    return mActivity.supportFragmentManager.findFragmentByTag(tag)
+    return mActivity.supportFragmentManager.findFragmentByTag(tag)!!
   }
 
   protected fun verifyVisibleFragment(tag: String): Fragment {

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:layout_marginTop="50dp"
+    >
+
+  <TextView
+      android:id="@+id/positionShares"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:textSize="@dimen/large_text"
+      tools:text="5.0 x 100 = $500.00"
+      />
+
+  <TextView
+      android:id="@+id/positionPrice"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:textSize="@dimen/large_text"
+      tools:text="5.0 x 100 = $500.00"
+      />
+
+  <TextView
+      android:id="@+id/positionTotalValue"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:textSize="@dimen/large_text"
+      tools:text="5.0 x 100 = $500.00"
+      />
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:id="@+id/remove_position"
+      android:layout_gravity="center_vertical"
+      android:src="@drawable/ic_close"
+      />
+
+</LinearLayout>

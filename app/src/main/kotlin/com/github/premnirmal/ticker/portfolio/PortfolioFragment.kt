@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
@@ -98,16 +97,34 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onClickQuoteOptions(view: View, quote: Quote, position: Int) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
+    val moveToWidgetItem = popupWindow.menu.findItem(R.id.move_to_widget)
+    moveToWidgetItem.isEnabled = widgetId != AppWidgetManager.INVALID_APPWIDGET_ID
+        && holder.widgetDataProvider.getAppWidgetIds().size > 1
     popupWindow.setOnMenuItemClickListener { menuItem ->
       val itemId = menuItem.itemId
       when (itemId) {
-        R.id.positions -> {
-          val intent = Intent(activity, EditPositionActivity::class.java)
-          intent.putExtra(EditPositionActivity.TICKER, quote.symbol)
-          activity?.startActivity(intent)
-        }
         R.id.remove -> {
           promptRemove(quote, position)
+        }
+        R.id.move_to_widget -> {
+          val widgetDataProvider = holder.widgetDataProvider
+          val appWidgetIds = widgetDataProvider.getAppWidgetIds()
+          val widgetNames = appWidgetIds.map {
+            widgetDataProvider.dataForWidgetId(it).widgetName()
+          }.toTypedArray()
+          val currentWidgetIndex = appWidgetIds.indexOf(widgetId)
+          AlertDialog.Builder(activity)
+              .setSingleChoiceItems(widgetNames, currentWidgetIndex) { dialog, which ->
+                if (which != currentWidgetIndex) {
+                  widgetDataProvider.moveQuoteToDifferentWidget(widgetId, quote,
+                      appWidgetIds[which])
+                  stocksAdapter.remove(quote)
+                  holder.bus.post(RefreshEvent())
+                  dialog.dismiss()
+                }
+              }
+              .setTitle(R.string.select_widget)
+              .show()
         }
       }
       true
@@ -131,13 +148,15 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
         }
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+      savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    stockList.addItemDecoration(SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
+    stockList.addItemDecoration(
+        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
     val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
@@ -157,11 +176,11 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
-  internal fun update() {
+  private fun update() {
     stocksAdapter.refresh()
   }
 
-  private fun promptRemove(quote: Quote?, position: Int) {
+  private fun promptRemove(quote: Quote?, _position: Int) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
       AlertDialog.Builder(activity)

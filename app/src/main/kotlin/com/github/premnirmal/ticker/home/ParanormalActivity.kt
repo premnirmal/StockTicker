@@ -130,7 +130,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
       }
     }
 
-    fab_settings.setOnClickListener({ v ->
+    fab_settings.setOnClickListener { v ->
       if (!widgetDataProvider.hasWidget()) {
         val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
         openTickerSelector(v, widgetId)
@@ -141,7 +141,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
           showFABMenu()
         }
       }
-    })
+    }
 
     fab_add_stocks.setOnClickListener { v ->
       val appWidgetIds = widgetDataProvider.getAppWidgetIds()
@@ -264,7 +264,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     }
   }
 
-  internal fun fetch() {
+  private fun fetch() {
     if (!attemptingFetch) {
       if (isNetworkOnline()) {
         fetchCount++
@@ -296,7 +296,7 @@ class ParanormalActivity : BaseActivity(), PortfolioFragment.Callback {
     }
   }
 
-  internal fun update() {
+  private fun update() {
     adapter.notifyDataSetChanged()
     updateHeader()
     fetchCount = 0

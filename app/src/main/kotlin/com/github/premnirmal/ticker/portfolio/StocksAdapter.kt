@@ -56,7 +56,7 @@ class StocksAdapter constructor(
   override fun getItemViewType(position: Int): Int {
     val stock = quoteList[position]
     return when {
-      stock.isPosition -> TYPE_POSITION
+      stock.hasPositions() -> TYPE_POSITION
       else -> TYPE_STOCK
     }
   }

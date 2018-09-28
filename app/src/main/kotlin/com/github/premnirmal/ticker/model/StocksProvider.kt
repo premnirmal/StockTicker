@@ -14,6 +14,8 @@ import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.RobindahoodException
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -28,7 +30,6 @@ import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
 import java.util.ArrayList
-import java.util.Arrays
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -41,57 +42,26 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   companion object {
 
-    @Deprecated("Remove after version update")
-    private fun String.stringToPositions(): MutableList<Quote> {
-      val tickerListCSV = ArrayList(Arrays.asList(
-          *this.split("\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-      val stockList = ArrayList<Quote>()
-      var tickerFields: ArrayList<String>
-      var tmpQuote: Quote
-      for (tickerCSV in tickerListCSV) {
-        tickerFields = ArrayList(Arrays.asList(
-            *tickerCSV.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()))
-        if (tickerFields.size >= 4 && java.lang.Boolean.parseBoolean(tickerFields[1])) {
-          tmpQuote = Quote()
-          tmpQuote.isPosition = true
-          tmpQuote.symbol = tickerFields[0]
-          tmpQuote.positionPrice = java.lang.Float.parseFloat(tickerFields[2])
-          tmpQuote.positionShares = java.lang.Float.parseFloat(tickerFields[3])
-          stockList.add(tmpQuote)
-        }
-      }
-      return stockList
-    }
-
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
     private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
+    private const val HAS_MIGRATED_POSITIONS = "has_migrated_positions"
   }
 
-  @Inject
-  internal lateinit var api: StocksApi
-  @Inject
-  internal lateinit var context: Context
-  @Inject
-  internal lateinit var preferences: SharedPreferences
-  @Inject
-  internal lateinit var appPreferences: AppPreferences
-  @Inject
-  internal lateinit var bus: RxBus
-  @Inject
-  internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject
-  internal lateinit var alarmScheduler: AlarmScheduler
-  @Inject
-  internal lateinit var clock: AppClock
-  @Inject
-  internal lateinit var mainThreadHandler: Handler
-  @Inject
-  internal lateinit var storage: StocksStorage
+  @Inject internal lateinit var api: StocksApi
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var preferences: SharedPreferences
+  @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var alarmScheduler: AlarmScheduler
+  @Inject internal lateinit var clock: AppClock
+  @Inject internal lateinit var mainThreadHandler: Handler
+  @Inject internal lateinit var storage: StocksStorage
 
   private val tickerList: MutableList<String> = ArrayList()
-  private val quoteList: MutableList<Quote> = ArrayList()
-  private val positionList: MutableList<Quote> = ArrayList()
+  private val quoteList: MutableMap<String, Quote> = HashMap()
+  private val positionList: MutableMap<String, Position> = HashMap()
 
   private var lastFetched: Long = 0L
   private var nextFetch: Long = 0L
@@ -115,23 +85,43 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   private fun fetchLocal() {
-    synchronized(quoteList, {
+    synchronized(quoteList) {
       quoteList.clear()
-      quoteList.addAll(storage.readStocks())
+      val quotes = storage.readStocks()
+      for (quote in quotes) {
+        quoteList[quote.symbol] = quote
+      }
       positionList.clear()
-      positionList.addAll(storage.readPositions())
-    })
+      val hasMigratedPositions = preferences.getBoolean(HAS_MIGRATED_POSITIONS, false)
+      if (!hasMigratedPositions) {
+        val oldPositions = storage.readPositionsLegacy()
+        val newPositions = ArrayList<Position>()
+        for (quote in oldPositions) {
+          val position =
+            Position(quote.symbol, arrayListOf(Holding(quote.positionShares, quote.positionPrice)))
+          newPositions.add(position)
+          quoteList[quote.symbol]?.position = position
+        }
+        storage.savePositions(newPositions)
+        preferences.edit().putBoolean(HAS_MIGRATED_POSITIONS, true).apply()
+      }
+      val positions = storage.readPositionsNew()
+      for (position in positions) {
+        if (!position.holdings.isEmpty()) {
+          positionList[position.symbol] = position
+        }
+      }
+      save()
+    }
   }
 
   private fun save() {
-    synchronized(quoteList, {
-      preferences.edit()
-          .putLong(LAST_FETCHED, lastFetched)
-          .apply()
+    synchronized(quoteList) {
+      preferences.edit().putLong(LAST_FETCHED, lastFetched).apply()
       storage.saveTickers(tickerList)
-      storage.saveStocks(quoteList)
-      storage.savePositions(positionList)
-    })
+      storage.saveStocks(quoteList.values.toList())
+      storage.savePositions(positionList.values.toList())
+    }
   }
 
   private fun retryWithBackoff() {
@@ -176,80 +166,68 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   /////////////////////
 
   override fun hasTicker(ticker: String): Boolean {
-    synchronized(tickerList, {
+    synchronized(tickerList) {
       return tickerList.contains(ticker)
-    })
+    }
   }
 
   override fun fetch(): Observable<List<Quote>> {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
       return Observable.error<List<Quote>>(Exception("No symbols in portfolio"))
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
+          .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     } else {
-      return api.getStocks(tickerList)
-          .doOnSubscribe {
-            appPreferences.setRefreshing(true)
-            widgetDataProvider.broadcastUpdateAllWidgets()
-          }
-          .doOnNext { stocks ->
-            if (stocks.isEmpty()) {
-              bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-              throw RuntimeException("No symbols in portfolio")
-            } else {
-              synchronized(quoteList, {
-                tickerList.clear()
-                stocks.mapTo(tickerList) { it.symbol }
-                quoteList.clear()
-                for (stock in stocks) {
-                  if (positionList.contains(stock)) {
-                    val index = positionList.indexOf(stock)
-                    stock.isPosition = true
-                    stock.positionPrice = positionList[index].positionPrice
-                    stock.positionShares = positionList[index].positionShares
-                  }
-                  quoteList.add(stock)
-                }
-                lastFetched = api.lastFetched
-                save()
-              })
+      return api.getStocks(tickerList).doOnSubscribe {
+        appPreferences.setRefreshing(true)
+        widgetDataProvider.broadcastUpdateAllWidgets()
+      }.doOnNext { stocks ->
+        if (stocks.isEmpty()) {
+          bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+          throw IllegalStateException("No symbols in portfolio")
+        } else {
+          synchronized(quoteList) {
+            tickerList.clear()
+            stocks.mapTo(tickerList) { it.symbol }
+            quoteList.clear()
+            for (stock in stocks) {
+              stock.position = getPosition(stock.symbol)
+              quoteList[stock.symbol] = stock
             }
+            lastFetched = api.lastFetched
+            save()
           }
-          .doOnError { t ->
-            var errorPosted = false
-            appPreferences.setRefreshing(false)
-            if (t is CompositeException) {
-              for (exception in t.exceptions) {
-                if (exception is RobindahoodException) {
-                  exception.message?.let {
-                    if (!bus.post(ErrorEvent(it))) {
-                      mainThreadHandler.post {
-                        InAppMessage.showToast(context, it)
-                      }
-                      errorPosted = true
-                    }
+        }
+      }.doOnError { t ->
+        var errorPosted = false
+        appPreferences.setRefreshing(false)
+        if (t is CompositeException) {
+          for (exception in t.exceptions) {
+            if (exception is RobindahoodException) {
+              exception.message?.let {
+                if (!bus.post(ErrorEvent(it))) {
+                  mainThreadHandler.post {
+                    InAppMessage.showToast(context, it)
                   }
-                  break
+                  errorPosted = true
                 }
               }
-            } else {
-              Timber.e(t)
+              break
             }
-            if (!errorPosted) {
-              mainThreadHandler.post {
-                InAppMessage.showToast(context, R.string.refresh_failed)
-              }
-            }
-            retryWithBackoff()
           }
-          .doOnComplete {
-            appPreferences.setRefreshing(false)
-            exponentialBackoff.reset()
-            scheduleUpdate(true)
+        } else {
+          Timber.e(t)
+        }
+        if (!errorPosted) {
+          mainThreadHandler.post {
+            InAppMessage.showToast(context, R.string.refresh_failed)
           }
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
+        }
+        retryWithBackoff()
+      }.doOnComplete {
+        appPreferences.setRefreshing(false)
+        exponentialBackoff.reset()
+        scheduleUpdate(true)
+      }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
     }
   }
 
@@ -262,109 +240,88 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   override fun addStock(ticker: String): Collection<String> {
-    synchronized(quoteList, {
+    synchronized(quoteList) {
       if (!tickerList.contains(ticker)) {
         tickerList.add(ticker)
         val quote = Quote()
         quote.symbol = ticker
-        quoteList.add(quote)
+        quoteList[ticker] = quote
         save()
         fetch().subscribe(SimpleSubscriber())
       }
-    })
+    }
     return tickerList
   }
 
-  override fun addPosition(ticker: String, shares: Float, price: Float) {
-    synchronized(quoteList, {
-      var position = getStock(ticker)
+  override fun hasPosition(ticker: String): Boolean = positionList.contains(ticker)
+
+  override fun getPosition(ticker: String): Position? = positionList[ticker]
+
+  override fun addPosition(ticker: String, shares: Float, price: Float): Holding {
+    synchronized(quoteList) {
+      val quote = getStock(ticker)
+      var position = getPosition(ticker)
       if (position == null) {
-        position = Quote()
-        position.symbol = ticker
+        position = Position(ticker, ArrayList())
+        positionList[ticker] = position
       }
       if (!tickerList.contains(ticker)) {
         tickerList.add(ticker)
       }
-      if (shares > 0) {
-        position.isPosition = true
-        position.positionPrice = price
-        position.positionShares = shares
-        positionList.remove(position)
-        positionList.add(position)
-        quoteList.remove(position)
-        quoteList.add(position)
-        save()
-      } else {
-        removePosition(ticker)
-      }
-    })
+      val holding = Holding(shares, price)
+      position.add(holding)
+      quote?.position = position
+      save()
+      return holding
+    }
   }
 
-  override fun removePosition(ticker: String) {
-    synchronized(positionList, {
-      val position = getStock(ticker) ?: return
-      position.isPosition = false
-      position.positionPrice = 0f
-      position.positionShares = 0f
-      positionList.remove(position)
+  override fun removePosition(ticker: String, holding: Holding) {
+    synchronized(positionList) {
+      val position = getPosition(ticker)
+      val quote = getStock(ticker)
+      position?.remove(holding)
+      quote?.position = position
       save()
-    })
+    }
   }
 
   override fun addStocks(tickers: Collection<String>): Collection<String> {
-    synchronized(tickerList, {
-      val filterNot = tickers
-          .filterNot { tickerList.contains(it) }
-      filterNot
-          .forEach { tickerList.add(it) }
+    synchronized(tickerList) {
+      val filterNot = tickers.filterNot { tickerList.contains(it) }
+      filterNot.forEach { tickerList.add(it) }
       save()
       if (filterNot.isNotEmpty()) {
         fetch().subscribe(SimpleSubscriber())
       }
-    })
+    }
     return tickerList
   }
 
   override fun removeStock(ticker: String): Collection<String> {
-    synchronized(quoteList, {
+    synchronized(quoteList) {
       tickerList.remove(ticker)
-      val dummy = Quote()
-      dummy.symbol = ticker
-      quoteList.remove(dummy)
-      positionList.remove(dummy)
+      quoteList.remove(ticker)
+      positionList.remove(ticker)
       save()
       scheduleUpdate()
       return tickerList
-    })
+    }
   }
 
   override fun removeStocks(tickers: Collection<String>) {
-    synchronized(quoteList, {
+    synchronized(quoteList) {
       tickers.forEach {
         tickerList.remove(it)
-        val dummy = Quote()
-        dummy.symbol = it
-        quoteList.remove(dummy)
-        positionList.remove(dummy)
+        quoteList.remove(it)
+        positionList.remove(it)
       }
       save()
       scheduleUpdate()
-    })
+    }
   }
 
-  override fun getStock(ticker: String): Quote? {
-    synchronized(quoteList, {
-      val dummy = Quote()
-      dummy.symbol = ticker
-      val index = quoteList.indexOf(dummy)
-      return if (index >= 0) {
-        val stock = quoteList[index]
-        stock
-      } else {
-        null
-      }
-    })
-  }
+  override fun getStock(ticker: String): Quote? = quoteList[ticker]
 
   override fun getTickers(): List<String> = ArrayList(tickerList)
 

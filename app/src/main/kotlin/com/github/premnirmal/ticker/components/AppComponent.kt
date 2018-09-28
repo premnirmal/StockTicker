@@ -19,7 +19,6 @@ import com.github.premnirmal.ticker.network.UserAgentInterceptor
 import com.github.premnirmal.ticker.news.GraphActivity
 import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
-import com.github.premnirmal.ticker.portfolio.EditPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
@@ -50,8 +49,6 @@ interface AppComponent {
   fun inject(tickerSelectorActivity: TickerSelectorActivity)
 
   fun inject(addPositionActivity: AddPositionActivity)
-
-  fun inject(editPositionActivity: EditPositionActivity)
 
   fun inject(widgetSettingsActivity: WidgetSettingsActivity)
 

@@ -15,9 +15,9 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "io.fabric.tools:gradle:1.24.2"
+    classpath "io.fabric.tools:gradle:1.25.4"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.6.3"
+    classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
     classpath('com.github.ayvazj.gradle.plugins.androlate:androlate:0.1')
   }
 }
@@ -41,7 +41,6 @@ dexcount {
   verbose = false
   maxTreeDepth = Integer.MAX_VALUE
   teamCityIntegration = false
-  enableForInstantRun = false
   teamCitySlug = null
   runOnEachAssemble = true
   maxMethodCount = 64000
@@ -49,7 +48,7 @@ dexcount {
 
 android {
   compileSdkVersion 28
-  buildToolsVersion '27.0.3'
+  buildToolsVersion '28.0.2'
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -152,7 +151,7 @@ kapt {
 }
 
 ext {
-  SUPPORT_LIBRARY_VERSION = "28.0.0-alpha1"
+  SUPPORT_LIBRARY_VERSION = "28.0.0"
   DAGGER_VERSION = "2.7"
   DEXMAKER_VERSION = "1.4"
   MOCKITO_VERSION = "2.9.0"
@@ -166,6 +165,8 @@ ext {
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+  implementation "com.android.support:multidex:1.0.3"
 
   implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
   implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
@@ -190,11 +191,11 @@ dependencies {
   implementation "com.trello.rxlifecycle2:rxlifecycle-android:2.0.1"
   implementation "com.trello.rxlifecycle2:rxlifecycle-kotlin:2.0.1"
 
-  implementation "com.jakewharton.threetenabp:threetenabp:1.0.5"
+  implementation "com.jakewharton.threetenabp:threetenabp:1.1.0"
 
   implementation "com.nbsp:library:1.6"
   implementation "uk.co.chrisjenx:calligraphy:2.2.0"
-  implementation "com.jakewharton.timber:timber:4.6.1"
+  implementation "com.jakewharton.timber:timber:4.7.1"
   implementation "saschpe.android:customtabs:1.1.1"
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
@@ -210,6 +211,7 @@ dependencies {
   testImplementation "junit:junit:$JUNIT_VERSION"
   testImplementation "org.assertj:assertj-core:3.8.0"
   testImplementation "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"
+  testImplementation "org.robolectric:shadows-multidex:$ROBOLECTRIC_VERSION"
   testImplementation "com.android.support.test:runner:$RUNNER_VERSION"
   testImplementation "com.android.support.test:rules:$RUNNER_VERSION"
   testImplementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
@@ -219,8 +221,8 @@ dependencies {
   testImplementation("com.android.support.test:runner:$RUNNER_VERSION") {
     exclude group: "com.android.support", module: "support-annotations"
   }
-  testImplementation "org.threeten:threetenbp:1.3.6"
-  testImplementation "com.android.tools:testutils:26.1.3"
+  testImplementation "org.threeten:threetenbp:1.3.7"
+  testImplementation "com.android.tools:testutils:26.2.0"
   testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
   androidTestImplementation "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
   androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$DEXMAKER_VERSION"
@@ -231,4 +233,8 @@ dependencies {
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation "org.khronos:opengl-api:gl1.1-android-2.1_r1"
+}
+
+configurations.all {
+  resolutionStrategy.force 'org.objenesis:objenesis:2.5.1'
 }

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Crashfix en 4.0</item>
-    <item>Se corrigió el bloqueo en Oreo y arriba</item>
-    <item>Eliminación de ticker fijo de todos los widgets</item>
+    <item>¡Ahora puede agregar múltiples posiciones!</item>
   </string-array>
 </resources>

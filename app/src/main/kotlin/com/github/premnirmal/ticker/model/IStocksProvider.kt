@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.model
 
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import io.reactivex.Observable
 
@@ -34,7 +36,11 @@ interface IStocksProvider {
 
   fun addStocks(tickers: Collection<String>): Collection<String>
 
-  fun addPosition(ticker: String, shares: Float, price: Float)
+  fun hasPosition(ticker: String): Boolean
 
-  fun removePosition(ticker: String)
+  fun getPosition(ticker: String): Position?
+
+  fun addPosition(ticker: String, shares: Float, price: Float): Holding
+
+  fun removePosition(ticker: String, holding: Holding)
 }
