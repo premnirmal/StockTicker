@@ -13,7 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.base.LifeCycleDelegate
+import com.github.premnirmal.ticker.base.ParentFragmentDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
@@ -34,9 +34,9 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
+class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
 
-  interface Callback {
+  interface Parent {
     fun onDragStarted()
     fun onDragEnded()
   }
@@ -80,7 +80,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   private lateinit var holder: InjectionHolder
-  private var callback: Callback by LifeCycleDelegate(this, this)
+  private val parent: Parent by ParentFragmentDelegate(this)
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -104,7 +104,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
       val itemId = menuItem.itemId
       when (itemId) {
         R.id.remove -> {
-          promptRemove(quote, position)
+          promptRemove(quote)
         }
         R.id.move_to_widget -> {
           val widgetDataProvider = holder.widgetDataProvider
@@ -143,7 +143,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     update()
     bind(holder.bus.forEventType(RefreshEvent::class.java))
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { _ ->
+        .subscribe {
           update()
         }
   }
@@ -164,8 +164,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     itemTouchHelper = ItemTouchHelper(callback)
     itemTouchHelper?.attachToRecyclerView(stockList)
 
-    savedInstanceState?.let {
-      val listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
+    savedInstanceState?.let { state ->
+      val listViewState = state.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
       listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
     }
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -180,7 +180,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     stocksAdapter.refresh()
   }
 
-  private fun promptRemove(quote: Quote?, _position: Int) {
+  private fun promptRemove(quote: Quote?) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
       AlertDialog.Builder(activity)
@@ -206,7 +206,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-    callback.onDragStarted()
+    parent.onDragStarted()
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     if (widgetData.autoSortEnabled()) {
       widgetData.setAutoSort(false)
@@ -219,6 +219,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStopDrag() {
-    callback.onDragEnded()
+    parent.onDragEnded()
   }
 }

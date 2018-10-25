@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.components
 import android.content.Context
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
+import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
@@ -22,7 +23,7 @@ import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
-import com.github.premnirmal.ticker.settings.SettingsActivity
+import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
@@ -44,7 +45,7 @@ interface AppComponent {
 
   fun inject(paranormalActivity: ParanormalActivity)
 
-  fun inject(settingsActivity: SettingsActivity)
+  fun inject(settingsFragment: SettingsFragment)
 
   fun inject(tickerSelectorActivity: TickerSelectorActivity)
 
@@ -105,6 +106,8 @@ interface AppComponent {
   fun inject(holder: PortfolioFragment.InjectionHolder)
 
   fun inject(homeAdapter: HomePagerAdapter)
+
+  fun inject(homeFragment: HomeFragment)
 
   fun inject(stocksAdapter: StocksAdapter)
 

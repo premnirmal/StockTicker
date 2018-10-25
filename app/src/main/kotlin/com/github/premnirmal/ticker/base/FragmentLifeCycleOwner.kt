@@ -1,39 +1,49 @@
 package com.github.premnirmal.ticker.base
 
+import android.app.Activity
 import android.support.v4.app.Fragment
 import com.trello.rxlifecycle2.android.FragmentEvent
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
+import kotlin.properties.ReadOnlyProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 interface FragmentLifeCycleOwner {
   val lifecycle: BehaviorSubject<FragmentEvent>
+  fun getActivity(): Activity?
+  fun getParentFragment(): Fragment?
 }
 
-class LifeCycleDelegate<T>(lifecycleParent: FragmentLifeCycleOwner, frag: Fragment) : ReadWriteProperty<Fragment, T> {
+class ParentFragmentDelegate<T>(lifecycleParent: FragmentLifeCycleOwner) :
+    LifeCycleDelegate<T>(lifecycleParent) {
+  override fun getParent(owner: FragmentLifeCycleOwner): T? = owner.getParentFragment() as? T
+}
+
+class ParentActivityDelegate<T>(lifecycleParent: FragmentLifeCycleOwner) :
+    LifeCycleDelegate<T>(lifecycleParent) {
+  override fun getParent(owner: FragmentLifeCycleOwner): T? = owner.getActivity() as? T
+}
+
+abstract class LifeCycleDelegate<T>(lifecycleParent: FragmentLifeCycleOwner) :
+    ReadOnlyProperty<Fragment, T> {
 
   private var value: T? = null
-  private var fragment: Fragment? = null
 
   init {
-    fragment = frag
     lifecycleParent.lifecycle.subscribe {
       Timber.d("Event: ${it.name}")
       if (it === FragmentEvent.ATTACH) {
-        value = fragment!!.activity as T?
+        value = getParent(lifecycleParent)
       } else if (it === FragmentEvent.DETACH) {
         value = null
-        fragment = null
       }
     }
   }
 
+  abstract fun getParent(owner: FragmentLifeCycleOwner): T?
+
   override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
     return value!!
-  }
-
-  override fun setValue(thisRef: Fragment, property: KProperty<*>, value: T) {
-    this.value = value
   }
 }

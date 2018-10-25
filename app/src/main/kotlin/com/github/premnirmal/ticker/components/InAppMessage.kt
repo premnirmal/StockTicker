@@ -6,19 +6,12 @@ import android.support.design.widget.Snackbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import com.github.premnirmal.ticker.StocksApp.Companion.getNavigationBarHeight
-import com.github.premnirmal.ticker.base.BaseActivity.Companion.hasNavBar
-import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.tickerwidget.R
 
 /**
  * Created by premnirmal on 2/26/16.
  */
 object InAppMessage {
-
-  private fun Activity.shouldAddBottomPadding(): Boolean {
-    return hasNavBar() && this is ParanormalActivity
-  }
 
   private fun Activity.getRootView(): View =
       (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0)
@@ -42,8 +35,7 @@ object InAppMessage {
     if (activity == null) {
       return
     }
-    val snackbar = createSnackbar(activity.getRootView(), message,
-        activity.shouldAddBottomPadding())
+    val snackbar = createSnackbar(activity.getRootView(), message)
     snackbar.show()
   }
 
@@ -52,22 +44,15 @@ object InAppMessage {
     if (activity == null) {
       return
     }
-    val snackbar = createSnackbar(activity.getRootView(), message,
-        activity.shouldAddBottomPadding())
+    val snackbar = createSnackbar(activity.getRootView(), message)
     snackbar.setAction(actionText, actionClick)
     snackbar.show()
   }
 
-  private fun createSnackbar(view: View, message: CharSequence,
-      padBottom: Boolean = false): Snackbar {
+  private fun createSnackbar(view: View, message: CharSequence): Snackbar {
     val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
     val snackBarView = snackbar.view
     snackBarView.setBackgroundColor(getSnackbarColor(view.context))
-    if (padBottom) {
-      snackBarView.setPadding(snackBarView.paddingLeft, snackBarView.paddingTop,
-          snackBarView.paddingRight,
-          snackBarView.paddingBottom + snackBarView.context.getNavigationBarHeight())
-    }
     return snackbar
   }
 

@@ -48,7 +48,7 @@ dexcount {
 
 android {
   compileSdkVersion 28
-  buildToolsVersion '28.0.2'
+  buildToolsVersion '28.0.3'
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()

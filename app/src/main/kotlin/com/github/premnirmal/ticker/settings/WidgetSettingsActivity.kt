@@ -19,9 +19,14 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
+import com.github.premnirmal.ticker.EXTRA_CENTER_X
+import com.github.premnirmal.ticker.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.openTickerSelector
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider

@@ -16,6 +16,8 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver
+import com.github.premnirmal.ticker.EXTRA_CENTER_X
+import com.github.premnirmal.ticker.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -24,6 +26,7 @@ import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.Callback
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+  <item
+      android:id="@+id/action_portfolio"
+      android:title="@string/action_portfolio"
+      android:icon="@drawable/ic_portfolio"
+      app:showAsAction="always"/>
+  <item
+      android:id="@+id/action_widgets"
+      android:title="@string/action_widgets"
+      android:icon="@drawable/ic_widget"
+      app:showAsAction="always"/>
+  <item
+      android:id="@+id/action_settings"
+      android:title="@string/action_settings"
+      android:icon="@drawable/ic_settings"
+      app:showAsAction="always"/>
+</menu>
