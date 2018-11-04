@@ -1,8 +1,5 @@
 package com.github.premnirmal.ticker.settings
 
-import android.animation.Animator
-import android.animation.Animator.AnimatorListener
-import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
@@ -10,28 +7,19 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.support.annotation.ArrayRes
-import android.support.annotation.RequiresApi
 import android.view.View
 import android.view.View.OnClickListener
-import android.view.ViewAnimationUtils
-import android.view.ViewTreeObserver
-import com.github.premnirmal.ticker.EXTRA_CENTER_X
-import com.github.premnirmal.ticker.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.openTickerSelector
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_widget_settings.activity_root
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_add_stock
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_autosort
 import kotlinx.android.synthetic.main.activity_widget_settings.setting_autosort_checkbox
@@ -59,14 +47,9 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   internal var widgetId = 0
-  internal var shouldPerformTransition = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    shouldPerformTransition = intent.hasExtra(EXTRA_CENTER_X) && intent.hasExtra(EXTRA_CENTER_Y)
-    if (shouldPerformTransition) {
-      overridePendingTransition(0, 0)
-    }
     Injector.appComponent.inject(this)
     widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
@@ -97,43 +80,20 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     arrayOf(setting_add_stock, setting_widget_name, setting_layout_type,
         setting_background, setting_text_color, setting_bold, setting_autosort)
         .forEach { it.setOnClickListener(this@WidgetSettingsActivity) }
-
-    if (savedInstanceState == null && shouldPerformTransition &&
-        VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      activity_root.visibility = View.INVISIBLE
-
-      if (activity_root.viewTreeObserver.isAlive) {
-        activity_root.viewTreeObserver
-            .addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-              @RequiresApi(VERSION_CODES.LOLLIPOP)
-              override fun onGlobalLayout() {
-                if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-                  activity_root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                } else {
-                  activity_root.viewTreeObserver.removeGlobalOnLayoutListener(this)
-                }
-                doCircularReveal()
-              }
-            })
-      }
-    }
   }
 
-  override fun onClick(v: View?) {
+  override fun onClick(v: View) {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    when (v?.id) {
-      R.id.setting_add_stock -> {
-        openTickerSelector(v, widgetId)
-      }
+    when (v.id) {
       R.id.setting_widget_name -> {
         v.setOnClickListener(null)
-        (v as SettingsTextView).setIsEditable(true, { s ->
+        (v as SettingsTextView).setIsEditable(true) { s ->
           widgetData.setWidgetName(s)
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
           InAppMessage.showMessage(this, R.string.widget_name_updated)
-        })
+        }
       }
       R.id.setting_layout_type -> {
         showDialogPreference(R.array.layout_types,
@@ -220,35 +180,5 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
 
   private fun setAutoSortSetting(widgetData: WidgetData) {
     setting_autosort_checkbox.isChecked = widgetData.autoSortEnabled()
-  }
-
-  override fun finishAfterTransition() {
-    if (shouldPerformTransition && VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      doCircularReveal(true, object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animation: Animator?) {
-          activity_root.visibility = View.INVISIBLE
-          finish()
-          overridePendingTransition(0, 0)
-        }
-      })
-    } else {
-      super.finishAfterTransition()
-    }
-  }
-
-  @RequiresApi(VERSION_CODES.LOLLIPOP)
-  internal fun doCircularReveal(reverse: Boolean = false, listener: AnimatorListener? = null) {
-    val cx = intent.getIntExtra(EXTRA_CENTER_X, resources.displayMetrics.widthPixels)
-    val cy = intent.getIntExtra(EXTRA_CENTER_Y, resources.displayMetrics.heightPixels)
-    val finalRadius = Math.max(activity_root.width, activity_root.height)
-    val circularRevealAnim = ViewAnimationUtils
-        .createCircularReveal(activity_root, cx, cy,
-            if (reverse) finalRadius.toFloat() else 0.toFloat(),
-            if (reverse) 0.toFloat() else finalRadius.toFloat())
-    circularRevealAnim.duration = resources.getInteger(
-        android.R.integer.config_mediumAnimTime).toLong()
-    activity_root.visibility = View.VISIBLE
-    listener?.let { circularRevealAnim.addListener(it) }
-    circularRevealAnim.start()
   }
 }

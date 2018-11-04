@@ -4,14 +4,11 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.EXTRA_CENTER_X
-import com.github.premnirmal.ticker.EXTRA_CENTER_Y
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.base.ParentActivityDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -22,10 +19,8 @@ import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.openTickerSelector
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
-import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -54,6 +49,8 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
   interface Parent {
     fun showWhatsNew()
     fun showTutorial()
+    fun openWidgetSettings(widgetId: Int)
+    fun openSearch(widgetId: Int)
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
@@ -119,10 +116,10 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
       }
     }
 
-    fab_settings.setOnClickListener { v ->
+    fab_settings.setOnClickListener {
       if (!widgetDataProvider.hasWidget()) {
         val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-        activity!!.openTickerSelector(v, widgetId)
+        parent.openWidgetSettings(widgetId)
       } else {
         if (isFABOpen) {
           closeFABMenu()
@@ -132,36 +129,25 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
       }
     }
 
-    fab_add_stocks.setOnClickListener { v ->
+    fab_add_stocks.setOnClickListener {
       val appWidgetIds = widgetDataProvider.getAppWidgetIds()
       if (appWidgetIds.isNotEmpty()) {
         val widgetId = appWidgetIds[view_pager!!.currentItem]
-        activity!!.openTickerSelector(v, widgetId)
+        parent.openSearch(widgetId)
       }
     }
 
-    fab_edit_widget.setOnClickListener { v ->
+    fab_edit_widget.setOnClickListener {
       val appWidgetIds = widgetDataProvider.getAppWidgetIds()
       if (appWidgetIds.isNotEmpty()) {
         val widgetId = appWidgetIds[view_pager!!.currentItem]
-        openWidgetSettings(v, widgetId)
+        parent.openWidgetSettings(widgetId)
       }
     }
 
     fab_bg.setOnClickListener {
       closeFABMenu()
     }
-  }
-
-  private fun openWidgetSettings(v: View, widgetId: Int) {
-    val intent = WidgetSettingsActivity.launchIntent(activity!!, widgetId)
-    val rect = Rect()
-    v.getGlobalVisibleRect(rect)
-    val centerX = (rect.right - ((rect.right - rect.left) / 2))
-    val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
-    intent.putExtra(EXTRA_CENTER_X, centerX)
-    intent.putExtra(EXTRA_CENTER_Y, centerY)
-    startActivity(intent)
   }
 
   private fun showFABMenu() {

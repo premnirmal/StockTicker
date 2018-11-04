@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -29,6 +30,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   private var rateDialogShown = false
 
@@ -53,6 +55,11 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
       showWhatsNew()
     }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    bottom_navigation.menu.findItem(R.id.action_widgets).isEnabled = widgetDataProvider.hasWidget()
   }
 
   override fun onBackPressed() {
@@ -128,5 +135,13 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     showDialog(
         getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), stringBuilder.toString()
     )
+  }
+
+  override fun openWidgetSettings(widgetId: Int) {
+    bottom_navigation.selectedItemId = R.id.action_widgets
+  }
+
+  override fun openSearch(widgetId: Int) {
+    bottom_navigation.selectedItemId = R.id.action_search
   }
 }

@@ -24,7 +24,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
-import kotlinx.android.synthetic.main.fragment_search.toolbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -47,9 +46,6 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    toolbar.setNavigationOnClickListener {
-      activity!!.onBackPressed()
-    }
     adapter = SuggestionsAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)
     recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
@@ -111,6 +107,6 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
 
   override fun onSuggestionClick(suggestion: Suggestion) {
     val ticker = suggestion.symbol
-    
+
   }
 }
