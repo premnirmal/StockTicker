@@ -38,11 +38,6 @@
       </intent-filter>
     </activity>
     <activity
-        android:name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity"
-        android:label="@string/add_ticker"
-        android:theme="@style/TickerSelectorActivityTheme"
-        android:windowSoftInputMode="adjustResize"/>
-    <activity
         android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
         android:label="@string/add_position"
         android:screenOrientation="portrait"

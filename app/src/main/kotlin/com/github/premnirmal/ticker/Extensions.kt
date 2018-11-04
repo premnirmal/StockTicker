@@ -7,16 +7,13 @@ import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
-import android.view.View
 import android.view.ViewConfiguration
-import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
 
 fun Drawable.toBitmap(): Bitmap {
   if (this is BitmapDrawable) {
@@ -44,21 +41,6 @@ fun Context.getStatusBarHeight(): Int {
     0
   }
   return result
-}
-
-
-const val EXTRA_CENTER_X = "centerX"
-const val EXTRA_CENTER_Y = "centerY"
-
-fun Activity.openTickerSelector(v: View, widgetId: Int) {
-  val intent = TickerSelectorActivity.launchIntent(this, widgetId)
-  val rect = Rect()
-  v.getGlobalVisibleRect(rect)
-  val centerX = (rect.right - ((rect.right - rect.left) / 2))
-  val centerY = (rect.bottom - ((rect.bottom - rect.top) / 2))
-  intent.putExtra(EXTRA_CENTER_X, centerX)
-  intent.putExtra(EXTRA_CENTER_Y, centerY)
-  startActivity(intent)
 }
 
 fun Activity.showDialog(message: String, listener: OnClickListener) {

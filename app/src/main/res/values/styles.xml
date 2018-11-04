@@ -32,8 +32,6 @@
 
   <style name="WidgetSettingsActivityTheme" parent="TranslucentTheme"/>
 
-  <style name="TickerSelectorActivityTheme" parent="TranslucentTheme"/>
-
   <style name="NewsFeedActivityTheme" parent="AppTheme"/>
 
   <style name="GraphActivityTheme" parent="AppTheme"/>
@@ -84,7 +82,7 @@
   </style>
 
   <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
-    <item name="android:textSize">34sp</item>
+    <item name="android:textSize">32sp</item>
   </style>
 
   <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">

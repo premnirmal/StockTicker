@@ -23,6 +23,7 @@
   <string name="import_desc">Import quotes from a comma separated .txt file</string>
   <string name="action_portfolio">Portfolio</string>
   <string name="action_widgets">Widgets</string>
+  <string name="action_search">Search</string>
   <string name="action_settings">Settings</string>
   <string name="app_settings">App Settings</string>
   <string name="news_feed">News Feed</string>

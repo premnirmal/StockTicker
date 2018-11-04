@@ -9,6 +9,7 @@ import android.view.MenuItem
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetsFragment
@@ -24,17 +25,19 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     HomeFragment.Parent {
 
   companion object {
-    const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+    private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
 
-  private var dialogShown = false
+  private var rateDialogShown = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
     Injector.appComponent.inject(this)
+
+    savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
 
@@ -59,12 +62,12 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
-    outState.putBoolean(DIALOG_SHOWN, dialogShown)
+    outState.putBoolean(DIALOG_SHOWN, rateDialogShown)
     super.onSaveInstanceState(outState)
   }
 
   private fun maybeAskToRate(): Boolean {
-    if (!dialogShown && appPreferences.shouldPromptRate()) {
+    if (!rateDialogShown && appPreferences.shouldPromptRate()) {
       Builder(this).setTitle(R.string.like_our_app).setMessage(R.string.please_rate)
           .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
@@ -73,7 +76,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
           }.setNegativeButton(R.string.later) { dialog, _ ->
             dialog.dismiss()
           }.create().show()
-      dialogShown = true
+      rateDialogShown = true
       return true
     }
     return false
@@ -93,6 +96,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     val fragment = when (item.itemId) {
       R.id.action_portfolio -> HomeFragment()
       R.id.action_widgets -> WidgetsFragment()
+      R.id.action_search -> SearchFragment()
       R.id.action_settings -> SettingsFragment()
       else -> {
         return false

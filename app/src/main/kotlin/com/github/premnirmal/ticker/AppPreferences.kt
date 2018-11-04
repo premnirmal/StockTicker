@@ -49,19 +49,16 @@ class AppPreferences @Inject constructor() {
   }
 
   fun startTime(): IntArray {
-    val startTimeString = sharedPreferences.getString(START_TIME, "09:30")
+    val startTimeString = sharedPreferences.getString(START_TIME, "09:30")!!
     return timeAsIntArray(startTimeString)
   }
 
   fun endTime(): IntArray {
-    val endTimeString = sharedPreferences.getString(END_TIME, "16:00")
+    val endTimeString = sharedPreferences.getString(END_TIME, "16:00")!!
     return timeAsIntArray(endTimeString)
   }
 
-  fun isRefreshing(): Boolean {
-    val isRefreshing = sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
-    return isRefreshing
-  }
+  fun isRefreshing() = sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
 
   fun setRefreshing(refreshing: Boolean) {
     sharedPreferences.edit().putBoolean(WIDGET_REFRESHING, refreshing).apply()
@@ -79,7 +76,7 @@ class AppPreferences @Inject constructor() {
     sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
   }
 
-  fun hasUserAlreadyRated(): Boolean = sharedPreferences.getBoolean(DID_RATE, false)
+  fun hasUserAlreadyRated() = sharedPreferences.getBoolean(DID_RATE, false)
 
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
       !hasUserAlreadyRated() && (random.nextInt() % 4 == 0)

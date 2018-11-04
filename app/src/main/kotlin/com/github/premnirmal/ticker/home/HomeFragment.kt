@@ -4,7 +4,6 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -57,7 +56,6 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
     fun showTutorial()
   }
 
-  @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var appPreferences: AppPreferences

@@ -22,7 +22,7 @@ import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
-import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
+import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.widget.RefreshReceiver
@@ -46,8 +46,6 @@ interface AppComponent {
   fun inject(paranormalActivity: ParanormalActivity)
 
   fun inject(settingsFragment: SettingsFragment)
-
-  fun inject(tickerSelectorActivity: TickerSelectorActivity)
 
   fun inject(addPositionActivity: AddPositionActivity)
 
@@ -108,6 +106,8 @@ interface AppComponent {
   fun inject(homeAdapter: HomePagerAdapter)
 
   fun inject(homeFragment: HomeFragment)
+
+  fun inject(fragment: SearchFragment)
 
   fun inject(stocksAdapter: StocksAdapter)
 
