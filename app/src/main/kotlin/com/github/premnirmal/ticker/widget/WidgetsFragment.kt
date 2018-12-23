@@ -1,8 +1,8 @@
 package com.github.premnirmal.ticker.widget
 
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,8 +24,12 @@ class WidgetsFragment: BaseFragment(), WidgetClickListener {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     adapter = WidgetListAdapter(this)
-    recycler_view.layoutManager = LinearLayoutManager(activity)
-    recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+    recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+    recycler_view.addItemDecoration(
+        androidx.recyclerview.widget.DividerItemDecoration(
+            activity, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
+        )
+    )
     recycler_view.adapter = adapter
   }
 

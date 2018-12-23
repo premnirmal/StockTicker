@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.github.premnirmal.ticker.network.data.Quote
@@ -12,7 +12,7 @@ import com.github.premnirmal.tickerwidget.R.color
 /**
  * Created by premnirmal on 2/29/16.
  */
-abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView),
+abstract class PortfolioVH(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView),
     ItemTouchHelperViewHolder {
 
   protected val positiveColor: Int = itemView.resources.getColor(color.positive_green)

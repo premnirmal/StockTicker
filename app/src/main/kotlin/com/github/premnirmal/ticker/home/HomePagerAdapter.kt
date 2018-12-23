@@ -1,15 +1,12 @@
 package com.github.premnirmal.ticker.home
 
 import android.appwidget.AppWidgetManager
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
-class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+class HomePagerAdapter(fm: androidx.fragment.app.FragmentManager) : androidx.fragment.app.FragmentPagerAdapter(fm) {
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
@@ -17,7 +14,7 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     Injector.appComponent.inject(this)
   }
 
-  override fun getItem(position: Int): Fragment {
+  override fun getItem(position: Int): androidx.fragment.app.Fragment {
     val appWidgetIds = appWidgetIds()
     return if (appWidgetIds.isEmpty()) {
       PortfolioFragment.newInstance()

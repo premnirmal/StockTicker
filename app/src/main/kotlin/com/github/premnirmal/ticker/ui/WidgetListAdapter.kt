@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.ui
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,7 @@ import com.github.premnirmal.tickerwidget.R
 import javax.inject.Inject
 
 class WidgetListAdapter(private val listener: WidgetClickListener) :
-    RecyclerView.Adapter<WidgetVH>() {
+    androidx.recyclerview.widget.RecyclerView.Adapter<WidgetVH>() {
 
   interface WidgetClickListener {
     fun onWidgetClick(widgetId: Int)
@@ -37,7 +37,7 @@ class WidgetListAdapter(private val listener: WidgetClickListener) :
     holder.update(data, listener)
   }
 
-  class WidgetVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+  class WidgetVH(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
     fun update(data: WidgetData, listener: WidgetClickListener) {
 

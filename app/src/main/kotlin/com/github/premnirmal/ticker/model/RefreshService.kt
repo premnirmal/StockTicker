@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.model
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.os.Build.VERSION_CODES
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.network.SimpleSubscriber

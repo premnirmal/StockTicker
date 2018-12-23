@@ -8,7 +8,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.ArrayRes
+import androidx.annotation.ArrayRes
 import android.view.View
 import android.view.View.OnClickListener
 import com.github.premnirmal.ticker.base.BaseActivity

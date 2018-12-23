@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
-import android.support.multidex.MultiDexApplication
+import androidx.multidex.MultiDexApplication
 import android.util.Base64
 import com.github.premnirmal.ticker.components.Analytics
 import com.github.premnirmal.ticker.components.AppComponent

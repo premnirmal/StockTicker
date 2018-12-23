@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import androidx.fragment.app.Fragment
 
 fun Drawable.toBitmap(): Bitmap {
   if (this is BitmapDrawable) {
@@ -49,5 +50,14 @@ fun Activity.showDialog(message: String): AlertDialog {
 
 fun Activity.showDialog(title: String, message: String): AlertDialog {
   return AlertDialog.Builder(this).setTitle(title).setMessage(message).setCancelable(false)
+      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+}
+
+fun Fragment.showDialog(message: String, listener: OnClickListener) {
+  AlertDialog.Builder(context!!).setMessage(message).setNeutralButton("OK", listener).show()
+}
+
+fun Fragment.showDialog(message: String): AlertDialog {
+  return AlertDialog.Builder(context!!).setMessage(message).setCancelable(false)
       .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
 }

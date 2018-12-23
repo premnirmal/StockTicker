@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.portfolio.search
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +14,7 @@ import java.util.ArrayList
 /**
  * Created by premnirmal on 2/26/16.
  */
-internal class SuggestionsAdapter(private val suggestionClickListener: SuggestionClickListener) : RecyclerView.Adapter<SuggestionVH>() {
+internal class SuggestionsAdapter(private val suggestionClickListener: SuggestionClickListener) : androidx.recyclerview.widget.RecyclerView.Adapter<SuggestionVH>() {
 
   private val suggestions: MutableList<Suggestion> = ArrayList()
 
@@ -49,7 +49,7 @@ internal class SuggestionsAdapter(private val suggestionClickListener: Suggestio
     holder.update(getItem(position))
   }
 
-  class SuggestionVH(itemView: View, private val suggestionClickListener: SuggestionClickListener) : RecyclerView.ViewHolder(itemView) {
+  class SuggestionVH(itemView: View, private val suggestionClickListener: SuggestionClickListener) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
     private val textView: TextView = itemView as TextView
     private var suggestion: Suggestion? = null

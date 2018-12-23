@@ -6,7 +6,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.support.annotation.RequiresApi
+import androidx.annotation.RequiresApi
 import timber.log.Timber
 
 @RequiresApi(VERSION_CODES.LOLLIPOP)

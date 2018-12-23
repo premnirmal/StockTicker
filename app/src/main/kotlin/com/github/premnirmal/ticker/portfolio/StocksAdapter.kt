@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +20,7 @@ class StocksAdapter constructor(
     private val widgetData: WidgetData,
     private val listener: StocksAdapter.QuoteClickListener,
     private val dragStartListener: OnStartDragListener)
-  : RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
+  : androidx.recyclerview.widget.RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
 
   interface QuoteClickListener {
     fun onClickQuoteOptions(view: View, quote: Quote, position: Int)

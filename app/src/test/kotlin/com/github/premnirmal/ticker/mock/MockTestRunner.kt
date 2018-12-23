@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.mock
 
 import android.app.Application
 import android.content.Context
-import android.support.test.runner.AndroidJUnitRunner
+import androidx.test.runner.AndroidJUnitRunner
 
 /**
  * Created by premnirmal on 3/30/17.
