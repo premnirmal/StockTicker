@@ -4,8 +4,8 @@ import android.app.AlertDialog.Builder
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import android.view.MenuItem
+import androidx.fragment.app.FragmentManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
@@ -16,6 +16,8 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.id
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_paranormal.bottom_navigation
 import javax.inject.Inject
 
@@ -23,10 +25,16 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    HomeFragment.Parent {
+    HomeFragment.Parent, FragmentManager.OnBackStackChangedListener {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+    private val FRAGMENT_MAP = mapOf<Class<*>, Int>(
+        HomeFragment::class.java to R.id.action_portfolio,
+        WidgetsFragment::class.java to R.id.action_widgets,
+        SearchFragment::class.java to R.id.action_search,
+        SettingsFragment::class.java to R.id.action_settings
+    )
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
@@ -44,8 +52,11 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     bottom_navigation.setOnNavigationItemSelectedListener(this)
 
     if (savedInstanceState == null) {
-      bottom_navigation.selectedItemId = R.id.action_portfolio
+      supportFragmentManager.beginTransaction().add(R.id.fragment_container, HomeFragment())
+          .commit()
     }
+
+    supportFragmentManager.addOnBackStackChangedListener(this)
 
     val tutorialShown = appPreferences.tutorialShown()
     if (!tutorialShown) {
@@ -63,8 +74,21 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   override fun onBackPressed() {
-    if (!maybeAskToRate()) {
+    val entryCount = supportFragmentManager.backStackEntryCount
+    if (entryCount > 0 || !maybeAskToRate()) {
       super.onBackPressed()
+    }
+  }
+
+  override fun onBackStackChanged() {
+    updateBottomNav()
+  }
+
+  private fun updateBottomNav() {
+    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+    val selectedItemId: Int? = FRAGMENT_MAP[currentFragment?.javaClass as Class<*>?]
+    if (selectedItemId != bottom_navigation.selectedItemId && selectedItemId != null) {
+      bottom_navigation.selectedItemId = selectedItemId
     }
   }
 
@@ -100,17 +124,24 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   // BottomNavigationView.OnNavigationItemSelectedListener
 
   override fun onNavigationItemSelected(item: MenuItem): Boolean {
-    val fragment = when (item.itemId) {
-      R.id.action_portfolio -> HomeFragment()
-      R.id.action_widgets -> WidgetsFragment()
-      R.id.action_search -> SearchFragment()
-      R.id.action_settings -> SettingsFragment()
-      else -> {
-        return false
+    val itemId = item.itemId
+    val currentFragment = supportFragmentManager.findFragmentById(id.fragment_container)
+    if (itemId != FRAGMENT_MAP[currentFragment?.javaClass as Class<*>?]) {
+      val fragment = when (itemId) {
+        id.action_portfolio -> HomeFragment()
+        id.action_widgets -> WidgetsFragment()
+        id.action_search -> SearchFragment()
+        id.action_settings -> SettingsFragment()
+        else -> {
+          return false
+        }
+      }
+
+      if (currentFragment?.javaClass != fragment.javaClass) {
+        supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
+            .addToBackStack(fragment.javaClass.name).commit()
       }
     }
-    supportFragmentManager.beginTransaction().replace(R.id.fragment_container, fragment)
-        .addToBackStack(fragment.javaClass.name).commit()
     return true
   }
 

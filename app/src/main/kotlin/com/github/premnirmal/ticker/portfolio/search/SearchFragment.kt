@@ -1,8 +1,6 @@
 package com.github.premnirmal.ticker.portfolio.search
 
 import android.os.Bundle
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -12,6 +10,7 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion

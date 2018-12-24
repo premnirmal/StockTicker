@@ -7,6 +7,7 @@
       app:defaultValue="1"
       app:entries="@array/font_sizes"
       app:entryValues="@array/font_sizes_values"
+      app:iconSpaceReserved="false"
       app:key="com.github.premnirmal.ticker.textsize"
       app:negativeButtonText="@null"
       app:positiveButtonText="@null"
@@ -16,6 +17,7 @@
       app:defaultValue="1"
       app:entries="@array/sync_periods"
       app:entryValues="@array/sync_periods_values"
+      app:iconSpaceReserved="false"
       app:key="UPDATE_INTERVAL"
       app:negativeButtonText="@null"
       app:positiveButtonText="@null"
@@ -23,43 +25,52 @@
 
   <com.github.premnirmal.ticker.settings.TimePreference
       app:defaultValue="09:30"
+      app:iconSpaceReserved="false"
       app:key="START_TIME"
       app:title="@string/start_time"/>
 
   <com.github.premnirmal.ticker.settings.TimePreference
       app:defaultValue="16:00"
+      app:iconSpaceReserved="false"
       app:key="END_TIME"
       app:title="@string/end_time"/>
 
   <Preference
+      app:iconSpaceReserved="false"
       app:key="SETTING_SHARE"
       app:selectable="true"
       app:title="@string/action_share"/>
 
   <Preference
+      app:iconSpaceReserved="false"
       app:key="SETTING_IMPORT"
       app:selectable="true"
       app:summary="@string/import_desc"
       app:title="@string/action_import"/>
 
   <Preference
+      app:iconSpaceReserved="false"
       app:key="SETTING_EXPORT"
       app:selectable="true"
       app:summary="@string/export_desc"
       app:title="@string/action_export"/>
 
   <Preference
+      app:iconSpaceReserved="false"
       app:key="SETTING_NUKE"
       app:selectable="true"
       app:title="@string/action_nuke"/>
 
   <Preference
+      app:iconSpaceReserved="false"
       app:key="SETTING_PRIVACY_POLICY"
       app:selectable="true"
       app:title="@string/privacy_policy"/>
 
-  <Preference
-      app:layout="@layout/preferences_footer"
+  <com.github.premnirmal.ticker.settings.FooterPreference
+      app:iconSpaceReserved="false"
       app:key="SETTING_FOOTER"
-      app:selectable="true"/>
+      app:layout="@layout/preferences_footer"
+      app:selectable="false"/>
+
 </androidx.preference.PreferenceScreen>

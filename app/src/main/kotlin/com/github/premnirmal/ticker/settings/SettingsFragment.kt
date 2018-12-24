@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.settings
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,7 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
+import android.widget.TimePicker
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.toBitmap
@@ -40,7 +42,8 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPermissionsResultCallback {
+class SettingsFragment : PreferenceFragmentCompat(),
+    ActivityCompat.OnRequestPermissionsResultCallback {
 
   companion object {
     private const val REQCODE_WRITE_EXTERNAL_STORAGE = 850
@@ -49,14 +52,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
     private const val REQCODE_FILE_WRITE = 853
   }
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
-  @Inject
-  internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject
-  internal lateinit var preferences: SharedPreferences
-  @Inject
-  internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var preferences: SharedPreferences
+  @Inject internal lateinit var appPreferences: AppPreferences
 
   override fun onPause() {
     super.onPause()
@@ -70,27 +69,34 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    val versionView = view.findViewById<TextView>(R.id.version)
-    val vName = "v${BuildConfig.VERSION_NAME}"
-    versionView.text = vName
+    view.setPadding(view.paddingLeft, context!!.getStatusBarHeight(), view.paddingRight, view.paddingBottom)
     setupSimplePreferencesScreen()
-    val githubLink = view.findViewById<View>(R.id.github_link)
-    githubLink.setOnClickListener {
-      val customTabsIntent = CustomTabsIntent.Builder()
-          .addDefaultShareMenuItem()
-          .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
-          .setShowTitle(true)
-          .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
-          .build()
-      CustomTabsHelper.addKeepAliveExtra(context, customTabsIntent.intent)
-      CustomTabsHelper.openCustomTab(context, customTabsIntent,
-          Uri.parse(resources.getString(R.string.checkout_open_source)), WebViewFallback()
-      )
-    }
   }
 
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
     setPreferencesFromResource(R.xml.prefs, rootKey)
+  }
+
+  override fun onDisplayPreferenceDialog(preference: Preference) {
+    if (preference.key == AppPreferences.START_TIME) {
+      val pref = preference as TimePreference
+      val dialog = TimePickerDialog(
+          context, TimeSelectedListener(pref, R.string.start_time_updated), pref.lastHour,
+          pref.lastMinute, true
+      )
+      dialog.setTitle(R.string.start_time)
+      dialog.show()
+    } else if (preference.key == AppPreferences.END_TIME) {
+      val pref = preference as TimePreference
+      val dialog = TimePickerDialog(
+          context, TimeSelectedListener(pref, R.string.end_time_updated), pref.lastHour,
+          pref.lastMinute, true
+      )
+      dialog.setTitle(R.string.end_time)
+      dialog.show()
+    } else {
+      super.onDisplayPreferenceDialog(preference)
+    }
   }
 
   /**
@@ -98,32 +104,24 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
    * device configuration dictates that a simplified, single-pane UI should be
    * shown.
    */
-  @SuppressLint("CommitPrefEdits")
-  private fun setupSimplePreferencesScreen() {
-    // In the simplified UI, fragments are not used at all and we instead
-    // use the older PreferenceActivity APIs.
-
-    // Add 'general' preferences.
-    addPreferencesFromResource(R.xml.prefs)
-
+  @SuppressLint("CommitPrefEdits") private fun setupSimplePreferencesScreen() {
     run {
-      val privacyPref = findPreference(AppPreferences.SETTING_PRIVACY_POLICY)
+      val privacyPref = findPreference<Preference>(AppPreferences.SETTING_PRIVACY_POLICY)
       privacyPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        val customTabsIntent = CustomTabsIntent.Builder()
-            .addDefaultShareMenuItem()
-            .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
-            .setShowTitle(true)
-            .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
-            .build()
+        val customTabsIntent = CustomTabsIntent.Builder().addDefaultShareMenuItem()
+            .setToolbarColor(this.resources.getColor(R.color.colorPrimary)).setShowTitle(true)
+            .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap()).build()
         CustomTabsHelper.addKeepAliveExtra(context!!, customTabsIntent.intent)
-        CustomTabsHelper.openCustomTab(context!!, customTabsIntent,
-            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback())
+        CustomTabsHelper.openCustomTab(
+            context!!, customTabsIntent,
+            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback()
+        )
         true
       }
     }
 
     run {
-      val nukePref = findPreference(AppPreferences.SETTING_NUKE)
+      val nukePref = findPreference<Preference>(AppPreferences.SETTING_NUKE)
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), DialogInterface.OnClickListener { _, _ ->
           val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
@@ -145,7 +143,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
     }
 
     run {
-      val exportPref = findPreference(AppPreferences.SETTING_EXPORT)
+      val exportPref = findPreference<Preference>(AppPreferences.SETTING_EXPORT)
       exportPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE)
@@ -157,7 +155,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
     }
 
     run {
-      val sharePref = findPreference(AppPreferences.SETTING_SHARE)
+      val sharePref = findPreference<Preference>(AppPreferences.SETTING_SHARE)
       sharePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE_SHARE)
@@ -169,7 +167,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
     }
 
     run {
-      val importPref = findPreference(AppPreferences.SETTING_IMPORT)
+      val importPref = findPreference<Preference>(AppPreferences.SETTING_IMPORT)
       importPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_READ_EXTERNAL_STORAGE)
@@ -190,8 +188,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().remove(AppPreferences.FONT_SIZE).putInt(AppPreferences.FONT_SIZE,
-              index).apply()
+          preferences.edit().remove(AppPreferences.FONT_SIZE).putInt(
+              AppPreferences.FONT_SIZE, index
+          ).apply()
           broadcastUpdateWidget()
           fontSizePreference.summary = fontSizePreference.entries[index]
           InAppMessage.showMessage(activity!!, R.string.text_size_updated_message)
@@ -270,16 +269,17 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
   }
 
   private fun needsPermissionGrant(): Boolean {
-    return Build.VERSION.SDK_INT >= 23 &&
-        ContextCompat.checkSelfPermission(activity!!,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+    return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
+        activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
+    ) != PackageManager.PERMISSION_GRANTED
   }
 
   private fun askForExternalStoragePermissions(reqCode: Int) {
-    ActivityCompat.requestPermissions(activity!!,
-        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE),
-        reqCode)
+    ActivityCompat.requestPermissions(
+        activity!!, arrayOf(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
+    ), reqCode
+    )
   }
 
   private fun exportAndShareTickers() {
@@ -301,13 +301,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
   }
 
   private fun launchImportIntent() {
-    MaterialFilePicker()
-        .withActivity(activity!!)
-        .withRequestCode(REQCODE_FILE_WRITE)
-        .withFilter(
-            Pattern.compile(
-            ".*\\.txt$")) // Filtering files and directories by file name using regexp
-        .start()
+    MaterialFilePicker().withSupportFragment(this).withRequestCode(REQCODE_FILE_WRITE)
+        // Filtering files and directories by file name using regexp
+        .withFilter(Pattern.compile(".*\\.txt$")).start()
   }
 
   private fun exportTickers() {
@@ -353,7 +349,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
   }
 
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-      grantResults: IntArray) {
+    grantResults: IntArray) {
     when (requestCode) {
       REQCODE_WRITE_EXTERNAL_STORAGE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -395,5 +391,27 @@ class SettingsFragment : PreferenceFragmentCompat(), ActivityCompat.OnRequestPer
       }
     }
     super.onActivityResult(requestCode, resultCode, data)
+  }
+
+  inner class TimeSelectedListener(private val preference: TimePreference,
+    private val messageRes: Int) : TimePickerDialog.OnTimeSetListener {
+
+    override fun onTimeSet(picker: TimePicker, hourOfDay: Int, minute: Int) {
+      val lastHour = picker.currentHour
+      val lastMinute = picker.currentMinute
+      val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
+      val minuteString = if (lastMinute < 10) "0$lastMinute" else lastMinute.toString()
+      val time = "$hourString:$minuteString"
+      val startTimez = appPreferences.timeAsIntArray(time)
+      val endTimez = appPreferences.endTime()
+      if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+        showDialog(getString(R.string.incorrect_time_update_error))
+      } else {
+        preferences.edit().putString(preference.key, time).apply()
+        preference.summary = time
+        stocksProvider.schedule()
+        InAppMessage.showMessage(activity!!, messageRes)
+      }
+    }
   }
 }
