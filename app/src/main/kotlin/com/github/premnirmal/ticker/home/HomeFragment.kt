@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.base.ParentActivityDelegate
@@ -16,6 +17,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
@@ -78,7 +80,7 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-
+    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     collapsingToolbarLayout.setCollapsedTitleTypeface(
         TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Regular.ttf")
     )
@@ -119,7 +121,7 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
     fab_settings.setOnClickListener {
       if (!widgetDataProvider.hasWidget()) {
         val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-        parent.openWidgetSettings(widgetId)
+        parent.openSearch(widgetId)
       } else {
         if (isFABOpen) {
           closeFABMenu()

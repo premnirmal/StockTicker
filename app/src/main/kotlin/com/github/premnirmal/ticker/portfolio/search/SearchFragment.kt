@@ -1,16 +1,20 @@
 package com.github.premnirmal.ticker.portfolio.search
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
-import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.hideKeyboard
+import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
@@ -30,6 +34,7 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
 
   @Inject internal lateinit var suggestionApi: SuggestionApi
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
   private var disposable: Disposable? = null
   private lateinit var adapter: SuggestionsAdapter
 
@@ -46,15 +51,15 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     adapter = SuggestionsAdapter(this)
-    recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
-    recycler_view.addItemDecoration(
-        androidx.recyclerview.widget.DividerItemDecoration(
-            activity, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
-        )
-    )
+    recycler_view.layoutManager = LinearLayoutManager(activity)
+    recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
     recycler_view.adapter = adapter
-
     search_view.addTextChangedListener(this)
+  }
+
+  override fun onPause() {
+    hideKeyboard(search_view)
+    super.onPause()
   }
 
   private fun addTickerToWidget(ticker: String, widgetId: Int) {
@@ -69,11 +74,11 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
   }
 
   override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
+    // Do nothing.
   }
 
   override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
+    // Do nothing.
   }
 
   override fun afterTextChanged(s: Editable) {
@@ -110,6 +115,22 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
 
   override fun onSuggestionClick(suggestion: Suggestion) {
     val ticker = suggestion.symbol
-
+    if (widgetDataProvider.hasWidget()) {
+      val widgetIds = widgetDataProvider.getAppWidgetIds()
+      if (widgetIds.size > 1) {
+        val widgets =
+          widgetIds.map { widgetDataProvider.dataForWidgetId(it).widgetName() }.toTypedArray()
+        AlertDialog.Builder(context!!).setTitle(R.string.select_widget)
+            .setItems(widgets) { dialog, which ->
+              val id = widgetIds[which]
+              addTickerToWidget(ticker, id)
+              dialog.dismiss()
+            }.create().show()
+      } else {
+        addTickerToWidget(ticker, widgetIds.first())
+      }
+    } else {
+      addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
+    }
   }
 }

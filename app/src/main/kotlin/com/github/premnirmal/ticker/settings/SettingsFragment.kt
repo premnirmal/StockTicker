@@ -23,7 +23,6 @@ import androidx.preference.PreferenceFragmentCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.toBitmap
@@ -69,7 +68,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    view.setPadding(view.paddingLeft, context!!.getStatusBarHeight(), view.paddingRight, view.paddingBottom)
     setupSimplePreferencesScreen()
   }
 

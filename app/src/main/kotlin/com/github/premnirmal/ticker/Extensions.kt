@@ -9,6 +9,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 
 fun Drawable.toBitmap(): Bitmap {
@@ -60,4 +62,9 @@ fun Fragment.showDialog(message: String, listener: OnClickListener) {
 fun Fragment.showDialog(message: String): AlertDialog {
   return AlertDialog.Builder(context!!).setMessage(message).setCancelable(false)
       .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+}
+
+fun Fragment.hideKeyboard(view: View) {
+  val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+  imm.hideSoftInputFromWindow(view.windowToken, 0)
 }

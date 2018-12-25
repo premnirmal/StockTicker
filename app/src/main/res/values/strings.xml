@@ -135,7 +135,7 @@
   <string name="one_year">1 Year</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Error loading graph</string>
-
+  <string name="widgets">Widgets</string>
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">How to add a widget</string>
   <string name="how_to">- Long-press an empty space on your home screen to bring up the menu\n\n- Now select the \'Widgets\' option.\n\n- Select the \'Stocks Widget\' item from the list of widgets.\n\n- You can add multiple widgets each with their own portfolio.</string>

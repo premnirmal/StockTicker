@@ -1,18 +1,18 @@
 package com.github.premnirmal.ticker.widget
 
 import android.os.Bundle
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.ui.WidgetListAdapter
 import com.github.premnirmal.ticker.ui.WidgetListAdapter.WidgetClickListener
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_widgets.recycler_view
 
-class WidgetsFragment: BaseFragment(), WidgetClickListener {
+class WidgetsFragment : BaseFragment(), WidgetClickListener {
 
   private lateinit var adapter: WidgetListAdapter
 
@@ -24,7 +24,7 @@ class WidgetsFragment: BaseFragment(), WidgetClickListener {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     adapter = WidgetListAdapter(this)
-    recycler_view.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(activity)
+    recycler_view.layoutManager = LinearLayoutManager(activity)
     recycler_view.addItemDecoration(
         androidx.recyclerview.widget.DividerItemDecoration(
             activity, androidx.recyclerview.widget.DividerItemDecoration.VERTICAL
@@ -34,6 +34,6 @@ class WidgetsFragment: BaseFragment(), WidgetClickListener {
   }
 
   override fun onWidgetClick(widgetId: Int) {
-
+    startActivity(WidgetSettingsActivity.launchIntent(context!!, widgetId))
   }
 }

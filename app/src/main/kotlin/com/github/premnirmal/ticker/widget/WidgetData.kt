@@ -46,7 +46,7 @@ class WidgetData {
   internal lateinit var widgetDataProvider: WidgetDataProvider
 
   private val position: Int
-  private val widgetId: Int
+  val widgetId: Int
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
 

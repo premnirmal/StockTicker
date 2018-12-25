@@ -11,6 +11,7 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
+import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
@@ -87,7 +88,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   private fun updateBottomNav() {
     val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
     val selectedItemId: Int? = FRAGMENT_MAP[currentFragment?.javaClass as Class<*>?]
-    if (selectedItemId != bottom_navigation.selectedItemId && selectedItemId != null) {
+    if (selectedItemId != null && selectedItemId != bottom_navigation.selectedItemId) {
       bottom_navigation.selectedItemId = selectedItemId
     }
   }
@@ -139,7 +140,10 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
       if (currentFragment?.javaClass != fragment.javaClass) {
         supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
-            .addToBackStack(fragment.javaClass.name).commit()
+            .setCustomAnimations(
+                android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_out,
+                android.R.anim.fade_in
+            ).addToBackStack(fragment.javaClass.name).commit()
       }
     }
     return true
@@ -170,6 +174,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   override fun openWidgetSettings(widgetId: Int) {
     bottom_navigation.selectedItemId = R.id.action_widgets
+    startActivity(WidgetSettingsActivity.launchIntent(this, widgetId))
   }
 
   override fun openSearch(widgetId: Int) {

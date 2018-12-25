@@ -12,6 +12,10 @@ import javax.inject.Singleton
 @Singleton
 class WidgetDataProvider {
 
+  companion object {
+    const val INVALID_WIDGET_ID = AppWidgetManager.INVALID_APPWIDGET_ID
+  }
+
   @Inject
   internal lateinit var widgetManager: AppWidgetManager
   @Inject

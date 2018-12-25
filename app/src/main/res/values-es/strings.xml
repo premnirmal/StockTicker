@@ -124,7 +124,7 @@
   <string name="one_year">1 año</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Error al cargar los datos del gráfico</string>
-
+  <string name="widgets">Widgets</string>
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">Cómo agregar un widget</string>
   <string name="how_to">- Mantenga pulsado un espacio en blanco en su pantalla de inicio para que aparezca el menú\n\n- Ahora seleccione la opción \'Widgets\'.\n\n- Seleccione el elemento \'Stocks Widget\' de la lista de widgets.\n\n- Puede agregar múltiples widgets, cada uno con su propio portafolio.</string>
