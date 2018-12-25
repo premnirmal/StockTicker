@@ -28,10 +28,8 @@ class FooterPreference(context: Context, attrs: AttributeSet) : Preference(conte
           .setToolbarColor(view.resources.getColor(R.color.colorPrimary)).setShowTitle(true)
           .setCloseButtonIcon(view.resources.getDrawable(R.drawable.ic_close).toBitmap()).build()
       CustomTabsHelper.addKeepAliveExtra(context, customTabsIntent.intent)
-      CustomTabsHelper.openCustomTab(
-          context, customTabsIntent,
-          Uri.parse(view.resources.getString(R.string.checkout_open_source)), WebViewFallback()
-      )
+      CustomTabsHelper.openCustomTab(context, customTabsIntent,
+          Uri.parse(view.resources.getString(R.string.checkout_open_source)), WebViewFallback())
     }
   }
 }

@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.portfolio
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import android.widget.TextView
 import com.github.premnirmal.ticker.network.data.Quote
@@ -12,16 +11,15 @@ import com.github.premnirmal.tickerwidget.R.color
 /**
  * Created by premnirmal on 2/29/16.
  */
-abstract class PortfolioVH(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView),
-    ItemTouchHelperViewHolder {
+abstract class PortfolioVH(itemView: View) :
+    androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView), ItemTouchHelperViewHolder {
 
   protected val positiveColor: Int = itemView.resources.getColor(color.positive_green)
   protected val negativeColor: Int = itemView.resources.getColor(color.negative_red)
 
   @Throws(Exception::class) abstract fun updateView(quote: Quote)
 
-  @Throws(Exception::class)
-  fun update(quote: Quote?, listener: StocksAdapter.QuoteClickListener) {
+  @Throws(Exception::class) fun update(quote: Quote?, listener: StocksAdapter.QuoteClickListener) {
     if (quote == null) {
       return
     }
@@ -30,8 +28,7 @@ abstract class PortfolioVH(itemView: View) : androidx.recyclerview.widget.Recycl
     itemView.setOnClickListener { v ->
       listener.onOpenQuote(v, quote, position)
     }
-    itemView.findViewById<View>(
-        R.id.more_menu).setOnClickListener { v ->
+    itemView.findViewById<View>(R.id.more_menu).setOnClickListener { v ->
       listener.onClickQuoteOptions(v, quote, position)
     }
 

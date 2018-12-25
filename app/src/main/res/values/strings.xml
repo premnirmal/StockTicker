@@ -33,7 +33,6 @@
   <string name="are_you_sure">Are you sure?</string>
   <string name="add_ticker">Add Ticker</string>
   <string name="dotdotdot">…</string>
-  <string name="text_size">Text Size</string>
   <string name="bg">Widget Background</string>
   <string name="layout_type">Widget Type</string>
   <string name="text_color">Text Color</string>
@@ -46,7 +45,7 @@
   <string name="refresh_on_screen_unlock_desc">Refresh when the screen unlocks (only during set hours).</string>
   <string name="bold_change">Bold text</string>
   <string name="bold_change_desc">Show changes and market value in bold</string>
-  <string name="choose_text_size">Text Size</string>
+  <string name="choose_text_size">Widget Text Size</string>
   <string name="text_size_updated_message">Text size updated</string>
   <string name="bg_updated_message">Background updated</string>
   <string name="layout_updated_message">Layout type updated</string>

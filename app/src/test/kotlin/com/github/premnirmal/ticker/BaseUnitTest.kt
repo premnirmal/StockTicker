@@ -23,7 +23,6 @@ import org.robolectric.android.controller.ActivityController
 import org.robolectric.annotation.Config
 import java.lang.reflect.Type
 
-
 /**
  * Created by premnirmal on 3/22/17.
  */
@@ -38,8 +37,7 @@ abstract class BaseUnitTest : TestCase() {
      *
      * @param fragment Fragment to add to the activity.
      */
-    fun attachFragmentToTestActivity(fragment: BaseFragment)
-        : ActivityController<TestActivity> {
+    fun attachFragmentToTestActivity(fragment: BaseFragment): ActivityController<TestActivity> {
       val controller = Robolectric.buildActivity(TestActivity::class.java).create()
       controller.start()
       controller.resume()

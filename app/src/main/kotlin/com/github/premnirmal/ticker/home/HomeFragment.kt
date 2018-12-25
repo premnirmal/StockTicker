@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.home
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.appwidget.AppWidgetManager
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +21,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
-import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -82,41 +80,17 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     collapsingToolbarLayout.setCollapsedTitleTypeface(
-        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Regular.ttf")
-    )
+        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Regular.ttf"))
     collapsingToolbarLayout.setExpandedTitleTypeface(
-        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Bold.ttf")
-    )
+        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Bold.ttf"))
 
-    swipe_container.setColorSchemeResources(
-        R.color.color_primary_dark, R.color.spicy_salmon, R.color.sea
-    )
+    swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
+        R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
 
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
-
-    toolbar.inflateMenu(R.menu.menu_paranormal)
-    toolbar.setOnMenuItemClickListener { item ->
-      val itemId = item.itemId
-      when (itemId) {
-        R.id.action_settings -> {
-          val intent = Intent(activity!!, SettingsFragment::class.java)
-          startActivity(intent)
-          true
-        }
-        R.id.action_tutorial -> {
-          parent.showTutorial()
-          true
-        }
-        R.id.action_whats_new -> {
-          parent.showWhatsNew()
-          true
-        }
-        else -> false
-      }
-    }
 
     fab_settings.setOnClickListener {
       if (!widgetDataProvider.hasWidget()) {
@@ -152,6 +126,11 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
     }
   }
 
+  override fun onPause() {
+    closeFABMenu()
+    super.onPause()
+  }
+
   private fun showFABMenu() {
     if (!isFABOpen) {
       isFABOpen = true
@@ -162,9 +141,9 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
       fab_bg.animate().alpha(1f).setDuration(FAB_ANIMATION_DURATION).setListener(null).start()
       add_stocks_container.animate().translationY(-resources.getDimension(R.dimen.first_fab_margin))
           .setDuration(FAB_ANIMATION_DURATION).start()
-      edit_widget_container.animate().translationY(
-          -resources.getDimension(R.dimen.second_fab_margin)
-      ).setDuration(FAB_ANIMATION_DURATION).start()
+      edit_widget_container.animate()
+          .translationY(-resources.getDimension(R.dimen.second_fab_margin))
+          .setDuration(FAB_ANIMATION_DURATION).start()
     }
   }
 
@@ -180,17 +159,16 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
             }
           }).start()
       add_stocks_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION).start()
-      edit_widget_container.animate().translationY(0f).setDuration(
-          FAB_ANIMATION_DURATION
-      ).setListener(object : AnimatorListenerAdapter() {
-        override fun onAnimationEnd(animator: Animator) {
-          if (!isFABOpen) {
-            add_stocks_container.visibility = View.GONE
-            edit_widget_container.visibility = View.GONE
-          }
+      edit_widget_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION)
+          .setListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animator: Animator) {
+              if (!isFABOpen) {
+                add_stocks_container.visibility = View.GONE
+                edit_widget_container.visibility = View.GONE
+              }
 
-        }
-      }).start()
+            }
+          }).start()
     }
   }
 

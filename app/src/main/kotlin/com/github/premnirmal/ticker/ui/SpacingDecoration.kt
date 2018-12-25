@@ -1,16 +1,17 @@
 package com.github.premnirmal.ticker.ui
 
 import android.graphics.Rect
-import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-open class SpacingDecoration(private val spacing: Int) : androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
+open class SpacingDecoration(private val spacing: Int) :
+    androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
 
-  override fun getItemOffsets(outRect: Rect, view: View, parent: androidx.recyclerview.widget.RecyclerView,
-      state: androidx.recyclerview.widget.RecyclerView.State) {
+  override fun getItemOffsets(outRect: Rect, view: View,
+    parent: androidx.recyclerview.widget.RecyclerView,
+    state: androidx.recyclerview.widget.RecyclerView.State) {
     super.getItemOffsets(outRect, view, parent, state)
     outRect.bottom = spacing
     outRect.top = spacing

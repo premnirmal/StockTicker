@@ -2,11 +2,11 @@ package com.github.premnirmal.ticker.components
 
 import android.app.Activity
 import android.content.Context
-import com.google.android.material.snackbar.Snackbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.github.premnirmal.tickerwidget.R
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -14,7 +14,7 @@ import com.github.premnirmal.tickerwidget.R
 object InAppMessage {
 
   private fun Activity.getRootView(): View =
-      (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0)
+    (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0)
 
   fun showToast(context: Context, messageResId: Int) {
     showToast(context, context.getString(messageResId))
@@ -40,7 +40,7 @@ object InAppMessage {
   }
 
   fun showMessage(activity: Activity?, message: CharSequence, actionText: CharSequence,
-      actionClick: View.OnClickListener) {
+    actionClick: View.OnClickListener) {
     if (activity == null) {
       return
     }
@@ -57,5 +57,5 @@ object InAppMessage {
   }
 
   private fun getSnackbarColor(context: Context): Int =
-      context.resources.getColor(R.color.color_primary)
+    context.resources.getColor(R.color.color_primary)
 }

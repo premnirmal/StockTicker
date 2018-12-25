@@ -2,8 +2,8 @@ package com.github.premnirmal.ticker.settings
 
 import android.appwidget.AppWidgetManager
 import android.os.AsyncTask
-import timber.log.Timber
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import timber.log.Timber
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
@@ -15,8 +15,8 @@ import java.util.Arrays
 /**
  * Created by premnirmal on 2/27/16.
  */
-internal open class FileImportTask(
-    private val widgetDataProvider: WidgetDataProvider) : AsyncTask<String, Void, Boolean>() {
+internal open class FileImportTask(private val widgetDataProvider: WidgetDataProvider) :
+    AsyncTask<String, Void, Boolean>() {
 
   override fun doInBackground(vararg params: String?): Boolean? {
     if (params.isEmpty() || params[0] == null) {
@@ -48,11 +48,8 @@ internal open class FileImportTask(
         text.append(it)
         line = br.readLine()
       }
-      val tickers = text.toString()
-          .replace(" ".toRegex(), "")
-          .split(",".toRegex())
-          .dropLastWhile(String::isEmpty)
-          .toTypedArray()
+      val tickers = text.toString().replace(" ".toRegex(), "").split(",".toRegex())
+          .dropLastWhile(String::isEmpty).toTypedArray()
       if (widgetDataProvider.hasWidget()) {
         widgetDataProvider.getAppWidgetIds().forEach { widgetId ->
           val widgetData = widgetDataProvider.dataForWidgetId(widgetId)

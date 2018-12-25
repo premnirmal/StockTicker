@@ -1,7 +1,5 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.github.premnirmal.ticker.AppPreferences
-
 data class Position(var symbol: String = "", var holdings: MutableList<Holding> = ArrayList()) {
 
   fun add(holding: Holding) {
@@ -12,8 +10,8 @@ data class Position(var symbol: String = "", var holdings: MutableList<Holding> 
     holdings.remove(holding)
   }
 
-  fun averagePrice(): Float = holdings.sumByDouble { it.totalValue().toDouble() }
-      .div(totalShares()).toFloat()
+  fun averagePrice(): Float =
+    holdings.sumByDouble { it.totalValue().toDouble() }.div(totalShares()).toFloat()
 
   fun totalShares(): Float = holdings.sumByDouble { it.shares.toDouble() }.toFloat()
 

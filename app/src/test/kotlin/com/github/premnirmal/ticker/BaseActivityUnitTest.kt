@@ -2,8 +2,6 @@ package com.github.premnirmal.ticker
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import com.github.premnirmal.ticker.mock.Mocker
 import org.junit.After
 import org.junit.Before
@@ -15,21 +13,19 @@ import org.robolectric.android.controller.ActivityController
  * Created by premnirmal on 3/22/17.
  */
 abstract class BaseActivityUnitTest<T : androidx.fragment.app.FragmentActivity> @JvmOverloads constructor(
-    private val mClass: Class<T>, private val mAutoCreate: Boolean = true) : BaseUnitTest() {
+  private val mClass: Class<T>, private val mAutoCreate: Boolean = true) : BaseUnitTest() {
 
   lateinit protected var mActivity: T
   lateinit protected var mController: ActivityController<T>
 
-  @Before
-  fun beforeTestCreate() {
+  @Before fun beforeTestCreate() {
     mController = Robolectric.buildActivity(mClass)
     if (mAutoCreate) {
       createActivity()
     }
   }
 
-  @After
-  fun afterTestDestroy() {
+  @After fun afterTestDestroy() {
     mController.pause().stop().destroy()
     Mocker.clearMocks()
   }

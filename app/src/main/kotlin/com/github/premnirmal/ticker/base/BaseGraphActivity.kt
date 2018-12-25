@@ -28,8 +28,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.axisRight.setDrawAxisLine(true)
     graphView.axisRight.isEnabled = true
     graphView.xAxis.setDrawGridLines(false)
-    graphView.setXAxisRenderer(MultilineXAxisRenderer(graphView.viewPortHandler,
-        graphView.xAxis,
+    graphView.setXAxisRenderer(MultilineXAxisRenderer(graphView.viewPortHandler, graphView.xAxis,
         graphView.getTransformer(YAxis.AxisDependency.RIGHT)))
     graphView.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
     graphView.legend.isEnabled = false

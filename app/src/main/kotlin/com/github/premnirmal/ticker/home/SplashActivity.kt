@@ -11,7 +11,7 @@ import com.github.premnirmal.tickerwidget.R
 import io.reactivex.Maybe
 import java.util.concurrent.TimeUnit
 
-class SplashActivity: BaseActivity() {
+class SplashActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -22,10 +22,7 @@ class SplashActivity: BaseActivity() {
     }
     setContentView(R.layout.activity_splash)
     Injector.appComponent.inject(this)
-    Maybe.empty<Any>()
-        .delay(1500, TimeUnit.MILLISECONDS)
-        .doOnComplete { launch() }
-        .subscribe()
+    Maybe.empty<Any>().delay(1500, TimeUnit.MILLISECONDS).doOnComplete { launch() }.subscribe()
   }
 
   private fun launch() {

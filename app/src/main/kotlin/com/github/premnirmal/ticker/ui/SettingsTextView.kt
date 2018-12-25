@@ -37,8 +37,8 @@ class SettingsTextView : LinearLayout {
     }
   }
 
-  constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) :
-      this(context, attrs, defStyleAttr)
+  constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : this(
+      context, attrs, defStyleAttr)
 
   fun setTitle(text: CharSequence?) {
     setting_title.text = text

@@ -8,9 +8,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import androidx.annotation.ArrayRes
 import android.view.View
 import android.view.View.OnClickListener
+import androidx.annotation.ArrayRes
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -63,8 +63,8 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
 
     setContentView(R.layout.activity_widget_settings)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(),
-          toolbar.paddingRight, toolbar.paddingBottom)
+      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,
+          toolbar.paddingBottom)
     }
     toolbar.setNavigationOnClickListener {
       onBackPressed()
@@ -77,9 +77,10 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
     setBoldSetting(widgetData)
     setAutoSortSetting(widgetData)
 
-    arrayOf(setting_add_stock, setting_widget_name, setting_layout_type,
-        setting_background, setting_text_color, setting_bold, setting_autosort)
-        .forEach { it.setOnClickListener(this@WidgetSettingsActivity) }
+    arrayOf(setting_add_stock, setting_widget_name, setting_layout_type, setting_background,
+        setting_text_color, setting_bold, setting_autosort).forEach {
+      it.setOnClickListener(this@WidgetSettingsActivity)
+    }
   }
 
   override fun onClick(v: View) {
@@ -109,25 +110,23 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
             })
       }
       R.id.setting_background -> {
-        showDialogPreference(R.array.backgrounds,
-            DialogInterface.OnClickListener { dialog, which ->
-              widgetData.setBgPref(which)
-              setBgSetting(widgetData)
-              setTextColorSetting(widgetData)
-              dialog.dismiss()
-              broadcastUpdateWidget()
-              InAppMessage.showMessage(this, R.string.bg_updated_message)
-            })
+        showDialogPreference(R.array.backgrounds, DialogInterface.OnClickListener { dialog, which ->
+          widgetData.setBgPref(which)
+          setBgSetting(widgetData)
+          setTextColorSetting(widgetData)
+          dialog.dismiss()
+          broadcastUpdateWidget()
+          InAppMessage.showMessage(this, R.string.bg_updated_message)
+        })
       }
       R.id.setting_text_color -> {
-        showDialogPreference(R.array.text_colors,
-            DialogInterface.OnClickListener { dialog, which ->
-              widgetData.setTextColorPref(which)
-              setTextColorSetting(widgetData)
-              dialog.dismiss()
-              broadcastUpdateWidget()
-              InAppMessage.showMessage(this, R.string.text_coor_updated_message)
-            })
+        showDialogPreference(R.array.text_colors, DialogInterface.OnClickListener { dialog, which ->
+          widgetData.setTextColorPref(which)
+          setTextColorSetting(widgetData)
+          dialog.dismiss()
+          broadcastUpdateWidget()
+          InAppMessage.showMessage(this, R.string.text_coor_updated_message)
+        })
       }
       R.id.setting_bold -> {
         val isChecked = !setting_bold_checkbox.isChecked
@@ -149,10 +148,8 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
   }
 
   private fun showDialogPreference(@ArrayRes itemRes: Int,
-      listener: DialogInterface.OnClickListener) {
-    AlertDialog.Builder(this)
-        .setItems(itemRes, listener)
-        .create().show()
+    listener: DialogInterface.OnClickListener) {
+    AlertDialog.Builder(this).setItems(itemRes, listener).create().show()
   }
 
   private fun setWidgetNameSetting(widgetData: WidgetData) {

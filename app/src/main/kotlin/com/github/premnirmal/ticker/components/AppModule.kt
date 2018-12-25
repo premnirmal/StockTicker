@@ -31,8 +31,8 @@ class AppModule(private val app: StocksApp) {
     Handler(Looper.getMainLooper())
 
   @Provides @Singleton internal fun provideDefaultSharedPreferences(
-    context: Context
-  ): SharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
+    context: Context): SharedPreferences =
+    context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
 
   @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
     AppWidgetManager.getInstance(app)

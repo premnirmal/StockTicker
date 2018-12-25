@@ -19,16 +19,11 @@ internal object AlarmSchedulerLollipop {
     val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
     val componentName = ComponentName(context, RefreshService::class.java)
     val builder = JobInfo.Builder(JOB_ID_SCHEDULE, componentName)
-    builder
-        .setPersisted(true)
-        .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-        .setRequiresDeviceIdle(false)
-        .setRequiresCharging(false)
-        .setMinimumLatency(msToNextAlarm)
+    builder.setPersisted(true).setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+        .setRequiresDeviceIdle(false).setRequiresCharging(false).setMinimumLatency(msToNextAlarm)
         .setOverrideDeadline(msToNextAlarm + FIVE_MINUTES_MS)
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
-      builder.setRequiresBatteryNotLow(false)
-          .setRequiresStorageNotLow(false)
+      builder.setRequiresBatteryNotLow(false).setRequiresStorageNotLow(false)
     }
     val jobInfo = builder.build()
     val scheduled = jobScheduler.schedule(jobInfo) == JobScheduler.RESULT_SUCCESS

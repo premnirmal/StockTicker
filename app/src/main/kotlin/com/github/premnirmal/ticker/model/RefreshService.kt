@@ -14,8 +14,7 @@ import javax.inject.Inject
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 class RefreshService : JobService() {
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
 
   override fun onCreate() {
     super.onCreate()
@@ -25,20 +24,19 @@ class RefreshService : JobService() {
   override fun onStartJob(params: JobParameters): Boolean {
     Timber.i("onStartJob " + params.jobId)
     if (isNetworkOnline()) {
-      stocksProvider.fetch().subscribe(
-          object : SimpleSubscriber<List<Quote>>() {
-            override fun onError(e: Throwable) {
-              // StocksProvider will handle rescheduling the job
-              val needsReschedule = false
-              jobFinished(params, needsReschedule)
-            }
+      stocksProvider.fetch().subscribe(object : SimpleSubscriber<List<Quote>>() {
+        override fun onError(e: Throwable) {
+          // StocksProvider will handle rescheduling the job
+          val needsReschedule = false
+          jobFinished(params, needsReschedule)
+        }
 
-            override fun onComplete() {
-              // doesn't need reschedule
-              val needsReschedule = false
-              jobFinished(params, needsReschedule)
-            }
-          })
+        override fun onComplete() {
+          // doesn't need reschedule
+          val needsReschedule = false
+          jobFinished(params, needsReschedule)
+        }
+      })
       // additional work is being performed
       return true
     } else {

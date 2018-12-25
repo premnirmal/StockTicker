@@ -7,12 +7,14 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.hideKeyboard
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
@@ -27,6 +29,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
+import kotlinx.android.synthetic.main.fragment_search.toolbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -50,6 +53,7 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     adapter = SuggestionsAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)
     recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))

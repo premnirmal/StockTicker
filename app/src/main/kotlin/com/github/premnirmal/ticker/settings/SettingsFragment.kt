@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TimePicker
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
@@ -23,6 +25,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.toBitmap
@@ -31,6 +34,7 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
+import kotlinx.android.synthetic.main.fragment_settings.toolbar
 import saschpe.android.customtabs.CustomTabsHelper
 import saschpe.android.customtabs.WebViewFallback
 import timber.log.Timber
@@ -51,14 +55,25 @@ class SettingsFragment : PreferenceFragmentCompat(),
     private const val REQCODE_FILE_WRITE = 853
   }
 
+  interface Parent {
+    fun showWhatsNew()
+    fun showTutorial()
+  }
+
+  private var parent: Parent? = null
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
 
-  override fun onPause() {
-    super.onPause()
-    broadcastUpdateWidget()
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    parent = context as Parent
+  }
+
+  override fun onDetach() {
+    super.onDetach()
+    parent = null
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,7 +83,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     setupSimplePreferencesScreen()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    broadcastUpdateWidget()
   }
 
   override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -78,18 +99,15 @@ class SettingsFragment : PreferenceFragmentCompat(),
   override fun onDisplayPreferenceDialog(preference: Preference) {
     if (preference.key == AppPreferences.START_TIME) {
       val pref = preference as TimePreference
-      val dialog = TimePickerDialog(
-          context, TimeSelectedListener(pref, R.string.start_time_updated), pref.lastHour,
-          pref.lastMinute, true
-      )
+      val dialog =
+        TimePickerDialog(context, TimeSelectedListener(pref, R.string.start_time_updated),
+            pref.lastHour, pref.lastMinute, true)
       dialog.setTitle(R.string.start_time)
       dialog.show()
     } else if (preference.key == AppPreferences.END_TIME) {
       val pref = preference as TimePreference
-      val dialog = TimePickerDialog(
-          context, TimeSelectedListener(pref, R.string.end_time_updated), pref.lastHour,
-          pref.lastMinute, true
-      )
+      val dialog = TimePickerDialog(context, TimeSelectedListener(pref, R.string.end_time_updated),
+          pref.lastHour, pref.lastMinute, true)
       dialog.setTitle(R.string.end_time)
       dialog.show()
     } else {
@@ -104,16 +122,31 @@ class SettingsFragment : PreferenceFragmentCompat(),
    */
   @SuppressLint("CommitPrefEdits") private fun setupSimplePreferencesScreen() {
     run {
+      val pref = findPreference<Preference>(AppPreferences.SETTING_WHATS_NEW)
+      pref.summary = getString(R.string.whats_new_in, BuildConfig.VERSION_NAME)
+      pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        parent?.showWhatsNew()
+        true
+      }
+    }
+
+    run {
+      val pref = findPreference<Preference>(AppPreferences.SETTING_TUTORIAL)
+      pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+        parent?.showTutorial()
+        true
+      }
+    }
+
+    run {
       val privacyPref = findPreference<Preference>(AppPreferences.SETTING_PRIVACY_POLICY)
       privacyPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         val customTabsIntent = CustomTabsIntent.Builder().addDefaultShareMenuItem()
             .setToolbarColor(this.resources.getColor(R.color.colorPrimary)).setShowTitle(true)
             .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap()).build()
         CustomTabsHelper.addKeepAliveExtra(context!!, customTabsIntent.intent)
-        CustomTabsHelper.openCustomTab(
-            context!!, customTabsIntent,
-            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback()
-        )
+        CustomTabsHelper.openCustomTab(context!!, customTabsIntent,
+            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback())
         true
       }
     }
@@ -186,9 +219,8 @@ class SettingsFragment : PreferenceFragmentCompat(),
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().remove(AppPreferences.FONT_SIZE).putInt(
-              AppPreferences.FONT_SIZE, index
-          ).apply()
+          preferences.edit().remove(AppPreferences.FONT_SIZE)
+              .putInt(AppPreferences.FONT_SIZE, index).apply()
           broadcastUpdateWidget()
           fontSizePreference.summary = fontSizePreference.entries[index]
           InAppMessage.showMessage(activity!!, R.string.text_size_updated_message)
@@ -267,17 +299,14 @@ class SettingsFragment : PreferenceFragmentCompat(),
   }
 
   private fun needsPermissionGrant(): Boolean {
-    return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
-        activity!!, Manifest.permission.WRITE_EXTERNAL_STORAGE
-    ) != PackageManager.PERMISSION_GRANTED
+    return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(activity!!,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
   }
 
   private fun askForExternalStoragePermissions(reqCode: Int) {
-    ActivityCompat.requestPermissions(
-        activity!!, arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
-    ), reqCode
-    )
+    ActivityCompat.requestPermissions(activity!!,
+        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE), reqCode)
   }
 
   private fun exportAndShareTickers() {

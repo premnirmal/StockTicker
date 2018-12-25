@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import java.io.IOException
@@ -12,8 +11,7 @@ import java.io.InputStream
  */
 internal abstract class BaseConverter<T>(val gson: Gson) : Converter<ResponseBody, T> {
 
-  @Throws(IOException::class)
-  protected fun getString(`is`: InputStream): String {
+  @Throws(IOException::class) protected fun getString(`is`: InputStream): String {
     var ch: Int
     val sb = StringBuilder()
     do {

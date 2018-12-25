@@ -1,7 +1,18 @@
 <androidx.preference.PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
+
+  <Preference
+      app:iconSpaceReserved="false"
+      app:key="SETTING_WHATS_NEW"
+      app:selectable="true"
+      app:title="@string/whats_new"/>
+
+  <Preference
+      app:iconSpaceReserved="false"
+      app:key="SETTING_TUTORIAL"
+      app:selectable="true"
+      app:title="@string/tutorial"/>
 
   <ListPreference
       app:defaultValue="1"

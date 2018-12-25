@@ -26,16 +26,15 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    HomeFragment.Parent, FragmentManager.OnBackStackChangedListener {
+    HomeFragment.Parent, SettingsFragment.Parent, FragmentManager.OnBackStackChangedListener {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
-    private val FRAGMENT_MAP = mapOf<Class<*>, Int>(
-        HomeFragment::class.java to R.id.action_portfolio,
-        WidgetsFragment::class.java to R.id.action_widgets,
-        SearchFragment::class.java to R.id.action_search,
-        SettingsFragment::class.java to R.id.action_settings
-    )
+    private val FRAGMENT_MAP =
+      mapOf<Class<*>, Int>(HomeFragment::class.java to R.id.action_portfolio,
+          WidgetsFragment::class.java to R.id.action_widgets,
+          SearchFragment::class.java to R.id.action_search,
+          SettingsFragment::class.java to R.id.action_settings)
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
@@ -140,16 +139,13 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
       if (currentFragment?.javaClass != fragment.javaClass) {
         supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
-            .setCustomAnimations(
-                android.R.anim.fade_in, android.R.anim.fade_out, android.R.anim.fade_out,
-                android.R.anim.fade_in
-            ).addToBackStack(fragment.javaClass.name).commit()
+            .addToBackStack(fragment.javaClass.name).commit()
       }
     }
     return true
   }
 
-  // HomeFragment.Parent
+  // SettingsFragment.Parent
 
   override fun showTutorial() {
     showDialog(getString(R.string.how_to_title), getString(R.string.how_to))
@@ -167,10 +163,10 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         stringBuilder.append("\n")
       }
     }
-    showDialog(
-        getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), stringBuilder.toString()
-    )
+    showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), stringBuilder.toString())
   }
+
+  // HomeFragment.Parent
 
   override fun openWidgetSettings(widgetId: Int) {
     bottom_navigation.selectedItemId = R.id.action_widgets

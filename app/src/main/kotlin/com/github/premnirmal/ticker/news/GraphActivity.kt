@@ -44,10 +44,8 @@ class GraphActivity : BaseGraphActivity() {
 
   private var range = Range.THREE_MONTH
   private lateinit var ticker: String
-  @Inject
-  internal lateinit var historyProvider: IHistoryProvider
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var historyProvider: IHistoryProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -159,9 +157,7 @@ class GraphActivity : BaseGraphActivity() {
       R.id.max -> range = Range.MAX
     }
     val parent = v.parent as ViewGroup
-    (0 until parent.childCount)
-        .map { parent.getChildAt(it) }
-        .forEach { it.isEnabled = it != v }
+    (0 until parent.childCount).map { parent.getChildAt(it) }.forEach { it.isEnabled = it != v }
     getData()
   }
 }

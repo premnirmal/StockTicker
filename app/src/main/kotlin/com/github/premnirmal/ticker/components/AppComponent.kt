@@ -38,9 +38,7 @@ import com.github.premnirmal.ticker.widget.WidgetsFragment
  * Created by premnirmal on 3/3/16.
  */
 @javax.inject.Singleton
-@dagger.Component(
-    modules = arrayOf(AppModule::class)
-)
+@dagger.Component(modules = arrayOf(AppModule::class))
 interface AppComponent {
 
   // Activities

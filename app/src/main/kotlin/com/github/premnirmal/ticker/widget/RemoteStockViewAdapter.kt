@@ -27,12 +27,9 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
   private val quotes: MutableList<Quote>
 
-  @Inject
-  internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject
-  internal lateinit var context: Context
-  @Inject
-  internal lateinit var sharedPreferences: SharedPreferences
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var sharedPreferences: SharedPreferences
 
   init {
     this.quotes = ArrayList()
@@ -102,7 +99,6 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
         remoteViews.setTextViewText(R.id.changeValue, changeValueString)
       }
       remoteViews.setTextViewText(R.id.totalValue, priceString)
-
 
       val color: Int
       color = if (change < 0f || changeInPercent < 0f) {

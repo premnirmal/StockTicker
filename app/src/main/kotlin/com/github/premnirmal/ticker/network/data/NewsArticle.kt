@@ -18,8 +18,7 @@ data class NewsArticle(var url: String? = "") {
 
   fun getSourceName(): String? = source?.name
 
-  fun date(): LocalDateTime = LocalDateTime.parse(publishedAt,
-      DateTimeFormatter.ISO_DATE_TIME)
+  fun date(): LocalDateTime = LocalDateTime.parse(publishedAt, DateTimeFormatter.ISO_DATE_TIME)
 
   fun dateString(): String = OUTPUT_FORMATTER.format(date())
 }

@@ -1,12 +1,10 @@
 package com.github.premnirmal.ticker.base
 
 import android.app.Activity
-import androidx.fragment.app.Fragment
 import com.trello.rxlifecycle2.android.FragmentEvent
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import kotlin.properties.ReadOnlyProperty
-import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 interface FragmentLifeCycleOwner {

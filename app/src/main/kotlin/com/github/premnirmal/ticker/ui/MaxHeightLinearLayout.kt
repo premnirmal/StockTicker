@@ -13,8 +13,8 @@ class MaxHeightLinearLayout : LinearLayout {
   constructor(context: Context) : super(context)
 
   constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
-    val attributeSet = context.theme.obtainStyledAttributes(attrs,
-        R.styleable.MaxHeightLinearLayout, 0, 0)
+    val attributeSet =
+      context.theme.obtainStyledAttributes(attrs, R.styleable.MaxHeightLinearLayout, 0, 0)
     try {
       maxHeightDp = attributeSet.getInteger(R.styleable.MaxHeightLinearLayout_maxHeightDp, 0)
     } finally {

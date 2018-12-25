@@ -4,9 +4,9 @@ import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
@@ -27,8 +27,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
-  @Inject
-  internal lateinit var bus: RxBus
+  @Inject internal lateinit var bus: RxBus
 
   private fun lifecycle(): Observable<ActivityEvent> = lifecycleSubject
 
@@ -36,7 +35,7 @@ abstract class BaseActivity : AppCompatActivity() {
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> =
-      observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
+    observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper.wrap(newBase))
@@ -65,8 +64,7 @@ abstract class BaseActivity : AppCompatActivity() {
   override fun onResume() {
     super.onResume()
     lifecycleSubject.onNext(ActivityEvent.RESUME)
-    bind(bus.forEventType(ErrorEvent::class.java))
-        .observeOn(AndroidSchedulers.mainThread())
+    bind(bus.forEventType(ErrorEvent::class.java)).observeOn(AndroidSchedulers.mainThread())
         .subscribe { event ->
           showDialog(event.message)
         }
@@ -87,8 +85,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
   fun updateToolbar(toolbar: androidx.appcompat.widget.Toolbar) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(),
-          toolbar.paddingRight, toolbar.paddingBottom)
+      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,
+          toolbar.paddingBottom)
     }
   }
 

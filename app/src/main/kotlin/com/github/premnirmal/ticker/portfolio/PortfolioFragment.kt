@@ -5,13 +5,11 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.base.ParentFragmentDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -68,11 +66,9 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
    */
   class InjectionHolder {
 
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-    @Inject
-    internal lateinit var bus: RxBus
+    @Inject internal lateinit var bus: RxBus
 
     init {
       Injector.appComponent.inject(this)
@@ -98,8 +94,9 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
     val moveToWidgetItem = popupWindow.menu.findItem(R.id.move_to_widget)
-    moveToWidgetItem.isEnabled = widgetId != AppWidgetManager.INVALID_APPWIDGET_ID
-        && holder.widgetDataProvider.getAppWidgetIds().size > 1
+    moveToWidgetItem.isEnabled = widgetId !=
+        AppWidgetManager.INVALID_APPWIDGET_ID && holder.widgetDataProvider.getAppWidgetIds().size >
+        1
     popupWindow.setOnMenuItemClickListener { menuItem ->
       val itemId = menuItem.itemId
       when (itemId) {
@@ -122,9 +119,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
                   holder.bus.post(RefreshEvent())
                   dialog.dismiss()
                 }
-              }
-              .setTitle(R.string.select_widget)
-              .show()
+              }.setTitle(R.string.select_widget).show()
         }
       }
       true
@@ -141,15 +136,14 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onStart() {
     super.onStart()
     update()
-    bind(holder.bus.forEventType(RefreshEvent::class.java))
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe {
-          update()
-        }
+    bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
+        AndroidSchedulers.mainThread()).subscribe {
+      update()
+    }
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?): View? {
+    savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
@@ -183,17 +177,14 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   private fun promptRemove(quote: Quote?) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-      AlertDialog.Builder(activity)
-          .setTitle(R.string.remove)
+      AlertDialog.Builder(activity).setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove) { dialog, _ ->
             widgetData.removeStock(it.symbol)
             stocksAdapter.remove(it)
             holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
-          }
-          .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
-          .show()
+          }.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }.show()
     }
   }
 

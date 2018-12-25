@@ -79,7 +79,7 @@ class AppPreferences @Inject constructor() {
   fun hasUserAlreadyRated() = sharedPreferences.getBoolean(DID_RATE, false)
 
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-      !hasUserAlreadyRated() && (random.nextInt() % 4 == 0)
+    !hasUserAlreadyRated() && (random.nextInt() % 4 == 0)
 
   fun clock(): AppClock = clock
 
@@ -111,6 +111,8 @@ class AppPreferences @Inject constructor() {
     const val START_TIME = "START_TIME"
     const val END_TIME = "END_TIME"
     const val TUTORIAL_SHOWN = "TUTORIAL_SHOWN"
+    const val SETTING_WHATS_NEW = "SETTING_WHATS_NEW"
+    const val SETTING_TUTORIAL = "SETTING_TUTORIAL"
     const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"

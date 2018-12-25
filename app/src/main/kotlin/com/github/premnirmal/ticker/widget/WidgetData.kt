@@ -38,12 +38,9 @@ class WidgetData {
     }
   }
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
-  @Inject
-  internal lateinit var context: Context
-  @Inject
-  internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   private val position: Int
   val widgetId: Int
@@ -60,11 +57,8 @@ class WidgetData {
     tickerList = if (tickerListVars.isNullOrEmpty()) {
       ArrayList()
     } else {
-      ArrayList(
-          Arrays.asList(
-              *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
-          )
-      )
+      ArrayList(Arrays.asList(
+          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }
     save()
   }
@@ -118,15 +112,13 @@ class WidgetData {
     preferences.edit().putInt(LAYOUT_TYPE, value).apply()
   }
 
-  @ColorInt
-  fun textColor(): Int {
+  @ColorInt fun textColor(): Int {
     val pref = textColorPref()
     return if (pref == 0) context.resources.getColor(R.color.white)
     else context.resources.getColor(R.color.dark_text)
   }
 
-  @LayoutRes
-  fun stockViewLayout(): Int {
+  @LayoutRes fun stockViewLayout(): Int {
     val pref = layoutPref()
     return when (pref) {
       0 -> R.layout.stockview
@@ -145,8 +137,7 @@ class WidgetData {
     }
   }
 
-  @DrawableRes
-  fun backgroundResource(): Int {
+  @DrawableRes fun backgroundResource(): Int {
     val bgPref = bgPref()
     return when (bgPref) {
       TRANSLUCENT -> R.drawable.translucent_widget_bg

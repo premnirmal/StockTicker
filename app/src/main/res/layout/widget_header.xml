@@ -1,66 +1,73 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="wrap_content"
-  android:layout_gravity="center_vertical"
-  android:layout_marginLeft="@dimen/widget_margin"
-  android:layout_marginStart="@dimen/widget_margin"
-  android:orientation="horizontal">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:layout_marginLeft="@dimen/widget_margin"
+    android:layout_marginStart="@dimen/widget_margin"
+    android:orientation="horizontal"
+    >
 
   <LinearLayout
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:orientation="vertical">
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      >
 
     <TextView
-      android:id="@+id/next_update"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="start"
-      android:gravity="start"
-      android:lines="1"
-      android:maxLines="1"
-      android:textColor="@android:color/darker_gray"
-      android:textSize="@dimen/small_text"
-      tools:text="Next fetch: 10:00" />
+        android:id="@+id/next_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:gravity="start"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="@dimen/small_text"
+        tools:text="Next fetch: 10:00"
+        />
 
     <TextView
-      android:id="@+id/last_updated"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="start"
-      android:gravity="start"
-      android:lines="1"
-      android:maxLines="1"
-      android:textColor="@android:color/darker_gray"
-      android:textSize="@dimen/small_text"
-      tools:text="Last fetch: 10:00" />
+        android:id="@+id/last_updated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:gravity="start"
+        android:lines="1"
+        android:maxLines="1"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="@dimen/small_text"
+        tools:text="Last fetch: 10:00"
+        />
 
   </LinearLayout>
 
   <FrameLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/widget_refresh_icon_padding_top"
-    android:paddingEnd="@dimen/widget_refresh_icon_padding_side"
-    android:paddingStart="@dimen/widget_refresh_icon_padding_side"
-    android:paddingTop="@dimen/widget_refresh_icon_padding_top">
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:paddingBottom="@dimen/widget_refresh_icon_padding_top"
+      android:paddingEnd="@dimen/widget_refresh_icon_padding_side"
+      android:paddingStart="@dimen/widget_refresh_icon_padding_side"
+      android:paddingTop="@dimen/widget_refresh_icon_padding_top"
+      >
 
     <ImageView
-      android:id="@+id/refresh_icon"
-      android:layout_width="@dimen/widget_refresh_icon_size"
-      android:layout_height="@dimen/widget_refresh_icon_size"
-      android:layout_gravity="center"
-      android:src="@drawable/ic_refresh" />
+        android:id="@+id/refresh_icon"
+        android:layout_width="@dimen/widget_refresh_icon_size"
+        android:layout_height="@dimen/widget_refresh_icon_size"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_refresh"
+        />
 
     <ProgressBar
-      android:id="@+id/refresh_progress"
-      android:layout_width="@dimen/widget_refresh_icon_size"
-      android:layout_height="@dimen/widget_refresh_icon_size"
-      android:layout_gravity="center"
-      android:indeterminateTint="@android:color/darker_gray"
-      android:progressTint="@android:color/darker_gray"
-      android:visibility="gone" />
+        android:id="@+id/refresh_progress"
+        android:layout_width="@dimen/widget_refresh_icon_size"
+        android:layout_height="@dimen/widget_refresh_icon_size"
+        android:layout_gravity="center"
+        android:indeterminateTint="@android:color/darker_gray"
+        android:progressTint="@android:color/darker_gray"
+        android:visibility="gone"
+        />
   </FrameLayout>
 </LinearLayout>

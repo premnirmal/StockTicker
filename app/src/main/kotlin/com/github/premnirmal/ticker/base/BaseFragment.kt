@@ -88,5 +88,5 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> =
-      observable.compose(RxLifecycleAndroid.bindFragment(lifecycle))
+    observable.compose(RxLifecycleAndroid.bindFragment(lifecycle))
 }
