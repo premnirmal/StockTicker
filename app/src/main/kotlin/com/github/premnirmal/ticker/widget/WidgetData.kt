@@ -31,7 +31,7 @@ class WidgetData {
     const val DARK = AppPreferences.DARK
     const val LIGHT = AppPreferences.LIGHT
     const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
-    const val HIDE_HEADER = AppPreferences.SETTING_AUTOSORT
+    const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
 
     enum class ChangeType {
       value,
