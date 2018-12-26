@@ -149,6 +149,13 @@ class StockWidget : AppWidgetProvider() {
       remoteViews.setViewVisibility(R.id.refresh_progress, View.GONE)
       remoteViews.setViewVisibility(R.id.refresh_icon, View.VISIBLE)
     }
+    // Show/hide header
+    val hideHeader = widgetData.hideHeader()
+    if (hideHeader) {
+      remoteViews.setViewVisibility(R.id.widget_header, View.GONE)
+    } else {
+      remoteViews.setViewVisibility(R.id.widget_header, View.VISIBLE)
+    }
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val refreshPendingIntent =

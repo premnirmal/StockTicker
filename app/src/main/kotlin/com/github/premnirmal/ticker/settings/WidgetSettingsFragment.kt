@@ -24,6 +24,8 @@ import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_background
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
@@ -71,9 +73,10 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setTextColorSetting(widgetData)
     setBoldSetting(widgetData)
     setAutoSortSetting(widgetData)
+    setHideHeaderSetting(widgetData)
 
     arrayOf(setting_add_stock, setting_widget_name, setting_layout_type, setting_background,
-        setting_text_color, setting_bold, setting_autosort).forEach {
+        setting_text_color, setting_bold, setting_autosort, setting_hide_header).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
   }
@@ -138,6 +141,12 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
         setAutoSortSetting(widgetData)
         broadcastUpdateWidget()
       }
+      R.id.setting_hide_header -> {
+        val isChecked = !setting_hide_header_checkbox.isChecked
+        widgetData.setHideHeader(isChecked)
+        setHideHeaderSetting(widgetData)
+        broadcastUpdateWidget()
+      }
     }
   }
 
@@ -175,5 +184,9 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   private fun setAutoSortSetting(widgetData: WidgetData) {
     setting_autosort_checkbox.isChecked = widgetData.autoSortEnabled()
+  }
+
+  private fun setHideHeaderSetting(widgetData: WidgetData) {
+    setting_hide_header_checkbox.isChecked = widgetData.hideHeader()
   }
 }

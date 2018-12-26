@@ -114,6 +114,7 @@ class AppPreferences @Inject constructor() {
     const val SETTING_WHATS_NEW = "SETTING_WHATS_NEW"
     const val SETTING_TUTORIAL = "SETTING_TUTORIAL"
     const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
+    const val SETTING_HIDE_HEADER = "SETTING_HIDE_HEADER"
     const val SETTING_EXPORT = "SETTING_EXPORT"
     const val SETTING_IMPORT = "SETTING_IMPORT"
     const val SETTING_SHARE = "SETTING_SHARE"

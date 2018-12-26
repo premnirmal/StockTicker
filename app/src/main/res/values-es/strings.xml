@@ -31,6 +31,8 @@
   <string name="update_interval">Intervalo de actualización</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Las existencias se ordenarán por cambio porcentual.</string>
+  <string name="hide_header">Hide widget header</string>
+  <string name="hide_header_desc">Fetch tiempo y botón de actualización.</string>
   <string name="refresh_on_screen_unlock">Actualizar al desbloquear</string>
   <string name="refresh_on_screen_unlock_desc">Actualiza cuando la pantalla se desbloquea (sólo durante las horas programadas).</string>
   <string name="bold_change">Texto en negrita</string>

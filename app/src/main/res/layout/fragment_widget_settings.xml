@@ -66,6 +66,38 @@
 
     <include layout="@layout/divider"/>
 
+    <LinearLayout
+        android:id="@+id/setting_hide_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+      <com.github.premnirmal.ticker.ui.SettingsTextView
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          app:subtitle_text="@string/hide_header_desc"
+          app:title_text="@string/hide_header"
+          />
+
+      <CheckBox
+          android:id="@+id/setting_hide_header_checkbox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginEnd="@dimen/setting_padding"
+          android:layout_marginRight="@dimen/setting_padding"
+          android:clickable="false"
+          android:duplicateParentState="true"
+          android:focusable="false"
+          android:gravity="center"
+          />
+
+    </LinearLayout>
+
+    <include layout="@layout/divider"/>
+
     <com.github.premnirmal.ticker.ui.SettingsTextView
         android:id="@+id/setting_layout_type"
         android:layout_width="match_parent"

@@ -36,6 +36,7 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private lateinit var widgetDataList: List<WidgetData>
+  private var currentWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -56,19 +57,33 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     widget_selection_spinner.adapter = WidgetSpinnerAdapter(widgetDataList)
     widget_selection_spinner.onItemSelectedListener = this
 
-    arguments?.let { bundle ->
-      val widgetId = bundle.getInt(ARG_WIDGET_ID)
-      if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-        val position = widgetDataList.indexOfFirst { it.widgetId == widgetId }
-        widget_selection_spinner.setSelection(position)
-      }
+    arguments?.let {
+      selectWidgetFromBundle(it)
     }
+
+    savedInstanceState?.let {
+      selectWidgetFromBundle(it)
+    }
+  }
+
+  private fun selectWidgetFromBundle(bundle: Bundle) {
+    val widgetId = bundle.getInt(ARG_WIDGET_ID)
+    if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+      val position = widgetDataList.indexOfFirst { it.widgetId == widgetId }
+      widget_selection_spinner.setSelection(position)
+    }
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    outState.putInt(ARG_WIDGET_ID, currentWidgetId)
+    super.onSaveInstanceState(outState)
   }
 
   private fun setWidgetFragment(widgetId: Int) {
     val fragment = WidgetSettingsFragment.newInstance(widgetId)
     childFragmentManager.beginTransaction().replace(R.id.child_fragment_container, fragment)
         .commit()
+    currentWidgetId = widgetId
   }
 
   // ChildFragment

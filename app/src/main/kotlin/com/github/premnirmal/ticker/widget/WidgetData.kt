@@ -31,6 +31,7 @@ class WidgetData {
     const val DARK = AppPreferences.DARK
     const val LIGHT = AppPreferences.LIGHT
     const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
+    const val HIDE_HEADER = AppPreferences.SETTING_AUTOSORT
 
     enum class ChangeType {
       value,
@@ -157,6 +158,12 @@ class WidgetData {
 
   fun setAutoSort(autoSort: Boolean) {
     preferences.edit().putBoolean(AUTOSORT, autoSort).apply()
+  }
+
+  fun hideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
+
+  fun setHideHeader(hide: Boolean) {
+    preferences.edit().putBoolean(HIDE_HEADER, hide).apply()
   }
 
   fun isBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)

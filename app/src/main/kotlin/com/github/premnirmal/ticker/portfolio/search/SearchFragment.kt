@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.portfolio.search
 
 import android.app.AlertDialog
+import android.appwidget.AppWidgetManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -36,11 +37,17 @@ import javax.inject.Inject
 
 class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
 
+  companion object {
+    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+  }
+
   @Inject internal lateinit var suggestionApi: SuggestionApi
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var stocksProvider: IStocksProvider
   private var disposable: Disposable? = null
   private lateinit var adapter: SuggestionsAdapter
+
+  private var selectedWidgetId: Int = -1
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -60,11 +67,18 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
     recycler_view.adapter = adapter
     search_view.addTextChangedListener(this)
+
+    savedInstanceState?.let { selectedWidgetId = it.getInt(ARG_WIDGET_ID, -1) }
   }
 
   override fun onPause() {
     hideKeyboard(search_view)
     super.onPause()
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    outState.putInt(ARG_WIDGET_ID, selectedWidgetId)
+    super.onSaveInstanceState(outState)
   }
 
   private fun addTickerToWidget(ticker: String, widgetId: Int) {
@@ -120,14 +134,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
 
   override fun onSuggestionClick(suggestion: Suggestion) {
     val ticker = suggestion.symbol
+    if (selectedWidgetId > 0) {
+      addTickerToWidget(ticker, selectedWidgetId)
+      return
+    }
     if (widgetDataProvider.hasWidget()) {
       val widgetIds = widgetDataProvider.getAppWidgetIds()
       if (widgetIds.size > 1) {
-        val widgets = widgetIds.map { widgetDataProvider.dataForWidgetId(it).widgetName() }.sorted()
-            .toTypedArray()
+        val widgets =
+          widgetIds.map { widgetDataProvider.dataForWidgetId(it) }.sortedBy { it.widgetName() }
+        val widgetNames = widgets.map { it.widgetName() }.toTypedArray()
         AlertDialog.Builder(context!!).setTitle(R.string.select_widget)
-            .setItems(widgets) { dialog, which ->
-              val id = widgetIds[which]
+            .setItems(widgetNames) { dialog, which ->
+              val id = widgets[which].widgetId
               addTickerToWidget(ticker, id)
               dialog.dismiss()
             }.create().show()
@@ -142,6 +161,6 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   // ChildFragment
 
   override fun setData(bundle: Bundle) {
-
+    selectedWidgetId = bundle.getInt(ARG_WIDGET_ID, -1)
   }
 }
