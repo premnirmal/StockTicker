@@ -2,10 +2,10 @@ package com.github.premnirmal.ticker.widget
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.support.annotation.ColorInt
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.annotation.LayoutRes
+import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
@@ -31,6 +31,7 @@ class WidgetData {
     const val DARK = AppPreferences.DARK
     const val LIGHT = AppPreferences.LIGHT
     const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
+    const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
 
     enum class ChangeType {
       value,
@@ -38,15 +39,12 @@ class WidgetData {
     }
   }
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
-  @Inject
-  internal lateinit var context: Context
-  @Inject
-  internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
   private val position: Int
-  private val widgetId: Int
+  val widgetId: Int
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
 
@@ -60,11 +58,8 @@ class WidgetData {
     tickerList = if (tickerListVars.isNullOrEmpty()) {
       ArrayList()
     } else {
-      ArrayList(
-          Arrays.asList(
-              *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
-          )
-      )
+      ArrayList(Arrays.asList(
+          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
     }
     save()
   }
@@ -118,15 +113,13 @@ class WidgetData {
     preferences.edit().putInt(LAYOUT_TYPE, value).apply()
   }
 
-  @ColorInt
-  fun textColor(): Int {
+  @ColorInt fun textColor(): Int {
     val pref = textColorPref()
     return if (pref == 0) context.resources.getColor(R.color.white)
     else context.resources.getColor(R.color.dark_text)
   }
 
-  @LayoutRes
-  fun stockViewLayout(): Int {
+  @LayoutRes fun stockViewLayout(): Int {
     val pref = layoutPref()
     return when (pref) {
       0 -> R.layout.stockview
@@ -145,8 +138,7 @@ class WidgetData {
     }
   }
 
-  @DrawableRes
-  fun backgroundResource(): Int {
+  @DrawableRes fun backgroundResource(): Int {
     val bgPref = bgPref()
     return when (bgPref) {
       TRANSLUCENT -> R.drawable.translucent_widget_bg
@@ -166,6 +158,12 @@ class WidgetData {
 
   fun setAutoSort(autoSort: Boolean) {
     preferences.edit().putBoolean(AUTOSORT, autoSort).apply()
+  }
+
+  fun hideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
+
+  fun setHideHeader(hide: Boolean) {
+    preferences.edit().putBoolean(HIDE_HEADER, hide).apply()
   }
 
   fun isBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)

@@ -2,8 +2,6 @@ package com.github.premnirmal.ticker
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import com.github.premnirmal.ticker.mock.Mocker
 import org.junit.After
 import org.junit.Before
@@ -14,22 +12,20 @@ import org.robolectric.android.controller.ActivityController
 /**
  * Created by premnirmal on 3/22/17.
  */
-abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads constructor(
-    private val mClass: Class<T>, private val mAutoCreate: Boolean = true) : BaseUnitTest() {
+abstract class BaseActivityUnitTest<T : androidx.fragment.app.FragmentActivity> @JvmOverloads constructor(
+  private val mClass: Class<T>, private val mAutoCreate: Boolean = true) : BaseUnitTest() {
 
   lateinit protected var mActivity: T
   lateinit protected var mController: ActivityController<T>
 
-  @Before
-  fun beforeTestCreate() {
+  @Before fun beforeTestCreate() {
     mController = Robolectric.buildActivity(mClass)
     if (mAutoCreate) {
       createActivity()
     }
   }
 
-  @After
-  fun afterTestDestroy() {
+  @After fun afterTestDestroy() {
     mController.pause().stop().destroy()
     Mocker.clearMocks()
   }
@@ -55,11 +51,11 @@ abstract class BaseActivityUnitTest<T : FragmentActivity> @JvmOverloads construc
     mActivity = mController.setup().get()
   }
 
-  protected fun findFragment(tag: String): Fragment {
+  protected fun findFragment(tag: String): androidx.fragment.app.Fragment {
     return mActivity.supportFragmentManager.findFragmentByTag(tag)!!
   }
 
-  protected fun verifyVisibleFragment(tag: String): Fragment {
+  protected fun verifyVisibleFragment(tag: String): androidx.fragment.app.Fragment {
     val fragment = findFragment(tag)
     assertNotNull(fragment)
     assertTrue(fragment.isAdded)

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Now you can add multiple positions!</item>
+    <item>StocksWidget gets a new UI!</item>
+    <item>Now you can show/hide the widget header</item>
   </string-array>
 </resources>

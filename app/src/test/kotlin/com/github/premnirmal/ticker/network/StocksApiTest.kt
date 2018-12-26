@@ -33,16 +33,14 @@ class StocksApiTest : BaseUnitTest() {
     val listType = object : TypeToken<List<QuoteNet>>() {}.type
     val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
     val stocks = Observable.just(stockList)
-    `when`(robinhood.getStocks(Matchers.anyString()))
-        .thenReturn(stocks)
+    `when`(robinhood.getStocks(Matchers.anyString())).thenReturn(stocks)
   }
 
   @After fun clear() {
     Mocker.clearMocks()
   }
 
-  @Test
-  fun testGetStocks() {
+  @Test fun testGetStocks() {
     val testTickerList = TEST_TICKER_LIST
     val subscriber = TestObserver<List<Quote>>()
     stocksApi.getStocks(testTickerList).subscribe(subscriber)

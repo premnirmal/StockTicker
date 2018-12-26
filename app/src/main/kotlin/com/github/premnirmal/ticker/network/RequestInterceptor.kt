@@ -27,14 +27,11 @@ class RequestInterceptor : Interceptor {
     Injector.appComponent.inject(this)
   }
 
-  @Throws(IOException::class)
-  override fun intercept(chain: Chain): Response? {
+  @Throws(IOException::class) override fun intercept(chain: Chain): Response? {
     // Disable cache so we always have fresh quotes.
-    val request: Request = chain.request().newBuilder()
-        .cacheControl(CacheControl.FORCE_NETWORK)
+    val request: Request = chain.request().newBuilder().cacheControl(CacheControl.FORCE_NETWORK)
         .addHeader(PACKAGE_HEADER, context.packageName)
-        .addHeader(SIGNATURE_HEADER, StocksApp.SIGNATURE)
-        .build()
+        .addHeader(SIGNATURE_HEADER, StocksApp.SIGNATURE).build()
     return chain.proceed(request)
   }
 }

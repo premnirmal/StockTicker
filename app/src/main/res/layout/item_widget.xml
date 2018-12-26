@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:padding="@dimen/activity_vertical_margin"
+    >
+
+  <TextView
+      android:id="@+id/widget_name_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textSize="@dimen/larger_text"
+      style="@style/BoldTextView"
+      />
+
+</FrameLayout>

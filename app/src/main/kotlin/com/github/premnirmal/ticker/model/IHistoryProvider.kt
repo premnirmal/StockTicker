@@ -12,7 +12,7 @@ interface IHistoryProvider {
   fun getHistoricalDataByRange(symbol: String, range: Range): Observable<List<DataPoint>>
 
   sealed class Range(val end: LocalDate) : Serializable {
-    class DateRange(end: LocalDate): Range(end)
+    class DateRange(end: LocalDate) : Range(end)
     companion object {
       val ONE_MONTH = DateRange(LocalDate.now().minusMonths(1))
       val THREE_MONTH = DateRange(LocalDate.now().minusMonths(3))

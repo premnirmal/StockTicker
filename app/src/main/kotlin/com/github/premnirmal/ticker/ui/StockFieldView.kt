@@ -15,8 +15,8 @@ import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StockFieldView @JvmOverloads
-constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(context, attrs) {
+class StockFieldView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+    LinearLayout(context, attrs) {
 
   companion object {
     const val ORIENTATION_HORIZONTAL = 0
@@ -34,10 +34,10 @@ constructor(context: Context, attrs: AttributeSet? = null) : LinearLayout(contex
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
       if (orientation == ORIENTATION_HORIZONTAL) {
         setOrientation(LinearLayout.HORIZONTAL)
-        fieldname.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT,
-            0.5f)
-        fieldvalue.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT,
-            0.5f)
+        fieldname.layoutParams =
+            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
+        fieldvalue.layoutParams =
+            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
         fieldvalue.gravity = Gravity.END
       } else {
         setOrientation(LinearLayout.VERTICAL)

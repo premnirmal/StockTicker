@@ -18,13 +18,9 @@ interface NewsApi {
    *
    * @return the news feed for the given query.
    */
-  @GET("v2/everything")
-  @Headers("Accept: application/json")
-  fun getNewsFeed(@Query(value = "apiKey") apiKey: String,
-      @Query(value = "q") query: String,
-      @Query(value = "language") language: String,
-      @Query(value = "pageSize") count: Int = 5,
-      @Query(value = "from") from: String,
-      @Query(value = "to") to: String,
-      @Query(value = "page") page: Int = 1): Observable<NewsFeed>
+  @GET("v2/everything") @Headers("Accept: application/json") fun getNewsFeed(@Query(
+      value = "apiKey") apiKey: String, @Query(value = "q") query: String, @Query(
+      value = "language") language: String, @Query(value = "pageSize") count: Int = 5, @Query(
+      value = "from") from: String, @Query(value = "to") to: String, @Query(
+      value = "page") page: Int = 1): Observable<NewsFeed>
 }

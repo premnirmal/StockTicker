@@ -2,9 +2,9 @@ package com.github.premnirmal.ticker.base
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.util.AndroidRuntimeException
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.trello.rxlifecycle2.android.FragmentEvent
 import com.trello.rxlifecycle2.android.FragmentEvent.ATTACH
 import com.trello.rxlifecycle2.android.FragmentEvent.CREATE
@@ -88,5 +88,5 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
    * Using this to automatically unsubscribe from observables on lifecycle events
    */
   protected fun <T> bind(observable: Observable<T>): Observable<T> =
-      observable.compose(RxLifecycleAndroid.bindFragment(lifecycle))
+    observable.compose(RxLifecycleAndroid.bindFragment(lifecycle))
 }

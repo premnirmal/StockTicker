@@ -15,8 +15,7 @@ import javax.inject.Inject
 
 class HistoryProvider : IHistoryProvider {
 
-  @Inject
-  internal lateinit var historicalDataApi: HistoricalDataApi
+  @Inject internal lateinit var historicalDataApi: HistoricalDataApi
   private val apiKey = Injector.appComponent.appContext().getString(R.string.alpha_vantage_api_key)
 
   private var cachedData: WeakReference<Pair<String, List<DataPoint>>>? = null
@@ -34,8 +33,7 @@ class HistoryProvider : IHistoryProvider {
       }
       points.sort()
       points as List<DataPoint>
-    }.subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+    }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
   }
 
   override fun getHistoricalDataByRange(symbol: String, range: Range): Observable<List<DataPoint>> {
@@ -52,7 +50,7 @@ class HistoryProvider : IHistoryProvider {
       cachedData = null
       observable = historicalDataApi.getHistoricalDataFull(apiKey = apiKey, symbol = symbol).map {
         val points = ArrayList<DataPoint>()
-        it.timeSeries.forEach {entry ->
+        it.timeSeries.forEach { entry ->
           val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE).toEpochDay()
           points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
         }
@@ -62,7 +60,6 @@ class HistoryProvider : IHistoryProvider {
         filtered
       }
     }
-    return observable.subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+    return observable.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
   }
 }

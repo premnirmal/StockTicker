@@ -22,5 +22,5 @@ class RxBus {
    * Subscribe to a specific event type
    */
   fun <T> forEventType(eventType: Class<T>): Observable<T> =
-      _bus.ofType(eventType).observeOn(AndroidSchedulers.mainThread())
+    _bus.ofType(eventType).observeOn(AndroidSchedulers.mainThread())
 }

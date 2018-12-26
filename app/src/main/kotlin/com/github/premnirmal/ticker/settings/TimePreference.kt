@@ -2,53 +2,21 @@ package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.preference.DialogPreference
 import android.util.AttributeSet
-import android.view.View
-import android.widget.TimePicker
+import androidx.preference.DialogPreference
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class TimePreference(ctxt: Context, attrs: AttributeSet) : DialogPreference(ctxt, attrs) {
-  private var lastHour = 0
-  private var lastMinute = 0
-  lateinit private var picker: TimePicker
+class TimePreference(context: Context, attrs: AttributeSet) : DialogPreference(context, attrs) {
 
-  init {
-    positiveButtonText = "Set"
-    negativeButtonText = "Cancel"
-  }
-
-  override fun onCreateDialogView(): View {
-    picker = TimePicker(context)
-    picker.setIs24HourView(true)
-    return picker as TimePicker
-  }
-
-  override fun onBindDialogView(v: View) {
-    super.onBindDialogView(v)
-    picker.currentHour = lastHour
-    picker.currentMinute = lastMinute
-  }
-
-  override fun onDialogClosed(positiveResult: Boolean) {
-    super.onDialogClosed(positiveResult)
-    if (positiveResult) {
-      lastHour = picker.currentHour
-      lastMinute = picker.currentMinute
-      val hourString = if (lastHour < 10) "0" + lastHour else lastHour.toString()
-      val minuteString = if (lastMinute < 10) "0" + lastMinute else lastMinute.toString()
-      val time = hourString + ":" + minuteString
-      if (callChangeListener(time)) {
-        persistString(time)
-      }
-    }
-  }
+  var lastHour = 0
+  var lastMinute = 0
 
   override fun onGetDefaultValue(a: TypedArray, index: Int): Any = a.getString(index)
 
   override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
+    super.onSetInitialValue(restoreValue, defaultValue)
     val time: String = if (restoreValue) {
       if (defaultValue == null) {
         getPersistedString("00:00")

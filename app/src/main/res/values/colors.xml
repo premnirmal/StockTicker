@@ -25,6 +25,9 @@
   <color name="light_grey_text">#90d3d3d3</color>
   <color name="grey_text">#d3d3d3</color>
 
+  <color name="disabled_grey">#98545454</color>
+  <color name="unselected_grey">#FFbdbdbd</color>
+
   <color name="negative_red">#FF6666</color>
   <color name="positive_green">#CCFF66</color>
   <color name="positive_green_dark">#009900</color>

@@ -12,10 +12,12 @@ import javax.inject.Singleton
 @Singleton
 class WidgetDataProvider {
 
-  @Inject
-  internal lateinit var widgetManager: AppWidgetManager
-  @Inject
-  internal lateinit var context: Context
+  companion object {
+    const val INVALID_WIDGET_ID = AppWidgetManager.INVALID_APPWIDGET_ID
+  }
+
+  @Inject internal lateinit var widgetManager: AppWidgetManager
+  @Inject internal lateinit var context: Context
 
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap<Int, WidgetData>()
@@ -26,7 +28,7 @@ class WidgetDataProvider {
   }
 
   fun getAppWidgetIds(): IntArray =
-      widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+    widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
 
   fun dataForWidgetId(widgetId: Int): WidgetData {
     synchronized(widgets) {

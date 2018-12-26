@@ -3,12 +3,12 @@ package com.github.premnirmal.ticker.news
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.support.customtabs.CustomTabsIntent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.browser.customtabs.CustomTabsIntent
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -51,12 +51,9 @@ class NewsFeedActivity : BaseGraphActivity() {
     private const val DATA_POINTS = "DATA_POINTS"
   }
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
-  @Inject
-  internal lateinit var newsProvider: NewsProvider
-  @Inject
-  internal lateinit var historyProvider: IHistoryProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var newsProvider: NewsProvider
+  @Inject internal lateinit var historyProvider: IHistoryProvider
   private lateinit var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,19 +109,19 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   private fun fetchData() {
     if (isNetworkOnline()) {
-      bind(historyProvider.getHistoricalDataShort(quote.symbol)).subscribe(
-          object : SimpleSubscriber<List<DataPoint>>() {
-            override fun onNext(result: List<DataPoint>) {
-              dataPoints = result
-              loadGraph(graphView)
-            }
+      bind(historyProvider.getHistoricalDataShort(quote.symbol)).subscribe(object :
+          SimpleSubscriber<List<DataPoint>>() {
+        override fun onNext(result: List<DataPoint>) {
+          dataPoints = result
+          loadGraph(graphView)
+        }
 
-            override fun onError(e: Throwable) {
-              progress.visibility = View.GONE
-              graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-              InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
-            }
-          })
+        override fun onError(e: Throwable) {
+          progress.visibility = View.GONE
+          graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+          InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
+        }
+      })
     } else {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.graph_fetch_failed))
@@ -145,8 +142,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     } else {
       news_container.visibility = View.VISIBLE
       for (newsArticle in articles) {
-        val layout = LayoutInflater.from(this)
-            .inflate(R.layout.item_news, news_container, false)
+        val layout = LayoutInflater.from(this).inflate(R.layout.item_news, news_container, false)
         val sourceView: TextView = layout.findViewById(R.id.news_source)
         val titleView: TextView = layout.findViewById(R.id.news_title)
         val subTitleView: TextView = layout.findViewById(R.id.news_subtitle)
@@ -164,15 +160,12 @@ class NewsFeedActivity : BaseGraphActivity() {
         layout.tag = newsArticle
         layout.setOnClickListener {
           val article = it.tag as NewsArticle
-          val customTabsIntent = CustomTabsIntent.Builder()
-              .addDefaultShareMenuItem()
-              .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
-              .setShowTitle(true)
-              .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
-              .build()
+          val customTabsIntent = CustomTabsIntent.Builder().addDefaultShareMenuItem()
+              .setToolbarColor(this.resources.getColor(R.color.colorPrimary)).setShowTitle(true)
+              .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap()).build()
           CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
-          CustomTabsHelper.openCustomTab(this, customTabsIntent,
-              Uri.parse(article.url), WebViewFallback())
+          CustomTabsHelper.openCustomTab(this, customTabsIntent, Uri.parse(article.url),
+              WebViewFallback())
         }
       }
     }
@@ -220,17 +213,17 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   private fun fetchNews() {
     if (isNetworkOnline()) {
-      bind(newsProvider.getNews(quote.newsQuery())).subscribe(
-          object : SimpleSubscriber<List<NewsArticle>>() {
-            override fun onNext(result: List<NewsArticle>) {
-              setUpArticles(result)
-            }
+      bind(newsProvider.getNews(quote.newsQuery())).subscribe(object :
+          SimpleSubscriber<List<NewsArticle>>() {
+        override fun onNext(result: List<NewsArticle>) {
+          setUpArticles(result)
+        }
 
-            override fun onError(e: Throwable) {
-              news_container.visibility = View.GONE
-              InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
-            }
-          })
+        override fun onError(e: Throwable) {
+          news_container.visibility = View.GONE
+          InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
+        }
+      })
     } else {
       news_container.visibility = View.GONE
       InAppMessage.showMessage(this, getString(R.string.no_network_message))

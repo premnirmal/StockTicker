@@ -17,12 +17,9 @@ import javax.inject.Singleton
 @Singleton
 class StocksApi @Inject constructor() {
 
-  @Inject
-  internal lateinit var gson: Gson
-  @Inject
-  internal lateinit var financeApi: Robindahood
-  @Inject
-  internal lateinit var clock: AppClock
+  @Inject internal lateinit var gson: Gson
+  @Inject internal lateinit var financeApi: Robindahood
+  @Inject internal lateinit var clock: AppClock
   var lastFetched: Long = 0
 
   init {
@@ -31,33 +28,28 @@ class StocksApi @Inject constructor() {
 
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
     val query = tickerList.joinToString(",")
-    return financeApi.getStocks(query)
-        .doOnNext {
-          lastFetched = clock.currentTimeMillis()
-        }
-        .map { quoteNets ->
-          val quotesMap = HashMap<String, Quote>()
-          for (quoteNet in quoteNets) {
-            val quote = Quote.fromQuoteNet(quoteNet)
-            quotesMap[quote.symbol] = quote
-          }
-          quotesMap
-        }
+    return financeApi.getStocks(query).doOnNext {
+      lastFetched = clock.currentTimeMillis()
+    }.map { quoteNets ->
+      val quotesMap = HashMap<String, Quote>()
+      for (quoteNet in quoteNets) {
+        val quote = Quote.fromQuoteNet(quoteNet)
+        quotesMap[quote.symbol] = quote
+      }
+      quotesMap
+    }
         // Try to keep original order of tickerList.
         .map { quotesMap ->
           val quotes = ArrayList<Quote>()
-          tickerList
-              .filter { quotesMap.containsKey(it) }
-              .mapTo(quotes) { quotesMap.remove(it)!! }
+          tickerList.filter { quotesMap.containsKey(it) }.mapTo(quotes) { quotesMap.remove(it)!! }
           if (quotesMap.isNotEmpty()) {
             quotes.addAll(quotesMap.values)
           }
           quotes as List<Quote>
-        }
-        .doOnError { e ->
+        }.doOnError { e ->
           if (e is HttpException) {
-            val errorBody: ErrorBody? = gson.fromJson(e.response().errorBody().string(),
-                ErrorBody::class.java)
+            val errorBody: ErrorBody? =
+              gson.fromJson(e.response().errorBody().string(), ErrorBody::class.java)
             errorBody?.let {
               val robindahoodException = RobindahoodException(it, e, e.code())
               Timber.w(robindahoodException)

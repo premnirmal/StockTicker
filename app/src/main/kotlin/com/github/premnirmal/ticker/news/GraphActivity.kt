@@ -11,12 +11,14 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
 import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
@@ -42,10 +44,8 @@ class GraphActivity : BaseGraphActivity() {
 
   private var range = Range.THREE_MONTH
   private lateinit var ticker: String
-  @Inject
-  internal lateinit var historyProvider: IHistoryProvider
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var historyProvider: IHistoryProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -157,9 +157,7 @@ class GraphActivity : BaseGraphActivity() {
       R.id.max -> range = Range.MAX
     }
     val parent = v.parent as ViewGroup
-    (0 until parent.childCount)
-        .map { parent.getChildAt(it) }
-        .forEach { it.isEnabled = it != v }
+    (0 until parent.childCount).map { parent.getChildAt(it) }.forEach { it.isEnabled = it != v }
     getData()
   }
 }

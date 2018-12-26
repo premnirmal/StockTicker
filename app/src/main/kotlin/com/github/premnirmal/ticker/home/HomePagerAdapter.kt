@@ -1,15 +1,13 @@
 package com.github.premnirmal.ticker.home
 
 import android.appwidget.AppWidgetManager
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
-class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+class HomePagerAdapter(fm: androidx.fragment.app.FragmentManager) :
+    androidx.fragment.app.FragmentPagerAdapter(fm) {
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
@@ -17,7 +15,7 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
     Injector.appComponent.inject(this)
   }
 
-  override fun getItem(position: Int): Fragment {
+  override fun getItem(position: Int): androidx.fragment.app.Fragment {
     val appWidgetIds = appWidgetIds()
     return if (appWidgetIds.isEmpty()) {
       PortfolioFragment.newInstance()
@@ -35,8 +33,7 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
   override fun getPageTitle(position: Int): CharSequence {
     val appWidgetIds = appWidgetIds()
-    return if (appWidgetIds.isEmpty() ||
-        appWidgetIds[position] == AppWidgetManager.INVALID_APPWIDGET_ID) {
+    return if (appWidgetIds.isEmpty() || appWidgetIds[position] == AppWidgetManager.INVALID_APPWIDGET_ID) {
       ""
     } else {
       val widgetData = widgetDataProvider.dataForWidgetId(appWidgetIds[position])
@@ -45,5 +42,5 @@ class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
   }
 
   override fun getPageWidth(position: Int): Float =
-      if (count > 1) 0.95f else super.getPageWidth(position)
+    if (count > 1) 0.95f else super.getPageWidth(position)
 }

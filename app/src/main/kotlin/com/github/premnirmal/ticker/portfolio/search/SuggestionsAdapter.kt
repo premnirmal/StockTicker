@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.portfolio.search
 
-import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -14,11 +13,12 @@ import java.util.ArrayList
 /**
  * Created by premnirmal on 2/26/16.
  */
-internal class SuggestionsAdapter(private val callback: Callback) : RecyclerView.Adapter<SuggestionVH>() {
+internal class SuggestionsAdapter(private val suggestionClickListener: SuggestionClickListener) :
+    androidx.recyclerview.widget.RecyclerView.Adapter<SuggestionVH>() {
 
   private val suggestions: MutableList<Suggestion> = ArrayList()
 
-  interface Callback {
+  interface SuggestionClickListener {
     fun onSuggestionClick(suggestion: Suggestion)
   }
 
@@ -42,21 +42,23 @@ internal class SuggestionsAdapter(private val callback: Callback) : RecyclerView
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionVH {
     val inflater = LayoutInflater.from(parent.context)
-    return SuggestionVH(inflater.inflate(R.layout.item_suggestion, parent, false), callback)
+    return SuggestionVH(inflater.inflate(R.layout.item_suggestion, parent, false),
+        suggestionClickListener)
   }
 
   override fun onBindViewHolder(holder: SuggestionVH, position: Int) {
     holder.update(getItem(position))
   }
 
-  class SuggestionVH(itemView: View, private val callback: Callback) : RecyclerView.ViewHolder(itemView) {
+  class SuggestionVH(itemView: View, private val suggestionClickListener: SuggestionClickListener) :
+      androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
     private val textView: TextView = itemView as TextView
     private var suggestion: Suggestion? = null
 
     init {
       itemView.setOnClickListener { _ ->
-        suggestion?.let { callback.onSuggestionClick(it) }
+        suggestion?.let { suggestionClickListener.onSuggestionClick(it) }
       }
     }
 

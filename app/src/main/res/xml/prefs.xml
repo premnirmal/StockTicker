@@ -1,57 +1,87 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+  <Preference
+      app:iconSpaceReserved="false"
+      app:key="SETTING_WHATS_NEW"
+      app:selectable="true"
+      app:title="@string/whats_new"/>
+
+  <Preference
+      app:iconSpaceReserved="false"
+      app:key="SETTING_TUTORIAL"
+      app:selectable="true"
+      app:title="@string/tutorial"/>
 
   <ListPreference
-      android:key="com.github.premnirmal.ticker.textsize"
-      android:title="@string/choose_text_size"
-      android:defaultValue="1"
-      android:entries="@array/font_sizes"
-      android:entryValues="@array/font_sizes_values"
-      android:negativeButtonText="@null"
-      android:positiveButtonText="@null"/>
+      app:defaultValue="1"
+      app:entries="@array/font_sizes"
+      app:entryValues="@array/font_sizes_values"
+      app:iconSpaceReserved="false"
+      app:key="com.github.premnirmal.ticker.textsize"
+      app:negativeButtonText="@null"
+      app:positiveButtonText="@null"
+      app:title="@string/choose_text_size"/>
 
   <ListPreference
-      android:key="UPDATE_INTERVAL"
-      android:title="@string/update_interval"
-      android:defaultValue="1"
-      android:entries="@array/sync_periods"
-      android:entryValues="@array/sync_periods_values"
-      android:negativeButtonText="@null"
-      android:positiveButtonText="@null"/>
+      app:defaultValue="1"
+      app:entries="@array/sync_periods"
+      app:entryValues="@array/sync_periods_values"
+      app:iconSpaceReserved="false"
+      app:key="UPDATE_INTERVAL"
+      app:negativeButtonText="@null"
+      app:positiveButtonText="@null"
+      app:title="@string/update_interval"/>
 
   <com.github.premnirmal.ticker.settings.TimePreference
-      android:key="START_TIME"
-      android:title="@string/start_time"
-      android:defaultValue="09:30"/>
+      app:defaultValue="09:30"
+      app:iconSpaceReserved="false"
+      app:key="START_TIME"
+      app:title="@string/start_time"/>
 
   <com.github.premnirmal.ticker.settings.TimePreference
-      android:key="END_TIME"
-      android:title="@string/end_time"
-      android:defaultValue="16:00"/>
+      app:defaultValue="16:00"
+      app:iconSpaceReserved="false"
+      app:key="END_TIME"
+      app:title="@string/end_time"/>
 
   <Preference
-      android:key="SETTING_SHARE"
-      android:title="@string/action_share"
-      android:selectable="true"/>
+      app:iconSpaceReserved="false"
+      app:key="SETTING_SHARE"
+      app:selectable="true"
+      app:title="@string/action_share"/>
 
   <Preference
-      android:key="SETTING_IMPORT"
-      android:title="@string/action_import"
-      android:selectable="true"
-      android:summary="@string/import_desc"/>
+      app:iconSpaceReserved="false"
+      app:key="SETTING_IMPORT"
+      app:selectable="true"
+      app:summary="@string/import_desc"
+      app:title="@string/action_import"/>
 
   <Preference
-      android:key="SETTING_EXPORT"
-      android:title="@string/action_export"
-      android:selectable="true"
-      android:summary="@string/export_desc"/>
+      app:iconSpaceReserved="false"
+      app:key="SETTING_EXPORT"
+      app:selectable="true"
+      app:summary="@string/export_desc"
+      app:title="@string/action_export"/>
 
   <Preference
-      android:key="SETTING_NUKE"
-      android:title="@string/action_nuke"
-      android:selectable="true"/>
+      app:iconSpaceReserved="false"
+      app:key="SETTING_NUKE"
+      app:selectable="true"
+      app:title="@string/action_nuke"/>
 
   <Preference
-      android:key="SETTING_PRIVACY_POLICY"
-      android:title="@string/privacy_policy"
-      android:selectable="true"/>
-</PreferenceScreen>
+      app:iconSpaceReserved="false"
+      app:key="SETTING_PRIVACY_POLICY"
+      app:selectable="true"
+      app:title="@string/privacy_policy"/>
+
+  <com.github.premnirmal.ticker.settings.FooterPreference
+      app:iconSpaceReserved="false"
+      app:key="SETTING_FOOTER"
+      app:layout="@layout/preferences_footer"
+      app:selectable="false"/>
+
+</androidx.preference.PreferenceScreen>

@@ -42,29 +42,24 @@ class AlarmScheduler @Inject constructor() {
     val startTimez = appPreferences.startTime()
     val endTimez = appPreferences.endTime()
     // whether the start time is after the end time e.g. start time is 11pm and end time is 5am
-    val inverse = startTimez[0] > endTimez[0] ||
-        (startTimez[0] == endTimez[0] && startTimez[1] > endTimez[1])
+    val inverse =
+      startTimez[0] > endTimez[0] || (startTimez[0] == endTimez[0] && startTimez[1] > endTimez[1])
     val now: ZonedDateTime = clock.todayZoned()
     var mutableDateTime: ZonedDateTime = clock.todayZoned()
-    val startTime = clock.todayZoned()
-        .withHour(startTimez[0])
-        .withMinute(startTimez[1])
-    var endTime = clock.todayZoned()
-        .withHour(endTimez[0])
-        .withMinute(endTimez[1])
+    val startTime = clock.todayZoned().withHour(startTimez[0]).withMinute(startTimez[1])
+    var endTime = clock.todayZoned().withHour(endTimez[0]).withMinute(endTimez[1])
     if (inverse && now.isAfter(startTime)) {
       endTime = endTime.plusDays(1)
     }
 
-    val lastFetchedTime = ZonedDateTime.ofInstant(
-        Instant.ofEpochMilli(lastFetchedMs), ZoneId.systemDefault())
+    val lastFetchedTime =
+      ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastFetchedMs), ZoneId.systemDefault())
 
     val msToNextAlarm: Long
-    if (now.isBefore(endTime)
-        && (now.isAfter(startTime) || now.isEqual(startTime))
-        && dayOfWeek <= FRIDAY) {
-      mutableDateTime = if (lastFetchedMs > 0
-          && Duration.between(lastFetchedTime, now).toMillis() >= appPreferences.updateIntervalMs) {
+    if (now.isBefore(endTime) && (now.isAfter(startTime) || now.isEqual(
+            startTime)) && dayOfWeek <= FRIDAY) {
+      mutableDateTime = if (lastFetchedMs > 0 && Duration.between(lastFetchedTime,
+              now).toMillis() >= appPreferences.updateIntervalMs) {
         mutableDateTime.plusMinutes(1)
       } else {
         mutableDateTime.plusSeconds(appPreferences.updateIntervalMs / 1000L)
@@ -103,14 +98,15 @@ class AlarmScheduler @Inject constructor() {
       AlarmSchedulerLollipop.scheduleUpdate(msToNextAlarm, context)
     } else {
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-      val pendingIntent = PendingIntent.getBroadcast(context.applicationContext, 0,
-          updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+      val pendingIntent =
+        PendingIntent.getBroadcast(context.applicationContext, 0, updateReceiverIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT)
       if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
         alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+            clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
       } else {
         alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+            clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
       }
     }
     return nextAlarmDate

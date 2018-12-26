@@ -31,12 +31,9 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   // Position fields
 
-  @Deprecated("remove after migration")
-  var isPosition: Boolean = false
-  @Deprecated("remove after migration")
-  var positionPrice: Float = 0.toFloat()
-  @Deprecated("remove after migration")
-  var positionShares: Float = 0.toFloat()
+  @Deprecated("remove after migration") var isPosition: Boolean = false
+  @Deprecated("remove after migration") var positionPrice: Float = 0.toFloat()
+  @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
   var position: Position? = null
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
@@ -129,5 +126,5 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   override operator fun compareTo(other: Quote): Int =
-      other.changeInPercent.compareTo(changeInPercent)
+    other.changeInPercent.compareTo(changeInPercent)
 }

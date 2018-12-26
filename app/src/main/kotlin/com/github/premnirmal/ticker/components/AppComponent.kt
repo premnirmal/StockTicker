@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.components
 import android.content.Context
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
+import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
@@ -21,36 +22,29 @@ import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
-import com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity
-import com.github.premnirmal.ticker.settings.SettingsActivity
-import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
+import com.github.premnirmal.ticker.portfolio.search.SearchFragment
+import com.github.premnirmal.ticker.settings.SettingsFragment
+import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import com.github.premnirmal.ticker.widget.WidgetsFragment
 
 /**
  * Created by premnirmal on 3/3/16.
  */
 @javax.inject.Singleton
-@dagger.Component(
-    modules = arrayOf(AppModule::class)
-)
+@dagger.Component(modules = arrayOf(AppModule::class))
 interface AppComponent {
 
   // Activities
 
   fun inject(paranormalActivity: ParanormalActivity)
 
-  fun inject(settingsActivity: SettingsActivity)
-
-  fun inject(tickerSelectorActivity: TickerSelectorActivity)
-
   fun inject(addPositionActivity: AddPositionActivity)
-
-  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
 
   fun inject(splashActivity: SplashActivity)
 
@@ -106,7 +100,17 @@ interface AppComponent {
 
   fun inject(homeAdapter: HomePagerAdapter)
 
+  fun inject(homeFragment: HomeFragment)
+
+  fun inject(fragment: SearchFragment)
+
+  fun inject(settingsFragment: SettingsFragment)
+
   fun inject(stocksAdapter: StocksAdapter)
+
+  fun inject(fragment: WidgetsFragment)
+
+  fun inject(widgetSettingsFragment: WidgetSettingsFragment)
 
   fun appContext(): Context
 

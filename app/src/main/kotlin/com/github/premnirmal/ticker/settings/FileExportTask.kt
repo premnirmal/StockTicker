@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.settings
 
 import android.os.AsyncTask
-import android.text.TextUtils
 import com.github.premnirmal.ticker.AppPreferences
 import timber.log.Timber
 import java.io.FileNotFoundException

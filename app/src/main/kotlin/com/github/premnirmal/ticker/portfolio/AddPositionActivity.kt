@@ -32,21 +32,20 @@ open class AddPositionActivity : BaseActivity() {
 
   companion object {
     const val TICKER = "TICKER"
-    private val PATTERN: Pattern = Pattern.compile(
-        "[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (1) + "})?)||(\\.)?")
+    private val PATTERN: Pattern =
+      Pattern.compile("[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (1) + "})?)||(\\.)?")
 
     private class DecimalDigitsInputFilter() : InputFilter {
 
       override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dStart: Int,
-          dEnd: Int): CharSequence? {
+        dEnd: Int): CharSequence? {
         val matcher = PATTERN.matcher(dest)
         return if (!matcher.matches()) "" else null
       }
     }
   }
 
-  @Inject
-  internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: IStocksProvider
   internal lateinit var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {

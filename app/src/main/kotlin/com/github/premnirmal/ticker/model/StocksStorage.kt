@@ -20,8 +20,7 @@ class StocksStorage {
     const val KEY_TICKERS = "TICKERS"
   }
 
-  @Inject
-  internal lateinit var gson: Gson
+  @Inject internal lateinit var gson: Gson
 
   init {
     Injector.appComponent.inject(this)
@@ -35,8 +34,7 @@ class StocksStorage {
     Paper.book().write(KEY_STOCKS, quotes)
   }
 
-  @Deprecated("remove after upgrade")
-  fun readPositionsLegacy(): MutableList<Quote> {
+  @Deprecated("remove after upgrade") fun readPositionsLegacy(): MutableList<Quote> {
     return Paper.book().read(KEY_POSITIONS_LEGACY, ArrayList())
   }
 

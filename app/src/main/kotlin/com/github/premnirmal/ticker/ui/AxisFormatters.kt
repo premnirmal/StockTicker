@@ -22,15 +22,15 @@ class DateAxisFormatter : IAxisValueFormatter {
 
 class ValueAxisFormatter : IAxisValueFormatter {
 
-  override fun getFormattedValue(value: Float,
-      axis: AxisBase): String = AppPreferences.DECIMAL_FORMAT.format(value)
+  override fun getFormattedValue(value: Float, axis: AxisBase): String =
+    AppPreferences.DECIMAL_FORMAT.format(value)
 }
 
 class MultilineXAxisRenderer(viewPortHandler: ViewPortHandler?, xAxis: XAxis?,
-    trans: Transformer?) : XAxisRenderer(viewPortHandler, xAxis, trans) {
+  trans: Transformer?) : XAxisRenderer(viewPortHandler, xAxis, trans) {
 
   override fun drawLabel(c: Canvas, formattedLabel: String, x: Float, y: Float, anchor: MPPointF,
-      angleDegrees: Float) {
+    angleDegrees: Float) {
     val lines = formattedLabel.split("-")
     for (i in 0 until lines.size) {
       val vOffset = i * mAxisLabelPaint.textSize

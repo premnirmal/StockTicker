@@ -28,11 +28,8 @@ class UserAgentInterceptor : Interceptor {
     Injector.appComponent.inject(this)
   }
 
-  @Throws(IOException::class)
-  override fun intercept(chain: Chain): Response {
-    val newRequest = chain.request().newBuilder()
-        .addHeader(USER_AGENT_KEY, userAgent)
-        .build()
+  @Throws(IOException::class) override fun intercept(chain: Chain): Response {
+    val newRequest = chain.request().newBuilder().addHeader(USER_AGENT_KEY, userAgent).build()
     return chain.proceed(newRequest)
   }
 

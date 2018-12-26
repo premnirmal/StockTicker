@@ -26,7 +26,7 @@ internal class StupidYahooWrapConverter(gson: Gson) : BaseConverter<Suggestions>
 
   companion object {
 
-    private val PATTERN_RESPONSE = Pattern.compile(
-        "YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)")
+    private val PATTERN_RESPONSE =
+      Pattern.compile("YAHOO\\.Finance\\.SymbolSuggest\\.ssCallback\\((\\{.*?\\})\\)")
   }
 }

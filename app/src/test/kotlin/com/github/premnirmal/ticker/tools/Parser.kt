@@ -13,7 +13,7 @@ class Parser {
   val parser = JsonParser()
   val gson = Gson()
 
-  fun <T> parseJsonFile(type: Type, fileName: String) : T {
+  fun <T> parseJsonFile(type: Type, fileName: String): T {
     val json = parseJsonFile(fileName)
     return gson.fromJson(json, type)
   }
@@ -22,8 +22,7 @@ class Parser {
     val jsonElement: JsonElement
     try {
       val `in` = javaClass.classLoader.getResourceAsStream(resourceName) ?: throw AssertionError(
-          "Failed loading resource " + resourceName + " from "
-              + Parser::class.java)
+          "Failed loading resource " + resourceName + " from " + Parser::class.java)
       val jsonString = readInput(`in`)
       jsonElement = convertStringToJson(jsonString)
     } catch (ioe: IOException) {
@@ -33,8 +32,7 @@ class Parser {
     return jsonElement
   }
 
-  @Throws(IOException::class)
-  private fun readInput(`in`: InputStream): String {
+  @Throws(IOException::class) private fun readInput(`in`: InputStream): String {
     val baos = ByteArrayOutputStream()
     val buffer = ByteArray(1024)
     var length = `in`.read(buffer)
@@ -46,8 +44,7 @@ class Parser {
     return baos.toString()
   }
 
-  @Throws(IOException::class)
-  private fun convertStringToJson(jsonString: String): JsonElement {
+  @Throws(IOException::class) private fun convertStringToJson(jsonString: String): JsonElement {
     return parser.parse(jsonString)
   }
 }

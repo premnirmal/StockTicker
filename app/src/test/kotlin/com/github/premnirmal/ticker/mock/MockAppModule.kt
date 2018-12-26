@@ -22,30 +22,24 @@ class MockAppModule(private val app: StocksApp) {
 
   @Provides internal fun provideApplicationContext(): Context = app
 
-  @Provides
-  @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class)
+  @Provides @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class)
 
-  @Provides
-  @Singleton internal fun provideEventBus(): RxBus = RxBus()
+  @Provides @Singleton internal fun provideEventBus(): RxBus = RxBus()
 
-  @Provides
-  @Singleton internal fun provideMainThreadHandler(): Handler = Handler(Looper.getMainLooper())
+  @Provides @Singleton internal fun provideMainThreadHandler(): Handler =
+    Handler(Looper.getMainLooper())
 
-  @Provides
-  @Singleton internal fun provideDefaultSharedPreferences(
-      context: Context): SharedPreferences {
-    val sharedPreferences = context.getSharedPreferences(AppPreferences.PREFS_NAME,
-        Context.MODE_PRIVATE)
+  @Provides @Singleton internal fun provideDefaultSharedPreferences(
+    context: Context): SharedPreferences {
+    val sharedPreferences =
+      context.getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
     return sharedPreferences
   }
 
-  @Provides
-  @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
-      AppWidgetManager.getInstance(app)
+  @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
+    AppWidgetManager.getInstance(app)
 
-  @Provides
-  @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
+  @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 
-  @Provides
-  @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
+  @Provides @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
 }

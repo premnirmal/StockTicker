@@ -5,15 +5,13 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.base.LifeCycleDelegate
+import com.github.premnirmal.ticker.base.ParentFragmentDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
@@ -34,9 +32,9 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
+class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
 
-  interface Callback {
+  interface Parent {
     fun onDragStarted()
     fun onDragEnded()
   }
@@ -68,11 +66,9 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
    */
   class InjectionHolder {
 
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-    @Inject
-    internal lateinit var bus: RxBus
+    @Inject internal lateinit var bus: RxBus
 
     init {
       Injector.appComponent.inject(this)
@@ -80,7 +76,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   private lateinit var holder: InjectionHolder
-  private var callback: Callback by LifeCycleDelegate(this, this)
+  private val parent: Parent by ParentFragmentDelegate(this)
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -98,13 +94,14 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
     val moveToWidgetItem = popupWindow.menu.findItem(R.id.move_to_widget)
-    moveToWidgetItem.isEnabled = widgetId != AppWidgetManager.INVALID_APPWIDGET_ID
-        && holder.widgetDataProvider.getAppWidgetIds().size > 1
+    moveToWidgetItem.isEnabled = widgetId !=
+        AppWidgetManager.INVALID_APPWIDGET_ID && holder.widgetDataProvider.getAppWidgetIds().size >
+        1
     popupWindow.setOnMenuItemClickListener { menuItem ->
       val itemId = menuItem.itemId
       when (itemId) {
         R.id.remove -> {
-          promptRemove(quote, position)
+          promptRemove(quote)
         }
         R.id.move_to_widget -> {
           val widgetDataProvider = holder.widgetDataProvider
@@ -122,9 +119,7 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
                   holder.bus.post(RefreshEvent())
                   dialog.dismiss()
                 }
-              }
-              .setTitle(R.string.select_widget)
-              .show()
+              }.setTitle(R.string.select_widget).show()
         }
       }
       true
@@ -141,15 +136,14 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   override fun onStart() {
     super.onStart()
     update()
-    bind(holder.bus.forEventType(RefreshEvent::class.java))
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { _ ->
-          update()
-        }
+    bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
+        AndroidSchedulers.mainThread()).subscribe {
+      update()
+    }
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-      savedInstanceState: Bundle?): View? {
+    savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
@@ -157,15 +151,15 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(
         SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
-    val gridLayoutManager = GridLayoutManager(context, 2)
+    val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(stocksAdapter)
     itemTouchHelper = ItemTouchHelper(callback)
     itemTouchHelper?.attachToRecyclerView(stockList)
 
-    savedInstanceState?.let {
-      val listViewState = it.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
+    savedInstanceState?.let { state ->
+      val listViewState = state.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
       listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
     }
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -180,20 +174,17 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     stocksAdapter.refresh()
   }
 
-  private fun promptRemove(quote: Quote?, _position: Int) {
+  private fun promptRemove(quote: Quote?) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-      AlertDialog.Builder(activity)
-          .setTitle(R.string.remove)
+      AlertDialog.Builder(activity).setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove) { dialog, _ ->
             widgetData.removeStock(it.symbol)
             stocksAdapter.remove(it)
             holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
-          }
-          .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
-          .show()
+          }.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }.show()
     }
   }
 
@@ -205,8 +196,8 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
     }
   }
 
-  override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-    callback.onDragStarted()
+  override fun onStartDrag(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
+    parent.onDragStarted()
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     if (widgetData.autoSortEnabled()) {
       widgetData.setAutoSort(false)
@@ -219,6 +210,6 @@ open class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragLi
   }
 
   override fun onStopDrag() {
-    callback.onDragEnded()
+    parent.onDragEnded()
   }
 }

@@ -32,28 +32,19 @@
         android:label="@string/app_name"
         android:launchMode="singleTask"
         android:screenOrientation="portrait"
-        android:theme="@style/ParanormalActivityTheme"/>
-    <activity
-        android:name="com.github.premnirmal.ticker.portfolio.search.TickerSelectorActivity"
-        android:label="@string/add_ticker"
-        android:theme="@style/TickerSelectorActivityTheme"
-        android:windowSoftInputMode="adjustResize"/>
+        android:theme="@style/ParanormalActivityTheme">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+      </intent-filter>
+    </activity>
     <activity
         android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
         android:label="@string/add_position"
         android:screenOrientation="portrait"
         android:windowSoftInputMode="adjustResize"/>
-    <activity
-        android:name="com.github.premnirmal.ticker.settings.SettingsActivity"
-        android:label="@string/app_settings"/>
-    <activity
-        android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
-        android:label="@string/action_Settings"
-        android:theme="@style/WidgetSettingsActivityTheme">
-      <intent-filter>
-        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
-      </intent-filter>
-    </activity>
     <activity
         android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
         android:label="@string/news_feed"
@@ -108,7 +99,7 @@
 
     <!-- File provider -->
     <provider
-        android:name="android.support.v4.content.FileProvider"
+        android:name="androidx.core.content.FileProvider"
         android:authorities="${applicationId}.provider"
         android:exported="false"
         android:grantUriPermissions="true">

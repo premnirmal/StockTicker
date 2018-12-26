@@ -15,6 +15,17 @@
     <!-- For AppCompat -->
     <item name="editTextStyle">@style/EditTextStyle</item>
     <item name="buttonStyle">@style/ButtonStyle</item>
+    <item name="preferenceTheme">@style/AppPreferenceTheme</item>
+  </style>
+  <!-- Custom Preference Theme -->
+  <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
+    <item name="preferenceFragmentCompatStyle">@style/AppPreferenceFragmentCompatStyle</item>
+    <item name="preferenceFragmentStyle">@style/AppPreferenceFragmentCompatStyle</item>
+  </style>
+  <!-- Custom Style for PreferenceFragmentCompat -->
+  <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material">
+    <item name="android:layout">@layout/fragment_settings</item>
+    <item name="layout">@layout/fragment_settings</item>
   </style>
 
   <style name="TranslucentTheme" parent="AppTheme">
@@ -27,12 +38,6 @@
   </style>
 
   <style name="ParanormalActivityTheme" parent="AppTheme"/>
-
-  <style name="SettingsActivityTheme" parent="TranslucentTheme"/>
-
-  <style name="WidgetSettingsActivityTheme" parent="TranslucentTheme"/>
-
-  <style name="TickerSelectorActivityTheme" parent="TranslucentTheme"/>
 
   <style name="NewsFeedActivityTheme" parent="AppTheme"/>
 
@@ -84,7 +89,7 @@
   </style>
 
   <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
-    <item name="android:textSize">34sp</item>
+    <item name="android:textSize">32sp</item>
   </style>
 
   <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
