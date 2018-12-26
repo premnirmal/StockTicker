@@ -1,23 +1,46 @@
 package com.github.premnirmal.ticker.widget
 
+import android.appwidget.AppWidgetManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.BaseAdapter
+import android.widget.TextView
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
-import com.github.premnirmal.ticker.ui.WidgetListAdapter
-import com.github.premnirmal.ticker.ui.WidgetListAdapter.WidgetClickListener
+import com.github.premnirmal.ticker.home.ChildFragment
+import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_widgets.recycler_view
 import kotlinx.android.synthetic.main.fragment_widgets.toolbar
+import kotlinx.android.synthetic.main.fragment_widgets.widget_selection_spinner
+import javax.inject.Inject
 
-class WidgetsFragment : BaseFragment(), WidgetClickListener {
+class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
 
-  private lateinit var adapter: WidgetListAdapter
+  companion object {
+    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+
+    fun newInstance(widgetId: Int): WidgetsFragment {
+      val fragment = WidgetsFragment()
+      val args = Bundle()
+      args.putInt(ARG_WIDGET_ID, widgetId)
+      fragment.arguments = args
+      return fragment
+    }
+  }
+
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  private lateinit var widgetDataList: List<WidgetData>
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    Injector.appComponent.inject(this)
+  }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?): View? {
@@ -27,19 +50,64 @@ class WidgetsFragment : BaseFragment(), WidgetClickListener {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
-    adapter = WidgetListAdapter(this)
-    recycler_view.layoutManager = LinearLayoutManager(activity)
-    recycler_view.addItemDecoration(androidx.recyclerview.widget.DividerItemDecoration(activity,
-        androidx.recyclerview.widget.DividerItemDecoration.VERTICAL))
-    recycler_view.adapter = adapter
+    widgetDataList = widgetDataProvider.getAppWidgetIds().map {
+      widgetDataProvider.dataForWidgetId(it)
+    }.sortedBy { it.widgetName() }
+    widget_selection_spinner.adapter = WidgetSpinnerAdapter(widgetDataList)
+    widget_selection_spinner.onItemSelectedListener = this
+
+    arguments?.let { bundle ->
+      val widgetId = bundle.getInt(ARG_WIDGET_ID)
+      if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+        val position = widgetDataList.indexOfFirst { it.widgetId == widgetId }
+        widget_selection_spinner.setSelection(position)
+      }
+    }
   }
 
-  override fun onResume() {
-    super.onResume()
-    adapter.notifyDataSetChanged()
+  private fun setWidgetFragment(widgetId: Int) {
+    val fragment = WidgetSettingsFragment.newInstance(widgetId)
+    childFragmentManager.beginTransaction().replace(R.id.child_fragment_container, fragment)
+        .commit()
   }
 
-  override fun onWidgetClick(widgetId: Int) {
-    startActivity(WidgetSettingsActivity.launchIntent(context!!, widgetId))
+  // ChildFragment
+
+  override fun setData(bundle: Bundle) {
+    if (isVisible) {
+      val widgetId = bundle.getInt(ARG_WIDGET_ID)
+      setWidgetFragment(widgetId)
+    } else {
+      arguments = bundle
+    }
+  }
+
+  // OnItemSelectedListener
+
+  override fun onNothingSelected(parent: AdapterView<*>?) {
+
+  }
+
+  override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    setWidgetFragment(widgetDataList[position].widgetId)
+  }
+
+  class WidgetSpinnerAdapter(private val data: List<WidgetData>) : BaseAdapter() {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+      val widgetData = getItem(position)
+      val view =
+        convertView ?: LayoutInflater.from(parent.context).inflate(R.layout.item_widget, parent,
+            false)
+      val nameTextView = view.findViewById<TextView>(R.id.widget_name_text)
+      nameTextView.text = widgetData.widgetName()
+      return view
+    }
+
+    override fun getItem(position: Int): WidgetData = data[position]
+
+    override fun getItemId(position: Int): Long = position.toLong()
+
+    override fun getCount(): Int = data.size
   }
 }

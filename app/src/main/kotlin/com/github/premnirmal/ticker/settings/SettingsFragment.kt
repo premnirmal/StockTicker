@@ -22,10 +22,12 @@ import androidx.core.content.FileProvider
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.toBitmap
@@ -45,7 +47,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class SettingsFragment : PreferenceFragmentCompat(),
+class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     ActivityCompat.OnRequestPermissionsResultCallback {
 
   companion object {
@@ -66,6 +68,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
 
+  // ChildFragment
+
+  override fun setData(bundle: Bundle) {
+
+  }
+
   override fun onAttach(context: Context) {
     super.onAttach(context)
     parent = context as Parent
@@ -84,6 +92,8 @@ class SettingsFragment : PreferenceFragmentCompat(),
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
+    listView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+    listView.isVerticalScrollBarEnabled = false
     setupSimplePreferencesScreen()
   }
 

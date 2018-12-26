@@ -39,7 +39,7 @@ import kotlinx.android.synthetic.main.fragment_home.view_pager
 import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
 
-class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
+class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   companion object {
     private const val MAX_FETCH_COUNT = 3
@@ -62,9 +62,7 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
   private var attemptingFetch = false
   private var isFABOpen = false
   private var fetchCount = 0
-  private val adapter: HomePagerAdapter by lazy {
-    HomePagerAdapter(childFragmentManager)
-  }
+  private lateinit var adapter: HomePagerAdapter
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -87,7 +85,7 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
-
+    adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
     subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
@@ -155,14 +153,14 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
       fab_bg.animate().alpha(0f).setDuration(FAB_ANIMATION_DURATION)
           .setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
-              fab_bg.visibility = View.GONE
+              if (isVisible) fab_bg.visibility = View.GONE
             }
           }).start()
       add_stocks_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION).start()
       edit_widget_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION)
           .setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animator: Animator) {
-              if (!isFABOpen) {
+              if (isVisible && !isFABOpen) {
                 add_stocks_container.visibility = View.GONE
                 edit_widget_container.visibility = View.GONE
               }
@@ -238,5 +236,11 @@ class HomeFragment : BaseFragment(), PortfolioFragment.Parent {
 
   override fun onDragEnded() {
     swipe_container.isEnabled = true
+  }
+
+  // ChildFragment
+
+  override fun setData(bundle: Bundle) {
+
   }
 }

@@ -1,17 +1,20 @@
 package com.github.premnirmal.ticker.home
 
+import android.app.Activity
 import android.app.AlertDialog.Builder
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
-import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
+import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
@@ -26,20 +29,23 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    HomeFragment.Parent, SettingsFragment.Parent, FragmentManager.OnBackStackChangedListener {
+    HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent,
+    FragmentManager.OnBackStackChangedListener {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
+    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     private val FRAGMENT_MAP =
-      mapOf<Class<*>, Int>(HomeFragment::class.java to R.id.action_portfolio,
-          WidgetsFragment::class.java to R.id.action_widgets,
-          SearchFragment::class.java to R.id.action_search,
-          SettingsFragment::class.java to R.id.action_settings)
+      mapOf<String, Int>(HomeFragment::class.java.name to R.id.action_portfolio,
+          WidgetsFragment::class.java.name to R.id.action_widgets,
+          SearchFragment::class.java.name to R.id.action_search,
+          SettingsFragment::class.java.name to R.id.action_settings)
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
+  private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,11 +58,28 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     bottom_navigation.setOnNavigationItemSelectedListener(this)
 
     if (savedInstanceState == null) {
-      supportFragmentManager.beginTransaction().add(R.id.fragment_container, HomeFragment())
-          .commit()
+      val fragment = HomeFragment()
+      supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
+      currentChild = fragment
     }
 
     supportFragmentManager.addOnBackStackChangedListener(this)
+
+    val widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+    if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+      val result = Intent()
+      result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+      setResult(Activity.RESULT_OK, result)
+
+      val fragment = WidgetsFragment.newInstance(widgetId)
+      supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
+          .addToBackStack(fragment.javaClass.name).commit()
+      currentChild = fragment
+
+      return
+    } else {
+      setResult(Activity.RESULT_CANCELED)
+    }
 
     val tutorialShown = appPreferences.tutorialShown()
     if (!tutorialShown) {
@@ -86,7 +109,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   private fun updateBottomNav() {
     val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-    val selectedItemId: Int? = FRAGMENT_MAP[currentFragment?.javaClass as Class<*>?]
+    val selectedItemId: Int? = FRAGMENT_MAP[currentFragment?.javaClass?.name]
     if (selectedItemId != null && selectedItemId != bottom_navigation.selectedItemId) {
       bottom_navigation.selectedItemId = selectedItemId
     }
@@ -125,21 +148,22 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   override fun onNavigationItemSelected(item: MenuItem): Boolean {
     val itemId = item.itemId
-    val currentFragment = supportFragmentManager.findFragmentById(id.fragment_container)
-    if (itemId != FRAGMENT_MAP[currentFragment?.javaClass as Class<*>?]) {
-      val fragment = when (itemId) {
-        id.action_portfolio -> HomeFragment()
-        id.action_widgets -> WidgetsFragment()
-        id.action_search -> SearchFragment()
-        id.action_settings -> SettingsFragment()
-        else -> {
-          return false
+    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+    if (FRAGMENT_MAP[currentFragment?.javaClass?.name] != itemId) {
+      if (currentChild == null || FRAGMENT_MAP[currentChild?.javaClass?.name] != itemId) {
+        val fragment: Fragment = when (itemId) {
+          id.action_portfolio -> HomeFragment()
+          id.action_widgets -> WidgetsFragment()
+          id.action_search -> SearchFragment()
+          id.action_settings -> SettingsFragment()
+          else -> {
+            return false
+          }
         }
-      }
 
-      if (currentFragment?.javaClass != fragment.javaClass) {
         supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
             .addToBackStack(fragment.javaClass.name).commit()
+        currentChild = fragment as ChildFragment
       }
     }
     return true
@@ -167,10 +191,13 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   // HomeFragment.Parent
+  // WidgetSettingsFragment.Parent
 
   override fun openWidgetSettings(widgetId: Int) {
     bottom_navigation.selectedItemId = R.id.action_widgets
-    startActivity(WidgetSettingsActivity.launchIntent(this, widgetId))
+    val data = Bundle()
+    data.putInt(ARG_WIDGET_ID, widgetId)
+    currentChild?.setData(data)
   }
 
   override fun openSearch(widgetId: Int) {

@@ -1,75 +1,70 @@
 package com.github.premnirmal.ticker.settings
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
+import android.view.ViewGroup
 import androidx.annotation.ArrayRes
-import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.base.ParentActivityDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_add_stock
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_autosort
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_autosort_checkbox
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_background
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_bold
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_bold_checkbox
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_layout_type
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_text_color
-import kotlinx.android.synthetic.main.activity_widget_settings.setting_widget_name
-import kotlinx.android.synthetic.main.activity_widget_settings.toolbar
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_add_stock
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_background
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
 import javax.inject.Inject
 
-class WidgetSettingsActivity : BaseActivity(), OnClickListener {
+class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   companion object {
     const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
 
-    fun launchIntent(context: Context, widgetId: Int): Intent {
-      val intent = Intent(context, WidgetSettingsActivity::class.java)
-      intent.putExtra(ARG_WIDGET_ID, widgetId)
-      return intent
+    fun newInstance(widgetId: Int): WidgetSettingsFragment {
+      val fragment = WidgetSettingsFragment()
+      val args = Bundle()
+      args.putInt(ARG_WIDGET_ID, widgetId)
+      fragment.arguments = args
+      return fragment
     }
   }
 
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  interface Parent {
+    fun openSearch(widgetId: Int)
+  }
 
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  private val parent: Parent by ParentActivityDelegate(this)
   internal var widgetId = 0
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
-    widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-    if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-      val result: Intent = Intent()
-      result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-      setResult(Activity.RESULT_OK, result)
-    } else {
-      setResult(Activity.RESULT_CANCELED)
-    }
+    widgetId = arguments!!.getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+  }
+
+  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+    savedInstanceState: Bundle?): View? {
+    return inflater.inflate(R.layout.fragment_widget_settings, container, false)
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-
-    setContentView(R.layout.activity_widget_settings)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,
-          toolbar.paddingBottom)
-    }
-    toolbar.setNavigationOnClickListener {
-      onBackPressed()
-    }
-
     setWidgetNameSetting(widgetData)
     setLayoutTypeSetting(widgetData)
     setBgSetting(widgetData)
@@ -79,13 +74,16 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
 
     arrayOf(setting_add_stock, setting_widget_name, setting_layout_type, setting_background,
         setting_text_color, setting_bold, setting_autosort).forEach {
-      it.setOnClickListener(this@WidgetSettingsActivity)
+      it.setOnClickListener(this@WidgetSettingsFragment)
     }
   }
 
   override fun onClick(v: View) {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     when (v.id) {
+      R.id.setting_add_stock -> {
+        parent.openSearch(widgetId)
+      }
       R.id.setting_widget_name -> {
         v.setOnClickListener(null)
         (v as SettingsTextView).setIsEditable(true) { s ->
@@ -93,7 +91,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
-          InAppMessage.showMessage(this, R.string.widget_name_updated)
+          InAppMessage.showMessage(activity!!, R.string.widget_name_updated)
         }
       }
       R.id.setting_layout_type -> {
@@ -106,7 +104,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
               if (which == 2) {
                 showDialog(getString(R.string.change_instructions))
               }
-              InAppMessage.showMessage(this, R.string.layout_updated_message)
+              InAppMessage.showMessage(activity!!, R.string.layout_updated_message)
             })
       }
       R.id.setting_background -> {
@@ -116,7 +114,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
           setTextColorSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(this, R.string.bg_updated_message)
+          InAppMessage.showMessage(activity!!, R.string.bg_updated_message)
         })
       }
       R.id.setting_text_color -> {
@@ -125,7 +123,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
           setTextColorSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(this, R.string.text_coor_updated_message)
+          InAppMessage.showMessage(activity!!, R.string.text_coor_updated_message)
         })
       }
       R.id.setting_bold -> {
@@ -149,7 +147,7 @@ class WidgetSettingsActivity : BaseActivity(), OnClickListener {
 
   private fun showDialogPreference(@ArrayRes itemRes: Int,
     listener: DialogInterface.OnClickListener) {
-    AlertDialog.Builder(this).setItems(itemRes, listener).create().show()
+    AlertDialog.Builder(activity!!).setItems(itemRes, listener).create().show()
   }
 
   private fun setWidgetNameSetting(widgetData: WidgetData) {

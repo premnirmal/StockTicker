@@ -39,10 +39,6 @@
 
   <style name="ParanormalActivityTheme" parent="AppTheme"/>
 
-  <style name="SettingsActivityTheme" parent="TranslucentTheme"/>
-
-  <style name="WidgetSettingsActivityTheme" parent="TranslucentTheme"/>
-
   <style name="NewsFeedActivityTheme" parent="AppTheme"/>
 
   <style name="GraphActivityTheme" parent="AppTheme"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,32 +7,40 @@
     android:orientation="vertical"
     android:paddingBottom="?attr/actionBarSize"
     >
-
-  <com.google.android.material.appbar.AppBarLayout
+  <androidx.appcompat.widget.Toolbar
+      android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/transparent"
+      android:background="@color/color_primary"
       android:elevation="0dp"
       app:elevation="0dp"
-      >
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/color_primary"
-        android:elevation="0dp"
-        app:elevation="0dp"
-        app:title="@string/widgets"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        />
-  </com.google.android.material.appbar.AppBarLayout>
-
-  <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/recycler_view"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:scrollbars="none"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      app:title="@string/widgets"
+      app:titleTextAppearance="@style/ActionBarTitleText"
       />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="@dimen/activity_vertical_margin"
+      android:layout_marginEnd="@dimen/activity_vertical_margin"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      android:gravity="center_vertical"
+      android:text="@string/select_widget"
+      android:textSize="@dimen/thin_title_text"
+      style="@style/ThinTitleTextView"
+      />
+
+  <Spinner
+      android:id="@+id/widget_selection_spinner"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      />
+
+  <FrameLayout
+      android:id="@+id/child_fragment_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scrollbars="none"
+      />
+
+</LinearLayout>

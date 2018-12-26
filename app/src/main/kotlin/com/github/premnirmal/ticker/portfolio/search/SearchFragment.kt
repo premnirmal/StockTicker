@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.hideKeyboard
+import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.SuggestionApi
@@ -33,7 +34,7 @@ import kotlinx.android.synthetic.main.fragment_search.toolbar
 import timber.log.Timber
 import javax.inject.Inject
 
-class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
+class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
 
   @Inject internal lateinit var suggestionApi: SuggestionApi
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
@@ -122,8 +123,8 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
     if (widgetDataProvider.hasWidget()) {
       val widgetIds = widgetDataProvider.getAppWidgetIds()
       if (widgetIds.size > 1) {
-        val widgets =
-          widgetIds.map { widgetDataProvider.dataForWidgetId(it).widgetName() }.toTypedArray()
+        val widgets = widgetIds.map { widgetDataProvider.dataForWidgetId(it).widgetName() }.sorted()
+            .toTypedArray()
         AlertDialog.Builder(context!!).setTitle(R.string.select_widget)
             .setItems(widgets) { dialog, which ->
               val id = widgetIds[which]
@@ -136,5 +137,11 @@ class SearchFragment : BaseFragment(), SuggestionClickListener, TextWatcher {
     } else {
       addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
     }
+  }
+
+  // ChildFragment
+
+  override fun setData(bundle: Bundle) {
+
   }
 }

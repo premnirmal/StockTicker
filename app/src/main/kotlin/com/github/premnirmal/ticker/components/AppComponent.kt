@@ -24,8 +24,7 @@ import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
-import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
-import com.github.premnirmal.ticker.ui.WidgetListAdapter
+import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -45,11 +44,7 @@ interface AppComponent {
 
   fun inject(paranormalActivity: ParanormalActivity)
 
-  fun inject(settingsFragment: SettingsFragment)
-
   fun inject(addPositionActivity: AddPositionActivity)
-
-  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
 
   fun inject(splashActivity: SplashActivity)
 
@@ -109,11 +104,13 @@ interface AppComponent {
 
   fun inject(fragment: SearchFragment)
 
+  fun inject(settingsFragment: SettingsFragment)
+
   fun inject(stocksAdapter: StocksAdapter)
 
   fun inject(fragment: WidgetsFragment)
 
-  fun inject(adapter: WidgetListAdapter)
+  fun inject(widgetSettingsFragment: WidgetSettingsFragment)
 
   fun appContext(): Context
 
