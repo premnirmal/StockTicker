@@ -109,6 +109,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   private fun updateBottomNav() {
     val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+    currentChild = currentFragment as? ChildFragment
     val selectedItemId: Int? = FRAGMENT_MAP[currentFragment?.javaClass?.name]
     if (selectedItemId != null && selectedItemId != bottom_navigation.selectedItemId) {
       bottom_navigation.selectedItemId = selectedItemId

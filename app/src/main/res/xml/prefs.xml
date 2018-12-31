@@ -12,6 +12,7 @@
       app:iconSpaceReserved="false"
       app:key="SETTING_TUTORIAL"
       app:selectable="true"
+      app:summary="@string/how_to_title"
       app:title="@string/tutorial"/>
 
   <ListPreference

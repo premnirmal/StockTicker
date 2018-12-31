@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     >
 
@@ -20,6 +21,8 @@
       style="@style/BoldTextView"
       />
 
+  <include layout="@layout/divider"/>
+
   <TextView
       android:id="@+id/version"
       android:layout_width="match_parent"
@@ -30,6 +33,7 @@
       android:layout_marginTop="8dp"
       android:background="?selectableItemBackground"
       android:gravity="center"
+      tools:text="v3.0.0"
       style="@style/FooterTextView"
       />
 

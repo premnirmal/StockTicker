@@ -133,7 +133,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   @SuppressLint("CommitPrefEdits") private fun setupSimplePreferencesScreen() {
     run {
       val pref = findPreference<Preference>(AppPreferences.SETTING_WHATS_NEW)
-      pref.summary = getString(R.string.whats_new_in, BuildConfig.VERSION_NAME)
       pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         parent?.showWhatsNew()
         true
