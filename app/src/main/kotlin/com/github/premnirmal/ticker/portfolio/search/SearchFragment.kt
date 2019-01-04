@@ -29,9 +29,7 @@ import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_search.recycler_view
-import kotlinx.android.synthetic.main.fragment_search.search_view
-import kotlinx.android.synthetic.main.fragment_search.toolbar
+import kotlinx.android.synthetic.main.fragment_search.*
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,6 +37,14 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
 
   companion object {
     const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+
+    fun newInstance(widgetId: Int): SearchFragment {
+      val fragment = SearchFragment()
+      val args = Bundle()
+      args.putInt(ARG_WIDGET_ID, widgetId)
+      fragment.arguments = args
+      return fragment
+    }
   }
 
   @Inject internal lateinit var suggestionApi: SuggestionApi
@@ -52,6 +58,9 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
+    arguments?.let {
+      setData(it)
+    }
   }
 
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,

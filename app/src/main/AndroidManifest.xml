@@ -3,114 +3,128 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.github.premnirmal.tickerwidget">
 
-  <uses-permission android:name="android.permission.INTERNET"/>
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-  <application
-      android:name="com.github.premnirmal.ticker.StocksApp"
-      android:allowBackup="true"
-      android:icon="@mipmap/ic_launcher"
-      android:label="@string/app_name"
-      android:roundIcon="@mipmap/ic_launcher_round"
-      android:theme="@style/AppTheme"
-      tools:replace="android:icon">
-
-    <activity
-        android:name="com.github.premnirmal.ticker.home.SplashActivity"
-        android:configChanges="orientation|keyboardHidden|screenSize"
-        android:theme="@style/SplashTheme">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
-    <activity
-        android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
+    <application
+        android:name="com.github.premnirmal.ticker.StocksApp"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:launchMode="singleTask"
-        android:screenOrientation="portrait"
-        android:theme="@style/ParanormalActivityTheme">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW"/>
-      </intent-filter>
-      <intent-filter>
-        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
-      </intent-filter>
-    </activity>
-    <activity
-        android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
-        android:label="@string/add_position"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="adjustResize"/>
-    <activity
-        android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
-        android:label="@string/news_feed"
-        android:screenOrientation="portrait"
-        android:theme="@style/NewsFeedActivityTheme"/>
-    <activity
-        android:name="com.github.premnirmal.ticker.news.GraphActivity"
-        android:screenOrientation="landscape"
-        android:theme="@style/GraphActivityTheme"/>
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:theme="@style/AppTheme"
+        tools:replace="android:icon">
 
-    <receiver
-        android:name="com.github.premnirmal.ticker.UpdateReceiver"
-        android:enabled="true"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-      </intent-filter>
-    </receiver>
-    <receiver
-        android:name="com.github.premnirmal.ticker.widget.RefreshReceiver"
-        android:enabled="true"
-        android:exported="false"/>
+        <activity
+            android:name="com.github.premnirmal.ticker.home.SplashActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/ParanormalActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
+            android:label="@string/add_position"
+            android:screenOrientation="portrait"
+            android:theme="@style/AddPositionTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
+            android:label="@string/action_Settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/WidgetSettingsTheme"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.github.premnirmal.ticker.portfolio.search.SearchActivity"
+            android:label="@string/action_search"
+            android:screenOrientation="portrait"
+            android:theme="@style/SearchTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
+            android:label="@string/news_feed"
+            android:screenOrientation="portrait"
+            android:theme="@style/NewsFeedActivityTheme" />
+        <activity
+            android:name="com.github.premnirmal.ticker.news.GraphActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/GraphActivityTheme" />
 
-    <service
-        android:name="com.github.premnirmal.ticker.model.RefreshService"
-        android:exported="true"
-        android:permission="android.permission.BIND_JOB_SERVICE"/>
+        <receiver
+            android:name="com.github.premnirmal.ticker.UpdateReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.github.premnirmal.ticker.widget.RefreshReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
-    <receiver
-        android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"
-        android:enabled="true"
-        android:exported="false">
-      <intent-filter>
-        <action android:name="com.github.premnirmal.ticker.WIDGET_CLICK"/>
-      </intent-filter>
-    </receiver>
-    <receiver
-        android:name="com.github.premnirmal.ticker.widget.StockWidget"
-        android:label="@string/widget_label">
-      <intent-filter>
-        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-      </intent-filter>
+        <service
+            android:name="com.github.premnirmal.ticker.model.RefreshService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
-      <meta-data
-          android:name="android.appwidget.provider"
-          android:resource="@xml/widget"/>
-    </receiver>
+        <receiver
+            android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.github.premnirmal.ticker.WIDGET_CLICK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.github.premnirmal.ticker.widget.StockWidget"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
 
-    <service
-        android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"
-        android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget" />
+        </receiver>
 
-    <!-- File provider -->
-    <provider
-        android:name="androidx.core.content.FileProvider"
-        android:authorities="${applicationId}.provider"
-        android:exported="false"
-        android:grantUriPermissions="true">
-      <meta-data
-          android:name="android.support.FILE_PROVIDER_PATHS"
-          android:resource="@xml/provider_paths"/>
-    </provider>
+        <service
+            android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-    <meta-data
-        android:name="com.crashlytics.ApiKey"
-        android:value="856c59cfad291a9403df034e02e90219acfdedb1"/>
-  </application>
+        <!-- File provider -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="856c59cfad291a9403df034e02e90219acfdedb1" />
+    </application>
 
 </manifest>
