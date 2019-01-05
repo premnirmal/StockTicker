@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>StocksWidget gets a new UI!</item>
-    <item>Now you can show/hide the widget header</item>
+    <item>Bug fixes</item>
   </string-array>
 </resources>

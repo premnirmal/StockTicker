@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>¡Hay una nueva interfaz de usuario!</item>
-    <item>Ahora puede mostrar / ocultar el encabezado del widget</item>
+    <item>Corrección de errores</item>
   </string-array>
 </resources>

@@ -43,6 +43,12 @@
 
   <style name="GraphActivityTheme" parent="AppTheme"/>
 
+  <style name="AddPositionTheme" parent="AppTheme"/>
+
+  <style name="WidgetSettingsTheme" parent="AppTheme"/>
+
+  <style name="SearchTheme" parent="AppTheme"/>
+
   <style name="TextViewStyle" parent="android:Widget.TextView">
     <item name="android:textSize">@dimen/text_size</item>
     <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>

@@ -22,8 +22,10 @@ import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
+import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
+import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
@@ -51,6 +53,10 @@ interface AppComponent {
   fun inject(newsFeedActivity: NewsFeedActivity)
 
   fun inject(graphActivity: GraphActivity)
+
+  fun inject(searchActivity: SearchActivity)
+
+  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
 
   // Components
 
