@@ -11,33 +11,32 @@ import com.github.premnirmal.tickerwidget.R
 
 class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
 
-    companion object {
-        const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
-    }
+  companion object {
+    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+  }
 
-    internal var widgetId = 0
+  internal var widgetId = 0
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_widget_settings)
-        Injector.appComponent.inject(this)
-        widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-            val result = Intent()
-            result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-            setResult(Activity.RESULT_OK, result)
-        } else {
-            setResult(Activity.RESULT_CANCELED)
-        }
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, WidgetSettingsFragment.newInstance(widgetId))
-        }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_widget_settings)
+    Injector.appComponent.inject(this)
+    widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+    if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+      val result = Intent()
+      result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+      setResult(Activity.RESULT_OK, result)
+    } else {
+      setResult(Activity.RESULT_CANCELED)
     }
+    if (savedInstanceState == null) {
+      supportFragmentManager.beginTransaction()
+          .add(R.id.fragment_container, WidgetSettingsFragment.newInstance(widgetId)).commit()
+    }
+  }
 
-    override fun openSearch(widgetId: Int) {
-        val intent = Intent(this, SearchActivity::class.java)
-        intent.putExtra(SearchActivity.ARG_WIDGET_ID, widgetId)
-        startActivity(intent)
-    }
+  override fun openSearch(widgetId: Int) {
+    val intent = SearchActivity.launchIntent(this, widgetId)
+    startActivity(intent)
+  }
 }
