@@ -20,7 +20,7 @@ This app also shows how to write android unit tests using [mockito](https://gith
 ## App features:
 
 - A homescreen widget that shows your stock portolio in a resizable grid.
-- This app fetches stock quotes from this API: https://www.robindahood.com
+- This app fetches stock quotes from this API: https://www.robindahood.com. The API is open sourced [here](https://github.com/premnirmal/robindahood.com).
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours and weekdays.
 
