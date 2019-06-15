@@ -4,6 +4,7 @@
   <string name="robindahood_endpoint" translatable="false">https://robindahood.com/api/</string>
   <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
   <string name="news_endpoint" translatable="false">https://newsapi.org/</string>
+  <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
   <string name="news_api_key" translatable="false">05bb573fdcc943f0a34bb0517f05e09b</string>
   <string name="alpha_vantage_endpoint" translatable="false">https://www.alphavantage.co/</string>
   <string name="alpha_vantage_api_key" translatable="false">9VQGQDBGD0L1B3IH</string>

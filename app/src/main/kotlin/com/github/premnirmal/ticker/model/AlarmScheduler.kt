@@ -38,7 +38,8 @@ class AlarmScheduler @Inject constructor() {
    * Takes care of weekends and after hours
    */
   fun msToNextAlarm(lastFetchedMs: Long): Long {
-    val dayOfWeek = clock.todayLocal().dayOfWeek
+    val dayOfWeek = clock.todayLocal()
+        .dayOfWeek
     val startTimez = appPreferences.startTime()
     val endTimez = appPreferences.endTime()
     // whether the start time is after the end time e.g. start time is 11pm and end time is 5am
@@ -46,8 +47,12 @@ class AlarmScheduler @Inject constructor() {
       startTimez[0] > endTimez[0] || (startTimez[0] == endTimez[0] && startTimez[1] > endTimez[1])
     val now: ZonedDateTime = clock.todayZoned()
     var mutableDateTime: ZonedDateTime = clock.todayZoned()
-    val startTime = clock.todayZoned().withHour(startTimez[0]).withMinute(startTimez[1])
-    var endTime = clock.todayZoned().withHour(endTimez[0]).withMinute(endTimez[1])
+    val startTime = clock.todayZoned()
+        .withHour(startTimez[0])
+        .withMinute(startTimez[1])
+    var endTime = clock.todayZoned()
+        .withHour(endTimez[0])
+        .withMinute(endTimez[1])
     if (inverse && now.isAfter(startTime)) {
       endTime = endTime.plusDays(1)
     }
@@ -57,9 +62,14 @@ class AlarmScheduler @Inject constructor() {
 
     val msToNextAlarm: Long
     if (now.isBefore(endTime) && (now.isAfter(startTime) || now.isEqual(
-            startTime)) && dayOfWeek <= FRIDAY) {
-      mutableDateTime = if (lastFetchedMs > 0 && Duration.between(lastFetchedTime,
-              now).toMillis() >= appPreferences.updateIntervalMs) {
+            startTime
+        )) && dayOfWeek <= FRIDAY
+    ) {
+      mutableDateTime = if (lastFetchedMs > 0 && Duration.between(
+              lastFetchedTime,
+              now
+          ).toMillis() >= appPreferences.updateIntervalMs
+      ) {
         mutableDateTime.plusMinutes(1)
       } else {
         mutableDateTime.plusSeconds(appPreferences.updateIntervalMs / 1000L)
@@ -68,13 +78,15 @@ class AlarmScheduler @Inject constructor() {
       mutableDateTime = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
         mutableDateTime.plusMinutes(1)
       } else {
-        mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
+        mutableDateTime.withHour(startTimez[0])
+            .withMinute(startTimez[1])
       }
     } else {
       if (dayOfWeek <= FRIDAY && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
         mutableDateTime = mutableDateTime.plusMinutes(1)
       } else {
-        mutableDateTime = mutableDateTime.withHour(startTimez[0]).withMinute(startTimez[1])
+        mutableDateTime = mutableDateTime.withHour(startTimez[0])
+            .withMinute(startTimez[1])
         if (dayOfWeek == FRIDAY) {
           mutableDateTime = mutableDateTime.plusDays(3)
         } else if (dayOfWeek == SATURDAY) {
@@ -88,7 +100,10 @@ class AlarmScheduler @Inject constructor() {
     return msToNextAlarm
   }
 
-  fun scheduleUpdate(msToNextAlarm: Long, context: Context): ZonedDateTime {
+  fun scheduleUpdate(
+    msToNextAlarm: Long,
+    context: Context
+  ): ZonedDateTime {
     Timber.i("Scheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
@@ -99,14 +114,20 @@ class AlarmScheduler @Inject constructor() {
     } else {
       val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
       val pendingIntent =
-        PendingIntent.getBroadcast(context.applicationContext, 0, updateReceiverIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(
+            context.applicationContext, 0, updateReceiverIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
       if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-        alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+        alarmManager.setExact(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            clock.elapsedRealtime() + msToNextAlarm, pendingIntent
+        )
       } else {
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+        alarmManager.set(
+            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            clock.elapsedRealtime() + msToNextAlarm, pendingIntent
+        )
       }
     }
     return nextAlarmDate

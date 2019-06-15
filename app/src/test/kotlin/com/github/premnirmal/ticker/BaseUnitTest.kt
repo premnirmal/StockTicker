@@ -3,10 +3,8 @@ package com.github.premnirmal.ticker
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.mock.RxSchedulersOverrideRule
-import com.github.premnirmal.ticker.mock.TestApplication
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.tools.Parser
-import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.JsonElement
 import io.reactivex.Observable
@@ -20,14 +18,12 @@ import org.mockito.Mockito.doNothing
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
-import org.robolectric.annotation.Config
 import java.lang.reflect.Type
 
 /**
  * Created by premnirmal on 3/22/17.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, application = TestApplication::class)
 abstract class BaseUnitTest : TestCase() {
 
   companion object {

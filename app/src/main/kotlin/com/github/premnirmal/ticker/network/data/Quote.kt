@@ -19,6 +19,17 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
       quote.description = quoteNet.description ?: ""
       return quote
     }
+    fun fromQuoteNet(quoteNet: YahooQuoteNet): Quote {
+      val quote = Quote(quoteNet.symbol ?: "")
+      quote.name = quoteNet.name ?: ""
+      quote.lastTradePrice = quoteNet.lastTradePrice
+      quote.changeInPercent = quoteNet.changePercent
+      quote.change = quoteNet.change
+      quote.stockExchange = quoteNet.exchange ?: ""
+      quote.currency = quoteNet.currency ?: "US"
+      quote.description = quoteNet.description ?: ""
+      return quote
+    }
   }
 
   var name: String = ""
@@ -117,7 +128,8 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   fun newsQuery(): String {
     if (name.isEmpty()) return "$symbol stock"
-    val split = name.replace("[^\\w\\s]", "").split(" ")
+    val split = name.replace("[^\\w\\s]", "")
+        .split(" ")
     return if (split.size <= 3) {
       name
     } else {

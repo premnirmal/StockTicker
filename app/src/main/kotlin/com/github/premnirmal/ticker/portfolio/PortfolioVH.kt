@@ -19,7 +19,10 @@ abstract class PortfolioVH(itemView: View) :
 
   @Throws(Exception::class) abstract fun updateView(quote: Quote)
 
-  @Throws(Exception::class) fun update(quote: Quote?, listener: StocksAdapter.QuoteClickListener) {
+  @Throws(Exception::class) fun update(
+    quote: Quote?,
+    listener: StocksAdapter.QuoteClickListener
+  ) {
     if (quote == null) {
       return
     }
@@ -28,9 +31,10 @@ abstract class PortfolioVH(itemView: View) :
     itemView.setOnClickListener { v ->
       listener.onOpenQuote(v, quote, position)
     }
-    itemView.findViewById<View>(R.id.more_menu).setOnClickListener { v ->
-      listener.onClickQuoteOptions(v, quote, position)
-    }
+    itemView.findViewById<View>(R.id.more_menu)
+        .setOnClickListener { v ->
+          listener.onClickQuoteOptions(v, quote, position)
+        }
 
     val tickerView = itemView.findViewById<TextView>(R.id.ticker)
     val nameView = itemView.findViewById<TextView>(R.id.name)

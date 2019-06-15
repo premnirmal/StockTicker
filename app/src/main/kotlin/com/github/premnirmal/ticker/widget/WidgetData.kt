@@ -48,7 +48,10 @@ class WidgetData {
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
 
-  constructor(position: Int, widgetId: Int) {
+  constructor(
+    position: Int,
+    widgetId: Int
+  ) {
     this.position = position
     this.widgetId = widgetId
     Injector.appComponent.inject(this)
@@ -58,13 +61,20 @@ class WidgetData {
     tickerList = if (tickerListVars.isNullOrEmpty()) {
       ArrayList()
     } else {
-      ArrayList(Arrays.asList(
-          *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()))
+      ArrayList(
+          Arrays.asList(
+              *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
+          )
+      )
     }
     save()
   }
 
-  constructor(position: Int, widgetId: Int, isFirstWidget: Boolean) : this(position, widgetId) {
+  constructor(
+    position: Int,
+    widgetId: Int,
+    isFirstWidget: Boolean
+  ) : this(position, widgetId) {
     if (isFirstWidget && tickerList.isEmpty()) {
       addAllFromStocksProvider()
     }
@@ -94,7 +104,9 @@ class WidgetData {
   }
 
   fun setWidgetName(value: String) {
-    preferences.edit().putString(WIDGET_NAME, value).apply()
+    preferences.edit()
+        .putString(WIDGET_NAME, value)
+        .apply()
   }
 
   fun changeType(): ChangeType {
@@ -104,13 +116,17 @@ class WidgetData {
 
   fun flipChange() {
     val state = preferences.getBoolean(PERCENT, false)
-    preferences.edit().putBoolean(PERCENT, !state).apply()
+    preferences.edit()
+        .putBoolean(PERCENT, !state)
+        .apply()
   }
 
   fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)
 
   fun setLayoutPref(value: Int) {
-    preferences.edit().putInt(LAYOUT_TYPE, value).apply()
+    preferences.edit()
+        .putInt(LAYOUT_TYPE, value)
+        .apply()
   }
 
   @ColorInt fun textColor(): Int {
@@ -131,7 +147,9 @@ class WidgetData {
   fun bgPref(): Int = preferences.getInt(WIDGET_BG, TRANSLUCENT)
 
   fun setBgPref(value: Int) {
-    preferences.edit().putInt(WIDGET_BG, value).apply()
+    preferences.edit()
+        .putInt(WIDGET_BG, value)
+        .apply()
     when (value) {
       LIGHT -> setTextColorPref(1)
       else -> setTextColorPref(0)
@@ -151,25 +169,33 @@ class WidgetData {
   fun textColorPref(): Int = preferences.getInt(TEXT_COLOR, 0)
 
   fun setTextColorPref(pref: Int) {
-    preferences.edit().putInt(TEXT_COLOR, pref).apply()
+    preferences.edit()
+        .putInt(TEXT_COLOR, pref)
+        .apply()
   }
 
   fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
 
   fun setAutoSort(autoSort: Boolean) {
-    preferences.edit().putBoolean(AUTOSORT, autoSort).apply()
+    preferences.edit()
+        .putBoolean(AUTOSORT, autoSort)
+        .apply()
   }
 
   fun hideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
 
   fun setHideHeader(hide: Boolean) {
-    preferences.edit().putBoolean(HIDE_HEADER, hide).apply()
+    preferences.edit()
+        .putBoolean(HIDE_HEADER, hide)
+        .apply()
   }
 
   fun isBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
 
   fun setBoldEnabled(value: Boolean) {
-    preferences.edit().putBoolean(BOLD_CHANGE, value).apply()
+    preferences.edit()
+        .putBoolean(BOLD_CHANGE, value)
+        .apply()
   }
 
   fun getStocks(): List<Quote> {
@@ -244,12 +270,16 @@ class WidgetData {
   }
 
   fun onWidgetRemoved() {
-    preferences.edit().clear().apply()
+    preferences.edit()
+        .clear()
+        .apply()
   }
 
   private fun save() {
     synchronized(tickerList) {
-      preferences.edit().putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString()).apply()
+      preferences.edit()
+          .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
+          .apply()
     }
   }
 }

@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.base
 
 import android.app.Activity
-import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle3.android.FragmentEvent
 import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import kotlin.properties.ReadOnlyProperty
@@ -41,7 +41,10 @@ abstract class LifeCycleDelegate<T>(lifecycleParent: FragmentLifeCycleOwner) :
 
   abstract fun getParent(owner: FragmentLifeCycleOwner): T?
 
-  override fun getValue(thisRef: androidx.fragment.app.Fragment, property: KProperty<*>): T {
+  override fun getValue(
+    thisRef: androidx.fragment.app.Fragment,
+    property: KProperty<*>
+  ): T {
     return value!!
   }
 }

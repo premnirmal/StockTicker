@@ -118,6 +118,7 @@ android {
     release {
       debuggable false
       signingConfig signingConfigs.release
+      useProguard false
       minifyEnabled true
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
@@ -125,11 +126,15 @@ android {
       debuggable true
       versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
+      useProguard false
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }
 
   testOptions {
     unitTests.returnDefaultValues = true
+    unitTests.includeAndroidResources = true
   }
 
   compileOptions {
@@ -152,13 +157,14 @@ kapt {
 
 ext {
   DAGGER_VERSION = "2.20"
-  DEXMAKER_VERSION = "1.4"
   MOCKITO_VERSION = "2.9.0"
   JUNIT_VERSION = "4.12"
   RETROFIT_VERSION = "2.2.0"
   OKHTTP_VERSION = "3.5.0"
-  RXJAVA_VERSION = "2.1.0"
-  ROBOLECTRIC_VERSION = "3.8"
+  RXANDROID_VERSION = "2.1.1"
+  RXJAVA_VERSION = "2.2.9"
+  RXLIFECYCLE_VERSION = "3.0.0"
+  ROBOLECTRIC_VERSION = "4.3"
 }
 
 dependencies {
@@ -169,10 +175,11 @@ dependencies {
   implementation 'androidx.appcompat:appcompat:1.0.2'
   implementation 'androidx.legacy:legacy-support-v4:1.0.0'
   implementation 'com.google.android.material:material:1.0.0'
-  implementation 'androidx.preference:preference:1.1.0-alpha02'
+  implementation 'androidx.preference:preference:1.1.0-beta01'
+  implementation 'androidx.browser:browser:1.0.0'
 
   implementation "javax.inject:javax.inject:1"
-  implementation "javax.annotation:javax.annotation-api:1.2"
+  implementation "javax.annotation:javax.annotation-api:1.3.2"
 
   implementation "com.google.dagger:dagger:$DAGGER_VERSION"
   kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
@@ -183,19 +190,20 @@ dependencies {
   implementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
   implementation "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
 
-  implementation "io.reactivex.rxjava2:rxandroid:2.0.1"
+  implementation "io.reactivex.rxjava2:rxandroid:$RXANDROID_VERSION"
   implementation "io.reactivex.rxjava2:rxjava:$RXJAVA_VERSION"
 
-  implementation "com.trello.rxlifecycle2:rxlifecycle:2.0.1"
-  implementation "com.trello.rxlifecycle2:rxlifecycle-android:2.0.1"
-  implementation "com.trello.rxlifecycle2:rxlifecycle-kotlin:2.0.1"
+  implementation "com.trello.rxlifecycle3:rxlifecycle:$RXLIFECYCLE_VERSION"
+  implementation "com.trello.rxlifecycle3:rxlifecycle-android:$RXLIFECYCLE_VERSION"
+  implementation "com.trello.rxlifecycle3:rxlifecycle-kotlin:$RXLIFECYCLE_VERSION"
 
-  implementation "com.jakewharton.threetenabp:threetenabp:1.1.0"
+  implementation "com.jakewharton.threetenabp:threetenabp:1.2.0"
 
-  implementation "com.nbsp:library:1.6"
-  implementation "uk.co.chrisjenx:calligraphy:2.2.0"
+  implementation "com.nbsp:library:1.8"
+  implementation "io.github.inflationx:calligraphy3:3.1.1"
+  implementation "io.github.inflationx:viewpump:1.0.0"
   implementation "com.jakewharton.timber:timber:4.7.1"
-  implementation "saschpe.android:customtabs:2.0.0"
+  implementation "saschpe.android:customtabs:2.0.3"
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
   implementation 'io.paperdb:paperdb:2.6'
@@ -204,27 +212,22 @@ dependencies {
     transitive = true
   }
 
-  debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-  releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.0-alpha-2'
+  implementation 'com.squareup.leakcanary:leaksentry:2.0-alpha-2'
 
   testImplementation "junit:junit:$JUNIT_VERSION"
   testImplementation "org.assertj:assertj-core:3.8.0"
   testImplementation "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"
   testImplementation "org.robolectric:shadows-multidex:$ROBOLECTRIC_VERSION"
-  testImplementation 'androidx.test:runner:1.1.1'
-  testImplementation 'androidx.test:rules:1.1.1'
-  testImplementation 'androidx.annotation:annotation:1.0.1'
-  testImplementation "androidx.test:rules:1.1.1"
-  testImplementation 'androidx.test:runner:1.1.1'
-  testImplementation "org.threeten:threetenbp:1.3.7"
-  testImplementation "com.android.tools:testutils:26.2.1"
+  testImplementation 'androidx.test:runner:1.2.0'
+  testImplementation 'androidx.test:rules:1.2.0'
+  testImplementation 'androidx.annotation:annotation:1.1.0'
+  testImplementation "androidx.test:rules:1.2.0"
+  testImplementation 'androidx.test:runner:1.2.0'
+  testImplementation "org.threeten:threetenbp:1.3.8"
   testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
-  androidTestImplementation "com.crittercism.dexmaker:dexmaker:$DEXMAKER_VERSION"
-  androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$DEXMAKER_VERSION"
-  androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$DEXMAKER_VERSION"
+
   kaptTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-  kaptAndroidTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
-  androidTestAnnotationProcessor "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation "org.khronos:opengl-api:gl1.1-android-2.1_r1"
@@ -232,4 +235,5 @@ dependencies {
 
 configurations.all {
   resolutionStrategy.force 'org.objenesis:objenesis:2.5.1'
+  resolutionStrategy.force "org.ow2.asm:asm:7.0"
 }

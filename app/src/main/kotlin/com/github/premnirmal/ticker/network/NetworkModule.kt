@@ -41,23 +41,31 @@ class NetworkModule {
   @Provides @Singleton @Named("client") internal fun provideHttpClientForYahoo(): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level =
-        if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+      if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient =
-      OkHttpClient.Builder().addInterceptor(UserAgentInterceptor()).addInterceptor(logger)
+      OkHttpClient.Builder()
+          .addInterceptor(UserAgentInterceptor())
+          .addInterceptor(logger)
           .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-          .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).build()
+          .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+          .build()
     return okHttpClient
   }
 
   @Provides @Singleton @Named("robindahoodClient") internal fun provideHttpClientForRobindahood(
-    context: Context, bus: RxBus): OkHttpClient {
+    context: Context,
+    bus: RxBus
+  ): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level =
-        if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
-    val okHttpClient = OkHttpClient.Builder().addInterceptor(RequestInterceptor())
-        .addInterceptor(UserAgentInterceptor()).addInterceptor(logger)
+      if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+    val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(RequestInterceptor())
+        .addInterceptor(UserAgentInterceptor())
+        .addInterceptor(logger)
         .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS).build()
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+        .build()
     return okHttpClient
   }
 
@@ -77,60 +85,121 @@ class NetworkModule {
     return RxJava2CallAdapterFactory.create()
   }
 
-  @Provides @Singleton internal fun provideSuggestionsApi(context: Context, @Named(
-      "client") okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi {
-    val Retrofit = Retrofit.Builder().client(okHttpClient)
+  @Provides @Singleton internal fun provideSuggestionsApi(
+    context: Context, @Named(
+        "client"
+    ) okHttpClient: OkHttpClient,
+    gson: Gson,
+    converterFactory: GsonConverterFactory,
+    rxJavaFactory: RxJava2CallAdapterFactory
+  ): SuggestionApi {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
         .baseUrl(context.getString(R.string.suggestions_endpoint))
-        .addCallAdapterFactory(rxJavaFactory).addConverterFactory(object : Converter.Factory() {
-          override fun responseBodyConverter(type: Type?, annotations: Array<out Annotation>?,
-            retrofit: Retrofit?): Converter<ResponseBody, *> {
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(object : Converter.Factory() {
+          override fun responseBodyConverter(
+            type: Type?,
+            annotations: Array<out Annotation>?,
+            retrofit: Retrofit?
+          ): Converter<ResponseBody, *> {
             return StupidYahooWrapConverter(gson)
           }
 
-          override fun requestBodyConverter(type: Type?,
-            parameterAnnotations: Array<out Annotation>?, methodAnnotations: Array<out Annotation>?,
-            retrofit: Retrofit?): Converter<*, RequestBody>? {
-            return converterFactory.requestBodyConverter(type, parameterAnnotations,
-                methodAnnotations, retrofit)
+          override fun requestBodyConverter(
+            type: Type?,
+            parameterAnnotations: Array<out Annotation>?,
+            methodAnnotations: Array<out Annotation>?,
+            retrofit: Retrofit?
+          ): Converter<*, RequestBody>? {
+            return converterFactory.requestBodyConverter(
+                type, parameterAnnotations,
+                methodAnnotations, retrofit
+            )
           }
 
-          override fun stringConverter(type: Type?, annotations: Array<out Annotation>?,
-            retrofit: Retrofit?): Converter<*, String>? {
+          override fun stringConverter(
+            type: Type?,
+            annotations: Array<out Annotation>?,
+            retrofit: Retrofit?
+          ): Converter<*, String>? {
             return converterFactory.stringConverter(type, annotations, retrofit)
           }
-        }).build()
-    val suggestionApi = Retrofit.create(SuggestionApi::class.java)
+        })
+        .build()
+    val suggestionApi = retrofit.create(SuggestionApi::class.java)
     return suggestionApi
   }
 
-  @Provides @Singleton internal fun provideRobindahood(context: Context, @Named(
-      "robindahoodClient") okHttpClient: OkHttpClient, gson: Gson,
-    converterFactory: GsonConverterFactory, rxJavaFactory: RxJava2CallAdapterFactory): Robindahood {
-    val Retrofit = Retrofit.Builder().client(okHttpClient)
+  @Provides @Singleton internal fun provideRobindahood(
+    context: Context, @Named(
+        "robindahoodClient"
+    ) okHttpClient: OkHttpClient,
+    gson: Gson,
+    converterFactory: GsonConverterFactory,
+    rxJavaFactory: RxJava2CallAdapterFactory
+  ): Robindahood {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
         .baseUrl(context.getString(R.string.robindahood_endpoint))
-        .addCallAdapterFactory(rxJavaFactory).addConverterFactory(converterFactory).build()
-    val robindahood = Retrofit.create(Robindahood::class.java)
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(converterFactory)
+        .build()
+    val robindahood = retrofit.create(Robindahood::class.java)
     return robindahood
   }
 
-  @Provides @Singleton internal fun provideNewsApi(context: Context, @Named(
-      "client") okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): NewsApi {
-    val Retrofit =
-      Retrofit.Builder().client(okHttpClient).baseUrl(context.getString(R.string.news_endpoint))
-          .addCallAdapterFactory(rxJavaFactory).addConverterFactory(converterFactory).build()
-    val newsApi = Retrofit.create(NewsApi::class.java)
+  @Provides @Singleton internal fun provideYahooFinance(
+    context: Context,
+    @Named("client") okHttpClient: OkHttpClient,
+    gson: Gson,
+    converterFactory: GsonConverterFactory,
+    rxJavaFactory: RxJava2CallAdapterFactory
+  ): YahooFinance {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.yahoo_endpoint))
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(converterFactory)
+        .build()
+    val yahooFinance = retrofit.create(YahooFinance::class.java)
+    return yahooFinance
+  }
+
+  @Provides @Singleton internal fun provideNewsApi(
+    context: Context, @Named(
+        "client"
+    ) okHttpClient: OkHttpClient,
+    gson: Gson,
+    converterFactory: GsonConverterFactory,
+    rxJavaFactory: RxJava2CallAdapterFactory
+  ): NewsApi {
+    val retrofit =
+      Retrofit.Builder()
+          .client(okHttpClient)
+          .baseUrl(context.getString(R.string.news_endpoint))
+          .addCallAdapterFactory(rxJavaFactory)
+          .addConverterFactory(converterFactory)
+          .build()
+    val newsApi = retrofit.create(NewsApi::class.java)
     return newsApi
   }
 
-  @Provides @Singleton internal fun provideHistoricalDataApi(context: Context, @Named(
-      "client") okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): HistoricalDataApi {
-    val Retrofit = Retrofit.Builder().client(okHttpClient)
+  @Provides @Singleton internal fun provideHistoricalDataApi(
+    context: Context, @Named(
+        "client"
+    ) okHttpClient: OkHttpClient,
+    gson: Gson,
+    converterFactory: GsonConverterFactory,
+    rxJavaFactory: RxJava2CallAdapterFactory
+  ): HistoricalDataApi {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
         .baseUrl(context.getString(R.string.alpha_vantage_endpoint))
-        .addCallAdapterFactory(rxJavaFactory).addConverterFactory(converterFactory).build()
-    val api = Retrofit.create(HistoricalDataApi::class.java)
+        .addCallAdapterFactory(rxJavaFactory)
+        .addConverterFactory(converterFactory)
+        .build()
+    val api = retrofit.create(HistoricalDataApi::class.java)
     return api
   }
 

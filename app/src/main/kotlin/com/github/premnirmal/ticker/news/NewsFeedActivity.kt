@@ -42,6 +42,7 @@ import kotlinx.android.synthetic.main.activity_news_feed.toolbar
 import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
 import saschpe.android.customtabs.CustomTabsHelper
 import saschpe.android.customtabs.WebViewFallback
+import timber.log.Timber
 import javax.inject.Inject
 
 class NewsFeedActivity : BaseGraphActivity() {
@@ -142,30 +143,36 @@ class NewsFeedActivity : BaseGraphActivity() {
     } else {
       news_container.visibility = View.VISIBLE
       for (newsArticle in articles) {
-        val layout = LayoutInflater.from(this).inflate(R.layout.item_news, news_container, false)
+        val layout = LayoutInflater.from(this)
+            .inflate(R.layout.item_news, news_container, false)
         val sourceView: TextView = layout.findViewById(R.id.news_source)
         val titleView: TextView = layout.findViewById(R.id.news_title)
         val subTitleView: TextView = layout.findViewById(R.id.news_subtitle)
         val dateView: TextView = layout.findViewById(R.id.published_at)
-        newsArticle.getSourceName()?.let { source ->
-          sourceView.text = source
-        }
         titleView.text = newsArticle.title
         subTitleView.text = newsArticle.description
         dateView.text = newsArticle.dateString()
-        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT)
+        sourceView.text = newsArticle.sourceName
+        val params = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         params.bottomMargin = resources.getDimensionPixelSize(R.dimen.activity_vertical_margin)
         news_container.addView(layout, params)
         layout.tag = newsArticle
         layout.setOnClickListener {
           val article = it.tag as NewsArticle
-          val customTabsIntent = CustomTabsIntent.Builder().addDefaultShareMenuItem()
-              .setToolbarColor(this.resources.getColor(R.color.colorPrimary)).setShowTitle(true)
-              .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap()).build()
+          val customTabsIntent = CustomTabsIntent.Builder()
+              .addDefaultShareMenuItem()
+              .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
+              .setShowTitle(true)
+              .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
+              .build()
           CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
-          CustomTabsHelper.openCustomTab(this, customTabsIntent, Uri.parse(article.url),
-              WebViewFallback())
+          CustomTabsHelper.openCustomTab(
+              this, customTabsIntent, Uri.parse(article.url),
+              WebViewFallback()
+          )
         }
       }
     }
@@ -220,6 +227,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         }
 
         override fun onError(e: Throwable) {
+          Timber.e(e)
           news_container.visibility = View.GONE
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
         }

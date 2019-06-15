@@ -9,7 +9,10 @@ interface IHistoryProvider {
 
   fun getHistoricalDataShort(symbol: String): Observable<List<DataPoint>>
 
-  fun getHistoricalDataByRange(symbol: String, range: Range): Observable<List<DataPoint>>
+  fun getHistoricalDataByRange(
+    symbol: String,
+    range: Range
+  ): Observable<List<DataPoint>>
 
   sealed class Range(val end: LocalDate) : Serializable {
     class DateRange(end: LocalDate) : Range(end)

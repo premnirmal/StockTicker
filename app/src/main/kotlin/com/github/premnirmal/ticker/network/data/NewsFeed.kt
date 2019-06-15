@@ -1,7 +1,9 @@
 package com.github.premnirmal.ticker.network.data
 
-data class NewsFeed(var status: String? = "") {
+import com.google.gson.annotations.SerializedName
 
-  var totalResults: Int = 0
-  var articles: List<NewsArticle>? = null
+class NewsFeed {
+  @SerializedName("status") var status: String? = ""
+  @SerializedName("totalResults") var totalResults: Int = 0
+  @SerializedName("articles") var articles: List<NewsArticle> = emptyList()
 }

@@ -21,11 +21,12 @@ fun Drawable.toBitmap(): Bitmap {
   val width = if (bounds.isEmpty) intrinsicWidth else bounds.width()
   val height = if (bounds.isEmpty) intrinsicHeight else bounds.height()
 
-  return Bitmap.createBitmap(width.nonZero(), height.nonZero(), Bitmap.Config.ARGB_8888).also {
-    val canvas = Canvas(it)
-    setBounds(0, 0, canvas.width, canvas.height)
-    draw(canvas)
-  }
+  return Bitmap.createBitmap(width.nonZero(), height.nonZero(), Bitmap.Config.ARGB_8888)
+      .also {
+        val canvas = Canvas(it)
+        setBounds(0, 0, canvas.width, canvas.height)
+        draw(canvas)
+      }
 }
 
 fun Int.nonZero() = if (this <= 0) 1 else this
@@ -41,27 +42,52 @@ fun Context.getStatusBarHeight(): Int {
   return result
 }
 
-fun Activity.showDialog(message: String, listener: OnClickListener) {
-  AlertDialog.Builder(this).setMessage(message).setNeutralButton("OK", listener).show()
+fun Activity.showDialog(
+  message: String,
+  listener: OnClickListener
+) {
+  AlertDialog.Builder(this)
+      .setMessage(message)
+      .setNeutralButton("OK", listener)
+      .show()
 }
 
 fun Activity.showDialog(message: String): AlertDialog {
-  return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
-      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+  return AlertDialog.Builder(this)
+      .setMessage(message)
+      .setCancelable(false)
+      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .show()
 }
 
-fun Activity.showDialog(title: String, message: String): AlertDialog {
-  return AlertDialog.Builder(this).setTitle(title).setMessage(message).setCancelable(false)
-      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+fun Activity.showDialog(
+  title: String,
+  message: String
+): AlertDialog {
+  return AlertDialog.Builder(this)
+      .setTitle(title)
+      .setMessage(message)
+      .setCancelable(false)
+      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .show()
 }
 
-fun Fragment.showDialog(message: String, listener: OnClickListener) {
-  AlertDialog.Builder(context!!).setMessage(message).setNeutralButton("OK", listener).show()
+fun Fragment.showDialog(
+  message: String,
+  listener: OnClickListener
+) {
+  AlertDialog.Builder(context!!)
+      .setMessage(message)
+      .setNeutralButton("OK", listener)
+      .show()
 }
 
 fun Fragment.showDialog(message: String): AlertDialog {
-  return AlertDialog.Builder(context!!).setMessage(message).setCancelable(false)
-      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+  return AlertDialog.Builder(context!!)
+      .setMessage(message)
+      .setCancelable(false)
+      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .show()
 }
 
 fun Fragment.hideKeyboard(view: View) {

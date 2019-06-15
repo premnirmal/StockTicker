@@ -84,13 +84,21 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   }
   private var itemTouchHelper: ItemTouchHelper? = null
 
-  override fun onOpenQuote(view: View, quote: Quote, position: Int) {
+  override fun onOpenQuote(
+    view: View,
+    quote: Quote,
+    position: Int
+  ) {
     val intent = Intent(view.context, NewsFeedActivity::class.java)
     intent.putExtra(NewsFeedActivity.TICKER, quote.symbol)
     startActivity(intent)
   }
 
-  override fun onClickQuoteOptions(view: View, quote: Quote, position: Int) {
+  override fun onClickQuoteOptions(
+    view: View,
+    quote: Quote,
+    position: Int
+  ) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
     val moveToWidgetItem = popupWindow.menu.findItem(R.id.move_to_widget)
@@ -107,19 +115,25 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
           val widgetDataProvider = holder.widgetDataProvider
           val appWidgetIds = widgetDataProvider.getAppWidgetIds()
           val widgetNames = appWidgetIds.map {
-            widgetDataProvider.dataForWidgetId(it).widgetName()
-          }.toTypedArray()
+            widgetDataProvider.dataForWidgetId(it)
+                .widgetName()
+          }
+              .toTypedArray()
           val currentWidgetIndex = appWidgetIds.indexOf(widgetId)
           AlertDialog.Builder(activity)
               .setSingleChoiceItems(widgetNames, currentWidgetIndex) { dialog, which ->
                 if (which != currentWidgetIndex) {
-                  widgetDataProvider.moveQuoteToDifferentWidget(widgetId, quote,
-                      appWidgetIds[which])
+                  widgetDataProvider.moveQuoteToDifferentWidget(
+                      widgetId, quote,
+                      appWidgetIds[which]
+                  )
                   stocksAdapter.remove(quote)
                   holder.bus.post(RefreshEvent())
                   dialog.dismiss()
                 }
-              }.setTitle(R.string.select_widget).show()
+              }
+              .setTitle(R.string.select_widget)
+              .show()
         }
       }
       true
@@ -137,20 +151,29 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     super.onStart()
     update()
     bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
-        AndroidSchedulers.mainThread()).subscribe {
-      update()
-    }
+        AndroidSchedulers.mainThread()
+    )
+        .subscribe {
+          update()
+        }
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View? {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(
-        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing)))
+        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing))
+    )
     val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
@@ -177,14 +200,17 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   private fun promptRemove(quote: Quote?) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-      AlertDialog.Builder(activity).setTitle(R.string.remove)
+      AlertDialog.Builder(activity)
+          .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove) { dialog, _ ->
             widgetData.removeStock(it.symbol)
             stocksAdapter.remove(it)
             holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
-          }.setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }.show()
+          }
+          .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+          .show()
     }
   }
 

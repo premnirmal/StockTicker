@@ -13,7 +13,10 @@ class SearchActivity : BaseActivity() {
   companion object {
     const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
 
-    fun launchIntent(context: Context, widgetId: Int): Intent {
+    fun launchIntent(
+      context: Context,
+      widgetId: Int
+    ): Intent {
       val intent = Intent(context, SearchActivity::class.java)
       intent.putExtra(SearchActivity.ARG_WIDGET_ID, widgetId)
       return intent

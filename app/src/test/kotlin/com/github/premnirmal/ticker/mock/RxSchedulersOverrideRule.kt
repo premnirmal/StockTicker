@@ -14,7 +14,7 @@ class RxSchedulersOverrideRule : TestRule {
   private val immediate = object : Scheduler() {
 
     override fun createWorker(): Worker {
-      return ExecutorScheduler.ExecutorWorker(Executor { it.run() })
+      return ExecutorScheduler.ExecutorWorker(Executor { it.run() }, true)
     }
   }
 

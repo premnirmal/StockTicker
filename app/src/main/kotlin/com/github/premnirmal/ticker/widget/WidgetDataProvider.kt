@@ -83,7 +83,11 @@ class WidgetDataProvider {
 
   fun containsTicker(ticker: String): Boolean = widgets.any { it.value.hasTicker(ticker) }
 
-  fun moveQuoteToDifferentWidget(oldWidgetId: Int, quote: Quote, newWidgetId: Int) {
+  fun moveQuoteToDifferentWidget(
+    oldWidgetId: Int,
+    quote: Quote,
+    newWidgetId: Int
+  ) {
     val oldWidget = widgets[oldWidgetId]!!
     val newWidget = widgets[newWidgetId]!!
     newWidget.addTicker(quote.symbol)

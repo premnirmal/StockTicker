@@ -27,30 +27,37 @@ class StocksStorage {
   }
 
   fun readStocks(): MutableList<Quote> {
-    return Paper.book().read(KEY_STOCKS, ArrayList())
+    return Paper.book()
+        .read(KEY_STOCKS, ArrayList())
   }
 
   fun saveStocks(quotes: List<Quote>) {
-    Paper.book().write(KEY_STOCKS, quotes)
+    Paper.book()
+        .write(KEY_STOCKS, quotes)
   }
 
   @Deprecated("remove after upgrade") fun readPositionsLegacy(): MutableList<Quote> {
-    return Paper.book().read(KEY_POSITIONS_LEGACY, ArrayList())
+    return Paper.book()
+        .read(KEY_POSITIONS_LEGACY, ArrayList())
   }
 
   fun readPositionsNew(): MutableList<Position> {
-    return Paper.book().read(KEY_POSITIONS_NEW, ArrayList())
+    return Paper.book()
+        .read(KEY_POSITIONS_NEW, ArrayList())
   }
 
   fun savePositions(positions: List<Position>) {
-    Paper.book().write(KEY_POSITIONS_NEW, positions)
+    Paper.book()
+        .write(KEY_POSITIONS_NEW, positions)
   }
 
   fun readTickers(): MutableList<String> {
-    return Paper.book().read(KEY_TICKERS, ArrayList())
+    return Paper.book()
+        .read(KEY_TICKERS, ArrayList())
   }
 
   fun saveTickers(tickers: List<String>) {
-    Paper.book().write(KEY_TICKERS, tickers)
+    Paper.book()
+        .write(KEY_TICKERS, tickers)
   }
 }

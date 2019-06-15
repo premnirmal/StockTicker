@@ -20,8 +20,10 @@ class UserAgentInterceptor : Interceptor {
   @Inject internal lateinit var context: Context
 
   private val userAgent by lazy {
-    String.format(USER_AGENT_FORMAT, context.packageName, BuildConfig.VERSION_NAME,
-        BuildConfig.VERSION_CODE, Build.VERSION.SDK_INT, Build.MANUFACTURER, Build.MODEL)
+    String.format(
+        USER_AGENT_FORMAT, context.packageName, BuildConfig.VERSION_NAME,
+        BuildConfig.VERSION_CODE, Build.VERSION.SDK_INT, Build.MANUFACTURER, Build.MODEL
+    )
   }
 
   init {
@@ -29,7 +31,10 @@ class UserAgentInterceptor : Interceptor {
   }
 
   @Throws(IOException::class) override fun intercept(chain: Chain): Response {
-    val newRequest = chain.request().newBuilder().addHeader(USER_AGENT_KEY, userAgent).build()
+    val newRequest = chain.request()
+        .newBuilder()
+        .addHeader(USER_AGENT_KEY, userAgent)
+        .build()
     return chain.proceed(newRequest)
   }
 

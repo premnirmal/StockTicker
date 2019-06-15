@@ -12,11 +12,12 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.squareup.leakcanary.LeakCanary
 import io.paperdb.Paper
 import timber.log.Timber
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig
 import java.security.MessageDigest
+import io.github.inflationx.calligraphy3.CalligraphyConfig
+import io.github.inflationx.calligraphy3.CalligraphyInterceptor
+import io.github.inflationx.viewpump.ViewPump
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -34,7 +35,8 @@ open class StocksApp : MultiDexApplication() {
         packageInfo.signatures.forEach {
           val md = MessageDigest.getInstance("SHA")
           md.update(it.toByteArray())
-          val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT).trim()
+          val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT)
+              .trim()
           return currentSignature
         }
       } catch (e: Exception) {
@@ -54,26 +56,21 @@ open class StocksApp : MultiDexApplication() {
 
   override fun onCreate() {
     super.onCreate()
-    if (!initLeakCanary()) return
     initLogger()
     initThreeTen()
-    CalligraphyConfig.initDefault(
-        CalligraphyConfig.Builder().setDefaultFontPath("fonts/Ubuntu-Regular.ttf").setFontAttrId(
-            R.attr.fontPath).build())
+    ViewPump.init(
+        ViewPump.builder()
+            .addInterceptor(
+                CalligraphyInterceptor(
+                    CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build()))
+            .build())
     Injector.init(createAppComponent())
     initPaper()
     initAnalytics()
     SIGNATURE = getAppSignature(this)
-  }
-
-  open fun initLeakCanary(): Boolean {
-    if (LeakCanary.isInAnalyzerProcess(this)) {
-      // This process is dedicated to LeakCanary for heap analysis.
-      // You should not init your app in this process.
-      return false
-    }
-    LeakCanary.install(this)
-    return true
   }
 
   open fun initPaper() {
@@ -85,7 +82,9 @@ open class StocksApp : MultiDexApplication() {
   }
 
   open fun createAppComponent(): AppComponent {
-    val component: AppComponent = DaggerAppComponent.builder().appModule(AppModule(this)).build()
+    val component: AppComponent = DaggerAppComponent.builder()
+        .appModule(AppModule(this))
+        .build()
     return component
   }
 

@@ -40,17 +40,28 @@ internal class SuggestionsAdapter(private val suggestionClickListener: Suggestio
     return position.toLong()
   }
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SuggestionVH {
+  override fun onCreateViewHolder(
+    parent: ViewGroup,
+    viewType: Int
+  ): SuggestionVH {
     val inflater = LayoutInflater.from(parent.context)
-    return SuggestionVH(inflater.inflate(R.layout.item_suggestion, parent, false),
-        suggestionClickListener)
+    return SuggestionVH(
+        inflater.inflate(R.layout.item_suggestion, parent, false),
+        suggestionClickListener
+    )
   }
 
-  override fun onBindViewHolder(holder: SuggestionVH, position: Int) {
+  override fun onBindViewHolder(
+    holder: SuggestionVH,
+    position: Int
+  ) {
     holder.update(getItem(position))
   }
 
-  class SuggestionVH(itemView: View, private val suggestionClickListener: SuggestionClickListener) :
+  class SuggestionVH(
+    itemView: View,
+    private val suggestionClickListener: SuggestionClickListener
+  ) :
       androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
 
     private val textView: TextView = itemView as TextView

@@ -13,8 +13,9 @@ import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
-import com.trello.rxlifecycle2.android.ActivityEvent
-import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import com.trello.rxlifecycle3.android.ActivityEvent
+import com.trello.rxlifecycle3.android.RxLifecycleAndroid
+import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.BehaviorSubject
@@ -38,10 +39,13 @@ abstract class BaseActivity : AppCompatActivity() {
     observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
 
   override fun attachBaseContext(newBase: Context) {
-    super.attachBaseContext(uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper.wrap(newBase))
+    super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
   }
 
-  override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+  override fun onCreate(
+    savedInstanceState: Bundle?,
+    persistentState: PersistableBundle?
+  ) {
     super.onCreate(savedInstanceState, persistentState)
     lifecycleSubject.onNext(ActivityEvent.CREATE)
   }
@@ -85,8 +89,10 @@ abstract class BaseActivity : AppCompatActivity() {
 
   fun updateToolbar(toolbar: androidx.appcompat.widget.Toolbar) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,
-          toolbar.paddingBottom)
+      toolbar.setPadding(
+          toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,
+          toolbar.paddingBottom
+      )
     }
   }
 

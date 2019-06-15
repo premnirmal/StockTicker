@@ -89,7 +89,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     Injector.appComponent.inject(this)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     listView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
@@ -102,7 +105,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     broadcastUpdateWidget()
   }
 
-  override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+  override fun onCreatePreferences(
+    savedInstanceState: Bundle?,
+    rootKey: String?
+  ) {
     setPreferencesFromResource(R.xml.prefs, rootKey)
   }
 
@@ -110,14 +116,18 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     if (preference.key == AppPreferences.START_TIME) {
       val pref = preference as TimePreference
       val dialog =
-        TimePickerDialog(context, TimeSelectedListener(pref, R.string.start_time_updated),
-            pref.lastHour, pref.lastMinute, true)
+        TimePickerDialog(
+            context, TimeSelectedListener(pref, R.string.start_time_updated),
+            pref.lastHour, pref.lastMinute, true
+        )
       dialog.setTitle(R.string.start_time)
       dialog.show()
     } else if (preference.key == AppPreferences.END_TIME) {
       val pref = preference as TimePreference
-      val dialog = TimePickerDialog(context, TimeSelectedListener(pref, R.string.end_time_updated),
-          pref.lastHour, pref.lastMinute, true)
+      val dialog = TimePickerDialog(
+          context, TimeSelectedListener(pref, R.string.end_time_updated),
+          pref.lastHour, pref.lastMinute, true
+      )
       dialog.setTitle(R.string.end_time)
       dialog.show()
     } else {
@@ -150,12 +160,17 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val privacyPref = findPreference<Preference>(AppPreferences.SETTING_PRIVACY_POLICY)
       privacyPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        val customTabsIntent = CustomTabsIntent.Builder().addDefaultShareMenuItem()
-            .setToolbarColor(this.resources.getColor(R.color.colorPrimary)).setShowTitle(true)
-            .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap()).build()
+        val customTabsIntent = CustomTabsIntent.Builder()
+            .addDefaultShareMenuItem()
+            .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
+            .setShowTitle(true)
+            .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
+            .build()
         CustomTabsHelper.addKeepAliveExtra(context!!, customTabsIntent.intent)
-        CustomTabsHelper.openCustomTab(context!!, customTabsIntent,
-            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback())
+        CustomTabsHelper.openCustomTab(
+            context!!, customTabsIntent,
+            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback()
+        )
         true
       }
     }
@@ -166,7 +181,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         showDialog(getString(R.string.are_you_sure), DialogInterface.OnClickListener { _, _ ->
           val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
           Timber.w(RuntimeException("Nuked from settings!"))
-          preferences.edit().clear().commit()
+          preferences.edit()
+              .clear()
+              .apply()
           val packageName = context!!.packageName
           val filesDir = context!!.filesDir
           val directory = filesDir.path + "$packageName/shared_prefs/"
@@ -175,7 +192,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           listFiles?.forEach { file ->
             file?.delete()
           }
-          preferences.edit().putBoolean(AppPreferences.DID_RATE, hasUserAlreadyRated).commit()
+          preferences.edit()
+              .putBoolean(AppPreferences.DID_RATE, hasUserAlreadyRated)
+              .apply()
           System.exit(0)
         })
         true
@@ -224,12 +243,17 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       fontSizePreference.setValueIndex(size)
       fontSizePreference.summary = fontSizePreference.entries[size]
       fontSizePreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+        override fun onPreferenceChange(
+          preference: Preference,
+          newValue: Any
+        ): Boolean {
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().remove(AppPreferences.FONT_SIZE)
-              .putInt(AppPreferences.FONT_SIZE, index).apply()
+          preferences.edit()
+              .remove(AppPreferences.FONT_SIZE)
+              .putInt(AppPreferences.FONT_SIZE, index)
+              .apply()
           broadcastUpdateWidget()
           fontSizePreference.summary = fontSizePreference.entries[index]
           InAppMessage.showMessage(activity!!, R.string.text_size_updated_message)
@@ -244,11 +268,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       refreshPreference.setValueIndex(refreshIndex)
       refreshPreference.summary = refreshPreference.entries[refreshIndex]
       refreshPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+        override fun onPreferenceChange(
+          preference: Preference,
+          newValue: Any
+        ): Boolean {
           val stringValue = newValue.toString()
           val listPreference = preference as ListPreference
           val index = listPreference.findIndexOfValue(stringValue)
-          preferences.edit().putInt(AppPreferences.UPDATE_INTERVAL, index).apply()
+          preferences.edit()
+              .putInt(AppPreferences.UPDATE_INTERVAL, index)
+              .apply()
           broadcastUpdateWidget()
           refreshPreference.summary = refreshPreference.entries[index]
           InAppMessage.showMessage(activity!!, R.string.refresh_updated_message)
@@ -261,14 +290,19 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       val startTimePref = findPreference(AppPreferences.START_TIME) as TimePreference
       startTimePref.summary = preferences.getString(AppPreferences.START_TIME, "09:30")
       startTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+        override fun onPreferenceChange(
+          preference: Preference,
+          newValue: Any
+        ): Boolean {
           val startTimez = appPreferences.timeAsIntArray(newValue.toString())
           val endTimez = appPreferences.endTime()
           if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
-            preferences.edit().putString(AppPreferences.START_TIME, newValue.toString()).apply()
+            preferences.edit()
+                .putString(AppPreferences.START_TIME, newValue.toString())
+                .apply()
             startTimePref.summary = newValue.toString()
             stocksProvider.schedule()
             InAppMessage.showMessage(activity!!, R.string.start_time_updated)
@@ -289,14 +323,19 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         }
       }
       endTimePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
-        override fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
+        override fun onPreferenceChange(
+          preference: Preference,
+          newValue: Any
+        ): Boolean {
           val endTimez = appPreferences.timeAsIntArray(newValue.toString())
           val startTimez = appPreferences.startTime()
           if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
-            preferences.edit().putString(AppPreferences.END_TIME, newValue.toString()).apply()
+            preferences.edit()
+                .putString(AppPreferences.END_TIME, newValue.toString())
+                .apply()
             endTimePref.summary = newValue.toString()
             stocksProvider.schedule()
             InAppMessage.showMessage(activity!!, R.string.end_time_updated)
@@ -307,15 +346,25 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     }
   }
 
+  private fun <T : Preference> findPreference(key: String): T {
+    return super.findPreference(key)!!
+  }
+
   private fun needsPermissionGrant(): Boolean {
-    return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(activity!!,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+    return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
+        activity!!,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    ) != PackageManager.PERMISSION_GRANTED
   }
 
   private fun askForExternalStoragePermissions(reqCode: Int) {
-    ActivityCompat.requestPermissions(activity!!,
-        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE), reqCode)
+    ActivityCompat.requestPermissions(
+        activity!!,
+        arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        ), reqCode
+    )
   }
 
   private fun exportAndShareTickers() {
@@ -337,9 +386,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   }
 
   private fun launchImportIntent() {
-    MaterialFilePicker().withSupportFragment(this).withRequestCode(REQCODE_FILE_WRITE)
+    MaterialFilePicker().withSupportFragment(this)
+        .withRequestCode(REQCODE_FILE_WRITE)
         // Filtering files and directories by file name using regexp
-        .withFilter(Pattern.compile(".*\\.txt$")).start()
+        .withFilter(Pattern.compile(".*\\.txt$"))
+        .start()
   }
 
   private fun exportTickers() {
@@ -384,8 +435,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     widgetDataProvider.broadcastUpdateAllWidgets()
   }
 
-  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
-    grantResults: IntArray) {
+  override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<String>,
+    grantResults: IntArray
+  ) {
     when (requestCode) {
       REQCODE_WRITE_EXTERNAL_STORAGE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -411,7 +465,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     }
   }
 
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+  override fun onActivityResult(
+    requestCode: Int,
+    resultCode: Int,
+    data: Intent?
+  ) {
     if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
       val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
       if (filePath != null) {
@@ -429,10 +487,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     super.onActivityResult(requestCode, resultCode, data)
   }
 
-  inner class TimeSelectedListener(private val preference: TimePreference,
-    private val messageRes: Int) : TimePickerDialog.OnTimeSetListener {
+  inner class TimeSelectedListener(
+    private val preference: TimePreference,
+    private val messageRes: Int
+  ) : TimePickerDialog.OnTimeSetListener {
 
-    override fun onTimeSet(picker: TimePicker, hourOfDay: Int, minute: Int) {
+    override fun onTimeSet(
+      picker: TimePicker,
+      hourOfDay: Int,
+      minute: Int
+    ) {
       val lastHour = picker.currentHour
       val lastMinute = picker.currentMinute
       val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
@@ -443,7 +507,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
         showDialog(getString(R.string.incorrect_time_update_error))
       } else {
-        preferences.edit().putString(preference.key, time).apply()
+        preferences.edit()
+            .putString(preference.key, time)
+            .apply()
         preference.summary = time
         stocksProvider.schedule()
         InAppMessage.showMessage(activity!!, messageRes)

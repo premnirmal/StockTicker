@@ -14,7 +14,10 @@ import org.threeten.bp.LocalDate
 
 class DateAxisFormatter : IAxisValueFormatter {
 
-  override fun getFormattedValue(value: Float, axis: AxisBase): String {
+  override fun getFormattedValue(
+    value: Float,
+    axis: AxisBase
+  ): String {
     val date = LocalDate.ofEpochDay(value.toLong())
     return date.format(AppPreferences.AXIS_DATE_FORMATTER)
   }
@@ -22,15 +25,27 @@ class DateAxisFormatter : IAxisValueFormatter {
 
 class ValueAxisFormatter : IAxisValueFormatter {
 
-  override fun getFormattedValue(value: Float, axis: AxisBase): String =
+  override fun getFormattedValue(
+    value: Float,
+    axis: AxisBase
+  ): String =
     AppPreferences.DECIMAL_FORMAT.format(value)
 }
 
-class MultilineXAxisRenderer(viewPortHandler: ViewPortHandler?, xAxis: XAxis?,
-  trans: Transformer?) : XAxisRenderer(viewPortHandler, xAxis, trans) {
+class MultilineXAxisRenderer(
+  viewPortHandler: ViewPortHandler?,
+  xAxis: XAxis?,
+  trans: Transformer?
+) : XAxisRenderer(viewPortHandler, xAxis, trans) {
 
-  override fun drawLabel(c: Canvas, formattedLabel: String, x: Float, y: Float, anchor: MPPointF,
-    angleDegrees: Float) {
+  override fun drawLabel(
+    c: Canvas,
+    formattedLabel: String,
+    x: Float,
+    y: Float,
+    anchor: MPPointF,
+    angleDegrees: Float
+  ) {
     val lines = formattedLabel.split("-")
     for (i in 0 until lines.size) {
       val vOffset = i * mAxisLabelPaint.textSize

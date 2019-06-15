@@ -59,12 +59,18 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     widgetId = arguments!!.getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View? {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
     return inflater.inflate(R.layout.fragment_widget_settings, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     setWidgetNameSetting(widgetData)
@@ -75,8 +81,10 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setAutoSortSetting(widgetData)
     setHideHeaderSetting(widgetData)
 
-    arrayOf(setting_add_stock, setting_widget_name, setting_layout_type, setting_background,
-        setting_text_color, setting_bold, setting_autosort, setting_hide_header).forEach {
+    arrayOf(
+        setting_add_stock, setting_widget_name, setting_layout_type, setting_background,
+        setting_text_color, setting_bold, setting_autosort, setting_hide_header
+    ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
   }
@@ -154,9 +162,14 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     widgetDataProvider.broadcastUpdateWidget(widgetId)
   }
 
-  private fun showDialogPreference(@ArrayRes itemRes: Int,
-    listener: DialogInterface.OnClickListener) {
-    AlertDialog.Builder(activity!!).setItems(itemRes, listener).create().show()
+  private fun showDialogPreference(
+    @ArrayRes itemRes: Int,
+    listener: DialogInterface.OnClickListener
+  ) {
+    AlertDialog.Builder(activity!!)
+        .setItems(itemRes, listener)
+        .create()
+        .show()
   }
 
   private fun setWidgetNameSetting(widgetData: WidgetData) {

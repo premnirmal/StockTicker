@@ -37,8 +37,14 @@ open class AddPositionActivity : BaseActivity() {
 
     private class DecimalDigitsInputFilter() : InputFilter {
 
-      override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned, dStart: Int,
-        dEnd: Int): CharSequence? {
+      override fun filter(
+        source: CharSequence,
+        start: Int,
+        end: Int,
+        dest: Spanned,
+        dStart: Int,
+        dEnd: Int
+      ): CharSequence? {
         val matcher = PATTERN.matcher(dest)
         return if (!matcher.matches()) "" else null
       }

@@ -48,13 +48,17 @@ internal open class FileImportTask(private val widgetDataProvider: WidgetDataPro
         text.append(it)
         line = br.readLine()
       }
-      val tickers = text.toString().replace(" ".toRegex(), "").split(",".toRegex())
-          .dropLastWhile(String::isEmpty).toTypedArray()
+      val tickers = text.toString()
+          .replace(" ".toRegex(), "")
+          .split(",".toRegex())
+          .dropLastWhile(String::isEmpty)
+          .toTypedArray()
       if (widgetDataProvider.hasWidget()) {
-        widgetDataProvider.getAppWidgetIds().forEach { widgetId ->
-          val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-          widgetData.addTickers(Arrays.asList(*tickers))
-        }
+        widgetDataProvider.getAppWidgetIds()
+            .forEach { widgetId ->
+              val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+              widgetData.addTickers(Arrays.asList(*tickers))
+            }
       } else {
         val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
         widgetData.addTickers(Arrays.asList(*tickers))

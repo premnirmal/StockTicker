@@ -43,17 +43,25 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     Injector.appComponent.inject(this)
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View? {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
     return inflater.inflate(R.layout.fragment_widgets, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
-    widgetDataList = widgetDataProvider.getAppWidgetIds().map {
-      widgetDataProvider.dataForWidgetId(it)
-    }.sortedBy { it.widgetName() }
+    widgetDataList = widgetDataProvider.getAppWidgetIds()
+        .map {
+          widgetDataProvider.dataForWidgetId(it)
+        }
+        .sortedBy { it.widgetName() }
     widget_selection_spinner.adapter = WidgetSpinnerAdapter(widgetDataList)
     widget_selection_spinner.onItemSelectedListener = this
 
@@ -81,7 +89,8 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
 
   private fun setWidgetFragment(widgetId: Int) {
     val fragment = WidgetSettingsFragment.newInstance(widgetId)
-    childFragmentManager.beginTransaction().replace(R.id.child_fragment_container, fragment)
+    childFragmentManager.beginTransaction()
+        .replace(R.id.child_fragment_container, fragment)
         .commit()
     currentWidgetId = widgetId
   }
@@ -103,17 +112,28 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
 
   }
 
-  override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+  override fun onItemSelected(
+    parent: AdapterView<*>?,
+    view: View?,
+    position: Int,
+    id: Long
+  ) {
     setWidgetFragment(widgetDataList[position].widgetId)
   }
 
   class WidgetSpinnerAdapter(private val data: List<WidgetData>) : BaseAdapter() {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+    override fun getView(
+      position: Int,
+      convertView: View?,
+      parent: ViewGroup
+    ): View {
       val widgetData = getItem(position)
       val view =
-        convertView ?: LayoutInflater.from(parent.context).inflate(R.layout.item_widget, parent,
-            false)
+        convertView ?: LayoutInflater.from(parent.context).inflate(
+            R.layout.item_widget, parent,
+            false
+        )
       val nameTextView = view.findViewById<TextView>(R.id.widget_name_text)
       nameTextView.text = widgetData.widgetName()
       return view

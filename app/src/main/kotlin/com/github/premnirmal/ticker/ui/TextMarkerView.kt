@@ -18,10 +18,14 @@ class TextMarkerView(context: Context) : MarkerView(context, R.layout.text_marke
     MPPointF(-(width / 2).toFloat(), -height.toFloat())
   }
 
-  override fun refreshContent(e: Entry?, highlight: Highlight?) {
+  override fun refreshContent(
+    e: Entry?,
+    highlight: Highlight?
+  ) {
     if (e is DataPoint) {
       val price = AppPreferences.DECIMAL_FORMAT.format(e.y)
-      val date = e.getDate().format(DATE_FORMATTER)
+      val date = e.getDate()
+          .format(DATE_FORMATTER)
       tvContent.text = "${price}\n$date"
     } else {
       tvContent.text = ""

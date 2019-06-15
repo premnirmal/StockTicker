@@ -31,7 +31,8 @@ class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
     }
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()
-          .add(R.id.fragment_container, WidgetSettingsFragment.newInstance(widgetId)).commit()
+          .add(R.id.fragment_container, WidgetSettingsFragment.newInstance(widgetId))
+          .commit()
     }
   }
 

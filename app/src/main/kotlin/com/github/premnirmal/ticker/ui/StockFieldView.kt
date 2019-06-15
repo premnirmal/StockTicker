@@ -15,7 +15,10 @@ import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StockFieldView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+class StockFieldView @JvmOverloads constructor(
+  context: Context,
+  attrs: AttributeSet? = null
+) :
     LinearLayout(context, attrs) {
 
   companion object {
@@ -28,29 +31,35 @@ class StockFieldView @JvmOverloads constructor(context: Context, attrs: Attribut
   }
 
   init {
-    LayoutInflater.from(context).inflate(R.layout.stock_field_view, this, true)
+    LayoutInflater.from(context)
+        .inflate(R.layout.stock_field_view, this, true)
     attrs?.let {
       val array = context.obtainStyledAttributes(it, R.styleable.StockFieldView)
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
       if (orientation == ORIENTATION_HORIZONTAL) {
         setOrientation(LinearLayout.HORIZONTAL)
         fieldname.layoutParams =
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
+          LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
         fieldvalue.layoutParams =
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
+          LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
         fieldvalue.gravity = Gravity.END
       } else {
         setOrientation(LinearLayout.VERTICAL)
-        fieldname.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT)
-        fieldvalue.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT)
+        fieldname.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        fieldvalue.layoutParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         fieldvalue.gravity = Gravity.START
       }
       weightSum = 1f
       val name = getStringValue(context, array, R.styleable.StockFieldView_name)
       fieldname.text = name
-      val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20).toFloat()
+      val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20)
+          .toFloat()
       fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
       fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
       val centerText = array.getBoolean(R.styleable.StockFieldView_center_text, false)
@@ -85,10 +94,20 @@ class StockFieldView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
   }
 
-  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : this(context, attrs)
+  constructor(
+    context: Context,
+    attrs: AttributeSet,
+    defStyleAttr: Int
+  ) : this(context, attrs)
 
-  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int) : this(
-      context, attrs)
+  constructor(
+    context: Context,
+    attrs: AttributeSet,
+    defStyleAttr: Int,
+    defStyleRes: Int
+  ) : this(
+      context, attrs
+  )
 
   fun setLabel(text: CharSequence?) {
     fieldname.text = text
@@ -102,7 +121,11 @@ class StockFieldView @JvmOverloads constructor(context: Context, attrs: Attribut
     fieldvalue.setTextColor(color)
   }
 
-  private fun getStringValue(context: Context, array: TypedArray, stylelable: Int): String {
+  private fun getStringValue(
+    context: Context,
+    array: TypedArray,
+    stylelable: Int
+  ): String {
     var name = array.getString(stylelable)
     if (name == null) {
       val stringId = array.getResourceId(stylelable, -1)

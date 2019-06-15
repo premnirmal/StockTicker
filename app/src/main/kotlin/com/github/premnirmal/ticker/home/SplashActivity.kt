@@ -22,7 +22,10 @@ class SplashActivity : BaseActivity() {
     }
     setContentView(R.layout.activity_splash)
     Injector.appComponent.inject(this)
-    Maybe.empty<Any>().delay(300, TimeUnit.MILLISECONDS).doOnComplete { launch() }.subscribe()
+    Maybe.empty<Any>()
+        .delay(300, TimeUnit.MILLISECONDS)
+        .doOnComplete { launch() }
+        .subscribe()
   }
 
   private fun launch() {

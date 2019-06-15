@@ -52,12 +52,16 @@ class GraphActivity : BaseGraphActivity() {
     Injector.appComponent.inject(this)
     setContentView(R.layout.activity_graph)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      graphActivityRoot.setPadding(graphActivityRoot.paddingLeft, getStatusBarHeight(),
-          graphActivityRoot.paddingRight, graphActivityRoot.paddingBottom)
+      graphActivityRoot.setPadding(
+          graphActivityRoot.paddingLeft, getStatusBarHeight(),
+          graphActivityRoot.paddingRight, graphActivityRoot.paddingBottom
+      )
     }
     if (Build.VERSION.SDK_INT < 16) {
-      window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-          WindowManager.LayoutParams.FLAG_FULLSCREEN)
+      window.setFlags(
+          WindowManager.LayoutParams.FLAG_FULLSCREEN,
+          WindowManager.LayoutParams.FLAG_FULLSCREEN
+      )
     } else {
       val decorView = window.decorView
       decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -157,7 +161,8 @@ class GraphActivity : BaseGraphActivity() {
       R.id.max -> range = Range.MAX
     }
     val parent = v.parent as ViewGroup
-    (0 until parent.childCount).map { parent.getChildAt(it) }.forEach { it.isEnabled = it != v }
+    (0 until parent.childCount).map { parent.getChildAt(it) }
+        .forEach { it.isEnabled = it != v }
     getData()
   }
 }

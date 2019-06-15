@@ -34,7 +34,10 @@ class StockWidget : AppWidgetProvider() {
 
   var injected = false
 
-  override fun onReceive(context: Context, intent: Intent) {
+  override fun onReceive(
+    context: Context,
+    intent: Intent
+  ) {
     if (!injected) {
       Injector.appComponent.inject(this)
       injected = true
@@ -45,15 +48,19 @@ class StockWidget : AppWidgetProvider() {
     }
   }
 
-  override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager,
-    appWidgetIds: IntArray) {
+  override fun onUpdate(
+    context: Context,
+    appWidgetManager: AppWidgetManager,
+    appWidgetIds: IntArray
+  ) {
     for (widgetId in appWidgetIds) {
       val minimumWidth: Int
       minimumWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
         getMinWidgetWidth(options)
       } else {
-        appWidgetManager.getAppWidgetInfo(widgetId).minWidth
+        appWidgetManager.getAppWidgetInfo(widgetId)
+            .minWidth
       }
       val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
       updateWidget(context, widgetId, remoteViews, appWidgetManager)
@@ -62,8 +69,12 @@ class StockWidget : AppWidgetProvider() {
     super.onUpdate(context, appWidgetManager, appWidgetIds)
   }
 
-  override fun onAppWidgetOptionsChanged(context: Context, appWidgetManager: AppWidgetManager,
-    appWidgetId: Int, newOptions: Bundle) {
+  override fun onAppWidgetOptionsChanged(
+    context: Context,
+    appWidgetManager: AppWidgetManager,
+    appWidgetId: Int,
+    newOptions: Bundle
+  ) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     val minimumWidth = getMinWidgetWidth(newOptions)
     val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
@@ -85,7 +96,10 @@ class StockWidget : AppWidgetProvider() {
     super.onDisabled(context)
   }
 
-  override fun onDeleted(context: Context?, appWidgetIds: IntArray?) {
+  override fun onDeleted(
+    context: Context?,
+    appWidgetIds: IntArray?
+  ) {
     super.onDeleted(context, appWidgetIds)
     appWidgetIds?.let {
       it.forEach { widgetId ->
@@ -94,7 +108,10 @@ class StockWidget : AppWidgetProvider() {
     }
   }
 
-  private fun createRemoteViews(context: Context, min_width: Int): RemoteViews {
+  private fun createRemoteViews(
+    context: Context,
+    min_width: Int
+  ): RemoteViews {
     val remoteViews: RemoteViews = when {
       min_width > 750 -> RemoteViews(context.packageName, R.layout.widget_4x1)
       min_width > 500 -> RemoteViews(context.packageName, R.layout.widget_3x1)
@@ -108,7 +125,9 @@ class StockWidget : AppWidgetProvider() {
 
   private fun getMinWidgetWidth(options: Bundle?): Int {
     return if (options == null || !options.containsKey(
-            AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)) {
+            AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
+        )
+    ) {
       0 // 2x1
     } else {
       if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
@@ -119,8 +138,12 @@ class StockWidget : AppWidgetProvider() {
     }
   }
 
-  private fun updateWidget(context: Context, appWidgetId: Int, remoteViews: RemoteViews,
-    appWidgetManager: AppWidgetManager) {
+  private fun updateWidget(
+    context: Context,
+    appWidgetId: Int,
+    remoteViews: RemoteViews,
+    appWidgetManager: AppWidgetManager
+  ) {
     val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
     val widgetAdapterIntent = Intent(context, RemoteStockProviderService::class.java)
     widgetAdapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
@@ -159,8 +182,10 @@ class StockWidget : AppWidgetProvider() {
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val refreshPendingIntent =
-      PendingIntent.getBroadcast(context.applicationContext, 0, updateReceiverIntent,
-          PendingIntent.FLAG_UPDATE_CURRENT)
+      PendingIntent.getBroadcast(
+          context.applicationContext, 0, updateReceiverIntent,
+          PendingIntent.FLAG_UPDATE_CURRENT
+      )
     remoteViews.setOnClickPendingIntent(R.id.refresh_icon, refreshPendingIntent)
     appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
   }

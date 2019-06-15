@@ -32,7 +32,9 @@ class AppPreferences @Inject constructor() {
 
   fun getLastSavedVersionCode(): Int = sharedPreferences.getInt(APP_VERSION_CODE, -1)
   fun saveVersionCode(code: Int) {
-    sharedPreferences.edit().putInt(APP_VERSION_CODE, code).apply()
+    sharedPreferences.edit()
+        .putInt(APP_VERSION_CODE, code)
+        .apply()
   }
 
   val updateIntervalMs: Long
@@ -43,7 +45,9 @@ class AppPreferences @Inject constructor() {
     }
 
   fun timeAsIntArray(time: String): IntArray {
-    val split = time.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+    val split = time.split(":".toRegex())
+        .dropLastWhile { it.isEmpty() }
+        .toTypedArray()
     val times = intArrayOf(split[0].toInt(), split[1].toInt())
     return times
   }
@@ -61,7 +65,9 @@ class AppPreferences @Inject constructor() {
   fun isRefreshing() = sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
 
   fun setRefreshing(refreshing: Boolean) {
-    sharedPreferences.edit().putBoolean(WIDGET_REFRESHING, refreshing).apply()
+    sharedPreferences.edit()
+        .putBoolean(WIDGET_REFRESHING, refreshing)
+        .apply()
   }
 
   fun tutorialShown(): Boolean {
@@ -69,11 +75,15 @@ class AppPreferences @Inject constructor() {
   }
 
   fun setTutorialShown(shown: Boolean) {
-    sharedPreferences.edit().putBoolean(TUTORIAL_SHOWN, shown).apply()
+    sharedPreferences.edit()
+        .putBoolean(TUTORIAL_SHOWN, shown)
+        .apply()
   }
 
   fun userDidRate() {
-    sharedPreferences.edit().putBoolean(DID_RATE, true).apply()
+    sharedPreferences.edit()
+        .putBoolean(DID_RATE, true)
+        .apply()
   }
 
   fun hasUserAlreadyRated() = sharedPreferences.getBoolean(DID_RATE, false)
@@ -86,7 +96,9 @@ class AppPreferences @Inject constructor() {
   fun backOffAttemptCount(): Int = sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
 
   fun setBackOffAttemptCount(count: Int) {
-    sharedPreferences.edit().putInt(BACKOFF_ATTEMPTS, count).apply()
+    sharedPreferences.edit()
+        .putInt(BACKOFF_ATTEMPTS, count)
+        .apply()
   }
 
   companion object {
@@ -139,7 +151,7 @@ class AppPreferences @Inject constructor() {
     val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)
     val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd-yyyy")
 
-    val DECIMAL_FORMAT: Format = DecimalFormat("0.00")
+    val DECIMAL_FORMAT: Format = DecimalFormat("0.00##")
 
     val tickersFile: File
       get() {

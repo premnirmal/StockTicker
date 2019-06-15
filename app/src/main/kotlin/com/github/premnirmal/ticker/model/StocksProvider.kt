@@ -103,7 +103,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           quoteList[quote.symbol]?.position = position
         }
         storage.savePositions(newPositions)
-        preferences.edit().putBoolean(HAS_MIGRATED_POSITIONS, true).apply()
+        preferences.edit()
+            .putBoolean(HAS_MIGRATED_POSITIONS, true)
+            .apply()
       }
       val positions = storage.readPositionsNew()
       for (position in positions) {
@@ -117,7 +119,9 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   private fun save() {
     synchronized(quoteList) {
-      preferences.edit().putLong(LAST_FETCHED, lastFetched).apply()
+      preferences.edit()
+          .putLong(LAST_FETCHED, lastFetched)
+          .apply()
       storage.saveTickers(tickerList)
       storage.saveStocks(quoteList.values.toList())
       storage.savePositions(positionList.values.toList())
@@ -136,10 +140,16 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   private val msToNextAlarm: Long
     get() = alarmScheduler.msToNextAlarm(lastFetched)
 
-  private fun scheduleUpdateWithMs(msToNextAlarm: Long, refresh: Boolean = false) {
+  private fun scheduleUpdateWithMs(
+    msToNextAlarm: Long,
+    refresh: Boolean = false
+  ) {
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
-    nextFetch = updateTime.toInstant().toEpochMilli()
-    preferences.edit().putLong(NEXT_FETCH, nextFetch).apply()
+    nextFetch = updateTime.toInstant()
+        .toEpochMilli()
+    preferences.edit()
+        .putLong(NEXT_FETCH, nextFetch)
+        .apply()
     appPreferences.setRefreshing(false)
     widgetDataProvider.broadcastUpdateAllWidgets()
     if (refresh) {
@@ -150,11 +160,13 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   private fun ZonedDateTime.createTimeString(): String {
     val fetched: String
     val fetchedDayOfWeek = dayOfWeek.value
-    val today = clock.todayZoned().dayOfWeek.value
+    val today = clock.todayZoned()
+        .dayOfWeek.value
     fetched = if (today == fetchedDayOfWeek) {
       AppPreferences.TIME_FORMATTER.format(this)
     } else {
-      val day: String = DayOfWeek.from(this).getDisplayName(SHORT, Locale.getDefault())
+      val day: String = DayOfWeek.from(this)
+          .getDisplayName(SHORT, Locale.getDefault())
       val timeStr: String = AppPreferences.TIME_FORMATTER.format(this)
       "$timeStr $day"
     }
@@ -175,59 +187,66 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
       return Observable.error<List<Quote>>(Exception("No symbols in portfolio"))
-          .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
     } else {
-      return api.getStocks(tickerList).doOnSubscribe {
-        appPreferences.setRefreshing(true)
-        widgetDataProvider.broadcastUpdateAllWidgets()
-      }.doOnNext { stocks ->
-        if (stocks.isEmpty()) {
-          bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-          throw IllegalStateException("No symbols in portfolio")
-        } else {
-          synchronized(quoteList) {
-            tickerList.clear()
-            stocks.mapTo(tickerList) { it.symbol }
-            quoteList.clear()
-            for (stock in stocks) {
-              stock.position = getPosition(stock.symbol)
-              quoteList[stock.symbol] = stock
-            }
-            lastFetched = api.lastFetched
-            save()
+      return api.getStocks(tickerList)
+          .doOnSubscribe {
+            appPreferences.setRefreshing(true)
+            widgetDataProvider.broadcastUpdateAllWidgets()
           }
-        }
-      }.doOnError { t ->
-        var errorPosted = false
-        appPreferences.setRefreshing(false)
-        if (t is CompositeException) {
-          for (exception in t.exceptions) {
-            if (exception is RobindahoodException) {
-              exception.message?.let {
-                if (!bus.post(ErrorEvent(it))) {
-                  mainThreadHandler.post {
-                    InAppMessage.showToast(context, it)
+          .doOnNext { stocks ->
+            if (stocks.isEmpty()) {
+              bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+              throw IllegalStateException("No symbols in portfolio")
+            } else {
+              synchronized(quoteList) {
+                tickerList.clear()
+                stocks.mapTo(tickerList) { it.symbol }
+                quoteList.clear()
+                for (stock in stocks) {
+                  stock.position = getPosition(stock.symbol)
+                  quoteList[stock.symbol] = stock
+                }
+                lastFetched = api.lastFetched
+                save()
+              }
+            }
+          }
+          .doOnError { t ->
+            var errorPosted = false
+            appPreferences.setRefreshing(false)
+            if (t is CompositeException) {
+              for (exception in t.exceptions) {
+                if (exception is RobindahoodException) {
+                  exception.message?.let {
+                    if (!bus.post(ErrorEvent(it))) {
+                      mainThreadHandler.post {
+                        InAppMessage.showToast(context, it)
+                      }
+                      errorPosted = true
+                    }
                   }
-                  errorPosted = true
+                  break
                 }
               }
-              break
+            } else {
+              Timber.e(t)
             }
+            if (!errorPosted) {
+              mainThreadHandler.post {
+                InAppMessage.showToast(context, R.string.refresh_failed)
+              }
+            }
+            retryWithBackoff()
           }
-        } else {
-          Timber.e(t)
-        }
-        if (!errorPosted) {
-          mainThreadHandler.post {
-            InAppMessage.showToast(context, R.string.refresh_failed)
+          .doOnComplete {
+            appPreferences.setRefreshing(false)
+            exponentialBackoff.reset()
+            scheduleUpdate(true)
           }
-        }
-        retryWithBackoff()
-      }.doOnComplete {
-        appPreferences.setRefreshing(false)
-        exponentialBackoff.reset()
-        scheduleUpdate(true)
-      }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
     }
   }
 
@@ -257,7 +276,11 @@ class StocksProvider @Inject constructor() : IStocksProvider {
 
   override fun getPosition(ticker: String): Position? = positionList[ticker]
 
-  override fun addPosition(ticker: String, shares: Float, price: Float): Holding {
+  override fun addPosition(
+    ticker: String,
+    shares: Float,
+    price: Float
+  ): Holding {
     synchronized(quoteList) {
       val quote = getStock(ticker)
       var position = getPosition(ticker)
@@ -276,7 +299,10 @@ class StocksProvider @Inject constructor() : IStocksProvider {
     }
   }
 
-  override fun removePosition(ticker: String, holding: Holding) {
+  override fun removePosition(
+    ticker: String,
+    holding: Holding
+  ) {
     synchronized(positionList) {
       val position = getPosition(ticker)
       val quote = getStock(ticker)

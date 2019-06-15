@@ -15,14 +15,25 @@ import java.util.ArrayList
 /**
  * Created by premnirmal on 2/29/16.
  */
-class StocksAdapter constructor(private val widgetData: WidgetData,
+class StocksAdapter constructor(
+  private val widgetData: WidgetData,
   private val listener: StocksAdapter.QuoteClickListener,
-  private val dragStartListener: OnStartDragListener) :
+  private val dragStartListener: OnStartDragListener
+) :
     androidx.recyclerview.widget.RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
 
   interface QuoteClickListener {
-    fun onClickQuoteOptions(view: View, quote: Quote, position: Int)
-    fun onOpenQuote(view: View, quote: Quote, position: Int)
+    fun onClickQuoteOptions(
+      view: View,
+      quote: Quote,
+      position: Int
+    )
+
+    fun onOpenQuote(
+      view: View,
+      quote: Quote,
+      position: Int
+    )
   }
 
   companion object {
@@ -59,20 +70,28 @@ class StocksAdapter constructor(private val widgetData: WidgetData,
     }
   }
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PortfolioVH {
+  override fun onCreateViewHolder(
+    parent: ViewGroup,
+    viewType: Int
+  ): PortfolioVH {
     val context = parent.context
     val portfolioVH: PortfolioVH
     portfolioVH = if (viewType == TYPE_POSITION) {
-      val itemView = LayoutInflater.from(context).inflate(R.layout.item_position, parent, false)
+      val itemView = LayoutInflater.from(context)
+          .inflate(R.layout.item_position, parent, false)
       PositionVH(itemView)
     } else {
-      val itemView = LayoutInflater.from(context).inflate(R.layout.item_stock, parent, false)
+      val itemView = LayoutInflater.from(context)
+          .inflate(R.layout.item_stock, parent, false)
       StockVH(itemView)
     }
     return portfolioVH
   }
 
-  override fun onBindViewHolder(holder: PortfolioVH, position: Int) {
+  override fun onBindViewHolder(
+    holder: PortfolioVH,
+    position: Int
+  ) {
     holder.update(quoteList[position], listener)
     holder.itemView.setOnLongClickListener {
       dragStartListener.onStartDrag(holder)
@@ -84,7 +103,10 @@ class StocksAdapter constructor(private val widgetData: WidgetData,
 
   override fun getItemCount(): Int = quoteList.size
 
-  override fun onItemMove(fromPosition: Int, toPosition: Int): Boolean {
+  override fun onItemMove(
+    fromPosition: Int,
+    toPosition: Int
+  ): Boolean {
     quoteList.add(toPosition, quoteList.removeAt(fromPosition))
     val newTickerList = quoteList.mapTo(ArrayList()) { it.symbol }
     widgetData.rearrange(newTickerList)

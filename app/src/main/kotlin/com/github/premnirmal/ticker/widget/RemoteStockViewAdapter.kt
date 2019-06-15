@@ -76,15 +76,23 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
       remoteViews.setTextViewText(R.id.ticker, stock.symbol)
 
       if (widgetData.isBoldEnabled()) {
-        changePercentString.setSpan(StyleSpan(Typeface.BOLD), 0, changePercentString.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        changeValueString.setSpan(StyleSpan(Typeface.BOLD), 0, changeValueString.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        changePercentString.setSpan(
+            StyleSpan(Typeface.BOLD), 0, changePercentString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        changeValueString.setSpan(
+            StyleSpan(Typeface.BOLD), 0, changeValueString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
       } else {
-        changePercentString.setSpan(StyleSpan(Typeface.NORMAL), 0, changePercentString.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        changeValueString.setSpan(StyleSpan(Typeface.NORMAL), 0, changeValueString.length,
-            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        changePercentString.setSpan(
+            StyleSpan(Typeface.NORMAL), 0, changePercentString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        changeValueString.setSpan(
+            StyleSpan(Typeface.NORMAL), 0, changeValueString.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
       }
 
       if (stockViewLayout == R.layout.stockview3) {

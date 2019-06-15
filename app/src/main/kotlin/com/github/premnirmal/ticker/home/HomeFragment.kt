@@ -23,6 +23,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import io.github.inflationx.calligraphy3.TypefaceUtils
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_home.add_stocks_container
 import kotlinx.android.synthetic.main.fragment_home.collapsingToolbarLayout
@@ -36,7 +37,6 @@ import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
 import kotlinx.android.synthetic.main.fragment_home.view_pager
-import uk.co.chrisjenx.calligraphy.TypefaceUtils
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
@@ -69,21 +69,31 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     Injector.appComponent.inject(this)
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return inflater.inflate(R.layout.fragment_home, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     collapsingToolbarLayout.setCollapsedTitleTypeface(
-        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Regular.ttf"))
+        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Regular.ttf")
+    )
     collapsingToolbarLayout.setExpandedTitleTypeface(
-        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Bold.ttf"))
+        TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Bold.ttf")
+    )
 
-    swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
-        R.color.sea)
+    swipe_container.setColorSchemeResources(
+        R.color.color_primary_dark, R.color.spicy_salmon,
+        R.color.sea
+    )
     swipe_container.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter
@@ -132,32 +142,53 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private fun showFABMenu() {
     if (!isFABOpen) {
       isFABOpen = true
-      fab_settings.animate().rotationBy(45f).setDuration(FAB_ANIMATION_DURATION).start()
+      fab_settings.animate()
+          .rotationBy(45f)
+          .setDuration(FAB_ANIMATION_DURATION)
+          .start()
       add_stocks_container.visibility = View.VISIBLE
       edit_widget_container.visibility = View.VISIBLE
       fab_bg.visibility = View.VISIBLE
-      fab_bg.animate().alpha(1f).setDuration(FAB_ANIMATION_DURATION).setListener(null).start()
-      add_stocks_container.animate().translationY(-resources.getDimension(R.dimen.first_fab_margin))
-          .setDuration(FAB_ANIMATION_DURATION).start()
+      fab_bg.animate()
+          .alpha(1f)
+          .setDuration(FAB_ANIMATION_DURATION)
+          .setListener(null)
+          .start()
+      add_stocks_container.animate()
+          .translationY(-resources.getDimension(R.dimen.first_fab_margin))
+          .setDuration(FAB_ANIMATION_DURATION)
+          .start()
       edit_widget_container.animate()
           .translationY(-resources.getDimension(R.dimen.second_fab_margin))
-          .setDuration(FAB_ANIMATION_DURATION).start()
+          .setDuration(FAB_ANIMATION_DURATION)
+          .start()
     }
   }
 
   private fun closeFABMenu() {
     if (isFABOpen) {
       isFABOpen = false
-      fab_settings.animate().rotationBy(-45f).setDuration(FAB_ANIMATION_DURATION).start()
+      fab_settings.animate()
+          .rotationBy(-45f)
+          .setDuration(FAB_ANIMATION_DURATION)
+          .start()
       fab_bg.visibility = View.VISIBLE
-      fab_bg.animate().alpha(0f).setDuration(FAB_ANIMATION_DURATION)
+      fab_bg.animate()
+          .alpha(0f)
+          .setDuration(FAB_ANIMATION_DURATION)
           .setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator?) {
               if (isVisible) fab_bg.visibility = View.GONE
             }
-          }).start()
-      add_stocks_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION).start()
-      edit_widget_container.animate().translationY(0f).setDuration(FAB_ANIMATION_DURATION)
+          })
+          .start()
+      add_stocks_container.animate()
+          .translationY(0f)
+          .setDuration(FAB_ANIMATION_DURATION)
+          .start()
+      edit_widget_container.animate()
+          .translationY(0f)
+          .setDuration(FAB_ANIMATION_DURATION)
           .setListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animator: Animator) {
               if (isVisible && !isFABOpen) {
@@ -166,7 +197,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
               }
 
             }
-          }).start()
+          })
+          .start()
     }
   }
 

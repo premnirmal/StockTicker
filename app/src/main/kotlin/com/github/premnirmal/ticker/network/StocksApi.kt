@@ -2,10 +2,12 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.network.data.ErrorBody
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.QuoteNet
+import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.google.gson.Gson
 import io.reactivex.Observable
+import io.reactivex.functions.Function
 import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject
@@ -18,7 +20,8 @@ import javax.inject.Singleton
 class StocksApi @Inject constructor() {
 
   @Inject internal lateinit var gson: Gson
-  @Inject internal lateinit var financeApi: Robindahood
+  @Inject internal lateinit var robindahood: Robindahood
+  @Inject internal lateinit var yahooFinance: YahooFinance
   @Inject internal lateinit var clock: AppClock
   var lastFetched: Long = 0
 
@@ -26,36 +29,74 @@ class StocksApi @Inject constructor() {
     Injector.appComponent.inject(this)
   }
 
+  /**
+   * Prefer robindahood, fallback to yahoo finance.
+   */
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
     val query = tickerList.joinToString(",")
-    return financeApi.getStocks(query).doOnNext {
-      lastFetched = clock.currentTimeMillis()
-    }.map { quoteNets ->
-      val quotesMap = HashMap<String, Quote>()
-      for (quoteNet in quoteNets) {
-        val quote = Quote.fromQuoteNet(quoteNet)
-        quotesMap[quote.symbol] = quote
-      }
-      quotesMap
-    }
+    return robindahood.getStocks(query)
+        .doOnNext {
+          lastFetched = clock.currentTimeMillis()
+        }
+        .map { quoteNets -> toMap(quoteNets) }
         // Try to keep original order of tickerList.
         .map { quotesMap ->
-          val quotes = ArrayList<Quote>()
-          tickerList.filter { quotesMap.containsKey(it) }.mapTo(quotes) { quotesMap.remove(it)!! }
-          if (quotesMap.isNotEmpty()) {
-            quotes.addAll(quotesMap.values)
-          }
-          quotes as List<Quote>
-        }.doOnError { e ->
-          if (e is HttpException) {
-            val errorBody: ErrorBody? =
-              gson.fromJson(e.response().errorBody().string(), ErrorBody::class.java)
-            errorBody?.let {
-              val robindahoodException = RobindahoodException(it, e, e.code())
-              Timber.w(robindahoodException)
-              throw robindahoodException
-            }
-          }
+          toOrderedList(tickerList, quotesMap)
         }
+        .onErrorResumeNext(Function { e ->
+          if (e is HttpException) {
+            return@Function getStocksYahoo(tickerList)
+          }
+          Timber.w(e)
+          throw e
+        })
+  }
+
+  private fun getStocksYahoo(tickerList: List<String>): Observable<List<Quote>> {
+    val query = tickerList.joinToString(",")
+    return yahooFinance.getStocks(query)
+        .doOnNext {
+          lastFetched = clock.currentTimeMillis()
+        }
+        .map { quotesResponse ->
+          val quoteNets = quotesResponse.quoteResponse!!.result
+          toMapYahoo(quoteNets)
+        }
+        .map { quotesMap ->
+          toOrderedList(tickerList, quotesMap)
+        }.doOnError { e ->
+          Timber.w(e)
+        }
+  }
+
+  private fun toMap(quoteNets: List<QuoteNet>): MutableMap<String, Quote> {
+    val quotesMap = HashMap<String, Quote>()
+    for (quoteNet in quoteNets) {
+      val quote = Quote.fromQuoteNet(quoteNet)
+      quotesMap[quote.symbol] = quote
+    }
+    return quotesMap
+  }
+
+  private fun toMapYahoo(quoteNets: List<YahooQuoteNet>): MutableMap<String, Quote> {
+    val quotesMap = HashMap<String, Quote>()
+    for (quoteNet in quoteNets) {
+      val quote = Quote.fromQuoteNet(quoteNet)
+      quotesMap[quote.symbol] = quote
+    }
+    return quotesMap
+  }
+
+  private fun toOrderedList(
+    tickerList: List<String>,
+    quotesMap: MutableMap<String, Quote>
+  ): List<Quote> {
+    val quotes = ArrayList<Quote>()
+    tickerList.filter { quotesMap.containsKey(it) }
+        .mapTo(quotes) { quotesMap.remove(it)!! }
+    if (quotesMap.isNotEmpty()) {
+      quotes.addAll(quotesMap.values)
+    }
+    return quotes
   }
 }

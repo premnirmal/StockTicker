@@ -9,9 +9,12 @@ import android.view.View
 open class SpacingDecoration(private val spacing: Int) :
     androidx.recyclerview.widget.RecyclerView.ItemDecoration() {
 
-  override fun getItemOffsets(outRect: Rect, view: View,
+  override fun getItemOffsets(
+    outRect: Rect,
+    view: View,
     parent: androidx.recyclerview.widget.RecyclerView,
-    state: androidx.recyclerview.widget.RecyclerView.State) {
+    state: androidx.recyclerview.widget.RecyclerView.State
+  ) {
     super.getItemOffsets(outRect, view, parent, state)
     outRect.bottom = spacing
     outRect.top = spacing

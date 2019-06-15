@@ -1,28 +1,24 @@
+# print r8 config
+-printconfiguration ./full-r8-config.txt
+
 # Line numbers
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
 
 # Retain the names of all classes in the data package for gson to deserialize
--keepnames class com.github.premnirmal.ticker.network.data.** { *; }
+-keep class com.github.premnirmal.ticker.network.data.** { *; }
 # Keep models package
 -keepnames class com.github.premnirmal.ticker.model.** { *; }
 
 # Kotlin
+-keep class kotlin.** { *; }
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlin.**
 -keepclassmembers class **$WhenMappings {
     <fields>;
 }
-
-# Android support
--dontwarn android.support.v4.**
--dontwarn android.support.design.**
--keep class android.support.design.** { *; }
--keep interface android.support.design.** { *; }
--keep public class android.support.design.R$* { *; }
--keep public class android.support.v7.widget.** { *; }
--keep public class android.support.v7.internal.widget.** { *; }
--keep public class android.support.v7.internal.view.menu.** { *; }
--keep class * extends android.support.design.widget.CoordinatorLayout$Behavior {
-  public <init>(android.content.Context, android.util.AttributeSet);
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
 }
 
 # Crashlytics
@@ -33,47 +29,31 @@
 -keep public class * extends java.lang.Exception
 
 # Calligraphy
--keep class uk.co.chrisjenx.calligraphy.* { *; }
--keep class uk.co.chrisjenx.calligraphy.*$* { *; }
-
-# Google Analytics
--keep class com.google.android.gms.** { *; }
--dontwarn com.google.android.gms.**
-
-# RxJava
--keep class rx.schedulers.Schedulers {
-    public static <methods>;
-}
--keep class rx.schedulers.ImmediateScheduler {
-    public <methods>;
-}
--keep class rx.schedulers.TestScheduler {
-    public <methods>;
-}
--keep class rx.schedulers.Schedulers {
-    public static ** test();
-}
--dontwarn sun.misc.**
--keepclassmembers class rx.internal.util.unsafe.*ArrayQueue*Field* {
-   long producerIndex;
-   long consumerIndex;
-}
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueProducerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode producerNode;
-}
--keepclassmembers class rx.internal.util.unsafe.BaseLinkedQueueConsumerNodeRef {
-    rx.internal.util.atomic.LinkedQueueNode consumerNode;
-}
--dontnote rx.internal.util.PlatformDependent
+-keep class io.github.inflationx.calligraphy3.* { *; }
+-keep class io.github.inflationx.calligraphy3.*$* { *; }
 
 # Retrofit
--dontnote retrofit2.Platform
--dontnote retrofit2.Platform$IOS$MainThreadExecutor
--dontwarn retrofit2.Platform$Java8
--keepattributes Signature
--keepattributes Exceptions
--dontwarn okio.**
--keepattributes EnclosingMethod
+# Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
+# EnclosingMethod is required to use InnerClasses.
+-keepattributes Signature, InnerClasses, EnclosingMethod
+# Retrofit does reflection on method and parameter annotations.
+-keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
+# Retain service method parameters when optimizing.
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
+    @retrofit2.http.* <methods>;
+}
+# Ignore annotation used for build tooling.
+-dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
+# Ignore JSR 305 annotations for embedding nullability information.
+-dontwarn javax.annotation.**
+# Guarded by a NoClassDefFoundError try/catch and only used when on the classpath.
+-dontwarn kotlin.Unit
+# Top-level functions that can only be used by Kotlin.
+-dontwarn retrofit2.KotlinExtensions
+# With R8 full mode, it sees no subtypes of Retrofit interfaces since they are created with a Proxy
+# and replaces all potential values with null. Explicitly keeping the interfaces prevents this.
+-if interface * { @retrofit2.http.* <methods>; }
+-keep,allowobfuscation interface <1>
 
 # MPAndroidChart
 -keep class com.github.mikephil.charting.** { *; }

@@ -12,7 +12,10 @@ class MaxHeightLinearLayout : LinearLayout {
 
   constructor(context: Context) : super(context)
 
-  constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+  constructor(
+    context: Context,
+    attrs: AttributeSet
+  ) : super(context, attrs) {
     val attributeSet =
       context.theme.obtainStyledAttributes(attrs, R.styleable.MaxHeightLinearLayout, 0, 0)
     try {
@@ -22,9 +25,16 @@ class MaxHeightLinearLayout : LinearLayout {
     }
   }
 
-  constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int) : this(context, attrs)
+  constructor(
+    context: Context,
+    attrs: AttributeSet,
+    defStyleAttr: Int
+  ) : this(context, attrs)
 
-  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+  override fun onMeasure(
+    widthMeasureSpec: Int,
+    heightMeasureSpec: Int
+  ) {
     val maxHeightPx = maxHeightDp.px
     val heightMeasure = MeasureSpec.makeMeasureSpec(maxHeightPx, MeasureSpec.AT_MOST)
     setMeasuredDimension(measuredWidth, maxHeightPx)

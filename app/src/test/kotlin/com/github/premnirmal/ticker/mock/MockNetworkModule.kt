@@ -10,6 +10,7 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.Robindahood
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.SuggestionApi
+import com.github.premnirmal.ticker.network.YahooFinance
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -44,6 +45,10 @@ class MockNetworkModule {
   @Provides @Singleton internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
     gson: Gson, converterFactory: GsonConverterFactory,
     rxJavaFactory: RxJava2CallAdapterFactory): Robindahood = Mocker.provide(Robindahood::class)
+
+  @Provides @Singleton internal fun provideYahooFinance(context: Context, okHttpClient: OkHttpClient,
+    gson: Gson, converterFactory: GsonConverterFactory,
+    rxJavaFactory: RxJava2CallAdapterFactory): YahooFinance = Mocker.provide(YahooFinance::class)
 
   @Provides @Singleton internal fun provideSuggestionsApi(context: Context,
     okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory,

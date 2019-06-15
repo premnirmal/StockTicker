@@ -63,12 +63,18 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-    savedInstanceState: Bundle?): View? {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View? {
     return inflater.inflate(R.layout.fragment_search, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
     adapter = SuggestionsAdapter(this)
@@ -90,7 +96,10 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     super.onSaveInstanceState(outState)
   }
 
-  private fun addTickerToWidget(ticker: String, widgetId: Int) {
+  private fun addTickerToWidget(
+    ticker: String,
+    widgetId: Int
+  ) {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     if (!widgetData.hasTicker(ticker)) {
       widgetData.addTicker(ticker)
@@ -101,40 +110,53 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+  override fun beforeTextChanged(
+    s: CharSequence,
+    start: Int,
+    count: Int,
+    after: Int
+  ) {
     // Do nothing.
   }
 
-  override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+  override fun onTextChanged(
+    s: CharSequence,
+    start: Int,
+    before: Int,
+    count: Int
+  ) {
     // Do nothing.
   }
 
   override fun afterTextChanged(s: Editable) {
-    val query = s.toString().trim { it <= ' ' }.replace(" ".toRegex(), "")
+    val query = s.toString()
+        .trim { it <= ' ' }
+        .replace(" ".toRegex(), "")
     if (!query.isEmpty()) {
       disposable?.dispose()
 
       if (activity!!.isNetworkOnline()) {
         val observable = suggestionApi.getSuggestions(query)
         disposable =
-            bind(observable).map { (resultSet) -> resultSet?.result!! }.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {
-                  override fun onError(e: Throwable) {
-                    Timber.w(e)
-                    InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
-                  }
+          bind(observable).map { (resultSet) -> resultSet?.result!! }
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {
+                override fun onError(e: Throwable) {
+                  Timber.w(e)
+                  InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
+                }
 
-                  override fun onNext(result: List<Suggestion>?) {
-                    result?.let {
-                      val suggestionList = ArrayList(it)
-                      if (it.isEmpty()) {
-                        suggestionList.add(0, Suggestion(query))
-                      }
-                      adapter.setData(suggestionList)
+                override fun onNext(result: List<Suggestion>?) {
+                  result?.let {
+                    val suggestionList = ArrayList(it)
+                    if (it.isEmpty()) {
+                      suggestionList.add(0, Suggestion(query))
                     }
+                    adapter.setData(suggestionList)
                   }
-                })
+                }
+              })
       } else {
         InAppMessage.showMessage(activity, R.string.no_network_message)
       }
@@ -151,14 +173,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       val widgetIds = widgetDataProvider.getAppWidgetIds()
       if (widgetIds.size > 1) {
         val widgets =
-          widgetIds.map { widgetDataProvider.dataForWidgetId(it) }.sortedBy { it.widgetName() }
-        val widgetNames = widgets.map { it.widgetName() }.toTypedArray()
-        AlertDialog.Builder(context!!).setTitle(R.string.select_widget)
+          widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
+              .sortedBy { it.widgetName() }
+        val widgetNames = widgets.map { it.widgetName() }
+            .toTypedArray()
+        AlertDialog.Builder(context!!)
+            .setTitle(R.string.select_widget)
             .setItems(widgetNames) { dialog, which ->
               val id = widgets[which].widgetId
               addTickerToWidget(ticker, id)
               dialog.dismiss()
-            }.create().show()
+            }
+            .create()
+            .show()
       } else {
         addTickerToWidget(ticker, widgetIds.first())
       }

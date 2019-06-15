@@ -15,8 +15,12 @@ class UpdateReceiver : BroadcastReceiver() {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
 
-  override fun onReceive(context: Context, intent: Intent) {
+  override fun onReceive(
+    context: Context,
+    intent: Intent
+  ) {
     Injector.appComponent.inject(this)
-    stocksProvider.fetch().subscribe(SimpleSubscriber())
+    stocksProvider.fetch()
+        .subscribe(SimpleSubscriber())
   }
 }

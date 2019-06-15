@@ -9,9 +9,16 @@ import java.io.Serializable
 
 class DataPoint : Entry, Serializable, Comparable<DataPoint> {
 
-  constructor(x: Float, y: Float) : super(x, y)
+  constructor(
+    x: Float,
+    y: Float
+  ) : super(x, y)
 
-  constructor(x: Float, y: Float, data: HistoricalValue) : super(x, y, data)
+  constructor(
+    x: Float,
+    y: Float,
+    data: HistoricalValue
+  ) : super(x, y, data)
 
   constructor(source: Parcel) : super(source)
 
@@ -24,6 +31,7 @@ class DataPoint : Entry, Serializable, Comparable<DataPoint> {
     private val FORMATTER: DateTimeFormatter by lazy { DateTimeFormatter.ofPattern("MMMM d") }
     private const val serialVersionUID = 42L
 
+    @JvmField
     val CREATOR: Parcelable.Creator<DataPoint> = object : Parcelable.Creator<DataPoint> {
       override fun createFromParcel(source: Parcel): DataPoint {
         return DataPoint(source)
