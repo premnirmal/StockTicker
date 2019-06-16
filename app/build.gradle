@@ -114,6 +114,18 @@ android {
     }
   }
 
+  bundle {
+    density {
+      enableSplit true
+    }
+    abi {
+      enableSplit true
+    }
+    language {
+      enableSplit false
+    }
+  }
+
   buildTypes {
     release {
       debuggable false

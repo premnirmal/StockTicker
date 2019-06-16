@@ -31,6 +31,9 @@ jobs:
       - run:
           name: Build APK
           command: ./gradlew assemblePureflossDebug -PdisablePreDex
+      - run:
+          name: Build app bundle
+          command: ./gradlew :app:bundlePureflossDebug -PdisablePreDex
       - store_artifacts:
           path: app/build/outputs/
           destination: outputs/
