@@ -2,5 +2,6 @@
 <resources>
   <string-array name="whats_new">
     <item>Actualizaciones a la biblioteca de tecnología</item>
+    <item>Correccion de errores</item>
   </string-array>
 </resources>

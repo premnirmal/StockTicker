@@ -2,5 +2,7 @@
 <resources>
   <string-array name="whats_new">
     <item>Library and network updates</item>
+    <item>Adding more decimal places</item>
+    <item>Fixing # of decimal places for change %</item>
   </string-array>
 </resources>

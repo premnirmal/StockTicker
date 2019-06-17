@@ -59,10 +59,10 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
     return changeString
   }
 
-  fun changePercentString(): String = "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
+  fun changePercentString(): String = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
 
   fun changePercentStringWithSign(): String {
-    val changeString = "${AppPreferences.DECIMAL_FORMAT.format(changeInPercent)}%"
+    val changeString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
     if (changeInPercent >= 0) {
       return "+$changeString"
     }
@@ -108,7 +108,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   fun gainLossPercentString(): String {
     val gainLossPercent = gainLossPercent()
-    val gainLossString = "${AppPreferences.DECIMAL_FORMAT.format(gainLossPercent)}%"
+    val gainLossString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(gainLossPercent)}%"
     if (gainLossPercent >= 0) {
       return "+$gainLossString"
     }

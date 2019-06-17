@@ -8,6 +8,7 @@
 /captures
 app/build
 app/full-r8-config.txt
+app/prod/
 
 #ignore keystore and keystore.properties
 *.jks
