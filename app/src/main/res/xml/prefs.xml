@@ -47,6 +47,14 @@
       app:key="END_TIME"
       app:title="@string/end_time"/>
 
+  <CheckBoxPreference
+      app:key="SETTING_AUTOSORT"
+      app:selectable="true"
+      app:iconSpaceReserved="false"
+      app:summary="@string/auto_sort_desc"
+      app:title="@string/auto_sort"
+      />
+
   <Preference
       app:iconSpaceReserved="false"
       app:key="SETTING_SHARE"

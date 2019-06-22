@@ -102,80 +102,6 @@
         />
   </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-  <View
-      android:id="@+id/fab_bg"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:background="@color/translucent"
-      android:visibility="gone"
-      />
-
-  <LinearLayout
-      android:id="@+id/add_stocks_container"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="bottom|end"
-      android:layout_marginBottom="@dimen/fab_margin_bottom"
-      android:layout_marginEnd="@dimen/fab_margin"
-      android:layout_marginRight="@dimen/fab_margin"
-      android:clipToPadding="false"
-      android:gravity="center_vertical"
-      android:visibility="gone"
-      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
-      >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:text="@string/add_stock"
-        android:textColor="@color/light"
-        />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add_stocks"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/sea"
-        app:rippleColor="@color/white"
-        />
-  </LinearLayout>
-
-  <LinearLayout
-      android:id="@+id/edit_widget_container"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="bottom|end"
-      android:layout_marginBottom="@dimen/fab_margin_bottom"
-      android:layout_marginEnd="@dimen/fab_margin"
-      android:layout_marginRight="@dimen/fab_margin"
-      android:clipToPadding="false"
-      android:gravity="center_vertical"
-      android:visibility="gone"
-      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
-      >
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginRight="@dimen/fab_margin"
-        android:text="@string/action_Settings"
-        android:textColor="@color/light"
-        />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_edit_widget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_design"
-        app:backgroundTint="@color/spicy_salmon"
-        app:rippleColor="@color/white"
-        />
-  </LinearLayout>
-
   <com.google.android.material.floatingactionbutton.FloatingActionButton
       android:id="@+id/fab_settings"
       android:layout_width="wrap_content"
@@ -184,7 +110,7 @@
       android:layout_marginBottom="@dimen/fab_margin_bottom"
       android:layout_marginEnd="@dimen/fab_margin"
       android:layout_marginRight="@dimen/fab_margin"
-      android:src="@drawable/ic_settings"
+      android:src="@drawable/ic_add"
       app:backgroundTint="@color/color_accent"
       app:borderWidth="0dp"
       app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"

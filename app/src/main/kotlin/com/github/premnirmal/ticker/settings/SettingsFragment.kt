@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.TimePickerDialog
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -19,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -113,25 +115,27 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   }
 
   override fun onDisplayPreferenceDialog(preference: Preference) {
-    if (preference.key == AppPreferences.START_TIME) {
-      val pref = preference as TimePreference
-      val dialog =
-        TimePickerDialog(
-            context, TimeSelectedListener(pref, R.string.start_time_updated),
+    when {
+      preference.key == AppPreferences.START_TIME -> {
+        val pref = preference as TimePreference
+        val dialog =
+          TimePickerDialog(
+              context, TimeSelectedListener(pref, R.string.start_time_updated),
+              pref.lastHour, pref.lastMinute, true
+          )
+        dialog.setTitle(R.string.start_time)
+        dialog.show()
+      }
+      preference.key == AppPreferences.END_TIME -> {
+        val pref = preference as TimePreference
+        val dialog = TimePickerDialog(
+            context, TimeSelectedListener(pref, R.string.end_time_updated),
             pref.lastHour, pref.lastMinute, true
         )
-      dialog.setTitle(R.string.start_time)
-      dialog.show()
-    } else if (preference.key == AppPreferences.END_TIME) {
-      val pref = preference as TimePreference
-      val dialog = TimePickerDialog(
-          context, TimeSelectedListener(pref, R.string.end_time_updated),
-          pref.lastHour, pref.lastMinute, true
-      )
-      dialog.setTitle(R.string.end_time)
-      dialog.show()
-    } else {
-      super.onDisplayPreferenceDialog(preference)
+        dialog.setTitle(R.string.end_time)
+        dialog.show()
+      }
+      else -> super.onDisplayPreferenceDialog(preference)
     }
   }
 
@@ -171,6 +175,18 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
             context!!, customTabsIntent,
             Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback()
         )
+        true
+      }
+    }
+
+    run {
+      val autoSortPref = findPreference<CheckBoxPreference>(AppPreferences.SETTING_AUTOSORT)
+      val widgetData =
+        widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
+      autoSortPref.isEnabled = !widgetDataProvider.hasWidget()
+      autoSortPref.isChecked = widgetData.autoSortEnabled()
+      autoSortPref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+        widgetData.setAutoSort(newValue as Boolean)
         true
       }
     }

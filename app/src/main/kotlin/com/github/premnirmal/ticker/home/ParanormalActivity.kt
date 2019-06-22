@@ -194,13 +194,6 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   // HomeFragment.Parent
   // WidgetSettingsFragment.Parent
 
-  override fun openWidgetSettings(widgetId: Int) {
-    bottom_navigation.selectedItemId = R.id.action_widgets
-    val data = Bundle()
-    data.putInt(ARG_WIDGET_ID, widgetId)
-    currentChild?.setData(data)
-  }
-
   override fun openSearch(widgetId: Int) {
     bottom_navigation.selectedItemId = R.id.action_search
   }

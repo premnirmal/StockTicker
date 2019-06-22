@@ -16,35 +16,23 @@ object InAppMessage {
   private fun Activity.getRootView(): View =
     (this.findViewById<View>(android.R.id.content) as ViewGroup).getChildAt(0)
 
-  fun showToast(
-    context: Context,
-    messageResId: Int
-  ) {
+  fun showToast(context: Context, messageResId: Int) {
     showToast(context, context.getString(messageResId))
   }
 
-  fun showToast(
-    context: Context,
-    message: String
-  ) {
+  fun showToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT)
         .show()
   }
 
-  fun showMessage(
-    activity: Activity?,
-    messageResId: Int
-  ) {
+  fun showMessage(activity: Activity?, messageResId: Int) {
     if (activity == null) {
       return
     }
     showMessage(activity, activity.getString(messageResId))
   }
 
-  fun showMessage(
-    activity: Activity?,
-    message: CharSequence
-  ) {
+  fun showMessage(activity: Activity?, message: CharSequence) {
     if (activity == null) {
       return
     }
@@ -52,12 +40,8 @@ object InAppMessage {
     snackbar.show()
   }
 
-  fun showMessage(
-    activity: Activity?,
-    message: CharSequence,
-    actionText: CharSequence,
-    actionClick: View.OnClickListener
-  ) {
+  fun showMessage(activity: Activity?, message: CharSequence, actionText: CharSequence,
+                  actionClick: View.OnClickListener) {
     if (activity == null) {
       return
     }
@@ -66,16 +50,14 @@ object InAppMessage {
     snackbar.show()
   }
 
-  private fun createSnackbar(
-    view: View,
-    message: CharSequence
-  ): Snackbar {
+  private fun createSnackbar(view: View, message: CharSequence): Snackbar {
     val snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
     val snackBarView = snackbar.view
-    snackBarView.setBackgroundColor(getSnackbarColor(view.context))
+    val params = snackBarView.layoutParams as ViewGroup.MarginLayoutParams
+    val margin = snackBarView.context.resources.getDimensionPixelSize(R.dimen.snackbar_margin)
+    params.setMargins(margin, margin, margin, margin)
+    snackBarView.layoutParams = params
+    snackBarView.setBackgroundDrawable(view.context.resources.getDrawable(R.drawable.snackbar_bg))
     return snackbar
   }
-
-  private fun getSnackbarColor(context: Context): Int =
-    context.resources.getColor(R.color.color_primary)
 }

@@ -9,7 +9,6 @@ import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import retrofit2.HttpException
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -47,7 +46,6 @@ class StocksApi @Inject constructor() {
           if (e is HttpException) {
             return@Function getStocksYahoo(tickerList)
           }
-          Timber.w(e)
           throw e
         })
   }
@@ -64,8 +62,6 @@ class StocksApi @Inject constructor() {
         }
         .map { quotesMap ->
           toOrderedList(tickerList, quotesMap)
-        }.doOnError { e ->
-          Timber.w(e)
         }
   }
 
@@ -87,10 +83,8 @@ class StocksApi @Inject constructor() {
     return quotesMap
   }
 
-  private fun toOrderedList(
-    tickerList: List<String>,
-    quotesMap: MutableMap<String, Quote>
-  ): List<Quote> {
+  private fun toOrderedList(tickerList: List<String>,
+                            quotesMap: MutableMap<String, Quote>): List<Quote> {
     val quotes = ArrayList<Quote>()
     tickerList.filter { quotesMap.containsKey(it) }
         .mapTo(quotes) { quotesMap.remove(it)!! }
