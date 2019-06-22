@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.inputmethod.InputMethodManager
+import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -29,7 +32,9 @@ import com.github.premnirmal.tickerwidget.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.fragment_search.recycler_view
+import kotlinx.android.synthetic.main.fragment_search.search_view
+import kotlinx.android.synthetic.main.fragment_search.toolbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -86,6 +91,16 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     savedInstanceState?.let { selectedWidgetId = it.getInt(ARG_WIDGET_ID, -1) }
   }
 
+  override fun onResume() {
+    super.onResume()
+    search_view.post {
+      search_view.requestFocus()
+      val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+      imm.showSoftInput(search_view, SHOW_IMPLICIT)
+      search_view.setSelection(search_view.text.length)
+    }
+  }
+
   override fun onPause() {
     hideKeyboard(search_view)
     super.onPause()
@@ -132,7 +147,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     val query = s.toString()
         .trim { it <= ' ' }
         .replace(" ".toRegex(), "")
-    if (!query.isEmpty()) {
+    if (query.isNotEmpty()) {
       disposable?.dispose()
 
       if (activity!!.isNetworkOnline()) {
