@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Actualizaciones a la biblioteca de tecnología</item>
-    <item>Correccion de errores</item>
+    <item>Tamaño más pequeño de apk</item>
+    <item>Se corrigió el error con el cálculo de ganancia / pérdida - gracias @yozw</item>
   </string-array>
 </resources>

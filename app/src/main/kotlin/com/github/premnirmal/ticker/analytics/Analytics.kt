@@ -12,4 +12,8 @@ interface Analytics {
       INSTANCE = AnalyticsImpl(context)
     }
   }
+
+  fun onScreenView(screenName: String) {}
+
+  fun onEventClick(event: IEvent)
 }
