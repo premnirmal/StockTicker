@@ -104,7 +104,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
     return gainLossString
   }
 
-  private fun gainLossPercent(): Float = (gainLoss() / holdings()) * 100f
+  private fun gainLossPercent(): Float = (gainLoss() / totalPositionPrice()) * 100f
 
   fun gainLossPercentString(): String {
     val gainLossPercent = gainLossPercent()
