@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
 import androidx.multidex.MultiDexApplication
-import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
@@ -69,7 +69,6 @@ open class StocksApp : MultiDexApplication() {
             .build())
     Injector.init(createAppComponent())
     initPaper()
-    initAnalytics()
     SIGNATURE = getAppSignature(this)
   }
 
@@ -86,10 +85,6 @@ open class StocksApp : MultiDexApplication() {
         .appModule(AppModule(this))
         .build()
     return component
-  }
-
-  protected open fun initAnalytics() {
-    Analytics.init(this)
   }
 
   protected open fun initLogger() {

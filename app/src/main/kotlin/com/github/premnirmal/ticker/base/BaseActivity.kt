@@ -7,6 +7,7 @@ import android.os.PersistableBundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.ErrorEvent
@@ -29,6 +30,7 @@ abstract class BaseActivity : AppCompatActivity() {
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
   @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var analytics: Analytics
 
   private fun lifecycle(): Observable<ActivityEvent> = lifecycleSubject
 
@@ -48,6 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState, persistentState)
     lifecycleSubject.onNext(ActivityEvent.CREATE)
+    analytics.trackScreenView(javaClass.simpleName)
   }
 
   override fun onStart() {

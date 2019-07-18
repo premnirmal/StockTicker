@@ -108,6 +108,8 @@ interface AppComponent {
 
   fun inject(homeFragment: HomeFragment)
 
+  fun inject(portfolioFragment: PortfolioFragment)
+
   fun inject(fragment: SearchFragment)
 
   fun inject(settingsFragment: SettingsFragment)

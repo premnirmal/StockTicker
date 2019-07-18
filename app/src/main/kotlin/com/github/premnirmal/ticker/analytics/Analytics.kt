@@ -1,19 +1,14 @@
-package com.github.premnirmal.ticker.components
+package com.github.premnirmal.ticker.analytics
 
 import android.content.Context
 
 interface Analytics {
 
-  companion object {
+  val context: Context
 
-    lateinit var INSTANCE: Analytics
+  fun getGeneralProperties(): GeneralProperties? = null
 
-    internal fun init(context: Context) {
-      INSTANCE = AnalyticsImpl(context)
-    }
-  }
+  fun trackScreenView(screenName: String) {}
 
-  fun onScreenView(screenName: String) {}
-
-  fun onEventClick(event: IEvent)
+  fun trackClickEvent(event: ClickEvent) {}
 }
