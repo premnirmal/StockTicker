@@ -18,6 +18,7 @@ import java.security.MessageDigest
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -54,6 +55,13 @@ open class StocksApp : MultiDexApplication() {
     }
   }
 
+
+  class InjectionHolder {
+    @Inject lateinit var analytics: Analytics
+  }
+
+  private val holder = InjectionHolder()
+
   override fun onCreate() {
     super.onCreate()
     initLogger()
@@ -68,8 +76,10 @@ open class StocksApp : MultiDexApplication() {
                         .build()))
             .build())
     Injector.init(createAppComponent())
+    Injector.appComponent.inject(holder)
     initPaper()
     SIGNATURE = getAppSignature(this)
+    initAnalytics()
   }
 
   open fun initPaper() {
@@ -89,5 +99,9 @@ open class StocksApp : MultiDexApplication() {
 
   protected open fun initLogger() {
     Timber.plant(LoggingTree(this))
+  }
+
+  protected open fun initAnalytics() {
+    holder.analytics.initialize()
   }
 }

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
@@ -165,6 +166,8 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
             .addToBackStack(fragment.javaClass.name).commit()
         currentChild = fragment as ChildFragment
+        analytics.trackClickEvent(ClickEvent("BottomNavClick")
+            .addProperty("NavItem", item.title.toString()))
       }
     }
     return true

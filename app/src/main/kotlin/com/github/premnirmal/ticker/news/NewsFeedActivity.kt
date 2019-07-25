@@ -10,6 +10,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.browser.customtabs.CustomTabsIntent
 import com.github.mikephil.charting.charts.LineChart
+import com.github.premnirmal.ticker.analytics.ClickEvent
+import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -99,6 +101,8 @@ class NewsFeedActivity : BaseGraphActivity() {
     equityValue.text = quote.holdingsString()
     description.text = quote.description
     edit_positions.setOnClickListener {
+      analytics.trackClickEvent(ClickEvent("EditPositionClick")
+          .addProperty("Instrument", ticker))
       val intent = Intent(this, AddPositionActivity::class.java)
       intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
       startActivity(intent)
@@ -168,9 +172,14 @@ class NewsFeedActivity : BaseGraphActivity() {
               .setShowTitle(true)
               .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
               .build()
+          analytics.trackClickEvent(ClickEvent("ArticleClick")
+              .addProperty("Instrument", ticker)
+              .addProperty("ArticleTitle", newsArticle.title.orEmpty())
+              .addProperty("ArticleSource", newsArticle.sourceName)
+              .addProperty("ArticleUrl", newsArticle.url.orEmpty()))
           CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
           CustomTabsHelper.openCustomTab(
-              this, customTabsIntent, Uri.parse(article.url),
+              this, customTabsIntent, Uri.parse(article.url.orEmpty()),
               WebViewFallback()
           )
         }
@@ -223,6 +232,9 @@ class NewsFeedActivity : BaseGraphActivity() {
       bind(newsProvider.getNews(quote.newsQuery())).subscribe(object :
           SimpleSubscriber<List<NewsArticle>>() {
         override fun onNext(result: List<NewsArticle>) {
+          analytics.trackGeneralEvent(GeneralEvent("FetchNews")
+              .addProperty("Instrument", ticker)
+              .addProperty("Success", "True"))
           setUpArticles(result)
         }
 
@@ -230,6 +242,9 @@ class NewsFeedActivity : BaseGraphActivity() {
           Timber.e(e)
           news_container.visibility = View.GONE
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
+          analytics.trackGeneralEvent(GeneralEvent("FetchNews")
+              .addProperty("Instrument", ticker)
+              .addProperty("Success", "False"))
         }
       })
     } else {
@@ -240,16 +255,20 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   override fun onGraphDataAdded(graphView: LineChart) {
     progress.visibility = View.GONE
+    analytics.trackGeneralEvent(GeneralEvent("GraphLoaded"))
   }
 
   override fun onNoGraphData(graphView: LineChart) {
     progress.visibility = View.GONE
+    analytics.trackGeneralEvent(GeneralEvent("NoGraphData"))
   }
 
   /**
    * Called via xml
    */
   fun openGraph(v: View) {
+    analytics.trackClickEvent(ClickEvent("GraphClick")
+        .addProperty("Instrument", ticker))
     val intent = Intent(this, GraphActivity::class.java)
     intent.putExtra(GraphActivity.TICKER, ticker)
     startActivity(intent)

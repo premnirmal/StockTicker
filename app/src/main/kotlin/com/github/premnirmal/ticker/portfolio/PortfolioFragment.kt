@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.base.ParentFragmentDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -89,6 +90,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     quote: Quote,
     position: Int
   ) {
+    analytics.trackClickEvent(ClickEvent("InstrumentClick")
+        .addProperty("Instrument", quote.symbol))
     val intent = Intent(view.context, NewsFeedActivity::class.java)
     intent.putExtra(NewsFeedActivity.TICKER, quote.symbol)
     startActivity(intent)

@@ -2,7 +2,9 @@ package com.github.premnirmal.ticker.components
 
 import android.content.Context
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.UpdateReceiver
+import com.github.premnirmal.ticker.analytics.GeneralProperties
 import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
@@ -60,6 +62,8 @@ interface AppComponent {
 
   // Components
 
+  fun inject(stocksApp: StocksApp.InjectionHolder)
+
   fun inject(stocksStorage: StocksStorage)
 
   fun inject(appPreferences: AppPreferences)
@@ -77,6 +81,8 @@ interface AppComponent {
   fun inject(refreshService: RefreshService)
 
   fun inject(exponentialBackoff: ExponentialBackoff)
+
+  fun inject(generalProperties: GeneralProperties)
 
   // Network
 

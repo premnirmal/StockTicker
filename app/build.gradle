@@ -70,6 +70,9 @@ android {
 
   sourceSets {
     main.java.srcDirs += "src/main/kotlin"
+    dev.java.srcDirs += "src/dev/kotlin"
+    prod.java.srcDirs += "src/prod/kotlin"
+    purefoss.java.srcDirs += "src/purefoss/kotlin"
     String testDir = "src/test/kotlin"
     test {
       resources.srcDirs += ['src/test/resources']
@@ -107,7 +110,7 @@ android {
       dimension "mobile"
       applicationId = appIdBase
     }
-    purefloss {
+    purefoss {
       dimension "mobile"
       // no analytics, but still using the production packageName
       applicationId = appIdBase
