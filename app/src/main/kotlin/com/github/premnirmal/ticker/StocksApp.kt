@@ -102,6 +102,6 @@ open class StocksApp : MultiDexApplication() {
   }
 
   protected open fun initAnalytics() {
-    holder.analytics.initialize()
+    holder.analytics.initialize(this)
   }
 }

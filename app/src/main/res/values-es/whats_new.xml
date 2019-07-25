@@ -2,6 +2,5 @@
 <resources>
   <string-array name="whats_new">
     <item>Tamaño más pequeño de apk</item>
-    <item>Se corrigió el error con el cálculo de ganancia / pérdida - gracias @yozw</item>
   </string-array>
 </resources>

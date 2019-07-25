@@ -44,5 +44,5 @@ class AppModule(private val app: StocksApp) {
 
   @Provides @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
 
-  @Provides @Singleton internal fun provideAnalytics(): Analytics = AnalyticsImpl(app)
+  @Provides @Singleton internal fun provideAnalytics(): Analytics = AnalyticsImpl()
 }

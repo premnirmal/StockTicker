@@ -1,24 +1,19 @@
-package com.github.premnirmal.ticker.components
+package com.github.premnirmal.ticker.analytics
 
 import android.content.Context
 import com.crashlytics.android.answers.Answers
 import com.crashlytics.android.answers.AnswersEvent
 import com.crashlytics.android.answers.ContentViewEvent
 import com.crashlytics.android.answers.CustomEvent
-import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.analytics.AnalyticsEvent
-import com.github.premnirmal.ticker.analytics.ClickEvent
-import com.github.premnirmal.ticker.analytics.GeneralEvent
-import com.github.premnirmal.ticker.analytics.GeneralProperties
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-internal class AnalyticsImpl(override val context: Context) : Analytics {
+class AnalyticsImpl : Analytics {
 
   private lateinit var generalProperties: GeneralProperties
 
-  override fun initialize() {
+  override fun initialize(context: Context) {
     generalProperties = GeneralProperties()
   }
 

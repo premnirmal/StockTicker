@@ -7,8 +7,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
 interface Analytics {
-  val context: Context
-  fun initialize() {}
+  fun initialize(context: Context) {}
   fun getGeneralProperties(): GeneralProperties? = null
   fun trackScreenView(screenName: String) {}
   fun trackClickEvent(event: ClickEvent) {}
