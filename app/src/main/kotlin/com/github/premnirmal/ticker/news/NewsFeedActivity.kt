@@ -60,9 +60,9 @@ class NewsFeedActivity : BaseGraphActivity() {
   private lateinit var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_news_feed)
-    Injector.appComponent.inject(this)
     updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {
       finish()

@@ -48,8 +48,8 @@ class GraphActivity : BaseGraphActivity() {
   @Inject internal lateinit var stocksProvider: IStocksProvider
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
+    super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_graph)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       graphActivityRoot.setPadding(

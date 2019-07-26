@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.CallSuper
 import androidx.fragment.app.Fragment
 import com.github.premnirmal.ticker.analytics.Analytics
+import com.github.premnirmal.ticker.components.Injector
 import com.trello.rxlifecycle3.android.FragmentEvent
 import com.trello.rxlifecycle3.android.FragmentEvent.ATTACH
 import com.trello.rxlifecycle3.android.FragmentEvent.CREATE
@@ -30,9 +31,18 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
 
   override val lifecycle: BehaviorSubject<FragmentEvent> = BehaviorSubject.create<FragmentEvent>()
 
-  @Inject internal lateinit var analytics: Analytics
-
   private var calledSuperOnViewCreated: Boolean = false
+  protected val analytics: Analytics
+    get() = holder.analytics
+  private val holder: InjectionHolder by lazy { InjectionHolder() }
+
+  class InjectionHolder {
+    @Inject internal lateinit var analytics: Analytics
+
+    init {
+      Injector.appComponent.inject(this)
+    }
+  }
 
   override fun onAttach(context: Context) {
     super.onAttach(context)
@@ -47,8 +57,8 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
 
   @CallSuper
   override fun onViewCreated(
-    view: View,
-    savedInstanceState: Bundle?
+      view: View,
+      savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     lifecycle.onNext(CREATE_VIEW)

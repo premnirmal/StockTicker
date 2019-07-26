@@ -146,7 +146,6 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
     holder = InjectionHolder()
     widgetId = arguments!!.getInt(KEY_WIDGET_ID)
   }

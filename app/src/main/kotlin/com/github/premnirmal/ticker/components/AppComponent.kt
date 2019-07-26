@@ -5,6 +5,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.analytics.GeneralProperties
+import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
@@ -108,13 +109,13 @@ interface AppComponent {
 
   // UI
 
+  fun inject(holder: BaseFragment.InjectionHolder)
+
   fun inject(holder: PortfolioFragment.InjectionHolder)
 
   fun inject(homeAdapter: HomePagerAdapter)
 
   fun inject(homeFragment: HomeFragment)
-
-  fun inject(portfolioFragment: PortfolioFragment)
 
   fun inject(fragment: SearchFragment)
 

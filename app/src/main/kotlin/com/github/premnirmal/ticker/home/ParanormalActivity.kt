@@ -50,9 +50,9 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   private var rateDialogShown = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
-    Injector.appComponent.inject(this)
 
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 

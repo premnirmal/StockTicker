@@ -26,8 +26,8 @@ class SearchActivity : BaseActivity() {
   var widgetId: Int = -1
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
+    super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_search)
     widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     if (savedInstanceState == null) {

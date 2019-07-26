@@ -18,9 +18,9 @@ class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
   internal var widgetId = 0
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_widget_settings)
-    Injector.appComponent.inject(this)
     widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
       val result = Intent()
