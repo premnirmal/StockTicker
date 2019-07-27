@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
 import androidx.multidex.MultiDexApplication
-import com.github.premnirmal.ticker.components.Analytics
+import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
@@ -18,6 +18,7 @@ import java.security.MessageDigest
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -54,6 +55,13 @@ open class StocksApp : MultiDexApplication() {
     }
   }
 
+
+  class InjectionHolder {
+    @Inject lateinit var analytics: Analytics
+  }
+
+  private val holder = InjectionHolder()
+
   override fun onCreate() {
     super.onCreate()
     initLogger()
@@ -68,9 +76,10 @@ open class StocksApp : MultiDexApplication() {
                         .build()))
             .build())
     Injector.init(createAppComponent())
+    Injector.appComponent.inject(holder)
     initPaper()
-    initAnalytics()
     SIGNATURE = getAppSignature(this)
+    initAnalytics()
   }
 
   open fun initPaper() {
@@ -88,11 +97,11 @@ open class StocksApp : MultiDexApplication() {
     return component
   }
 
-  protected open fun initAnalytics() {
-    Analytics.init(this)
-  }
-
   protected open fun initLogger() {
     Timber.plant(LoggingTree(this))
+  }
+
+  protected open fun initAnalytics() {
+    holder.analytics.initialize(this)
   }
 }

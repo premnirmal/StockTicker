@@ -55,8 +55,8 @@ open class AddPositionActivity : BaseActivity() {
   internal lateinit var ticker: String
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
+    super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_positions)
     toolbar.setTitle(R.string.add_position)
     updateToolbar(toolbar)

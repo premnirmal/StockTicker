@@ -22,10 +22,6 @@ class TestApplication : StocksApp() {
     // No-op
   }
 
-  override fun initAnalytics() {
-    super.initAnalytics()
-  }
-
   override fun initLogger() {
     super.initLogger()
   }

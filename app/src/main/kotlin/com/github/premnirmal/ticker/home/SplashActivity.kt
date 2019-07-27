@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit
 class SplashActivity : BaseActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
+    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     val decorView = window.decorView
     // Hide the status bar.
@@ -21,7 +22,6 @@ class SplashActivity : BaseActivity() {
       decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
     setContentView(R.layout.activity_splash)
-    Injector.appComponent.inject(this)
     Maybe.empty<Any>()
         .delay(300, TimeUnit.MILLISECONDS)
         .doOnComplete { launch() }

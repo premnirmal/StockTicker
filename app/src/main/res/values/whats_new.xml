@@ -2,6 +2,5 @@
 <resources>
   <string-array name="whats_new">
     <item>Smaller apk size - using app bundles!</item>
-    <item>Fixed calculation of gain/loss - thanks @yozw</item>
   </string-array>
 </resources>

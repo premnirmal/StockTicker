@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
+import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.model.StocksStorage
@@ -42,4 +43,6 @@ class MockAppModule(private val app: StocksApp) {
   @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 
   @Provides @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
+
+  @Provides @Singleton internal fun provideAnalytics(): Analytics = Mocker.provide(Analytics::class)
 }

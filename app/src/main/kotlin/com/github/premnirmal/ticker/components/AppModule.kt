@@ -8,6 +8,8 @@ import android.os.Handler
 import android.os.Looper
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
+import com.github.premnirmal.ticker.analytics.Analytics
+import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.model.StocksStorage
 import com.github.premnirmal.ticker.network.NetworkModule
@@ -41,4 +43,6 @@ class AppModule(private val app: StocksApp) {
   @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 
   @Provides @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
+
+  @Provides @Singleton internal fun provideAnalytics(): Analytics = AnalyticsImpl()
 }

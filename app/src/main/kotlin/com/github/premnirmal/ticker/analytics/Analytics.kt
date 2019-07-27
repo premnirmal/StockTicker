@@ -1,19 +1,54 @@
-package com.github.premnirmal.ticker.components
+package com.github.premnirmal.ticker.analytics
 
 import android.content.Context
+import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import javax.inject.Inject
 
 interface Analytics {
+  fun initialize(context: Context) {}
+  fun getGeneralProperties(): GeneralProperties? = null
+  fun trackScreenView(screenName: String) {}
+  fun trackClickEvent(event: ClickEvent) {}
+  fun trackGeneralEvent(event: GeneralEvent) {}
+}
 
-  companion object {
+sealed class AnalyticsEvent(val name: String) {
 
-    lateinit var INSTANCE: Analytics
+  val properties: Map<String, String>
+    get() = _properties
+  private val _properties = HashMap<String, String>()
 
-    internal fun init(context: Context) {
-      INSTANCE = AnalyticsImpl(context)
-    }
+  open fun addProperty(key: String, value: String) = apply {
+    _properties[key] = value
+  }
+}
+
+class GeneralEvent(name: String): AnalyticsEvent(name) {
+  override fun addProperty(key: String, value: String) = apply {
+    super.addProperty(key, value)
+  }
+}
+
+class ClickEvent(name: String): AnalyticsEvent(name) {
+  override fun addProperty(key: String, value: String) = apply {
+    super.addProperty(key, value)
+  }
+}
+
+class GeneralProperties {
+
+  @Inject lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject lateinit var stocksProvider: IStocksProvider
+
+  init {
+    Injector.appComponent.inject(this)
   }
 
-  fun onScreenView(screenName: String) {}
+  val widgetCount: Int
+    get() = widgetDataProvider.getAppWidgetIds().size
+  val tickerCount: Int
+    get() = stocksProvider.getTickers().size
 
-  fun onEventClick(event: IEvent)
 }
