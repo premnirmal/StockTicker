@@ -15,36 +15,16 @@ import javax.inject.Singleton
 @Singleton
 class NewsProvider @Inject constructor() {
 
-  companion object {
-    private val FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-  }
-
   @Inject internal lateinit var newsApi: NewsApi
   @Inject internal lateinit var clock: AppClock
-  private val apiKey = Injector.appComponent.appContext()
-      .getString(R.string.news_api_key)
 
   init {
     Injector.appComponent.inject(this)
   }
 
   fun getNews(query: String): Observable<List<NewsArticle>> {
-    val language = "en"//Locale.getDefault().language
-    val from = clock.todayLocal()
-        .minusWeeks(1)
-        .format(FORMATTER)
-    val to = clock.todayLocal()
-        .format(FORMATTER)
     return newsApi.getNewsFeed(
-        apiKey = apiKey, query = query, language = language, from = from,
-        to = to
-    )
-        .map { feed: NewsFeed ->
-          val set = HashSet<NewsArticle>(feed.articles)
-          val articles = ArrayList<NewsArticle>(set)
-          articles.sortByDescending { it.date() }
-          articles as List<NewsArticle>
-        }
+        query = query)
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
   }

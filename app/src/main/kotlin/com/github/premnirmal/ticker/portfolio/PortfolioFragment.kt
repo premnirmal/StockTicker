@@ -76,6 +76,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     }
   }
 
+  override val simpleName: String = "PortfolioFragment"
   private lateinit var holder: InjectionHolder
   private val parent: Parent by ParentFragmentDelegate(this)
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID

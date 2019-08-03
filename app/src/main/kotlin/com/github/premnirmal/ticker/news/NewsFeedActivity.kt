@@ -58,6 +58,7 @@ class NewsFeedActivity : BaseGraphActivity() {
   @Inject internal lateinit var newsProvider: NewsProvider
   @Inject internal lateinit var historyProvider: IHistoryProvider
   private lateinit var ticker: String
+  override val simpleName: String = "NewsFeedActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -156,7 +157,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         titleView.text = newsArticle.title
         subTitleView.text = newsArticle.description
         dateView.text = newsArticle.dateString()
-        sourceView.text = newsArticle.sourceName
+        sourceView.text = newsArticle.sourceName()
         val params = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -175,7 +176,7 @@ class NewsFeedActivity : BaseGraphActivity() {
           analytics.trackClickEvent(ClickEvent("ArticleClick")
               .addProperty("Instrument", ticker)
               .addProperty("ArticleTitle", newsArticle.title.orEmpty())
-              .addProperty("ArticleSource", newsArticle.sourceName)
+              .addProperty("ArticleSource", newsArticle.sourceName())
               .addProperty("ArticleUrl", newsArticle.url.orEmpty()))
           CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
           CustomTabsHelper.openCustomTab(

@@ -57,6 +57,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   @Inject internal lateinit var stocksProvider: IStocksProvider
   private var disposable: Disposable? = null
   private lateinit var adapter: SuggestionsAdapter
+  override val simpleName: String = "SearchFragment"
 
   private var selectedWidgetId: Int = -1
 

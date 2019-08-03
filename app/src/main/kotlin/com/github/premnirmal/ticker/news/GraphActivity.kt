@@ -46,6 +46,7 @@ class GraphActivity : BaseGraphActivity() {
   private lateinit var ticker: String
   @Inject internal lateinit var historyProvider: IHistoryProvider
   @Inject internal lateinit var stocksProvider: IStocksProvider
+  override val simpleName: String = "GraphActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

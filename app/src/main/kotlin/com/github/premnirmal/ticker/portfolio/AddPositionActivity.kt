@@ -53,6 +53,7 @@ open class AddPositionActivity : BaseActivity() {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   internal lateinit var ticker: String
+  override val simpleName: String = "AddPositionActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

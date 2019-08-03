@@ -52,6 +52,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private val parent: Parent by ParentActivityDelegate(this)
   internal var widgetId = 0
+  override val simpleName: String = "WidgetSettingsFragment"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

@@ -48,6 +48,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
+  override val simpleName: String = "ParanormalActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

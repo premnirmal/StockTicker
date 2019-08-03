@@ -16,6 +16,7 @@ class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
   }
 
   internal var widgetId = 0
+  override val simpleName: String = "WidgetSettingsActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

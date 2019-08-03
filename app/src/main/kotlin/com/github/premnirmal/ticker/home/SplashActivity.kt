@@ -12,6 +12,7 @@ import io.reactivex.Maybe
 import java.util.concurrent.TimeUnit
 
 class SplashActivity : BaseActivity() {
+  override val simpleName: String = "SplashActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

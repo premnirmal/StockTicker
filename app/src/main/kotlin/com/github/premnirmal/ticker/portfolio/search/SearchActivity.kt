@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 
 class SearchActivity : BaseActivity() {
+  override val simpleName: String = "SearchActivity"
 
   companion object {
     const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID

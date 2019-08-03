@@ -37,6 +37,7 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private lateinit var widgetDataList: List<WidgetData>
   private var currentWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
+  override val simpleName: String = "WidgetsFragment"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

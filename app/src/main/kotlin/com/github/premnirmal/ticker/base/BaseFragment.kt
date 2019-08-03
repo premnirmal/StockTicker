@@ -36,6 +36,8 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
     get() = holder.analytics
   private val holder: InjectionHolder by lazy { InjectionHolder() }
 
+  abstract val simpleName: String
+
   class InjectionHolder {
     @Inject internal lateinit var analytics: Analytics
 
@@ -52,7 +54,7 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     lifecycle.onNext(CREATE)
-    analytics.trackScreenView(javaClass.simpleName)
+    analytics.trackScreenView(simpleName)
   }
 
   @CallSuper
@@ -73,7 +75,7 @@ abstract class BaseFragment : Fragment(), FragmentLifeCycleOwner {
   override fun onResume() {
     if (!calledSuperOnViewCreated) {
       throw AndroidRuntimeException(
-          "You didn't call super.onViewCreated() when in " + javaClass.simpleName
+          "You didn't call super.onViewCreated() when in " + simpleName
       )
     }
     super.onResume()

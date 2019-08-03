@@ -168,7 +168,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideNewsApi(
     context: Context, @Named(
-        "client"
+        "robindahoodClient"
     ) okHttpClient: OkHttpClient,
     gson: Gson,
     converterFactory: GsonConverterFactory,
@@ -177,7 +177,7 @@ class NetworkModule {
     val retrofit =
       Retrofit.Builder()
           .client(okHttpClient)
-          .baseUrl(context.getString(R.string.news_endpoint))
+          .baseUrl(context.getString(R.string.robindahood_endpoint))
           .addCallAdapterFactory(rxJavaFactory)
           .addConverterFactory(converterFactory)
           .build()

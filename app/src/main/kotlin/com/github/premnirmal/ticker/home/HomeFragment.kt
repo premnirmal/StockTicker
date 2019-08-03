@@ -48,6 +48,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var bus: RxBus
+  override val simpleName: String = "HomeFragment"
 
   private val parent: Parent by ParentActivityDelegate(this)
   private var attemptingFetch = false

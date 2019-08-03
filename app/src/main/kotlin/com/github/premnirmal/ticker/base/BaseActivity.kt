@@ -29,6 +29,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
   private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
 
+  abstract val simpleName: String
   @Inject internal lateinit var bus: RxBus
   @Inject internal lateinit var analytics: Analytics
 
@@ -50,7 +51,7 @@ abstract class BaseActivity : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState, persistentState)
     lifecycleSubject.onNext(ActivityEvent.CREATE)
-    analytics.trackScreenView(javaClass.simpleName)
+    analytics.trackScreenView(simpleName)
   }
 
   override fun onStart() {

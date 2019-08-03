@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.mock.MockAppComponent
 import com.github.premnirmal.tickerwidget.R
 
 class TestActivity : BaseActivity() {
+  override val simpleName: String = "TestActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
