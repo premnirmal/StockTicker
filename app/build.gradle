@@ -133,17 +133,13 @@ android {
     release {
       debuggable false
       signingConfig signingConfigs.release
-      useProguard false
       minifyEnabled true
-      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
     debug {
       debuggable true
       versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
-      useProguard false
       minifyEnabled true
-      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }
 
@@ -190,7 +186,7 @@ dependencies {
   implementation 'androidx.appcompat:appcompat:1.0.2'
   implementation 'androidx.legacy:legacy-support-v4:1.0.0'
   implementation 'com.google.android.material:material:1.0.0'
-  implementation 'androidx.preference:preference:1.1.0-beta01'
+  implementation 'androidx.preference:preference:1.1.0-rc01'
   implementation 'androidx.browser:browser:1.0.0'
 
   implementation "javax.inject:javax.inject:1"

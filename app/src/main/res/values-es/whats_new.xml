@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Más decimales para las posiciones </item>
     <item>Fuente de noticias más confiable</item>
   </string-array>
 </resources>

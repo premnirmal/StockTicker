@@ -28,12 +28,12 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-open class AddPositionActivity : BaseActivity() {
+class AddPositionActivity : BaseActivity() {
 
   companion object {
     const val TICKER = "TICKER"
     private val PATTERN: Pattern =
-      Pattern.compile("[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (1) + "})?)||(\\.)?")
+      Pattern.compile("[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (5) + "})?)||(\\.)?")
 
     private class DecimalDigitsInputFilter() : InputFilter {
 
@@ -94,7 +94,7 @@ open class AddPositionActivity : BaseActivity() {
     val priceView = price
     val priceText = priceView.text.toString()
     val sharesText = sharesView.text.toString()
-    if (!priceText.isEmpty() && !sharesText.isEmpty()) {
+    if (priceText.isNotEmpty() && sharesText.isNotEmpty()) {
       var price = 0f
       var shares = 0f
       var success = true
