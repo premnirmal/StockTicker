@@ -85,35 +85,41 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   }
 
   private fun fetchLocal() {
-    synchronized(quoteList) {
-      quoteList.clear()
-      val quotes = storage.readStocks()
-      for (quote in quotes) {
-        quoteList[quote.symbol] = quote
-      }
-      positionList.clear()
-      val hasMigratedPositions = preferences.getBoolean(HAS_MIGRATED_POSITIONS, false)
-      if (!hasMigratedPositions) {
-        val oldPositions = storage.readPositionsLegacy()
-        val newPositions = ArrayList<Position>()
-        for (quote in oldPositions) {
-          val position =
-            Position(quote.symbol, arrayListOf(Holding(quote.positionShares, quote.positionPrice)))
-          newPositions.add(position)
-          quoteList[quote.symbol]?.position = position
+    try {
+      synchronized(quoteList) {
+        quoteList.clear()
+        val quotes = storage.readStocks()
+        for (quote in quotes) {
+          quoteList[quote.symbol] = quote
         }
-        storage.savePositions(newPositions)
-        preferences.edit()
-            .putBoolean(HAS_MIGRATED_POSITIONS, true)
-            .apply()
-      }
-      val positions = storage.readPositionsNew()
-      for (position in positions) {
-        if (!position.holdings.isEmpty()) {
-          positionList[position.symbol] = position
+        positionList.clear()
+        val hasMigratedPositions = preferences.getBoolean(HAS_MIGRATED_POSITIONS, false)
+        if (!hasMigratedPositions) {
+          val oldPositions = storage.readPositionsLegacy()
+          val newPositions = ArrayList<Position>()
+          for (quote in oldPositions) {
+            val position =
+              Position(
+                  quote.symbol, arrayListOf(Holding(quote.positionShares, quote.positionPrice))
+              )
+            newPositions.add(position)
+            quoteList[quote.symbol]?.position = position
+          }
+          storage.savePositions(newPositions)
+          preferences.edit()
+              .putBoolean(HAS_MIGRATED_POSITIONS, true)
+              .apply()
         }
+        val positions = storage.readPositionsNew()
+        for (position in positions) {
+          if (position.holdings.isNotEmpty()) {
+            positionList[position.symbol] = position
+          }
+        }
+        save()
       }
-      save()
+    } catch (e: Exception) {
+      Timber.w(e)
     }
   }
 
