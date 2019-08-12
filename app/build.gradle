@@ -133,13 +133,17 @@ android {
     release {
       debuggable false
       signingConfig signingConfigs.release
+      useProguard false
       minifyEnabled true
+      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
     debug {
       debuggable true
       versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
+      useProguard false
       minifyEnabled true
+      proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }
 
