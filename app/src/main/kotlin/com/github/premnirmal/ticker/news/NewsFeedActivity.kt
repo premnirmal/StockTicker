@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.browser.customtabs.CustomTabsIntent
 import com.github.mikephil.charting.charts.LineChart
+import com.github.premnirmal.ticker.BrowserFallback
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
@@ -43,7 +44,6 @@ import kotlinx.android.synthetic.main.activity_news_feed.tickerName
 import kotlinx.android.synthetic.main.activity_news_feed.toolbar
 import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
 import saschpe.android.customtabs.CustomTabsHelper
-import saschpe.android.customtabs.WebViewFallback
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -181,7 +181,7 @@ class NewsFeedActivity : BaseGraphActivity() {
           CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
           CustomTabsHelper.openCustomTab(
               this, customTabsIntent, Uri.parse(article.url.orEmpty()),
-              WebViewFallback()
+              BrowserFallback()
           )
         }
       }

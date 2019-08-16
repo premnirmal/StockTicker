@@ -7,6 +7,7 @@ import android.os.PersistableBundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
@@ -91,7 +92,7 @@ abstract class BaseActivity : AppCompatActivity() {
     return super.onOptionsItemSelected(item)
   }
 
-  fun updateToolbar(toolbar: androidx.appcompat.widget.Toolbar) {
+  fun updateToolbar(toolbar: Toolbar) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       toolbar.setPadding(
           toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,

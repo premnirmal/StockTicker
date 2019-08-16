@@ -26,6 +26,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.BrowserFallback
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
@@ -40,7 +41,6 @@ import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.fragment_settings.toolbar
 import saschpe.android.customtabs.CustomTabsHelper
-import saschpe.android.customtabs.WebViewFallback
 import timber.log.Timber
 import java.io.File
 import java.util.regex.Pattern
@@ -173,7 +173,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         CustomTabsHelper.addKeepAliveExtra(context!!, customTabsIntent.intent)
         CustomTabsHelper.openCustomTab(
             context!!, customTabsIntent,
-            Uri.parse(resources.getString(R.string.privacy_policy_url)), WebViewFallback()
+            Uri.parse(resources.getString(R.string.privacy_policy_url)),
+            BrowserFallback()
         )
         true
       }

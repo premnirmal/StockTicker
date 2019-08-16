@@ -1,6 +1,8 @@
 package com.github.premnirmal.ticker.settings
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
@@ -8,15 +10,15 @@ import android.widget.TextView
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
+import com.github.premnirmal.ticker.BrowserFallback
 import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import saschpe.android.customtabs.CustomTabsHelper
-import saschpe.android.customtabs.WebViewFallback
 
 class FooterPreference(
-  context: Context,
-  attrs: AttributeSet
+    context: Context,
+    attrs: AttributeSet
 ) : Preference(context, attrs) {
 
   override fun onBindViewHolder(holder: PreferenceViewHolder) {
@@ -34,9 +36,10 @@ class FooterPreference(
           .setCloseButtonIcon(view.resources.getDrawable(R.drawable.ic_close).toBitmap())
           .build()
       CustomTabsHelper.addKeepAliveExtra(context, customTabsIntent.intent)
-      CustomTabsHelper.openCustomTab(
-          context, customTabsIntent,
-          Uri.parse(view.resources.getString(R.string.checkout_open_source)), WebViewFallback()
+      CustomTabsHelper.openCustomTab(context,
+          customTabsIntent,
+          Uri.parse(view.resources.getString(R.string.checkout_open_source)),
+          BrowserFallback()
       )
     }
   }

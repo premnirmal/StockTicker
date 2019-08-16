@@ -7,11 +7,11 @@
   <color name="button_pressed">@color/sea</color>
   <color name="button_disabled">#638ca6</color>
   <color name="button_enabled">@color/color_accent</color>
-  <color name="default_dark_bg">#ff303030</color>
+  <color name="default_dark_bg">#191919</color>
   <color name="spicy_salmon">#ff5655</color>
   <color name="dark">#575757</color>
   <color name="divider">#AAAA</color>
-  <color name="card_bg">#262b2b</color>
+  <color name="card_bg">#1d1d1d</color>
   <color name="dark_text">#333333</color>
 
   <color name="transparent">#00000000</color>

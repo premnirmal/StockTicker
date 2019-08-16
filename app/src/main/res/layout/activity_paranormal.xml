@@ -17,7 +17,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom"
-      android:background="@color/default_dark_bg"
+      android:background="@color/card_bg"
       app:elevation="4dp"
       app:itemIconTint="@drawable/bottom_nav_icon_tint"
       app:itemTextColor="@drawable/bottom_nav_icon_tint"
