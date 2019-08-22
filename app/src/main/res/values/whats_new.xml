@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>App icon updates</item>
     <item>UI tweaks</item>
     <item>Crash fixes</item>
     <item>More decimal places for positions</item>
