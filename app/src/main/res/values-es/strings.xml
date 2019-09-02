@@ -8,9 +8,9 @@
   <string name="action_nuke">Borrar datos de la aplicación</string>
   <string name="privacy_policy">Política de privacidad</string>
   <string name="nuke_desc">Restablecer la aplicación a la configuración predeterminada. Use esto si tiene problemas con su cartera.</string>
-  <string name="export_desc">Exportar citas a un archivo .txt separado por comas. El archivo se almacenará en StockTickers/Tickers.txt</string>
+  <string name="export_desc">Exportar su portafolio a un archivo .json. El archivo se almacenará en StockTickers/Portfolio.json</string>
   <string name="action_import">Importar cotizaciones</string>
-  <string name="import_desc">Importar citas de un archivo .txt separado por comas</string>
+  <string name="import_desc">Importar citas de un archivo .txt separado por comas, o un archivo .json</string>
   <string name="action_portfolio">Portafolio</string>
   <string name="action_widgets">Widgetes</string>
   <string name="action_search">Buscar</string>

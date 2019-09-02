@@ -25,7 +25,7 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class AlarmScheduler @Inject constructor() {
+class AlarmScheduler {
 
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var clock: AppClock

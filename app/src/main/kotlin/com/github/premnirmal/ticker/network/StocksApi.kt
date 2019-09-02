@@ -16,7 +16,7 @@ import javax.inject.Singleton
  * Created by premnirmal on 3/3/16.
  */
 @Singleton
-class StocksApi @Inject constructor() {
+class StocksApi {
 
   @Inject internal lateinit var gson: Gson
   @Inject internal lateinit var robindahood: Robindahood
@@ -87,7 +87,7 @@ class StocksApi @Inject constructor() {
                             quotesMap: MutableMap<String, Quote>): List<Quote> {
     val quotes = ArrayList<Quote>()
     tickerList.filter { quotesMap.containsKey(it) }
-        .mapTo(quotes) { quotesMap.remove(it)!! }
+        .mapTo(quotes) { quotesMap[it]!! }
     if (quotesMap.isNotEmpty()) {
       quotes.addAll(quotesMap.values)
     }

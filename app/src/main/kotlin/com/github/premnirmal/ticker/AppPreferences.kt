@@ -18,7 +18,7 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/26/16.
  */
 @Singleton
-class AppPreferences @Inject constructor() {
+class AppPreferences {
 
   @Inject internal lateinit var sharedPreferences: SharedPreferences
   @Inject internal lateinit var clock: AppClock
@@ -161,6 +161,16 @@ class AppPreferences @Inject constructor() {
           dir.mkdir()
         }
         val fileName = "Tickers.txt"
+        return File(dir, fileName)
+      }
+
+    val portfolioFile: File
+      get() {
+        val dir = Environment.getExternalStoragePublicDirectory("StockTickers")
+        if (!dir.exists()) {
+          dir.mkdir()
+        }
+        val fileName = "Portfolio.json"
         return File(dir, fileName)
       }
   }

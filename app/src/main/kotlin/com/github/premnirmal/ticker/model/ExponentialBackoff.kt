@@ -4,7 +4,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import javax.inject.Inject
 
-class ExponentialBackoff @Inject constructor() {
+class ExponentialBackoff {
 
   internal val baseMs: Long = 1000 * 30 * 1 // 30 seconds
   internal val backoffFactor: Int = 2 // Linear backoff

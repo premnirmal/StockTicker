@@ -31,7 +31,6 @@
             android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"
             android:theme="@style/ParanormalActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -40,13 +39,11 @@
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
             android:label="@string/add_position"
-            android:screenOrientation="portrait"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
             android:label="@string/action_Settings"
-            android:screenOrientation="portrait"
             android:theme="@style/WidgetSettingsTheme"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -56,13 +53,11 @@
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.search.SearchActivity"
             android:label="@string/action_search"
-            android:screenOrientation="portrait"
             android:theme="@style/SearchTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
             android:label="@string/news_feed"
-            android:screenOrientation="portrait"
             android:theme="@style/NewsFeedActivityTheme" />
         <activity
             android:name="com.github.premnirmal.ticker.news.GraphActivity"

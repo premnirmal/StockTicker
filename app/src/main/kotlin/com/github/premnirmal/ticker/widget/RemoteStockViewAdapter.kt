@@ -97,7 +97,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       if (stockViewLayout == R.layout.stockview3) {
         val changeType = widgetData.changeType()
-        if (changeType === ChangeType.percent) {
+        if (changeType === ChangeType.Percent) {
           remoteViews.setTextViewText(R.id.change, changePercentString)
         } else {
           remoteViews.setTextViewText(R.id.change, changeValueString)

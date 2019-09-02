@@ -17,9 +17,9 @@
   <string name="action_nuke">Clear app data</string>
   <string name="privacy_policy">Privacy Policy</string>
   <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
-  <string name="export_desc">Export quotes to a comma separated .txt file. The file will be stored in StockTickers/Tickers.txt</string>
+  <string name="export_desc">Export your portfolio to a .json file. The file will be stored in StockTickers/Portfolio.json</string>
   <string name="action_import">Import Quotes</string>
-  <string name="import_desc">Import quotes from a comma separated .txt file</string>
+  <string name="import_desc">Import quotes from a comma separated .txt file, or a .json file</string>
   <string name="action_portfolio">Portfolio</string>
   <string name="action_widgets">Widgets</string>
   <string name="action_search">Search</string>

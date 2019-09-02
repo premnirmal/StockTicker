@@ -38,14 +38,13 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider @Inject constructor() : IStocksProvider {
+class StocksProvider : IStocksProvider {
 
   companion object {
 
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
     private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
-    private const val HAS_MIGRATED_POSITIONS = "has_migrated_positions"
   }
 
   @Inject internal lateinit var api: StocksApi
@@ -71,7 +70,8 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   init {
     Injector.appComponent.inject(this)
     exponentialBackoff = ExponentialBackoff()
-    tickerList.addAll(storage.readTickers())
+    val tickers = HashSet(storage.readTickers())
+    tickerList.addAll(tickers)
     if (tickerList.isEmpty()) {
       tickerList.addAll(DEFAULT_STOCKS)
     }
@@ -93,24 +93,7 @@ class StocksProvider @Inject constructor() : IStocksProvider {
           quoteList[quote.symbol] = quote
         }
         positionList.clear()
-        val hasMigratedPositions = preferences.getBoolean(HAS_MIGRATED_POSITIONS, false)
-        if (!hasMigratedPositions) {
-          val oldPositions = storage.readPositionsLegacy()
-          val newPositions = ArrayList<Position>()
-          for (quote in oldPositions) {
-            val position =
-              Position(
-                  quote.symbol, arrayListOf(Holding(quote.positionShares, quote.positionPrice))
-              )
-            newPositions.add(position)
-            quoteList[quote.symbol]?.position = position
-          }
-          storage.savePositions(newPositions)
-          preferences.edit()
-              .putBoolean(HAS_MIGRATED_POSITIONS, true)
-              .apply()
-        }
-        val positions = storage.readPositionsNew()
+        val positions = storage.readPositions()
         for (position in positions) {
           if (position.holdings.isNotEmpty()) {
             positionList[position.symbol] = position
@@ -356,6 +339,24 @@ class StocksProvider @Inject constructor() : IStocksProvider {
   override fun getStock(ticker: String): Quote? = quoteList[ticker]
 
   override fun getTickers(): List<String> = ArrayList(tickerList)
+
+  override fun getPortfolio(): List<Quote> = quoteList.map { it.value }
+
+  override fun addPortfolio(portfolio: List<Quote>) {
+    synchronized(quoteList) {
+      portfolio.forEach {
+        val symbol = it.symbol
+        if (!tickerList.contains(symbol)) tickerList.add(symbol)
+        quoteList[symbol] = it
+        if (it.hasPositions()) {
+          positionList[symbol] = it.position!!
+        }
+      }
+      save()
+      widgetDataProvider.updateWidgets(tickerList)
+      fetch().subscribe(SimpleSubscriber())
+    }
+  }
 
   override fun lastFetched(): String {
     return if (lastFetched > 0L) {

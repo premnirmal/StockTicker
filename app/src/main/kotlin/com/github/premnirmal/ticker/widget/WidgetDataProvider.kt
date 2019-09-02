@@ -94,4 +94,14 @@ class WidgetDataProvider {
     oldWidget.removeStock(quote.symbol)
     broadcastUpdateAllWidgets()
   }
+
+  fun updateWidgets(tickerList: List<String>) {
+    if (hasWidget()) {
+      dataForWidgetId(getAppWidgetIds()[0])
+          .addTickers(tickerList)
+    } else {
+      dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
+          .addTickers(tickerList)
+    }
+  }
 }

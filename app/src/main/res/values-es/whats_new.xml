@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Actualizaciones de ícono de aplicacion</item>
+    <item>Ahora puede exportar e importar toda su cartera, incluidas las posiciones en formato json</item>
     <item>Ajustes de IU</item>
-    <item>Soluciones de bloqueo</item>
-    <item>Más decimales para las posiciones </item>
-    <item>Fuente de noticias más confiable</item>
   </string-array>
 </resources>

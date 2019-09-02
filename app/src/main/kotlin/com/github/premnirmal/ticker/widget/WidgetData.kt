@@ -18,24 +18,24 @@ import javax.inject.Inject
 class WidgetData {
 
   companion object {
-    const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
-    const val PREFS_NAME_PREFIX = "stocks_widget_"
-    const val WIDGET_NAME = "WIDGET_NAME"
-    const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
-    const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
-    const val WIDGET_BG = AppPreferences.WIDGET_BG
-    const val TEXT_COLOR = AppPreferences.TEXT_COLOR
-    const val PERCENT = AppPreferences.PERCENT
-    const val TRANSPARENT = AppPreferences.TRANSPARENT
-    const val TRANSLUCENT = AppPreferences.TRANSLUCENT
-    const val DARK = AppPreferences.DARK
-    const val LIGHT = AppPreferences.LIGHT
-    const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
-    const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
+    private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
+    private const val PREFS_NAME_PREFIX = "stocks_widget_"
+    private const val WIDGET_NAME = "WIDGET_NAME"
+    private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
+    private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
+    private const val WIDGET_BG = AppPreferences.WIDGET_BG
+    private const val TEXT_COLOR = AppPreferences.TEXT_COLOR
+    private const val PERCENT = AppPreferences.PERCENT
+    private const val TRANSPARENT = AppPreferences.TRANSPARENT
+    private const val TRANSLUCENT = AppPreferences.TRANSLUCENT
+    private const val DARK = AppPreferences.DARK
+    private const val LIGHT = AppPreferences.LIGHT
+    private const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
+    private const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
 
     enum class ChangeType {
-      value,
-      percent
+      Value,
+      Percent
     }
   }
 
@@ -111,7 +111,7 @@ class WidgetData {
 
   fun changeType(): ChangeType {
     val state = preferences.getBoolean(PERCENT, false)
-    return if (state) ChangeType.percent else ChangeType.value
+    return if (state) ChangeType.Percent else ChangeType.Value
   }
 
   fun flipChange() {

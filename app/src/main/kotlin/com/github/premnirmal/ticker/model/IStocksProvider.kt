@@ -24,6 +24,10 @@ interface IStocksProvider {
 
   fun getTickers(): List<String>
 
+  fun getPortfolio(): List<Quote>
+
+  fun addPortfolio(portfolio: List<Quote>)
+
   fun getStock(ticker: String): Quote?
 
   fun removeStock(ticker: String): Collection<String>

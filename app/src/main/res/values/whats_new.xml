@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>App icon updates</item>
+    <item>Now you can export and import your whole portfolio including positions in json format</item>
     <item>UI tweaks</item>
-    <item>Crash fixes</item>
-    <item>More decimal places for positions</item>
-    <item>More reliable news feed</item>
   </string-array>
 </resources>

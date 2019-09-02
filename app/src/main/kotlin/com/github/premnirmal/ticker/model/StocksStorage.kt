@@ -14,10 +14,9 @@ import javax.inject.Inject
 class StocksStorage {
 
   companion object {
-    const val KEY_STOCKS = "STOCKS"
-    @Deprecated("remove after upgrade") const val KEY_POSITIONS_LEGACY = "POSITIONS"
-    const val KEY_POSITIONS_NEW = "POSITIONS_NEW"
-    const val KEY_TICKERS = "TICKERS"
+    private const val KEY_STOCKS = "STOCKS"
+    private const val KEY_POSITIONS = "POSITIONS_NEW"
+    private const val KEY_TICKERS = "TICKERS"
   }
 
   @Inject internal lateinit var gson: Gson
@@ -36,19 +35,14 @@ class StocksStorage {
         .write(KEY_STOCKS, quotes)
   }
 
-  @Deprecated("remove after upgrade") fun readPositionsLegacy(): MutableList<Quote> {
+  fun readPositions(): MutableList<Position> {
     return Paper.book()
-        .read(KEY_POSITIONS_LEGACY, ArrayList())
-  }
-
-  fun readPositionsNew(): MutableList<Position> {
-    return Paper.book()
-        .read(KEY_POSITIONS_NEW, ArrayList())
+        .read(KEY_POSITIONS, ArrayList())
   }
 
   fun savePositions(positions: List<Position>) {
     Paper.book()
-        .write(KEY_POSITIONS_NEW, positions)
+        .write(KEY_POSITIONS, positions)
   }
 
   fun readTickers(): MutableList<String> {

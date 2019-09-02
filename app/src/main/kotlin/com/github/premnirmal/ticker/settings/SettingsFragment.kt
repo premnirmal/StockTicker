@@ -201,10 +201,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preferences.edit()
               .clear()
               .apply()
-          val packageName = context!!.packageName
           val filesDir = context!!.filesDir
-          val directory = filesDir.path + "$packageName/shared_prefs/"
-          val sharedPreferenceFile = File(directory)
+          filesDir.listFiles().forEach { file ->
+            file?.delete()
+          }
+          val sharedPrefsDir = filesDir.parentFile.path + "/shared_prefs/"
+          val sharedPreferenceFile = File(sharedPrefsDir)
           val listFiles = sharedPreferenceFile.listFiles()
           listFiles?.forEach { file ->
             file?.delete()
@@ -224,7 +226,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE)
         } else {
-          exportTickers()
+          exportPortfolio()
         }
         true
       }
@@ -389,7 +391,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     if (file.exists()) {
       shareTickers()
     } else {
-      object : FileExportTask() {
+      object : TickersExportTask() {
         override fun onPostExecute(result: String?) {
           if (result == null) {
             showDialog(getString(R.string.error_sharing))
@@ -406,12 +408,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     MaterialFilePicker().withSupportFragment(this)
         .withRequestCode(REQCODE_FILE_WRITE)
         // Filtering files and directories by file name using regexp
-        .withFilter(Pattern.compile(".*\\.txt$"))
+        .withFilter(Pattern.compile(".*\\.(txt|json)$"))
         .start()
   }
 
-  private fun exportTickers() {
-    object : FileExportTask() {
+  private fun exportPortfolio() {
+    object : PortfolioExportTask() {
       override fun onPostExecute(result: String?) {
         if (result == null) {
           showDialog(getString(R.string.error_exporting))
@@ -420,7 +422,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           showDialog(getString(R.string.exported_to, result))
         }
       }
-    }.execute(stocksProvider.getTickers())
+    }.execute(stocksProvider.getPortfolio())
   }
 
   private fun shareTickers() {
@@ -460,7 +462,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     when (requestCode) {
       REQCODE_WRITE_EXTERNAL_STORAGE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          exportTickers()
+          exportPortfolio()
         } else {
           showDialog(getString(R.string.cannot_export_msg))
         }
@@ -490,15 +492,29 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
       val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
       if (filePath != null) {
-        object : FileImportTask(widgetDataProvider) {
-          override fun onPostExecute(result: Boolean?) {
-            if (result != null && result) {
-              showDialog(getString(R.string.ticker_import_success))
-            } else {
-              showDialog(getString(R.string.ticker_import_fail))
+        val task: ImportTask
+        if (filePath.endsWith(".txt")) {
+          task = object : TickersImportTask(widgetDataProvider) {
+            override fun onPostExecute(result: Boolean?) {
+              if (result != null && result) {
+                showDialog(getString(R.string.ticker_import_success))
+              } else {
+                showDialog(getString(R.string.ticker_import_fail))
+              }
             }
           }
-        }.execute(filePath)
+        } else {
+          task = object : PortfolioImportTask(stocksProvider) {
+            override fun onPostExecute(result: Boolean?) {
+              if (result != null && result) {
+                showDialog(getString(R.string.ticker_import_success))
+              } else {
+                showDialog(getString(R.string.ticker_import_fail))
+              }
+            }
+          }
+        }
+        task.execute(filePath)
       }
     }
     super.onActivityResult(requestCode, resultCode, data)

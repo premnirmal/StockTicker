@@ -37,6 +37,7 @@ import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
+import com.google.gson.Gson
 
 /**
  * Created by premnirmal on 3/3/16.
@@ -128,5 +129,7 @@ interface AppComponent {
   fun inject(widgetSettingsFragment: WidgetSettingsFragment)
 
   fun appContext(): Context
+
+  fun gson(): Gson
 
 }
