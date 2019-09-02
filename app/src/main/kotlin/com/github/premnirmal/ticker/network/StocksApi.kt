@@ -88,9 +88,6 @@ class StocksApi {
     val quotes = ArrayList<Quote>()
     tickerList.filter { quotesMap.containsKey(it) }
         .mapTo(quotes) { quotesMap[it]!! }
-    if (quotesMap.isNotEmpty()) {
-      quotes.addAll(quotesMap.values)
-    }
     return quotes
   }
 }

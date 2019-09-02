@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.HistoricalDataApi
@@ -74,4 +75,6 @@ class MockNetworkModule {
 
   @Provides @Singleton internal fun provideHistoricalDataProvider(): IHistoryProvider =
     Mocker.provide(IHistoryProvider::class)
+
+  @Provides @Singleton internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()
 }
