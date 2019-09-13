@@ -13,7 +13,6 @@ import java.io.FileReader
 import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
-import java.util.Arrays
 
 internal abstract class ImportTask: AsyncTask<String, Nothing, Boolean>()
 
@@ -54,11 +53,11 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
         widgetDataProvider.getAppWidgetIds()
             .forEach { widgetId ->
               val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-              widgetData.addTickers(Arrays.asList(*tickers))
+              widgetData.addTickers(listOf(*tickers))
             }
       } else {
         val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
-        widgetData.addTickers(Arrays.asList(*tickers))
+        widgetData.addTickers(listOf(*tickers))
       }
       result = true
     } catch (e: IOException) {

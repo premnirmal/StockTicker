@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.news
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -68,8 +69,10 @@ class NewsFeedActivity : BaseGraphActivity() {
     toolbar.setNavigationOnClickListener {
       finish()
     }
-    graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
-    graph_container.requestLayout()
+    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+      graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
+      graph_container.requestLayout()
+    }
     setupGraphView(graphView)
     val q: Quote?
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
