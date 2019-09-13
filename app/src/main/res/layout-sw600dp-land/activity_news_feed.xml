@@ -18,19 +18,33 @@
       tools:title="AAPL"
       />
 
-  <ScrollView
+  <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:orientation="horizontal"
+      android:baselineAligned="false"
       >
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_weight="0.5"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed"
+        android:scrollbars="none"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
         >
 
+      <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical"
+          app:layout_scrollFlags="scroll|exitUntilCollapsed"
+          android:paddingBottom="?actionBarSize"
+          >
+
       <TextView
+          app:layout_constraintTop_toTopOf="parent"
           android:id="@+id/tickerName"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -42,6 +56,8 @@
           />
 
       <ImageView
+          app:layout_constraintTop_toBottomOf="@id/tickerName"
+          app:layout_constraintEnd_toEndOf="parent"
           android:id="@+id/expand_graph"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
@@ -53,9 +69,11 @@
           />
 
       <FrameLayout
+          app:layout_constraintTop_toBottomOf="@id/expand_graph"
           android:id="@+id/graph_container"
           android:layout_width="match_parent"
-          android:layout_height="200dp"
+          android:layout_height="0dp"
+          app:layout_constraintHeight_percent="0.5"
           android:padding="8dp"
           >
         <com.github.mikephil.charting.charts.LineChart
@@ -75,6 +93,8 @@
       </FrameLayout>
 
       <LinearLayout
+          app:layout_constraintTop_toBottomOf="@id/graph_container"
+          android:id="@+id/price_container"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
@@ -123,6 +143,8 @@
       </LinearLayout>
 
       <LinearLayout
+          app:layout_constraintTop_toBottomOf="@id/price_container"
+          android:id="@+id/positions_header"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="8dp"
@@ -152,6 +174,8 @@
 
       </LinearLayout>
       <LinearLayout
+          app:layout_constraintTop_toBottomOf="@id/positions_header"
+          android:id="@+id/positions_container"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_margin="8dp"
@@ -256,23 +280,44 @@
             />
 
       </LinearLayout>
+        <TextView
+            app:layout_constraintBottom_toTopOf="@id/positions_container"
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="16dp"
+            android:textSize="@dimen/medium_text"
+            tools:text="Description"
+            />
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.5"
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"
+        >
 
       <LinearLayout
           android:id="@+id/news_container"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical"
-          android:paddingEnd="8dp"
-          android:paddingLeft="8dp"
-          android:paddingRight="8dp"
-          android:paddingStart="8dp"
+          app:layout_scrollFlags="scroll|exitUntilCollapsed"
+          android:paddingBottom="?actionBarSize"
           >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_margin="8dp"
+            android:layout_margin="16dp"
             android:gravity="center_vertical"
             android:text="@string/recent_news"
             android:textSize="@dimen/thin_title_text"
@@ -280,20 +325,8 @@
             />
 
       </LinearLayout>
+    </ScrollView>
 
-      <TextView
-          android:id="@+id/description"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="16dp"
-          android:layout_marginEnd="16dp"
-          android:layout_marginLeft="16dp"
-          android:layout_marginRight="16dp"
-          android:layout_marginStart="16dp"
-          android:textSize="@dimen/medium_text"
-          tools:text="Description"
-          />
+  </LinearLayout>
 
-    </LinearLayout>
-  </ScrollView>
 </LinearLayout>

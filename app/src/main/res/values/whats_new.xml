@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Tablet improvements</item>
     <item>Now you can export and import your whole portfolio including positions in json format</item>
     <item>UI tweaks</item>
   </string-array>
