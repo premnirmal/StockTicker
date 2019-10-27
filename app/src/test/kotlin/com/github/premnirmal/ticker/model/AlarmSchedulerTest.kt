@@ -2,8 +2,17 @@ package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
+import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.`when`
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.DayOfWeek.FRIDAY
+import org.threeten.bp.DayOfWeek.MONDAY
+import org.threeten.bp.DayOfWeek.SATURDAY
+import org.threeten.bp.DayOfWeek.SUNDAY
+import org.threeten.bp.DayOfWeek.THURSDAY
+import org.threeten.bp.DayOfWeek.TUESDAY
+import org.threeten.bp.DayOfWeek.WEDNESDAY
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneOffset
@@ -30,6 +39,16 @@ class AlarmSchedulerTest : BaseUnitTest() {
 
     private val alarmScheduler: AlarmScheduler = AlarmScheduler()
     private val appPreferences: AppPreferences = alarmScheduler.appPreferences
+  }
+
+  @Before fun init() {
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY))
+  }
+
+  private fun setSelectDays(selectedDays: Set<DayOfWeek>) {
+    appPreferences.setUpdateDays(selectedDays.map {
+      it.value.toString()
+    }.toSet())
   }
 
   private fun setStartAndEndTime(startTime: String, endTime: String) {
@@ -141,7 +160,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     setNow(FLIP_TIME_5)
 
     val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
-    val followingMonday = appPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(3)
+    val followingMonday = appPreferences.clock().todayZoned().withHour(21).withMinute(0)
     val expectedNext =
       followingMonday.toInstant().toEpochMilli() - appPreferences.clock().currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
@@ -169,4 +188,57 @@ class AlarmSchedulerTest : BaseUnitTest() {
     assertEquals(expectedNext, msToNextAlarm)
   }
 
+  //////////////////////////////////////////////////////////////
+  // Tests for when non-default days are selected
+  //////////////////////////////////////////////////////////////
+
+  @Test fun testNextAlarmTime_saturdaySelected() {
+    setStartAndEndTime("09:30", "16:30")
+    setNow(TIME_5) // Friday 6pm
+
+    // Select Saturday as an update day
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY))
+
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
+    val followingSaturday = appPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(1)
+    val expectedNext =
+      followingSaturday.toInstant().toEpochMilli() - appPreferences.clock().currentTimeMillis()
+    assertEquals(expectedNext, msToNextAlarm)
+  }
+
+  @Test fun testNextAlarmTime_sundaySelected() {
+    setStartAndEndTime("09:30", "16:30")
+    setNow(TIME_5) // Friday 6pm
+
+    // Select Sunday as an update day
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SUNDAY))
+
+    val msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
+    val followingSunday = appPreferences.clock().todayZoned().withHour(9).withMinute(30).plusDays(2)
+    val expectedNext =
+      followingSunday.toInstant().toEpochMilli() - appPreferences.clock().currentTimeMillis()
+    assertEquals(expectedNext, msToNextAlarm)
+  }
+
+  @Test fun flip_testNextAlarmTime_sundaySelected() {
+    setStartAndEndTime("21:00", "04:00")
+    setNow(FLIP_TIME_5) // Friday 6am
+
+    // Select Friday Sunday as an update day
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SUNDAY))
+
+    var msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
+    val fridayEvening = appPreferences.clock().todayZoned().withHour(21).withMinute(0)
+    var expectedNext =
+      fridayEvening.toInstant().toEpochMilli() - appPreferences.clock().currentTimeMillis()
+    assertEquals(expectedNext, msToNextAlarm)
+
+    // Remove Friday as an update day
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, SUNDAY))
+    msToNextAlarm = alarmScheduler.msToNextAlarm(0L)
+    val sundayEvening = appPreferences.clock().todayZoned().withHour(21).withMinute(0).plusDays(2)
+    expectedNext =
+      sundayEvening.toInstant().toEpochMilli() - appPreferences.clock().currentTimeMillis()
+    assertEquals(expectedNext, msToNextAlarm)
+  }
 }

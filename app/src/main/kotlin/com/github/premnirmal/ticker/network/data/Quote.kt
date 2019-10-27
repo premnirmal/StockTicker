@@ -1,6 +1,9 @@
 package com.github.premnirmal.ticker.network.data
 
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.components.Injector
+import java.text.Format
+import javax.inject.Inject
 
 /**
  * Created by premnirmal on 3/30/17.
@@ -47,12 +50,18 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
   var position: Position? = null
 
+  @Inject internal lateinit var appPreferences: AppPreferences
+
+  init {
+    Injector.appComponent.inject(this)
+  }
+
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
-  fun changeString(): String = AppPreferences.DECIMAL_FORMAT.format(change)
+  fun changeString(): String = selectedFormat.format(change)
 
   fun changeStringWithSign(): String {
-    val changeString = AppPreferences.DECIMAL_FORMAT.format(change)
+    val changeString = selectedFormat.format(change)
     if (change >= 0) {
       return "+$changeString"
     }
@@ -81,23 +90,23 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
     it.totalPaidPrice()
   } ?: 0f
 
-  fun priceString(): String = AppPreferences.DECIMAL_FORMAT.format(lastTradePrice)
+  fun priceString(): String = selectedFormat.format(lastTradePrice)
 
-  fun averagePositionPrice(): String = AppPreferences.DECIMAL_FORMAT.format(positionPrice())
+  fun averagePositionPrice(): String = selectedFormat.format(positionPrice())
 
-  fun numSharesString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPositionShares())
+  fun numSharesString(): String = selectedFormat.format(totalPositionShares())
 
-  fun totalSpentString(): String = AppPreferences.DECIMAL_FORMAT.format(totalPositionPrice())
+  fun totalSpentString(): String = selectedFormat.format(totalPositionPrice())
 
   fun holdings(): Float = lastTradePrice * totalPositionShares()
 
-  fun holdingsString(): String = AppPreferences.DECIMAL_FORMAT.format(holdings())
+  fun holdingsString(): String = selectedFormat.format(holdings())
 
   fun gainLoss(): Float = holdings() - totalPositionShares() * positionPrice()
 
   fun gainLossString(): String {
     val gainLoss = gainLoss()
-    val gainLossString = AppPreferences.DECIMAL_FORMAT.format(gainLoss)
+    val gainLossString = selectedFormat.format(gainLoss)
     if (gainLoss >= 0) {
       return "+$gainLossString"
     }
@@ -119,7 +128,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   fun dayChangeString(): String {
     val dayChange = dayChange()
-    val dayChangeString = AppPreferences.DECIMAL_FORMAT.format(dayChange)
+    val dayChangeString = selectedFormat.format(dayChange)
     if (dayChange > 0) {
       return "+$dayChangeString"
     }
@@ -129,6 +138,13 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   fun newsQuery(): String {
     return symbol
   }
+
+  private val selectedFormat: Format
+    get() = if (appPreferences.roundToTwoDecimalPlaces()) {
+      AppPreferences.DECIMAL_FORMAT_2DP
+    } else {
+      AppPreferences.DECIMAL_FORMAT
+    }
 
   override operator fun compareTo(other: Quote): Int =
     other.changeInPercent.compareTo(changeInPercent)

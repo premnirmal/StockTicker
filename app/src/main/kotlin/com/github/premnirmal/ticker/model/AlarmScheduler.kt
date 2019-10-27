@@ -56,14 +56,14 @@ class AlarmScheduler {
     if (inverse && now.isAfter(startTime)) {
       endTime = endTime.plusDays(1)
     }
-
+    val selectedDaysOfWeek = appPreferences.updateDays()
     val lastFetchedTime =
       ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastFetchedMs), ZoneId.systemDefault())
 
     val msToNextAlarm: Long
     if (now.isBefore(endTime) && (now.isAfter(startTime) || now.isEqual(
             startTime
-        )) && dayOfWeek <= FRIDAY
+        )) && selectedDaysOfWeek.contains(dayOfWeek)
     ) {
       mutableDateTime = if (lastFetchedMs > 0 && Duration.between(
               lastFetchedTime,
@@ -74,7 +74,7 @@ class AlarmScheduler {
       } else {
         mutableDateTime.plusSeconds(appPreferences.updateIntervalMs / 1000L)
       }
-    } else if (!inverse && now.isBefore(startTime) && dayOfWeek <= FRIDAY) {
+    } else if (!inverse && now.isBefore(startTime) && selectedDaysOfWeek.contains(dayOfWeek)) {
       mutableDateTime = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
         mutableDateTime.plusMinutes(1)
       } else {
@@ -82,17 +82,27 @@ class AlarmScheduler {
             .withMinute(startTimez[1])
       }
     } else {
-      if (dayOfWeek <= FRIDAY && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
+      if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
         mutableDateTime = mutableDateTime.plusMinutes(1)
       } else {
         mutableDateTime = mutableDateTime.withHour(startTimez[0])
             .withMinute(startTimez[1])
-        if (dayOfWeek == FRIDAY) {
-          mutableDateTime = mutableDateTime.plusDays(3)
-        } else if (dayOfWeek == SATURDAY) {
-          mutableDateTime = mutableDateTime.plusDays(2)
-        } else if (dayOfWeek == SUNDAY || !inverse) {
-          mutableDateTime = mutableDateTime.plusDays(1)
+
+        var count = 0
+        if (inverse) {
+          while (!selectedDaysOfWeek.contains(mutableDateTime.dayOfWeek) && count <= 7) {
+            count++
+            mutableDateTime = mutableDateTime.plusDays(1)
+          }
+        } else {
+          do {
+            count++
+            mutableDateTime = mutableDateTime.plusDays(1)
+          } while (!selectedDaysOfWeek.contains(mutableDateTime.dayOfWeek) && count <= 7)
+        }
+
+        if (count >= 5) {
+          Timber.w(Exception("Possible infinite loop in calculating date. Now: ${now.toInstant()}, nextUpdate: ${mutableDateTime.toInstant()}"))
         }
       }
     }
@@ -104,7 +114,7 @@ class AlarmScheduler {
     msToNextAlarm: Long,
     context: Context
   ): ZonedDateTime {
-    Timber.i("Scheduled for " + msToNextAlarm / (1000 * 60) + " minutes")
+    Timber.i("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)

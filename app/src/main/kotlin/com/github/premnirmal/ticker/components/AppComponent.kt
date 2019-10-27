@@ -20,6 +20,7 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.GraphActivity
 import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
@@ -85,6 +86,10 @@ interface AppComponent {
   fun inject(exponentialBackoff: ExponentialBackoff)
 
   fun inject(generalProperties: GeneralProperties)
+
+  // Data
+
+  fun inject(quote: Quote)
 
   // Network
 
