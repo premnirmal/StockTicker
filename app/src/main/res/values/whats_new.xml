@@ -3,5 +3,6 @@
   <string-array name="whats_new">
     <item>Ability to select update days</item>
     <item>Ability to round to 2 decimal places</item>
+    <item>Better navigation</item>
   </string-array>
 </resources>

@@ -3,5 +3,6 @@
   <string-array name="whats_new">
     <item>Posibilidad de seleccionar días de actualización</item>
     <item>Capacidad para redondear a 2 decimales</item>
+    <item>Mejor navegación</item>
   </string-array>
 </resources>

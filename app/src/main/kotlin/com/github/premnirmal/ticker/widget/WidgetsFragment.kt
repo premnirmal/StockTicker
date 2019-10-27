@@ -23,15 +23,7 @@ import javax.inject.Inject
 class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
 
   companion object {
-    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
-
-    fun newInstance(widgetId: Int): WidgetsFragment {
-      val fragment = WidgetsFragment()
-      val args = Bundle()
-      args.putInt(ARG_WIDGET_ID, widgetId)
-      fragment.arguments = args
-      return fragment
-    }
+    private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
