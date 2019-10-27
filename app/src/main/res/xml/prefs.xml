@@ -47,12 +47,30 @@
       app:key="END_TIME"
       app:title="@string/end_time"/>
 
+  <MultiSelectListPreference
+      app:entries="@array/days"
+      app:entryValues="@array/days_values"
+      app:iconSpaceReserved="false"
+      app:key="UPDATE_DAYS"
+      app:positiveButtonText="@string/ok"
+      app:negativeButtonText="@string/cancel"
+      app:summary="@string/update_days_desc"
+      app:title="@string/update_days"/>
+
   <CheckBoxPreference
       app:key="SETTING_AUTOSORT"
       app:selectable="true"
       app:iconSpaceReserved="false"
       app:summary="@string/auto_sort_desc"
       app:title="@string/auto_sort"
+      />
+
+  <CheckBoxPreference
+      app:key="SETTING_ROUND_TWO_DP"
+      app:selectable="true"
+      app:iconSpaceReserved="false"
+      app:summary="@string/round_two_dp_desc"
+      app:title="@string/round_two_dp"
       />
 
   <Preference

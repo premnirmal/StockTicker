@@ -22,6 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
+import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -40,9 +41,11 @@ import com.github.premnirmal.tickerwidget.R
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.fragment_settings.toolbar
+import org.threeten.bp.format.TextStyle.SHORT
 import saschpe.android.customtabs.CustomTabsHelper
 import timber.log.Timber
 import java.io.File
+import java.util.Locale
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -186,10 +189,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
       autoSortPref.isEnabled = !widgetDataProvider.hasWidget()
       autoSortPref.isChecked = widgetData.autoSortEnabled()
-      autoSortPref.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-        widgetData.setAutoSort(newValue as Boolean)
-        true
-      }
+      autoSortPref.onPreferenceChangeListener =
+        Preference.OnPreferenceChangeListener { _, newValue ->
+          widgetData.setAutoSort(newValue as Boolean)
+          true
+        }
     }
 
     run {
@@ -202,9 +206,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
               .clear()
               .apply()
           val filesDir = context!!.filesDir
-          filesDir.listFiles().forEach { file ->
-            file?.delete()
-          }
+          filesDir.listFiles()
+              .forEach { file ->
+                file?.delete()
+              }
           val sharedPrefsDir = filesDir.parentFile.path + "/shared_prefs/"
           val sharedPreferenceFile = File(sharedPrefsDir)
           val listFiles = sharedPreferenceFile.listFiles()
@@ -362,6 +367,44 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           }
         }
       }
+    }
+
+    run {
+      val daysPreference = findPreference<MultiSelectListPreference>(AppPreferences.UPDATE_DAYS)
+      val selectedDays = appPreferences.updateDaysRaw()
+      daysPreference.summary = appPreferences.updateDays().joinToString {
+        it.getDisplayName(SHORT, Locale.getDefault())
+      }
+      daysPreference.values = selectedDays
+      daysPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+        override fun onPreferenceChange(
+          preference: Preference,
+          newValue: Any
+        ): Boolean {
+          val selectedValues = newValue as Set<String>
+          if (selectedValues.isEmpty()) {
+            InAppMessage.showMessage(requireActivity(), R.string.days_updated_error_message)
+            return false
+          }
+          appPreferences.setUpdateDays(selectedValues)
+          daysPreference.summary = appPreferences.updateDays().joinToString {
+            it.getDisplayName(SHORT, Locale.getDefault())
+          }
+          InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
+          broadcastUpdateWidget()
+          return true
+        }
+      }
+    }
+
+    run {
+      val round2dpPref = findPreference<CheckBoxPreference>(AppPreferences.SETTING_ROUND_TWO_DP)
+      round2dpPref.isChecked = appPreferences.roundToTwoDecimalPlaces()
+      round2dpPref.onPreferenceChangeListener =
+        Preference.OnPreferenceChangeListener { _, newValue ->
+          appPreferences.setRoundToTwoDecimalPlaces(newValue as Boolean)
+          true
+        }
     }
   }
 

@@ -29,6 +29,10 @@
   <string name="start_time">Hora de inicio</string>
   <string name="end_time">Hora de finalización</string>
   <string name="update_interval">Intervalo de actualización</string>
+  <string name="update_days">Días de actualización</string>
+  <string name="update_days_desc">Las actualizaciones ocurrirán en estos días</string>
+  <string name="round_two_dp">Redondear a 2 decimales</string>
+  <string name="round_two_dp_desc">Redondea el cambio y el valor a 2 decimales</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Las existencias se ordenarán por cambio porcentual.</string>
   <string name="hide_header">Hide widget header</string>
@@ -43,6 +47,8 @@
   <string name="layout_updated_message">Tipo de diseño actualizado</string>
   <string name="text_coor_updated_message">Color del texto actualizado</string>
   <string name="refresh_updated_message">Actualización del intervalo actualizado</string>
+  <string name="days_updated_message">Días de actualización actualizados</string>
+  <string name="days_updated_error_message">Error: debe seleccionar días</string>
   <string name="error_exporting">Error al exportar el archivo</string>
   <string name="error_symbol">Símbolo no válido</string>
   <string name="error_sharing">Error al compartir las cotizaciones</string>
@@ -96,6 +102,7 @@
   <string name="day_change_amount">Cambio de día</string>
   <string name="autosort_disabled">La clasificación automática se ha deshabilitado. Ahora puede arrastrar y soltar para ordenar.</string>
   <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de tu cartera?</string>
+  <string name="ok">OK</string>
   <string name="cancel">Cancelar</string>
   <string name="invalid_number">Número inválido</string>
   <string name="add_positions_prompt">¿Quieres añadir empleos para%1$s?</string>

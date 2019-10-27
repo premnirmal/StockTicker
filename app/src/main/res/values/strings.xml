@@ -38,6 +38,10 @@
   <string name="start_time">Start Time</string>
   <string name="end_time">End Time</string>
   <string name="update_interval">Update Interval</string>
+  <string name="update_days">Update days</string>
+  <string name="update_days_desc">Updates will occur on these days</string>
+  <string name="round_two_dp">Round to 2 dp</string>
+  <string name="round_two_dp_desc">Round the change and value to 2 decimal places</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
   <string name="hide_header">Hide widget header</string>
@@ -52,6 +56,8 @@
   <string name="layout_updated_message">Layout type updated</string>
   <string name="text_coor_updated_message">Text color updated</string>
   <string name="refresh_updated_message">Refresh interval updated</string>
+  <string name="days_updated_message">Update days updated</string>
+  <string name="days_updated_error_message">Error - you must select days</string>
   <string name="error_exporting">Error exporting file</string>
   <string name="error_symbol">Invalid symbol</string>
   <string name="error_sharing">Error sharing quotes</string>
@@ -106,6 +112,7 @@
   <string name="day_change_amount">Day Change</string>
   <string name="autosort_disabled">Auto-sort has been disabled. You can now drag and drop to sort.</string>
   <string name="remove_prompt">Are you sure you want to remove %1$s from your portfolio?</string>
+  <string name="ok">OK</string>
   <string name="cancel">Cancel</string>
   <string name="invalid_number">Invalid number</string>
   <string name="add_positions_prompt">Do you want to add positions for %1$s?</string>

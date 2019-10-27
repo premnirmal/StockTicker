@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.os.Environment
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle.MEDIUM
 import java.io.File
@@ -62,6 +63,31 @@ class AppPreferences {
     return timeAsIntArray(endTimeString)
   }
 
+  fun updateDaysRaw(): Set<String> {
+    val defaultSet = setOf("1", "2", "3", "4", "5")
+    var selectedDays = sharedPreferences.getStringSet(UPDATE_DAYS, defaultSet)!!
+    if (selectedDays.isEmpty()) {
+      selectedDays = defaultSet
+    }
+    return selectedDays
+  }
+
+  fun setUpdateDays(selected: Set<String>) {
+    sharedPreferences.edit()
+        .putStringSet(AppPreferences.UPDATE_DAYS, selected)
+        .apply()
+  }
+
+  fun updateDays(): Set<DayOfWeek> {
+    val defaultSet = setOf("1", "2", "3", "4", "5")
+    var selectedDays = sharedPreferences.getStringSet(UPDATE_DAYS, defaultSet)!!
+    if (selectedDays.isEmpty()) {
+      selectedDays = defaultSet
+    }
+    return selectedDays.map { DayOfWeek.of(it.toInt()) }
+        .toSet()
+  }
+
   fun isRefreshing() = sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
 
   fun setRefreshing(refreshing: Boolean) {
@@ -89,7 +115,7 @@ class AppPreferences {
   fun hasUserAlreadyRated() = sharedPreferences.getBoolean(DID_RATE, false)
 
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-    !hasUserAlreadyRated() && (random.nextInt() % 4 == 0)
+    !hasUserAlreadyRated() && (random.nextInt() % 10 == 0)
 
   fun clock(): AppClock = clock
 
@@ -98,6 +124,14 @@ class AppPreferences {
   fun setBackOffAttemptCount(count: Int) {
     sharedPreferences.edit()
         .putInt(BACKOFF_ATTEMPTS, count)
+        .apply()
+  }
+
+  fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, false)
+
+  fun setRoundToTwoDecimalPlaces(round: Boolean) {
+    sharedPreferences.edit()
+        .putBoolean(SETTING_ROUND_TWO_DP, round)
         .apply()
   }
 
@@ -122,6 +156,7 @@ class AppPreferences {
     const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
     const val START_TIME = "START_TIME"
     const val END_TIME = "END_TIME"
+    const val UPDATE_DAYS = "UPDATE_DAYS"
     const val TUTORIAL_SHOWN = "TUTORIAL_SHOWN"
     const val SETTING_WHATS_NEW = "SETTING_WHATS_NEW"
     const val SETTING_TUTORIAL = "SETTING_TUTORIAL"
@@ -132,6 +167,7 @@ class AppPreferences {
     const val SETTING_SHARE = "SETTING_SHARE"
     const val SETTING_NUKE = "SETTING_NUKE"
     const val SETTING_PRIVACY_POLICY = "SETTING_PRIVACY_POLICY"
+    const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
     const val WIDGET_BG = "WIDGET_BG"
     const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
     const val TEXT_COLOR = "TEXT_COLOR"

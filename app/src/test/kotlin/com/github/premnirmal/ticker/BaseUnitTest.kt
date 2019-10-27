@@ -45,9 +45,9 @@ abstract class BaseUnitTest : TestCase() {
   }
 
   @get:Rule val schedulerRule = RxSchedulersOverrideRule()
-  val parser = Parser()
+  private val parser = Parser()
 
-  @Before override public fun setUp() {
+  @Before public override fun setUp() {
     super.setUp()
     val iStocksProvider = Mocker.provide(IStocksProvider::class)
     doNothing().`when`(iStocksProvider).schedule()
