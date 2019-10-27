@@ -56,13 +56,15 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
 
-    if (savedInstanceState == null) {
+    currentChild = if (savedInstanceState == null) {
       val fragment = HomeFragment()
       supportFragmentManager.beginTransaction()
           .add(R.id.fragment_container, fragment, fragment.javaClass.name)
           .show(fragment)
           .commit()
-      currentChild = fragment
+      fragment
+    } else {
+      supportFragmentManager.findFragmentById(R.id.fragment_container) as ChildFragment
     }
 
     val tutorialShown = appPreferences.tutorialShown()
