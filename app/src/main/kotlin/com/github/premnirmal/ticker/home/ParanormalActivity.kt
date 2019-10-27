@@ -21,7 +21,6 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.id
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_paranormal.bottom_navigation
 import javax.inject.Inject
@@ -30,17 +29,15 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent,
-    FragmentManager.OnBackStackChangedListener {
+    HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
-    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     private val FRAGMENT_MAP =
-      mapOf<String, Int>(HomeFragment::class.java.name to R.id.action_portfolio,
-          WidgetsFragment::class.java.name to R.id.action_widgets,
-          SearchFragment::class.java.name to R.id.action_search,
-          SettingsFragment::class.java.name to R.id.action_settings)
+      mapOf<Int, String>(R.id.action_portfolio to HomeFragment::class.java.name,
+          R.id.action_widgets to WidgetsFragment::class.java.name,
+          R.id.action_search to SearchFragment::class.java.name,
+          R.id.action_settings to SettingsFragment::class.java.name)
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
@@ -61,26 +58,11 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
     if (savedInstanceState == null) {
       val fragment = HomeFragment()
-      supportFragmentManager.beginTransaction().add(R.id.fragment_container, fragment).commit()
+      supportFragmentManager.beginTransaction()
+          .add(R.id.fragment_container, fragment, fragment.javaClass.name)
+          .show(fragment)
+          .commit()
       currentChild = fragment
-    }
-
-    supportFragmentManager.addOnBackStackChangedListener(this)
-
-    val widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-    if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-      val result = Intent()
-      result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-      setResult(Activity.RESULT_OK, result)
-
-      val fragment = WidgetsFragment.newInstance(widgetId)
-      supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
-          .addToBackStack(fragment.javaClass.name).commit()
-      currentChild = fragment
-
-      return
-    } else {
-      setResult(Activity.RESULT_CANCELED)
     }
 
     val tutorialShown = appPreferences.tutorialShown()
@@ -99,22 +81,12 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   override fun onBackPressed() {
-    val entryCount = supportFragmentManager.backStackEntryCount
-    if (entryCount > 0 || !maybeAskToRate()) {
-      super.onBackPressed()
+    val eaten = onNavigationItemSelected(bottom_navigation.menu.findItem(R.id.action_portfolio))
+    if (eaten) {
+      bottom_navigation.selectedItemId = R.id.action_portfolio
     }
-  }
-
-  override fun onBackStackChanged() {
-    updateBottomNav()
-  }
-
-  private fun updateBottomNav() {
-    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-    currentChild = currentFragment as? ChildFragment
-    val selectedItemId: Int? = FRAGMENT_MAP[currentFragment?.javaClass?.name]
-    if (selectedItemId != null && selectedItemId != bottom_navigation.selectedItemId) {
-      bottom_navigation.selectedItemId = selectedItemId
+    if (!eaten && !maybeAskToRate()) {
+      super.onBackPressed()
     }
   }
 
@@ -151,27 +123,36 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   override fun onNavigationItemSelected(item: MenuItem): Boolean {
     val itemId = item.itemId
-    val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-    if (FRAGMENT_MAP[currentFragment?.javaClass?.name] != itemId) {
-      if (currentChild == null || FRAGMENT_MAP[currentChild?.javaClass?.name] != itemId) {
-        val fragment: Fragment = when (itemId) {
-          id.action_portfolio -> HomeFragment()
-          id.action_widgets -> WidgetsFragment()
-          id.action_search -> SearchFragment()
-          id.action_settings -> SettingsFragment()
-          else -> {
-            return false
-          }
+    var fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_MAP[itemId])
+    if (fragment == null) {
+      fragment = when (itemId) {
+        R.id.action_portfolio -> HomeFragment()
+        R.id.action_widgets -> WidgetsFragment()
+        R.id.action_search -> SearchFragment()
+        R.id.action_settings -> SettingsFragment()
+        else -> {
+          throw IllegalStateException("Unknown bottom nav itemId: $itemId - ${item.title}")
         }
-
-        supportFragmentManager.beginTransaction().replace(id.fragment_container, fragment)
-            .addToBackStack(fragment.javaClass.name).commit()
-        currentChild = fragment as ChildFragment
-        analytics.trackClickEvent(ClickEvent("BottomNavClick")
-            .addProperty("NavItem", item.title.toString()))
       }
+      supportFragmentManager.beginTransaction()
+          .add(R.id.fragment_container, fragment, fragment::class.java.name)
+          .hide(fragment)
+          .show(currentChild as Fragment)
+          .commitNowAllowingStateLoss()
     }
-    return true
+    if (fragment.isHidden) {
+      supportFragmentManager.beginTransaction()
+          .hide(currentChild as Fragment)
+          .show(fragment)
+          .commit()
+      currentChild = fragment as ChildFragment
+      analytics.trackClickEvent(
+          ClickEvent("BottomNavClick")
+              .addProperty("NavItem", item.title.toString())
+      )
+      return true
+    }
+    return false
   }
 
   // SettingsFragment.Parent
