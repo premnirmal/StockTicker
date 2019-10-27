@@ -29,6 +29,7 @@ class AppPreferences {
 
   init {
     Injector.appComponent.inject(this)
+    INSTANCE = this
   }
 
   fun getLastSavedVersionCode(): Int = sharedPreferences.getInt(APP_VERSION_CODE, -1)
@@ -132,6 +133,9 @@ class AppPreferences {
   }
 
   companion object {
+
+    // TODO remove, this is a hack
+    lateinit var INSTANCE: AppPreferences
 
     fun List<String>.toCommaSeparatedString(): String {
       val builder = StringBuilder()

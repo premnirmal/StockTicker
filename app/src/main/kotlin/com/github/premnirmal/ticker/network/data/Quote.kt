@@ -50,12 +50,6 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
   var position: Position? = null
 
-  @Inject internal lateinit var appPreferences: AppPreferences
-
-  init {
-    Injector.appComponent.inject(this)
-  }
-
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
   fun changeString(): String = selectedFormat.format(change)
@@ -140,7 +134,7 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
   }
 
   private val selectedFormat: Format
-    get() = if (appPreferences.roundToTwoDecimalPlaces()) {
+    get() = if (AppPreferences.INSTANCE.roundToTwoDecimalPlaces()) {
       AppPreferences.DECIMAL_FORMAT_2DP
     } else {
       AppPreferences.DECIMAL_FORMAT

@@ -87,10 +87,6 @@ interface AppComponent {
 
   fun inject(generalProperties: GeneralProperties)
 
-  // Data
-
-  fun inject(quote: Quote)
-
   // Network
 
   fun inject(stocksApi: StocksApi)
