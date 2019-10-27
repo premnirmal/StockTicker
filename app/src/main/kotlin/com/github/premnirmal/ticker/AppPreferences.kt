@@ -74,16 +74,12 @@ class AppPreferences {
 
   fun setUpdateDays(selected: Set<String>) {
     sharedPreferences.edit()
-        .putStringSet(AppPreferences.UPDATE_DAYS, selected)
+        .putStringSet(UPDATE_DAYS, selected)
         .apply()
   }
 
   fun updateDays(): Set<DayOfWeek> {
-    val defaultSet = setOf("1", "2", "3", "4", "5")
-    var selectedDays = sharedPreferences.getStringSet(UPDATE_DAYS, defaultSet)!!
-    if (selectedDays.isEmpty()) {
-      selectedDays = defaultSet
-    }
+    val selectedDays = updateDaysRaw()
     return selectedDays.map { DayOfWeek.of(it.toInt()) }
         .toSet()
   }
