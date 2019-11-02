@@ -12,7 +12,6 @@ import android.widget.PopupMenu
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.base.ParentFragmentDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
@@ -25,7 +24,6 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCal
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
 import javax.inject.Inject
@@ -78,7 +76,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
 
   override val simpleName: String = "PortfolioFragment"
   private lateinit var holder: InjectionHolder
-  private val parent: Parent by ParentFragmentDelegate(this)
+  private val parent: Parent
+    get() = parentFragment as Parent
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
@@ -87,9 +86,9 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   private var itemTouchHelper: ItemTouchHelper? = null
 
   override fun onOpenQuote(
-    view: View,
-    quote: Quote,
-    position: Int
+      view: View,
+      quote: Quote,
+      position: Int
   ) {
     analytics.trackClickEvent(ClickEvent("InstrumentClick")
         .addProperty("Instrument", quote.symbol))
@@ -99,9 +98,9 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   }
 
   override fun onClickQuoteOptions(
-    view: View,
-    quote: Quote,
-    position: Int
+      view: View,
+      quote: Quote,
+      position: Int
   ) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
@@ -154,25 +153,25 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onStart() {
     super.onStart()
     update()
-    bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
-        AndroidSchedulers.mainThread()
-    )
-        .subscribe {
-          update()
-        }
+//    bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
+//        AndroidSchedulers.mainThread()
+//    )
+//        .subscribe {
+//          update()
+//        }
   }
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
   override fun onViewCreated(
-    view: View,
-    savedInstanceState: Bundle?
+      view: View,
+      savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(

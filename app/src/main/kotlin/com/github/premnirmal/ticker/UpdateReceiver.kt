@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.concurrency.ApplicationScope
+import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.SimpleSubscriber
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -20,7 +22,12 @@ class UpdateReceiver : BroadcastReceiver() {
     intent: Intent
   ) {
     Injector.appComponent.inject(this)
-    stocksProvider.fetch()
-        .subscribe(SimpleSubscriber())
+    ApplicationScope.launch {
+      try {
+        stocksProvider.fetch()
+      } catch (ex: FetchException) {
+        // ignored
+      }
+    }
   }
 }

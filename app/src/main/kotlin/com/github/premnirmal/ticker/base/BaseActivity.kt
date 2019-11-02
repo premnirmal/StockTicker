@@ -11,16 +11,9 @@ import androidx.appcompat.widget.Toolbar
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.RxBus
-import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
-import com.trello.rxlifecycle3.android.ActivityEvent
-import com.trello.rxlifecycle3.android.RxLifecycleAndroid
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 /**
@@ -28,19 +21,9 @@ import javax.inject.Inject
  */
 abstract class BaseActivity : AppCompatActivity() {
 
-  private val lifecycleSubject = BehaviorSubject.create<ActivityEvent>()
-
   abstract val simpleName: String
   @Inject internal lateinit var bus: RxBus
   @Inject internal lateinit var analytics: Analytics
-
-  private fun lifecycle(): Observable<ActivityEvent> = lifecycleSubject
-
-  /**
-   * Using this to automatically unsubscribe from observables on lifecycle events
-   */
-  protected fun <T> bind(observable: Observable<T>): Observable<T> =
-    observable.compose(RxLifecycleAndroid.bindActivity(lifecycle()))
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
@@ -51,37 +34,7 @@ abstract class BaseActivity : AppCompatActivity() {
     persistentState: PersistableBundle?
   ) {
     super.onCreate(savedInstanceState, persistentState)
-    lifecycleSubject.onNext(ActivityEvent.CREATE)
     analytics.trackScreenView(simpleName)
-  }
-
-  override fun onStart() {
-    super.onStart()
-    lifecycleSubject.onNext(ActivityEvent.START)
-  }
-
-  override fun onStop() {
-    super.onStop()
-    lifecycleSubject.onNext(ActivityEvent.STOP)
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    lifecycleSubject.onNext(ActivityEvent.DESTROY)
-  }
-
-  override fun onResume() {
-    super.onResume()
-    lifecycleSubject.onNext(ActivityEvent.RESUME)
-    bind(bus.forEventType(ErrorEvent::class.java)).observeOn(AndroidSchedulers.mainThread())
-        .subscribe { event ->
-          showDialog(event.message)
-        }
-  }
-
-  override fun onPause() {
-    super.onPause()
-    lifecycleSubject.onNext(ActivityEvent.PAUSE)
   }
 
   override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {

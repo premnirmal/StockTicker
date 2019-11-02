@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.minutesInMs
+import com.github.premnirmal.ticker.concurrency.ApplicationScope
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.StocksApi
@@ -17,7 +18,6 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.DayOfWeek
@@ -74,7 +74,13 @@ class StocksProvider : IStocksProvider {
     lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     if (lastFetched == 0L) {
-      GlobalScope.launch { fetch() }
+      ApplicationScope.launch {
+        try {
+          fetch()
+        } catch (ex: FetchException) {
+          // ignored
+        }
+      }
     } else {
       fetchLocal()
     }
@@ -225,7 +231,13 @@ class StocksProvider : IStocksProvider {
         quote.symbol = ticker
         quoteList[ticker] = quote
         save()
-        GlobalScope.launch { fetch() }
+        ApplicationScope.launch {
+          try {
+            fetch()
+          } catch (ex: FetchException) {
+            // ignored
+          }
+        }
       }
     }
     return tickerList
@@ -277,7 +289,13 @@ class StocksProvider : IStocksProvider {
       filterNot.forEach { tickerList.add(it) }
       save()
       if (filterNot.isNotEmpty()) {
-        GlobalScope.launch { fetch() }
+        ApplicationScope.launch {
+          try {
+            fetch()
+          } catch (ex: FetchException) {
+            // ignored
+          }
+        }
       }
     }
     return tickerList
@@ -324,7 +342,13 @@ class StocksProvider : IStocksProvider {
       }
       save()
       widgetDataProvider.updateWidgets(tickerList)
-      GlobalScope.launch { fetch() }
+      ApplicationScope.launch {
+        try {
+          fetch()
+        } catch (ex: FetchException) {
+          // ignored
+        }
+      }
     }
   }
 

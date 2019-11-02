@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
@@ -15,8 +16,6 @@ import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.SimpleSubscriber
-import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
@@ -30,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_graph.one_year
 import kotlinx.android.synthetic.main.activity_graph.progress
 import kotlinx.android.synthetic.main.activity_graph.three_month
 import kotlinx.android.synthetic.main.activity_graph.tickerName
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -120,19 +120,16 @@ class GraphActivity : BaseGraphActivity() {
     if (isNetworkOnline()) {
       graph_holder.visibility = View.GONE
       progress.visibility = View.VISIBLE
-      val observable = historyProvider.getHistoricalDataByRange(ticker, range)
-      bind(observable).subscribe(object : SimpleSubscriber<List<DataPoint>>() {
-        override fun onError(e: Throwable) {
-          Timber.w(e)
+      lifecycleScope.launch {
+        try {
+          dataPoints = historyProvider.getHistoricalDataByRange(ticker, range)
+          loadGraph(graphView)
+        } catch (ex: Exception) {
+          Timber.w(ex)
           showDialog(getString(R.string.error_loading_graph),
               DialogInterface.OnClickListener { _, _ -> finish() })
         }
-
-        override fun onNext(result: List<DataPoint>) {
-          dataPoints = result
-          loadGraph(graphView)
-        }
-      })
+      }
     } else {
       showDialog(getString(R.string.no_network_message),
           DialogInterface.OnClickListener { _, _ -> finish() })

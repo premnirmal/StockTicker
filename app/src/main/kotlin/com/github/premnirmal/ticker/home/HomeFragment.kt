@@ -6,23 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.base.ParentActivityDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.isNetworkOnline
-import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.SimpleSubscriber
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.calligraphy3.TypefaceUtils
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.fragment_home.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.fragment_home.fab_settings
 import kotlinx.android.synthetic.main.fragment_home.subtitle
@@ -30,6 +27,7 @@ import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
 import kotlinx.android.synthetic.main.fragment_home.view_pager
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
@@ -50,7 +48,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   @Inject internal lateinit var bus: RxBus
   override val simpleName: String = "HomeFragment"
 
-  private val parent: Parent by ParentActivityDelegate(this)
+  private val parent: Parent
+    get() = activity as Parent
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
@@ -89,9 +88,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onResume() {
     super.onResume()
     update()
-    bind(bus.forEventType(RefreshEvent::class.java))
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe { update() }
+//    bind(bus.forEventType(RefreshEvent::class.java))
+//        .observeOn(AndroidSchedulers.mainThread())
+//        .subscribe { update() }
   }
 
   private fun updateHeader() {
@@ -112,18 +111,16 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
-          bind(stocksProvider.fetch()).subscribe(object : SimpleSubscriber<List<Quote>>() {
-            override fun onError(e: Throwable) {
-              attemptingFetch = false
-              swipe_container?.isRefreshing = false
+          lifecycleScope.launch {
+            try {
+              stocksProvider.fetch()
+              update()
+            } catch (ex: FetchException) {
               InAppMessage.showMessage(activity, getString(R.string.refresh_failed))
             }
-
-            override fun onNext(result: List<Quote>) {
-              attemptingFetch = false
-              swipe_container?.isRefreshing = false
-            }
-          })
+            attemptingFetch = false
+            swipe_container?.isRefreshing = false
+          }
         } else {
           attemptingFetch = false
           InAppMessage.showMessage(activity, getString(R.string.refresh_failed))

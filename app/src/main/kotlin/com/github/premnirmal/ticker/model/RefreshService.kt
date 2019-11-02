@@ -6,8 +6,8 @@ import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
-import com.github.premnirmal.ticker.network.SimpleSubscriber
-import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.concurrency.ApplicationScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -22,22 +22,17 @@ class RefreshService : JobService() {
   }
 
   override fun onStartJob(params: JobParameters): Boolean {
-    Timber.i("onStartJob " + params.jobId)
+    Timber.d("onStartJob ${params.jobId}")
     if (isNetworkOnline()) {
-      stocksProvider.fetch()
-          .subscribe(object : SimpleSubscriber<List<Quote>>() {
-            override fun onError(e: Throwable) {
-              // StocksProvider will handle rescheduling the job
-              val needsReschedule = false
-              jobFinished(params, needsReschedule)
-            }
-
-            override fun onComplete() {
-              // doesn't need reschedule
-              val needsReschedule = false
-              jobFinished(params, needsReschedule)
-            }
-          })
+      ApplicationScope.launch {
+        try {
+          stocksProvider.fetch()
+        } catch (ex: FetchException) {
+          Timber.w(ex)
+        }
+        val needsReschedule = false
+        jobFinished(params, needsReschedule)
+      }
       // additional work is being performed
       return true
     } else {
@@ -47,7 +42,7 @@ class RefreshService : JobService() {
   }
 
   override fun onStopJob(params: JobParameters): Boolean {
-    Timber.i("onStopJob " + params.jobId)
+    Timber.d("onStopJob ${params.jobId}")
     // doesn't need reschedule
     return false
   }

@@ -1,8 +1,10 @@
 package com.github.premnirmal.ticker.components
 
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.channels.filter
+import kotlinx.coroutines.channels.map
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -11,16 +13,20 @@ import io.reactivex.subjects.PublishSubject
  */
 class RxBus {
 
-  private val _bus = PublishSubject.create<Any>()
+  @ExperimentalCoroutinesApi val bus: BroadcastChannel<Any> = BroadcastChannel(1)
 
-  fun post(o: Any): Boolean {
-    _bus.onNext(o)
-    return _bus.hasObservers()
+  fun post(o: Any) {
+//    ApplicationScope.launch {
+//      bus.send(o)
+//    }
+//    flow {  }
   }
 
-  /**
-   * Subscribe to a specific event type
-   */
-  fun <T> forEventType(eventType: Class<T>): Observable<T> =
-    _bus.ofType(eventType).observeOn(AndroidSchedulers.mainThread())
+  fun <T> forEventType(clazz: Class<T>) {
+
+  }
+
+  inline fun <reified T> asChannel(): ReceiveChannel<T> {
+    return bus.openSubscription().filter{ it is T }.map { it as T }
+  }
 }

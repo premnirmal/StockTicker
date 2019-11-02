@@ -10,7 +10,6 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.annotation.ArrayRes
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.base.ParentActivityDelegate
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.showDialog
@@ -50,7 +49,8 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  private val parent: Parent by ParentActivityDelegate(this)
+  private val parent: Parent
+    get() = activity as Parent
   internal var widgetId = 0
   override val simpleName: String = "WidgetSettingsFragment"
 
@@ -61,16 +61,16 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   }
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ): View? {
     return inflater.inflate(R.layout.fragment_widget_settings, container, false)
   }
 
   override fun onViewCreated(
-    view: View,
-    savedInstanceState: Bundle?
+      view: View,
+      savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
@@ -164,8 +164,8 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   }
 
   private fun showDialogPreference(
-    @ArrayRes itemRes: Int,
-    listener: DialogInterface.OnClickListener
+      @ArrayRes itemRes: Int,
+      listener: DialogInterface.OnClickListener
   ) {
     AlertDialog.Builder(activity!!)
         .setItems(itemRes, listener)

@@ -5,9 +5,8 @@ import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.HistoricalDataApi
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.tickerwidget.R
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
 import java.lang.ref.WeakReference
@@ -25,58 +24,46 @@ class HistoryProvider : IHistoryProvider {
     Injector.appComponent.inject(this)
   }
 
-  override fun getHistoricalDataShort(symbol: String): Observable<List<DataPoint>> {
-    return historicalDataApi.getHistoricalData(apiKey = apiKey, symbol = symbol)
-        .map {
-          val points = ArrayList<DataPoint>()
-          it.timeSeries.forEach { entry ->
-            val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
-                .toEpochDay()
-            points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
-          }
-          points.sort()
-          points as List<DataPoint>
-        }
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
+  override suspend fun getHistoricalDataShort(symbol: String): List<DataPoint> {
+    return withContext(Dispatchers.IO) {
+      val historicalData = historicalDataApi.getHistoricalData(apiKey = apiKey, symbol = symbol)
+      val points = ArrayList<DataPoint>()
+      historicalData.timeSeries.forEach { entry ->
+        val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
+            .toEpochDay()
+        points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
+      }
+      points
+    }
   }
 
-  override fun getHistoricalDataByRange(
-    symbol: String,
-    range: Range
-  ): Observable<List<DataPoint>> {
-    val observable: Observable<List<DataPoint>>
+  override suspend fun getHistoricalDataByRange(
+      symbol: String,
+      range: Range
+  ): List<DataPoint> = withContext(Dispatchers.IO) {
     if (symbol == cachedData?.get()?.first) {
-      observable = Observable.fromCallable {
-        val filtered = cachedData!!.get()!!.second.filter {
-          it.getDate()
-              .isAfter(range.end)
-        }
-            .toMutableList()
-        filtered.sort()
-        filtered
+      cachedData!!.get()!!.second.filter {
+        it.getDate()
+            .isAfter(range.end)
       }
+          .toMutableList()
+          .sorted()
     } else {
       cachedData = null
-      observable = historicalDataApi.getHistoricalDataFull(apiKey = apiKey, symbol = symbol)
-          .map {
-            val points = ArrayList<DataPoint>()
-            it.timeSeries.forEach { entry ->
-              val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
-                  .toEpochDay()
-              points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
-            }
-            cachedData = WeakReference(Pair(symbol, points))
-            val filtered = points.filter {
-              it.getDate()
-                  .isAfter(range.end)
-            }
-                .toMutableList()
-            filtered.sort()
-            filtered
-          }
+      val historicalData = historicalDataApi.getHistoricalDataFull(apiKey = apiKey, symbol = symbol)
+      val points = ArrayList<DataPoint>()
+      historicalData.timeSeries.forEach { entry ->
+        val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
+            .toEpochDay()
+        points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
+      }
+      cachedData = WeakReference(Pair(symbol, points))
+      points.filter {
+        it.getDate()
+            .isAfter(range.end)
+      }
+          .toMutableList()
+          .sorted()
     }
-    return observable.subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
   }
 }
