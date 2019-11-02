@@ -4,10 +4,12 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteNet
+import com.github.premnirmal.ticker.network.data.Suggestions
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.google.gson.Gson
 import io.reactivex.Observable
 import io.reactivex.functions.Function
+import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,6 +23,7 @@ class StocksApi {
   @Inject internal lateinit var gson: Gson
   @Inject internal lateinit var robindahood: Robindahood
   @Inject internal lateinit var yahooFinance: YahooFinance
+  @Inject internal lateinit var suggestionApi: SuggestionApi
   @Inject internal lateinit var clock: AppClock
   var lastFetched: Long = 0
 
@@ -28,12 +31,24 @@ class StocksApi {
     Injector.appComponent.inject(this)
   }
 
+  fun getSuggestions(query: String): Observable<Suggestions> {
+    return Observable.fromCallable {
+      runBlocking {
+        suggestionApi.getSuggestions(query)
+      }
+    }
+  }
+
   /**
    * Prefer robindahood, fallback to yahoo finance.
    */
   fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
-    val query = tickerList.joinToString(",")
-    return robindahood.getStocks(query)
+    return Observable.fromCallable {
+      runBlocking {
+        val query = tickerList.joinToString(",")
+        robindahood.getStocks(query)
+      }
+    }
         .doOnNext {
           lastFetched = clock.currentTimeMillis()
         }
@@ -51,8 +66,12 @@ class StocksApi {
   }
 
   private fun getStocksYahoo(tickerList: List<String>): Observable<List<Quote>> {
-    val query = tickerList.joinToString(",")
-    return yahooFinance.getStocks(query)
+    return Observable.fromCallable {
+      runBlocking {
+        val query = tickerList.joinToString(",")
+        yahooFinance.getStocks(query)
+      }
+    }
         .doOnNext {
           lastFetched = clock.currentTimeMillis()
         }

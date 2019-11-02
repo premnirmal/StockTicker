@@ -20,7 +20,6 @@ import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
@@ -81,22 +80,16 @@ class NetworkModule {
     return GsonConverterFactory.create(gson)
   }
 
-  @Provides @Singleton internal fun provideRxJavaFactory(): RxJava2CallAdapterFactory {
-    return RxJava2CallAdapterFactory.create()
-  }
-
   @Provides @Singleton internal fun provideSuggestionsApi(
     context: Context, @Named(
         "client"
     ) okHttpClient: OkHttpClient,
     gson: Gson,
-    converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory
+    converterFactory: GsonConverterFactory
   ): SuggestionApi {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.suggestions_endpoint))
-        .addCallAdapterFactory(rxJavaFactory)
         .addConverterFactory(object : Converter.Factory() {
           override fun responseBodyConverter(
             type: Type?,
@@ -136,13 +129,11 @@ class NetworkModule {
         "robindahoodClient"
     ) okHttpClient: OkHttpClient,
     gson: Gson,
-    converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory
+    converterFactory: GsonConverterFactory
   ): Robindahood {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.robindahood_endpoint))
-        .addCallAdapterFactory(rxJavaFactory)
         .addConverterFactory(converterFactory)
         .build()
     val robindahood = retrofit.create(Robindahood::class.java)
@@ -153,13 +144,11 @@ class NetworkModule {
     context: Context,
     @Named("client") okHttpClient: OkHttpClient,
     gson: Gson,
-    converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory
+    converterFactory: GsonConverterFactory
   ): YahooFinance {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.yahoo_endpoint))
-        .addCallAdapterFactory(rxJavaFactory)
         .addConverterFactory(converterFactory)
         .build()
     val yahooFinance = retrofit.create(YahooFinance::class.java)
@@ -171,14 +160,12 @@ class NetworkModule {
         "robindahoodClient"
     ) okHttpClient: OkHttpClient,
     gson: Gson,
-    converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory
+    converterFactory: GsonConverterFactory
   ): NewsApi {
     val retrofit =
       Retrofit.Builder()
           .client(okHttpClient)
           .baseUrl(context.getString(R.string.robindahood_endpoint))
-          .addCallAdapterFactory(rxJavaFactory)
           .addConverterFactory(converterFactory)
           .build()
     val newsApi = retrofit.create(NewsApi::class.java)
@@ -190,13 +177,11 @@ class NetworkModule {
         "client"
     ) okHttpClient: OkHttpClient,
     gson: Gson,
-    converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory
+    converterFactory: GsonConverterFactory
   ): HistoricalDataApi {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
         .baseUrl(context.getString(R.string.alpha_vantage_endpoint))
-        .addCallAdapterFactory(rxJavaFactory)
         .addConverterFactory(converterFactory)
         .build()
     val api = retrofit.create(HistoricalDataApi::class.java)

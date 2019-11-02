@@ -23,7 +23,7 @@ import com.github.premnirmal.ticker.hideKeyboard
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.SimpleSubscriber
-import com.github.premnirmal.ticker.network.SuggestionApi
+import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
@@ -52,7 +52,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  @Inject internal lateinit var suggestionApi: SuggestionApi
+  @Inject internal lateinit var stocksApi: StocksApi
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var stocksProvider: IStocksProvider
   private var disposable: Disposable? = null
@@ -152,7 +152,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       disposable?.dispose()
 
       if (activity!!.isNetworkOnline()) {
-        val observable = suggestionApi.getSuggestions(query)
+        val observable = stocksApi.getSuggestions(query)
         disposable =
           bind(observable).map { (resultSet) -> resultSet?.result!! }
               .subscribeOn(Schedulers.io())

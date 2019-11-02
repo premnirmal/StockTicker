@@ -11,7 +11,6 @@ import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.minutesInMs
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.network.RobindahoodException
 import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
@@ -21,7 +20,6 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.exceptions.CompositeException
 import io.reactivex.schedulers.Schedulers
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
@@ -130,8 +128,8 @@ class StocksProvider : IStocksProvider {
     get() = alarmScheduler.msToNextAlarm(lastFetched)
 
   private fun scheduleUpdateWithMs(
-    msToNextAlarm: Long,
-    refresh: Boolean = false
+      msToNextAlarm: Long,
+      refresh: Boolean = false
   ) {
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     nextFetch = updateTime.toInstant()
@@ -203,29 +201,10 @@ class StocksProvider : IStocksProvider {
             }
           }
           .doOnError { t ->
-            var errorPosted = false
+            Timber.w(t)
             appPreferences.setRefreshing(false)
-            if (t is CompositeException) {
-              for (exception in t.exceptions) {
-                if (exception is RobindahoodException) {
-                  exception.message?.let {
-                    if (!bus.post(ErrorEvent(it))) {
-                      mainThreadHandler.post {
-                        InAppMessage.showToast(context, it)
-                      }
-                      errorPosted = true
-                    }
-                  }
-                  break
-                }
-              }
-            } else {
-              Timber.e(t)
-            }
-            if (!errorPosted) {
-              mainThreadHandler.post {
-                InAppMessage.showToast(context, R.string.refresh_failed)
-              }
+            mainThreadHandler.post {
+              InAppMessage.showToast(context, R.string.refresh_failed)
             }
             retryWithBackoff()
           }
@@ -266,9 +245,9 @@ class StocksProvider : IStocksProvider {
   override fun getPosition(ticker: String): Position? = positionList[ticker]
 
   override fun addPosition(
-    ticker: String,
-    shares: Float,
-    price: Float
+      ticker: String,
+      shares: Float,
+      price: Float
   ): Holding {
     synchronized(quoteList) {
       val quote = getStock(ticker)
@@ -289,8 +268,8 @@ class StocksProvider : IStocksProvider {
   }
 
   override fun removePosition(
-    ticker: String,
-    holding: Holding
+      ticker: String,
+      holding: Holding
   ) {
     synchronized(positionList) {
       val position = getPosition(ticker)
