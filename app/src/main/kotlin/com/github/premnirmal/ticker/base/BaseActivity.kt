@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,6 +29,7 @@ abstract class BaseActivity : AppCompatActivity() {
   abstract val simpleName: String
   @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var analytics: Analytics
+  private lateinit var receiveChannel: ReceiveChannel<ErrorEvent>
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
@@ -43,12 +45,17 @@ abstract class BaseActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
-    val channel = bus.asChannel<ErrorEvent>()
+    receiveChannel = bus.asChannel<ErrorEvent>()
     lifecycleScope.launch {
-      for (event in channel) {
+      for (event in receiveChannel) {
         showDialog(event.message)
       }
     }
+  }
+
+  override fun onPause() {
+    super.onPause()
+    receiveChannel.cancel(null)
   }
 
   override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
