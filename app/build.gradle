@@ -176,9 +176,6 @@ ext {
   JUNIT_VERSION = "4.12"
   RETROFIT_VERSION = "2.6.2"
   OKHTTP_VERSION = "3.5.0"
-  RXANDROID_VERSION = "2.1.1"
-  RXJAVA_VERSION = "2.2.9"
-  RXLIFECYCLE_VERSION = "3.0.0"
   ROBOLECTRIC_VERSION = "4.3"
   COROUTINES_VERSION = "1.3.2"
 }
@@ -205,18 +202,10 @@ dependencies {
   implementation "com.squareup.okhttp3:logging-interceptor:$OKHTTP_VERSION"
   implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
   implementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
-  implementation "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
-
-  implementation "io.reactivex.rxjava2:rxandroid:$RXANDROID_VERSION"
-  implementation "io.reactivex.rxjava2:rxjava:$RXJAVA_VERSION"
 
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$COROUTINES_VERSION"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-alpha01"
-
-  implementation "com.trello.rxlifecycle3:rxlifecycle:$RXLIFECYCLE_VERSION"
-  implementation "com.trello.rxlifecycle3:rxlifecycle-android:$RXLIFECYCLE_VERSION"
-  implementation "com.trello.rxlifecycle3:rxlifecycle-kotlin:$RXLIFECYCLE_VERSION"
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc01"
 
   implementation "com.jakewharton.threetenabp:threetenabp:1.2.1"
 

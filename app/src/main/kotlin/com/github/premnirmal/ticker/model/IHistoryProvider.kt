@@ -1,18 +1,17 @@
 package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.network.data.DataPoint
-import io.reactivex.Observable
 import org.threeten.bp.LocalDate
 import java.io.Serializable
 
 interface IHistoryProvider {
 
-  fun getHistoricalDataShort(symbol: String): Observable<List<DataPoint>>
+  suspend fun getHistoricalDataShort(symbol: String): List<DataPoint>
 
-  fun getHistoricalDataByRange(
+  suspend fun getHistoricalDataByRange(
     symbol: String,
     range: Range
-  ): Observable<List<DataPoint>>
+  ): List<DataPoint>
 
   sealed class Range(val end: LocalDate) : Serializable {
     class DateRange(end: LocalDate) : Range(end)

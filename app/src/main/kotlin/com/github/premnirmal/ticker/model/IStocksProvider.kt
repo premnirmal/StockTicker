@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.model
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import io.reactivex.Observable
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -16,7 +15,7 @@ interface IStocksProvider {
 
   fun nextFetchMs(): Long
 
-  fun fetch(): Observable<List<Quote>>
+  suspend fun fetch(): List<Quote>
 
   fun schedule()
 

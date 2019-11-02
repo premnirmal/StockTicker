@@ -2,14 +2,12 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.data.IQuoteNet
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.network.data.QuoteNet
-import com.github.premnirmal.ticker.network.data.Suggestions
-import com.github.premnirmal.ticker.network.data.YahooQuoteNet
+import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.google.gson.Gson
-import io.reactivex.Observable
-import io.reactivex.functions.Function
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,82 +29,52 @@ class StocksApi {
     Injector.appComponent.inject(this)
   }
 
-  fun getSuggestions(query: String): Observable<Suggestions> {
-    return Observable.fromCallable {
-      runBlocking {
-        suggestionApi.getSuggestions(query)
-      }
+  suspend fun getSuggestions(query: String) = withContext(Dispatchers.IO) {
+    val suggestions = suggestionApi.getSuggestions(query)
+        .resultSet?.result
+    val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
+    if (suggestionList.isEmpty()) {
+      suggestionList.add(0, Suggestion(query))
     }
+    suggestionList
   }
 
   /**
    * Prefer robindahood, fallback to yahoo finance.
    */
-  fun getStocks(tickerList: List<String>): Observable<List<Quote>> {
-    return Observable.fromCallable {
-      runBlocking {
-        val query = tickerList.joinToString(",")
-        robindahood.getStocks(query)
-      }
+  suspend fun getStocks(tickerList: List<String>) = withContext(Dispatchers.IO) {
+    val query = tickerList.joinToString(",")
+    val quoteNets: List<IQuoteNet> = try {
+      val stocks = robindahood.getStocks(query)
+      lastFetched = clock.currentTimeMillis()
+      stocks
+    } catch (ex: HttpException) {
+      getStocksYahoo(tickerList)
     }
-        .doOnNext {
-          lastFetched = clock.currentTimeMillis()
-        }
-        .map { quoteNets -> toMap(quoteNets) }
-        // Try to keep original order of tickerList.
-        .map { quotesMap ->
-          toOrderedList(tickerList, quotesMap)
-        }
-        .onErrorResumeNext(Function { e ->
-          if (e is HttpException) {
-            return@Function getStocksYahoo(tickerList)
-          }
-          throw e
-        })
+    quoteNets.toQuoteMap()
+        .toOrderedQuoteList(tickerList)
   }
 
-  private fun getStocksYahoo(tickerList: List<String>): Observable<List<Quote>> {
-    return Observable.fromCallable {
-      runBlocking {
-        val query = tickerList.joinToString(",")
-        yahooFinance.getStocks(query)
-      }
-    }
-        .doOnNext {
-          lastFetched = clock.currentTimeMillis()
-        }
-        .map { quotesResponse ->
-          val quoteNets = quotesResponse.quoteResponse!!.result
-          toMapYahoo(quoteNets)
-        }
-        .map { quotesMap ->
-          toOrderedList(tickerList, quotesMap)
-        }
+  private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
+    val query = tickerList.joinToString(",")
+    val quoteNets = yahooFinance.getStocks(query).quoteResponse!!.result
+    lastFetched = clock.currentTimeMillis()
+    quoteNets
   }
 
-  private fun toMap(quoteNets: List<QuoteNet>): MutableMap<String, Quote> {
+  private fun List<IQuoteNet>.toQuoteMap(): MutableMap<String, Quote> {
     val quotesMap = HashMap<String, Quote>()
-    for (quoteNet in quoteNets) {
+    for (quoteNet in this) {
       val quote = Quote.fromQuoteNet(quoteNet)
       quotesMap[quote.symbol] = quote
     }
     return quotesMap
   }
 
-  private fun toMapYahoo(quoteNets: List<YahooQuoteNet>): MutableMap<String, Quote> {
-    val quotesMap = HashMap<String, Quote>()
-    for (quoteNet in quoteNets) {
-      val quote = Quote.fromQuoteNet(quoteNet)
-      quotesMap[quote.symbol] = quote
-    }
-    return quotesMap
-  }
-
-  private fun toOrderedList(tickerList: List<String>,
-                            quotesMap: MutableMap<String, Quote>): List<Quote> {
+  private fun MutableMap<String, Quote>.toOrderedQuoteList(tickerList: List<String>): List<Quote> {
     val quotes = ArrayList<Quote>()
-    tickerList.filter { quotesMap.containsKey(it) }
-        .mapTo(quotes) { quotesMap[it]!! }
+    tickerList.filter { this.containsKey(it) }
+        .mapTo(quotes) { this[it]!! }
     return quotes
   }
 }

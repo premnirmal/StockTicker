@@ -1,9 +1,7 @@
 package com.github.premnirmal.ticker.network.data
 
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.Injector
 import java.text.Format
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 3/30/17.
@@ -11,18 +9,7 @@ import javax.inject.Inject
 data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   companion object {
-    fun fromQuoteNet(quoteNet: QuoteNet): Quote {
-      val quote = Quote(quoteNet.symbol ?: "")
-      quote.name = quoteNet.name ?: ""
-      quote.lastTradePrice = quoteNet.lastTradePrice
-      quote.changeInPercent = quoteNet.changePercent
-      quote.change = quoteNet.change
-      quote.stockExchange = quoteNet.exchange ?: ""
-      quote.currency = quoteNet.currency ?: "US"
-      quote.description = quoteNet.description ?: ""
-      return quote
-    }
-    fun fromQuoteNet(quoteNet: YahooQuoteNet): Quote {
+    fun fromQuoteNet(quoteNet: IQuoteNet): Quote {
       val quote = Quote(quoteNet.symbol ?: "")
       quote.name = quoteNet.name ?: ""
       quote.lastTradePrice = quoteNet.lastTradePrice
