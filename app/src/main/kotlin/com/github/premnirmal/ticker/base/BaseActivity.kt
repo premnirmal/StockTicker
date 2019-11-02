@@ -8,12 +8,16 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.AsyncBus
+import com.github.premnirmal.ticker.components.InAppMessage
+import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -35,6 +39,16 @@ abstract class BaseActivity : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState, persistentState)
     analytics.trackScreenView(simpleName)
+  }
+
+  override fun onResume() {
+    super.onResume()
+    val channel = bus.asChannel<ErrorEvent>()
+    lifecycleScope.launch {
+      for (event in channel) {
+        showDialog(event.message)
+      }
+    }
   }
 
   override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {

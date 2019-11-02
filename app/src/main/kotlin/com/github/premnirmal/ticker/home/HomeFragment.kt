@@ -9,9 +9,9 @@ import android.view.ViewGroup.MarginLayoutParams
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.FetchException
@@ -88,9 +88,13 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onResume() {
     super.onResume()
     update()
-//    bind(bus.forEventType(RefreshEvent::class.java))
-//        .observeOn(AndroidSchedulers.mainThread())
-//        .subscribe { update() }
+    // TODO is this needed?
+//    val channel = bus.asChannel<RefreshEvent>()
+//    lifecycleScope.launch {
+//      for (event in channel) {
+//        update()
+//      }
+//    }
   }
 
   private fun updateHeader() {
