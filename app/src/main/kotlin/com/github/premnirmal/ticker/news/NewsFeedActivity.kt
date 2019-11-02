@@ -121,16 +121,15 @@ class NewsFeedActivity : BaseGraphActivity() {
       lifecycleScope.launch {
         try {
           dataPoints = historyProvider.getHistoricalDataShort(quote.symbol)
+          loadGraph(graphView)
         } catch (ex: Exception) {
           progress.visibility = View.GONE
           graphView.setNoDataText(getString(R.string.graph_fetch_failed))
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
         }
-        loadGraph(graphView)
       }
     } else {
       progress.visibility = View.GONE
-      graphView.setNoDataText(getString(R.string.graph_fetch_failed))
       InAppMessage.showMessage(this, getString(R.string.no_network_message))
     }
   }

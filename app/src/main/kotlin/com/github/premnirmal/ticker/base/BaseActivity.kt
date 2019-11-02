@@ -32,7 +32,7 @@ abstract class BaseActivity : AppCompatActivity() {
   private lateinit var receiveChannel: ReceiveChannel<ErrorEvent>
 
   override fun attachBaseContext(newBase: Context) {
-    super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase));
+    super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
   }
 
   override fun onCreate(

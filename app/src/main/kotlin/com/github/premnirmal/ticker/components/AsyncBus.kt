@@ -18,7 +18,8 @@ class AsyncBus {
   @ExperimentalCoroutinesApi
   val bus: BroadcastChannel<Any> = BroadcastChannel(1)
 
-  @ExperimentalCoroutinesApi fun post(o: Any) {
+  @ExperimentalCoroutinesApi
+  fun post(o: Any) {
     ApplicationScope.launch {
       bus.send(o)
     }
