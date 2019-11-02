@@ -9,12 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.NewsFeedActivity
@@ -26,6 +27,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -67,7 +69,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
 
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-    @Inject internal lateinit var bus: RxBus
+    @Inject internal lateinit var bus: AsyncBus
 
     init {
       Injector.appComponent.inject(this)
@@ -153,12 +155,12 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onStart() {
     super.onStart()
     update()
-//    bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
-//        AndroidSchedulers.mainThread()
-//    )
-//        .subscribe {
-//          update()
-//        }
+    val channel = holder.bus.asChannel<RefreshEvent>()
+    lifecycleScope.launch {
+      for (even in channel) {
+        update()
+      }
+    }
   }
 
   override fun onCreateView(

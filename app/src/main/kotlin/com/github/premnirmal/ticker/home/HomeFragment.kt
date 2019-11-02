@@ -11,7 +11,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.FetchException
@@ -45,7 +45,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var appPreferences: AppPreferences
-  @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var bus: AsyncBus
   override val simpleName: String = "HomeFragment"
 
   private val parent: Parent

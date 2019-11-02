@@ -9,7 +9,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.model.StocksStorage
 import dagger.Module
 import dagger.Provides
@@ -25,7 +25,7 @@ class MockAppModule(private val app: StocksApp) {
 
   @Provides @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class)
 
-  @Provides @Singleton internal fun provideEventBus(): RxBus = RxBus()
+  @Provides @Singleton internal fun provideEventBus(): AsyncBus = AsyncBus()
 
   @Provides @Singleton internal fun provideMainThreadHandler(): Handler =
     Handler(Looper.getMainLooper())

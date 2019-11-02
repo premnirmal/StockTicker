@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.mock
 
 import android.content.Context
-import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -28,7 +28,7 @@ import javax.inject.Singleton
 @Module
 class MockNetworkModule {
 
-  @Provides @Singleton internal fun provideHttpClient(context: Context, bus: RxBus): OkHttpClient =
+  @Provides @Singleton internal fun provideHttpClient(context: Context, bus: AsyncBus): OkHttpClient =
     Mocker.provide(OkHttpClient::class)
 
   @Provides @Singleton internal fun provideStocksApi(): StocksApi = Mocker.provide(StocksApi::class)

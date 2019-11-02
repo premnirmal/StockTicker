@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
@@ -22,7 +22,7 @@ import javax.inject.Inject
 abstract class BaseActivity : AppCompatActivity() {
 
   abstract val simpleName: String
-  @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var analytics: Analytics
 
   override fun attachBaseContext(newBase: Context) {

@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider
@@ -53,7 +53,7 @@ class NetworkModule {
 
   @Provides @Singleton @Named("robindahoodClient") internal fun provideHttpClientForRobindahood(
     context: Context,
-    bus: RxBus
+    bus: AsyncBus
   ): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level =

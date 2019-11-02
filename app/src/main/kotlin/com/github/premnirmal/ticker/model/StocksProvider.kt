@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.minutesInMs
 import com.github.premnirmal.ticker.concurrency.ApplicationScope
 import com.github.premnirmal.ticker.events.ErrorEvent
@@ -48,7 +48,7 @@ class StocksProvider : IStocksProvider {
   @Inject internal lateinit var context: Context
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
-  @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var alarmScheduler: AlarmScheduler
   @Inject internal lateinit var clock: AppClock
