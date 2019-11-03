@@ -19,7 +19,8 @@ abstract class BaseGraphActivity : BaseActivity() {
   protected var dataPoints: List<DataPoint>? = null
   protected lateinit var quote: Quote
 
-  protected fun setupGraphView(graphView: LineChart) {
+  protected fun setupGraphView() {
+    val graphView: LineChart = findViewById(R.id.graphView)
     graphView.isDoubleTapToZoomEnabled = false
     graphView.axisLeft.setDrawGridLines(false)
     graphView.axisLeft.setDrawAxisLine(false)
@@ -42,7 +43,8 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.marker = TextMarkerView(this)
   }
 
-  protected fun loadGraph(graphView: LineChart) {
+  protected fun loadGraph() {
+    val graphView: LineChart = findViewById(R.id.graphView)
     if (dataPoints == null || dataPoints!!.isEmpty()) {
       onNoGraphData(graphView)
       graphView.setNoDataText(getString(R.string.no_data))

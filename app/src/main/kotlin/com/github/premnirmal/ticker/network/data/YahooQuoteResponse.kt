@@ -11,13 +11,13 @@ class QuoteResponse {
 }
 
 data class YahooQuoteNet(
-  @SerializedName("symbol") var symbol: String? = ""
-) {
-  @SerializedName("shortName") var name: String? = ""
-  @SerializedName("regularMarketPrice") var lastTradePrice: Float = 0.toFloat()
-  @SerializedName("regularMarketChangePercent") var changePercent: Float = 0.toFloat()
-  @SerializedName("regularMarketChange") var change: Float = 0.toFloat()
-  @SerializedName("exchange") var exchange: String? = ""
-  @SerializedName("currency") var currency: String? = ""
-  @SerializedName("description") var description: String? = ""
+  @SerializedName("symbol") override var symbol: String? = ""
+): IQuoteNet {
+  @SerializedName("shortName") override var name: String? = ""
+  @SerializedName("regularMarketPrice") override var lastTradePrice: Float = 0.toFloat()
+  @SerializedName("regularMarketChangePercent") override var changePercent: Float = 0.toFloat()
+  @SerializedName("regularMarketChange") override var change: Float = 0.toFloat()
+  @SerializedName("exchange") override var exchange: String? = ""
+  @SerializedName("currency") override var currency: String? = ""
+  @SerializedName("description") override var description: String? = ""
 }

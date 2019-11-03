@@ -5,11 +5,12 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
-import io.reactivex.Maybe
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SplashActivity : BaseActivity() {
   override val simpleName: String = "SplashActivity"
@@ -23,10 +24,10 @@ class SplashActivity : BaseActivity() {
       decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
     setContentView(R.layout.activity_splash)
-    Maybe.empty<Any>()
-        .delay(300, TimeUnit.MILLISECONDS)
-        .doOnComplete { launch() }
-        .subscribe()
+    lifecycleScope.launch {
+      delay(300)
+      launch()
+    }
   }
 
   private fun launch() {

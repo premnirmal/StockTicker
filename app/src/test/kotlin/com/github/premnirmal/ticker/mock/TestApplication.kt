@@ -8,10 +8,6 @@ import com.github.premnirmal.ticker.components.AppComponent
  */
 class TestApplication : StocksApp() {
 
-  override fun onCreate() {
-    super.onCreate()
-  }
-
   override fun createAppComponent(): AppComponent {
     val component: MockAppComponent =
       DaggerMockAppComponent.builder().mockAppModule(MockAppModule(this)).build()

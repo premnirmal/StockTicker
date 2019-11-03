@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.BrowserFallback
 import com.github.premnirmal.ticker.analytics.ClickEvent
@@ -21,8 +22,6 @@ import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.SimpleSubscriber
-import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
@@ -44,8 +43,8 @@ import kotlinx.android.synthetic.main.activity_news_feed.progress
 import kotlinx.android.synthetic.main.activity_news_feed.tickerName
 import kotlinx.android.synthetic.main.activity_news_feed.toolbar
 import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
+import kotlinx.coroutines.launch
 import saschpe.android.customtabs.CustomTabsHelper
-import timber.log.Timber
 import javax.inject.Inject
 
 class NewsFeedActivity : BaseGraphActivity() {
@@ -73,7 +72,7 @@ class NewsFeedActivity : BaseGraphActivity() {
       graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
       graph_container.requestLayout()
     }
-    setupGraphView(graphView)
+    setupGraphView()
     val q: Quote?
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
       ticker = intent.getStringExtra(TICKER)
@@ -118,22 +117,20 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   private fun fetchData() {
     if (isNetworkOnline()) {
-      bind(historyProvider.getHistoricalDataShort(quote.symbol)).subscribe(object :
-          SimpleSubscriber<List<DataPoint>>() {
-        override fun onNext(result: List<DataPoint>) {
-          dataPoints = result
-          loadGraph(graphView)
-        }
-
-        override fun onError(e: Throwable) {
+      lifecycleScope.launch {
+        val result = historyProvider.getHistoricalDataShort(quote.symbol)
+        if (result.wasSuccessful) {
+          dataPoints = result.data
+          loadGraph()
+        } else {
           progress.visibility = View.GONE
           graphView.setNoDataText(getString(R.string.graph_fetch_failed))
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
         }
-      })
+      }
     } else {
       progress.visibility = View.GONE
-      graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+      graphView.setNoDataText(getString(R.string.no_network_message))
       InAppMessage.showMessage(this, getString(R.string.no_network_message))
     }
   }
@@ -199,7 +196,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     if (dataPoints == null) {
       fetchData()
     } else {
-      loadGraph(graphView)
+      loadGraph()
     }
   }
 
@@ -233,24 +230,22 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   private fun fetchNews() {
     if (isNetworkOnline()) {
-      bind(newsProvider.getNews(quote.newsQuery())).subscribe(object :
-          SimpleSubscriber<List<NewsArticle>>() {
-        override fun onNext(result: List<NewsArticle>) {
+      lifecycleScope.launch {
+        val result = newsProvider.getNews(quote.newsQuery())
+        if (result.wasSuccessful) {
+          val articles = result.data
           analytics.trackGeneralEvent(GeneralEvent("FetchNews")
               .addProperty("Instrument", ticker)
               .addProperty("Success", "True"))
-          setUpArticles(result)
-        }
-
-        override fun onError(e: Throwable) {
-          Timber.e(e)
+          setUpArticles(articles)
+        } else {
           news_container.visibility = View.GONE
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
           analytics.trackGeneralEvent(GeneralEvent("FetchNews")
               .addProperty("Instrument", ticker)
               .addProperty("Success", "False"))
         }
-      })
+      }
     } else {
       news_container.visibility = View.GONE
       InAppMessage.showMessage(this, getString(R.string.no_network_message))

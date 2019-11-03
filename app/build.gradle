@@ -172,14 +172,12 @@ kapt {
 
 ext {
   DAGGER_VERSION = "2.20"
-  MOCKITO_VERSION = "2.9.0"
+  MOCKITO_VERSION = "3.1.0"
   JUNIT_VERSION = "4.12"
-  RETROFIT_VERSION = "2.2.0"
+  RETROFIT_VERSION = "2.6.2"
   OKHTTP_VERSION = "3.5.0"
-  RXANDROID_VERSION = "2.1.1"
-  RXJAVA_VERSION = "2.2.9"
-  RXLIFECYCLE_VERSION = "3.0.0"
-  ROBOLECTRIC_VERSION = "4.3"
+  ROBOLECTRIC_VERSION = "4.3.1"
+  COROUTINES_VERSION = "1.3.2"
 }
 
 dependencies {
@@ -204,14 +202,10 @@ dependencies {
   implementation "com.squareup.okhttp3:logging-interceptor:$OKHTTP_VERSION"
   implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
   implementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
-  implementation "com.squareup.retrofit2:adapter-rxjava2:$RETROFIT_VERSION"
 
-  implementation "io.reactivex.rxjava2:rxandroid:$RXANDROID_VERSION"
-  implementation "io.reactivex.rxjava2:rxjava:$RXJAVA_VERSION"
-
-  implementation "com.trello.rxlifecycle3:rxlifecycle:$RXLIFECYCLE_VERSION"
-  implementation "com.trello.rxlifecycle3:rxlifecycle-android:$RXLIFECYCLE_VERSION"
-  implementation "com.trello.rxlifecycle3:rxlifecycle-kotlin:$RXLIFECYCLE_VERSION"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$COROUTINES_VERSION"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc01"
 
   implementation "com.jakewharton.threetenabp:threetenabp:1.2.1"
 
@@ -242,6 +236,8 @@ dependencies {
   testImplementation 'androidx.test:runner:1.2.0'
   testImplementation "org.threeten:threetenbp:1.4.0"
   testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
+  testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+  testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"
 
   kaptTest "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 

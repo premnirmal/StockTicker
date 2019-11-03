@@ -9,13 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.base.ParentFragmentDelegate
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.NewsFeedActivity
@@ -25,9 +25,10 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCal
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -69,7 +70,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
 
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-    @Inject internal lateinit var bus: RxBus
+    @Inject internal lateinit var bus: AsyncBus
 
     init {
       Injector.appComponent.inject(this)
@@ -78,18 +79,20 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
 
   override val simpleName: String = "PortfolioFragment"
   private lateinit var holder: InjectionHolder
-  private val parent: Parent by ParentFragmentDelegate(this)
+  private val parent: Parent
+    get() = parentFragment as Parent
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
     val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
     StocksAdapter(widgetData, this as QuoteClickListener, this as OnStartDragListener)
   }
   private var itemTouchHelper: ItemTouchHelper? = null
+  private lateinit var receiveChannel: ReceiveChannel<RefreshEvent>
 
   override fun onOpenQuote(
-    view: View,
-    quote: Quote,
-    position: Int
+      view: View,
+      quote: Quote,
+      position: Int
   ) {
     analytics.trackClickEvent(ClickEvent("InstrumentClick")
         .addProperty("Instrument", quote.symbol))
@@ -99,9 +102,9 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   }
 
   override fun onClickQuoteOptions(
-    view: View,
-    quote: Quote,
-    position: Int
+      view: View,
+      quote: Quote,
+      position: Int
   ) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
@@ -154,25 +157,30 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onStart() {
     super.onStart()
     update()
-    bind(holder.bus.forEventType(RefreshEvent::class.java)).observeOn(
-        AndroidSchedulers.mainThread()
-    )
-        .subscribe {
-          update()
-        }
+    receiveChannel = holder.bus.asChannel<RefreshEvent>()
+    lifecycleScope.launch {
+      for (even in receiveChannel) {
+        update()
+      }
+    }
+  }
+
+  override fun onStop() {
+    super.onStop()
+    receiveChannel.cancel(null)
   }
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ): View? {
     return inflater.inflate(R.layout.portfolio_fragment, container, false)
   }
 
   override fun onViewCreated(
-    view: View,
-    savedInstanceState: Bundle?
+      view: View,
+      savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(

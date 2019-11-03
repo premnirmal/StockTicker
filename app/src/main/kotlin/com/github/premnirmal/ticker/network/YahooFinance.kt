@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.network.data.YahooResponse
-import io.reactivex.Observable
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -17,5 +16,5 @@ interface YahooFinance {
   @GET(
       "quote?format=json&fields=symbol,regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,shortName,currency"
   )
-  fun getStocks(@Query(value = "symbols") query: String): Observable<YahooResponse>
+  suspend fun getStocks(@Query(value = "symbols") query: String): YahooResponse
 }

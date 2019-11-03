@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.view.inputmethod.InputMethodManager
 import android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -22,19 +23,16 @@ import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.hideKeyboard
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.SimpleSubscriber
-import com.github.premnirmal.ticker.network.SuggestionApi
+import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
 import kotlinx.android.synthetic.main.fragment_search.toolbar
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -52,10 +50,9 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  @Inject internal lateinit var suggestionApi: SuggestionApi
+  @Inject internal lateinit var stocksApi: StocksApi
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var stocksProvider: IStocksProvider
-  private var disposable: Disposable? = null
   private lateinit var adapter: SuggestionsAdapter
   override val simpleName: String = "SearchFragment"
 
@@ -70,16 +67,16 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ): View? {
     return inflater.inflate(R.layout.fragment_search, container, false)
   }
 
   override fun onViewCreated(
-    view: View,
-    savedInstanceState: Bundle?
+      view: View,
+      savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
@@ -113,8 +110,8 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   private fun addTickerToWidget(
-    ticker: String,
-    widgetId: Int
+      ticker: String,
+      widgetId: Int
   ) {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     if (!widgetData.hasTicker(ticker)) {
@@ -127,19 +124,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   override fun beforeTextChanged(
-    s: CharSequence,
-    start: Int,
-    count: Int,
-    after: Int
+      s: CharSequence,
+      start: Int,
+      count: Int,
+      after: Int
   ) {
     // Do nothing.
   }
 
   override fun onTextChanged(
-    s: CharSequence,
-    start: Int,
-    before: Int,
-    count: Int
+      s: CharSequence,
+      start: Int,
+      before: Int,
+      count: Int
   ) {
     // Do nothing.
   }
@@ -149,30 +146,17 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         .trim { it <= ' ' }
         .replace(" ".toRegex(), "")
     if (query.isNotEmpty()) {
-      disposable?.dispose()
 
       if (activity!!.isNetworkOnline()) {
-        val observable = suggestionApi.getSuggestions(query)
-        disposable =
-          bind(observable).map { (resultSet) -> resultSet?.result!! }
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribeWith(object : SimpleSubscriber<List<Suggestion>?>() {
-                override fun onError(e: Throwable) {
-                  Timber.w(e)
-                  InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
-                }
-
-                override fun onNext(result: List<Suggestion>?) {
-                  result?.let {
-                    val suggestionList = ArrayList(it)
-                    if (it.isEmpty()) {
-                      suggestionList.add(0, Suggestion(query))
-                    }
-                    adapter.setData(suggestionList)
-                  }
-                }
-              })
+        lifecycleScope.launch {
+          val suggestions = stocksApi.getSuggestions(query)
+          if (suggestions.wasSuccessful) {
+            adapter.setData(suggestions.data)
+          } else {
+            Timber.w(suggestions.error)
+            InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
+          }
+        }
       } else {
         InAppMessage.showMessage(activity, R.string.no_network_message)
       }

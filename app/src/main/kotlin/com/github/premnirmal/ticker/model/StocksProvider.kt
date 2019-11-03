@@ -2,27 +2,24 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Handler
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.RxBus
 import com.github.premnirmal.ticker.components.minutesInMs
+import com.github.premnirmal.ticker.concurrency.ApplicationScope
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.network.RobindahoodException
-import com.github.premnirmal.ticker.network.SimpleSubscriber
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -51,11 +48,10 @@ class StocksProvider : IStocksProvider {
   @Inject internal lateinit var context: Context
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
-  @Inject internal lateinit var bus: RxBus
+  @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var alarmScheduler: AlarmScheduler
   @Inject internal lateinit var clock: AppClock
-  @Inject internal lateinit var mainThreadHandler: Handler
   @Inject internal lateinit var storage: StocksStorage
 
   private val tickerList: MutableList<String> = ArrayList()
@@ -78,7 +74,9 @@ class StocksProvider : IStocksProvider {
     lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     if (lastFetched == 0L) {
-      fetch().subscribe(SimpleSubscriber())
+      ApplicationScope.launch {
+        fetch()
+      }
     } else {
       fetchLocal()
     }
@@ -130,8 +128,8 @@ class StocksProvider : IStocksProvider {
     get() = alarmScheduler.msToNextAlarm(lastFetched)
 
   private fun scheduleUpdateWithMs(
-    msToNextAlarm: Long,
-    refresh: Boolean = false
+      msToNextAlarm: Long,
+      refresh: Boolean = false
   ) {
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     nextFetch = updateTime.toInstant()
@@ -172,70 +170,44 @@ class StocksProvider : IStocksProvider {
     }
   }
 
-  override fun fetch(): Observable<List<Quote>> {
+  override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-      return Observable.error<List<Quote>>(Exception("No symbols in portfolio"))
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
+      return@withContext FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
     } else {
-      return api.getStocks(tickerList)
-          .doOnSubscribe {
-            appPreferences.setRefreshing(true)
-            widgetDataProvider.broadcastUpdateAllWidgets()
+      val result = try {
+        appPreferences.setRefreshing(true)
+        widgetDataProvider.broadcastUpdateAllWidgets()
+        val fetchedStocks = api.getStocks(tickerList)
+        if (fetchedStocks.isEmpty()) {
+          bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+          FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
+        }
+        synchronized(quoteList) {
+          tickerList.clear()
+          fetchedStocks.mapTo(tickerList) { it.symbol }
+          quoteList.clear()
+          for (stock in fetchedStocks) {
+            stock.position = getPosition(stock.symbol)
+            quoteList[stock.symbol] = stock
           }
-          .doOnNext { stocks ->
-            if (stocks.isEmpty()) {
-              bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-              throw IllegalStateException("No symbols in portfolio")
-            } else {
-              synchronized(quoteList) {
-                tickerList.clear()
-                stocks.mapTo(tickerList) { it.symbol }
-                quoteList.clear()
-                for (stock in stocks) {
-                  stock.position = getPosition(stock.symbol)
-                  quoteList[stock.symbol] = stock
-                }
-                lastFetched = api.lastFetched
-                save()
-              }
-            }
-          }
-          .doOnError { t ->
-            var errorPosted = false
-            appPreferences.setRefreshing(false)
-            if (t is CompositeException) {
-              for (exception in t.exceptions) {
-                if (exception is RobindahoodException) {
-                  exception.message?.let {
-                    if (!bus.post(ErrorEvent(it))) {
-                      mainThreadHandler.post {
-                        InAppMessage.showToast(context, it)
-                      }
-                      errorPosted = true
-                    }
-                  }
-                  break
-                }
-              }
-            } else {
-              Timber.e(t)
-            }
-            if (!errorPosted) {
-              mainThreadHandler.post {
-                InAppMessage.showToast(context, R.string.refresh_failed)
-              }
-            }
-            retryWithBackoff()
-          }
-          .doOnComplete {
-            appPreferences.setRefreshing(false)
-            exponentialBackoff.reset()
-            scheduleUpdate(true)
-          }
-          .subscribeOn(Schedulers.io())
-          .observeOn(AndroidSchedulers.mainThread())
+          lastFetched = api.lastFetched
+          save()
+          FetchResult(_data = fetchedStocks)
+        }
+      } catch (ex: Exception) {
+        Timber.w(ex)
+        appPreferences.setRefreshing(false)
+        withContext(Dispatchers.Main) {
+          InAppMessage.showToast(context, R.string.refresh_failed)
+        }
+        retryWithBackoff()
+        FetchResult<List<Quote>>(_error = FetchException("Failed to fetch", ex))
+      }
+      appPreferences.setRefreshing(false)
+      exponentialBackoff.reset()
+      scheduleUpdate(true)
+      return@withContext result
     }
   }
 
@@ -255,7 +227,9 @@ class StocksProvider : IStocksProvider {
         quote.symbol = ticker
         quoteList[ticker] = quote
         save()
-        fetch().subscribe(SimpleSubscriber())
+        ApplicationScope.launch {
+          fetch()
+        }
       }
     }
     return tickerList
@@ -266,9 +240,9 @@ class StocksProvider : IStocksProvider {
   override fun getPosition(ticker: String): Position? = positionList[ticker]
 
   override fun addPosition(
-    ticker: String,
-    shares: Float,
-    price: Float
+      ticker: String,
+      shares: Float,
+      price: Float
   ): Holding {
     synchronized(quoteList) {
       val quote = getStock(ticker)
@@ -289,8 +263,8 @@ class StocksProvider : IStocksProvider {
   }
 
   override fun removePosition(
-    ticker: String,
-    holding: Holding
+      ticker: String,
+      holding: Holding
   ) {
     synchronized(positionList) {
       val position = getPosition(ticker)
@@ -307,7 +281,9 @@ class StocksProvider : IStocksProvider {
       filterNot.forEach { tickerList.add(it) }
       save()
       if (filterNot.isNotEmpty()) {
-        fetch().subscribe(SimpleSubscriber())
+        ApplicationScope.launch {
+          fetch()
+        }
       }
     }
     return tickerList
@@ -354,7 +330,9 @@ class StocksProvider : IStocksProvider {
       }
       save()
       widgetDataProvider.updateWidgets(tickerList)
-      fetch().subscribe(SimpleSubscriber())
+      ApplicationScope.launch {
+        fetch()
+      }
     }
   }
 

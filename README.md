@@ -13,7 +13,7 @@
 
 ## Motivation
 
-This app is to demonstrate usage of **kotlin** on android using [Dagger2](https://github.com/google/dagger) and [RxJava2](https://github.com/ReactiveX/RxJava).
+This app is to demonstrate usage of **kotlin** on android using [Dagger2](https://github.com/google/dagger) and [Kotlin coroutines](https://github.com/Kotlin/kotlinx.coroutines).
 
 This app also shows how to write android unit tests using [mockito](https://github.com/mockito/mockito) and [robolectric](https://github.com/robolectric/robolectric) using kotlin.
 

@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.mock
 
 import android.content.Context
-import com.github.premnirmal.ticker.components.RxBus
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -18,7 +18,6 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
@@ -28,7 +27,7 @@ import javax.inject.Singleton
 @Module
 class MockNetworkModule {
 
-  @Provides @Singleton internal fun provideHttpClient(context: Context, bus: RxBus): OkHttpClient =
+  @Provides @Singleton internal fun provideHttpClient(context: Context, bus: AsyncBus): OkHttpClient =
     Mocker.provide(OkHttpClient::class)
 
   @Provides @Singleton internal fun provideStocksApi(): StocksApi = Mocker.provide(StocksApi::class)
@@ -39,21 +38,14 @@ class MockNetworkModule {
     return GsonConverterFactory.create(gson)
   }
 
-  @Provides @Singleton internal fun provideRxJavaFactory(): RxJava2CallAdapterFactory {
-    return RxJava2CallAdapterFactory.create()
-  }
-
   @Provides @Singleton internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
-    gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): Robindahood = Mocker.provide(Robindahood::class)
+    gson: Gson, converterFactory: GsonConverterFactory): Robindahood = Mocker.provide(Robindahood::class)
 
   @Provides @Singleton internal fun provideYahooFinance(context: Context, okHttpClient: OkHttpClient,
-    gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): YahooFinance = Mocker.provide(YahooFinance::class)
+    gson: Gson, converterFactory: GsonConverterFactory): YahooFinance = Mocker.provide(YahooFinance::class)
 
   @Provides @Singleton internal fun provideSuggestionsApi(context: Context,
-    okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): SuggestionApi = Mocker.provide(SuggestionApi::class)
+    okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory): SuggestionApi = Mocker.provide(SuggestionApi::class)
 
   @Provides @Singleton internal fun provideStocksProvider(): IStocksProvider =
     Mocker.provide(IStocksProvider::class)
@@ -62,15 +54,13 @@ class MockNetworkModule {
     Mocker.provide(WidgetDataProvider::class)
 
   @Provides @Singleton internal fun provideNewsApi(context: Context, okHttpClient: OkHttpClient,
-    gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): NewsApi = Mocker.provide(NewsApi::class)
+    gson: Gson, converterFactory: GsonConverterFactory): NewsApi = Mocker.provide(NewsApi::class)
 
   @Provides @Singleton internal fun provideNewsProvider(): NewsProvider =
     Mocker.provide(NewsProvider::class)
 
   @Provides @Singleton internal fun provideHistoricalDataApi(context: Context,
-    okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory,
-    rxJavaFactory: RxJava2CallAdapterFactory): HistoricalDataApi =
+    okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory): HistoricalDataApi =
     Mocker.provide(HistoricalDataApi::class)
 
   @Provides @Singleton internal fun provideHistoricalDataProvider(): IHistoryProvider =
