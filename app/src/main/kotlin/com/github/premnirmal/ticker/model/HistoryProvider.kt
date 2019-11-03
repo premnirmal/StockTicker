@@ -35,7 +35,7 @@ class HistoryProvider : IHistoryProvider {
               .toEpochDay()
           points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
         }
-        points
+        points.sorted()
       } catch (ex: Exception) {
         Timber.w(ex)
         return@withContext FetchResult<List<DataPoint>>(_error = FetchException("Error fetching datapoints", ex))
