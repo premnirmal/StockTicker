@@ -66,7 +66,7 @@ class GraphActivity : BaseGraphActivity() {
       val decorView = window.decorView
       decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
-    setupGraphView(graphView)
+    setupGraphView()
     val q: Quote?
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
       ticker = intent.getStringExtra(TICKER)
@@ -103,7 +103,7 @@ class GraphActivity : BaseGraphActivity() {
     if (dataPoints == null) {
       getData()
     } else {
-      loadGraph(graphView)
+      loadGraph()
     }
   }
 
@@ -123,7 +123,7 @@ class GraphActivity : BaseGraphActivity() {
         val result = historyProvider.getHistoricalDataByRange(ticker, range)
         if (result.wasSuccessful) {
           dataPoints = result.data
-          loadGraph(graphView)
+          loadGraph()
         } else {
           showDialog(getString(R.string.error_loading_graph),
               DialogInterface.OnClickListener { _, _ -> finish() })

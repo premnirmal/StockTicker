@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.news
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -35,7 +34,6 @@ import kotlinx.android.synthetic.main.activity_news_feed.edit_positions
 import kotlinx.android.synthetic.main.activity_news_feed.equityValue
 import kotlinx.android.synthetic.main.activity_news_feed.exchange
 import kotlinx.android.synthetic.main.activity_news_feed.graphView
-import kotlinx.android.synthetic.main.activity_news_feed.graph_container
 import kotlinx.android.synthetic.main.activity_news_feed.lastTradePrice
 import kotlinx.android.synthetic.main.activity_news_feed.news_container
 import kotlinx.android.synthetic.main.activity_news_feed.numShares
@@ -68,11 +66,11 @@ class NewsFeedActivity : BaseGraphActivity() {
     toolbar.setNavigationOnClickListener {
       finish()
     }
-    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
-      graph_container.requestLayout()
-    }
-    setupGraphView(graphView)
+//    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+//      graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
+//      graph_container.requestLayout()
+//    }
+    setupGraphView()
     val q: Quote?
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
       ticker = intent.getStringExtra(TICKER)
@@ -121,7 +119,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         val result = historyProvider.getHistoricalDataShort(quote.symbol)
         if (result.wasSuccessful) {
           dataPoints = result.data
-          loadGraph(graphView)
+          loadGraph()
         } else {
           progress.visibility = View.GONE
           graphView.setNoDataText(getString(R.string.graph_fetch_failed))
@@ -195,7 +193,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     if (dataPoints == null) {
       fetchData()
     } else {
-      loadGraph(graphView)
+      loadGraph()
     }
   }
 

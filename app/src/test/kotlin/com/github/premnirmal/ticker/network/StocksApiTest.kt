@@ -3,26 +3,22 @@ package com.github.premnirmal.ticker.network
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.mock.Mocker
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteNet
 import com.github.premnirmal.ticker.network.data.YahooResponse
 import com.google.gson.reflect.TypeToken
-import io.reactivex.Observable
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.observers.TestObserver
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Matchers
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.never
-import org.mockito.Mockito.verify
 import retrofit2.HttpException
 import retrofit2.Response
-import java.net.SocketTimeoutException
 
 class StocksApiTest : BaseUnitTest() {
 
@@ -37,16 +33,16 @@ class StocksApiTest : BaseUnitTest() {
   private val stocksApi = StocksApi()
 
   @Before fun initMocks() {
-    robinhoodFinance = Mocker.provide(Robindahood::class)
-    yahooFinance = Mocker.provide(YahooFinance::class)
-    mockPrefs = Mocker.provide(SharedPreferences::class)
-    val listType = object : TypeToken<List<QuoteNet>>() {}.type
-    val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
-    val yahooStockList = parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
-    val yahooStocks = Observable.just(yahooStockList)
-    val stocks = Observable.just(stockList)
-    `when`(robinhoodFinance.getStocks(Matchers.anyString())).thenReturn(stocks)
-    `when`(yahooFinance.getStocks(Matchers.anyString())).thenReturn(yahooStocks)
+    runBlocking {
+      robinhoodFinance = Mocker.provide(Robindahood::class)
+      yahooFinance = Mocker.provide(YahooFinance::class)
+      mockPrefs = Mocker.provide(SharedPreferences::class)
+      val listType = object : TypeToken<List<QuoteNet>>() {}.type
+      val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
+      val yahooStockList = parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
+      whenever(robinhoodFinance.getStocks(any())).thenReturn(stockList)
+      whenever(yahooFinance.getStocks(any())).thenReturn(yahooStockList)
+    }
   }
 
   @After fun clear() {
@@ -54,56 +50,47 @@ class StocksApiTest : BaseUnitTest() {
   }
 
   @Test fun testGetStocks() {
-    val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestObserver<List<Quote>>()
-    stocksApi.getStocks(testTickerList)
-        .subscribe(subscriber)
-    subscriber.assertNoErrors()
-    verify(robinhoodFinance).getStocks(anyString())
-    val onNextEvents = subscriber.events[0]
-    assertTrue(onNextEvents.size == 1)
-    val stocks = onNextEvents[0] as List<*>
-    assertEquals(testTickerList.size, stocks.size)
+    runBlocking {
+      val testTickerList = TEST_TICKER_LIST
+      val stocks = stocksApi.getStocks(testTickerList)
+      verify(robinhoodFinance).getStocks(any())
+      assertEquals(testTickerList.size, stocks.size)
+    }
   }
 
   @Test fun testFallbackToYahoo() {
-    val error = HttpException(
-        Response.error<Any>(
-            400, ResponseBody.create(
-            MediaType.parse("application/json"),
-            "{}"
-        )
-        )
-    )
-    val result = Observable.error<List<QuoteNet>>(error)
-    `when`(robinhoodFinance.getStocks(Matchers.anyString())).thenReturn(result)
-    val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestObserver<List<Quote>>()
-    stocksApi.getStocks(testTickerList)
-        .subscribe(subscriber)
-    subscriber.assertNoErrors()
-    verify(robinhoodFinance).getStocks(anyString())
-    verify(yahooFinance).getStocks(anyString())
-    val onNextEvents = subscriber.events[0]
-    assertTrue(onNextEvents.size == 1)
-    val stocks = onNextEvents[0] as List<*>
-    assertEquals(testTickerList.size, stocks.size)
+    runBlocking {
+      val error = HttpException(
+          Response.error<Any>(
+              400, ResponseBody.create(
+              MediaType.parse("application/json"),
+              "{}"
+          )
+          )
+      )
+      doThrow(error).whenever(robinhoodFinance).getStocks(any())
+      val testTickerList = TEST_TICKER_LIST
+      val result = stocksApi.getStocks(testTickerList)
+      verify(robinhoodFinance).getStocks(any())
+      verify(yahooFinance).getStocks(any())
+      assertEquals(testTickerList.size, result.size)
+    }
   }
 
-  @Test fun testFailure() {
-    val error = SocketTimeoutException()
-    val result = Observable.error<List<QuoteNet>>(error)
-    `when`(robinhoodFinance.getStocks(Matchers.anyString())).thenReturn(result)
-    val testTickerList = TEST_TICKER_LIST
-    val subscriber = TestObserver<List<Quote>>()
-    stocksApi.getStocks(testTickerList)
-        .subscribe(subscriber)
-    subscriber.assertError { e ->
-      e is CompositeException
+  @Test
+  fun testFailure() {
+    runBlocking {
+      val error = RuntimeException()
+      doThrow(error).whenever(robinhoodFinance).getStocks(any())
+      val testTickerList = TEST_TICKER_LIST
+      try {
+        val stocks = stocksApi.getStocks(testTickerList)
+        fail("This shouldn't happen")
+      } catch (ex: RuntimeException) {
+        // ignore
+      }
+      verify(robinhoodFinance).getStocks(any())
+      verify(yahooFinance, never()).getStocks(any())
     }
-    verify(robinhoodFinance).getStocks(anyString())
-    verify(yahooFinance, never()).getStocks(anyString())
-    val onNextEvents = subscriber.events[0]
-    assertTrue(onNextEvents.isEmpty())
   }
 }

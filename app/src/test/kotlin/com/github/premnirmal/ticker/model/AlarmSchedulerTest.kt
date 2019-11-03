@@ -2,9 +2,9 @@ package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
+import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.`when`
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.DayOfWeek.FRIDAY
 import org.threeten.bp.DayOfWeek.MONDAY
@@ -62,10 +62,10 @@ class AlarmSchedulerTest : BaseUnitTest() {
     val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
     val localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC)
     val clock = appPreferences.clock()
-    `when`(clock.currentTimeMillis()).thenReturn(now)
-    `when`(clock.elapsedRealtime()).thenReturn(now)
-    `when`(clock.todayLocal()).thenReturn(localDateTime)
-    `when`(clock.todayZoned()).thenReturn(zonedDateTime)
+    whenever(clock.currentTimeMillis()).thenReturn(now)
+    whenever(clock.elapsedRealtime()).thenReturn(now)
+    whenever(clock.todayLocal()).thenReturn(localDateTime)
+    whenever(clock.todayZoned()).thenReturn(zonedDateTime)
   }
 
   @Test fun testAlarmTime_pastEndTime_withLastFetched_beforeEndTime() {

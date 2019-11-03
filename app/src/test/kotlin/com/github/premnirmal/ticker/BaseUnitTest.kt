@@ -2,19 +2,18 @@ package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.mock.Mocker
-import com.github.premnirmal.ticker.mock.RxSchedulersOverrideRule
+import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.tools.Parser
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.JsonElement
-import io.reactivex.Observable
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doNothing
+import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.TestCase
+import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
-import org.junit.Rule
 import org.junit.runner.RunWith
-import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.doNothing
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.android.controller.ActivityController
@@ -44,18 +43,17 @@ abstract class BaseUnitTest : TestCase() {
     }
   }
 
-  @get:Rule val schedulerRule = RxSchedulersOverrideRule()
   private val parser = Parser()
 
-  @Before public override fun setUp() {
+  @Before public override fun setUp() = runBlockingTest {
     super.setUp()
     val iStocksProvider = Mocker.provide(IStocksProvider::class)
-    doNothing().`when`(iStocksProvider).schedule()
-    `when`(iStocksProvider.fetch()).thenReturn(Observable.never())
-    `when`(iStocksProvider.getTickers()).thenReturn(emptyList())
-    `when`(iStocksProvider.addStock(ArgumentMatchers.anyString())).thenReturn(emptyList())
-    `when`(iStocksProvider.lastFetched()).thenReturn("--")
-    `when`(iStocksProvider.nextFetch()).thenReturn("--")
+    doNothing().whenever(iStocksProvider).schedule()
+    whenever(iStocksProvider.fetch()).thenReturn(FetchResult(ArrayList()))
+    whenever(iStocksProvider.getTickers()).thenReturn(emptyList())
+    whenever(iStocksProvider.addStock(any())).thenReturn(emptyList())
+    whenever(iStocksProvider.lastFetched()).thenReturn("--")
+    whenever(iStocksProvider.nextFetch()).thenReturn("--")
   }
 
   fun parseJsonFile(fileName: String): JsonElement {
