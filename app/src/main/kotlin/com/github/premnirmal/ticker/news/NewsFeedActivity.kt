@@ -45,7 +45,6 @@ import kotlinx.android.synthetic.main.activity_news_feed.toolbar
 import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
 import kotlinx.coroutines.launch
 import saschpe.android.customtabs.CustomTabsHelper
-import timber.log.Timber
 import javax.inject.Inject
 
 class NewsFeedActivity : BaseGraphActivity() {
@@ -119,10 +118,11 @@ class NewsFeedActivity : BaseGraphActivity() {
   private fun fetchData() {
     if (isNetworkOnline()) {
       lifecycleScope.launch {
-        try {
-          dataPoints = historyProvider.getHistoricalDataShort(quote.symbol)
+        val result = historyProvider.getHistoricalDataShort(quote.symbol)
+        if (result.wasSuccessful) {
+          dataPoints = result.data!!
           loadGraph(graphView)
-        } catch (ex: Exception) {
+        } else {
           progress.visibility = View.GONE
           graphView.setNoDataText(getString(R.string.graph_fetch_failed))
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
@@ -230,14 +230,14 @@ class NewsFeedActivity : BaseGraphActivity() {
   private fun fetchNews() {
     if (isNetworkOnline()) {
       lifecycleScope.launch {
-        try {
-          val result = newsProvider.getNews(quote.newsQuery())
+        val result = newsProvider.getNews(quote.newsQuery())
+        if (result.wasSuccessful) {
+          val articles = result.data!!
           analytics.trackGeneralEvent(GeneralEvent("FetchNews")
               .addProperty("Instrument", ticker)
               .addProperty("Success", "True"))
-          setUpArticles(result)
-        } catch (ex: Exception) {
-          Timber.e(ex)
+          setUpArticles(articles)
+        } else {
           news_container.visibility = View.GONE
           InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
           analytics.trackGeneralEvent(GeneralEvent("FetchNews")

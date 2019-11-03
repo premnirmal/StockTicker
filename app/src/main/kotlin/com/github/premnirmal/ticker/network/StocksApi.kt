@@ -2,6 +2,8 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.model.FetchException
+import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.IQuoteNet
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
@@ -30,13 +32,17 @@ class StocksApi {
   }
 
   suspend fun getSuggestions(query: String) = withContext(Dispatchers.IO) {
-    val suggestions = suggestionApi.getSuggestions(query)
-        .resultSet?.result
+    val suggestions = try {
+      suggestionApi.getSuggestions(query)
+          .resultSet?.result
+    } catch (e: Exception) {
+      return@withContext FetchResult<List<Suggestion>>(error = FetchException("Error fetching", e))
+    }
     val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
     if (suggestionList.isEmpty()) {
       suggestionList.add(0, Suggestion(query))
     }
-    suggestionList
+    return@withContext FetchResult<List<Suggestion>>(data = suggestionList)
   }
 
   /**

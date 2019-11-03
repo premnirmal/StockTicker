@@ -23,21 +23,17 @@ class RefreshService : JobService() {
 
   override fun onStartJob(params: JobParameters): Boolean {
     Timber.d("onStartJob ${params.jobId}")
-    if (isNetworkOnline()) {
+    return if (isNetworkOnline()) {
       ApplicationScope.launch {
-        try {
-          stocksProvider.fetch()
-        } catch (ex: FetchException) {
-          Timber.w(ex)
-        }
+        stocksProvider.fetch()
         val needsReschedule = false
         jobFinished(params, needsReschedule)
       }
       // additional work is being performed
-      return true
+      true
     } else {
       stocksProvider.scheduleSoon()
-      return false
+      false
     }
   }
 

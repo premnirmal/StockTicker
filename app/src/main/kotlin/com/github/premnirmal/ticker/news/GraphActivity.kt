@@ -30,7 +30,6 @@ import kotlinx.android.synthetic.main.activity_graph.progress
 import kotlinx.android.synthetic.main.activity_graph.three_month
 import kotlinx.android.synthetic.main.activity_graph.tickerName
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class GraphActivity : BaseGraphActivity() {
@@ -121,11 +120,11 @@ class GraphActivity : BaseGraphActivity() {
       graph_holder.visibility = View.GONE
       progress.visibility = View.VISIBLE
       lifecycleScope.launch {
-        try {
-          dataPoints = historyProvider.getHistoricalDataByRange(ticker, range)
+        val result = historyProvider.getHistoricalDataByRange(ticker, range)
+        if (result.wasSuccessful) {
+          dataPoints = result.data!!
           loadGraph(graphView)
-        } catch (ex: Exception) {
-          Timber.w(ex)
+        } else {
           showDialog(getString(R.string.error_loading_graph),
               DialogInterface.OnClickListener { _, _ -> finish() })
         }

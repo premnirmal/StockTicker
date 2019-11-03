@@ -15,7 +15,7 @@ interface IStocksProvider {
 
   fun nextFetchMs(): Long
 
-  suspend fun fetch(): List<Quote>
+  suspend fun fetch(): FetchResult<List<Quote>>
 
   fun schedule()
 

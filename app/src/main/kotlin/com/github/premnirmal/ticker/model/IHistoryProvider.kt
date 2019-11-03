@@ -6,12 +6,12 @@ import java.io.Serializable
 
 interface IHistoryProvider {
 
-  suspend fun getHistoricalDataShort(symbol: String): List<DataPoint>
+  suspend fun getHistoricalDataShort(symbol: String): FetchResult<List<DataPoint>>
 
   suspend fun getHistoricalDataByRange(
     symbol: String,
     range: Range
-  ): List<DataPoint>
+  ): FetchResult<List<DataPoint>>
 
   sealed class Range(val end: LocalDate) : Serializable {
     class DateRange(end: LocalDate) : Range(end)

@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.threeten.bp.LocalDate
 import org.threeten.bp.format.DateTimeFormatter
+import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 
@@ -24,46 +25,60 @@ class HistoryProvider : IHistoryProvider {
     Injector.appComponent.inject(this)
   }
 
-  override suspend fun getHistoricalDataShort(symbol: String): List<DataPoint> {
+  override suspend fun getHistoricalDataShort(symbol: String): FetchResult<List<DataPoint>> {
     return withContext(Dispatchers.IO) {
-      val historicalData = historicalDataApi.getHistoricalData(apiKey = apiKey, symbol = symbol)
-      val points = ArrayList<DataPoint>()
-      historicalData.timeSeries.forEach { entry ->
-        val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
-            .toEpochDay()
-        points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
+      val dataPoints = try {
+        val historicalData = historicalDataApi.getHistoricalData(apiKey = apiKey, symbol = symbol)
+        val points = ArrayList<DataPoint>()
+        historicalData.timeSeries.forEach { entry ->
+          val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
+              .toEpochDay()
+          points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
+        }
+        points
+      } catch (ex: Exception) {
+        Timber.w(ex)
+        return@withContext FetchResult<List<DataPoint>>(error = FetchException("Error fetching datapoints", ex))
       }
-      points
+      return@withContext FetchResult<List<DataPoint>>(data = dataPoints)
     }
   }
 
   override suspend fun getHistoricalDataByRange(
       symbol: String,
       range: Range
-  ): List<DataPoint> = withContext(Dispatchers.IO) {
-    if (symbol == cachedData?.get()?.first) {
-      cachedData!!.get()!!.second.filter {
-        it.getDate()
-            .isAfter(range.end)
+  ): FetchResult<List<DataPoint>> = withContext(Dispatchers.IO) {
+    val dataPoints = try {
+      if (symbol == cachedData?.get()?.first) {
+        cachedData!!.get()!!.second.filter {
+          it.getDate()
+              .isAfter(range.end)
+        }
+            .toMutableList()
+            .sorted()
+      } else {
+        cachedData = null
+        val historicalData =
+          historicalDataApi.getHistoricalDataFull(apiKey = apiKey, symbol = symbol)
+        val points = ArrayList<DataPoint>()
+        historicalData.timeSeries.forEach { entry ->
+          val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
+              .toEpochDay()
+          points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
+        }
+        cachedData = WeakReference(Pair(symbol, points))
+        points.filter {
+          it.getDate()
+              .isAfter(range.end)
+        }
+            .toMutableList()
+            .sorted()
       }
-          .toMutableList()
-          .sorted()
-    } else {
-      cachedData = null
-      val historicalData = historicalDataApi.getHistoricalDataFull(apiKey = apiKey, symbol = symbol)
-      val points = ArrayList<DataPoint>()
-      historicalData.timeSeries.forEach { entry ->
-        val epochDate = LocalDate.parse(entry.key, DateTimeFormatter.ISO_LOCAL_DATE)
-            .toEpochDay()
-        points.add(DataPoint(epochDate.toFloat(), entry.value.close.toFloat()))
-      }
-      cachedData = WeakReference(Pair(symbol, points))
-      points.filter {
-        it.getDate()
-            .isAfter(range.end)
-      }
-          .toMutableList()
-          .sorted()
+    } catch (ex: Exception) {
+      Timber.w(ex)
+      return@withContext FetchResult<List<DataPoint>>(
+          error = FetchException("Error fetching datapoints", ex))
     }
+    return@withContext FetchResult(data = dataPoints)
   }
 }

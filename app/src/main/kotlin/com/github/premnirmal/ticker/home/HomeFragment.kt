@@ -14,7 +14,6 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
 import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -116,12 +115,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
           lifecycleScope.launch {
-            try {
-              stocksProvider.fetch()
-              update()
-            } catch (ex: FetchException) {
-              InAppMessage.showMessage(activity, getString(R.string.refresh_failed))
-            }
+            stocksProvider.fetch()
+            update()
             attemptingFetch = false
             swipe_container?.isRefreshing = false
           }

@@ -75,11 +75,7 @@ class StocksProvider : IStocksProvider {
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     if (lastFetched == 0L) {
       ApplicationScope.launch {
-        try {
-          fetch()
-        } catch (ex: FetchException) {
-          // ignored
-        }
+        fetch()
       }
     } else {
       fetchLocal()
@@ -174,18 +170,18 @@ class StocksProvider : IStocksProvider {
     }
   }
 
-  override suspend fun fetch(): List<Quote> = withContext(Dispatchers.IO) {
+  override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-      throw FetchException("No symbols in portfolio")
+      return@withContext FetchResult<List<Quote>>(error = FetchException("No symbols in portfolio"))
     } else {
-      val stocks = try {
+      val result = try {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fetchedStocks = api.getStocks(tickerList)
         if (fetchedStocks.isEmpty()) {
           bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-          throw FetchException("No symbols in portfolio")
+          FetchResult<List<Quote>>(error = FetchException("No symbols in portfolio"))
         }
         synchronized(quoteList) {
           tickerList.clear()
@@ -197,7 +193,7 @@ class StocksProvider : IStocksProvider {
           }
           lastFetched = api.lastFetched
           save()
-          fetchedStocks
+          FetchResult(data = fetchedStocks)
         }
       } catch (ex: Exception) {
         Timber.w(ex)
@@ -206,12 +202,12 @@ class StocksProvider : IStocksProvider {
           InAppMessage.showToast(context, R.string.refresh_failed)
         }
         retryWithBackoff()
-        throw FetchException("Failed to fetch", ex)
+        FetchResult<List<Quote>>(error = FetchException("Failed to fetch", ex))
       }
       appPreferences.setRefreshing(false)
       exponentialBackoff.reset()
       scheduleUpdate(true)
-      stocks
+      return@withContext result
     }
   }
 
@@ -232,11 +228,7 @@ class StocksProvider : IStocksProvider {
         quoteList[ticker] = quote
         save()
         ApplicationScope.launch {
-          try {
-            fetch()
-          } catch (ex: FetchException) {
-            // ignored
-          }
+          fetch()
         }
       }
     }
@@ -290,11 +282,7 @@ class StocksProvider : IStocksProvider {
       save()
       if (filterNot.isNotEmpty()) {
         ApplicationScope.launch {
-          try {
-            fetch()
-          } catch (ex: FetchException) {
-            // ignored
-          }
+          fetch()
         }
       }
     }
@@ -343,11 +331,7 @@ class StocksProvider : IStocksProvider {
       save()
       widgetDataProvider.updateWidgets(tickerList)
       ApplicationScope.launch {
-        try {
-          fetch()
-        } catch (ex: FetchException) {
-          // ignored
-        }
+        fetch()
       }
     }
   }

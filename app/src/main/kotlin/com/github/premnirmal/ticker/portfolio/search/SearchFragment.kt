@@ -67,16 +67,16 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
+      inflater: LayoutInflater,
+      container: ViewGroup?,
+      savedInstanceState: Bundle?
   ): View? {
     return inflater.inflate(R.layout.fragment_search, container, false)
   }
 
   override fun onViewCreated(
-    view: View,
-    savedInstanceState: Bundle?
+      view: View,
+      savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
@@ -110,8 +110,8 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   private fun addTickerToWidget(
-    ticker: String,
-    widgetId: Int
+      ticker: String,
+      widgetId: Int
   ) {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     if (!widgetData.hasTicker(ticker)) {
@@ -124,19 +124,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   override fun beforeTextChanged(
-    s: CharSequence,
-    start: Int,
-    count: Int,
-    after: Int
+      s: CharSequence,
+      start: Int,
+      count: Int,
+      after: Int
   ) {
     // Do nothing.
   }
 
   override fun onTextChanged(
-    s: CharSequence,
-    start: Int,
-    before: Int,
-    count: Int
+      s: CharSequence,
+      start: Int,
+      before: Int,
+      count: Int
   ) {
     // Do nothing.
   }
@@ -149,11 +149,11 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
 
       if (activity!!.isNetworkOnline()) {
         lifecycleScope.launch {
-          try {
-            val suggestions = stocksApi.getSuggestions(query)
-            adapter.setData(suggestions)
-          } catch (ex: Exception) {
-            Timber.w(ex)
+          val suggestions = stocksApi.getSuggestions(query)
+          if (suggestions.wasSuccessful) {
+            adapter.setData(suggestions.data!!)
+          } else {
+            Timber.w(suggestions.error!!)
             InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
           }
         }
