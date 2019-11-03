@@ -21,9 +21,9 @@ class NewsProvider {
   suspend fun getNews(query: String): FetchResult<List<NewsArticle>> = withContext(Dispatchers.IO) {
     try {
       val newsFeed = newsApi.getNewsFeed(query = query)
-      return@withContext FetchResult(data = newsFeed)
+      return@withContext FetchResult(_data = newsFeed)
     } catch (ex: Exception) {
-      return@withContext FetchResult<List<NewsArticle>>(error = FetchException("Error fetching news", ex))
+      return@withContext FetchResult<List<NewsArticle>>(_error = FetchException("Error fetching news", ex))
     }
   }
 }

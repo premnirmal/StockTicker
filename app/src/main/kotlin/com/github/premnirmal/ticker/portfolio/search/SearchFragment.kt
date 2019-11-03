@@ -151,9 +151,9 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         lifecycleScope.launch {
           val suggestions = stocksApi.getSuggestions(query)
           if (suggestions.wasSuccessful) {
-            adapter.setData(suggestions.data!!)
+            adapter.setData(suggestions.data)
           } else {
-            Timber.w(suggestions.error!!)
+            Timber.w(suggestions.error)
             InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
           }
         }

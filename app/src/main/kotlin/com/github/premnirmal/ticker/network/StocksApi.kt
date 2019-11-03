@@ -36,13 +36,13 @@ class StocksApi {
       suggestionApi.getSuggestions(query)
           .resultSet?.result
     } catch (e: Exception) {
-      return@withContext FetchResult<List<Suggestion>>(error = FetchException("Error fetching", e))
+      return@withContext FetchResult<List<Suggestion>>(_error = FetchException("Error fetching", e))
     }
     val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
     if (suggestionList.isEmpty()) {
       suggestionList.add(0, Suggestion(query))
     }
-    return@withContext FetchResult<List<Suggestion>>(data = suggestionList)
+    return@withContext FetchResult<List<Suggestion>>(_data = suggestionList)
   }
 
   /**

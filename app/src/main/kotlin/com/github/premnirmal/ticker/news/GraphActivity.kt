@@ -122,7 +122,7 @@ class GraphActivity : BaseGraphActivity() {
       lifecycleScope.launch {
         val result = historyProvider.getHistoricalDataByRange(ticker, range)
         if (result.wasSuccessful) {
-          dataPoints = result.data!!
+          dataPoints = result.data
           loadGraph(graphView)
         } else {
           showDialog(getString(R.string.error_loading_graph),

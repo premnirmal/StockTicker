@@ -173,7 +173,7 @@ class StocksProvider : IStocksProvider {
   override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerList.isEmpty()) {
       bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-      return@withContext FetchResult<List<Quote>>(error = FetchException("No symbols in portfolio"))
+      return@withContext FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
     } else {
       val result = try {
         appPreferences.setRefreshing(true)
@@ -181,7 +181,7 @@ class StocksProvider : IStocksProvider {
         val fetchedStocks = api.getStocks(tickerList)
         if (fetchedStocks.isEmpty()) {
           bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-          FetchResult<List<Quote>>(error = FetchException("No symbols in portfolio"))
+          FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
         }
         synchronized(quoteList) {
           tickerList.clear()
@@ -193,7 +193,7 @@ class StocksProvider : IStocksProvider {
           }
           lastFetched = api.lastFetched
           save()
-          FetchResult(data = fetchedStocks)
+          FetchResult(_data = fetchedStocks)
         }
       } catch (ex: Exception) {
         Timber.w(ex)
@@ -202,7 +202,7 @@ class StocksProvider : IStocksProvider {
           InAppMessage.showToast(context, R.string.refresh_failed)
         }
         retryWithBackoff()
-        FetchResult<List<Quote>>(error = FetchException("Failed to fetch", ex))
+        FetchResult<List<Quote>>(_error = FetchException("Failed to fetch", ex))
       }
       appPreferences.setRefreshing(false)
       exponentialBackoff.reset()

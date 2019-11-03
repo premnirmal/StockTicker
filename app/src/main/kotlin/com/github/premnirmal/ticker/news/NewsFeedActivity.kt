@@ -120,7 +120,7 @@ class NewsFeedActivity : BaseGraphActivity() {
       lifecycleScope.launch {
         val result = historyProvider.getHistoricalDataShort(quote.symbol)
         if (result.wasSuccessful) {
-          dataPoints = result.data!!
+          dataPoints = result.data
           loadGraph(graphView)
         } else {
           progress.visibility = View.GONE
@@ -232,7 +232,7 @@ class NewsFeedActivity : BaseGraphActivity() {
       lifecycleScope.launch {
         val result = newsProvider.getNews(quote.newsQuery())
         if (result.wasSuccessful) {
-          val articles = result.data!!
+          val articles = result.data
           analytics.trackGeneralEvent(GeneralEvent("FetchNews")
               .addProperty("Instrument", ticker)
               .addProperty("Success", "True"))
