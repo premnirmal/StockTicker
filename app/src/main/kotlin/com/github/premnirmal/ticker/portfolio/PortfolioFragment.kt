@@ -27,7 +27,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
-import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -87,7 +87,6 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     StocksAdapter(widgetData, this as QuoteClickListener, this as OnStartDragListener)
   }
   private var itemTouchHelper: ItemTouchHelper? = null
-  private lateinit var receiveChannel: ReceiveChannel<RefreshEvent>
 
   override fun onOpenQuote(
       view: View,
@@ -135,7 +134,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
                       appWidgetIds[which]
                   )
                   stocksAdapter.remove(quote)
-                  holder.bus.post(RefreshEvent())
+                  holder.bus.send(RefreshEvent())
                   dialog.dismiss()
                 }
               }
@@ -157,17 +156,12 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onStart() {
     super.onStart()
     update()
-    receiveChannel = holder.bus.asChannel<RefreshEvent>()
     lifecycleScope.launch {
-      for (even in receiveChannel) {
+      val flow = holder.bus.receive<RefreshEvent>()
+      flow.collect {
         update()
       }
     }
-  }
-
-  override fun onStop() {
-    super.onStop()
-    receiveChannel.cancel(null)
   }
 
   override fun onCreateView(

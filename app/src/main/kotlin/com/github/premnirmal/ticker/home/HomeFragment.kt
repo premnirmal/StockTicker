@@ -88,7 +88,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     super.onResume()
     update()
     // TODO is this needed?
-//    val channel = bus.asChannel<RefreshEvent>()
+//    val channel = bus.receive<RefreshEvent>()
 //    lifecycleScope.launch {
 //      for (event in channel) {
 //        update()
