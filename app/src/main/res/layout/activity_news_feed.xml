@@ -219,7 +219,7 @@
 
         </LinearLayout>
 
-        <com.github.premnirmal.ticker.ui.StockFieldView
+        <com.github.premnirmal.ticker.portfolio.StockFieldView
             android:id="@+id/average_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -231,7 +231,7 @@
             app:size="@dimen/larger_text"
             />
 
-        <com.github.premnirmal.ticker.ui.StockFieldView
+        <com.github.premnirmal.ticker.portfolio.StockFieldView
             android:id="@+id/total_gain_loss"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
             app:size="@dimen/larger_text"
             />
 
-        <com.github.premnirmal.ticker.ui.StockFieldView
+        <com.github.premnirmal.ticker.portfolio.StockFieldView
             android:id="@+id/day_change"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -5,7 +5,7 @@ import android.text.InputFilter
 import android.text.Spanned
 import android.widget.TextView
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.news.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider

@@ -90,7 +90,7 @@
       android:paddingRight="5dp"
       >
 
-    <com.github.premnirmal.ticker.ui.StockFieldView
+    <com.github.premnirmal.ticker.portfolio.StockFieldView
         android:id="@+id/changePercent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
         sfw:size="@dimen/portfolio_stock_vh_text_size"
         />
 
-    <com.github.premnirmal.ticker.ui.StockFieldView
+    <com.github.premnirmal.ticker.portfolio.StockFieldView
         android:id="@+id/changeValue"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

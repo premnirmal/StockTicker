@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.news.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 

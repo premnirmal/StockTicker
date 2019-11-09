@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -180,7 +181,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     stockList.addItemDecoration(
         SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing))
     )
-    val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
+    val gridLayoutManager = GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager
     stockList.adapter = stocksAdapter
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(stocksAdapter)

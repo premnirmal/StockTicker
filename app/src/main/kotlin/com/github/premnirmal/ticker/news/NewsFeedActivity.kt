@@ -25,7 +25,7 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
-import com.github.premnirmal.ticker.toBitmap
+import com.github.premnirmal.ticker.components.toBitmap
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
 import kotlinx.android.synthetic.main.activity_news_feed.change

@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.ui
+package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.util.AttributeSet

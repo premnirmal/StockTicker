@@ -2,12 +2,6 @@ package com.github.premnirmal.ticker.network
 
 import android.content.Context
 import com.github.premnirmal.ticker.components.AsyncBus
-import com.github.premnirmal.ticker.model.AlarmScheduler
-import com.github.premnirmal.ticker.model.HistoryProvider
-import com.github.premnirmal.ticker.model.IHistoryProvider
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.Gson
@@ -187,17 +181,5 @@ class NetworkModule {
     val api = retrofit.create(HistoricalDataApi::class.java)
     return api
   }
-
-  @Provides @Singleton internal fun provideNewsProvider(): NewsProvider = NewsProvider()
-
-  @Provides @Singleton internal fun provideStocksProvider(): IStocksProvider = StocksProvider()
-
-  @Provides @Singleton internal fun provideHistoricalDataProvider(): IHistoryProvider =
-    HistoryProvider()
-
-  @Provides @Singleton internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()
-
-  @Provides @Singleton internal fun provideWidgetDataFactory(): WidgetDataProvider =
-    WidgetDataProvider()
 
 }

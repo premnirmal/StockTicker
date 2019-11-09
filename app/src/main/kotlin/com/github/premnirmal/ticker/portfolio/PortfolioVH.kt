@@ -2,17 +2,16 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.view.View
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperViewHolder
-import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 
 /**
  * Created by premnirmal on 2/29/16.
  */
-abstract class PortfolioVH(itemView: View) :
-    androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView), ItemTouchHelperViewHolder {
+abstract class PortfolioVH(itemView: View) : ViewHolder(itemView), ItemTouchHelperViewHolder {
 
   protected val positiveColor: Int = itemView.resources.getColor(color.positive_green)
   protected val negativeColor: Int = itemView.resources.getColor(color.negative_red)

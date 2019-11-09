@@ -30,11 +30,11 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BrowserFallback
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.components.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.ticker.toBitmap
+import com.github.premnirmal.ticker.components.showDialog
+import com.github.premnirmal.ticker.components.toBitmap
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R

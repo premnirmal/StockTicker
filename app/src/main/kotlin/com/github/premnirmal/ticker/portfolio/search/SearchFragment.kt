@@ -19,14 +19,14 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
-import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.hideKeyboard
+import com.github.premnirmal.ticker.components.getStatusBarHeight
+import com.github.premnirmal.ticker.components.hideKeyboard
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
-import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.components.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_search.recycler_view

@@ -1,7 +1,9 @@
 package com.github.premnirmal.ticker.portfolio.drag_drop
 
 import android.graphics.Canvas
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 
 /**
  * Created by premnirmal on 2/29/16.
@@ -18,10 +20,10 @@ internal class SimpleItemTouchHelperCallback(private val adapter: ItemTouchHelpe
   override fun isItemViewSwipeEnabled(): Boolean = true
 
   override fun getMovementFlags(
-    recyclerView: androidx.recyclerview.widget.RecyclerView,
-    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder
+      recyclerView: RecyclerView,
+      viewHolder: RecyclerView.ViewHolder
   ): Int {
-    return if (recyclerView.layoutManager is androidx.recyclerview.widget.GridLayoutManager) {
+    return if (recyclerView.layoutManager is GridLayoutManager) {
       val dragFlags: Int =
         ItemTouchHelper.UP or (ItemTouchHelper.DOWN) or (ItemTouchHelper.LEFT) or (ItemTouchHelper.RIGHT)
       val swipeFlags = 0
@@ -34,16 +36,16 @@ internal class SimpleItemTouchHelperCallback(private val adapter: ItemTouchHelpe
   }
 
   override fun onMove(
-    recyclerView: androidx.recyclerview.widget.RecyclerView,
-    source: androidx.recyclerview.widget.RecyclerView.ViewHolder,
-    target: androidx.recyclerview.widget.RecyclerView.ViewHolder
+    recyclerView: RecyclerView,
+    source: RecyclerView.ViewHolder,
+    target: RecyclerView.ViewHolder
   ): Boolean {
     adapter.onItemMove(source.adapterPosition, target.adapterPosition)
     return true
   }
 
   override fun onSwiped(
-    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+    viewHolder: RecyclerView.ViewHolder,
     i: Int
   ) {
 
@@ -51,8 +53,8 @@ internal class SimpleItemTouchHelperCallback(private val adapter: ItemTouchHelpe
 
   override fun onChildDraw(
     c: Canvas,
-    recyclerView: androidx.recyclerview.widget.RecyclerView,
-    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder,
+    recyclerView: RecyclerView,
+    viewHolder: RecyclerView.ViewHolder,
     dX: Float,
     dY: Float,
     actionState: Int,
@@ -68,7 +70,7 @@ internal class SimpleItemTouchHelperCallback(private val adapter: ItemTouchHelpe
   }
 
   override fun onSelectedChanged(
-    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder?,
+    viewHolder: RecyclerView.ViewHolder?,
     actionState: Int
   ) {
     if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
@@ -81,8 +83,8 @@ internal class SimpleItemTouchHelperCallback(private val adapter: ItemTouchHelpe
   }
 
   override fun clearView(
-    recyclerView: androidx.recyclerview.widget.RecyclerView,
-    viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder
+    recyclerView: RecyclerView,
+    viewHolder: RecyclerView.ViewHolder
   ) {
     super.clearView(recyclerView, viewHolder)
     viewHolder.itemView.alpha = ALPHA_FULL

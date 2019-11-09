@@ -1,8 +1,6 @@
 package com.github.premnirmal.ticker.settings
 
 import android.content.Context
-import android.content.Intent
-import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.util.AttributeSet
 import android.view.View
@@ -11,7 +9,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.github.premnirmal.ticker.BrowserFallback
-import com.github.premnirmal.ticker.toBitmap
+import com.github.premnirmal.ticker.components.toBitmap
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import saschpe.android.customtabs.CustomTabsHelper

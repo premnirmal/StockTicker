@@ -12,7 +12,7 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.components.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.tickerwidget.R

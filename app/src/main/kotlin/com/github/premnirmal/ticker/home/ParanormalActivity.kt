@@ -1,22 +1,19 @@
 package com.github.premnirmal.ticker.home
 
-import android.app.Activity
 import android.app.AlertDialog.Builder
-import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.ClickEvent
-import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.news.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
-import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.components.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
@@ -29,7 +26,7 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent {
+                           HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"

@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.ui
+package com.github.premnirmal.ticker.news
 
 import android.graphics.Canvas
 import com.github.mikephil.charting.components.AxisBase

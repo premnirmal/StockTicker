@@ -12,8 +12,7 @@ import androidx.annotation.ArrayRes
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.ticker.ui.SettingsTextView
+import com.github.premnirmal.ticker.components.showDialog
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R

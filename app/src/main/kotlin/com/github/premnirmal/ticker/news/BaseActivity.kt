@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.base
+package com.github.premnirmal.ticker.news
 
 import android.content.Context
 import android.os.Build
@@ -13,8 +13,8 @@ import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.events.ErrorEvent
-import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.components.getStatusBarHeight
+import com.github.premnirmal.ticker.components.showDialog
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import kotlinx.coroutines.flow.collect

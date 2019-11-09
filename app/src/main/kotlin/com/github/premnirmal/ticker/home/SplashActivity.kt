@@ -6,7 +6,7 @@ import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
-import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.news.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.delay

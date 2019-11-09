@@ -4,14 +4,16 @@ import android.graphics.Color
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
+import com.github.mikephil.charting.components.YAxis.AxisDependency.RIGHT
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.ui.DateAxisFormatter
-import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
-import com.github.premnirmal.ticker.ui.TextMarkerView
-import com.github.premnirmal.ticker.ui.ValueAxisFormatter
+import com.github.premnirmal.ticker.news.BaseActivity
+import com.github.premnirmal.ticker.news.DateAxisFormatter
+import com.github.premnirmal.ticker.news.MultilineXAxisRenderer
+import com.github.premnirmal.ticker.news.TextMarkerView
+import com.github.premnirmal.ticker.news.ValueAxisFormatter
 import com.github.premnirmal.tickerwidget.R
 
 abstract class BaseGraphActivity : BaseActivity() {
@@ -32,7 +34,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.setXAxisRenderer(
         MultilineXAxisRenderer(
             graphView.viewPortHandler, graphView.xAxis,
-            graphView.getTransformer(YAxis.AxisDependency.RIGHT)
+            graphView.getTransformer(RIGHT)
         )
     )
     graphView.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
