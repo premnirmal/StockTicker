@@ -140,7 +140,7 @@ class StocksProvider : IStocksProvider {
     appPreferences.setRefreshing(false)
     widgetDataProvider.broadcastUpdateAllWidgets()
     if (refresh) {
-      bus.post(RefreshEvent())
+      bus.send(RefreshEvent())
     }
   }
 
@@ -172,7 +172,7 @@ class StocksProvider : IStocksProvider {
 
   override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerList.isEmpty()) {
-      bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+      bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
       return@withContext FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
     } else {
       val result = try {
@@ -180,7 +180,7 @@ class StocksProvider : IStocksProvider {
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fetchedStocks = api.getStocks(tickerList)
         if (fetchedStocks.isEmpty()) {
-          bus.post(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+          bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
           FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
         }
         synchronized(quoteList) {
