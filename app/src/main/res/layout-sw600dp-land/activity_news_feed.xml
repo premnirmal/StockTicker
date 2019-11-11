@@ -310,7 +310,6 @@
           android:layout_height="wrap_content"
           android:orientation="vertical"
           app:layout_scrollFlags="scroll|exitUntilCollapsed"
-          android:paddingBottom="?actionBarSize"
           >
 
         <TextView

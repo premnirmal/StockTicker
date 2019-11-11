@@ -75,7 +75,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
-    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
+    subtitle.text = subtitleText
     fab_settings.setOnClickListener {
       if (!widgetDataProvider.hasWidget()) {
         val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -87,18 +87,11 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onResume() {
     super.onResume()
     update()
-    // TODO is this needed?
-//    val channel = bus.receive<RefreshEvent>()
-//    lifecycleScope.launch {
-//      for (event in channel) {
-//        update()
-//      }
-//    }
   }
 
   private fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
-    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
+    subtitle.text = subtitleText
     if (!widgetDataProvider.hasWidget()) {
       fab_settings.show()
       fab_settings.setImageResource(R.drawable.ic_add)
@@ -107,9 +100,12 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     }
   }
 
+  private val subtitleText: String
+    get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
+
   private fun fetch() {
     if (!attemptingFetch) {
-      if (activity!!.isNetworkOnline()) {
+      if (requireActivity().isNetworkOnline()) {
         fetchCount++
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
@@ -122,12 +118,12 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
           }
         } else {
           attemptingFetch = false
-          InAppMessage.showMessage(activity, getString(R.string.refresh_failed))
+          InAppMessage.showMessage(activity, R.string.refresh_failed)
           swipe_container?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
-        InAppMessage.showMessage(activity, getString(R.string.no_network_message))
+        InAppMessage.showMessage(activity, R.string.no_network_message)
         swipe_container?.isRefreshing = false
       }
     }

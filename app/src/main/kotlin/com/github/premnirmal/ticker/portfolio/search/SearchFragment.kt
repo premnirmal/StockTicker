@@ -146,8 +146,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         .trim { it <= ' ' }
         .replace(" ".toRegex(), "")
     if (query.isNotEmpty()) {
-
-      if (activity!!.isNetworkOnline()) {
+      if (requireActivity().isNetworkOnline()) {
         lifecycleScope.launch {
           val suggestions = stocksApi.getSuggestions(query)
           if (suggestions.wasSuccessful) {
