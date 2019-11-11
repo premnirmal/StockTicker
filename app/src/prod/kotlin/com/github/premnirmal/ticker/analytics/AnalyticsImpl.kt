@@ -1,50 +1,53 @@
 package com.github.premnirmal.ticker.analytics
 
+import android.app.Activity
 import android.content.Context
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.answers.AnswersEvent
-import com.crashlytics.android.answers.ContentViewEvent
-import com.crashlytics.android.answers.CustomEvent
+import android.os.Bundle
+import com.github.premnirmal.ticker.home.SplashActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Created by premnirmal on 2/26/16.
  */
 class AnalyticsImpl : Analytics {
 
+  private lateinit var firebaseAnalytics: FirebaseAnalytics
   private lateinit var generalProperties: GeneralProperties
 
   override fun initialize(context: Context) {
+    firebaseAnalytics = FirebaseAnalytics.getInstance(context)
     generalProperties = GeneralProperties()
   }
 
-  override fun getGeneralProperties(): GeneralProperties? = GeneralProperties()
-
-  override fun trackScreenView(screenName: String) {
-    Answers.getInstance()
-        .logContentView(ContentViewEvent()
-            .putContentName(screenName)
-            .putCustomAttribute("WidgetCount", generalProperties.widgetCount)
-            .putCustomAttribute("TickerCount", generalProperties.tickerCount))
+  override fun trackScreenView(screenName: String, activity: Activity) {
+    if (activity is SplashActivity) {
+      firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
+    }
+    firebaseAnalytics.setCurrentScreen(activity, screenName, null)
+    val bundle = Bundle().apply {
+      putString(FirebaseAnalytics.Param.ITEM_NAME, screenName)
+      putInt("WidgetCount", generalProperties.widgetCount)
+      putInt("TickerCount", generalProperties.tickerCount)
+    }
+    firebaseAnalytics.logEvent("ScreenView", bundle)
   }
 
   override fun trackClickEvent(event: ClickEvent) {
-    Answers.getInstance()
-        .logCustom(CustomEvent(event.name)
-            .populateWithEvent(event))
+    firebaseAnalytics.logEvent(event.name, fromEvent(event))
   }
 
   override fun trackGeneralEvent(event: GeneralEvent) {
-    Answers.getInstance()
-        .logCustom(CustomEvent(event.name)
-            .populateWithEvent(event))
+    firebaseAnalytics.logEvent(event.name, fromEvent(event))
   }
 
-  private fun <T: AnswersEvent<*>> T.populateWithEvent(event: AnalyticsEvent): T {
-    event.properties.forEach { entry ->
-      putCustomAttribute(entry.key, entry.value)
+  private fun fromEvent(event: AnalyticsEvent): Bundle {
+    return Bundle().apply {
+      putString(FirebaseAnalytics.Param.ITEM_NAME, event.name)
+      event.properties.forEach { entry ->
+        putString(entry.key, entry.value)
+      }
+      putInt("WidgetCount", generalProperties.widgetCount)
+      putInt("TickerCount", generalProperties.tickerCount)
     }
-    putCustomAttribute("WidgetCount", generalProperties.widgetCount)
-    putCustomAttribute("TickerCount", generalProperties.tickerCount)
-    return this
   }
 }
