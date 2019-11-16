@@ -55,6 +55,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
 
+  private val subtitleText: String
+    get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
@@ -92,7 +95,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     lifecycleScope.launch {
       val flow = bus.receive<RefreshEvent>()
       flow.collect {
-        update()
+        updateHeader()
       }
     }
   }
@@ -107,9 +110,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
       fab_settings.hide()
     }
   }
-
-  private val subtitleText: String
-    get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
 
   private fun fetch() {
     if (!attemptingFetch) {
