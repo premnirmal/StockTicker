@@ -1,17 +1,18 @@
 package com.github.premnirmal.ticker.settings
 
-import android.os.AsyncTask
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.ArrayList
 
-internal open class TickersExportTask : AsyncTask<List<String>, Void, String>() {
+internal object TickersExporter {
 
-  override fun doInBackground(vararg tickers: List<String>): String? {
+  suspend fun exportTickers(vararg tickers: List<String>): String? = withContext(Dispatchers.IO) {
     val file = AppPreferences.tickersFile
     val tickerList = ArrayList(tickers[0])
     try {
@@ -25,18 +26,18 @@ internal open class TickersExportTask : AsyncTask<List<String>, Void, String>() 
       }
     } catch (e: IOException) {
       Timber.w(e)
-      return null
+      return@withContext null
     }
 
-    return file.path
+    return@withContext file.path
   }
 }
 
-internal open class PortfolioExportTask : AsyncTask<List<Quote>, Void, String>() {
+internal object PortfolioExporter {
 
   private val gson = Injector.appComponent.gson()
 
-  override fun doInBackground(vararg quoteLists: List<Quote>): String? {
+  suspend fun exportQuotes(vararg quoteLists: List<Quote>): String? = withContext(Dispatchers.IO) {
     val file = AppPreferences.portfolioFile
     val quoteList: List<Quote> = quoteLists[0]
     try {
@@ -49,9 +50,9 @@ internal open class PortfolioExportTask : AsyncTask<List<Quote>, Void, String>()
       fileOutputStream.use { it.write(jsonString.toByteArray()) }
     } catch (e: IOException) {
       Timber.w(e)
-      return null
+      return@withContext null
     }
 
-    return file.path
+    return@withContext file.path
   }
 }

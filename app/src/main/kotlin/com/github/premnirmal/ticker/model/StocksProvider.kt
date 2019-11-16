@@ -347,6 +347,7 @@ class StocksProvider : IStocksProvider {
   }
 
   override fun nextFetch(): String {
+    scheduleUpdate(refresh = false)
     return if (nextFetch > 0) {
       val instant = Instant.ofEpochMilli(nextFetch)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
