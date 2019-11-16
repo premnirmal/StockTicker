@@ -89,6 +89,11 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     }
   }
 
+  override fun onHiddenChanged(hidden: Boolean) {
+    super.onHiddenChanged(hidden)
+    if (!hidden) updateHeader()
+  }
+
   override fun onResume() {
     super.onResume()
     update()
