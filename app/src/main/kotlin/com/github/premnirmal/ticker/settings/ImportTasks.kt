@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.settings
 
 import android.appwidget.AppWidgetManager
-import android.os.AsyncTask
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
@@ -14,18 +13,20 @@ import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
 
-internal abstract class ImportTask: AsyncTask<String, Nothing, Boolean>()
+internal interface ImportTask {
+  suspend fun import(filePath: String): Boolean
+}
 
 internal open class TickersImportTask(private val widgetDataProvider: WidgetDataProvider) :
-    ImportTask() {
+    ImportTask {
 
-  override fun doInBackground(vararg params: String?): Boolean? {
-    if (params.isEmpty() || params[0] == null) {
+  override suspend fun import(filePath: String): Boolean {
+    if (filePath.isEmpty()) {
       return false
     }
     val uri: URI
     try {
-      uri = URI(params[0])
+      uri = URI(filePath)
     } catch (e: URISyntaxException) {
       Timber.w(e)
       return false
@@ -35,7 +36,7 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
       return false
     }
 
-    val tickersFile = File(params[0])
+    val tickersFile = File(filePath)
     var result: Boolean
 
     if (!tickersFile.exists()) {
@@ -70,17 +71,17 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
 }
 
 internal open class PortfolioImportTask(private val stocksProvider: IStocksProvider) :
-    ImportTask() {
+    ImportTask {
 
   private val gson = Injector.appComponent.gson()
 
-  override fun doInBackground(vararg params: String?): Boolean? {
-    if (params.isEmpty() || params[0] == null) {
+  override suspend fun import(filePath: String): Boolean {
+    if (filePath.isEmpty()) {
       return false
     }
     val uri: URI
     try {
-      uri = URI(params[0])
+      uri = URI(filePath)
     } catch (e: URISyntaxException) {
       Timber.w(e)
       return false
@@ -90,7 +91,7 @@ internal open class PortfolioImportTask(private val stocksProvider: IStocksProvi
       return false
     }
 
-    val tickersFile = File(params[0])
+    val tickersFile = File(filePath)
     if (!tickersFile.exists()) {
       return false
     }
@@ -108,4 +109,4 @@ internal open class PortfolioImportTask(private val stocksProvider: IStocksProvi
   }
 }
 
-private inline fun <reified T> genericType() = object: TypeToken<T>() {}.type
+private inline fun <reified T> genericType() = object : TypeToken<T>() {}.type

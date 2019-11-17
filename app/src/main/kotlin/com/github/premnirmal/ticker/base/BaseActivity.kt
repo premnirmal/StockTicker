@@ -39,7 +39,7 @@ abstract class BaseActivity : AppCompatActivity() {
     persistentState: PersistableBundle?
   ) {
     super.onCreate(savedInstanceState, persistentState)
-    analytics.trackScreenView(simpleName)
+    analytics.trackScreenView(simpleName, this)
   }
 
   override fun onResume() {

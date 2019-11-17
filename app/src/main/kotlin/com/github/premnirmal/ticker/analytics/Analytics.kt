@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.analytics
 
+import android.app.Activity
 import android.content.Context
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -8,8 +9,7 @@ import javax.inject.Inject
 
 interface Analytics {
   fun initialize(context: Context) {}
-  fun getGeneralProperties(): GeneralProperties? = null
-  fun trackScreenView(screenName: String) {}
+  fun trackScreenView(screenName: String, activity: Activity) {}
   fun trackClickEvent(event: ClickEvent) {}
   fun trackGeneralEvent(event: GeneralEvent) {}
 }

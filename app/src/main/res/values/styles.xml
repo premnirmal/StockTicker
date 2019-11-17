@@ -11,6 +11,7 @@
     <item name="android:buttonStyle">@style/ButtonStyle</item>
     <item name="android:alertDialogTheme">@style/AlertDialog</item>
     <item name="android:dialogTheme">@style/AlertDialog</item>
+    <item name="android:actionBarStyle">@style/ActionBarStyle</item>
 
     <!-- For AppCompat -->
     <item name="editTextStyle">@style/EditTextStyle</item>
@@ -48,6 +49,10 @@
   <style name="WidgetSettingsTheme" parent="AppTheme"/>
 
   <style name="SearchTheme" parent="AppTheme"/>
+
+  <style name="ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
+    <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
+  </style>
 
   <style name="TextViewStyle" parent="android:Widget.TextView">
     <item name="android:textSize">@dimen/text_size</item>
@@ -92,10 +97,6 @@
   <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
     <item name="android:textColor">@color/white</item>
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-  </style>
-
-  <style name="ActionBarExpandedTitleText" parent="@style/ActionBarTitleText">
-    <item name="android:textSize">32sp</item>
   </style>
 
   <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">

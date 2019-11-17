@@ -348,6 +348,9 @@ class StocksProvider : IStocksProvider {
 
   override fun nextFetch(): String {
     return if (nextFetch > 0) {
+      val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
+      nextFetch = updateTime.toInstant()
+          .toEpochMilli()
       val instant = Instant.ofEpochMilli(nextFetch)
       val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
       time.createTimeString()

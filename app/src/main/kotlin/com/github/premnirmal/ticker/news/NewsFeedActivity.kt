@@ -131,7 +131,6 @@ class NewsFeedActivity : BaseGraphActivity() {
     } else {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.no_network_message))
-      InAppMessage.showMessage(this, getString(R.string.no_network_message))
     }
   }
 
@@ -190,14 +189,7 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   override fun onStart() {
     super.onStart()
-    if (news_container.childCount <= 1) {
-      fetchNews()
-    }
-    if (dataPoints == null) {
-      fetchData()
-    } else {
-      loadGraph()
-    }
+    fetch()
   }
 
   override fun onResume() {
@@ -228,6 +220,20 @@ class NewsFeedActivity : BaseGraphActivity() {
     }
   }
 
+  private fun fetch() {
+    if (!isNetworkOnline()) {
+      InAppMessage.showMessage(this, R.string.no_network_message)
+    }
+    if (news_container.childCount <= 1) {
+      fetchNews()
+    }
+    if (dataPoints == null) {
+      fetchData()
+    } else {
+      loadGraph()
+    }
+  }
+
   private fun fetchNews() {
     if (isNetworkOnline()) {
       lifecycleScope.launch {
@@ -248,7 +254,6 @@ class NewsFeedActivity : BaseGraphActivity() {
       }
     } else {
       news_container.visibility = View.GONE
-      InAppMessage.showMessage(this, getString(R.string.no_network_message))
     }
   }
 

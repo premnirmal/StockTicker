@@ -20,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
 import androidx.preference.MultiSelectListPreference
@@ -41,6 +42,7 @@ import com.github.premnirmal.tickerwidget.R
 import com.nbsp.materialfilepicker.MaterialFilePicker
 import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.fragment_settings.toolbar
+import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
 import saschpe.android.customtabs.CustomTabsHelper
 import timber.log.Timber
@@ -434,16 +436,15 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     if (file.exists()) {
       shareTickers()
     } else {
-      object : TickersExportTask() {
-        override fun onPostExecute(result: String?) {
-          if (result == null) {
-            showDialog(getString(R.string.error_sharing))
-            Timber.w(Throwable("Error sharing tickers"))
-          } else {
-            shareTickers()
-          }
+      lifecycleScope.launch {
+        val result = TickersExporter.exportTickers(stocksProvider.getTickers())
+        if (result == null) {
+          showDialog(getString(R.string.error_sharing))
+          Timber.w(Throwable("Error sharing tickers"))
+        } else {
+          shareTickers()
         }
-      }.execute(stocksProvider.getTickers())
+      }
     }
   }
 
@@ -456,16 +457,15 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   }
 
   private fun exportPortfolio() {
-    object : PortfolioExportTask() {
-      override fun onPostExecute(result: String?) {
-        if (result == null) {
-          showDialog(getString(R.string.error_exporting))
-          Timber.w(Throwable("Error exporting tickers"))
-        } else {
-          showDialog(getString(R.string.exported_to, result))
-        }
+    lifecycleScope.launch {
+      val result = PortfolioExporter.exportQuotes(stocksProvider.getPortfolio())
+      if (result == null) {
+        showDialog(getString(R.string.error_exporting))
+        Timber.w(Throwable("Error exporting tickers"))
+      } else {
+        showDialog(getString(R.string.exported_to, result))
       }
-    }.execute(stocksProvider.getPortfolio())
+    }
   }
 
   private fun shareTickers() {
@@ -535,29 +535,19 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
       val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
       if (filePath != null) {
-        val task: ImportTask
-        if (filePath.endsWith(".txt")) {
-          task = object : TickersImportTask(widgetDataProvider) {
-            override fun onPostExecute(result: Boolean?) {
-              if (result != null && result) {
-                showDialog(getString(R.string.ticker_import_success))
-              } else {
-                showDialog(getString(R.string.ticker_import_fail))
-              }
-            }
-          }
+        val task: ImportTask = if (filePath.endsWith(".txt")) {
+          TickersImportTask(widgetDataProvider)
         } else {
-          task = object : PortfolioImportTask(stocksProvider) {
-            override fun onPostExecute(result: Boolean?) {
-              if (result != null && result) {
-                showDialog(getString(R.string.ticker_import_success))
-              } else {
-                showDialog(getString(R.string.ticker_import_fail))
-              }
-            }
+          PortfolioImportTask(stocksProvider)
+        }
+        lifecycleScope.launch {
+          val imported = task.import(filePath)
+          if (imported) {
+            showDialog(getString(R.string.ticker_import_success))
+          } else {
+            showDialog(getString(R.string.ticker_import_fail))
           }
         }
-        task.execute(filePath)
       }
     }
     super.onActivityResult(requestCode, resultCode, data)

@@ -7,25 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.lifecycle.lifecycleScope
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import io.github.inflationx.calligraphy3.TypefaceUtils
-import kotlinx.android.synthetic.main.fragment_home.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.fragment_home.fab_settings
 import kotlinx.android.synthetic.main.fragment_home.subtitle
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
 import kotlinx.android.synthetic.main.fragment_home.view_pager
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +42,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var bus: AsyncBus
   override val simpleName: String = "HomeFragment"
 
@@ -52,6 +50,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
+
+  private val subtitleText: String
+    get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -66,16 +67,13 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
-    val boldTypeface = TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Bold.ttf")
-    collapsingToolbarLayout.setCollapsedTitleTypeface(boldTypeface)
-    collapsingToolbarLayout.setExpandedTitleTypeface(boldTypeface)
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
-    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
+    subtitle.text = subtitleText
     fab_settings.setOnClickListener {
       if (!widgetDataProvider.hasWidget()) {
         val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -84,21 +82,25 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     }
   }
 
+  override fun onHiddenChanged(hidden: Boolean) {
+    super.onHiddenChanged(hidden)
+    if (!hidden) updateHeader()
+  }
+
   override fun onResume() {
     super.onResume()
     update()
-    // TODO is this needed?
-//    val channel = bus.receive<RefreshEvent>()
-//    lifecycleScope.launch {
-//      for (event in channel) {
-//        update()
-//      }
-//    }
+    lifecycleScope.launch {
+      val flow = bus.receive<RefreshEvent>()
+      flow.collect {
+        updateHeader()
+      }
+    }
   }
 
   private fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
-    subtitle?.text = getString(R.string.last_fetch, stocksProvider.lastFetched())
+    subtitle.text = subtitleText
     if (!widgetDataProvider.hasWidget()) {
       fab_settings.show()
       fab_settings.setImageResource(R.drawable.ic_add)
@@ -109,7 +111,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   private fun fetch() {
     if (!attemptingFetch) {
-      if (activity!!.isNetworkOnline()) {
+      if (requireActivity().isNetworkOnline()) {
         fetchCount++
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
@@ -122,12 +124,12 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
           }
         } else {
           attemptingFetch = false
-          InAppMessage.showMessage(activity, getString(R.string.refresh_failed))
+          InAppMessage.showMessage(activity, R.string.refresh_failed)
           swipe_container?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
-        InAppMessage.showMessage(activity, getString(R.string.no_network_message))
+        InAppMessage.showMessage(activity, R.string.no_network_message)
         swipe_container?.isRefreshing = false
       }
     }
