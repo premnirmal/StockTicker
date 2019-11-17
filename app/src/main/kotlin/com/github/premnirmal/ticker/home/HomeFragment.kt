@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.lifecycle.lifecycleScope
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -19,8 +18,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import io.github.inflationx.calligraphy3.TypefaceUtils
-import kotlinx.android.synthetic.main.fragment_home.collapsingToolbarLayout
 import kotlinx.android.synthetic.main.fragment_home.fab_settings
 import kotlinx.android.synthetic.main.fragment_home.subtitle
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
@@ -45,7 +42,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var bus: AsyncBus
   override val simpleName: String = "HomeFragment"
 
@@ -71,9 +67,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
-    val boldTypeface = TypefaceUtils.load(activity!!.assets, "fonts/Ubuntu-Bold.ttf")
-    collapsingToolbarLayout.setCollapsedTitleTypeface(boldTypeface)
-    collapsingToolbarLayout.setExpandedTitleTypeface(boldTypeface)
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }

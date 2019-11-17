@@ -8,11 +8,11 @@
     <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
     <item name="android:colorAccent">@color/color_accent</item>
     <item name="android:windowBackground">@color/default_dark_bg</item>
-
     <item name="android:textViewStyle">@style/TextViewStyle</item>
     <item name="android:buttonStyle">@style/ButtonStyle</item>
     <item name="android:alertDialogTheme">@style/AlertDialog</item>
     <item name="android:dialogTheme">@style/AlertDialog</item>
+    <item name="android:actionBarStyle">@style/ActionBarStyle</item>
 
     <!-- For AppCompat -->
     <item name="editTextStyle">@style/EditTextStyle</item>
