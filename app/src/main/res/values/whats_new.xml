@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Multi-threading updates</item>
-    <item>Ability to select update days</item>
-    <item>Ability to round to 2 decimal places</item>
-    <item>Better navigation</item>
+    <item>Visual updates</item>
   </string-array>
 </resources>
