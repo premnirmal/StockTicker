@@ -125,7 +125,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         } else {
           progress.visibility = View.GONE
           graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-          InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.graph_fetch_failed))
+          InAppMessage.showMessage(this@NewsFeedActivity, R.string.graph_fetch_failed, error = true)
         }
       }
     } else {
@@ -222,7 +222,7 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   private fun fetch() {
     if (!isNetworkOnline()) {
-      InAppMessage.showMessage(this, R.string.no_network_message)
+      InAppMessage.showMessage(this, R.string.no_network_message, error = true)
     }
     if (news_container.childCount <= 1) {
       fetchNews()
@@ -246,7 +246,7 @@ class NewsFeedActivity : BaseGraphActivity() {
           setUpArticles(articles)
         } else {
           news_container.visibility = View.GONE
-          InAppMessage.showMessage(this@NewsFeedActivity, getString(R.string.news_fetch_failed))
+          InAppMessage.showMessage(this@NewsFeedActivity, R.string.news_fetch_failed, error = true)
           analytics.trackGeneralEvent(GeneralEvent("FetchNews")
               .addProperty("Instrument", ticker)
               .addProperty("Success", "False"))

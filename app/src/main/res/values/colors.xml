@@ -32,6 +32,8 @@
   <color name="positive_green">#CCFF66</color>
   <color name="positive_green_dark">#009900</color>
 
+  <color name="error_red">#FF3232</color>
+
   <!-- For the file picker library -->
   <color name="colorPrimary">@color/color_primary</color>
   <color name="colorPrimaryDark">@color/color_primary</color>

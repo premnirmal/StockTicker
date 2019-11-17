@@ -44,10 +44,12 @@ fun Context.getStatusBarHeight(): Int {
 
 fun Activity.showDialog(
   message: String,
-  listener: OnClickListener
+  listener: OnClickListener,
+  cancelable: Boolean = true
 ) {
   AlertDialog.Builder(this)
       .setMessage(message)
+      .setCancelable(cancelable)
       .setNeutralButton("OK", listener)
       .show()
 }

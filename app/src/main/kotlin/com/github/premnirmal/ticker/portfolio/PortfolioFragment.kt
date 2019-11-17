@@ -235,7 +235,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
       widgetData.setAutoSort(false)
       update()
       holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
-      InAppMessage.showMessage(activity, getString(R.string.autosort_disabled))
+      InAppMessage.showMessage(requireActivity(), R.string.autosort_disabled)
     } else {
       itemTouchHelper?.startDrag(viewHolder)
     }

@@ -282,7 +282,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
               .apply()
           broadcastUpdateWidget()
           fontSizePreference.summary = fontSizePreference.entries[index]
-          InAppMessage.showMessage(activity!!, R.string.text_size_updated_message)
+          InAppMessage.showMessage(requireActivity(), R.string.text_size_updated_message)
           return true
         }
       }
@@ -306,7 +306,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
               .apply()
           broadcastUpdateWidget()
           refreshPreference.summary = refreshPreference.entries[index]
-          InAppMessage.showMessage(activity!!, R.string.refresh_updated_message)
+          InAppMessage.showMessage(requireActivity(), R.string.refresh_updated_message)
           return true
         }
       }
@@ -331,7 +331,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             startTimePref.summary = newValue.toString()
             stocksProvider.schedule()
-            InAppMessage.showMessage(activity!!, R.string.start_time_updated)
+            InAppMessage.showMessage(requireActivity(), R.string.start_time_updated)
             return true
           }
         }
@@ -364,7 +364,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             endTimePref.summary = newValue.toString()
             stocksProvider.schedule()
-            InAppMessage.showMessage(activity!!, R.string.end_time_updated)
+            InAppMessage.showMessage(requireActivity(), R.string.end_time_updated)
             return true
           }
         }
@@ -385,7 +385,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         ): Boolean {
           val selectedValues = newValue as Set<String>
           if (selectedValues.isEmpty()) {
-            InAppMessage.showMessage(requireActivity(), R.string.days_updated_error_message)
+            InAppMessage.showMessage(requireActivity(), R.string.days_updated_error_message, error = true)
             return false
           }
           appPreferences.setUpdateDays(selectedValues)
@@ -417,14 +417,14 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
 
   private fun needsPermissionGrant(): Boolean {
     return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
-        activity!!,
+        requireActivity(),
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) != PackageManager.PERMISSION_GRANTED
   }
 
   private fun askForExternalStoragePermissions(reqCode: Int) {
     ActivityCompat.requestPermissions(
-        activity!!,
+        requireActivity(),
         arrayOf(
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -579,7 +579,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
             .apply()
         preference.summary = time
         stocksProvider.schedule()
-        InAppMessage.showMessage(activity!!, messageRes)
+        InAppMessage.showMessage(requireActivity(), messageRes)
       }
     }
   }

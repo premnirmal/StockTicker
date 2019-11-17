@@ -117,9 +117,9 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     if (!widgetData.hasTicker(ticker)) {
       widgetData.addTicker(ticker)
       widgetDataProvider.broadcastUpdateWidget(widgetId)
-      InAppMessage.showMessage(activity, getString(R.string.added_to_list, ticker))
+      InAppMessage.showMessage(requireActivity(), getString(R.string.added_to_list, ticker))
     } else {
-      activity!!.showDialog(getString(R.string.already_in_portfolio, ticker))
+      requireActivity().showDialog(getString(R.string.already_in_portfolio, ticker))
     }
   }
 
@@ -153,11 +153,11 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
             adapter.setData(suggestions.data)
           } else {
             Timber.w(suggestions.error)
-            InAppMessage.showMessage(activity, R.string.error_fetching_suggestions)
+            InAppMessage.showMessage(requireActivity(), R.string.error_fetching_suggestions, error = true)
           }
         }
       } else {
-        InAppMessage.showMessage(activity, R.string.no_network_message)
+        InAppMessage.showMessage(requireActivity(), R.string.no_network_message, error = true)
       }
     }
   }

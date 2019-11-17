@@ -21,7 +21,6 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
 import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
-import kotlinx.android.synthetic.main.activity_graph.graphView
 import kotlinx.android.synthetic.main.activity_graph.graph_holder
 import kotlinx.android.synthetic.main.activity_graph.max
 import kotlinx.android.synthetic.main.activity_graph.one_month
@@ -126,12 +125,12 @@ class GraphActivity : BaseGraphActivity() {
           loadGraph()
         } else {
           showDialog(getString(R.string.error_loading_graph),
-              DialogInterface.OnClickListener { _, _ -> finish() })
+              DialogInterface.OnClickListener { _, _ -> finish() }, cancelable = false)
         }
       }
     } else {
       showDialog(getString(R.string.no_network_message),
-          DialogInterface.OnClickListener { _, _ -> finish() })
+          DialogInterface.OnClickListener { _, _ -> finish() }, cancelable = false)
     }
   }
 

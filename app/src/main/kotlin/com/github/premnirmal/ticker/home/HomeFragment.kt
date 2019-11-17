@@ -124,12 +124,12 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
           }
         } else {
           attemptingFetch = false
-          InAppMessage.showMessage(activity, R.string.refresh_failed)
+          InAppMessage.showMessage(requireActivity(), R.string.refresh_failed, error = true)
           swipe_container?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
-        InAppMessage.showMessage(activity, R.string.no_network_message)
+        InAppMessage.showMessage(requireActivity(), R.string.no_network_message, error = true)
         swipe_container?.isRefreshing = false
       }
     }
