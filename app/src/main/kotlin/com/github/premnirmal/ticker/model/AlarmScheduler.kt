@@ -82,10 +82,6 @@ class AlarmScheduler {
         nextAlarmDate = nextAlarmDate.withHour(startTimez[0])
             .withMinute(startTimez[1])
 
-        if (selectedDaysOfWeek.isEmpty()) {
-          nextAlarmDate = nextAlarmDate.plusDays(1)
-        }
-
         var count = 0
         if (inverse) {
           while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek) && count <= 7) {
@@ -99,7 +95,7 @@ class AlarmScheduler {
           } while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek) && count <= 7)
         }
 
-        if (count >= 5) {
+        if (count >= 7) {
           Timber.w(Exception("Possible infinite loop in calculating date. Now: ${now.toInstant()}, nextUpdate: ${nextAlarmDate.toInstant()}"))
         }
       }

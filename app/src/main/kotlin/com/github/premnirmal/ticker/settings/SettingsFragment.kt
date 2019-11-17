@@ -392,6 +392,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           daysPreference.summary = appPreferences.updateDays().joinToString {
             it.getDisplayName(SHORT, Locale.getDefault())
           }
+          stocksProvider.schedule()
           InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
           broadcastUpdateWidget()
           return true
