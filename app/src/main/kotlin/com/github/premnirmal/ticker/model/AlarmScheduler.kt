@@ -10,9 +10,6 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.widget.RefreshReceiver
-import org.threeten.bp.DayOfWeek.FRIDAY
-import org.threeten.bp.DayOfWeek.SATURDAY
-import org.threeten.bp.DayOfWeek.SUNDAY
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -46,7 +43,6 @@ class AlarmScheduler {
     val inverse =
       startTimez[0] > endTimez[0] || (startTimez[0] == endTimez[0] && startTimez[1] > endTimez[1])
     val now: ZonedDateTime = clock.todayZoned()
-    var mutableDateTime: ZonedDateTime = clock.todayZoned()
     val startTime = clock.todayZoned()
         .withHour(startTimez[0])
         .withMinute(startTimez[1])
@@ -60,53 +56,56 @@ class AlarmScheduler {
     val lastFetchedTime =
       ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastFetchedMs), ZoneId.systemDefault())
 
-    val msToNextAlarm: Long
+    var nextAlarmDate: ZonedDateTime = clock.todayZoned()
     if (now.isBefore(endTime) && (now.isAfter(startTime) || now.isEqual(
             startTime
         )) && selectedDaysOfWeek.contains(dayOfWeek)
     ) {
-      mutableDateTime = if (lastFetchedMs > 0 && Duration.between(
-              lastFetchedTime,
-              now
-          ).toMillis() >= appPreferences.updateIntervalMs
+      nextAlarmDate = if (lastFetchedMs > 0
+          && Duration.between(lastFetchedTime,now).toMillis() >= appPreferences.updateIntervalMs
       ) {
-        mutableDateTime.plusMinutes(1)
+        nextAlarmDate.plusMinutes(1)
       } else {
-        mutableDateTime.plusSeconds(appPreferences.updateIntervalMs / 1000L)
+        nextAlarmDate.plusSeconds(appPreferences.updateIntervalMs / 1000L)
       }
     } else if (!inverse && now.isBefore(startTime) && selectedDaysOfWeek.contains(dayOfWeek)) {
-      mutableDateTime = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
-        mutableDateTime.plusMinutes(1)
+      nextAlarmDate = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
+        nextAlarmDate.plusMinutes(1)
       } else {
-        mutableDateTime.withHour(startTimez[0])
+        nextAlarmDate.withHour(startTimez[0])
             .withMinute(startTimez[1])
       }
     } else {
       if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
-        mutableDateTime = mutableDateTime.plusMinutes(1)
+        nextAlarmDate = nextAlarmDate.plusMinutes(1)
       } else {
-        mutableDateTime = mutableDateTime.withHour(startTimez[0])
+        nextAlarmDate = nextAlarmDate.withHour(startTimez[0])
             .withMinute(startTimez[1])
+
+        if (selectedDaysOfWeek.isEmpty()) {
+          nextAlarmDate = nextAlarmDate.plusDays(1)
+        }
 
         var count = 0
         if (inverse) {
-          while (!selectedDaysOfWeek.contains(mutableDateTime.dayOfWeek) && count <= 7) {
+          while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek) && count <= 7) {
             count++
-            mutableDateTime = mutableDateTime.plusDays(1)
+            nextAlarmDate = nextAlarmDate.plusDays(1)
           }
         } else {
           do {
             count++
-            mutableDateTime = mutableDateTime.plusDays(1)
-          } while (!selectedDaysOfWeek.contains(mutableDateTime.dayOfWeek) && count <= 7)
+            nextAlarmDate = nextAlarmDate.plusDays(1)
+          } while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek) && count <= 7)
         }
 
         if (count >= 5) {
-          Timber.w(Exception("Possible infinite loop in calculating date. Now: ${now.toInstant()}, nextUpdate: ${mutableDateTime.toInstant()}"))
+          Timber.w(Exception("Possible infinite loop in calculating date. Now: ${now.toInstant()}, nextUpdate: ${nextAlarmDate.toInstant()}"))
         }
       }
     }
-    msToNextAlarm = mutableDateTime.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
+
+    val msToNextAlarm = nextAlarmDate.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
     return msToNextAlarm
   }
 
