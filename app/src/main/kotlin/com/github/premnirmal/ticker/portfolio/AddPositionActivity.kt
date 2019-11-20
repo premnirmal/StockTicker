@@ -60,7 +60,6 @@ class AddPositionActivity : BaseActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_positions)
     toolbar.setTitle(R.string.add_position)
-    updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {
       finish()
     }

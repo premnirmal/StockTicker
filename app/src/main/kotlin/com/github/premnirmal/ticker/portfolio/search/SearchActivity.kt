@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
@@ -19,7 +20,7 @@ class SearchActivity : BaseActivity() {
       widgetId: Int
     ): Intent {
       val intent = Intent(context, SearchActivity::class.java)
-      intent.putExtra(SearchActivity.ARG_WIDGET_ID, widgetId)
+      intent.putExtra(ARG_WIDGET_ID, widgetId)
       return intent
     }
   }
@@ -30,6 +31,8 @@ class SearchActivity : BaseActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_search)
+    window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()

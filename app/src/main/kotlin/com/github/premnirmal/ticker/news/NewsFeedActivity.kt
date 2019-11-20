@@ -64,7 +64,6 @@ class NewsFeedActivity : BaseGraphActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_news_feed)
-    updateToolbar(toolbar)
     toolbar.setNavigationOnClickListener {
       finish()
     }

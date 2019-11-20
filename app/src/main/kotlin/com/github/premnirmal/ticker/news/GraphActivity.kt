@@ -50,21 +50,6 @@ class GraphActivity : BaseGraphActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_graph)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      graphActivityRoot.setPadding(
-          graphActivityRoot.paddingLeft, getStatusBarHeight(),
-          graphActivityRoot.paddingRight, graphActivityRoot.paddingBottom
-      )
-    }
-    if (Build.VERSION.SDK_INT < 16) {
-      window.setFlags(
-          WindowManager.LayoutParams.FLAG_FULLSCREEN,
-          WindowManager.LayoutParams.FLAG_FULLSCREEN
-      )
-    } else {
-      val decorView = window.decorView
-      decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-    }
     setupGraphView()
     val q: Quote?
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {

@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginTop="@dimen/activity_horizontal_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:elevation="0dp"
         android:hint="@string/enter_a_symbol"
         android:imeOptions="actionDone"

@@ -60,15 +60,6 @@ abstract class BaseActivity : AppCompatActivity() {
     return super.onOptionsItemSelected(item)
   }
 
-  fun updateToolbar(toolbar: Toolbar) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      toolbar.setPadding(
-          toolbar.paddingLeft, getStatusBarHeight(), toolbar.paddingRight,
-          toolbar.paddingBottom
-      )
-    }
-  }
-
   protected fun showErrorAndFinish() {
     InAppMessage.showToast(this, R.string.error_symbol)
     finish()

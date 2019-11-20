@@ -7,16 +7,23 @@
     android:orientation="vertical"
     android:paddingBottom="?attr/actionBarSize"
     >
-  <androidx.appcompat.widget.Toolbar
-      android:id="@+id/toolbar"
+
+  <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:background="@color/color_primary"
-      android:elevation="0dp"
-      app:elevation="0dp"
-      app:title="@string/widgets"
-      app:titleTextAppearance="@style/ActionBarTitleText"
-      />
+      >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_primary"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        app:title="@string/widgets"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        />
+  </com.google.android.material.appbar.AppBarLayout>
 
   <TextView
       android:layout_width="match_parent"

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.github.premnirmal.ticker.AppPreferences
@@ -51,6 +52,8 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
+    window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
 
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 

@@ -25,7 +25,6 @@
     <!-- v21 specific -->
     <item name="android:statusBarColor">@color/transparent</item>
     <item name="android:navigationBarColor">@color/default_dark_bg</item>
-    <item name="android:windowTranslucentStatus">true</item>
   </style>
   <!-- Custom Preference Theme -->
   <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
@@ -36,6 +35,18 @@
   <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material">
     <item name="android:layout">@layout/fragment_settings</item>
     <item name="layout">@layout/fragment_settings</item>
+  </style>
+
+  <style name="WidgetSettingsTheme" parent="AppTheme">
+    <item name="android:statusBarColor">@color/color_primary</item>
+  </style>
+
+  <style name="SearchTheme" parent="AppTheme">
+    <item name="android:statusBarColor">@color/color_primary</item>
+  </style>
+
+  <style name="NewsFeedActivityTheme" parent="AppTheme">
+    <item name="android:statusBarColor">@color/color_primary</item>
   </style>
 
   <style name="GraphActivityTheme" parent="AppTheme">
