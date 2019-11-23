@@ -9,9 +9,9 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.view.View
-import android.view.inputmethod.InputMethodManager
+import android.net.ConnectivityManager
 import androidx.fragment.app.Fragment
+import com.github.premnirmal.tickerwidget.R
 
 fun Drawable.toBitmap(): Bitmap {
   if (this is BitmapDrawable) {
@@ -50,7 +50,7 @@ fun Activity.showDialog(
   AlertDialog.Builder(this)
       .setMessage(message)
       .setCancelable(cancelable)
-      .setNeutralButton("OK", listener)
+      .setNeutralButton(R.string.ok, listener)
       .show()
 }
 
@@ -58,7 +58,7 @@ fun Activity.showDialog(message: String): AlertDialog {
   return AlertDialog.Builder(this)
       .setMessage(message)
       .setCancelable(false)
-      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }
 
@@ -70,7 +70,7 @@ fun Activity.showDialog(
       .setTitle(title)
       .setMessage(message)
       .setCancelable(false)
-      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }
 
@@ -78,21 +78,36 @@ fun Fragment.showDialog(
   message: String,
   listener: OnClickListener
 ) {
-  AlertDialog.Builder(context!!)
+  AlertDialog.Builder(requireContext())
       .setMessage(message)
-      .setNeutralButton("OK", listener)
+      .setNeutralButton(getString(R.string.ok), listener)
       .show()
 }
 
 fun Fragment.showDialog(message: String): AlertDialog {
-  return AlertDialog.Builder(context!!)
+  return AlertDialog.Builder(requireContext())
       .setMessage(message)
       .setCancelable(false)
-      .setNeutralButton("OK") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }
 
-fun Fragment.hideKeyboard(view: View) {
-  val imm = activity!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-  imm.hideSoftInputFromWindow(view.windowToken, 0)
+fun Context.isNetworkOnline(): Boolean {
+  try {
+    val connectivityManager =
+      this.getSystemService(
+          Context.CONNECTIVITY_SERVICE
+      ) as ConnectivityManager
+    val i = connectivityManager.activeNetworkInfo ?: return false
+    if (!i.isConnected) return false
+    if (!i.isAvailable) return false
+    return true
+  } catch (e: Exception) {
+    e.printStackTrace()
+    return false
+  }
+}
+
+fun Long.minutesInMs(): Long {
+  return this * 60 * 1000
 }

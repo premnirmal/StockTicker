@@ -18,7 +18,7 @@ import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider

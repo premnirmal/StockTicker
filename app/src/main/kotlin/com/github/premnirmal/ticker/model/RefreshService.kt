@@ -5,7 +5,7 @@ import android.app.job.JobService
 import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.concurrency.ApplicationScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -23,17 +23,17 @@ class RefreshService : JobService() {
 
   override fun onStartJob(params: JobParameters): Boolean {
     Timber.d("onStartJob ${params.jobId}")
-    return if (isNetworkOnline()) {
+    if (isNetworkOnline()) {
       ApplicationScope.launch {
         stocksProvider.fetch()
         val needsReschedule = false
         jobFinished(params, needsReschedule)
       }
       // additional work is being performed
-      true
+      return true
     } else {
       stocksProvider.scheduleSoon()
-      false
+      return false
     }
   }
 

@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.layout
 import javax.inject.Inject
 
 /**
@@ -55,12 +56,11 @@ class StockWidget : AppWidgetProvider() {
   ) {
     for (widgetId in appWidgetIds) {
       val minimumWidth: Int
-      minimumWidth = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      minimumWidth = if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
         getMinWidgetWidth(options)
       } else {
-        appWidgetManager.getAppWidgetInfo(widgetId)
-            .minWidth
+        appWidgetManager.getAppWidgetInfo(widgetId).minWidth
       }
       val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
       updateWidget(context, widgetId, remoteViews, appWidgetManager)
@@ -92,10 +92,6 @@ class StockWidget : AppWidgetProvider() {
     }
   }
 
-  override fun onDisabled(context: Context?) {
-    super.onDisabled(context)
-  }
-
   override fun onDeleted(
     context: Context?,
     appWidgetIds: IntArray?
@@ -111,17 +107,14 @@ class StockWidget : AppWidgetProvider() {
   private fun createRemoteViews(
     context: Context,
     min_width: Int
-  ): RemoteViews {
-    val remoteViews: RemoteViews = when {
-      min_width > 750 -> RemoteViews(context.packageName, R.layout.widget_4x1)
-      min_width > 500 -> RemoteViews(context.packageName, R.layout.widget_3x1)
+  ): RemoteViews = when {
+      min_width > 750 -> RemoteViews(context.packageName, layout.widget_4x1)
+      min_width > 500 -> RemoteViews(context.packageName, layout.widget_3x1)
       min_width > 250 -> // 3x2
-        RemoteViews(context.packageName, R.layout.widget_2x1)
+        RemoteViews(context.packageName, layout.widget_2x1)
       else -> // 2x1
-        RemoteViews(context.packageName, R.layout.widget_1x1)
+        RemoteViews(context.packageName, layout.widget_1x1)
     }
-    return remoteViews
-  }
 
   private fun getMinWidgetWidth(options: Bundle?): Int {
     return if (options == null || !options.containsKey(

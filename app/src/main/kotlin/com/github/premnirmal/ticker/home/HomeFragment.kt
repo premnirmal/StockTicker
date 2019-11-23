@@ -11,7 +11,7 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.isNetworkOnline
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.model.IStocksProvider

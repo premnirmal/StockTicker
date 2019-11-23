@@ -15,13 +15,22 @@ import timber.log.Timber
 class LoggingTree(context: Context) : Timber.Tree() {
 
   init {
-    val kit =
-      Crashlytics.Builder().core(CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-          .build()
+    val kit = Crashlytics.Builder()
+        .core(
+            CrashlyticsCore.Builder()
+                .disabled(BuildConfig.DEBUG)
+                .build()
+        )
+        .build()
     Fabric.with(context, kit, Answers())
   }
 
-  override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+  override fun log(
+    priority: Int,
+    tag: String?,
+    message: String,
+    t: Throwable?
+  ) {
     if (priority == Log.VERBOSE || priority == Log.DEBUG) {
       return
     }

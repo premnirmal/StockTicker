@@ -1,18 +1,15 @@
 package com.github.premnirmal.ticker.news
 
 import android.content.DialogInterface
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.isNetworkOnline
-import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -20,7 +17,6 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
-import kotlinx.android.synthetic.main.activity_graph.graphActivityRoot
 import kotlinx.android.synthetic.main.activity_graph.graph_holder
 import kotlinx.android.synthetic.main.activity_graph.max
 import kotlinx.android.synthetic.main.activity_graph.one_month

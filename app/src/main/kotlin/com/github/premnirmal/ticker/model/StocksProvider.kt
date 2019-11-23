@@ -7,7 +7,7 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.components.minutesInMs
+import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.concurrency.ApplicationScope
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent

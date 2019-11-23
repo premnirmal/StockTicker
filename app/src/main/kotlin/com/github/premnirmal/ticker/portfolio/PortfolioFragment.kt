@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -153,8 +154,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     widgetId = arguments!!.getInt(KEY_WIDGET_ID)
   }
 
-  override fun onStart() {
-    super.onStart()
+  override fun onResume() {
+    super.onResume()
     update()
     lifecycleScope.launch {
       val flow = holder.bus.receive<RefreshEvent>()

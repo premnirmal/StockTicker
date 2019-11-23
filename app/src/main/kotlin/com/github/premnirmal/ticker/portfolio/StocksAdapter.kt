@@ -11,6 +11,7 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperAdapter
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
+import timber.log.Timber
 import java.util.ArrayList
 
 /**
