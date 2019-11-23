@@ -29,6 +29,7 @@ import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.Suggesti
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
 import kotlinx.android.synthetic.main.fragment_search.toolbar
@@ -79,7 +80,8 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
+    fake_status_bar.layoutParams.height = context!!.getStatusBarHeight()
+    fake_status_bar.requestLayout()
     adapter = SuggestionsAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)
     recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))

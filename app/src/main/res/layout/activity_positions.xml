@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_root"
@@ -7,10 +7,10 @@
     android:layout_height="match_parent"
     android:background="@color/default_dark_bg"
     >
-  <LinearLayout
+
+  <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:orientation="vertical"
       >
 
     <androidx.appcompat.widget.Toolbar
@@ -22,234 +22,248 @@
         app:titleTextAppearance="@style/ActionBarTitleText"
         />
 
-    <TextView
-        android:id="@+id/tickerName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:textSize="@dimen/xlarge_text"
-        tools:text="GOOG"
-        style="@style/BoldTextView"
-        />
+  </com.google.android.material.appbar.AppBarLayout>
 
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        >
-
-      <TextView
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:layout_weight="0.4"
-          android:text="@string/number_of_shares"
-          />
-
-      <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/sharesInputLayout"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical|end"
-          android:layout_weight="0.6"
-          >
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/shares"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:inputType="numberDecimal"
-            android:maxLength="9"
-            android:maxLines="1"
-            android:nextFocusDown="@+id/price"
-            android:nextFocusForward="@+id/price"
-            android:textAlignment="textEnd"
-            />
-      </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        >
-
-      <TextView
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical"
-          android:layout_weight="0.4"
-          android:text="@string/price"
-          />
-
-      <com.google.android.material.textfield.TextInputLayout
-          android:id="@+id/priceInputLayout"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical|end"
-          android:layout_weight="0.6"
-          >
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/price"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:imeOptions="actionDone"
-            android:inputType="numberDecimal"
-            android:maxLength="9"
-            android:maxLines="1"
-            android:textAlignment="textEnd"
-            />
-      </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/addButton"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/add"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/current_positions"
-        android:textSize="@dimen/thin_title_text"
-        style="@style/ThinTitleTextView"
-        />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/card_bg"
         android:orientation="vertical"
-        android:padding="16dp"
         >
+
+      <TextView
+          android:id="@+id/tickerName"
+          style="@style/BoldTextView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="20dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center"
+          android:textSize="@dimen/xlarge_text"
+          tools:text="GOOG"
+          />
 
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="10dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center_vertical"
           android:orientation="horizontal"
           >
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/shares"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.4"
+            android:text="@string/number_of_shares"
             />
 
-        <TextView
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/sharesInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/price"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
-            />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/value"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
-            />
-
-        <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            />
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="0.6"
+            >
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/shares"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end"
+              android:inputType="numberDecimal"
+              android:maxLength="9"
+              android:maxLines="1"
+              android:nextFocusDown="@+id/price"
+              android:nextFocusForward="@+id/price"
+              android:textAlignment="textEnd"
+              />
+        </com.google.android.material.textfield.TextInputLayout>
 
       </LinearLayout>
 
       <LinearLayout
-          android:id="@+id/positionsHolder"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="8dp"
-          android:orientation="vertical"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="10dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center_vertical"
+          android:orientation="horizontal"
+          >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.4"
+            android:text="@string/price"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/priceInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="0.6"
+            >
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/price"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end"
+              android:imeOptions="actionDone"
+              android:inputType="numberDecimal"
+              android:maxLength="9"
+              android:maxLines="1"
+              android:textAlignment="textEnd"
+              />
+        </com.google.android.material.textfield.TextInputLayout>
+      </LinearLayout>
+
+      <Button
+          android:id="@+id/addButton"
+          android:layout_width="match_parent"
+          android:layout_height="45dp"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginStart="16dp"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="20dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginBottom="20dp"
+          android:text="@string/add"
           />
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="0.75dp"
-          android:layout_marginBottom="12dp"
-          android:layout_marginTop="12dp"
-          android:background="@color/divider"
+      <TextView
+          style="@style/ThinTitleTextView"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_vertical"
+          android:layout_marginStart="16dp"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="20dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginBottom="8dp"
+          android:text="@string/current_positions"
+          android:textSize="@dimen/thin_title_text"
           />
 
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="horizontal"
+          android:layout_margin="8dp"
+          android:background="@drawable/card_bg"
+          android:orientation="vertical"
+          android:padding="16dp"
           >
 
-        <TextView
-            android:id="@+id/totalShares"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/large_text"
-            tools:text="5.00"
-            />
+            android:orientation="horizontal"
+            >
 
-        <TextView
-            android:id="@+id/averagePrice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/large_text"
-            tools:text="20.00"
-            />
+          <TextView
+              style="@style/ThinTitleTextView"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="@string/shares"
+              android:textSize="@dimen/thin_title_text"
+              />
 
-        <TextView
-            android:id="@+id/totalValue"
-            android:layout_width="0dp"
+          <TextView
+              style="@style/ThinTitleTextView"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="@string/price"
+              android:textSize="@dimen/thin_title_text"
+              />
+
+          <TextView
+              style="@style/ThinTitleTextView"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:text="@string/value"
+              android:textSize="@dimen/thin_title_text"
+              />
+
+          <View
+              android:layout_width="24dp"
+              android:layout_height="24dp"
+              />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/positionsHolder"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textSize="@dimen/large_text"
-            tools:text="100.00"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
             />
 
         <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="0.75dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/divider"
             />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+          <TextView
+              android:id="@+id/totalShares"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:textSize="@dimen/large_text"
+              tools:text="5.00"
+              />
+
+          <TextView
+              android:id="@+id/averagePrice"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:textSize="@dimen/large_text"
+              tools:text="20.00"
+              />
+
+          <TextView
+              android:id="@+id/totalValue"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:textSize="@dimen/large_text"
+              tools:text="100.00"
+              />
+
+          <View
+              android:layout_width="24dp"
+              android:layout_height="24dp"
+              />
+
+        </LinearLayout>
 
       </LinearLayout>
 
     </LinearLayout>
-
-  </LinearLayout>
-</ScrollView>
+  </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

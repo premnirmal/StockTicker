@@ -9,10 +9,16 @@
   <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/transparent"
       android:elevation="0dp"
       app:elevation="0dp"
       >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:id="@+id/fake_status_bar"
+        android:background="@color/color_primary"
+        />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -31,8 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_marginRight="5dp"
         android:elevation="0dp"
         android:hint="@string/enter_a_symbol"
         android:imeOptions="actionDone"

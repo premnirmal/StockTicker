@@ -51,6 +51,10 @@
     <item name="android:navigationBarColor">@color/black</item>
   </style>
 
+  <style name="AddPositionTheme" parent="AppTheme">
+    <item name="android:statusBarColor">@color/color_primary</item>
+  </style>
+
   <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
     <item name="android:colorPrimary">@color/white</item>
     <item name="android:textColorPrimary">@color/white</item>

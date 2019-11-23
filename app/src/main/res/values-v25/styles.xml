@@ -52,4 +52,8 @@
   <style name="GraphActivityTheme" parent="AppTheme">
     <item name="android:navigationBarColor">@color/black</item>
   </style>
+
+  <style name="AddPositionTheme" parent="AppTheme">
+    <item name="android:statusBarColor">@color/color_primary</item>
+  </style>
 </resources>
