@@ -17,7 +17,9 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.DayOfWeek
@@ -128,8 +130,8 @@ class StocksProvider : IStocksProvider {
     get() = alarmScheduler.msToNextAlarm(lastFetched)
 
   private fun scheduleUpdateWithMs(
-      msToNextAlarm: Long,
-      refresh: Boolean = false
+    msToNextAlarm: Long,
+    refresh: Boolean = false
   ) {
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     nextFetch = updateTime.toInstant()
@@ -173,7 +175,9 @@ class StocksProvider : IStocksProvider {
   override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerList.isEmpty()) {
       bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-      return@withContext FetchResult<List<Quote>>(_error = FetchException("No symbols in portfolio"))
+      return@withContext FetchResult<List<Quote>>(
+          _error = FetchException("No symbols in portfolio")
+      )
     } else {
       val result = try {
         appPreferences.setRefreshing(true)
@@ -240,12 +244,12 @@ class StocksProvider : IStocksProvider {
   override fun getPosition(ticker: String): Position? = positionList[ticker]
 
   override fun addPosition(
-      ticker: String,
-      shares: Float,
-      price: Float
+    ticker: String,
+    shares: Float,
+    price: Float
   ): Holding {
     synchronized(quoteList) {
-      val quote = getStock(ticker)
+      val quote = quoteList[ticker]
       var position = getPosition(ticker)
       if (position == null) {
         position = Position(ticker, ArrayList())
@@ -263,12 +267,12 @@ class StocksProvider : IStocksProvider {
   }
 
   override fun removePosition(
-      ticker: String,
-      holding: Holding
+    ticker: String,
+    holding: Holding
   ) {
     synchronized(positionList) {
       val position = getPosition(ticker)
-      val quote = getStock(ticker)
+      val quote = quoteList[ticker]
       position?.remove(holding)
       quote?.position = position
       save()
@@ -309,6 +313,12 @@ class StocksProvider : IStocksProvider {
       }
       save()
       scheduleUpdate()
+    }
+  }
+
+  override suspend fun fetchStock(ticker: String): Quote? = withContext(Dispatchers.IO) {
+    return@withContext quoteList[ticker] ?: run {
+      api.getStock(ticker)
     }
   }
 

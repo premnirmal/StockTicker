@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +21,7 @@ import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
+import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -145,6 +147,10 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
 
   override fun onSuggestionClick(suggestion: Suggestion) {
     val ticker = suggestion.symbol
+    val intent = Intent(requireContext(), NewsFeedActivity::class.java)
+    intent.putExtra(NewsFeedActivity.TICKER, ticker)
+    startActivity(intent)
+    return
     if (selectedWidgetId > 0) {
       addTickerToWidget(ticker, selectedWidgetId)
       return
@@ -157,7 +163,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
               .sortedBy { it.widgetName() }
         val widgetNames = widgets.map { it.widgetName() }
             .toTypedArray()
-        AlertDialog.Builder(context!!)
+        AlertDialog.Builder(requireContext())
             .setTitle(R.string.select_widget)
             .setItems(widgetNames) { dialog, which ->
               val id = widgets[which].widgetId

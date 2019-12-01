@@ -1,12 +1,15 @@
 package com.github.premnirmal.ticker.network.data
 
+import android.os.Parcel
+import android.os.Parcelable
+import android.os.Parcelable.Creator
 import com.github.premnirmal.ticker.AppPreferences
 import java.text.Format
 
 /**
  * Created by premnirmal on 3/30/17.
  */
-data class Quote(var symbol: String = "") : Comparable<Quote> {
+data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   companion object {
     fun fromQuoteNet(quoteNet: IQuoteNet): Quote {
@@ -19,6 +22,17 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
       quote.currency = quoteNet.currency ?: "US"
       quote.description = quoteNet.description ?: ""
       return quote
+    }
+
+    @JvmField
+    val CREATOR = object: Creator<Quote> {
+      override fun createFromParcel(parcel: Parcel): Quote {
+        return Quote(parcel)
+      }
+
+      override fun newArray(size: Int): Array<Quote?> {
+        return arrayOfNulls(size)
+      }
     }
   }
 
@@ -129,4 +143,38 @@ data class Quote(var symbol: String = "") : Comparable<Quote> {
 
   override operator fun compareTo(other: Quote): Int =
     other.changeInPercent.compareTo(changeInPercent)
+
+  constructor(parcel: Parcel) : this(parcel.readString()!!) {
+    name = parcel.readString()!!
+    lastTradePrice = parcel.readFloat()
+    changeInPercent = parcel.readFloat()
+    change = parcel.readFloat()
+    stockExchange = parcel.readString()!!
+    currency = parcel.readString()!!
+    description = parcel.readString()!!
+    isPosition = parcel.readByte() != 0.toByte()
+    positionPrice = parcel.readFloat()
+    positionShares = parcel.readFloat()
+  }
+
+  override fun writeToParcel(
+    parcel: Parcel,
+    flags: Int
+  ) {
+    parcel.writeString(symbol)
+    parcel.writeString(name)
+    parcel.writeFloat(lastTradePrice)
+    parcel.writeFloat(changeInPercent)
+    parcel.writeFloat(change)
+    parcel.writeString(stockExchange)
+    parcel.writeString(currency)
+    parcel.writeString(description)
+    parcel.writeByte(if (isPosition) 1 else 0)
+    parcel.writeFloat(positionPrice)
+    parcel.writeFloat(positionShares)
+  }
+
+  override fun describeContents(): Int {
+    return 0
+  }
 }

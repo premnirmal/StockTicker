@@ -61,6 +61,15 @@ class StocksApi {
         .toOrderedQuoteList(tickerList)
   }
 
+  suspend fun getStock(ticker: String) = withContext(Dispatchers.IO) {
+    val quoteNets = try {
+      robindahood.getStocks(ticker)
+    } catch (ex: HttpException) {
+      getStocksYahoo(listOf(ticker))
+    }
+    return@withContext Quote.fromQuoteNet(quoteNets.first())
+  }
+
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
     val quoteNets = yahooFinance.getStocks(query).quoteResponse!!.result

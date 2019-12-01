@@ -19,6 +19,9 @@ abstract class BaseGraphActivity : BaseActivity() {
   protected var dataPoints: List<DataPoint>? = null
   protected lateinit var quote: Quote
 
+  protected val isQuoteInitialized: Boolean
+    get() = this::quote.isInitialized
+
   protected fun setupGraphView() {
     val graphView: LineChart = findViewById(R.id.graphView)
     graphView.isDoubleTapToZoomEnabled = false

@@ -27,6 +27,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.color
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
 import kotlinx.android.synthetic.main.activity_news_feed.change
 import kotlinx.android.synthetic.main.activity_news_feed.day_change
@@ -52,6 +53,7 @@ class NewsFeedActivity : BaseGraphActivity() {
   companion object {
     const val TICKER = "TICKER"
     private const val DATA_POINTS = "DATA_POINTS"
+    private const val QUOTE = "QUOTE"
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
@@ -72,45 +74,58 @@ class NewsFeedActivity : BaseGraphActivity() {
       graph_container.requestLayout()
     }
     setupGraphView()
-    val q: Quote?
-    if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-      ticker = intent.getStringExtra(TICKER)
-      q = stocksProvider.getStock(ticker)
-      if (q == null) {
-        showErrorAndFinish()
-        return
+    savedInstanceState?.let {
+      dataPoints = it.getParcelableArrayList(DATA_POINTS)
+      quote = checkNotNull(it.getParcelable(QUOTE))
+      fetch()
+      setupUi()
+    } ?: run {
+      lifecycleScope.launch {
+        val q: Quote?
+        if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
+          ticker = intent.getStringExtra(TICKER)
+          q = stocksProvider.fetchStock(ticker)
+          if (q == null) {
+            showErrorAndFinish()
+            return@launch
+          }
+        } else {
+          ticker = ""
+          showErrorAndFinish()
+          return@launch
+        }
+        quote = q
+        fetch()
+        setupUi()
       }
-    } else {
-      ticker = ""
-      showErrorAndFinish()
-      return
     }
-    quote = q
+  }
+
+  private fun setupUi() {
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
     val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
     change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
-      change.setTextColor(resources.getColor(R.color.positive_green))
-      lastTradePrice.setTextColor(resources.getColor(R.color.positive_green))
+      change.setTextColor(resources.getColor(color.positive_green))
+      lastTradePrice.setTextColor(resources.getColor(color.positive_green))
     } else {
-      change.setTextColor(resources.getColor(R.color.negative_red))
-      lastTradePrice.setTextColor(resources.getColor(R.color.negative_red))
+      change.setTextColor(resources.getColor(color.negative_red))
+      lastTradePrice.setTextColor(resources.getColor(color.negative_red))
     }
     exchange.text = quote.stockExchange
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
     description.text = quote.description
     edit_positions.setOnClickListener {
-      analytics.trackClickEvent(ClickEvent("EditPositionClick")
-          .addProperty("Instrument", ticker))
+      analytics.trackClickEvent(
+          ClickEvent("EditPositionClick")
+              .addProperty("Instrument", ticker)
+      )
       val intent = Intent(this, AddPositionActivity::class.java)
       intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
       startActivity(intent)
-    }
-    savedInstanceState?.let {
-      dataPoints = it.getParcelableArrayList(DATA_POINTS)
     }
   }
 
@@ -186,13 +201,11 @@ class NewsFeedActivity : BaseGraphActivity() {
     }
   }
 
-  override fun onStart() {
-    super.onStart()
-    fetch()
-  }
-
   override fun onResume() {
     super.onResume()
+    if (!isQuoteInitialized) {
+      return
+    }
     numShares.text = quote.numSharesString()
     equityValue.text = quote.holdingsString()
     if (quote.hasPositions()) {

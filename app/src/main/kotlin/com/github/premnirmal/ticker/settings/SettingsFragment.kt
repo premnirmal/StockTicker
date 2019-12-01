@@ -101,7 +101,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
+    (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
     listView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
     listView.isVerticalScrollBarEnabled = false
     setupSimplePreferencesScreen()
@@ -175,9 +175,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
             .setShowTitle(true)
             .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
             .build()
-        CustomTabsHelper.addKeepAliveExtra(context!!, customTabsIntent.intent)
+        CustomTabsHelper.addKeepAliveExtra(requireContext(), customTabsIntent.intent)
         CustomTabsHelper.openCustomTab(
-            context!!, customTabsIntent,
+            requireContext(), customTabsIntent,
             Uri.parse(resources.getString(R.string.privacy_policy_url)),
             BrowserFallback()
         )
@@ -207,7 +207,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preferences.edit()
               .clear()
               .apply()
-          val filesDir = context!!.filesDir
+          val filesDir = requireContext().filesDir
           filesDir.listFiles()
               .forEach { file ->
                 file?.delete()
@@ -482,7 +482,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       return
     }
     val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      FileProvider.getUriForFile(context!!, BuildConfig.APPLICATION_ID + ".provider", file)
+      FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file)
     } else {
       Uri.fromFile(file)
     }
