@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.news
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
@@ -25,7 +26,9 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.toBitmap
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import kotlinx.android.synthetic.main.activity_news_feed.average_price
@@ -59,6 +62,7 @@ class NewsFeedActivity : BaseGraphActivity() {
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var newsProvider: NewsProvider
   @Inject internal lateinit var historyProvider: IHistoryProvider
+  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private lateinit var ticker: String
   override val simpleName: String = "NewsFeedActivity"
 
@@ -75,6 +79,7 @@ class NewsFeedActivity : BaseGraphActivity() {
     }
     setupGraphView()
     savedInstanceState?.let {
+      ticker = intent.getStringExtra(TICKER)
       dataPoints = it.getParcelableArrayList(DATA_POINTS)
       quote = checkNotNull(it.getParcelable(QUOTE))
       fetch()
@@ -102,6 +107,54 @@ class NewsFeedActivity : BaseGraphActivity() {
   }
 
   private fun setupUi() {
+    toolbar.inflateMenu(R.menu.menu_news_feed)
+    val isInPortfolio = stocksProvider.hasTicker(ticker)
+    val addMenuItem = toolbar.menu.findItem(R.id.action_add)
+    val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
+    if (isInPortfolio) {
+      addMenuItem.isVisible = false
+      removeMenuItem.isVisible = true
+    } else {
+      removeMenuItem.isVisible = false
+      addMenuItem.isVisible = true
+    }
+    toolbar.setOnMenuItemClickListener { menuItem ->
+      when (menuItem.itemId) {
+        R.id.action_add -> {
+          if (widgetDataProvider.hasWidget()) {
+            val widgetIds = widgetDataProvider.getAppWidgetIds()
+            if (widgetIds.size > 1) {
+              val widgets =
+                widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
+                    .sortedBy { it.widgetName() }
+              val widgetNames = widgets.map { it.widgetName() }
+                  .toTypedArray()
+              AlertDialog.Builder(this)
+                  .setTitle(R.string.select_widget)
+                  .setItems(widgetNames) { dialog, which ->
+                    val id = widgets[which].widgetId
+                    addTickerToWidget(ticker, id)
+                    dialog.dismiss()
+                  }
+                  .create()
+                  .show()
+            } else {
+              addTickerToWidget(ticker, widgetIds.first())
+            }
+          } else {
+            addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
+          }
+          return@setOnMenuItemClickListener true
+        }
+        R.id.action_remove -> {
+          removeMenuItem.isVisible = false
+          addMenuItem.isVisible = true
+          stocksProvider.removeStock(ticker)
+          return@setOnMenuItemClickListener true
+        }
+      }
+      return@setOnMenuItemClickListener false
+    }
     toolbar.title = ticker
     tickerName.text = quote.name
     lastTradePrice.text = quote.priceString()
@@ -153,6 +206,9 @@ class NewsFeedActivity : BaseGraphActivity() {
     dataPoints?.let {
       outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
     }
+    if (isQuoteInitialized) {
+      outState.putParcelable(QUOTE, quote)
+    }
   }
 
   private fun setUpArticles(articles: List<NewsArticle>) {
@@ -186,11 +242,13 @@ class NewsFeedActivity : BaseGraphActivity() {
               .setShowTitle(true)
               .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
               .build()
-          analytics.trackClickEvent(ClickEvent("ArticleClick")
-              .addProperty("Instrument", ticker)
-              .addProperty("ArticleTitle", newsArticle.title.orEmpty())
-              .addProperty("ArticleSource", newsArticle.sourceName())
-              .addProperty("ArticleUrl", newsArticle.url.orEmpty()))
+          analytics.trackClickEvent(
+              ClickEvent("ArticleClick")
+                  .addProperty("Instrument", ticker)
+                  .addProperty("ArticleTitle", newsArticle.title.orEmpty())
+                  .addProperty("ArticleSource", newsArticle.sourceName())
+                  .addProperty("ArticleUrl", newsArticle.url.orEmpty())
+          )
           CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
           CustomTabsHelper.openCustomTab(
               this, customTabsIntent, Uri.parse(article.url.orEmpty()),
@@ -252,16 +310,20 @@ class NewsFeedActivity : BaseGraphActivity() {
         val result = newsProvider.getNews(quote.newsQuery())
         if (result.wasSuccessful) {
           val articles = result.data
-          analytics.trackGeneralEvent(GeneralEvent("FetchNews")
-              .addProperty("Instrument", ticker)
-              .addProperty("Success", "True"))
+          analytics.trackGeneralEvent(
+              GeneralEvent("FetchNews")
+                  .addProperty("Instrument", ticker)
+                  .addProperty("Success", "True")
+          )
           setUpArticles(articles)
         } else {
           news_container.visibility = View.GONE
           InAppMessage.showMessage(this@NewsFeedActivity, R.string.news_fetch_failed, error = true)
-          analytics.trackGeneralEvent(GeneralEvent("FetchNews")
-              .addProperty("Instrument", ticker)
-              .addProperty("Success", "False"))
+          analytics.trackGeneralEvent(
+              GeneralEvent("FetchNews")
+                  .addProperty("Instrument", ticker)
+                  .addProperty("Success", "False")
+          )
         }
       }
     } else {
@@ -283,10 +345,30 @@ class NewsFeedActivity : BaseGraphActivity() {
    * Called via xml
    */
   fun openGraph(v: View) {
-    analytics.trackClickEvent(ClickEvent("GraphClick")
-        .addProperty("Instrument", ticker))
+    analytics.trackClickEvent(
+        ClickEvent("GraphClick")
+            .addProperty("Instrument", ticker)
+    )
     val intent = Intent(this, GraphActivity::class.java)
     intent.putExtra(GraphActivity.TICKER, ticker)
     startActivity(intent)
+  }
+
+  private fun addTickerToWidget(
+    ticker: String,
+    widgetId: Int
+  ) {
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    if (!widgetData.hasTicker(ticker)) {
+      widgetData.addTicker(ticker)
+      widgetDataProvider.broadcastUpdateWidget(widgetId)
+      val addMenuItem = toolbar.menu.findItem(R.id.action_add)
+      val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
+      addMenuItem.isVisible = false
+      removeMenuItem.isVisible = true
+      InAppMessage.showMessage(this, getString(R.string.added_to_list, ticker))
+    } else {
+      showDialog(getString(R.string.already_in_portfolio, ticker))
+    }
   }
 }

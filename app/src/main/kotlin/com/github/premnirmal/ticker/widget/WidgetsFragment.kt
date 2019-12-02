@@ -81,7 +81,7 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
   }
 
   private fun setWidgetFragment(widgetId: Int) {
-    val fragment = WidgetSettingsFragment.newInstance(widgetId)
+    val fragment = WidgetSettingsFragment.newInstance(widgetId, false)
     childFragmentManager.beginTransaction()
         .replace(R.id.child_fragment_container, fragment)
         .commit()

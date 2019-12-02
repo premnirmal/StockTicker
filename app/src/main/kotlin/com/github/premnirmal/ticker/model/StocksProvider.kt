@@ -231,6 +231,7 @@ class StocksProvider : IStocksProvider {
         quote.symbol = ticker
         quoteList[ticker] = quote
         save()
+        bus.send(RefreshEvent())
         ApplicationScope.launch {
           fetch()
         }
@@ -299,7 +300,7 @@ class StocksProvider : IStocksProvider {
       quoteList.remove(ticker)
       positionList.remove(ticker)
       save()
-      scheduleUpdate()
+      scheduleUpdate(true)
       return tickerList
     }
   }
@@ -312,7 +313,7 @@ class StocksProvider : IStocksProvider {
         positionList.remove(it)
       }
       save()
-      scheduleUpdate()
+      scheduleUpdate(true)
     }
   }
 

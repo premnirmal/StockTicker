@@ -20,7 +20,8 @@ import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
+import com.github.premnirmal.ticker.network.data.Suggestion
+import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.news.NewsFeedActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
@@ -29,7 +30,9 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -92,6 +95,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     super.onSaveInstanceState(outState)
   }
 
+  override fun onResume() {
+    super.onResume()
+    lifecycleScope.launch {
+      withContext(Dispatchers.Default) {
+        adapter.getData()
+            .forEach {
+              it.exists = stocksProvider.hasTicker(it.symbol)
+            }
+      }
+      adapter.notifyDataSetChanged()
+    }
+  }
+
   private fun addTickerToWidget(
       ticker: String,
       widgetId: Int
@@ -133,7 +149,14 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         lifecycleScope.launch {
           val suggestions = stocksApi.getSuggestions(query)
           if (suggestions.wasSuccessful) {
-            adapter.setData(suggestions.data)
+            val data = withContext(Dispatchers.Default) {
+              suggestions.data.map {
+                val sug = Suggestion.fromSuggestionNet(it)
+                sug.exists = stocksProvider.hasTicker(sug.symbol)
+                sug
+              }
+            }
+            adapter.setData(data)
           } else {
             Timber.w(suggestions.error)
             InAppMessage.showMessage(requireActivity(), R.string.error_fetching_suggestions, error = true)
@@ -145,38 +168,63 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  override fun onSuggestionClick(suggestion: Suggestion) {
+  override fun onSuggestionClick(suggestion: Suggestion): Boolean {
     val ticker = suggestion.symbol
+    if (selectedWidgetId > 0) {
+      addTickerToWidget(ticker, selectedWidgetId)
+      return true
+    }
     val intent = Intent(requireContext(), NewsFeedActivity::class.java)
     intent.putExtra(NewsFeedActivity.TICKER, ticker)
     startActivity(intent)
-    return
-    if (selectedWidgetId > 0) {
-      addTickerToWidget(ticker, selectedWidgetId)
-      return
-    }
-    if (widgetDataProvider.hasWidget()) {
-      val widgetIds = widgetDataProvider.getAppWidgetIds()
-      if (widgetIds.size > 1) {
-        val widgets =
-          widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
-              .sortedBy { it.widgetName() }
-        val widgetNames = widgets.map { it.widgetName() }
-            .toTypedArray()
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.select_widget)
-            .setItems(widgetNames) { dialog, which ->
-              val id = widgets[which].widgetId
-              addTickerToWidget(ticker, id)
-              dialog.dismiss()
-            }
-            .create()
-            .show()
+    return false
+  }
+
+  override fun onAddRemoveClick(suggestion: Suggestion): Boolean {
+    val ticker = suggestion.symbol
+    if (!suggestion.exists) {
+      if (selectedWidgetId > 0) {
+        addTickerToWidget(ticker, selectedWidgetId)
+        return true
       } else {
-        addTickerToWidget(ticker, widgetIds.first())
+        if (widgetDataProvider.hasWidget()) {
+          val widgetIds = widgetDataProvider.getAppWidgetIds()
+          if (widgetIds.size > 1) {
+            val widgets =
+              widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
+                  .sortedBy { it.widgetName() }
+            val widgetNames = widgets.map { it.widgetName() }
+                .toTypedArray()
+            AlertDialog.Builder(requireActivity())
+                .setTitle(R.string.select_widget)
+                .setItems(widgetNames) { dialog, which ->
+                  val id = widgets[which].widgetId
+                  addTickerToWidget(ticker, id)
+                  suggestion.exists = !suggestion.exists
+                  adapter.notifyDataSetChanged()
+                  dialog.dismiss()
+                }
+                .create()
+                .show()
+            return false
+          } else {
+            addTickerToWidget(ticker, widgetIds.first())
+            return true
+          }
+        } else {
+          addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
+          return true
+        }
       }
     } else {
-      addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
+      if (selectedWidgetId > 0) {
+        val widgetData = widgetDataProvider.dataForWidgetId(selectedWidgetId)
+        widgetData.removeStock(ticker)
+      } else {
+        val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
+        widgetData?.removeStock(ticker)
+      }
+      return true
     }
   }
 

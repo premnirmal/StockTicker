@@ -21,7 +21,7 @@
       app:elevation="4dp"
       app:itemIconTint="@drawable/bottom_nav_icon_tint"
       app:itemTextColor="@drawable/bottom_nav_icon_tint"
-      app:menu="@menu/bottom_nav_items"
+      app:menu="@menu/menu_bottom_nav"
       />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

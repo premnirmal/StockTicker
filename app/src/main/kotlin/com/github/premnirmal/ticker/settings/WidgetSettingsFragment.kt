@@ -10,8 +10,10 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.annotation.ArrayRes
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
@@ -33,12 +35,14 @@ import javax.inject.Inject
 class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   companion object {
-    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+    private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+    private const val ARG_SHOW_ADD_STOCKS = "show_add_stocks"
 
-    fun newInstance(widgetId: Int): WidgetSettingsFragment {
+    fun newInstance(widgetId: Int, showAddStocks: Boolean = true): WidgetSettingsFragment {
       val fragment = WidgetSettingsFragment()
       val args = Bundle()
       args.putInt(ARG_WIDGET_ID, widgetId)
+      args.putBoolean(ARG_SHOW_ADD_STOCKS, showAddStocks)
       fragment.arguments = args
       return fragment
     }
@@ -49,6 +53,8 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var bus: AsyncBus
+  private var showAddStocks = true
   private val parent: Parent
     get() = activity as Parent
   internal var widgetId = 0
@@ -58,6 +64,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
     widgetId = arguments!!.getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+    showAddStocks = arguments!!.getBoolean(ARG_SHOW_ADD_STOCKS, true)
   }
 
   override fun onCreateView(
@@ -73,6 +80,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
+    setting_add_stock.visibility = if (showAddStocks) View.VISIBLE else View.GONE
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     setWidgetNameSetting(widgetData)
     setLayoutTypeSetting(widgetData)
@@ -103,6 +111,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
+          bus.send(RefreshEvent())
           InAppMessage.showMessage(activity!!, R.string.widget_name_updated)
         }
       }

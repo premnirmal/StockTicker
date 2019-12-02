@@ -100,6 +100,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   private fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
+    adapter.notifyDataSetChanged()
     subtitle.text = subtitleText
     if (!widgetDataProvider.hasWidget()) {
       fab_settings.show()

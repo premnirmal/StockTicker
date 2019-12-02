@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
@@ -18,6 +17,7 @@ import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.layout
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -97,9 +97,14 @@ class StockWidget : AppWidgetProvider() {
     appWidgetIds: IntArray?
   ) {
     super.onDeleted(context, appWidgetIds)
-    appWidgetIds?.let {
-      it.forEach { widgetId ->
-        widgetDataProvider.widgetRemoved(widgetId)
+    appWidgetIds?.let { id ->
+      id.forEach { widgetId ->
+        val removed = widgetDataProvider.removeWidget(widgetId)
+        removed?.getTickers()?.forEach { ticker ->
+          if (!widgetDataProvider.containsTicker(ticker)) {
+            stocksProvider.removeStock(ticker)
+          }
+        }
       }
     }
   }
