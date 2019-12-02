@@ -56,7 +56,7 @@
             android:theme="@style/SearchTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.news.NewsFeedActivity"
+            android:name="com.github.premnirmal.ticker.news.QuoteDetailActivity"
             android:label="@string/news_feed"
             android:theme="@style/NewsFeedActivityTheme" />
         <activity

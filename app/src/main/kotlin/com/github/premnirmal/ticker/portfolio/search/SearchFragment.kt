@@ -21,8 +21,7 @@ import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
-import com.github.premnirmal.ticker.news.NewsFeedActivity
+import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -174,8 +173,8 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       addTickerToWidget(ticker, selectedWidgetId)
       return true
     }
-    val intent = Intent(requireContext(), NewsFeedActivity::class.java)
-    intent.putExtra(NewsFeedActivity.TICKER, ticker)
+    val intent = Intent(requireContext(), QuoteDetailActivity::class.java)
+    intent.putExtra(QuoteDetailActivity.TICKER, ticker)
     startActivity(intent)
     return false
   }

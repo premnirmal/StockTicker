@@ -31,27 +31,29 @@ import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
-import kotlinx.android.synthetic.main.activity_news_feed.average_price
-import kotlinx.android.synthetic.main.activity_news_feed.change
-import kotlinx.android.synthetic.main.activity_news_feed.day_change
-import kotlinx.android.synthetic.main.activity_news_feed.description
-import kotlinx.android.synthetic.main.activity_news_feed.edit_positions
-import kotlinx.android.synthetic.main.activity_news_feed.equityValue
-import kotlinx.android.synthetic.main.activity_news_feed.exchange
-import kotlinx.android.synthetic.main.activity_news_feed.graphView
-import kotlinx.android.synthetic.main.activity_news_feed.graph_container
-import kotlinx.android.synthetic.main.activity_news_feed.lastTradePrice
-import kotlinx.android.synthetic.main.activity_news_feed.news_container
-import kotlinx.android.synthetic.main.activity_news_feed.numShares
-import kotlinx.android.synthetic.main.activity_news_feed.progress
-import kotlinx.android.synthetic.main.activity_news_feed.tickerName
-import kotlinx.android.synthetic.main.activity_news_feed.toolbar
-import kotlinx.android.synthetic.main.activity_news_feed.total_gain_loss
+import kotlinx.android.synthetic.main.activity_quote_detail.average_price
+import kotlinx.android.synthetic.main.activity_quote_detail.change
+import kotlinx.android.synthetic.main.activity_quote_detail.day_change
+import kotlinx.android.synthetic.main.activity_quote_detail.description
+import kotlinx.android.synthetic.main.activity_quote_detail.edit_positions
+import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
+import kotlinx.android.synthetic.main.activity_quote_detail.exchange
+import kotlinx.android.synthetic.main.activity_quote_detail.graphView
+import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
+import kotlinx.android.synthetic.main.activity_quote_detail.lastTradePrice
+import kotlinx.android.synthetic.main.activity_quote_detail.news_container
+import kotlinx.android.synthetic.main.activity_quote_detail.numShares
+import kotlinx.android.synthetic.main.activity_quote_detail.positions_container
+import kotlinx.android.synthetic.main.activity_quote_detail.positions_header
+import kotlinx.android.synthetic.main.activity_quote_detail.progress
+import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
+import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
+import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
 import kotlinx.coroutines.launch
 import saschpe.android.customtabs.CustomTabsHelper
 import javax.inject.Inject
 
-class NewsFeedActivity : BaseGraphActivity() {
+class QuoteDetailActivity : BaseGraphActivity() {
 
   companion object {
     const val TICKER = "TICKER"
@@ -69,7 +71,7 @@ class NewsFeedActivity : BaseGraphActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_news_feed)
+    setContentView(R.layout.activity_quote_detail)
     toolbar.setNavigationOnClickListener {
       finish()
     }
@@ -168,9 +170,7 @@ class NewsFeedActivity : BaseGraphActivity() {
       lastTradePrice.setTextColor(resources.getColor(color.negative_red))
     }
     exchange.text = quote.stockExchange
-    numShares.text = quote.numSharesString()
-    equityValue.text = quote.holdingsString()
-    description.text = quote.description
+    updatePositionsUi()
     edit_positions.setOnClickListener {
       analytics.trackClickEvent(
           ClickEvent("EditPositionClick")
@@ -192,7 +192,7 @@ class NewsFeedActivity : BaseGraphActivity() {
         } else {
           progress.visibility = View.GONE
           graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-          InAppMessage.showMessage(this@NewsFeedActivity, R.string.graph_fetch_failed, error = true)
+          InAppMessage.showMessage(this@QuoteDetailActivity, R.string.graph_fetch_failed, error = true)
         }
       }
     } else {
@@ -261,32 +261,44 @@ class NewsFeedActivity : BaseGraphActivity() {
 
   override fun onResume() {
     super.onResume()
-    if (!isQuoteInitialized) {
-      return
+    if (isQuoteInitialized) {
+      updatePositionsUi()
     }
-    numShares.text = quote.numSharesString()
-    equityValue.text = quote.holdingsString()
-    if (quote.hasPositions()) {
-      total_gain_loss.visibility = View.VISIBLE
-      total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
-      if (quote.gainLoss() >= 0) {
-        total_gain_loss.setTextColor(resources.getColor(R.color.positive_green))
+  }
+
+  private fun updatePositionsUi() {
+    val isInPortfolio = stocksProvider.hasTicker(ticker)
+    if (isInPortfolio) {
+      positions_container.visibility = View.VISIBLE
+      positions_header.visibility = View.VISIBLE
+      numShares.text = quote.numSharesString()
+      equityValue.text = quote.holdingsString()
+      description.text = quote.description
+      if (quote.hasPositions()) {
+        total_gain_loss.visibility = View.VISIBLE
+        total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
+        if (quote.gainLoss() >= 0) {
+          total_gain_loss.setTextColor(resources.getColor(color.positive_green))
+        } else {
+          total_gain_loss.setTextColor(resources.getColor(color.negative_red))
+        }
+        average_price.visibility = View.VISIBLE
+        average_price.setText(quote.averagePositionPrice())
+        day_change.visibility = View.VISIBLE
+        day_change.setText(quote.dayChangeString())
+        if (quote.change > 0 || quote.changeInPercent >= 0) {
+          day_change.setTextColor(resources.getColor(color.positive_green))
+        } else {
+          day_change.setTextColor(resources.getColor(color.negative_red))
+        }
       } else {
-        total_gain_loss.setTextColor(resources.getColor(R.color.negative_red))
-      }
-      average_price.visibility = View.VISIBLE
-      average_price.setText(quote.averagePositionPrice())
-      day_change.visibility = View.VISIBLE
-      day_change.setText(quote.dayChangeString())
-      if (quote.change > 0 || quote.changeInPercent >= 0) {
-        day_change.setTextColor(resources.getColor(R.color.positive_green))
-      } else {
-        day_change.setTextColor(resources.getColor(R.color.negative_red))
+        total_gain_loss.visibility = View.GONE
+        day_change.visibility = View.GONE
+        average_price.visibility = View.GONE
       }
     } else {
-      total_gain_loss.visibility = View.GONE
-      day_change.visibility = View.GONE
-      average_price.visibility = View.GONE
+      positions_container.visibility = View.GONE
+      positions_header.visibility = View.GONE
     }
   }
 
@@ -318,7 +330,7 @@ class NewsFeedActivity : BaseGraphActivity() {
           setUpArticles(articles)
         } else {
           news_container.visibility = View.GONE
-          InAppMessage.showMessage(this@NewsFeedActivity, R.string.news_fetch_failed, error = true)
+          InAppMessage.showMessage(this@QuoteDetailActivity, R.string.news_fetch_failed, error = true)
           analytics.trackGeneralEvent(
               GeneralEvent("FetchNews")
                   .addProperty("Instrument", ticker)

@@ -18,7 +18,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.news.NewsFeedActivity
+import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
@@ -95,8 +95,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   ) {
     analytics.trackClickEvent(ClickEvent("InstrumentClick")
         .addProperty("Instrument", quote.symbol))
-    val intent = Intent(view.context, NewsFeedActivity::class.java)
-    intent.putExtra(NewsFeedActivity.TICKER, quote.symbol)
+    val intent = Intent(view.context, QuoteDetailActivity::class.java)
+    intent.putExtra(QuoteDetailActivity.TICKER, quote.symbol)
     startActivity(intent)
   }
 

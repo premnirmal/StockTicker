@@ -20,9 +20,8 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.GraphActivity
-import com.github.premnirmal.ticker.news.NewsFeedActivity
+import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
@@ -55,7 +54,7 @@ interface AppComponent {
 
   fun inject(splashActivity: SplashActivity)
 
-  fun inject(newsFeedActivity: NewsFeedActivity)
+  fun inject(newsFeedActivity: QuoteDetailActivity)
 
   fun inject(graphActivity: GraphActivity)
 
