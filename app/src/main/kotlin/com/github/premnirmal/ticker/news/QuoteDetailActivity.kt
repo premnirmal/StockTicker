@@ -146,12 +146,14 @@ class QuoteDetailActivity : BaseGraphActivity() {
           } else {
             addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
           }
+          updatePositionsUi()
           return@setOnMenuItemClickListener true
         }
         R.id.action_remove -> {
           removeMenuItem.isVisible = false
           addMenuItem.isVisible = true
           stocksProvider.removeStock(ticker)
+          updatePositionsUi()
           return@setOnMenuItemClickListener true
         }
       }
