@@ -18,6 +18,9 @@
   <color name="translucent">#98000000</color>
   <color name="bg_gradient_center">#752a2a2a</color>
   <color name="black_gradient_center">#3f3f3f</color>
+  <color name="nav_bar_bg">@color/default_dark_bg</color>
+  <color name="nav_bar_bg_2">@color/card_bg</color>
+  <color name="bottom_bar_bg">@color/card_bg</color>
 
   <color name="white">#ffffff</color>
   <color name="black">#000000</color>
