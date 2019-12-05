@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filter
@@ -32,7 +31,6 @@ class AsyncBus: CoroutineScope {
   @ExperimentalCoroutinesApi
   fun send(o: Any) {
     launch {
-      delay(2000)
       bus.send(o)
     }
   }
