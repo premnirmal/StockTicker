@@ -18,7 +18,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.news.NewsFeedActivity
+import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
@@ -29,7 +29,6 @@ import kotlinx.android.synthetic.main.portfolio_fragment.stockList
 import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -96,8 +95,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   ) {
     analytics.trackClickEvent(ClickEvent("InstrumentClick")
         .addProperty("Instrument", quote.symbol))
-    val intent = Intent(view.context, NewsFeedActivity::class.java)
-    intent.putExtra(NewsFeedActivity.TICKER, quote.symbol)
+    val intent = Intent(view.context, QuoteDetailActivity::class.java)
+    intent.putExtra(QuoteDetailActivity.TICKER, quote.symbol)
     startActivity(intent)
   }
 
@@ -107,7 +106,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
       position: Int
   ) {
     val popupWindow = PopupMenu(view.context, view)
-    popupWindow.menuInflater.inflate(R.menu.stock_menu, popupWindow.menu)
+    popupWindow.menuInflater.inflate(R.menu.menu_portfolio, popupWindow.menu)
     val moveToWidgetItem = popupWindow.menu.findItem(R.id.move_to_widget)
     moveToWidgetItem.isEnabled = widgetId !=
         AppWidgetManager.INVALID_APPWIDGET_ID && holder.widgetDataProvider.getAppWidgetIds().size >

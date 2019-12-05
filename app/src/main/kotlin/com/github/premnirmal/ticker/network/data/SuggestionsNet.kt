@@ -5,14 +5,14 @@ import com.google.gson.annotations.SerializedName
 /**
  * Created by premnirmal on 3/30/17.
  */
-data class Suggestions(@SerializedName("ResultSet") var resultSet: QueryResults? = null) {
+data class SuggestionsNet(@SerializedName("ResultSet") var resultSet: QueryResultsNet? = null) {
 
-  data class QueryResults(
+  data class QueryResultsNet(
     @SerializedName("Query") var query: String = "") {
-    @SerializedName("Result") var result: List<Suggestion>? = null
+    @SerializedName("Result") var result: List<SuggestionNet>? = null
   }
 
-  data class Suggestion(
+  data class SuggestionNet(
     @SerializedName("symbol") var symbol: String = ""
   ) {
     @SerializedName("name") var name: String = ""

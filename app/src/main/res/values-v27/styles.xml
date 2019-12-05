@@ -25,6 +25,8 @@
     <!-- v21 specific -->
     <item name="android:statusBarColor">@color/transparent</item>
     <item name="android:navigationBarColor">@color/nav_bar_bg</item>
+    <!-- v27 specific -->
+    <item name="android:navigationBarDividerColor">@color/transparent</item>
   </style>
   <!-- Custom Preference Theme -->
   <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">

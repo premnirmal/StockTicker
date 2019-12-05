@@ -6,7 +6,7 @@ import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.IQuoteNet
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.network.data.Suggestions.Suggestion
+import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -36,13 +36,13 @@ class StocksApi {
       suggestionApi.getSuggestions(query)
           .resultSet?.result
     } catch (e: Exception) {
-      return@withContext FetchResult<List<Suggestion>>(_error = FetchException("Error fetching", e))
+      return@withContext FetchResult<List<SuggestionNet>>(_error = FetchException("Error fetching", e))
     }
     val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
     if (suggestionList.isEmpty()) {
-      suggestionList.add(0, Suggestion(query))
+      suggestionList.add(0, SuggestionNet(query))
     }
-    return@withContext FetchResult<List<Suggestion>>(_data = suggestionList)
+    return@withContext FetchResult<List<SuggestionNet>>(_data = suggestionList)
   }
 
   /**
@@ -59,6 +59,15 @@ class StocksApi {
     }
     quoteNets.toQuoteMap()
         .toOrderedQuoteList(tickerList)
+  }
+
+  suspend fun getStock(ticker: String) = withContext(Dispatchers.IO) {
+    val quoteNets = try {
+      robindahood.getStocks(ticker)
+    } catch (ex: HttpException) {
+      getStocksYahoo(listOf(ticker))
+    }
+    return@withContext Quote.fromQuoteNet(quoteNets.first())
   }
 
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
