@@ -61,6 +61,7 @@
   <string name="error_exporting">Error exporting file</string>
   <string name="error_symbol">Invalid symbol</string>
   <string name="error_sharing">Error sharing quotes</string>
+  <string name="error_fetching_stock">Error fetching stock</string>
   <string name="ticker_import_success">Quotes imported successfully</string>
   <string name="ticker_import_fail">Error importing quotes</string>
   <string name="no_network_message">No network connection</string>

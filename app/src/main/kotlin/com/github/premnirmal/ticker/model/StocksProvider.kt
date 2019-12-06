@@ -7,19 +7,17 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.concurrency.ApplicationScope
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.threeten.bp.DayOfWeek
@@ -319,7 +317,15 @@ class StocksProvider : IStocksProvider {
 
   override suspend fun fetchStock(ticker: String): Quote? = withContext(Dispatchers.IO) {
     return@withContext quoteList[ticker] ?: run {
-      api.getStock(ticker)
+      try {
+        return@run api.getStock(ticker)
+      } catch (ex: Exception) {
+        Timber.w(ex)
+        withContext(Dispatchers.Main) {
+          InAppMessage.showToast(context, R.string.error_fetching_stock)
+        }
+        return@run null
+      }
     }
   }
 
