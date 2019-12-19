@@ -200,8 +200,10 @@ class StocksProvider : IStocksProvider {
       } catch (ex: Exception) {
         Timber.w(ex)
         appPreferences.setRefreshing(false)
-        withContext(Dispatchers.Main) {
-          InAppMessage.showToast(context, R.string.refresh_failed)
+        if (!bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))) {
+          withContext(Dispatchers.Main) {
+            InAppMessage.showToast(context, R.string.refresh_failed)
+          }
         }
         retryWithBackoff()
         FetchResult<List<Quote>>(_error = FetchException("Failed to fetch", ex))

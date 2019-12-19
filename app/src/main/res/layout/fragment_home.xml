@@ -95,19 +95,4 @@
         />
   </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-  <com.google.android.material.floatingactionbutton.FloatingActionButton
-      android:id="@+id/fab_settings"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_gravity="bottom|right|end"
-      android:layout_marginBottom="@dimen/fab_margin_bottom"
-      android:layout_marginEnd="@dimen/fab_margin"
-      android:layout_marginRight="@dimen/fab_margin"
-      android:src="@drawable/ic_add"
-      app:backgroundTint="@color/color_accent"
-      app:borderWidth="0dp"
-      app:layout_behavior="com.github.premnirmal.ticker.ui.FabBehavior"
-      app:rippleColor="@color/white"
-      />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

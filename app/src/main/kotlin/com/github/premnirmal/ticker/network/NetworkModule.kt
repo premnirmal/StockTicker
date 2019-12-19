@@ -33,8 +33,8 @@ import javax.inject.Singleton
 class NetworkModule {
 
   companion object {
-    internal const val CONNECTION_TIMEOUT: Long = 20000
-    internal const val READ_TIMEOUT: Long = 20000
+    internal const val CONNECTION_TIMEOUT: Long = 5000
+    internal const val READ_TIMEOUT: Long = 5000
   }
 
   @Provides @Singleton @Named("client") internal fun provideHttpClientForYahoo(): OkHttpClient {
@@ -51,10 +51,8 @@ class NetworkModule {
     return okHttpClient
   }
 
-  @Provides @Singleton @Named("robindahoodClient") internal fun provideHttpClientForRobindahood(
-    context: Context,
-    bus: AsyncBus
-  ): OkHttpClient {
+  @Provides @Singleton @Named("robindahoodClient")
+  internal fun provideHttpClientForRobindahood(): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level =
       if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
@@ -128,7 +126,6 @@ class NetworkModule {
     context: Context, @Named(
         "robindahoodClient"
     ) okHttpClient: OkHttpClient,
-    gson: Gson,
     converterFactory: GsonConverterFactory
   ): Robindahood {
     val retrofit = Retrofit.Builder()
@@ -143,7 +140,6 @@ class NetworkModule {
   @Provides @Singleton internal fun provideYahooFinance(
     context: Context,
     @Named("client") okHttpClient: OkHttpClient,
-    gson: Gson,
     converterFactory: GsonConverterFactory
   ): YahooFinance {
     val retrofit = Retrofit.Builder()
@@ -159,7 +155,6 @@ class NetworkModule {
     context: Context, @Named(
         "robindahoodClient"
     ) okHttpClient: OkHttpClient,
-    gson: Gson,
     converterFactory: GsonConverterFactory
   ): NewsApi {
     val retrofit =
@@ -176,7 +171,6 @@ class NetworkModule {
     context: Context, @Named(
         "client"
     ) okHttpClient: OkHttpClient,
-    gson: Gson,
     converterFactory: GsonConverterFactory
   ): HistoricalDataApi {
     val retrofit = Retrofit.Builder()

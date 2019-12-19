@@ -181,7 +181,6 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), stringBuilder.toString())
   }
 
-  // HomeFragment.Parent
   // WidgetSettingsFragment.Parent
 
   override fun openSearch(widgetId: Int) {

@@ -156,8 +156,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onResume() {
     super.onResume()
     update()
+    val flow = holder.bus.receive<RefreshEvent>()
     lifecycleScope.launch {
-      val flow = holder.bus.receive<RefreshEvent>()
       flow.collect {
         update()
       }
@@ -178,7 +178,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   ) {
     super.onViewCreated(view, savedInstanceState)
     stockList.addItemDecoration(
-        SpacingDecoration(context!!.resources.getDimensionPixelSize(R.dimen.list_spacing))
+        SpacingDecoration(requireContext().resources.getDimensionPixelSize(R.dimen.list_spacing))
     )
     val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
     stockList.layoutManager = gridLayoutManager

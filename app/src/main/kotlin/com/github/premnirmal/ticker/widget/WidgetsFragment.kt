@@ -49,7 +49,7 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
+    (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
     widgetDataList = widgetDataProvider.getAppWidgetIds()
         .map {
           widgetDataProvider.dataForWidgetId(it)

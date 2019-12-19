@@ -78,7 +78,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    fake_status_bar.layoutParams.height = context!!.getStatusBarHeight()
+    fake_status_bar.layoutParams.height = requireContext().getStatusBarHeight()
     fake_status_bar.requestLayout()
     adapter = SuggestionsAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)

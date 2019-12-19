@@ -18,7 +18,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_home.fab_settings
 import kotlinx.android.synthetic.main.fragment_home.subtitle
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
@@ -37,7 +36,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   interface Parent {
     fun showWhatsNew()
     fun showTutorial()
-    fun openSearch(widgetId: Int)
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
@@ -45,8 +43,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   @Inject internal lateinit var bus: AsyncBus
   override val simpleName: String = "HomeFragment"
 
-  private val parent: Parent
-    get() = activity as Parent
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
@@ -66,7 +62,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    (toolbar.layoutParams as MarginLayoutParams).topMargin = context!!.getStatusBarHeight()
+    (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { fetch() }
@@ -74,12 +70,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
     subtitle.text = subtitleText
-    fab_settings.setOnClickListener {
-      if (!widgetDataProvider.hasWidget()) {
-        val widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
-        parent.openSearch(widgetId)
-      }
-    }
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -90,8 +80,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onResume() {
     super.onResume()
     update()
+    val flow = bus.receive<RefreshEvent>()
     lifecycleScope.launch {
-      val flow = bus.receive<RefreshEvent>()
       flow.collect {
         updateHeader()
       }
@@ -102,12 +92,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.notifyDataSetChanged()
     subtitle.text = subtitleText
-    if (!widgetDataProvider.hasWidget()) {
-      fab_settings.show()
-      fab_settings.setImageResource(R.drawable.ic_add)
-    } else {
-      fab_settings.hide()
-    }
   }
 
   private fun fetch() {
@@ -119,9 +103,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
           attemptingFetch = true
           lifecycleScope.launch {
             stocksProvider.fetch()
-            update()
             attemptingFetch = false
             swipe_container?.isRefreshing = false
+            update()
           }
         } else {
           attemptingFetch = false

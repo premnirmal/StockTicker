@@ -21,6 +21,7 @@
       app:elevation="4dp"
       app:itemIconTint="@drawable/bottom_nav_icon_tint"
       app:itemTextColor="@drawable/bottom_nav_icon_tint"
+      app:layout_behavior="com.github.premnirmal.ticker.ui.BottomNavigationBehavior"
       app:menu="@menu/menu_bottom_nav"
       />
 

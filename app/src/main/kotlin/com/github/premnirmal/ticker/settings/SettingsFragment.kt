@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.TimePicker
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -28,14 +27,13 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.BrowserFallback
+import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -44,7 +42,6 @@ import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.fragment_settings.toolbar
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
-import saschpe.android.customtabs.CustomTabsHelper
 import timber.log.Timber
 import java.io.File
 import java.util.Locale
@@ -169,17 +166,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val privacyPref = findPreference<Preference>(AppPreferences.SETTING_PRIVACY_POLICY)
       privacyPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        val customTabsIntent = CustomTabsIntent.Builder()
-            .addDefaultShareMenuItem()
-            .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
-            .setShowTitle(true)
-            .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
-            .build()
-        CustomTabsHelper.addKeepAliveExtra(requireContext(), customTabsIntent.intent)
-        CustomTabsHelper.openCustomTab(
-            requireContext(), customTabsIntent,
-            Uri.parse(resources.getString(R.string.privacy_policy_url)),
-            BrowserFallback()
+        CustomTabs.openTab(
+            requireContext(), resources.getString(R.string.privacy_policy_url)
         )
         true
       }

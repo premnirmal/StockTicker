@@ -3,17 +3,15 @@ package com.github.premnirmal.ticker.news
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.browser.customtabs.CustomTabsIntent
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.LineChart
-import com.github.premnirmal.ticker.BrowserFallback
+import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
@@ -27,7 +25,6 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.ticker.toBitmap
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
@@ -50,7 +47,6 @@ import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
 import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
 import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
 import kotlinx.coroutines.launch
-import saschpe.android.customtabs.CustomTabsHelper
 import javax.inject.Inject
 
 class QuoteDetailActivity : BaseGraphActivity() {
@@ -238,24 +234,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
         layout.tag = newsArticle
         layout.setOnClickListener {
           val article = it.tag as NewsArticle
-          val customTabsIntent = CustomTabsIntent.Builder()
-              .addDefaultShareMenuItem()
-              .setToolbarColor(this.resources.getColor(R.color.colorPrimary))
-              .setShowTitle(true)
-              .setCloseButtonIcon(resources.getDrawable(R.drawable.ic_close).toBitmap())
-              .build()
-          analytics.trackClickEvent(
-              ClickEvent("ArticleClick")
-                  .addProperty("Instrument", ticker)
-                  .addProperty("ArticleTitle", newsArticle.title.orEmpty())
-                  .addProperty("ArticleSource", newsArticle.sourceName())
-                  .addProperty("ArticleUrl", newsArticle.url.orEmpty())
-          )
-          CustomTabsHelper.addKeepAliveExtra(this, customTabsIntent.intent)
-          CustomTabsHelper.openCustomTab(
-              this, customTabsIntent, Uri.parse(article.url.orEmpty()),
-              BrowserFallback()
-          )
+          CustomTabs.openTab(this, article.url.orEmpty())
         }
       }
     }

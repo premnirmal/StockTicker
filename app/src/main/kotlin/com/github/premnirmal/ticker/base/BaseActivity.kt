@@ -44,8 +44,8 @@ abstract class BaseActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+    val flow = bus.receive<ErrorEvent>()
     lifecycleScope.launch {
-      val flow = bus.receive<ErrorEvent>()
       flow.collect { event ->
         showDialog(event.message)
       }

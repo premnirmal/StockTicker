@@ -1,13 +1,13 @@
 package com.github.premnirmal.ticker.home
 
 import android.appwidget.AppWidgetManager
+import androidx.fragment.app.FragmentPagerAdapter
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
-class HomePagerAdapter(fm: androidx.fragment.app.FragmentManager) :
-    androidx.fragment.app.FragmentPagerAdapter(fm) {
+class HomePagerAdapter(fm: androidx.fragment.app.FragmentManager) : FragmentPagerAdapter(fm) {
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 

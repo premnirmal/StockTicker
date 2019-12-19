@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -18,7 +19,8 @@ import kotlin.coroutines.CoroutineContext
  *
  * The ghetto event bus!
  */
-class AsyncBus: CoroutineScope {
+@Singleton
+class AsyncBus : CoroutineScope {
 
   private val job = Job()
 
@@ -29,10 +31,12 @@ class AsyncBus: CoroutineScope {
   val bus = BroadcastChannel<Any>(1)
 
   @ExperimentalCoroutinesApi
-  fun send(o: Any) {
-    launch {
-      bus.send(o)
+  fun send(event: Any): Boolean {
+    if (bus.offer(event)) return true
+    else launch {
+      bus.send(event)
     }
+    return false
   }
 
   @FlowPreview
