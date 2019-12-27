@@ -18,19 +18,19 @@ class SplashActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_splash)
     val decorView = window.decorView
     // Hide the status bar.
     if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
       decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
     }
-    setContentView(R.layout.activity_splash)
     lifecycleScope.launch {
       delay(300)
-      launch()
+      openApp()
     }
   }
 
-  private fun launch() {
+  private fun openApp() {
     if (!isFinishing) {
       startActivity(Intent(this, ParanormalActivity::class.java))
       finish()

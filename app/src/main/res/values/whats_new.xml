@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>More Bug fixes</item>
-    <item>Visual updates</item>
+    <item>Splash update</item>
   </string-array>
 </resources>
