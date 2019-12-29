@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - 'master'
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+    name: Build apk and bundle
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build apk
+        run: bash ./gradlew assemblePurefossDebug -PdisablePreDex
+      - name: Build bundle
+        run: bash ./gradlew app:bundlePurefossDebug -PdisablePreDex
+      - name: Upload apk and bundle
+        uses: actions/upload-artifact@v1
+        with:
+          name: app
+          path: app/build/outputs/
