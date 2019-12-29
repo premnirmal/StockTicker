@@ -1,4 +1,4 @@
-name: Build apk and bundle
+name: Build
 
 on:
   pull_request:
