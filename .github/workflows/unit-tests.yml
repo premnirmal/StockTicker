@@ -1,9 +1,12 @@
 name: Run unit tests
 
 on:
+  pull_request:
+    branches:
+      - 'master'
   push:
     branches:
-      - '*'
+      - 'master'
 
 jobs:
   test:
@@ -18,3 +21,13 @@ jobs:
         java-version: 1.8
     - name: Unit tests
       run: bash ./gradlew testPurefossDebug -PdisablePreDex --no-daemon
+    - name: Archive test results
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-reports
+        path: app/build/test-results/testPurefossDebugUnitTest/
+    - name: Archive test reports
+      uses: actions/upload-artifact@v1
+      with:
+        name: test-reports
+        path: app/build/reports/tests
