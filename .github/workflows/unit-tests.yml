@@ -24,7 +24,7 @@ jobs:
     - name: Archive test results
       uses: actions/upload-artifact@v1
       with:
-        name: test-reports
+        name: test-results
         path: app/build/test-results/testPurefossDebugUnitTest/
     - name: Archive test reports
       uses: actions/upload-artifact@v1
