@@ -1,5 +1,5 @@
 # Stocks Widget
-[![Build](https://github.com/premnirmal/StockTicker/workflows/build/badge.svg)](https://github.com/premnirmal/StockTicker/actions) [![Unit tests](https://github.com/premnirmal/StockTicker/workflows/unittests/badge.svg)](https://github.com/premnirmal/StockTicker/actions)
+[![Build](https://github.com/premnirmal/StockTicker/workflows/Build/badge.svg)](https://github.com/premnirmal/StockTicker/actions) [![Unit tests](https://github.com/premnirmal/StockTicker/workflows/Run%20unit%20tests/badge.svg)](https://github.com/premnirmal/StockTicker/actions)
 
 [![Google play link](graphics/google-play-badge.png)](https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget) [<img src="https://i.imgur.com/u6kj7yf.png"
       alt="Get it on F-Droid"
