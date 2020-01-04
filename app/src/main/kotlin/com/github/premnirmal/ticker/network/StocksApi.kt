@@ -11,7 +11,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import retrofit2.http.HTTP
 import javax.inject.Inject
 import javax.inject.Singleton
 
