@@ -57,9 +57,7 @@ class StocksApi {
         robindahood.getStocks(query)
       }
     } catch (ex: HttpException) {
-      if (ex.code() == 401) {
-        unauthorized = true
-      }
+      unauthorized = ex.code() == 401
       getStocksYahoo(tickerList)
     }
     lastFetched = clock.currentTimeMillis()
@@ -70,14 +68,12 @@ class StocksApi {
   suspend fun getStock(ticker: String) = withContext(Dispatchers.IO) {
     val quoteNets = try {
       if (unauthorized) {
-        robindahood.getStocks(ticker)
-      } else {
         getStocksYahoo(listOf(ticker))
+      } else {
+        robindahood.getStocks(ticker)
       }
     } catch (ex: HttpException) {
-      if (ex.code() == 401) {
-        unauthorized = true
-      }
+      unauthorized = ex.code() == 401
       getStocksYahoo(listOf(ticker))
     }
     return@withContext Quote.fromQuoteNet(quoteNets.first())
