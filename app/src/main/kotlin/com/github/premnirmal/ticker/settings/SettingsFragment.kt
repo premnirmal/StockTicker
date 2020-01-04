@@ -3,6 +3,8 @@ package com.github.premnirmal.ticker.settings
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
 import android.appwidget.AppWidgetManager
 import android.content.Context
@@ -118,23 +120,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
 
   override fun onDisplayPreferenceDialog(preference: Preference) {
     when {
-      preference.key == AppPreferences.START_TIME -> {
+      preference.key == AppPreferences.START_TIME || preference.key == AppPreferences.END_TIME-> {
         val pref = preference as TimePreference
-        val dialog =
-          TimePickerDialog(
-              context, TimeSelectedListener(pref, R.string.start_time_updated),
-              pref.lastHour, pref.lastMinute, true
-          )
-        dialog.setTitle(R.string.start_time)
-        dialog.show()
-      }
-      preference.key == AppPreferences.END_TIME -> {
-        val pref = preference as TimePreference
-        val dialog = TimePickerDialog(
-            context, TimeSelectedListener(pref, R.string.end_time_updated),
-            pref.lastHour, pref.lastMinute, true
-        )
-        dialog.setTitle(R.string.end_time)
+        val dialog = createTimePickerDialog(pref)
         dialog.show()
       }
       else -> super.onDisplayPreferenceDialog(preference)
@@ -362,9 +350,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val daysPreference = findPreference<MultiSelectListPreference>(AppPreferences.UPDATE_DAYS)
       val selectedDays = appPreferences.updateDaysRaw()
-      daysPreference.summary = appPreferences.updateDays().joinToString {
-        it.getDisplayName(SHORT, Locale.getDefault())
-      }
+      daysPreference.summary = appPreferences.updateDays()
+          .joinToString {
+            it.getDisplayName(SHORT, Locale.getDefault())
+          }
       daysPreference.values = selectedDays
       daysPreference.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
         override fun onPreferenceChange(
@@ -373,13 +362,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         ): Boolean {
           val selectedValues = newValue as Set<String>
           if (selectedValues.isEmpty()) {
-            InAppMessage.showMessage(requireActivity(), R.string.days_updated_error_message, error = true)
+            InAppMessage.showMessage(
+                requireActivity(), R.string.days_updated_error_message, error = true
+            )
             return false
           }
           appPreferences.setUpdateDays(selectedValues)
-          daysPreference.summary = appPreferences.updateDays().joinToString {
-            it.getDisplayName(SHORT, Locale.getDefault())
-          }
+          daysPreference.summary = appPreferences.updateDays()
+              .joinToString {
+                it.getDisplayName(SHORT, Locale.getDefault())
+              }
           stocksProvider.schedule()
           InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
           broadcastUpdateWidget()
@@ -542,33 +534,70 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     super.onActivityResult(requestCode, resultCode, data)
   }
 
-  inner class TimeSelectedListener(
-    private val preference: TimePreference,
-    private val messageRes: Int
-  ) : TimePickerDialog.OnTimeSetListener {
-
-    override fun onTimeSet(
-      picker: TimePicker,
-      hourOfDay: Int,
-      minute: Int
-    ) {
-      val lastHour = picker.currentHour
-      val lastMinute = picker.currentMinute
-      val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
-      val minuteString = if (lastMinute < 10) "0$lastMinute" else lastMinute.toString()
-      val time = "$hourString:$minuteString"
-      val startTimez = appPreferences.timeAsIntArray(time)
-      val endTimez = appPreferences.endTime()
-      if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
-        showDialog(getString(R.string.incorrect_time_update_error))
-      } else {
-        preferences.edit()
-            .putString(preference.key, time)
-            .apply()
-        preference.summary = time
-        stocksProvider.schedule()
-        InAppMessage.showMessage(requireActivity(), messageRes)
+  private fun createTimePickerDialog(pref: TimePreference): Dialog {
+    val listener = TimeSelectedListener(
+        pref,
+        if (pref.key == AppPreferences.START_TIME) R.string.start_time_updated else R.string.end_time_updated
+    )
+    val dialog = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+      TimePickerDialog(
+          context, listener,
+          pref.lastHour, pref.lastMinute, true
+      )
+    } else {
+      val timePicker = TimePicker(requireContext()).apply {
+        setIs24HourView(true)
+        currentHour = pref.lastHour
+        currentMinute = pref.lastMinute
       }
+      AlertDialog.Builder(requireContext())
+          .setView(timePicker)
+          .setPositiveButton(R.string.ok) { _, _ ->
+            listener.onTimeSet(timePicker, timePicker.currentHour, timePicker.currentMinute)
+          }
+          .create()
+    }
+    dialog.setTitle(
+        if (pref.key == AppPreferences.START_TIME) R.string.start_time else R.string.end_time
+    )
+    return dialog
+}
+
+inner class TimeSelectedListener(
+  private val preference: TimePreference,
+  private val messageRes: Int
+) : TimePickerDialog.OnTimeSetListener {
+
+  override fun onTimeSet(
+    picker: TimePicker,
+    hourOfDay: Int,
+    minute: Int
+  ) {
+    val lastHour = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      picker.hour
+    } else {
+      picker.currentHour
+    }
+    val lastMinute = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      picker.minute
+    } else {
+      picker.currentMinute
+    }
+    val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
+    val minuteString = if (lastMinute < 10) "0$lastMinute" else lastMinute.toString()
+    val time = "$hourString:$minuteString"
+    val startTimez = appPreferences.timeAsIntArray(time)
+    val endTimez = appPreferences.endTime()
+    if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+      showDialog(getString(R.string.incorrect_time_update_error))
+    } else {
+      preferences.edit()
+          .putString(preference.key, time)
+          .apply()
+      preference.summary = time
+      stocksProvider.schedule()
+      InAppMessage.showMessage(requireActivity(), messageRes)
     }
   }
+}
 }
