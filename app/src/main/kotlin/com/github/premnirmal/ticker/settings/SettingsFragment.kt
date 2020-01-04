@@ -15,8 +15,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.EditText
 import android.widget.TimePicker
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -396,7 +398,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   }
 
   private fun needsPermissionGrant(): Boolean {
-    return Build.VERSION.SDK_INT >= 23 && ContextCompat.checkSelfPermission(
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(
         requireActivity(),
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     ) != PackageManager.PERMISSION_GRANTED
@@ -537,51 +539,61 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   private fun createTimePickerDialog(pref: TimePreference): Dialog {
     val listener = TimeSelectedListener(
         pref,
-        if (pref.key == AppPreferences.START_TIME) R.string.start_time_updated else R.string.end_time_updated
+        if (pref.key == AppPreferences.START_TIME) R.string.start_time_updated
+        else R.string.end_time_updated
     )
+    if (pref.key == AppPreferences.START_TIME) {
+      val startTime = appPreferences.startTime()
+      pref.lastHour = startTime[0]
+      pref.lastMinute = startTime[1]
+    } else {
+      val endTime = appPreferences.endTime()
+      pref.lastHour = endTime[0]
+      pref.lastMinute = endTime[1]
+    }
     val dialog = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
       TimePickerDialog(
           context, listener,
           pref.lastHour, pref.lastMinute, true
       )
     } else {
-      val timePicker = TimePicker(requireContext()).apply {
-        setIs24HourView(true)
-        currentHour = pref.lastHour
-        currentMinute = pref.lastMinute
-      }
+      // This is to fix a crash on Samsung devices running Android 6.0.1
+      // See https://github.com/premnirmal/StockTicker/issues/80
+      val timeSelectorLayout = LayoutInflater.from(requireContext())
+          .inflate(R.layout.layout_time_selector, null)
+      val hourText = timeSelectorLayout.findViewById<EditText>(R.id.hour_text)
+      val minuteText = timeSelectorLayout.findViewById<EditText>(R.id.minute_text)
+      hourText.setText(pref.lastHour.toString())
+      hourText.setSelection(hourText.text.length)
+      minuteText.setText(pref.lastMinute.toString())
+      minuteText.setSelection(minuteText.text.length)
       AlertDialog.Builder(requireContext())
-          .setView(timePicker)
+          .setView(timeSelectorLayout)
           .setPositiveButton(R.string.ok) { _, _ ->
-            listener.onTimeSet(timePicker, timePicker.currentHour, timePicker.currentMinute)
+            onTimeSet(
+                pref, hourText.text.toString().toInt(), minuteText.text.toString().toInt(),
+                if (pref.key == AppPreferences.START_TIME) R.string.start_time_updated
+                else R.string.end_time_updated
+            )
           }
+          .setNegativeButton(R.string.cancel, null)
           .create()
     }
     dialog.setTitle(
         if (pref.key == AppPreferences.START_TIME) R.string.start_time else R.string.end_time
     )
     return dialog
-}
+  }
 
-inner class TimeSelectedListener(
-  private val preference: TimePreference,
-  private val messageRes: Int
-) : TimePickerDialog.OnTimeSetListener {
-
-  override fun onTimeSet(
-    picker: TimePicker,
-    hourOfDay: Int,
-    minute: Int
+  private fun onTimeSet(
+    preference: TimePreference,
+    lastHour: Int,
+    lastMinute: Int,
+    messageRes: Int
   ) {
-    val lastHour = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      picker.hour
-    } else {
-      picker.currentHour
-    }
-    val lastMinute = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      picker.minute
-    } else {
-      picker.currentMinute
+    if (lastHour > 23 || lastHour < 0 || lastMinute > 59 || lastMinute < 0) {
+      InAppMessage.showMessage(requireActivity(), R.string.invalid_time, true)
+      return
     }
     val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
     val minuteString = if (lastMinute < 10) "0$lastMinute" else lastMinute.toString()
@@ -599,5 +611,28 @@ inner class TimeSelectedListener(
       InAppMessage.showMessage(requireActivity(), messageRes)
     }
   }
-}
+
+  inner class TimeSelectedListener(
+    private val preference: TimePreference,
+    private val messageRes: Int
+  ) : TimePickerDialog.OnTimeSetListener {
+
+    override fun onTimeSet(
+      picker: TimePicker,
+      hourOfDay: Int,
+      minute: Int
+    ) {
+      val lastHour = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        picker.hour
+      } else {
+        picker.currentHour
+      }
+      val lastMinute = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        picker.minute
+      } else {
+        picker.currentMinute
+      }
+      onTimeSet(preference, lastHour, lastMinute, messageRes)
+    }
+  }
 }

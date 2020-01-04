@@ -106,6 +106,7 @@
   <string name="ok">OK</string>
   <string name="cancel">Cancelar</string>
   <string name="invalid_number">Número inválido</string>
+  <string name="invalid_time">Tiempo inválido</string>
   <string name="add_positions_prompt">¿Quieres añadir empleos para%1$s?</string>
   <string name="already_in_portfolio">%1$s ya está en su cartera</string>
   <string name="added_to_list">%1$s añadido a su cartera</string>
