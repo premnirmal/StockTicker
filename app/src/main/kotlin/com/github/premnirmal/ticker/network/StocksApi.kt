@@ -11,6 +11,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import retrofit2.http.HTTP
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,6 +27,7 @@ class StocksApi {
   @Inject internal lateinit var suggestionApi: SuggestionApi
   @Inject internal lateinit var clock: AppClock
   var lastFetched: Long = 0
+  private var unauthorized = false
 
   init {
     Injector.appComponent.inject(this)
@@ -33,10 +35,9 @@ class StocksApi {
 
   suspend fun getSuggestions(query: String) = withContext(Dispatchers.IO) {
     val suggestions = try {
-      suggestionApi.getSuggestions(query)
-          .resultSet?.result
+      suggestionApi.getSuggestions(query).resultSet?.result
     } catch (e: Exception) {
-      return@withContext FetchResult<List<SuggestionNet>>(_error = FetchException("Error fetching", e))
+      return@withContext FetchResult<List<SuggestionNet>>(_error = FetchException("Error fetching", e))cd ~/de
     }
     val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
     if (suggestionList.isEmpty()) {
@@ -49,22 +50,35 @@ class StocksApi {
    * Prefer robindahood, fallback to yahoo finance.
    */
   suspend fun getStocks(tickerList: List<String>) = withContext(Dispatchers.IO) {
-    val query = tickerList.joinToString(",")
     val quoteNets: List<IQuoteNet> = try {
-      val stocks = robindahood.getStocks(query)
-      lastFetched = clock.currentTimeMillis()
-      stocks
+      if (unauthorized) {
+        getStocksYahoo(tickerList)
+      } else {
+        val query = tickerList.joinToString(",")
+        robindahood.getStocks(query)
+      }
     } catch (ex: HttpException) {
+      if (ex.code() == 401) {
+        unauthorized = true
+      }
       getStocksYahoo(tickerList)
     }
+    lastFetched = clock.currentTimeMillis()
     quoteNets.toQuoteMap()
         .toOrderedQuoteList(tickerList)
   }
 
   suspend fun getStock(ticker: String) = withContext(Dispatchers.IO) {
     val quoteNets = try {
-      robindahood.getStocks(ticker)
+      if (unauthorized) {
+        robindahood.getStocks(ticker)
+      } else {
+        getStocksYahoo(listOf(ticker))
+      }
     } catch (ex: HttpException) {
+      if (ex.code() == 401) {
+        unauthorized = true
+      }
       getStocksYahoo(listOf(ticker))
     }
     return@withContext Quote.fromQuoteNet(quoteNets.first())
@@ -73,7 +87,6 @@ class StocksApi {
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
     val quoteNets = yahooFinance.getStocks(query).quoteResponse!!.result
-    lastFetched = clock.currentTimeMillis()
     quoteNets
   }
 
