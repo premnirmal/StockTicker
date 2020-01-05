@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Splash update</item>
+    <item>Fix time picker for Samsung Marshmallow devices</item>
   </string-array>
 </resources>

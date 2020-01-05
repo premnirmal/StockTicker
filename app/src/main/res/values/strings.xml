@@ -116,6 +116,7 @@
   <string name="ok">OK</string>
   <string name="cancel">Cancel</string>
   <string name="invalid_number">Invalid number</string>
+  <string name="invalid_time">Invalid time</string>
   <string name="add_positions_prompt">Do you want to add positions for %1$s?</string>
   <string name="already_in_portfolio">%1$s is already in your portfolio</string>
   <string name="added_to_list">%1$s added to your portfolio</string>
