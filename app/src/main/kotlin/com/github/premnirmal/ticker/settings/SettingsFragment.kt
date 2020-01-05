@@ -564,9 +564,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       val hourText = timeSelectorLayout.findViewById<EditText>(R.id.hour_text)
       val minuteText = timeSelectorLayout.findViewById<EditText>(R.id.minute_text)
       hourText.setText(pref.lastHour.toString())
-      hourText.setSelection(hourText.text.length)
+      hourText.setSelection(hourText.text.toString().length)
       minuteText.setText(pref.lastMinute.toString())
-      minuteText.setSelection(minuteText.text.length)
+      minuteText.setSelection(minuteText.text.toString().length)
       AlertDialog.Builder(requireContext())
           .setView(timeSelectorLayout)
           .setPositiveButton(R.string.ok) { _, _ ->
