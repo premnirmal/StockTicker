@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.settings
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.appwidget.AppWidgetManager
@@ -20,6 +19,8 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.EditText
 import android.widget.TimePicker
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -160,6 +161,28 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
             requireContext(), resources.getString(R.string.privacy_policy_url)
         )
         true
+      }
+    }
+
+    run {
+      val themePref = findPreference<ListPreference>(AppPreferences.SETTING_APP_THEME)
+      val selectedPref = appPreferences.themePref
+      themePref.setValueIndex(selectedPref)
+      themePref.summary = themePref.entries[selectedPref]
+      themePref.onPreferenceChangeListener = object : DefaultPreferenceChangeListener() {
+        override fun onPreferenceChange(
+            preference: Preference,
+            newValue: Any
+        ): Boolean {
+          val stringValue = newValue.toString()
+          val listPreference = preference as ListPreference
+          val index = listPreference.findIndexOfValue(stringValue)
+          appPreferences.themePref = index
+          themePref.summary = listPreference.entries[index]
+          AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
+          InAppMessage.showMessage(requireActivity(), R.string.theme_updated_message)
+          return true
+        }
       }
     }
 

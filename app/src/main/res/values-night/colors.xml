@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="color_accent">#00a896</color>
+  <color name="color_primary">#02525c</color>
+  <color name="color_primary_dark">#003e37</color>
+  <color name="button_pressed">#05668d</color>
+  <color name="button_disabled">#638ca6</color>
+  <color name="button_enabled">#00a896</color>
+  <color name="default_bg">#191919</color>
+  <color name="graph_bg">#000000</color>
+  <color name="color_statusbar">@color/color_primary</color>
+  <color name="bg_toolbar">@color/color_primary</color>
+  <color name="divider">#aaaa</color>
+  <color name="card_bg">#1d1d1d</color>
+  <color name="card_shadow">#95000000</color>
+  <color name="error_red">#ff3232</color>
+  <color name="negative_red">#ff6666</color>
+  <color name="positive_green">#ccff66</color>
+  <color name="positive_green_dark">#009900</color>
+  <color name="disabled_grey">#98545454</color>
+  <color name="unselected_grey">#ffbdbdbd</color>
+  <color name="nav_bar_bg">@color/default_bg</color>
+  <color name="nav_bar_bg_2">@color/card_bg</color>
+  <color name="bottom_bar_bg">@color/card_bg</color>
+  <color name="actionbar_title_text">#ffffff</color>
+  <color name="text_1">#ffffff</color>
+  <color name="text_2">#fff3f3f3</color>
+  <color name="text_3">#90d3d3d3</color>
+  <color name="text_4">#d3d3d3</color>
+  <color name="text_inverse">#1b1b1b</color>
+  <color name="button_text">#ffffff</color>
+  <color name="icon_tint">#ffffff</color>
+  <color name="home_toolbar_scrim">@color/color_primary</color>
+  <color name="tab_text">@color/text_3</color>
+  <color name="tab_text_selected">@color/text_1</color>
+
+  <!-- For the file picker library -->
+  <color name="colorPrimary">@color/color_primary</color>
+  <color name="colorPrimaryDark">@color/color_primary</color>
+  <color name="colorAccent">@color/color_accent</color>
+</resources>

@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.news
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.CustomTabs
@@ -87,11 +87,16 @@ class QuoteDetailActivity : BaseGraphActivity() {
         val q: Quote?
         if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
           ticker = intent.getStringExtra(TICKER)
-          q = stocksProvider.fetchStock(ticker)
-          if (q == null) {
+          val result = stocksProvider.fetchStock(ticker)
+          if (!result.wasSuccessful) {
+            if (!result.wasAuthorized) {
+              showIllegalErrorAndFinish()
+              return@launch
+            }
             showErrorAndFinish()
             return@launch
           }
+          q = result.data
         } else {
           ticker = ""
           showErrorAndFinish()

@@ -2,7 +2,10 @@ package com.github.premnirmal.ticker
 
 import android.app.AlarmManager
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Environment
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import org.threeten.bp.DayOfWeek
@@ -132,6 +135,28 @@ class AppPreferences {
         .apply()
   }
 
+  var themePref: Int
+    get() = sharedPreferences.getInt(APP_THEME, 1)
+    set(value) = sharedPreferences.edit().putInt(APP_THEME, value).apply()
+
+  @NightMode val nightMode: Int
+    get() = when (themePref) {
+      0 -> AppCompatDelegate.MODE_NIGHT_NO
+      1 -> AppCompatDelegate.MODE_NIGHT_YES
+      2 -> {
+        if (supportSystemNightMode) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        else AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+      }
+      else -> AppCompatDelegate.MODE_NIGHT_YES
+    }
+
+  private val supportSystemNightMode: Boolean
+    get() {
+      return (Build.VERSION.SDK_INT > Build.VERSION_CODES.P
+          || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
+          || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "samsung".equals(Build.MANUFACTURER, ignoreCase = true))
+    }
+
   companion object {
 
     // TODO remove, this is a hack
@@ -151,6 +176,7 @@ class AppPreferences {
     }
 
     const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
+    const val SETTING_APP_THEME = "com.github.premnirmal.ticker.theme"
     const val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
     const val PREFS_NAME = "com.github.premnirmal.ticker"
     const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
@@ -178,6 +204,7 @@ class AppPreferences {
     const val DID_RATE = "DID_RATE"
     const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"
     const val APP_VERSION_CODE = "APP_VERSION_CODE"
+    const val APP_THEME = "APP_THEME"
     const val TRANSPARENT = 0
     const val TRANSLUCENT = 1
     const val DARK = 2

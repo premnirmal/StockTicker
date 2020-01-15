@@ -80,8 +80,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onResume() {
     super.onResume()
     update()
-    val flow = bus.receive<RefreshEvent>()
     lifecycleScope.launch {
+      val flow = bus.receive<RefreshEvent>()
       flow.collect {
         updateHeader()
       }

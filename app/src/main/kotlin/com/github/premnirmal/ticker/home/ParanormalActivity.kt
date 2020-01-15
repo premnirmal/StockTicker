@@ -1,15 +1,12 @@
 package com.github.premnirmal.ticker.home
 
-import android.app.Activity
-import android.app.AlertDialog.Builder
-import android.appwidget.AppWidgetManager
+import androidx.appcompat.app.AlertDialog.Builder
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
@@ -52,9 +49,8 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
-    window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
@@ -102,7 +98,9 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   private fun maybeAskToRate(): Boolean {
     if (!rateDialogShown && appPreferences.shouldPromptRate()) {
-      Builder(this).setTitle(R.string.like_our_app).setMessage(R.string.please_rate)
+      Builder(this)
+          .setTitle(R.string.like_our_app)
+          .setMessage(R.string.please_rate)
           .setPositiveButton(R.string.yes) { dialog, _ ->
             sendToPlayStore()
             appPreferences.userDidRate()

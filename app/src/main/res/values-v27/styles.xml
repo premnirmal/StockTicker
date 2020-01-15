@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
     <item name="colorPrimary">@color/color_primary</item>
     <item name="colorPrimaryDark">@color/color_primary_dark</item>
     <item name="colorAccent">@color/color_accent</item>
     <item name="android:colorPrimary">@color/color_primary</item>
     <item name="android:colorPrimaryDark">@color/color_primary_dark</item>
-    <item name="android:windowBackground">@color/default_dark_bg</item>
+    <item name="android:windowBackground">@color/default_bg</item>
     <item name="android:colorAccent">@color/color_accent</item>
     <item name="android:colorSecondary">@color/color_accent</item>
     <item name="android:alertDialogTheme">@style/AlertDialog</item>
     <item name="android:dialogTheme">@style/AlertDialog</item>
     <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    <item name="alertDialogTheme">@style/AlertDialog</item>
 
     <item name="android:textViewStyle">@style/TextViewStyle</item>
     <item name="android:buttonStyle">@style/ButtonStyle</item>
@@ -27,39 +28,8 @@
     <item name="android:navigationBarColor">@color/nav_bar_bg</item>
     <!-- v27 specific -->
     <item name="android:navigationBarDividerColor">@color/transparent</item>
-  </style>
-  <!-- Custom Preference Theme -->
-  <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
-    <item name="preferenceFragmentCompatStyle">@style/AppPreferenceFragmentCompatStyle</item>
-    <item name="preferenceFragmentStyle">@style/AppPreferenceFragmentCompatStyle</item>
-  </style>
-  <!-- Custom Style for PreferenceFragmentCompat -->
-  <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material">
-    <item name="android:layout">@layout/fragment_settings</item>
-    <item name="layout">@layout/fragment_settings</item>
-  </style>
-
-  <style name="ParanormalActivityTheme" parent="AppTheme">
-    <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>
-  </style>
-
-  <style name="WidgetSettingsTheme" parent="AppTheme">
-    <item name="android:statusBarColor">@color/color_primary</item>
-  </style>
-
-  <style name="SearchTheme" parent="AppTheme">
-    <item name="android:statusBarColor">@color/color_primary</item>
-  </style>
-
-  <style name="NewsFeedActivityTheme" parent="AppTheme">
-    <item name="android:statusBarColor">@color/color_primary</item>
-  </style>
-
-  <style name="GraphActivityTheme" parent="AppTheme">
-    <item name="android:navigationBarColor">@color/black</item>
-  </style>
-
-  <style name="AddPositionTheme" parent="AppTheme">
-    <item name="android:statusBarColor">@color/color_primary</item>
+    <item name="android:windowLightNavigationBar">true</item>
+    <!-- v23 specific -->
+    <item name="android:windowLightStatusBar">true</item>
   </style>
 </resources>

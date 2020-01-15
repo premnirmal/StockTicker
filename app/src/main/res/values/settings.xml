@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
 
-
   <string-array name="font_sizes">
     <item>Small</item>
     <item>Medium</item>
     <item>Large</item>
   </string-array>
   <string-array name="font_sizes_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
+  <string-array name="app_themes">
+    <item>Light</item>
+    <item>Dark</item>
+    <item>Auto</item>
+  </string-array>
+  <string-array name="app_themes_values">
     <item>0</item>
     <item>1</item>
     <item>2</item>

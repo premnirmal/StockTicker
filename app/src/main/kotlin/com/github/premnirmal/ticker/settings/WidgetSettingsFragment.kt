@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.settings
 
-import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.DialogInterface
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.annotation.ArrayRes
+import androidx.appcompat.app.AlertDialog
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -176,7 +176,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
       @ArrayRes itemRes: Int,
       listener: DialogInterface.OnClickListener
   ) {
-    AlertDialog.Builder(activity!!)
+    AlertDialog.Builder(requireContext())
         .setItems(itemRes, listener)
         .create()
         .show()

@@ -6,15 +6,20 @@ import android.os.Build.VERSION_CODES
 import androidx.annotation.RequiresApi
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.concurrency.ApplicationScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @RequiresApi(VERSION_CODES.LOLLIPOP)
-class RefreshService : JobService() {
+class RefreshService : JobService(), CoroutineScope {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
+
+  override val coroutineContext: CoroutineContext
+    get() = Dispatchers.Main
 
   override fun onCreate() {
     super.onCreate()
@@ -23,17 +28,17 @@ class RefreshService : JobService() {
 
   override fun onStartJob(params: JobParameters): Boolean {
     Timber.d("onStartJob ${params.jobId}")
-    if (isNetworkOnline()) {
-      ApplicationScope.launch {
+    return if (isNetworkOnline()) {
+      launch {
         stocksProvider.fetch()
         val needsReschedule = false
         jobFinished(params, needsReschedule)
       }
       // additional work is being performed
-      return true
+      true
     } else {
       stocksProvider.scheduleSoon()
-      return false
+      false
     }
   }
 

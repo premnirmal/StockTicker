@@ -4,9 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.snackbar.Snackbar
+
+
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -47,6 +50,8 @@ object InAppMessage {
     snackBarView.layoutParams = params
     val bg = if (error) R.drawable.snackbar_bg_error else R.drawable.snackbar_bg
     snackBarView.background = view.context.resources.getDrawable(bg)
+    val text = snackBarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+    text.setTextColor(view.context.resources.getColor(if (error) R.color.white else R.color.text_1))
     return snackbar
   }
 }

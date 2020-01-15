@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.model
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import kotlinx.coroutines.Deferred
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -30,7 +29,7 @@ interface IStocksProvider {
 
   fun getStock(ticker: String): Quote?
 
-  suspend fun fetchStock(ticker: String): Quote?
+  suspend fun fetchStock(ticker: String): FetchResult<Quote>
 
   fun removeStock(ticker: String): Collection<String>
 

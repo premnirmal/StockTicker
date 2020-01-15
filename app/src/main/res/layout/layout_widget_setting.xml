@@ -16,7 +16,7 @@
       android:ellipsize="end"
       android:lines="1"
       android:maxLines="1"
-      android:textColor="@color/light"
+      android:textColor="@color/text_2"
       android:textSize="@dimen/large_text"
       tools:text="Setting title"
       />
@@ -37,7 +37,7 @@
         android:ellipsize="end"
         android:lines="1"
         android:maxLines="1"
-        android:textColor="@color/grey_text"
+        android:textColor="@color/text_4"
         android:textSize="@dimen/text_size"
         tools:text="Setting subtitle"
         />

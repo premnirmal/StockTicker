@@ -15,7 +15,7 @@
       android:layout_gravity="center_horizontal"
       android:gravity="center"
       android:text="@string/no_symbols"
-      android:textColor="@color/colorAccent"
+      android:textColor="@color/color_accent"
       android:textSize="@dimen/large_text"
       style="@style/BoldTextView"
       />

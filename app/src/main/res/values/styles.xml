@@ -1,27 +1,95 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
     <item name="colorPrimary">@color/color_primary</item>
     <item name="colorPrimaryDark">@color/color_primary_dark</item>
     <item name="colorAccent">@color/color_accent</item>
-    <item name="android:windowBackground">@color/default_dark_bg</item>
+    <item name="android:windowBackground">@color/default_bg</item>
     <item name="android:textViewStyle">@style/TextViewStyle</item>
     <item name="android:editTextStyle">@style/EditTextStyle</item>
     <item name="android:buttonStyle">@style/ButtonStyle</item>
     <item name="android:alertDialogTheme">@style/AlertDialog</item>
     <item name="android:dialogTheme">@style/AlertDialog</item>
     <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-
+    <item name="alertDialogTheme">@style/AlertDialog</item>
     <!-- For AppCompat -->
     <item name="editTextStyle">@style/EditTextStyle</item>
     <item name="buttonStyle">@style/ButtonStyle</item>
     <item name="preferenceTheme">@style/AppPreferenceTheme</item>
   </style>
+
+  <style name="ActionBarStyle" parent="Widget.AppCompat.ActionBar.Solid">
+    <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
+  </style>
+
+  <style name="TextViewStyle" parent="android:Widget.TextView">
+    <item name="android:textSize">@dimen/text_size</item>
+    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+  </style>
+
+  <style name="BoldTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+  </style>
+
+  <style name="ItalicTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Ubuntu-MediumItalic.ttf</item>
+  </style>
+
+  <style name="ThinTitleTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Raleway-Light.ttf</item>
+    <item name="android:textSize">@dimen/thin_title_text</item>
+    <item name="android:textColor">@color/text_3</item>
+  </style>
+
+  <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+  </style>
+
+  <style name="FooterTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Alegreya-Black-Italic.ttf</item>
+    <item name="android:textSize">24sp</item>
+  </style>
+
+  <style name="ButtonStyle" parent="android:Widget.Button">
+    <item name="android:textSize">@dimen/button_text</item>
+    <item name="android:textColor">@color/button_text</item>
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+    <item name="android:background">@drawable/button_bg</item>
+  </style>
+
+  <style name="EditTextStyle" parent="android:Widget.EditText">
+    <item name="android:textSize">@dimen/text_size</item>
+    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+  </style>
+
+  <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+    <item name="android:textColor">@color/actionbar_title_text</item>
+    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+  </style>
+
+  <style name="AlertDialog" parent="@style/Theme.AppCompat.DayNight.Dialog.Alert">
+    <item name="android:textColor">@color/color_accent</item>
+    <item name="android:colorBackground">@color/default_bg</item>
+    <item name="android:colorBackgroundCacheHint">@color/default_bg</item>
+    <item name="android:windowBackground">@color/default_bg</item>
+    <item name="android:textAppearanceSmall">@style/TextAppearance.Dialog</item>
+    <item name="colorPrimary">@color/color_accent</item>
+    <item name="colorPrimaryDark">@color/color_primary</item>
+    <item name="colorControlNormal">@color/color_accent</item>
+    <item name="colorControlHighlight">@color/color_accent</item>
+    <item name="colorControlActivated">@color/color_accent</item>
+  </style>
+
+  <style name="TextAppearance.Dialog" parent="@style/TextAppearance.AppCompat.Small">
+    <item name="android:textColor">@color/text_4</item>
+  </style>
+
   <!-- Custom Preference Theme -->
   <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
     <item name="preferenceFragmentCompatStyle">@style/AppPreferenceFragmentCompatStyle</item>
     <item name="preferenceFragmentStyle">@style/AppPreferenceFragmentCompatStyle</item>
+    <item name="dialogPreferenceStyle">@style/AlertDialog</item>
   </style>
   <!-- Custom Style for PreferenceFragmentCompat -->
   <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material">
@@ -49,64 +117,5 @@
   <style name="WidgetSettingsTheme" parent="AppTheme"/>
 
   <style name="SearchTheme" parent="AppTheme"/>
-
-  <style name="ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar.Solid">
-    <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
-  </style>
-
-  <style name="TextViewStyle" parent="android:Widget.TextView">
-    <item name="android:textSize">@dimen/text_size</item>
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
-  </style>
-
-  <style name="BoldTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-  </style>
-
-  <style name="ItalicTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-MediumItalic.ttf</item>
-  </style>
-
-  <style name="ThinTitleTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Raleway-Light.ttf</item>
-    <item name="android:textSize">@dimen/thin_title_text</item>
-    <item name="android:textColor">@color/light_grey_text</item>
-  </style>
-
-  <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-  </style>
-
-  <style name="FooterTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Alegreya-Black-Italic.ttf</item>
-    <item name="android:textSize">24sp</item>
-  </style>
-
-  <style name="ButtonStyle" parent="android:Widget.Button">
-    <item name="android:textSize">@dimen/button_text</item>
-    <item name="android:textColor">@color/white</item>
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-    <item name="android:background">@drawable/button_bg</item>
-  </style>
-
-  <style name="EditTextStyle" parent="android:Widget.EditText">
-    <item name="android:textSize">@dimen/text_size</item>
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
-  </style>
-
-  <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-    <item name="android:textColor">@color/white</item>
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-  </style>
-
-  <style name="AlertDialog" parent="Theme.AppCompat.Dialog.Alert">
-    <item name="android:textColorPrimary">@color/color_accent</item>
-    <item name="colorPrimary">@color/white</item>
-    <item name="colorPrimaryDark">@color/white</item>
-    <item name="colorControlNormal">@color/color_accent</item>
-    <item name="colorControlHighlight">@color/white</item>
-    <item name="colorControlActivated">@color/white</item>
-    <item name="android:background">@color/default_dark_bg</item>
-  </style>
 
 </resources>

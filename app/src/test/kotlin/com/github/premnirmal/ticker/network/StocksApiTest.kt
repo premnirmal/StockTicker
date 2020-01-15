@@ -34,12 +34,14 @@ class StocksApiTest : BaseUnitTest() {
 
   @Before fun initMocks() {
     runBlocking {
+      StocksApi.DEBUG = false
       robinhoodFinance = Mocker.provide(Robindahood::class)
       yahooFinance = Mocker.provide(YahooFinance::class)
       mockPrefs = Mocker.provide(SharedPreferences::class)
       val listType = object : TypeToken<List<QuoteNet>>() {}.type
       val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
-      val yahooStockList = parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
+      val yahooStockList =
+        parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
       whenever(robinhoodFinance.getStocks(any())).thenReturn(stockList)
       whenever(yahooFinance.getStocks(any())).thenReturn(yahooStockList)
     }
@@ -54,7 +56,7 @@ class StocksApiTest : BaseUnitTest() {
       val testTickerList = TEST_TICKER_LIST
       val stocks = stocksApi.getStocks(testTickerList)
       verify(robinhoodFinance).getStocks(any())
-      assertEquals(testTickerList.size, stocks.size)
+      assertEquals(testTickerList.size, stocks.data.size)
     }
   }
 
@@ -68,12 +70,13 @@ class StocksApiTest : BaseUnitTest() {
           )
           )
       )
-      doThrow(error).whenever(robinhoodFinance).getStocks(any())
+      doThrow(error).whenever(robinhoodFinance)
+          .getStocks(any())
       val testTickerList = TEST_TICKER_LIST
       val result = stocksApi.getStocks(testTickerList)
       verify(robinhoodFinance).getStocks(any())
       verify(yahooFinance).getStocks(any())
-      assertEquals(testTickerList.size, result.size)
+      assertEquals(testTickerList.size, result.data.size)
     }
   }
 
@@ -81,14 +84,38 @@ class StocksApiTest : BaseUnitTest() {
   fun testFailure() {
     runBlocking {
       val error = RuntimeException()
-      doThrow(error).whenever(robinhoodFinance).getStocks(any())
+      doThrow(error).whenever(robinhoodFinance)
+          .getStocks(any())
+      doThrow(error).whenever(yahooFinance)
+          .getStocks(any())
       val testTickerList = TEST_TICKER_LIST
-      try {
-        val stocks = stocksApi.getStocks(testTickerList)
-        fail("This shouldn't happen")
-      } catch (ex: RuntimeException) {
-        // ignore
-      }
+      val result = stocksApi.getStocks(testTickerList)
+      assertFalse(result.wasSuccessful)
+      assertTrue(result.wasAuthorized)
+      assertTrue(result.hasError)
+      verify(robinhoodFinance).getStocks(any())
+      verify(yahooFinance).getStocks(any())
+    }
+  }
+
+  @Test
+  fun testUnauthorized() {
+    runBlocking {
+      val error = HttpException(
+          Response.error<List<QuoteNet>>(
+              401, ResponseBody.create(
+              MediaType.parse("application/json"),
+              "{}"
+          )
+          )
+      )
+      doThrow(error).whenever(robinhoodFinance)
+          .getStocks(any())
+      val testTickerList = TEST_TICKER_LIST
+      val result = stocksApi.getStocks(testTickerList)
+      assertTrue(result.hasError)
+      assertFalse(result.wasSuccessful)
+      assertFalse(result.wasAuthorized)
       verify(robinhoodFinance).getStocks(any())
       verify(yahooFinance, never()).getStocks(any())
     }

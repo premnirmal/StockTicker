@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.IQuoteNet
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,6 +21,10 @@ import javax.inject.Singleton
 @Singleton
 class StocksApi {
 
+  companion object {
+    var DEBUG = BuildConfig.DEBUG
+  }
+
   @Inject internal lateinit var gson: Gson
   @Inject internal lateinit var robindahood: Robindahood
   @Inject internal lateinit var yahooFinance: YahooFinance
@@ -32,52 +37,78 @@ class StocksApi {
     Injector.appComponent.inject(this)
   }
 
-  suspend fun getSuggestions(query: String) = withContext(Dispatchers.IO) {
-    val suggestions = try {
-      suggestionApi.getSuggestions(query).resultSet?.result
-    } catch (e: Exception) {
-      return@withContext FetchResult<List<SuggestionNet>>(_error = FetchException("Error fetching", e))
+  suspend fun getSuggestions(query: String): FetchResult<List<SuggestionNet>> =
+    withContext(Dispatchers.IO) {
+      val suggestions = try {
+        suggestionApi.getSuggestions(query)
+            .resultSet?.result
+      } catch (e: Exception) {
+        return@withContext FetchResult<List<SuggestionNet>>(
+            _error = FetchException("Error fetching", e))
+      }
+      val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
+      if (suggestionList.isEmpty()) {
+        suggestionList.add(0, SuggestionNet(query))
+      }
+      return@withContext FetchResult<List<SuggestionNet>>(_data = suggestionList)
     }
-    val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
-    if (suggestionList.isEmpty()) {
-      suggestionList.add(0, SuggestionNet(query))
-    }
-    return@withContext FetchResult<List<SuggestionNet>>(_data = suggestionList)
-  }
 
   /**
    * Prefer robindahood, fallback to yahoo finance.
    */
-  suspend fun getStocks(tickerList: List<String>) = withContext(Dispatchers.IO) {
-    val quoteNets: List<IQuoteNet> = try {
+  suspend fun getStocks(tickerList: List<String>): FetchResult<List<Quote>> =
+    withContext(Dispatchers.IO) {
       if (unauthorized) {
-        getStocksYahoo(tickerList)
-      } else {
-        val query = tickerList.joinToString(",")
-        robindahood.getStocks(query)
+        return@withContext FetchResult<List<Quote>>(_unauthorized = true)
       }
-    } catch (ex: HttpException) {
-      unauthorized = ex.code() == 401
-      getStocksYahoo(tickerList)
+      try {
+        var quoteNets: List<IQuoteNet>
+        try {
+          val query = tickerList.joinToString(",")
+          quoteNets = robindahood.getStocks(query)
+        } catch (ex: HttpException) {
+          unauthorized = ex.code() == 401 && !DEBUG
+          if (unauthorized) {
+            return@withContext FetchResult<List<Quote>>(_unauthorized = true)
+          } else {
+            quoteNets = getStocksYahoo(tickerList)
+          }
+        } catch (ex: Exception) {
+          quoteNets = getStocksYahoo(tickerList)
+        }
+        lastFetched = clock.currentTimeMillis()
+        return@withContext FetchResult(_data = quoteNets.toQuoteMap().toOrderedList(tickerList))
+      } catch (ex: Exception) {
+        return@withContext FetchResult<List<Quote>>(
+            _error = FetchException("Failed to fetch", ex))
+      }
     }
-    lastFetched = clock.currentTimeMillis()
-    quoteNets.toQuoteMap()
-        .toOrderedQuoteList(tickerList)
-  }
 
-  suspend fun getStock(ticker: String) = withContext(Dispatchers.IO) {
-    val quoteNets = try {
+  suspend fun getStock(ticker: String): FetchResult<Quote> =
+    withContext(Dispatchers.IO) {
       if (unauthorized) {
-        getStocksYahoo(listOf(ticker))
-      } else {
-        robindahood.getStocks(ticker)
+        return@withContext FetchResult<Quote>(_unauthorized = true)
       }
-    } catch (ex: HttpException) {
-      unauthorized = ex.code() == 401
-      getStocksYahoo(listOf(ticker))
+      try {
+        var quoteNets: List<IQuoteNet>
+        try {
+          quoteNets = robindahood.getStocks(ticker)
+        } catch (ex: HttpException) {
+          unauthorized = ex.code() == 401 && !DEBUG
+          if (unauthorized) {
+            return@withContext FetchResult<Quote>(_unauthorized = true)
+          } else {
+            quoteNets = getStocksYahoo(listOf(ticker))
+          }
+        } catch (ex: Exception) {
+          quoteNets = getStocksYahoo(listOf(ticker))
+        }
+        return@withContext FetchResult(_data = Quote.fromQuoteNet(quoteNets.first()))
+      } catch (ex: Exception) {
+        return@withContext FetchResult<Quote>(
+            _error = FetchException("Failed to fetch $ticker", ex))
+      }
     }
-    return@withContext Quote.fromQuoteNet(quoteNets.first())
-  }
 
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
@@ -94,7 +125,7 @@ class StocksApi {
     return quotesMap
   }
 
-  private fun MutableMap<String, Quote>.toOrderedQuoteList(tickerList: List<String>): List<Quote> {
+  private fun MutableMap<String, Quote>.toOrderedList(tickerList: List<String>): List<Quote> {
     val quotes = ArrayList<Quote>()
     tickerList.filter { this.containsKey(it) }
         .mapTo(quotes) { this[it]!! }

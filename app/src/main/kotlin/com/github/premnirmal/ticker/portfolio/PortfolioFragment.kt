@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
@@ -25,8 +25,8 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCal
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.portfolio_fragment.stockList
-import kotlinx.android.synthetic.main.portfolio_fragment.view_flipper
+import kotlinx.android.synthetic.main.fragment_portfolio.stockList
+import kotlinx.android.synthetic.main.fragment_portfolio.view_flipper
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -126,7 +126,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
           }
               .toTypedArray()
           val currentWidgetIndex = appWidgetIds.indexOf(widgetId)
-          AlertDialog.Builder(activity)
+          AlertDialog.Builder(requireContext())
               .setSingleChoiceItems(widgetNames, currentWidgetIndex) { dialog, which ->
                 if (which != currentWidgetIndex) {
                   widgetDataProvider.moveQuoteToDifferentWidget(
@@ -156,8 +156,8 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onResume() {
     super.onResume()
     update()
-    val flow = holder.bus.receive<RefreshEvent>()
     lifecycleScope.launch {
+      val flow = holder.bus.receive<RefreshEvent>()
       flow.collect {
         update()
       }
@@ -169,7 +169,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
       container: ViewGroup?,
       savedInstanceState: Bundle?
   ): View? {
-    return inflater.inflate(R.layout.portfolio_fragment, container, false)
+    return inflater.inflate(R.layout.fragment_portfolio, container, false)
   }
 
   override fun onViewCreated(
@@ -206,7 +206,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   private fun promptRemove(quote: Quote?) {
     quote?.let {
       val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
-      AlertDialog.Builder(activity)
+      AlertDialog.Builder(requireContext())
           .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove) { dialog, _ ->

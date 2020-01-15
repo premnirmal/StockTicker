@@ -16,6 +16,16 @@
       app:title="@string/tutorial"/>
 
   <ListPreference
+      app:defaultValue="0"
+      app:entries="@array/app_themes"
+      app:entryValues="@array/app_themes_values"
+      app:iconSpaceReserved="false"
+      app:key="com.github.premnirmal.ticker.theme"
+      app:negativeButtonText="@null"
+      app:positiveButtonText="@null"
+      app:title="@string/app_theme"/>
+
+  <ListPreference
       app:defaultValue="1"
       app:entries="@array/font_sizes"
       app:entryValues="@array/font_sizes_values"

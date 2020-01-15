@@ -84,15 +84,15 @@ class WidgetData {
     @ColorRes get() {
       val bgPref = preferences.getInt(WIDGET_BG, TRANSPARENT)
       return when (bgPref) {
-        TRANSLUCENT -> R.color.positive_green
-        DARK -> R.color.positive_green
-        LIGHT -> R.color.positive_green_dark
-        else -> R.color.positive_green
+        TRANSLUCENT -> R.color.text_widget_positive
+        DARK -> R.color.text_widget_positive
+        LIGHT -> R.color.text_widget_positive_dark
+        else -> R.color.text_widget_positive
       }
     }
 
   val negativeTextColor: Int
-    @ColorRes get() = R.color.negative_red
+    @ColorRes get() = R.color.text_widget_negative
 
   fun widgetName(): String {
     var name = preferences.getString(WIDGET_NAME, "")!!
@@ -131,8 +131,8 @@ class WidgetData {
 
   @ColorInt fun textColor(): Int {
     val pref = textColorPref()
-    return if (pref == 0) context.resources.getColor(R.color.white)
-    else context.resources.getColor(R.color.dark_text)
+    return if (pref == 0) context.resources.getColor(R.color.widget_text)
+    else context.resources.getColor(R.color.dark_widget_text)
   }
 
   @LayoutRes fun stockViewLayout(): Int {

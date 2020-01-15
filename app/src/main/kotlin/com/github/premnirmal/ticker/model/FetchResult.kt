@@ -1,10 +1,17 @@
 package com.github.premnirmal.ticker.model
 
 data class FetchResult<T>(private val _data: T? = null,
-                          private val _error: FetchException? = null) {
+                          private var _error: FetchException? = null,
+                          private val _unauthorized: Boolean = false) {
+
+  init {
+    if (_unauthorized) {
+      _error = FetchException("Unauthorized")
+    }
+  }
 
   val wasSuccessful: Boolean
-    get() = _data != null
+    get() = _data != null && wasAuthorized
 
   val hasError: Boolean
     get() = _error != null
@@ -14,4 +21,6 @@ data class FetchResult<T>(private val _data: T? = null,
 
   val error: FetchException
     get() = _error!!
+
+  val wasAuthorized: Boolean = !_unauthorized
 }

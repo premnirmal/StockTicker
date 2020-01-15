@@ -11,7 +11,7 @@
       android:id="@+id/toolbar"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/color_primary"
+      android:background="@color/bg_toolbar"
       app:layout_collapseMode="pin"
       app:navigationIcon="?attr/homeAsUpIndicator"
       app:titleTextAppearance="@style/ActionBarTitleText"
@@ -50,6 +50,7 @@
           android:onClick="openGraph"
           android:padding="8dp"
           android:src="@drawable/ic_expand"
+          android:tint="@color/icon_tint"
           />
 
       <FrameLayout
@@ -115,7 +116,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:gravity="start"
-            android:textColor="@color/light_grey_text"
+            android:textColor="@color/text_3"
             android:textSize="@dimen/medium_text"
             tools:text="NYSE"
             />
@@ -149,6 +150,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_edit"
+            android:tint="@color/icon_tint"
             />
 
       </LinearLayout>
@@ -188,7 +190,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/shares"
-                android:textColor="@color/light_grey_text"
+                android:textColor="@color/text_3"
                 />
 
           </LinearLayout>
@@ -214,7 +216,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/equity_value"
-                android:textColor="@color/light_grey_text"
+                android:textColor="@color/text_3"
                 />
 
           </LinearLayout>

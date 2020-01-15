@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Base64
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
@@ -12,12 +13,12 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
-import io.paperdb.Paper
-import timber.log.Timber
-import java.security.MessageDigest
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
+import io.paperdb.Paper
+import timber.log.Timber
+import java.security.MessageDigest
 import javax.inject.Inject
 
 /**
@@ -45,19 +46,12 @@ open class StocksApp : MultiDexApplication() {
       }
       return null
     }
-
-    fun Context.getNavigationBarHeight(): Int {
-      val resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
-      if (resourceId > 0) {
-        return resources.getDimensionPixelSize(resourceId)
-      }
-      return 0
-    }
   }
 
 
   class InjectionHolder {
     @Inject lateinit var analytics: Analytics
+    @Inject lateinit var appPreferences: AppPreferences
   }
 
   private val holder = InjectionHolder()
@@ -77,6 +71,7 @@ open class StocksApp : MultiDexApplication() {
             .build())
     Injector.init(createAppComponent())
     Injector.appComponent.inject(holder)
+    AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
     initPaper()
     SIGNATURE = getAppSignature(this)
     initAnalytics()

@@ -1,46 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="sea">#05668D</color>
-  <color name="color_accent">#00A896</color>
-  <color name="color_primary">#02525C</color>
-  <color name="color_primary_dark">#003E37</color>
-  <color name="button_pressed">@color/sea</color>
-  <color name="button_disabled">#638ca6</color>
-  <color name="button_enabled">@color/color_accent</color>
-  <color name="default_dark_bg">#191919</color>
+  <color name="sea">#05668d</color>
   <color name="spicy_salmon">#ff5655</color>
-  <color name="dark">#575757</color>
-  <color name="divider">#AAAA</color>
-  <color name="card_bg">#1d1d1d</color>
-  <color name="dark_text">#333333</color>
+  <color name="black">#000000</color>
+  <color name="white">#ffffff</color>
 
+  <color name="color_accent">#be6663</color>
+  <color name="color_primary">#d9fcfe</color>
+  <color name="color_primary_dark">#dad8d9</color>
+  <color name="button_pressed">#d19391</color>
+  <color name="button_disabled">#cdaca1</color>
+  <color name="button_enabled">#be6663</color>
+  <color name="default_bg">#ffffff</color>
+  <color name="color_statusbar">@color/default_bg</color>
+  <color name="bg_toolbar">@color/default_bg</color>
+  <color name="graph_bg">#ffffff</color>
+  <color name="divider">#aaaa</color>
+  <color name="card_bg">#fdfdfd</color>
+  <color name="card_shadow">#10000000</color>
+  <color name="error_red">#ff3232</color>
+  <color name="negative_red">#e55b5b</color>
+  <color name="positive_green">#009900</color>
+  <color name="positive_green_dark">#006b00</color>
   <color name="transparent">#00000000</color>
   <color name="translucent">#98000000</color>
-  <color name="bg_gradient_center">#752a2a2a</color>
-  <color name="black_gradient_center">#3f3f3f</color>
-  <color name="nav_bar_bg">@color/default_dark_bg</color>
-  <color name="nav_bar_bg_2">@color/card_bg</color>
-  <color name="bottom_bar_bg">@color/card_bg</color>
-
-  <color name="white">#ffffff</color>
-  <color name="black">#000000</color>
-  <color name="light">#fff3f3f3</color>
-  <color name="light_grey_text">#90d3d3d3</color>
-  <color name="grey_text">#d3d3d3</color>
-
-  <color name="disabled_grey">#98545454</color>
-  <color name="unselected_grey">#FFbdbdbd</color>
-
-  <color name="negative_red">#FF6666</color>
-  <color name="positive_green">#CCFF66</color>
-  <color name="positive_green_dark">#009900</color>
-
-  <color name="error_red">#FF3232</color>
+  <color name="disabled_grey">#ffbdbdbd</color>
+  <color name="unselected_grey">#98545454</color>
+  <color name="nav_bar_bg">@color/default_bg</color>
+  <color name="nav_bar_bg_2">@color/color_primary</color>
+  <color name="bottom_bar_bg">@color/color_primary</color>
+  <color name="actionbar_title_text">#1b1b1b</color>
+  <color name="text_1">#4d4d4d</color>
+  <color name="text_2">#6e6e6e</color>
+  <color name="text_3">#4d4d4d</color>
+  <color name="text_4">#373737</color>
+  <color name="text_inverse">#f2f2f2</color>
+  <color name="button_text">#f1f1f1</color>
+  <color name="icon_tint">#1b1b1b</color>
+  <color name="home_toolbar_scrim">@color/bg_toolbar</color>
+  <color name="tab_text">@color/text_1</color>
+  <color name="tab_text_selected">@color/text_4</color>
+  <color name="tab_background">@color/transparent</color>
 
   <!-- For the file picker library -->
   <color name="colorPrimary">@color/color_primary</color>
   <color name="colorPrimaryDark">@color/color_primary</color>
   <color name="colorAccent">@color/color_accent</color>
-
-  <color name="black_overlay">#66000000</color>
 </resources>

@@ -18,7 +18,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
-      android:background="@color/translucent"
+      android:background="@drawable/bg_ic_splash"
       android:padding="@dimen/activity_horizontal_margin"
       android:src="@mipmap/ic_splash"
       app:layout_constraintEnd_toEndOf="parent"

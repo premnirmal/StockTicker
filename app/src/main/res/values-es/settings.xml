@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+
   <string-array name="font_sizes">
     <item>Pequeña</item>
     <item>Medio</item>
@@ -10,6 +11,18 @@
     <item>1</item>
     <item>2</item>
   </string-array>
+
+  <string-array name="app_themes">
+    <item>Clara</item>
+    <item>Oscura</item>
+    <item>Automática</item>
+  </string-array>
+  <string-array name="app_themes_values">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
   <string-array name="layout_types">
     <item>Animado</item>
     <item>Pestañas</item>
@@ -20,11 +33,12 @@
     <item>1</item>
     <item>2</item>
   </string-array>
+
   <string-array name="backgrounds">
     <item>Transparente</item>
     <item>Translúcido</item>
     <item>Oscuro</item>
-    <item>Ligero</item>
+    <item>Claro</item>
   </string-array>
   <string-array name="backgrounds_values">
     <item>0</item>
@@ -32,10 +46,12 @@
     <item>2</item>
     <item>3</item>
   </string-array>
+
   <string-array name="text_colors">
     <item>Blanco</item>
     <item>Negro</item>
   </string-array>
+
   <string-array name="sync_periods">
     <item>15 minutos</item>
     <item>30 minutos</item>
@@ -48,4 +64,5 @@
     <item>2</item>
     <item>3</item>
   </string-array>
+
 </resources>

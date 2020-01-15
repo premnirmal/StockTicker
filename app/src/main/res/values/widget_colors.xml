@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="text_widget_header">#aaa</color>
+  <color name="dark_widget_text">#333333</color>
+  <color name="widget_text">#f1f1f1</color>
+  <color name="text_widget_positive">#ccff66</color>
+  <color name="text_widget_positive_dark">#009900</color>
+  <color name="text_widget_negative">#ff6666</color>
+</resources>

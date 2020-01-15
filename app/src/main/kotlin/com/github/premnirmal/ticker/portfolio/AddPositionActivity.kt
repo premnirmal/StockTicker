@@ -93,7 +93,7 @@ class AddPositionActivity : BaseActivity() {
     val priceView = price
     val priceText = priceView.text.toString()
     val sharesText = sharesView.text.toString()
-    if (!priceText.isEmpty() && !sharesText.isEmpty()) {
+    if (priceText.isNotEmpty() && sharesText.isNotEmpty()) {
       var price = 0f
       var shares = 0f
       var success = true

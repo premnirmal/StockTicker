@@ -15,7 +15,7 @@
       android:layout_weight="0.30"
       android:ellipsize="end"
       android:maxLines="1"
-      android:textColor="@color/white"
+      android:textColor="@color/widget_text"
       android:textSize="12sp"
       android:textStyle="bold"
       />
@@ -27,9 +27,9 @@
       android:layout_weight="0.30"
       android:ellipsize="none"
       android:gravity="end"
-      android:maxLines="1"
-      android:textColor="@color/white"
+      android:textColor="@color/widget_text"
       android:textSize="12sp"
+      android:singleLine="true"
       />
 
 
@@ -40,9 +40,9 @@
       android:layout_weight="0.25"
       android:ellipsize="none"
       android:gravity="end"
-      android:maxLines="1"
-      android:textColor="@color/positive_green"
+      android:textColor="@color/text_widget_positive"
       android:textSize="12sp"
+      android:singleLine="true"
       />
 
   <TextView
@@ -52,9 +52,9 @@
       android:layout_weight="0.30"
       android:ellipsize="none"
       android:gravity="end"
-      android:maxLines="1"
-      android:textColor="@color/positive_green"
+      android:textColor="@color/text_widget_positive"
       android:textSize="12sp"
+      android:singleLine="true"
       />
 
 

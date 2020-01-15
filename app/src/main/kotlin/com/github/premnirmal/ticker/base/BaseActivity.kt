@@ -1,20 +1,20 @@
 package com.github.premnirmal.ticker.base
 
 import android.content.Context
-import android.os.Build
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.events.ErrorEvent
-import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.events.UnauthorizedEvent
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import kotlinx.coroutines.flow.collect
@@ -35,8 +35,8 @@ abstract class BaseActivity : AppCompatActivity() {
   }
 
   override fun onCreate(
-    savedInstanceState: Bundle?,
-    persistentState: PersistableBundle?
+      savedInstanceState: Bundle?,
+      persistentState: PersistableBundle?
   ) {
     super.onCreate(savedInstanceState, persistentState)
     analytics.trackScreenView(simpleName, this)
@@ -44,10 +44,16 @@ abstract class BaseActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
-    val flow = bus.receive<ErrorEvent>()
     lifecycleScope.launch {
-      flow.collect { event ->
+      val errorFlow = bus.receive<ErrorEvent>()
+      errorFlow.collect { event ->
         showDialog(event.message)
+      }
+    }
+    lifecycleScope.launch {
+      val unauthorizedFlow = bus.receive<UnauthorizedEvent>()
+      unauthorizedFlow.collect {
+        showIllegalErrorAndFinish()
       }
     }
   }
@@ -70,6 +76,16 @@ abstract class BaseActivity : AppCompatActivity() {
     if (view is TextView) {
       val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
       imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+  }
+
+  protected fun showIllegalErrorAndFinish() {
+    if (!BuildConfig.DEBUG) {
+      showDialog(getString(R.string.error_illegal_app),
+          DialogInterface.OnClickListener { _, _ ->
+            finish()
+          },
+          cancelable = false)
     }
   }
 }

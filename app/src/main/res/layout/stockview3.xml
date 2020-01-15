@@ -12,7 +12,7 @@
       android:layout_width="0dp"
       android:layout_weight="0.4"
       android:layout_height="wrap_content"
-      android:textColor="@color/white"
+      android:textColor="@color/widget_text"
       android:textSize="12sp"
       android:maxLines="1"
       android:ellipsize="end"
@@ -24,24 +24,24 @@
       android:layout_width="0dp"
       android:layout_weight="0.5"
       android:layout_height="wrap_content"
-      android:textColor="@color/white"
+      android:textColor="@color/widget_text"
       android:textSize="12sp"
-      android:maxLines="1"
       android:ellipsize="none"
       android:id="@+id/totalValue"
       android:gravity="end"
+      android:singleLine="true"
       />
 
   <TextView
       android:layout_width="0dp"
       android:layout_weight="0.5"
       android:layout_height="wrap_content"
-      android:textColor="@color/positive_green"
+      android:textColor="@color/text_widget_positive"
       android:textSize="12sp"
-      android:maxLines="1"
       android:ellipsize="none"
       android:id="@+id/change"
       android:gravity="end"
+      android:singleLine="true"
       />
 
 </LinearLayout>
