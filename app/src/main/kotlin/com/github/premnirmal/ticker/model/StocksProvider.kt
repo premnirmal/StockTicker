@@ -269,7 +269,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       val quote = quoteList[ticker]
       var position = getPosition(ticker)
       if (position == null) {
-        position = Position(ticker, ArrayList())
+        position = Position(ticker)
         positionList[ticker] = position
       }
       if (!tickerList.contains(ticker)) {

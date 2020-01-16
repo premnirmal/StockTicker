@@ -30,7 +30,7 @@
   <color name="nav_bar_bg_2">@color/color_primary</color>
   <color name="bottom_bar_bg">@color/color_primary</color>
   <color name="actionbar_title_text">#1b1b1b</color>
-  <color name="text_1">#4d4d4d</color>
+  <color name="text_1">#5e5e5e</color>
   <color name="text_2">#6e6e6e</color>
   <color name="text_3">#4d4d4d</color>
   <color name="text_4">#373737</color>

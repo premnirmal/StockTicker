@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.news
 
+import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -55,6 +56,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
     const val TICKER = "TICKER"
     private const val DATA_POINTS = "DATA_POINTS"
     private const val QUOTE = "QUOTE"
+    private const val REQ_EDIT_POSITIONS = 12345
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
@@ -78,8 +80,12 @@ class QuoteDetailActivity : BaseGraphActivity() {
     setupGraphView()
     savedInstanceState?.let {
       ticker = intent.getStringExtra(TICKER)
-      dataPoints = it.getParcelableArrayList(DATA_POINTS)
-      quote = checkNotNull(it.getParcelable(QUOTE))
+      if (dataPoints == null) {
+        dataPoints = it.getParcelableArrayList(DATA_POINTS)
+      }
+      if (!isQuoteInitialized) {
+        quote = checkNotNull(it.getParcelable(QUOTE))
+      }
       fetch()
       setupUi()
     } ?: run {
@@ -181,7 +187,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
       )
       val intent = Intent(this, AddPositionActivity::class.java)
       intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
-      startActivity(intent)
+      startActivityForResult(intent, REQ_EDIT_POSITIONS)
     }
   }
 
@@ -202,6 +208,21 @@ class QuoteDetailActivity : BaseGraphActivity() {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.no_network_message))
     }
+  }
+
+  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    if (requestCode == REQ_EDIT_POSITIONS) {
+      if (resultCode == Activity.RESULT_OK) {
+        quote = checkNotNull(data?.getParcelableExtra(AddPositionActivity.QUOTE))
+      }
+    }
+    super.onActivityResult(requestCode, resultCode, data)
+  }
+
+  override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    super.onRestoreInstanceState(savedInstanceState)
+    dataPoints = savedInstanceState.getParcelableArrayList(DATA_POINTS)
+    quote = checkNotNull(savedInstanceState.getParcelable(QUOTE))
   }
 
   override fun onSaveInstanceState(outState: Bundle) {

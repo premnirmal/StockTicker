@@ -47,8 +47,8 @@ dexcount {
 }
 
 android {
-  compileSdkVersion 28
-  buildToolsVersion '28.0.3'
+  compileSdkVersion 29
+  buildToolsVersion '29.0.2'
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -60,7 +60,7 @@ android {
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 16
-    targetSdkVersion 28
+    targetSdkVersion 29
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code
@@ -207,7 +207,7 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc03"
 
-  implementation "com.jakewharton.threetenabp:threetenabp:1.2.1"
+  implementation "com.jakewharton.threetenabp:threetenabp:1.2.2"
 
   implementation "com.nbsp:library:1.8"
   implementation "io.github.inflationx:calligraphy3:3.1.1"
@@ -234,7 +234,7 @@ dependencies {
   testImplementation 'androidx.annotation:annotation:1.1.0'
   testImplementation "androidx.test:rules:1.2.0"
   testImplementation 'androidx.test:runner:1.2.0'
-  testImplementation "org.threeten:threetenbp:1.4.0"
+  testImplementation "org.threeten:threetenbp:1.4.1"
   testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
   testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"

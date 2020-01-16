@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.portfolio
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.InputFilter
 import android.text.Spanned
@@ -31,6 +33,7 @@ import javax.inject.Inject
 class AddPositionActivity : BaseActivity() {
 
   companion object {
+    const val QUOTE = "QUOTE"
     const val TICKER = "TICKER"
     private val PATTERN: Pattern =
       Pattern.compile("[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (5) + "})?)||(\\.)?")
@@ -117,9 +120,17 @@ class AddPositionActivity : BaseActivity() {
         sharesView.setText("")
         addPositionView(holding)
         updateTotal()
+        updateActivityResult()
       }
     }
     dismissKeyboard()
+  }
+
+  private fun updateActivityResult() {
+    val quote = checkNotNull(stocksProvider.getStock(ticker))
+    val data = Intent()
+    data.putExtra(QUOTE, quote)
+    setResult(Activity.RESULT_OK, data)
   }
 
   private fun addPositionView(holding: Holding) {
@@ -140,7 +151,7 @@ class AddPositionActivity : BaseActivity() {
   }
 
   private fun updateTotal() {
-    val quote = stocksProvider.getStock(ticker)!!
+    val quote = checkNotNull(stocksProvider.getStock(ticker))
     totalShares.text = quote.numSharesString()
     averagePrice.text = quote.averagePositionPrice()
     totalValue.text = quote.totalSpentString()

@@ -19,6 +19,7 @@ import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -55,6 +56,15 @@ abstract class BaseActivity : AppCompatActivity() {
       unauthorizedFlow.collect {
         showIllegalErrorAndFinish()
       }
+    }
+  }
+
+  override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    try {
+      super.onRestoreInstanceState(savedInstanceState)
+    } catch (ex: Throwable) {
+      // android bug
+      Timber.w(ex)
     }
   }
 

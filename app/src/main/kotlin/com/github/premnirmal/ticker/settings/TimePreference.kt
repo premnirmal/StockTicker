@@ -19,7 +19,7 @@ class TimePreference(
   override fun onGetDefaultValue(
     a: TypedArray,
     index: Int
-  ): Any = a.getString(index)
+  ): Any? = a.getString(index)
 
   override fun onSetInitialValue(
     restoreValue: Boolean,

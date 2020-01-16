@@ -44,11 +44,6 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   var currency: String = ""
   var description: String = ""
 
-  // Position fields
-
-  @Deprecated("remove after migration") var isPosition: Boolean = false
-  @Deprecated("remove after migration") var positionPrice: Float = 0.toFloat()
-  @Deprecated("remove after migration") var positionShares: Float = 0.toFloat()
   var position: Position? = null
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
@@ -152,9 +147,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     stockExchange = parcel.readString()!!
     currency = parcel.readString()!!
     description = parcel.readString()!!
-    isPosition = parcel.readByte() != 0.toByte()
-    positionPrice = parcel.readFloat()
-    positionShares = parcel.readFloat()
+    position = parcel.readParcelable(Position::class.java.classLoader)
   }
 
   override fun writeToParcel(
@@ -169,9 +162,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     parcel.writeString(stockExchange)
     parcel.writeString(currency)
     parcel.writeString(description)
-    parcel.writeByte(if (isPosition) 1 else 0)
-    parcel.writeFloat(positionPrice)
-    parcel.writeFloat(positionShares)
+    parcel.writeParcelable(position, flags)
   }
 
   override fun describeContents(): Int {
