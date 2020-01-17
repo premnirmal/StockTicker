@@ -210,8 +210,8 @@ dependencies {
   implementation "com.jakewharton.threetenabp:threetenabp:1.2.2"
 
   implementation "com.nbsp:library:1.8"
-  implementation "io.github.inflationx:calligraphy3:3.1.1"
-  implementation "io.github.inflationx:viewpump:1.0.0"
+  implementation 'io.github.inflationx:calligraphy3:3.1.1'
+  implementation 'io.github.inflationx:viewpump:2.0.3'
   implementation "com.jakewharton.timber:timber:4.7.1"
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 

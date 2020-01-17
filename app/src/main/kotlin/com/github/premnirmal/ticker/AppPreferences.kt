@@ -136,7 +136,7 @@ class AppPreferences {
   }
 
   var themePref: Int
-    get() = sharedPreferences.getInt(APP_THEME, 1)
+    get() = sharedPreferences.getInt(APP_THEME, 2)
     set(value) = sharedPreferences.edit().putInt(APP_THEME, value).apply()
 
   @NightMode val nightMode: Int
