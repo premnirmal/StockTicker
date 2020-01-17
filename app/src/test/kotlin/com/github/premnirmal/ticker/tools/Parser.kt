@@ -21,7 +21,7 @@ class Parser {
   fun parseJsonFile(resourceName: String): JsonElement {
     val jsonElement: JsonElement
     try {
-      val `in` = javaClass.classLoader.getResourceAsStream(resourceName) ?: throw AssertionError(
+      val `in` = javaClass.classLoader!!.getResourceAsStream(resourceName) ?: throw AssertionError(
           "Failed loading resource " + resourceName + " from " + Parser::class.java)
       val jsonString = readInput(`in`)
       jsonElement = convertStringToJson(jsonString)
