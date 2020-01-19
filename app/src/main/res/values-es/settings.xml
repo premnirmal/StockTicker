@@ -15,7 +15,7 @@
   <string-array name="app_themes">
     <item>Clara</item>
     <item>Oscura</item>
-    <item>Automática</item>
+    <item>Seguir sistema</item>
   </string-array>
   <string-array name="app_themes_values">
     <item>0</item>
