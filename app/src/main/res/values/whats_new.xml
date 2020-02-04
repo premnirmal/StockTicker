@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Attempting to prevent portfolio from being cleared on upgrade</item>
+    <item>Crash fixes</item>
     <item>UI tweaks</item>
     <item>Night mode support</item>
     <item>Fix time picker for Samsung Marshmallow devices</item>

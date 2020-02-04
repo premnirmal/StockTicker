@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.portfolio.search
 
-import androidx.appcompat.app.AlertDialog
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
@@ -9,15 +8,16 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestion
@@ -87,15 +87,6 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     search_view.addTextChangedListener(this)
 
     savedInstanceState?.let { selectedWidgetId = it.getInt(ARG_WIDGET_ID, -1) }
-  }
-
-  override fun onSaveInstanceState(outState: Bundle) {
-    outState.putInt(ARG_WIDGET_ID, selectedWidgetId)
-    super.onSaveInstanceState(outState)
-  }
-
-  override fun onResume() {
-    super.onResume()
     lifecycleScope.launch {
       withContext(Dispatchers.Default) {
         adapter.getData()
@@ -105,6 +96,11 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       }
       adapter.notifyDataSetChanged()
     }
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    outState.putInt(ARG_WIDGET_ID, selectedWidgetId)
+    super.onSaveInstanceState(outState)
   }
 
   private fun addTickerToWidget(

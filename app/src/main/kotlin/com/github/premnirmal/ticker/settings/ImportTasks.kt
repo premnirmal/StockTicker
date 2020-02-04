@@ -28,7 +28,7 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
     try {
       uri = URI(filePath)
     } catch (e: URISyntaxException) {
-      Timber.w(e)
+      Timber.e(e)
       return false
     }
 
@@ -62,7 +62,7 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
       }
       result = true
     } catch (e: IOException) {
-      Timber.w(e)
+      Timber.e(e)
       result = false
     }
 
@@ -83,7 +83,7 @@ internal open class PortfolioImportTask(private val stocksProvider: IStocksProvi
     try {
       uri = URI(filePath)
     } catch (e: URISyntaxException) {
-      Timber.w(e)
+      Timber.e(e)
       return false
     }
 

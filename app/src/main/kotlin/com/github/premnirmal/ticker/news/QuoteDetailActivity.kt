@@ -79,7 +79,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
     }
     setupGraphView()
     savedInstanceState?.let {
-      ticker = intent.getStringExtra(TICKER)
+      ticker = checkNotNull(intent.getStringExtra(TICKER))
       if (dataPoints == null) {
         dataPoints = it.getParcelableArrayList(DATA_POINTS)
       }
@@ -92,7 +92,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
       lifecycleScope.launch {
         val q: Quote?
         if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-          ticker = intent.getStringExtra(TICKER)
+          ticker = checkNotNull(intent.getStringExtra(TICKER))
           val result = stocksProvider.fetchStock(ticker)
           if (!result.wasSuccessful) {
             if (!result.wasAuthorized) {
@@ -227,9 +227,10 @@ class QuoteDetailActivity : BaseGraphActivity() {
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
-    dataPoints?.let {
-      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
-    }
+    // Seeing if this fixes the parcelable too large exception
+//    dataPoints?.let {
+//      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
+//    }
     if (isQuoteInitialized) {
       outState.putParcelable(QUOTE, quote)
     }

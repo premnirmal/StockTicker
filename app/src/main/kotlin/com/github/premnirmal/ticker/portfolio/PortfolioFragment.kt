@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.fragment_portfolio.stockList
 import kotlinx.android.synthetic.main.fragment_portfolio.view_flipper
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -159,6 +160,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
     lifecycleScope.launch {
       val flow = holder.bus.receive<RefreshEvent>()
       flow.collect {
+        Timber.d("RefreshEvent")
         update()
       }
     }

@@ -25,7 +25,7 @@ internal object TickersExporter {
         fileOutputStream.use { it.write(("$ticker, ").toByteArray()) }
       }
     } catch (e: IOException) {
-      Timber.w(e)
+      Timber.e(e)
       return@withContext null
     }
 
@@ -49,7 +49,7 @@ internal object PortfolioExporter {
       val fileOutputStream = FileOutputStream(file)
       fileOutputStream.use { it.write(jsonString.toByteArray()) }
     } catch (e: IOException) {
-      Timber.w(e)
+      Timber.e(e)
       return@withContext null
     }
 

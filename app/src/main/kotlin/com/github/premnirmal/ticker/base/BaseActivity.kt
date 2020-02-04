@@ -18,6 +18,7 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -48,7 +49,9 @@ abstract class BaseActivity : AppCompatActivity() {
     lifecycleScope.launch {
       val errorFlow = bus.receive<ErrorEvent>()
       errorFlow.collect { event ->
-        showDialog(event.message)
+        if (this.isActive) {
+          showDialog(event.message)
+        }
       }
     }
     lifecycleScope.launch {

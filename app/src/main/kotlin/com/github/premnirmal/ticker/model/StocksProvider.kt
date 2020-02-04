@@ -165,6 +165,21 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     return fetched
   }
 
+  private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(Dispatchers.IO) {
+    val quote = if (allowCache) quoteList[ticker] else null
+    return@withContext quote?.let { FetchResult(quote) } ?: run {
+      try {
+        return@run api.getStock(ticker)
+      } catch (ex: Exception) {
+        Timber.w(ex)
+        withContext(Dispatchers.Main) {
+          InAppMessage.showToast(context, R.string.error_fetching_stock)
+        }
+        return@run FetchResult<Quote>(_error = FetchException("Failed to fetch", ex))
+      }
+    }
+  }
+
   /////////////////////
   // public api
   /////////////////////
@@ -200,12 +215,12 @@ class StocksProvider : IStocksProvider, CoroutineScope {
             FetchResult(_error = FetchException("No symbols in portfolio"))
           } else {
             synchronized(quoteList) {
-              tickerList.clear()
-              fetchedStocks.mapTo(tickerList) { it.symbol }
-              quoteList.clear()
-              for (stock in fetchedStocks) {
+              fetchedStocks.forEach { stock ->
                 stock.position = getPosition(stock.symbol)
                 quoteList[stock.symbol] = stock
+                if (!tickerList.contains(stock.symbol)) {
+                  tickerList.add(stock.symbol)
+                }
               }
               lastFetched = api.lastFetched
               save()
@@ -249,7 +264,12 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         save()
         bus.send(RefreshEvent())
         launch {
-          fetch()
+          val result = fetchStockInternal(ticker, false)
+          if (result.wasSuccessful) {
+            quoteList[ticker] = result.data
+            save()
+            bus.send(RefreshEvent())
+          }
         }
       }
     }
@@ -333,19 +353,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
   }
 
-  override suspend fun fetchStock(ticker: String): FetchResult<Quote> = withContext(Dispatchers.IO) {
-    val quote = quoteList[ticker]
-    return@withContext quote?.let { FetchResult(quote) } ?: run {
-      try {
-        return@run api.getStock(ticker)
-      } catch (ex: Exception) {
-        Timber.w(ex)
-        withContext(Dispatchers.Main) {
-          InAppMessage.showToast(context, R.string.error_fetching_stock)
-        }
-        return@run FetchResult<Quote>(_error = FetchException("Failed to fetch", ex))
-      }
-    }
+  override suspend fun fetchStock(ticker: String): FetchResult<Quote> {
+    return fetchStockInternal(ticker, true)
   }
 
   override fun getStock(ticker: String): Quote? = quoteList[ticker]

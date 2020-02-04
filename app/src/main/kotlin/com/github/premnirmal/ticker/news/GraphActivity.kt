@@ -87,13 +87,14 @@ class GraphActivity : BaseGraphActivity() {
     }
   }
 
-  override fun onSaveInstanceState(outState: Bundle) {
-    super.onSaveInstanceState(outState)
-    dataPoints?.let {
-      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
-    }
-    outState.putSerializable(RANGE, range)
-  }
+  // Seeing if this fixes the parcelable too large exception
+//  override fun onSaveInstanceState(outState: Bundle) {
+//    super.onSaveInstanceState(outState)
+//    dataPoints?.let {
+//      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
+//    }
+//    outState.putSerializable(RANGE, range)
+//  }
 
   private fun getData() {
     if (isNetworkOnline()) {
