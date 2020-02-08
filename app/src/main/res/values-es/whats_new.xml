@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Intentando evitar que la cartera se borre en la actualización</item>
-    <item>Soluciones de bloqueo</item>
-    <item>Actualizaciones visuales</item>
-    <item>Soporte de modo oscuro</item>
-    <item>Selector de tiempo de fijación para dispositivos Samsung Marshmallow</item>
+    <item>Reparar importación/exportación en Android Q</item>
+    <item>Ajustes de visuales</item>
   </string-array>
 </resources>

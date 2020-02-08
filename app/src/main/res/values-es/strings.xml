@@ -119,7 +119,7 @@
   <string name="cannot_export_msg">No se pueden exportar citas sin permiso para escribir en un almacenamiento externo</string>
   <string name="cannot_import_msg">No se puede importar comillas sin permiso para leer almacenamiento externo</string>
   <string name="cannot_share_msg">No puede compartir comillas sin permiso para escribir en un almacenamiento externo</string>
-  <string name="exported_to">Se exporta a%1$s</string>
+  <string name="exported_to">Exportado exitosamente</string>
   <string name="whats_new">Qué es nuevo</string>
   <string name="whats_new_in">Qué es nuevo en v%1$s</string>
   <string name="enter_a_symbol">Introduzca un símbolo</string>

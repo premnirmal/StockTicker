@@ -129,7 +129,7 @@
   <string name="cannot_export_msg">Cannot export quotes without permission to write to external storage</string>
   <string name="cannot_import_msg">Cannot import quotes without permission to read external storage</string>
   <string name="cannot_share_msg">Cannot share quotes without permission to write to external storage</string>
-  <string name="exported_to">Exported to %1$s</string>
+  <string name="exported_to">Exported successfully</string>
   <string name="whats_new">What\'s new</string>
   <string name="whats_new_in">What\'s new in v%1$s</string>
   <string name="enter_a_symbol">Enter a symbol</string>

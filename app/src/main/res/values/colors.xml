@@ -41,9 +41,6 @@
   <color name="tab_text">@color/text_1</color>
   <color name="tab_text_selected">@color/text_4</color>
   <color name="tab_background">@color/transparent</color>
-
-  <!-- For the file picker library -->
-  <color name="colorPrimary">@color/color_primary</color>
-  <color name="colorPrimaryDark">@color/color_primary</color>
-  <color name="colorAccent">@color/color_accent</color>
+  <color name="snackbar_bg">@color/color_accent</color>
+  <color name="snackbar_text">@color/white</color>
 </resources>

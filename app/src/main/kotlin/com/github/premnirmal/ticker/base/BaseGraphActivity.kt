@@ -41,7 +41,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
     graphView.legend.isEnabled = false
     graphView.description = null
-    graphView.setNoDataTextColor(resources.getColor(R.color.colorAccent))
+    graphView.setNoDataTextColor(resources.getColor(R.color.color_accent))
     graphView.setNoDataText("")
     graphView.marker = TextMarkerView(this)
   }

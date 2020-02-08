@@ -21,7 +21,7 @@ object CustomTabs {
   ) {
     val customTabsIntent = CustomTabsIntent.Builder()
         .addDefaultShareMenuItem()
-        .setToolbarColor(context.resources.getColor(R.color.colorPrimary))
+        .setToolbarColor(context.resources.getColor(R.color.color_primary))
         .setShowTitle(true)
         .setCloseButtonIcon(context.resources.getDrawable(R.drawable.ic_close).toBitmap())
         .setExitAnimations(context, android.R.anim.fade_in, android.R.anim.fade_out)

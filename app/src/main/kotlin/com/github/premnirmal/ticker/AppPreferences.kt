@@ -217,6 +217,7 @@ class AppPreferences {
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00##")
     val DECIMAL_FORMAT_2DP: Format = DecimalFormat("0.00")
 
+    @Deprecated("Do not use after API 19")
     val tickersFile: File
       get() {
         val dir = Environment.getExternalStoragePublicDirectory("StockTickers")
@@ -227,6 +228,7 @@ class AppPreferences {
         return File(dir, fileName)
       }
 
+    @Deprecated("Do not use after API 19")
     val portfolioFile: File
       get() {
         val dir = Environment.getExternalStoragePublicDirectory("StockTickers")

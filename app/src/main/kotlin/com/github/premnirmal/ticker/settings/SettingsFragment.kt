@@ -19,6 +19,7 @@ import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.EditText
 import android.widget.TimePicker
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
@@ -42,15 +43,12 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import com.nbsp.materialfilepicker.MaterialFilePicker
-import com.nbsp.materialfilepicker.ui.FilePickerActivity
 import kotlinx.android.synthetic.main.fragment_settings.toolbar
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
 import java.io.File
 import java.util.Locale
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 /**
@@ -63,7 +61,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     private const val REQCODE_WRITE_EXTERNAL_STORAGE = 850
     private const val REQCODE_READ_EXTERNAL_STORAGE = 851
     private const val REQCODE_WRITE_EXTERNAL_STORAGE_SHARE = 852
-    private const val REQCODE_FILE_WRITE = 853
+    private const val REQCODE_FILE_READ = 853
+    private const val REQCODE_FILE_WRITE = 854
+    private const val REQCODE_FILE_WRITE_SHARE = 855
   }
 
   interface Parent {
@@ -234,7 +234,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE)
         } else {
-          exportPortfolio()
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            launchExportIntent()
+          } else {
+            exportPortfolio(AppPreferences.portfolioFile)
+          }
         }
         true
       }
@@ -246,7 +250,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         if (needsPermissionGrant()) {
           askForExternalStoragePermissions(REQCODE_WRITE_EXTERNAL_STORAGE_SHARE)
         } else {
-          exportAndShareTickers()
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            launchExportForShareIntent()
+          } else {
+            exportAndShareTickers(AppPreferences.tickersFile)
+          }
         }
         true
       }
@@ -437,50 +445,92 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     )
   }
 
-  private fun exportAndShareTickers() {
-    val file = AppPreferences.tickersFile
+  private fun exportAndShareTickers(file: File) {
     if (file.exists()) {
-      shareTickers()
+      shareTickers(file)
     } else {
       lifecycleScope.launch {
-        val result = TickersExporter.exportTickers(stocksProvider.getTickers())
+        val result = TickersExporter.exportTickers(file, stocksProvider.getTickers())
         if (result == null) {
           showDialog(getString(R.string.error_sharing))
           Timber.w(Throwable("Error sharing tickers"))
         } else {
-          shareTickers()
+          shareTickers(file)
         }
       }
     }
   }
 
-  private fun launchImportIntent() {
-    MaterialFilePicker().withSupportFragment(this)
-        .withRequestCode(REQCODE_FILE_WRITE)
-        // Filtering files and directories by file name using regexp
-        .withFilter(Pattern.compile(".*\\.(txt|json)$"))
-        .start()
-  }
-
-  private fun exportPortfolio() {
+  private fun exportAndShareTickers(uri: Uri) {
     lifecycleScope.launch {
-      val result = PortfolioExporter.exportQuotes(stocksProvider.getPortfolio())
+      val result = TickersExporter.exportTickers(requireContext(), uri, stocksProvider.getTickers())
       if (result == null) {
-        showDialog(getString(R.string.error_exporting))
-        Timber.w(Throwable("Error exporting tickers"))
+        showDialog(getString(R.string.error_sharing))
+        Timber.w(Throwable("Error sharing tickers"))
       } else {
-        showDialog(getString(R.string.exported_to, result))
+        shareTickers(uri)
       }
     }
   }
 
-  private fun shareTickers() {
+  @RequiresApi(Build.VERSION_CODES.KITKAT)
+  private fun launchExportIntent() {
+    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+      addCategory(Intent.CATEGORY_OPENABLE)
+      type = "application/json"
+    }
+    startActivityForResult(intent, REQCODE_FILE_WRITE)
+  }
+
+  @RequiresApi(Build.VERSION_CODES.KITKAT)
+  private fun launchExportForShareIntent() {
+    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+      addCategory(Intent.CATEGORY_OPENABLE)
+      type = "text/plain"
+    }
+    startActivityForResult(intent, REQCODE_FILE_WRITE_SHARE)
+  }
+
+  private fun launchImportIntent() {
+    val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+      Intent(Intent.ACTION_OPEN_DOCUMENT)
+    } else {
+      Intent(Intent.ACTION_GET_CONTENT)
+    }
+    intent.type = "*/*"
+    startActivityForResult(intent, REQCODE_FILE_READ)
+  }
+
+  private fun exportPortfolio(file: File) {
+    lifecycleScope.launch {
+      val result = PortfolioExporter.exportQuotes(file, stocksProvider.getPortfolio())
+      if (result == null) {
+        showDialog(getString(R.string.error_exporting))
+        Timber.w(Throwable("Error exporting tickers"))
+      } else {
+        showDialog(getString(R.string.exported_to))
+      }
+    }
+  }
+
+  private fun exportPortfolio(uri: Uri) {
+    lifecycleScope.launch {
+      val result = PortfolioExporter.exportQuotes(requireContext(), uri, stocksProvider.getPortfolio())
+      if (result == null) {
+        showDialog(getString(R.string.error_exporting))
+        Timber.w(Throwable("Error exporting tickers"))
+      } else {
+        showDialog(getString(R.string.exported_to))
+      }
+    }
+  }
+
+  private fun shareTickers(file: File) {
     val intent = Intent(Intent.ACTION_SEND)
     intent.type = "text/plain"
     intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>())
     intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.my_stock_portfolio))
     intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_email_subject))
-    val file = AppPreferences.tickersFile
     if (!file.exists() || !file.canRead()) {
       showDialog(getString(R.string.error_sharing))
       Timber.w(Throwable("Error sharing tickers"))
@@ -491,6 +541,20 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     } else {
       Uri.fromFile(file)
     }
+    intent.putExtra(Intent.EXTRA_STREAM, uri)
+    val launchIntent = Intent.createChooser(intent, getString(R.string.action_share))
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+      launchIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    startActivity(launchIntent)
+  }
+
+  private fun shareTickers(uri: Uri) {
+    val intent = Intent(Intent.ACTION_SEND)
+    intent.type = "text/plain"
+    intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>())
+    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.my_stock_portfolio))
+    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_email_subject))
     intent.putExtra(Intent.EXTRA_STREAM, uri)
     val launchIntent = Intent.createChooser(intent, getString(R.string.action_share))
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -511,7 +575,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     when (requestCode) {
       REQCODE_WRITE_EXTERNAL_STORAGE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          exportPortfolio()
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            launchExportIntent()
+          } else {
+            exportPortfolio(AppPreferences.portfolioFile)
+          }
         } else {
           showDialog(getString(R.string.cannot_export_msg))
         }
@@ -525,7 +593,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       }
       REQCODE_WRITE_EXTERNAL_STORAGE_SHARE -> {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-          exportAndShareTickers()
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            launchExportForShareIntent()
+          } else {
+            exportAndShareTickers(AppPreferences.tickersFile)
+          }
         } else {
           showDialog(getString(R.string.cannot_share_msg))
         }
@@ -538,22 +610,34 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     resultCode: Int,
     data: Intent?
   ) {
-    if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
-      val filePath = data?.getStringExtra(FilePickerActivity.RESULT_FILE_PATH)
-      if (filePath != null) {
-        val task: ImportTask = if (filePath.endsWith(".txt")) {
+    if (requestCode == REQCODE_FILE_READ && resultCode == Activity.RESULT_OK) {
+      val fileUri = data?.data
+      if (fileUri != null) {
+        val type = requireContext().contentResolver.getType(fileUri)
+        val task: ImportTask = if ("text/plain" == type) {
           TickersImportTask(widgetDataProvider)
         } else {
           PortfolioImportTask(stocksProvider)
         }
         lifecycleScope.launch {
-          val imported = task.import(filePath)
+          val imported = task.import(requireContext(), fileUri)
           if (imported) {
             showDialog(getString(R.string.ticker_import_success))
           } else {
             showDialog(getString(R.string.ticker_import_fail))
           }
         }
+      }
+    } else if (requestCode == REQCODE_FILE_WRITE && resultCode == Activity.RESULT_OK) {
+      val fileUri = data?.data
+      if (fileUri != null) {
+        exportPortfolio(fileUri)
+      }
+    }
+    else if (requestCode == REQCODE_FILE_WRITE_SHARE && resultCode == Activity.RESULT_OK) {
+      val fileUri = data?.data
+      if (fileUri != null) {
+        exportAndShareTickers(fileUri)
       }
     }
     super.onActivityResult(requestCode, resultCode, data)
@@ -576,7 +660,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     }
     val dialog = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
       TimePickerDialog(
-          context, listener,
+          context, R.style.AlertDialog, listener,
           pref.lastHour, pref.lastMinute, true
       )
     } else {

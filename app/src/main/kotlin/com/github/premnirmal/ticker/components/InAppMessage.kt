@@ -24,12 +24,26 @@ object InAppMessage {
         .show()
   }
 
+  fun showToast(context: Context, message: CharSequence) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT)
+        .show()
+  }
+
   fun showMessage(activity: Activity, messageResId: Int, error: Boolean = false) {
     showMessage(activity, activity.getString(messageResId), error)
   }
 
   fun showMessage(activity: Activity, message: CharSequence, error: Boolean = false) {
     val snackbar = createSnackbar(activity.getRootView(), message, error)
+    snackbar.show()
+  }
+
+  fun showMessage(view: ViewGroup, messageResId: Int, error: Boolean) {
+    showMessage(view, view.resources.getString(messageResId), error)
+  }
+
+  fun showMessage(view: ViewGroup, message: String, error: Boolean) {
+    val snackbar = createSnackbar(view, message, error)
     snackbar.show()
   }
 
@@ -51,7 +65,7 @@ object InAppMessage {
     val bg = if (error) R.drawable.snackbar_bg_error else R.drawable.snackbar_bg
     snackBarView.background = view.context.resources.getDrawable(bg)
     val text = snackBarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-    text.setTextColor(view.context.resources.getColor(if (error) R.color.white else R.color.text_1))
+    text.setTextColor(view.context.resources.getColor(if (error) R.color.white else R.color.snackbar_text))
     return snackbar
   }
 }

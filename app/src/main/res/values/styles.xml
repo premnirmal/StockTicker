@@ -74,6 +74,8 @@
     <item name="android:colorBackgroundCacheHint">@color/default_bg</item>
     <item name="android:windowBackground">@color/default_bg</item>
     <item name="android:textAppearanceSmall">@style/TextAppearance.Dialog</item>
+    <item name="android:button">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+    <item name="android:buttonBarButtonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
     <item name="colorPrimary">@color/color_accent</item>
     <item name="colorPrimaryDark">@color/color_primary</item>
     <item name="colorControlNormal">@color/color_accent</item>
