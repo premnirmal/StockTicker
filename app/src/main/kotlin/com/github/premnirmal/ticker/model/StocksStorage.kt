@@ -40,8 +40,7 @@ class StocksStorage {
 
   @Deprecated("remove after migration")
   private fun readStocksOld(): List<Quote> {
-    return Paper.book()
-        .read(KEY_STOCKS, ArrayList())
+    return Paper.book().read(KEY_STOCKS, ArrayList<Quote>())
   }
 
   @Deprecated("remove after migration")
@@ -94,7 +93,7 @@ class StocksStorage {
       return@withContext quotesWithHoldings.map { quoteWithHoldings ->
         val quote = quoteWithHoldings.quote.toQuote()
         val holdings = quoteWithHoldings.holdings.map { holdingTable ->
-          Holding(holdingTable.shares, holdingTable.price)
+          Holding(holdingTable.shares, holdingTable.price, holdingTable.id)
         }
         quote.position = Position(quote.symbol, holdings.toMutableList())
         quote
@@ -108,10 +107,12 @@ class StocksStorage {
 
   suspend fun saveQuotes(quotes: List<Quote>) = withContext(Dispatchers.IO) {
     val quoteRows = quotes.map { it.toQuoteRow() }
-    val holdingRows = quotes.mapNotNull { it.position?.toHoldingRows() }
-        .flatten()
+    val positions = quotes.mapNotNull { it.position }
     db.withTransaction {
-      quoteDao.upsertQuotesAndHoldings(quoteRows, holdingRows)
+      quoteDao.upsertQuotes(quoteRows)
+      positions.forEach {
+        quoteDao.upsertHoldings(it.symbol, it.toHoldingRows())
+      }
     }
   }
 
@@ -124,11 +125,11 @@ class StocksStorage {
   }
 
   suspend fun savePosition(position: Position) = db.withTransaction {
-    quoteDao.upsertHoldings(position.toHoldingRows())
+    quoteDao.upsertHoldings(position.symbol, position.toHoldingRows())
   }
 
   suspend fun removeHolding(ticker: String, holding: Holding) = db.withTransaction {
-    quoteDao.deleteHolding(HoldingRow(ticker, holding.shares, holding.price))
+    quoteDao.deleteHolding(HoldingRow(holding.id, ticker, holding.shares, holding.price))
   }
 
   private fun Quote.toQuoteRow(): QuoteRow {
@@ -138,7 +139,7 @@ class StocksStorage {
 
   private fun Position.toHoldingRows(): List<HoldingRow> {
     return this.holdings.map {
-      HoldingRow(this.symbol, it.shares, it.price)
+      HoldingRow(it.id, this.symbol, it.shares, it.price)
     }
   }
 

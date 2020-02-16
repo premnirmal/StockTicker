@@ -66,7 +66,8 @@ data class Position(
 
 data class Holding(
   var shares: Float = 0.0f,
-  var price: Float = 0.0f
+  var price: Float = 0.0f,
+  var id: Long? = null
 ) : Parcelable {
 
   fun totalValue(): Float = shares * price

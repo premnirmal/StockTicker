@@ -26,21 +26,9 @@ interface QuoteDao {
   suspend fun upsertQuote(quote: QuoteRow)
 
   @Transaction
-  suspend fun upsertQuotesAndHoldings(quotes: List<QuoteRow>, holdings: List<HoldingRow>) {
-    upsertQuotes(quotes)
-    upsertHoldings(holdings)
-  }
-
-  @Transaction
   suspend fun upsertQuoteAndHolding(quote: QuoteRow, holdings: List<HoldingRow>?) {
     upsertQuote(quote)
-    holdings?.let { upsertHoldings(it) }
-  }
-
-  @Transaction
-  suspend fun deleteQuoteAndHoldings(quote: QuoteRow, holdings: List<HoldingRow>?) {
-    deleteQuote(quote)
-    holdings?.let { deleteHoldings(it) }
+    holdings?.let { upsertHoldings(quote.symbol, it) }
   }
 
   @Transaction
@@ -58,6 +46,16 @@ interface QuoteDao {
   @Query("DELETE FROM QuoteRow WHERE symbol = :symbol")
   suspend fun deleteQuoteById(symbol: String)
 
+  @Transaction
+  suspend fun upsertHoldings(symbol: String, holdings: List<HoldingRow>) {
+    deleteHoldingsByQuoteId(symbol)
+    insertHoldings(holdings)
+  }
+
+  @Insert
+  @JvmSuppressWildcards
+  suspend fun insertHoldings(holdings: List<HoldingRow>)
+
   @Query("DELETE FROM HoldingRow WHERE quote_symbol = :symbol")
   suspend fun deleteHoldingsByQuoteId(symbol: String)
 
@@ -68,16 +66,5 @@ interface QuoteDao {
   suspend fun deleteHoldingsByQuoteIds(symbols: List<String>)
 
   @Delete
-  suspend fun deleteQuote(quote: QuoteRow)
-
-  @Insert(onConflict = OnConflictStrategy.REPLACE)
-  @JvmSuppressWildcards
-  suspend fun upsertHoldings(holdings: List<HoldingRow>)
-
-  @Delete
   suspend fun deleteHolding(holding: HoldingRow)
-
-  @Delete
-  @JvmSuppressWildcards
-  suspend fun deleteHoldings(holdings: List<HoldingRow>)
 }
