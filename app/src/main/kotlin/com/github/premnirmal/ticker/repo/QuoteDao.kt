@@ -19,11 +19,11 @@ interface QuoteDao {
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   @JvmSuppressWildcards
-  suspend fun upsertQuotes(quotes: List<QuoteRow>)
+  suspend fun upsertQuotes(quotes: List<QuoteRow>): LongArray
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   @JvmSuppressWildcards
-  suspend fun upsertQuote(quote: QuoteRow)
+  suspend fun upsertQuote(quote: QuoteRow): Long
 
   @Transaction
   suspend fun upsertQuoteAndHolding(quote: QuoteRow, holdings: List<HoldingRow>?) {
@@ -54,7 +54,10 @@ interface QuoteDao {
 
   @Insert
   @JvmSuppressWildcards
-  suspend fun insertHoldings(holdings: List<HoldingRow>)
+  suspend fun insertHoldings(holdings: List<HoldingRow>): LongArray
+
+  @Insert
+  suspend fun insertHolding(holding: HoldingRow): Long
 
   @Query("DELETE FROM HoldingRow WHERE quote_symbol = :symbol")
   suspend fun deleteHoldingsByQuoteId(symbol: String)

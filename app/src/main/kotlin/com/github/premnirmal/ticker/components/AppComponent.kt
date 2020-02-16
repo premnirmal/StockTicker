@@ -15,7 +15,7 @@ import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.model.StocksStorage
+import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi

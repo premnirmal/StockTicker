@@ -1,13 +1,12 @@
-package com.github.premnirmal.ticker.model
+package com.github.premnirmal.ticker.repo
 
 import android.content.SharedPreferences
 import androidx.room.withTransaction
+import com.github.premnirmal.ticker.AppPreferences.Companion.HAS_MIGRATED
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.repo.QuoteDao
-import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.data.HoldingRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.google.gson.Gson
@@ -26,7 +25,6 @@ class StocksStorage {
     private const val KEY_STOCKS = "STOCKS"
     private const val KEY_POSITIONS = "POSITIONS_NEW"
     private const val KEY_TICKERS = "TICKERS"
-    private const val MIGRATED = "MIGRATED"
   }
 
   @Inject lateinit var preferences: SharedPreferences
@@ -55,23 +53,24 @@ class StocksStorage {
         .read(KEY_POSITIONS, ArrayList())
   }
 
-  fun saveTickers(tickers: List<String>) {
+  fun saveTickers(tickers: Set<String>) {
     preferences.edit()
-        .putStringSet(KEY_TICKERS, tickers.toSet())
+        .putStringSet(KEY_TICKERS, tickers)
         .apply()
   }
 
   fun readTickers(): Set<String> {
-    return preferences.getStringSet(KEY_TICKERS, emptySet())!!
+    return preferences.getStringSet(
+        KEY_TICKERS, emptySet())!!
   }
 
   suspend fun migrateIfNecessary(): Boolean {
-    if (preferences.getBoolean(MIGRATED, false)) {
+    if (preferences.getBoolean(HAS_MIGRATED, false)) {
       return false
     }
     return withContext(Dispatchers.IO) {
       val tickersOld = readTickersOld()
-      saveTickers(tickersOld)
+      saveTickers(tickersOld.toSet())
       val stocksOld = readStocksOld()
       val positionsOld = readPositionsOld()
       positionsOld.forEach {
@@ -83,7 +82,7 @@ class StocksStorage {
         }
       }
       saveQuotes(stocksOld)
-      preferences.edit().putBoolean(MIGRATED, true).commit()
+      preferences.edit().putBoolean(HAS_MIGRATED, true).commit()
     }
   }
 
@@ -93,7 +92,7 @@ class StocksStorage {
       return@withContext quotesWithHoldings.map { quoteWithHoldings ->
         val quote = quoteWithHoldings.quote.toQuote()
         val holdings = quoteWithHoldings.holdings.map { holdingTable ->
-          Holding(holdingTable.shares, holdingTable.price, holdingTable.id)
+          Holding(holdingTable.quoteSymbol, holdingTable.shares, holdingTable.price, holdingTable.id!!)
         }
         quote.position = Position(quote.symbol, holdings.toMutableList())
         quote
@@ -124,8 +123,8 @@ class StocksStorage {
     quoteDao.deleteQuotesAndHoldings(tickers)
   }
 
-  suspend fun savePosition(position: Position) = db.withTransaction {
-    quoteDao.upsertHoldings(position.symbol, position.toHoldingRows())
+  suspend fun addHolding(holding: Holding) = db.withTransaction {
+    quoteDao.insertHolding(holding.toHoldingRow())
   }
 
   suspend fun removeHolding(ticker: String, holding: Holding) = db.withTransaction {
@@ -141,6 +140,10 @@ class StocksStorage {
     return this.holdings.map {
       HoldingRow(it.id, this.symbol, it.shares, it.price)
     }
+  }
+
+  private fun Holding.toHoldingRow(): HoldingRow {
+    return HoldingRow(this.id, this.symbol, this.shares, this.price)
   }
 
   private fun QuoteRow.toQuote(): Quote {

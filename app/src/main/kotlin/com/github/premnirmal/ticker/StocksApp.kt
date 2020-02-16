@@ -5,12 +5,14 @@ import android.content.pm.PackageManager
 import android.util.Base64
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
+import com.facebook.stetho.Stetho
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -75,6 +77,13 @@ open class StocksApp : MultiDexApplication() {
     initPaper()
     SIGNATURE = getAppSignature(this)
     initAnalytics()
+    if (BuildConfig.DEBUG) {
+      initStetho()
+    }
+  }
+
+  open fun initStetho() {
+    Stetho.initializeWithDefaults(this)
   }
 
   open fun initPaper() {
@@ -86,10 +95,9 @@ open class StocksApp : MultiDexApplication() {
   }
 
   open fun createAppComponent(): AppComponent {
-    val component: AppComponent = DaggerAppComponent.builder()
+    return DaggerAppComponent.builder()
         .appModule(AppModule(this))
         .build()
-    return component
   }
 
   protected open fun initLogger() {

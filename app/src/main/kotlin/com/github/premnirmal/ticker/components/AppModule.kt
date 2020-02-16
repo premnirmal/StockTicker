@@ -12,7 +12,7 @@ import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
-import com.github.premnirmal.ticker.model.StocksStorage
+import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.network.NetworkModule
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
@@ -47,7 +47,8 @@ class AppModule(private val app: StocksApp) {
 
   @Provides @Singleton fun provideAnalytics(): Analytics = AnalyticsImpl()
 
-  @Provides @Singleton fun provideStorage(): StocksStorage = StocksStorage()
+  @Provides @Singleton fun provideStorage(): StocksStorage =
+    StocksStorage()
   
   @Provides @Singleton fun provideQuotesDB(context: Context): QuotesDB {
     return Room.databaseBuilder(

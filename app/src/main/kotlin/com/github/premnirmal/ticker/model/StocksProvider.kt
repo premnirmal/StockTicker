@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.CoroutineScope
@@ -60,7 +61,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.Main
 
-  private val tickerList: MutableList<String> = ArrayList()
+  private val tickers: MutableSet<String> = HashSet()
   private val quoteMap: MutableMap<String, Quote> = HashMap()
 
   private var lastFetched: Long = 0L
@@ -73,9 +74,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     exponentialBackoff = ExponentialBackoff()
     runBlocking { storage.migrateIfNecessary() }
     val tickers = storage.readTickers()
-    tickerList.addAll(tickers)
-    if (tickerList.isEmpty()) {
-      tickerList.addAll(DEFAULT_STOCKS)
+    this.tickers.addAll(tickers)
+    if (this.tickers.isEmpty()) {
+      this.tickers.addAll(DEFAULT_STOCKS)
     }
     lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
@@ -88,15 +89,15 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
   }
 
-  private suspend fun fetchLocal() {
-    try {
-      val quotes = storage.readQuotes()
-      for (quote in quotes) {
-        quoteMap[quote.symbol] = quote
+  private suspend fun fetchLocal() = withContext(Dispatchers.IO) {
+      try {
+        val quotes = storage.readQuotes()
+        synchronized(quoteMap) {
+          quotes.forEach { quoteMap[it.symbol] = it }
+        }
+      } catch (e: Exception) {
+        Timber.w(e)
       }
-    } catch (e: Exception) {
-      Timber.w(e)
-    }
   }
 
   private fun saveLastFetched() {
@@ -106,12 +107,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   }
 
   private fun saveTickers() {
-    storage.saveTickers(tickerList)
-  }
-
-  private fun retryWithBackoff() {
-    val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
-    scheduleUpdateWithMs(backOffTimeMs)
+    storage.saveTickers(tickers)
   }
 
   private fun scheduleUpdate(refresh: Boolean = false) {
@@ -174,65 +170,60 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   /////////////////////
 
   override fun hasTicker(ticker: String): Boolean {
-    synchronized(tickerList) {
-      return tickerList.contains(ticker)
+    synchronized(tickers) {
+      return tickers.contains(ticker)
     }
   }
 
   override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
-    if (tickerList.isEmpty()) {
+    if (tickers.isEmpty()) {
       bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
       return@withContext FetchResult<List<Quote>>(
           _error = FetchException("No symbols in portfolio")
       )
     } else {
-      val result: FetchResult<List<Quote>> = try {
+      try {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
-        val fr = api.getStocks(tickerList)
+        val fr = api.getStocks(tickers.toList())
         if (!fr.wasAuthorized) {
           if (!bus.send(UnauthorizedEvent())) {
             withContext(Dispatchers.Main) {
               InAppMessage.showToast(context, R.string.error_illegal_app)
             }
           }
-          fr
+          return@withContext fr
         } else {
           val fetchedStocks = fr.data
           if (fetchedStocks.isEmpty()) {
-            bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-            FetchResult(_error = FetchException("No symbols in portfolio"))
+            bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
+            return@withContext FetchResult<List<Quote>>(_error = FetchException("Refresh failed"))
           } else {
-            synchronized(quoteMap) {
-              fetchedStocks.forEach { stock ->
-                stock.position = getPosition(stock.symbol)
-                quoteMap[stock.symbol] = stock
-                if (!tickerList.contains(stock.symbol)) {
-                  tickerList.add(stock.symbol)
-                }
-              }
+            synchronized(tickers) {
+              tickers.addAll(fetchedStocks.map { it.symbol })
             }
-            storage.saveQuotes(quoteMap.values.toList())
+            storage.saveQuotes(fetchedStocks)
+            fetchLocal()
             lastFetched = api.lastFetched
             saveLastFetched()
-            FetchResult(_data = fetchedStocks)
+            exponentialBackoff.reset()
+            scheduleUpdate(true)
+            return@withContext FetchResult(_data = fetchedStocks)
           }
         }
       } catch (ex: Exception) {
-        Timber.w(ex)
-        appPreferences.setRefreshing(false)
+        Timber.e(ex)
         if (!bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))) {
           withContext(Dispatchers.Main) {
             InAppMessage.showToast(context, R.string.refresh_failed)
           }
         }
-        retryWithBackoff()
-        FetchResult(_error = FetchException("Failed to fetch", ex))
+        val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
+        scheduleUpdateWithMs(backOffTimeMs)
+        return@withContext FetchResult<List<Quote>>(_error = FetchException("Failed to fetch", ex))
+      } finally {
+        appPreferences.setRefreshing(false)
       }
-      appPreferences.setRefreshing(false)
-      exponentialBackoff.reset()
-      scheduleUpdate(true)
-      return@withContext result
     }
   }
 
@@ -246,8 +237,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun addStock(ticker: String): Collection<String> {
     synchronized(quoteMap) {
-      if (!tickerList.contains(ticker)) {
-        tickerList.add(ticker)
+      if (!tickers.contains(ticker)) {
+        tickers.add(ticker)
         val quote = Quote()
         quote.symbol = ticker
         quoteMap[ticker] = quote
@@ -264,14 +255,14 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
       }
     }
-    return tickerList
+    return tickers
   }
 
   override fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
 
   override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-  override fun addPosition(
+  override fun addHolding(
     ticker: String,
     shares: Float,
     price: Float
@@ -282,15 +273,16 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       if (position == null) {
         position = Position(ticker)
       }
-      if (!tickerList.contains(ticker)) {
-        tickerList.add(ticker)
+      if (!tickers.contains(ticker)) {
+        tickers.add(ticker)
         saveTickers()
       }
-      val holding = Holding(shares, price)
+      val holding = Holding(ticker, shares, price)
       position.add(holding)
       quote?.position = position
       launch {
-        storage.savePosition(position)
+        val id = storage.addHolding(holding)
+        holding.id = id
       }
       return holding
     }
@@ -311,10 +303,10 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
   }
 
-  override fun addStocks(tickers: Collection<String>): Collection<String> {
-    synchronized(tickerList) {
-      val filterNot = tickers.filterNot { tickerList.contains(it) }
-      filterNot.forEach { tickerList.add(it) }
+  override fun addStocks(symbols: Collection<String>): Collection<String> {
+    synchronized(this.tickers) {
+      val filterNot = symbols.filterNot { this.tickers.contains(it) }
+      filterNot.forEach { this.tickers.add(it) }
       saveTickers()
       if (filterNot.isNotEmpty()) {
         launch {
@@ -322,34 +314,34 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
       }
     }
-    return tickerList
+    return this.tickers
   }
 
   override fun removeStock(ticker: String): Collection<String> {
     synchronized(quoteMap) {
-      tickerList.remove(ticker)
+      tickers.remove(ticker)
       saveTickers()
       quoteMap.remove(ticker)
-      scheduleUpdate(true)
-      launch {
-        storage.removeQuoteBySymbol(ticker)
-      }
-      return tickerList
     }
+    scheduleUpdate(true)
+    launch {
+      storage.removeQuoteBySymbol(ticker)
+    }
+    return tickers
   }
 
-  override fun removeStocks(tickers: Collection<String>) {
+  override fun removeStocks(symbols: Collection<String>) {
     synchronized(quoteMap) {
-      tickers.forEach {
-        tickerList.remove(it)
+      symbols.forEach {
+        tickers.remove(it)
         quoteMap.remove(it)
       }
-      saveTickers()
-      launch {
-        storage.removeQuotesBySymbol(tickers.toList())
-      }
-      scheduleUpdate(true)
     }
+    saveTickers()
+    launch {
+      storage.removeQuotesBySymbol(symbols.toList())
+    }
+    scheduleUpdate(true)
   }
 
   override suspend fun fetchStock(ticker: String): FetchResult<Quote> {
@@ -358,7 +350,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun getStock(ticker: String): Quote? = quoteMap[ticker]
 
-  override fun getTickers(): List<String> = ArrayList(tickerList)
+  override fun getTickers(): List<String> = ArrayList(tickers)
 
   override fun getPortfolio(): List<Quote> = quoteMap.map { it.value }
 
@@ -366,15 +358,16 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     synchronized(quoteMap) {
       portfolio.forEach {
         val symbol = it.symbol
-        if (!tickerList.contains(symbol)) tickerList.add(symbol)
+        if (!tickers.contains(symbol)) tickers.add(symbol)
         quoteMap[symbol] = it
       }
       saveTickers()
-      widgetDataProvider.updateWidgets(tickerList)
-      launch {
-        storage.saveQuotes(portfolio)
-        fetch()
-      }
+      widgetDataProvider.updateWidgets(tickers.toList())
+    }
+    launch {
+      storage.saveQuotes(portfolio)
+      fetchLocal()
+      fetch()
     }
   }
 

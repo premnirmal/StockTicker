@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
@@ -39,17 +38,20 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_settings.toolbar
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
 import java.io.File
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.system.exitProcess
 
 /**
  * Created by premnirmal on 2/27/16.
@@ -71,26 +73,18 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     fun showTutorial()
   }
 
-  private var parent: Parent? = null
+  private val parent: Parent
+    get() = context as Parent
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var db: QuotesDB
 
   // ChildFragment
 
   override fun setData(bundle: Bundle) {
 
-  }
-
-  override fun onAttach(context: Context) {
-    super.onAttach(context)
-    parent = context as Parent
-  }
-
-  override fun onDetach() {
-    super.onDetach()
-    parent = null
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -204,25 +198,19 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), DialogInterface.OnClickListener { _, _ ->
           val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
+          val hasMigrated = preferences.getBoolean(AppPreferences.HAS_MIGRATED, false)
           Timber.w(RuntimeException("Nuked from settings!"))
           preferences.edit()
               .clear()
               .apply()
-          val filesDir = requireContext().filesDir
-          filesDir.listFiles()
-              .forEach { file ->
-                file?.delete()
-              }
-          val sharedPrefsDir = filesDir.parentFile.path + "/shared_prefs/"
-          val sharedPreferenceFile = File(sharedPrefsDir)
-          val listFiles = sharedPreferenceFile.listFiles()
-          listFiles?.forEach { file ->
-            file?.delete()
-          }
           preferences.edit()
               .putBoolean(AppPreferences.DID_RATE, hasUserAlreadyRated)
+              .putBoolean(AppPreferences.HAS_MIGRATED, hasMigrated)
               .apply()
-          System.exit(0)
+          lifecycleScope.launch(Dispatchers.IO) {
+            db.clearAllTables()
+            exitProcess(0)
+          }
         })
         true
       }

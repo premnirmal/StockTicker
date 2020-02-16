@@ -10,7 +10,9 @@ import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AsyncBus
-import com.github.premnirmal.ticker.model.StocksStorage
+import com.github.premnirmal.ticker.repo.StocksStorage
+import com.github.premnirmal.ticker.repo.QuoteDao
+import com.github.premnirmal.ticker.repo.QuotesDB
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -32,9 +34,7 @@ class MockAppModule(private val app: StocksApp) {
 
   @Provides @Singleton internal fun provideDefaultSharedPreferences(
     context: Context): SharedPreferences {
-    val sharedPreferences =
-      context.getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
-    return sharedPreferences
+    return context.getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
   }
 
   @Provides @Singleton internal fun provideAppWidgetManager(): AppWidgetManager =
@@ -42,7 +42,16 @@ class MockAppModule(private val app: StocksApp) {
 
   @Provides @Singleton internal fun provideAppPreferences(): AppPreferences = AppPreferences()
 
-  @Provides @Singleton internal fun provideStorage(): StocksStorage = StocksStorage()
+  @Provides @Singleton internal fun provideStorage(): StocksStorage =
+    StocksStorage()
 
   @Provides @Singleton internal fun provideAnalytics(): Analytics = Mocker.provide(Analytics::class)
+
+  @Provides @Singleton fun provideQuotesDB(context: Context): QuotesDB {
+    return Mocker.provide(QuotesDB::class)
+  }
+
+  @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao {
+    return Mocker.provide(QuoteDao::class)
+  }
 }
