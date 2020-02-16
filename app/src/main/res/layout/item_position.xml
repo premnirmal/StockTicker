@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.github.premnirmal.ticker.ui.MaxHeightLinearLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:sfw="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/stockContainer"
@@ -12,7 +11,6 @@
     android:paddingBottom="8dp"
     android:paddingLeft="4dp"
     android:paddingTop="4dp"
-    app:maxHeightDp="150"
     tools:layout_height="150dp"
     tools:layout_marginTop="100dp"
     >
@@ -80,7 +78,8 @@
 
   <LinearLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
       android:gravity="bottom"
       android:layout_gravity="bottom"
       android:orientation="horizontal"
@@ -90,7 +89,7 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         android:layout_weight="0.33"
@@ -123,7 +122,7 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         android:layout_weight="0.33"
@@ -145,7 +144,7 @@
 
     <LinearLayout
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_weight="0.33"
         android:gravity="bottom"
         android:orientation="vertical"
@@ -175,4 +174,4 @@
     </LinearLayout>
   </LinearLayout>
 
-</com.github.premnirmal.ticker.ui.MaxHeightLinearLayout>
+</LinearLayout>

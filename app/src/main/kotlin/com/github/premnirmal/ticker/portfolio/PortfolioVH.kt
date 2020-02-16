@@ -17,8 +17,9 @@ abstract class PortfolioVH(itemView: View) :
 
   protected val positiveColor: Int = itemView.resources.getColor(color.positive_green)
   protected val negativeColor: Int = itemView.resources.getColor(color.negative_red)
+  protected val neutralColor: Int = itemView.resources.getColor(color.text_1)
 
-  @Throws(Exception::class) abstract fun updateView(quote: Quote)
+  @Throws(Exception::class) protected abstract fun updateView(quote: Quote, color: Int)
 
   @Throws(Exception::class) fun update(
     quote: Quote?,
@@ -46,7 +47,20 @@ abstract class PortfolioVH(itemView: View) :
     val totalValueText = itemView.findViewById<TextView>(R.id.totalValue)
     totalValueText.text = quote.priceString()
 
-    updateView(quote)
+    val change: Float = quote.change
+    val changePercent: Float = quote.changeInPercent
+    val color = when {
+      (change < 0f || changePercent < 0f) -> {
+        negativeColor
+      }
+      (change == 0f) -> {
+        neutralColor
+      }
+      else -> {
+        positiveColor
+      }
+    }
+    updateView(quote, color)
   }
 
   override fun onItemSelected() {
@@ -59,14 +73,7 @@ abstract class PortfolioVH(itemView: View) :
 
   internal class StockVH(itemView: View) : PortfolioVH(itemView) {
 
-    override fun updateView(quote: Quote) {
-      val change: Float = quote.change
-      val changePercent: Float = quote.changeInPercent
-      val color = if (change < 0f || changePercent < 0f) {
-        negativeColor
-      } else {
-        positiveColor
-      }
+    override fun updateView(quote: Quote, color: Int) {
       val changeInPercentView = itemView.findViewById<TextView>(R.id.changePercent)
       changeInPercentView.text = quote.changePercentStringWithSign()
       val changeValueView = itemView.findViewById<TextView>(R.id.changeValue)
@@ -78,14 +85,7 @@ abstract class PortfolioVH(itemView: View) :
 
   internal class PositionVH(itemView: View) : PortfolioVH(itemView) {
 
-    override fun updateView(quote: Quote) {
-      val change: Float = quote.change
-      val changePercent: Float = quote.changeInPercent
-      val color = if (change < 0f || changePercent < 0f) {
-        negativeColor
-      } else {
-        positiveColor
-      }
+    override fun updateView(quote: Quote, color: Int) {
       val changeInPercentView = itemView.findViewById<StockFieldView>(R.id.changePercent)
       changeInPercentView.setText(quote.changePercentStringWithSign())
       val changeValueView = itemView.findViewById<StockFieldView>(R.id.changeValue)
@@ -102,18 +102,21 @@ abstract class PortfolioVH(itemView: View) :
       gainLossView.setText(quote.gainLossString())
       val dayChangeView = itemView.findViewById<StockFieldView>(R.id.dayChange)
       dayChangeView.setText(quote.dayChangeString())
-      if (gainLossAmount >= 0) {
-        gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
-        gainLossView.setTextColor(positiveColor)
-      } else {
-        gainLossView.setLabel(gainLossView.context.getString(R.string.loss))
-        gainLossView.setTextColor(negativeColor)
+      when {
+        gainLossAmount > 0 -> {
+          gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
+          gainLossView.setTextColor(positiveColor)
+        }
+        gainLossAmount == 0f -> {
+          gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
+          gainLossView.setTextColor(neutralColor)
+        }
+        else -> {
+          gainLossView.setLabel(gainLossView.context.getString(R.string.loss))
+          gainLossView.setTextColor(negativeColor)
+        }
       }
-      if (quote.change < 0f || quote.changeInPercent < 0f) {
-        dayChangeView.setTextColor(negativeColor)
-      } else {
-        dayChangeView.setTextColor(positiveColor)
-      }
+      dayChangeView.setTextColor(color)
     }
   }
 }
