@@ -70,6 +70,8 @@ android {
 
   sourceSets {
     main.java.srcDirs += "src/main/kotlin"
+    debug.java.srcDirs += "src/debug/kotlin"
+    release.java.srcDirs += "src/release/kotlin"
     dev.java.srcDirs += "src/dev/kotlin"
     prod.java.srcDirs += "src/prod/kotlin"
     purefoss.java.srcDirs += "src/purefoss/kotlin"
@@ -220,7 +222,7 @@ dependencies {
   implementation "androidx.room:room-runtime:$ROOM_VERSION"
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
-  implementation 'com.facebook.stetho:stetho:1.5.1'
+  debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 
   prodImplementation("com.crashlytics.sdk.android:crashlytics:2.9.4@aar") {
     transitive = true

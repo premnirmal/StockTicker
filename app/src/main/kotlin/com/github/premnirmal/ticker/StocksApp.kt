@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.util.Base64
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import com.facebook.stetho.Stetho
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
@@ -83,7 +82,7 @@ open class StocksApp : MultiDexApplication() {
   }
 
   open fun initStetho() {
-    Stetho.initializeWithDefaults(this)
+    StethoInitializer.initialize(this)
   }
 
   open fun initPaper() {
