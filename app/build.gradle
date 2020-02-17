@@ -173,6 +173,7 @@ kapt {
 }
 
 ext {
+  LIFECYCLE_VERSION = "2.2.0"
   DAGGER_VERSION = "2.20"
   MOCKITO_VERSION = "3.1.0"
   JUNIT_VERSION = "4.12"
@@ -190,7 +191,7 @@ dependencies {
 
   implementation 'androidx.appcompat:appcompat:1.1.0'
   implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-  implementation 'com.google.android.material:material:1.0.0'
+  implementation 'com.google.android.material:material:1.1.0'
   implementation 'androidx.preference:preference:1.1.0'
   implementation 'androidx.browser:browser:1.2.0'
   implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
@@ -208,7 +209,9 @@ dependencies {
 
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$COROUTINES_VERSION"
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
-  implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc03"
+  implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"
+  implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
+  implementation "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
 
   implementation "com.jakewharton.threetenabp:threetenabp:1.2.2"
 

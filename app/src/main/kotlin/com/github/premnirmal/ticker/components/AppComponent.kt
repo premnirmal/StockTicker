@@ -6,6 +6,8 @@ import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.analytics.GeneralProperties
 import com.github.premnirmal.ticker.base.BaseFragment
+import com.github.premnirmal.ticker.debug.DbViewerActivity
+import com.github.premnirmal.ticker.debug.DbViewerViewModel
 import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
@@ -15,7 +17,6 @@ import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi
@@ -27,6 +28,7 @@ import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
+import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
@@ -61,6 +63,8 @@ interface AppComponent {
   fun inject(searchActivity: SearchActivity)
 
   fun inject(widgetSettingsActivity: WidgetSettingsActivity)
+
+  fun inject(dbViewerActivity: DbViewerActivity)
 
   // Components
 
@@ -131,5 +135,9 @@ interface AppComponent {
   fun appContext(): Context
 
   fun gson(): Gson
+
+  // ViewModels
+
+  fun inject(dbViewerViewModel: DbViewerViewModel)
 
 }

@@ -62,7 +62,6 @@ class AddPositionActivity : BaseActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_positions)
-    toolbar.setTitle(R.string.add_position)
     toolbar.setNavigationOnClickListener {
       finish()
     }

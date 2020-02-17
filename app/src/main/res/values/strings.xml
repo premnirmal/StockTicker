@@ -152,5 +152,6 @@
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">How to add a widget</string>
   <string name="how_to">- Long-press an empty space on your home screen to bring up the menu\n\n- Now select the \'Widgets\' option.\n\n- Select the \'Stocks Widget\' item from the list of widgets.\n\n- You can add multiple widgets each with their own portfolio.</string>
-
+  <string name="db_viewer">Application database</string>
+  <string name="discovered_db">You have discovered the secret entrance to the DB Viewer</string>
 </resources>

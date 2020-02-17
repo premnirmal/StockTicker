@@ -135,7 +135,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val pref = findPreference<Preference>(AppPreferences.SETTING_WHATS_NEW)
       pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        parent?.showWhatsNew()
+        parent.showWhatsNew()
         true
       }
     }
@@ -143,7 +143,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val pref = findPreference<Preference>(AppPreferences.SETTING_TUTORIAL)
       pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        parent?.showTutorial()
+        parent.showTutorial()
         true
       }
     }
