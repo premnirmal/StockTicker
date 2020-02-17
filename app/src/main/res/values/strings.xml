@@ -17,7 +17,7 @@
   <string name="action_nuke">Clear app data</string>
   <string name="privacy_policy">Privacy Policy</string>
   <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
-  <string name="export_desc">Export your portfolio to a .json file. The file will be stored in StockTickers/Portfolio.json</string>
+  <string name="export_desc">Export your portfolio to a .json file</string>
   <string name="action_import">Import Quotes</string>
   <string name="import_desc">Import quotes from a comma separated .txt file, or a .json file</string>
   <string name="action_portfolio">Portfolio</string>
@@ -152,5 +152,6 @@
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">How to add a widget</string>
   <string name="how_to">- Long-press an empty space on your home screen to bring up the menu\n\n- Now select the \'Widgets\' option.\n\n- Select the \'Stocks Widget\' item from the list of widgets.\n\n- You can add multiple widgets each with their own portfolio.</string>
-
+  <string name="db_viewer">Application database</string>
+  <string name="discovered_db">You have discovered the secret entrance to the DB Viewer</string>
 </resources>

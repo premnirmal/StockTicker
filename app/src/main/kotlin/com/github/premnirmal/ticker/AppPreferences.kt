@@ -175,6 +175,7 @@ class AppPreferences {
       return builder.toString()
     }
 
+    const val HAS_MIGRATED = "HAS_MIGRATED"
     const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
     const val SETTING_APP_THEME = "com.github.premnirmal.ticker.theme"
     const val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"

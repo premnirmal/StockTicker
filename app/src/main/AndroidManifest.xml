@@ -63,6 +63,9 @@
             android:name="com.github.premnirmal.ticker.news.GraphActivity"
             android:screenOrientation="landscape"
             android:theme="@style/GraphActivityTheme" />
+        <activity
+            android:name="com.github.premnirmal.ticker.debug.DbViewerActivity"
+            android:theme="@style/DbViewerTheme" />
 
         <receiver
             android:name="com.github.premnirmal.ticker.UpdateReceiver"

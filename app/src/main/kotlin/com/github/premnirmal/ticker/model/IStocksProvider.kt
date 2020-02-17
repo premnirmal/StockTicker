@@ -33,19 +33,19 @@ interface IStocksProvider {
 
   fun removeStock(ticker: String): Collection<String>
 
-  fun removeStocks(tickers: Collection<String>)
+  fun removeStocks(symbols: Collection<String>)
 
   fun hasTicker(ticker: String): Boolean
 
   fun addStock(ticker: String): Collection<String>
 
-  fun addStocks(tickers: Collection<String>): Collection<String>
+  fun addStocks(symbols: Collection<String>): Collection<String>
 
   fun hasPosition(ticker: String): Boolean
 
   fun getPosition(ticker: String): Position?
 
-  fun addPosition(
+  fun addHolding(
     ticker: String,
     shares: Float,
     price: Float

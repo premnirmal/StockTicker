@@ -8,7 +8,7 @@
   <string name="action_nuke">Borrar datos de la aplicación</string>
   <string name="privacy_policy">Política de privacidad</string>
   <string name="nuke_desc">Restablecer la aplicación a la configuración predeterminada. Use esto si tiene problemas con su cartera.</string>
-  <string name="export_desc">Exportar su portafolio a un archivo .json. El archivo se almacenará en StockTickers/Portfolio.json</string>
+  <string name="export_desc">Exportar su portafolio a un archivo .json</string>
   <string name="action_import">Importar cotizaciones</string>
   <string name="import_desc">Importar citas de un archivo .txt separado por comas, o un archivo .json</string>
   <string name="action_portfolio">Portafolio</string>
@@ -142,4 +142,6 @@
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">Cómo agregar un widget</string>
   <string name="how_to">- Mantenga pulsado un espacio en blanco en su pantalla de inicio para que aparezca el menú\n\n- Ahora seleccione la opción \'Widgets\'.\n\n- Seleccione el elemento \'Stocks Widget\' de la lista de widgets.\n\n- Puede agregar múltiples widgets, cada uno con su propio portafolio.</string>
+  <string name="db_viewer">Base de datos de la aplicación</string>
+  <string name="discovered_db">Has descubierto la entrada secreta al DB Viewer</string>
 </resources>

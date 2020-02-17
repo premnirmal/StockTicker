@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/bg_toolbar"
+        app:title="@string/add_position"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:titleTextAppearance="@style/ActionBarTitleText"
         />

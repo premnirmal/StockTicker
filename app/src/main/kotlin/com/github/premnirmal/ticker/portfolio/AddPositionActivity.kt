@@ -62,7 +62,6 @@ class AddPositionActivity : BaseActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_positions)
-    toolbar.setTitle(R.string.add_position)
     toolbar.setNavigationOnClickListener {
       finish()
     }
@@ -115,7 +114,7 @@ class AddPositionActivity : BaseActivity() {
       if (success) {
         priceInputLayout.error = null
         sharesInputLayout.error = null
-        val holding = stocksProvider.addPosition(ticker, shares, price)
+        val holding = stocksProvider.addHolding(ticker, shares, price)
         priceView.setText("")
         sharesView.setText("")
         addPositionView(holding)

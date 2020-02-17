@@ -9,6 +9,8 @@
 -keep class com.github.premnirmal.ticker.network.data.** { *; }
 # Keep models package
 -keepnames class com.github.premnirmal.ticker.model.** { *; }
+# Keep DB repo
+-keepnames class com.github.premnirmal.ticker.repo.** { *; }
 
 # Kotlin
 -keep class kotlin.** { *; }

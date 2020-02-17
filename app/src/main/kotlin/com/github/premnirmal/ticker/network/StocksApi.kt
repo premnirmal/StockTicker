@@ -103,7 +103,7 @@ class StocksApi {
         } catch (ex: Exception) {
           quoteNets = getStocksYahoo(listOf(ticker))
         }
-        return@withContext FetchResult(_data = Quote.fromQuoteNet(quoteNets.first()))
+        return@withContext FetchResult(_data = quoteNets.first().toQuote())
       } catch (ex: Exception) {
         return@withContext FetchResult<Quote>(
             _error = FetchException("Failed to fetch $ticker", ex))
@@ -119,7 +119,7 @@ class StocksApi {
   private fun List<IQuoteNet>.toQuoteMap(): MutableMap<String, Quote> {
     val quotesMap = HashMap<String, Quote>()
     for (quoteNet in this) {
-      val quote = Quote.fromQuoteNet(quoteNet)
+      val quote = quoteNet.toQuote()
       quotesMap[quote.symbol] = quote
     }
     return quotesMap
@@ -130,5 +130,17 @@ class StocksApi {
     tickerList.filter { this.containsKey(it) }
         .mapTo(quotes) { this[it]!! }
     return quotes
+  }
+
+  private fun IQuoteNet.toQuote(): Quote {
+    val quote = Quote(this.symbol ?: "")
+    quote.name = this.name ?: ""
+    quote.lastTradePrice = this.lastTradePrice
+    quote.changeInPercent = this.changePercent
+    quote.change = this.change
+    quote.stockExchange = this.exchange ?: ""
+    quote.currency = this.currency ?: "US"
+    quote.description = this.description ?: ""
+    return quote
   }
 }

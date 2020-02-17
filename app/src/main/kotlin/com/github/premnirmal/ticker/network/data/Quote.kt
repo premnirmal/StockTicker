@@ -12,17 +12,6 @@ import java.text.Format
 data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   companion object {
-    fun fromQuoteNet(quoteNet: IQuoteNet): Quote {
-      val quote = Quote(quoteNet.symbol ?: "")
-      quote.name = quoteNet.name ?: ""
-      quote.lastTradePrice = quoteNet.lastTradePrice
-      quote.changeInPercent = quoteNet.changePercent
-      quote.change = quoteNet.change
-      quote.stockExchange = quoteNet.exchange ?: ""
-      quote.currency = quoteNet.currency ?: "US"
-      quote.description = quoteNet.description ?: ""
-      return quote
-    }
 
     @JvmField
     val CREATOR = object: Creator<Quote> {

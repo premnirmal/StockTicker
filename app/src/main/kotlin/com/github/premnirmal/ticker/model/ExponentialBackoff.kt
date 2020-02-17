@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.model
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import javax.inject.Inject
+import kotlin.math.pow
 
 class ExponentialBackoff {
 
@@ -18,12 +19,12 @@ class ExponentialBackoff {
   }
 
   internal fun getBackoffDurationMs(attempt: Int): Long {
-    var duration = baseMs * Math.pow(backoffFactor.toDouble(), attempt.toDouble()).toLong()
+    var duration = baseMs * backoffFactor.toDouble().pow(attempt.toDouble()).toLong()
     if (duration <= 0) {
       duration = Long.MAX_VALUE
     }
     appPreferences.setBackOffAttemptCount(backOffAttemptCount)
-    return Math.min(Math.max(duration, baseMs), capMs)
+    return duration.coerceAtLeast(baseMs).coerceAtMost(capMs)
   }
 
   fun getBackoffDurationMs(): Long = getBackoffDurationMs(backOffAttemptCount++)

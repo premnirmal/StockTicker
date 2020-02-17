@@ -65,19 +65,25 @@ data class Position(
 }
 
 data class Holding(
-  var shares: Float = 0.0f,
-  var price: Float = 0.0f
+    val symbol: String,
+    val shares: Float = 0.0f,
+    val price: Float = 0.0f,
+    var id: Long? = null
 ) : Parcelable {
 
   fun totalValue(): Float = shares * price
 
   constructor(parcel: Parcel) : this(
+      parcel.readString()!!,
       parcel.readFloat(),
-      parcel.readFloat())
+      parcel.readFloat(),
+      parcel.readLong())
 
   override fun writeToParcel(parcel: Parcel, flags: Int) {
+    parcel.writeString(symbol)
     parcel.writeFloat(shares)
     parcel.writeFloat(price)
+    id?.let { parcel.writeLong(it) }
   }
 
   override fun describeContents(): Int {
