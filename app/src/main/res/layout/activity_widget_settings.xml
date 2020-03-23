@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:background="@color/bg_toolbar"
         android:elevation="0dp"
+        app:navigationIcon="@drawable/ic_close"
         app:elevation="0dp"
         app:title="@string/action_Settings"
         app:titleTextAppearance="@style/ActionBarTitleText" />

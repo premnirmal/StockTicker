@@ -2,6 +2,9 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.graphics.PorterDuff
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -29,6 +32,7 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
+import kotlinx.android.synthetic.main.fragment_search.toolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,12 +42,14 @@ import javax.inject.Inject
 class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
 
   companion object {
-    const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+    private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
+    private const val ARG_SHOW_NAV_ICON = "SHOW_NAV_ICON"
 
-    fun newInstance(widgetId: Int): SearchFragment {
+    fun newInstance(widgetId: Int, showNavIcon: Boolean = false): SearchFragment {
       val fragment = SearchFragment()
       val args = Bundle()
       args.putInt(ARG_WIDGET_ID, widgetId)
+      args.putBoolean(ARG_SHOW_NAV_ICON, showNavIcon)
       fragment.arguments = args
       return fragment
     }
@@ -78,8 +84,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    fake_status_bar.layoutParams.height = requireContext().getStatusBarHeight()
-    fake_status_bar.requestLayout()
+    if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
+      toolbar.setNavigationIcon(R.drawable.ic_close)
+      if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+        toolbar.navigationIcon?.setTint(resources.getColor(R.color.icon_tint))
+        toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
+      }
+      toolbar.setNavigationOnClickListener { requireActivity().finish() }
+      fake_status_bar.visibility = View.GONE
+    } else {
+      fake_status_bar.visibility = View.VISIBLE
+      fake_status_bar.layoutParams.height = requireContext().getStatusBarHeight()
+      fake_status_bar.requestLayout()
+    }
     adapter = SuggestionsAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)
     recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))

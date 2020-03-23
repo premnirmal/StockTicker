@@ -38,7 +38,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     private const val ARG_SHOW_ADD_STOCKS = "show_add_stocks"
 
-    fun newInstance(widgetId: Int, showAddStocks: Boolean = true): WidgetSettingsFragment {
+    fun newInstance(widgetId: Int, showAddStocks: Boolean): WidgetSettingsFragment {
       val fragment = WidgetSettingsFragment()
       val args = Bundle()
       args.putInt(ARG_WIDGET_ID, widgetId)

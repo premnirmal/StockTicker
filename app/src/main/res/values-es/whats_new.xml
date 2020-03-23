@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Usamos SQLite DB</item>
-    <item>Reparar importación/exportación en Android Q</item>
-    <item>Ajustes de visuales</item>
+    <item>Ajustes de preferencias del widget</item>
   </string-array>
 </resources>
