@@ -1,8 +1,5 @@
 package com.github.premnirmal.ticker
 
-import android.content.Context
-import android.content.pm.PackageManager
-import android.util.Base64
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.github.premnirmal.ticker.analytics.Analytics
@@ -19,36 +16,12 @@ import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
 import io.paperdb.Paper
 import timber.log.Timber
-import java.security.MessageDigest
 import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
  */
 open class StocksApp : MultiDexApplication() {
-
-  companion object {
-
-    var SIGNATURE: String? = null
-
-    fun getAppSignature(context: Context): String? {
-      try {
-        val packageInfo =
-          context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_SIGNATURES)
-        packageInfo.signatures.forEach {
-          val md = MessageDigest.getInstance("SHA")
-          md.update(it.toByteArray())
-          val currentSignature = Base64.encodeToString(md.digest(), Base64.DEFAULT)
-              .trim()
-          return currentSignature
-        }
-      } catch (e: Exception) {
-        Timber.e(e)
-      }
-      return null
-    }
-  }
-
 
   class InjectionHolder {
     @Inject lateinit var analytics: Analytics
@@ -74,7 +47,6 @@ open class StocksApp : MultiDexApplication() {
     Injector.appComponent.inject(holder)
     AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
     initPaper()
-    SIGNATURE = getAppSignature(this)
     initAnalytics()
     if (BuildConfig.DEBUG) {
       initStetho()

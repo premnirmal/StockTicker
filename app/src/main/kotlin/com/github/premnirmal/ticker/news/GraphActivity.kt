@@ -4,16 +4,15 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
@@ -24,50 +23,40 @@ import kotlinx.android.synthetic.main.activity_graph.one_year
 import kotlinx.android.synthetic.main.activity_graph.progress
 import kotlinx.android.synthetic.main.activity_graph.three_month
 import kotlinx.android.synthetic.main.activity_graph.tickerName
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class GraphActivity : BaseGraphActivity() {
 
   companion object {
     const val TICKER = "TICKER"
-    private const val DATA_POINTS = "DATA_POINTS"
-    private const val RANGE = "RANGE"
     private const val DURATION = 2000
   }
 
+  override val simpleName: String = "GraphActivity"
   private var range = Range.THREE_MONTH
   private lateinit var ticker: String
-  @Inject internal lateinit var historyProvider: IHistoryProvider
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  override val simpleName: String = "GraphActivity"
+  private lateinit var viewModel: GraphViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_graph)
     setupGraphView()
-    val q: Quote?
-    if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-      ticker = intent.getStringExtra(TICKER)
-      q = stocksProvider.getStock(ticker)
-      if (q == null) {
-        showErrorAndFinish()
-        return
-      }
-    } else {
-      ticker = ""
+    ticker = checkNotNull(intent.getStringExtra(TICKER))
+    viewModel = ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
+        .get(GraphViewModel::class.java)
+    viewModel.quote.observe(this, Observer { q ->
+      quote = q
+      tickerName.text = ticker
+      desc.text = quote.name
+    })
+    viewModel.data.observe(this, Observer { data ->
+      dataPoints = data
+      loadGraph()
+    })
+    viewModel.error.observe(this, Observer {
       showErrorAndFinish()
-      return
-    }
-    quote = q
-    tickerName.text = ticker
-    desc.text = quote.name
-
-    savedInstanceState?.let {
-      dataPoints = it.getParcelableArrayList(DATA_POINTS)
-    }
-
+    })
+    viewModel.fetchStock(ticker)
     var view: View? = null
     when (range) {
       Range.ONE_MONTH -> view = one_month
@@ -87,29 +76,11 @@ class GraphActivity : BaseGraphActivity() {
     }
   }
 
-  // Seeing if this fixes the parcelable too large exception
-//  override fun onSaveInstanceState(outState: Bundle) {
-//    super.onSaveInstanceState(outState)
-//    dataPoints?.let {
-//      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
-//    }
-//    outState.putSerializable(RANGE, range)
-//  }
-
   private fun getData() {
     if (isNetworkOnline()) {
       graph_holder.visibility = View.GONE
       progress.visibility = View.VISIBLE
-      lifecycleScope.launch {
-        val result = historyProvider.getHistoricalDataByRange(ticker, range)
-        if (result.wasSuccessful) {
-          dataPoints = result.data
-          loadGraph()
-        } else {
-          showDialog(getString(R.string.error_loading_graph),
-              DialogInterface.OnClickListener { _, _ -> finish() }, cancelable = false)
-        }
-      }
+      viewModel.fetchHistoricalDataByRange(ticker, range)
     } else {
       showDialog(getString(R.string.no_network_message),
           DialogInterface.OnClickListener { _, _ -> finish() }, cancelable = false)

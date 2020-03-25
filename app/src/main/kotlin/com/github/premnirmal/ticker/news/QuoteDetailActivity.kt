@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
@@ -19,11 +21,7 @@ import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.model.IHistoryProvider
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.NewsArticle
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -47,24 +45,19 @@ import kotlinx.android.synthetic.main.activity_quote_detail.progress
 import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
 import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
 import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class QuoteDetailActivity : BaseGraphActivity() {
 
   companion object {
     const val TICKER = "TICKER"
-    private const val DATA_POINTS = "DATA_POINTS"
-    private const val QUOTE = "QUOTE"
     private const val REQ_EDIT_POSITIONS = 12345
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var newsProvider: NewsProvider
-  @Inject internal lateinit var historyProvider: IHistoryProvider
+  override val simpleName: String = "NewsFeedActivity"
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private lateinit var ticker: String
-  override val simpleName: String = "NewsFeedActivity"
+  private lateinit var viewModel: QuoteDetailViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -78,46 +71,47 @@ class QuoteDetailActivity : BaseGraphActivity() {
       graph_container.requestLayout()
     }
     setupGraphView()
-    savedInstanceState?.let {
-      ticker = checkNotNull(intent.getStringExtra(TICKER))
-      if (dataPoints == null) {
-        dataPoints = it.getParcelableArrayList(DATA_POINTS)
-      }
-      if (!isQuoteInitialized) {
-        quote = checkNotNull(it.getParcelable(QUOTE))
-      }
+    ticker = checkNotNull(intent.getStringExtra(TICKER))
+
+    viewModel = ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
+        .get(QuoteDetailViewModel::class.java)
+    viewModel.quote.observe(this, Observer { q ->
+      quote = q
       fetch()
       setupUi()
-    } ?: run {
-      lifecycleScope.launch {
-        val q: Quote?
-        if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-          ticker = checkNotNull(intent.getStringExtra(TICKER))
-          val result = stocksProvider.fetchStock(ticker)
-          if (!result.wasSuccessful) {
-            if (!result.wasAuthorized) {
-              showIllegalErrorAndFinish()
-              return@launch
-            }
-            showErrorAndFinish()
-            return@launch
-          }
-          q = result.data
-        } else {
-          ticker = ""
-          showErrorAndFinish()
-          return@launch
-        }
-        quote = q
-        fetch()
-        setupUi()
-      }
-    }
+    })
+    viewModel.data.observe(this, Observer { data ->
+      dataPoints = data
+      loadGraph()
+    })
+    viewModel.dataFetchError.observe(this, Observer {
+      progress.visibility = View.GONE
+      graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+      InAppMessage.showMessage(this@QuoteDetailActivity, R.string.graph_fetch_failed, error = true)
+    })
+    viewModel.newsData.observe(this, Observer { data ->
+      analytics.trackGeneralEvent(
+          GeneralEvent("FetchNews")
+              .addProperty("Instrument", ticker)
+              .addProperty("Success", "True")
+      )
+      setUpArticles(data)
+    })
+    viewModel.newsError.observe(this, Observer {
+      news_container.visibility = View.GONE
+      InAppMessage.showMessage(this@QuoteDetailActivity, R.string.news_fetch_failed, error = true)
+      analytics.trackGeneralEvent(
+          GeneralEvent("FetchNews")
+              .addProperty("Instrument", ticker)
+              .addProperty("Success", "False")
+      )
+    })
+    viewModel.fetchQuote(ticker)
   }
 
   private fun setupUi() {
     toolbar.inflateMenu(R.menu.menu_news_feed)
-    val isInPortfolio = stocksProvider.hasTicker(ticker)
+    val isInPortfolio = viewModel.isInPortfolio(ticker)
     val addMenuItem = toolbar.menu.findItem(R.id.action_add)
     val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
     if (isInPortfolio) {
@@ -159,7 +153,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
         R.id.action_remove -> {
           removeMenuItem.isVisible = false
           addMenuItem.isVisible = true
-          stocksProvider.removeStock(ticker)
+          viewModel.removeStock(ticker)
           updatePositionsUi()
           return@setOnMenuItemClickListener true
         }
@@ -193,17 +187,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
 
   private fun fetchData() {
     if (isNetworkOnline()) {
-      lifecycleScope.launch {
-        val result = historyProvider.getHistoricalDataShort(quote.symbol)
-        if (result.wasSuccessful) {
-          dataPoints = result.data
-          loadGraph()
-        } else {
-          progress.visibility = View.GONE
-          graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-          InAppMessage.showMessage(this@QuoteDetailActivity, R.string.graph_fetch_failed, error = true)
-        }
-      }
+      viewModel.fetchHistoricalDataShort(quote.symbol)
     } else {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.no_network_message))
@@ -217,23 +201,6 @@ class QuoteDetailActivity : BaseGraphActivity() {
       }
     }
     super.onActivityResult(requestCode, resultCode, data)
-  }
-
-  override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-    super.onRestoreInstanceState(savedInstanceState)
-    dataPoints = savedInstanceState.getParcelableArrayList(DATA_POINTS)
-    quote = checkNotNull(savedInstanceState.getParcelable(QUOTE))
-  }
-
-  override fun onSaveInstanceState(outState: Bundle) {
-    super.onSaveInstanceState(outState)
-    // Seeing if this fixes the parcelable too large exception
-//    dataPoints?.let {
-//      outState.putParcelableArrayList(DATA_POINTS, ArrayList(it))
-//    }
-    if (isQuoteInitialized) {
-      outState.putParcelable(QUOTE, quote)
-    }
   }
 
   private fun setUpArticles(articles: List<NewsArticle>) {
@@ -275,7 +242,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
   }
 
   private fun updatePositionsUi() {
-    val isInPortfolio = stocksProvider.hasTicker(ticker)
+    val isInPortfolio = viewModel.hasTicker(ticker)
     if (isInPortfolio) {
       positions_container.visibility = View.VISIBLE
       positions_header.visibility = View.VISIBLE
@@ -326,26 +293,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
 
   private fun fetchNews() {
     if (isNetworkOnline()) {
-      lifecycleScope.launch {
-        val result = newsProvider.getNews(quote.newsQuery())
-        if (result.wasSuccessful) {
-          val articles = result.data
-          analytics.trackGeneralEvent(
-              GeneralEvent("FetchNews")
-                  .addProperty("Instrument", ticker)
-                  .addProperty("Success", "True")
-          )
-          setUpArticles(articles)
-        } else {
-          news_container.visibility = View.GONE
-          InAppMessage.showMessage(this@QuoteDetailActivity, R.string.news_fetch_failed, error = true)
-          analytics.trackGeneralEvent(
-              GeneralEvent("FetchNews")
-                  .addProperty("Instrument", ticker)
-                  .addProperty("Success", "False")
-          )
-        }
-      }
+      viewModel.fetchNews(quote)
     } else {
       news_container.visibility = View.GONE
     }

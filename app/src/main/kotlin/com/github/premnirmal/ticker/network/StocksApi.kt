@@ -11,7 +11,6 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,12 +25,10 @@ class StocksApi {
   }
 
   @Inject internal lateinit var gson: Gson
-  @Inject internal lateinit var robindahood: Robindahood
   @Inject internal lateinit var yahooFinance: YahooFinance
   @Inject internal lateinit var suggestionApi: SuggestionApi
   @Inject internal lateinit var clock: AppClock
   var lastFetched: Long = 0
-  private var unauthorized = false
 
   init {
     Injector.appComponent.inject(this)
@@ -58,24 +55,8 @@ class StocksApi {
    */
   suspend fun getStocks(tickerList: List<String>): FetchResult<List<Quote>> =
     withContext(Dispatchers.IO) {
-      if (unauthorized) {
-        return@withContext FetchResult<List<Quote>>(_unauthorized = true)
-      }
       try {
-        var quoteNets: List<IQuoteNet>
-        try {
-          val query = tickerList.joinToString(",")
-          quoteNets = robindahood.getStocks(query)
-        } catch (ex: HttpException) {
-          unauthorized = ex.code() == 401 && !DEBUG
-          if (unauthorized) {
-            return@withContext FetchResult<List<Quote>>(_unauthorized = true)
-          } else {
-            quoteNets = getStocksYahoo(tickerList)
-          }
-        } catch (ex: Exception) {
-          quoteNets = getStocksYahoo(tickerList)
-        }
+        val quoteNets = getStocksYahoo(tickerList)
         lastFetched = clock.currentTimeMillis()
         return@withContext FetchResult(_data = quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
@@ -86,23 +67,8 @@ class StocksApi {
 
   suspend fun getStock(ticker: String): FetchResult<Quote> =
     withContext(Dispatchers.IO) {
-      if (unauthorized) {
-        return@withContext FetchResult<Quote>(_unauthorized = true)
-      }
       try {
-        var quoteNets: List<IQuoteNet>
-        try {
-          quoteNets = robindahood.getStocks(ticker)
-        } catch (ex: HttpException) {
-          unauthorized = ex.code() == 401 && !DEBUG
-          if (unauthorized) {
-            return@withContext FetchResult<Quote>(_unauthorized = true)
-          } else {
-            quoteNets = getStocksYahoo(listOf(ticker))
-          }
-        } catch (ex: Exception) {
-          quoteNets = getStocksYahoo(listOf(ticker))
-        }
+        val quoteNets = getStocksYahoo(listOf(ticker))
         return@withContext FetchResult(_data = quoteNets.first().toQuote())
       } catch (ex: Exception) {
         return@withContext FetchResult<Quote>(

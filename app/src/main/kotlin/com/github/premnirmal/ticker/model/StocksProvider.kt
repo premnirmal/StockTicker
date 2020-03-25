@@ -9,7 +9,6 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.events.UnauthorizedEvent
 import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
@@ -186,30 +185,21 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fr = api.getStocks(tickers.toList())
-        if (!fr.wasAuthorized) {
-          if (!bus.send(UnauthorizedEvent())) {
-            withContext(Dispatchers.Main) {
-              InAppMessage.showToast(context, R.string.error_illegal_app)
-            }
-          }
-          return@withContext fr
+        val fetchedStocks = fr.data
+        if (fetchedStocks.isEmpty()) {
+          bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
+          return@withContext FetchResult<List<Quote>>(_error = FetchException("Refresh failed"))
         } else {
-          val fetchedStocks = fr.data
-          if (fetchedStocks.isEmpty()) {
-            bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
-            return@withContext FetchResult<List<Quote>>(_error = FetchException("Refresh failed"))
-          } else {
-            synchronized(tickers) {
-              tickers.addAll(fetchedStocks.map { it.symbol })
-            }
-            storage.saveQuotes(fetchedStocks)
-            fetchLocal()
-            lastFetched = api.lastFetched
-            saveLastFetched()
-            exponentialBackoff.reset()
-            scheduleUpdate(true)
-            return@withContext FetchResult(_data = fetchedStocks)
+          synchronized(tickers) {
+            tickers.addAll(fetchedStocks.map { it.symbol })
           }
+          storage.saveQuotes(fetchedStocks)
+          fetchLocal()
+          lastFetched = api.lastFetched
+          saveLastFetched()
+          exponentialBackoff.reset()
+          scheduleUpdate(true)
+          return@withContext FetchResult(_data = fetchedStocks)
         }
       } catch (ex: Exception) {
         Timber.e(ex)

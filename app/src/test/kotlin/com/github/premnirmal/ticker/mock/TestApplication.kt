@@ -19,6 +19,10 @@ class TestApplication : StocksApp() {
   }
 
   override fun initLogger() {
-    super.initLogger()
+    // No-op
+  }
+
+  override fun initStetho() {
+    // No-op
   }
 }

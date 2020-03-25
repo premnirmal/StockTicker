@@ -122,21 +122,6 @@ class NetworkModule {
     return suggestionApi
   }
 
-  @Provides @Singleton internal fun provideRobindahood(
-    context: Context, @Named(
-        "robindahoodClient"
-    ) okHttpClient: OkHttpClient,
-    converterFactory: GsonConverterFactory
-  ): Robindahood {
-    val retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(context.getString(R.string.robindahood_endpoint))
-        .addConverterFactory(converterFactory)
-        .build()
-    val robindahood = retrofit.create(Robindahood::class.java)
-    return robindahood
-  }
-
   @Provides @Singleton internal fun provideYahooFinance(
     context: Context,
     @Named("client") okHttpClient: OkHttpClient,

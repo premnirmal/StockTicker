@@ -11,7 +11,7 @@ data class FetchResult<T>(private val _data: T? = null,
   }
 
   val wasSuccessful: Boolean
-    get() = _data != null && wasAuthorized
+    get() = _data != null
 
   val hasError: Boolean
     get() = _error != null
@@ -21,6 +21,4 @@ data class FetchResult<T>(private val _data: T? = null,
 
   val error: FetchException
     get() = _error!!
-
-  val wasAuthorized: Boolean = !_unauthorized
 }
