@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
@@ -22,8 +21,8 @@ class GraphViewModel(application: Application): AndroidViewModel(application) {
   private val _quote = MutableLiveData<Quote>()
   val quote: LiveData<Quote>
     get() = _quote
-  private val _error = MutableLiveData<FetchException>()
-  val error: LiveData<FetchException>
+  private val _error = MutableLiveData<Exception>()
+  val error: LiveData<Exception>
     get() = _error
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>
@@ -35,7 +34,12 @@ class GraphViewModel(application: Application): AndroidViewModel(application) {
 
   fun fetchStock(ticker: String) {
     viewModelScope.launch {
-      _quote.value = stocksProvider.getStock(ticker)
+      val stock = stocksProvider.getStock(ticker)
+      stock?.let {
+        _quote.value = it
+      } ?: run {
+        _error.value = Exception("Quote not found")
+      }
     }
   }
 

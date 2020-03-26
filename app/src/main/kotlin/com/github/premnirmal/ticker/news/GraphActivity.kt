@@ -44,8 +44,8 @@ class GraphActivity : BaseGraphActivity() {
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     viewModel = ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
         .get(GraphViewModel::class.java)
-    viewModel.quote.observe(this, Observer { q ->
-      quote = q
+    viewModel.quote.observe(this, Observer { quote ->
+      this.quote = quote
       tickerName.text = ticker
       desc.text = quote.name
     })
