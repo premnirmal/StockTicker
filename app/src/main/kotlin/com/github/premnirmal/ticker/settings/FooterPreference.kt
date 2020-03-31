@@ -2,8 +2,8 @@ package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.content.Intent
-import android.os.Handler
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import androidx.preference.Preference
@@ -13,7 +13,6 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import android.view.ViewConfiguration
 import android.widget.Toast
-import androidx.core.os.HandlerCompat.postDelayed
 import android.view.MotionEvent
 import com.github.premnirmal.ticker.debug.DbViewerActivity
 
@@ -43,24 +42,40 @@ class FooterPreference(
     private var numberOfTaps = 0
     private var lastTapTimeMs: Long = 0
     private var touchDownMs: Long = 0
+    private var countToast: Toast? = null
 
     override fun onTouch(v: View, event: MotionEvent): Boolean {
       when (event.action) {
-        MotionEvent.ACTION_DOWN -> touchDownMs = System.currentTimeMillis()
+        MotionEvent.ACTION_DOWN -> {
+          touchDownMs = System.currentTimeMillis()
+          if (numberOfTaps > 0 && System.currentTimeMillis() - lastTapTimeMs < ViewConfiguration.getDoubleTapTimeout()) {
+            numberOfTaps++
+            countToast?.cancel()
+            if (numberOfTaps < 5) {
+              val toast =Toast.makeText(context,
+                  context.getString(R.string.db_tap_count, 5 - numberOfTaps),
+                    Toast.LENGTH_SHORT)
+              toast.setGravity(Gravity.CENTER, 0, 0)
+              toast.show()
+              countToast = toast
+            }
+          } else {
+            countToast?.cancel()
+            numberOfTaps = 1
+          }
+        }
         MotionEvent.ACTION_UP -> {
           if (System.currentTimeMillis() - touchDownMs > ViewConfiguration.getTapTimeout()) {
+            countToast?.cancel()
             numberOfTaps = 0
             lastTapTimeMs = 0
             return true
           }
-          if (numberOfTaps > 0 && System.currentTimeMillis() - lastTapTimeMs < ViewConfiguration.getDoubleTapTimeout()) {
-            numberOfTaps++
-          } else {
-            numberOfTaps = 1
-          }
           lastTapTimeMs = System.currentTimeMillis()
-          if (numberOfTaps == 7) {
-            Toast.makeText(context, R.string.discovered_db, Toast.LENGTH_LONG).show()
+          if (numberOfTaps == 5) {
+            val toast = Toast.makeText(context, R.string.discovered_db, Toast.LENGTH_LONG)
+            toast.setGravity(Gravity.CENTER, 0, 0)
+            toast.show()
             context.startActivity(Intent(context, DbViewerActivity::class.java))
             numberOfTaps = 0
             lastTapTimeMs = 0

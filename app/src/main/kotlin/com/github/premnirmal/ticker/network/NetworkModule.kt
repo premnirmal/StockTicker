@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider
@@ -98,10 +97,10 @@ class NetworkModule {
           }
 
           override fun requestBodyConverter(
-            type: Type?,
-            parameterAnnotations: Array<out Annotation>?,
-            methodAnnotations: Array<out Annotation>?,
-            retrofit: Retrofit?
+            type: Type,
+            parameterAnnotations: Array<out Annotation>,
+            methodAnnotations: Array<out Annotation>,
+            retrofit: Retrofit
           ): Converter<*, RequestBody>? {
             return converterFactory.requestBodyConverter(
                 type, parameterAnnotations,
@@ -110,16 +109,15 @@ class NetworkModule {
           }
 
           override fun stringConverter(
-            type: Type?,
-            annotations: Array<out Annotation>?,
-            retrofit: Retrofit?
+            type: Type,
+            annotations: Array<out Annotation>,
+            retrofit: Retrofit
           ): Converter<*, String>? {
             return converterFactory.stringConverter(type, annotations, retrofit)
           }
         })
         .build()
-    val suggestionApi = retrofit.create(SuggestionApi::class.java)
-    return suggestionApi
+    return retrofit.create(SuggestionApi::class.java)
   }
 
   @Provides @Singleton internal fun provideYahooFinance(

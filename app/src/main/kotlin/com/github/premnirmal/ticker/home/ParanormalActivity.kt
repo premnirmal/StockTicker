@@ -1,11 +1,13 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.appcompat.app.AlertDialog.Builder
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog.Builder
 import androidx.fragment.app.Fragment
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.ClickEvent
@@ -49,8 +51,10 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
-    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+      window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+          or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    }
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
