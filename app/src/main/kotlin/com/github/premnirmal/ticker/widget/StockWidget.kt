@@ -17,7 +17,6 @@ import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.layout
-import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -60,7 +59,7 @@ class StockWidget : AppWidgetProvider() {
         val options = appWidgetManager.getAppWidgetOptions(widgetId)
         getMinWidgetWidth(options)
       } else {
-        appWidgetManager.getAppWidgetInfo(widgetId).minWidth
+        appWidgetManager.getAppWidgetInfo(widgetId)?.minWidth ?: 0
       }
       val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
       updateWidget(context, widgetId, remoteViews, appWidgetManager)

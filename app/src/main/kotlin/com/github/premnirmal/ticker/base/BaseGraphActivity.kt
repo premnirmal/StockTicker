@@ -7,7 +7,6 @@ import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.premnirmal.ticker.network.data.DataPoint
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
 import com.github.premnirmal.ticker.ui.TextMarkerView
@@ -17,10 +16,6 @@ import com.github.premnirmal.tickerwidget.R
 abstract class BaseGraphActivity : BaseActivity() {
 
   protected var dataPoints: List<DataPoint>? = null
-  protected lateinit var quote: Quote
-
-  protected val isQuoteInitialized: Boolean
-    get() = this::quote.isInitialized
 
   protected fun setupGraphView() {
     val graphView: LineChart = findViewById(R.id.graphView)
@@ -46,7 +41,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.marker = TextMarkerView(this)
   }
 
-  protected fun loadGraph() {
+  protected fun loadGraph(ticker: String) {
     val graphView: LineChart = findViewById(R.id.graphView)
     if (dataPoints == null || dataPoints!!.isEmpty()) {
       onNoGraphData(graphView)
@@ -56,7 +51,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     }
     graphView.setNoDataText("")
     graphView.lineData?.clearValues()
-    val series = LineDataSet(dataPoints, quote.symbol)
+    val series = LineDataSet(dataPoints, ticker)
     series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)
     val colorAccent = resources.getColor(R.color.color_accent)

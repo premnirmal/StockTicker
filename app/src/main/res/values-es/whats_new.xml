@@ -2,6 +2,5 @@
 <resources>
   <string-array name="whats_new">
     <item>Corrección de errores</item>
-    <item>Ajustes de preferencias del widget</item>
   </string-array>
 </resources>

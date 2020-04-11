@@ -22,6 +22,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.network.data.NewsArticle
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -57,6 +58,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
   override val simpleName: String = "NewsFeedActivity"
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private lateinit var ticker: String
+  protected lateinit var quote: Quote
   private lateinit var viewModel: QuoteDetailViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +84,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
     })
     viewModel.data.observe(this, Observer { data ->
       dataPoints = data
-      loadGraph()
+      loadGraph(ticker)
     })
     viewModel.dataFetchError.observe(this, Observer {
       progress.visibility = View.GONE
@@ -104,6 +106,16 @@ class QuoteDetailActivity : BaseGraphActivity() {
           GeneralEvent("FetchNews")
               .addProperty("Instrument", ticker)
               .addProperty("Success", "False")
+      )
+    })
+    viewModel.unauthorized.observe(this, Observer {
+      news_container.visibility = View.GONE
+      InAppMessage.showMessage(this@QuoteDetailActivity, R.string.error_unauthorized, error = true)
+      analytics.trackGeneralEvent(
+          GeneralEvent("FetchNews")
+              .addProperty("Instrument", ticker)
+              .addProperty("Success", "False")
+              .addProperty("Unauthorized", "True")
       )
     })
     viewModel.fetchQuote(ticker)
@@ -236,7 +248,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
 
   override fun onResume() {
     super.onResume()
-    if (isQuoteInitialized) {
+    if (this::quote.isInitialized) {
       updatePositionsUi()
     }
   }
@@ -287,7 +299,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
     if (dataPoints == null) {
       fetchData()
     } else {
-      loadGraph()
+      loadGraph(ticker)
     }
   }
 

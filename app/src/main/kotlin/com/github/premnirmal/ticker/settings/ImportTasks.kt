@@ -128,9 +128,9 @@ internal open class PortfolioImportTask(private val stocksProvider: IStocksProvi
           true
         }
       } ?: false
-    } catch (e: IOException) {
+    } catch (e: Exception) {
       Timber.w(e)
-      false
+      return false
     }
   }
 

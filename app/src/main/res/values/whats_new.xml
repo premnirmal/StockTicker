@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Crash fix in graph viewer</item>
-    <item>Widget settings tweaks</item>
+    <item>Bug fixes</item>
   </string-array>
 </resources>

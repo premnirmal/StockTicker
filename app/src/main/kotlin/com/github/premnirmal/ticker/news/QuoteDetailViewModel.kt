@@ -39,6 +39,9 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
   private val _newsError = MutableLiveData<FetchException>()
   val newsError: LiveData<FetchException>
     get() = _newsError
+  private val _unauthorized = MutableLiveData<Nothing>()
+  val unauthorized: LiveData<Nothing>
+    get() = _unauthorized
 
   init {
     Injector.appComponent.inject(this)
@@ -92,10 +95,16 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
       }
       val query = quote.newsQuery()
       val result = newsProvider.getNews(query)
-      if (result.wasSuccessful) {
-        _newsData.value = result.data
-      } else {
-        _newsError.value = result.error
+      when {
+        result.wasSuccessful -> {
+          _newsData.value = result.data
+        }
+        result.unauthorized -> {
+          _unauthorized.value = null
+        }
+        else -> {
+          _newsError.value = result.error
+        }
       }
     }
   }

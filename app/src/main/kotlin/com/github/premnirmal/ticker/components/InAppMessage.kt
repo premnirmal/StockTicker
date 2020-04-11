@@ -2,6 +2,8 @@ package com.github.premnirmal.ticker.components
 
 import android.app.Activity
 import android.content.Context
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -63,7 +65,9 @@ object InAppMessage {
     params.setMargins(margin, margin, margin, margin)
     snackBarView.layoutParams = params
     val bg = if (error) R.drawable.snackbar_bg_error else R.drawable.snackbar_bg
-    snackBarView.background = view.context.resources.getDrawable(bg)
+    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+      snackBarView.background = view.context.resources.getDrawable(bg)
+    }
     val text = snackBarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
     text.setTextColor(view.context.resources.getColor(if (error) R.color.white else R.color.snackbar_text))
     return snackbar

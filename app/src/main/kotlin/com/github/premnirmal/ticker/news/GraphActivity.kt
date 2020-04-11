@@ -13,6 +13,7 @@ import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
@@ -34,6 +35,7 @@ class GraphActivity : BaseGraphActivity() {
   override val simpleName: String = "GraphActivity"
   private var range = Range.THREE_MONTH
   private lateinit var ticker: String
+  protected lateinit var quote: Quote
   private lateinit var viewModel: GraphViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +53,7 @@ class GraphActivity : BaseGraphActivity() {
     })
     viewModel.data.observe(this, Observer { data ->
       dataPoints = data
-      loadGraph()
+      loadGraph(ticker)
     })
     viewModel.error.observe(this, Observer {
       showErrorAndFinish()
@@ -72,7 +74,7 @@ class GraphActivity : BaseGraphActivity() {
     if (dataPoints == null) {
       getData()
     } else {
-      loadGraph()
+      loadGraph(ticker)
     }
   }
 

@@ -144,7 +144,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
           setTextColorSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(activity!!, R.string.text_coor_updated_message)
+          InAppMessage.showMessage(activity!!, R.string.text_color_updated_message)
         })
       }
       R.id.setting_bold -> {
