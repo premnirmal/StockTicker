@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.repo
 
 import android.content.SharedPreferences
 import androidx.room.withTransaction
-import com.github.premnirmal.ticker.AppPreferences.Companion.HAS_MIGRATED
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -10,10 +9,8 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.data.HoldingRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.google.gson.Gson
-import io.paperdb.Paper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -22,8 +19,6 @@ import javax.inject.Inject
 class StocksStorage {
 
   companion object {
-    private const val KEY_STOCKS = "STOCKS"
-    private const val KEY_POSITIONS = "POSITIONS_NEW"
     private const val KEY_TICKERS = "TICKERS"
   }
 
@@ -36,23 +31,6 @@ class StocksStorage {
     Injector.appComponent.inject(this)
   }
 
-  @Deprecated("remove after migration")
-  private fun readStocksOld(): List<Quote> {
-    return Paper.book().read(KEY_STOCKS, ArrayList<Quote>())
-  }
-
-  @Deprecated("remove after migration")
-  private fun readTickersOld(): List<String> {
-    return Paper.book()
-        .read(KEY_TICKERS, ArrayList())
-  }
-
-  @Deprecated("remove after migration")
-  private fun readPositionsOld(): List<Position> {
-    return Paper.book()
-        .read(KEY_POSITIONS, ArrayList())
-  }
-
   fun saveTickers(tickers: Set<String>) {
     preferences.edit()
         .putStringSet(KEY_TICKERS, tickers)
@@ -62,28 +40,6 @@ class StocksStorage {
   fun readTickers(): Set<String> {
     return preferences.getStringSet(
         KEY_TICKERS, emptySet())!!
-  }
-
-  suspend fun migrateIfNecessary(): Boolean {
-    if (preferences.getBoolean(HAS_MIGRATED, false)) {
-      return false
-    }
-    return withContext(Dispatchers.IO) {
-      val tickersOld = readTickersOld()
-      saveTickers(tickersOld.toSet())
-      val stocksOld = readStocksOld()
-      val positionsOld = readPositionsOld()
-      positionsOld.forEach {
-        for (stock in stocksOld) {
-          if (stock.symbol == it.symbol) {
-            stock.position = it
-            break
-          }
-        }
-      }
-      saveQuotes(stocksOld)
-      preferences.edit().putBoolean(HAS_MIGRATED, true).commit()
-    }
   }
 
   suspend fun readQuotes(): List<Quote> {

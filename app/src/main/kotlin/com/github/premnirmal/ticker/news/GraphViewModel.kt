@@ -34,11 +34,11 @@ class GraphViewModel(application: Application): AndroidViewModel(application) {
 
   fun fetchStock(ticker: String) {
     viewModelScope.launch {
-      val stock = stocksProvider.getStock(ticker)
-      stock?.let {
-        _quote.value = it
-      } ?: run {
+      val fetchResult = stocksProvider.fetchStock(ticker)
+      if (!fetchResult.wasSuccessful) {
         _error.value = Exception("Quote not found")
+      } else {
+        _quote.value = fetchResult.data
       }
     }
   }

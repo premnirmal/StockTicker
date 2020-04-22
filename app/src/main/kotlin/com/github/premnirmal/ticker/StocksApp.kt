@@ -14,7 +14,6 @@ import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.inflationx.calligraphy3.CalligraphyConfig
 import io.github.inflationx.calligraphy3.CalligraphyInterceptor
 import io.github.inflationx.viewpump.ViewPump
-import io.paperdb.Paper
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -46,7 +45,6 @@ open class StocksApp : MultiDexApplication() {
     Injector.init(createAppComponent())
     Injector.appComponent.inject(holder)
     AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
-    initPaper()
     initAnalytics()
     if (BuildConfig.DEBUG) {
       initStetho()
@@ -55,10 +53,6 @@ open class StocksApp : MultiDexApplication() {
 
   open fun initStetho() {
     StethoInitializer.initialize(this)
-  }
-
-  open fun initPaper() {
-    Paper.init(this)
   }
 
   open fun initThreeTen() {

@@ -198,14 +198,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
         showDialog(getString(R.string.are_you_sure), DialogInterface.OnClickListener { _, _ ->
           val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
-          val hasMigrated = preferences.getBoolean(AppPreferences.HAS_MIGRATED, false)
           Timber.w(RuntimeException("Nuked from settings!"))
           preferences.edit()
               .clear()
               .apply()
           preferences.edit()
               .putBoolean(AppPreferences.DID_RATE, hasUserAlreadyRated)
-              .putBoolean(AppPreferences.HAS_MIGRATED, hasMigrated)
               .apply()
           lifecycleScope.launch(Dispatchers.IO) {
             db.clearAllTables()

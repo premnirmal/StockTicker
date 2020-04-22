@@ -44,9 +44,6 @@ class StocksApi {
             _error = FetchException("Error fetching", e))
       }
       val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
-      if (suggestionList.isEmpty()) {
-        suggestionList.add(0, SuggestionNet(query))
-      }
       return@withContext FetchResult<List<SuggestionNet>>(_data = suggestionList)
     }
 

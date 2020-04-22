@@ -223,8 +223,6 @@ dependencies {
   implementation "com.jakewharton.timber:timber:4.7.1"
   implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
-  implementation 'io.paperdb:paperdb:2.6'
-
   implementation "androidx.room:room-runtime:$ROOM_VERSION"
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"

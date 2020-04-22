@@ -71,7 +71,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   init {
     Injector.appComponent.inject(this)
     exponentialBackoff = ExponentialBackoff()
-    runBlocking { storage.migrateIfNecessary() }
     val tickers = storage.readTickers()
     this.tickers.addAll(tickers)
     if (this.tickers.isEmpty()) {
