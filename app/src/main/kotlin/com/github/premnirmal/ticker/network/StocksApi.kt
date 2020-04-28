@@ -11,6 +11,7 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,11 +41,11 @@ class StocksApi {
         suggestionApi.getSuggestions(query)
             .resultSet?.result
       } catch (e: Exception) {
-        return@withContext FetchResult<List<SuggestionNet>>(
-            _error = FetchException("Error fetching", e))
+        Timber.w(e)
+        return@withContext FetchResult.failure<List<SuggestionNet>>(FetchException("Error fetching", e))
       }
       val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
-      return@withContext FetchResult<List<SuggestionNet>>(_data = suggestionList)
+      return@withContext FetchResult.success<List<SuggestionNet>>(suggestionList)
     }
 
   /**
@@ -55,10 +56,10 @@ class StocksApi {
       try {
         val quoteNets = getStocksYahoo(tickerList)
         lastFetched = clock.currentTimeMillis()
-        return@withContext FetchResult(_data = quoteNets.toQuoteMap().toOrderedList(tickerList))
+        return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
-        return@withContext FetchResult<List<Quote>>(
-            _error = FetchException("Failed to fetch", ex))
+        Timber.w(ex)
+        return@withContext FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       }
     }
 
@@ -66,10 +67,10 @@ class StocksApi {
     withContext(Dispatchers.IO) {
       try {
         val quoteNets = getStocksYahoo(listOf(ticker))
-        return@withContext FetchResult(_data = quoteNets.first().toQuote())
+        return@withContext FetchResult.success(quoteNets.first().toQuote())
       } catch (ex: Exception) {
-        return@withContext FetchResult<Quote>(
-            _error = FetchException("Failed to fetch $ticker", ex))
+        Timber.w(ex)
+        return@withContext FetchResult.failure<Quote>(FetchException("Failed to fetch $ticker", ex))
       }
     }
 

@@ -14,6 +14,7 @@
   <string name="action_portfolio">Portafolio</string>
   <string name="action_widgets">Widgetes</string>
   <string name="action_search">Buscar</string>
+  <string name="action_feed">Noticias</string>
   <string name="action_settings">Configuraciones</string>
   <string name="app_settings">Ajustes de Aplicacion</string>
   <string name="news_feed">Noticias</string>
@@ -54,7 +55,6 @@
   <string name="error_symbol">Símbolo no válido</string>
   <string name="error_sharing">Error al compartir las cotizaciones</string>
   <string name="error_fetching_stock">Error al buscar valores</string>
-  <string name="error_unauthorized">No autorizada</string>
   <string name="ticker_import_success">Cotizaciones importadas con éxito</string>
   <string name="ticker_import_fail">Error al importar las cotizaciones</string>
   <string name="no_network_message">No hay conexion de red</string>
@@ -123,6 +123,7 @@
   <string name="whats_new_in">Qué es nuevo en v%1$s</string>
   <string name="enter_a_symbol">Introduzca un símbolo</string>
   <string name="no_symbols">¯\\_(ツ)_/¯\nNo hay símbolos</string>
+  <string name="error_fetching_news">¯\\_(ツ)_/¯\nError buscar noticias</string>
   <string name="widget_name">Nombre del widget</string>
   <string name="widget_name_updated">Nombre del widget actualizado</string>
   <string name="set">Fijado</string>

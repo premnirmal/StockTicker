@@ -6,7 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -30,18 +29,15 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>
     get() = _data
-  private val _dataFetchError = MutableLiveData<FetchException>()
-  val dataFetchError: LiveData<FetchException>
+  private val _dataFetchError = MutableLiveData<Throwable>()
+  val dataFetchError: LiveData<Throwable>
     get() = _dataFetchError
   private val _newsData = MutableLiveData<List<NewsArticle>>()
   val newsData: LiveData<List<NewsArticle>>
     get() = _newsData
-  private val _newsError = MutableLiveData<FetchException>()
-  val newsError: LiveData<FetchException>
+  private val _newsError = MutableLiveData<Throwable>()
+  val newsError: LiveData<Throwable>
     get() = _newsError
-  private val _unauthorized = MutableLiveData<Nothing>()
-  val unauthorized: LiveData<Nothing>
-    get() = _unauthorized
 
   init {
     Injector.appComponent.inject(this)
@@ -93,14 +89,11 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
         _newsData.postValue(_newsData.value)
         return@launch
       }
-      val query = quote.newsQuery()
-      val result = newsProvider.getNews(query)
+      val query = quote.newsQuery() + " stock"
+      val result = newsProvider.fetchNewsForQuery(query)
       when {
         result.wasSuccessful -> {
           _newsData.value = result.data
-        }
-        result.unauthorized -> {
-          _unauthorized.value = null
         }
         else -> {
           _newsError.value = result.error

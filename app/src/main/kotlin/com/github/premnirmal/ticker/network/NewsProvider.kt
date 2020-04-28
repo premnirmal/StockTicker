@@ -5,34 +5,49 @@ import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NewsProvider {
 
+  companion object {
+    const val NEWS_QUERY = "Finance"
+  }
+
   @Inject internal lateinit var newsApi: NewsApi
+
+  private var cachedArticles: List<NewsArticle>? = null
 
   init {
     Injector.appComponent.inject(this)
   }
 
-  suspend fun getNews(query: String): FetchResult<List<NewsArticle>> = withContext(Dispatchers.IO) {
+  fun initCache() {
+    GlobalScope.launch { fetchNews(NEWS_QUERY) }
+  }
+
+  suspend fun fetchNewsForQuery(query: String): FetchResult<List<NewsArticle>> {
+    return fetchNews(query, false)
+  }
+
+  suspend fun fetchNews(query: String, useCache: Boolean = false): FetchResult<List<NewsArticle>> = withContext(Dispatchers.IO) {
     try {
-      val newsFeed = newsApi.getNewsFeed(query = query)
-      return@withContext FetchResult(_data = newsFeed)
-    } catch (ex: Exception) {
-      if (ex is HttpException) {
-        if (ex.code() == 401) {
-          return@withContext FetchResult<List<NewsArticle>>(
-              _error = FetchException("Error fetching news", ex),
-              unauthorized = true)
-        }
+      if (useCache && !cachedArticles.isNullOrEmpty()) {
+        return@withContext FetchResult.success(cachedArticles!!)
       }
-      return@withContext FetchResult<List<NewsArticle>>(
-          _error = FetchException("Error fetching news", ex))
+      val newsFeed = newsApi.getNewsFeed(query = query)
+      val articles = newsFeed.articleList?.sortedByDescending { it.date } ?: emptyList()
+      cachedArticles = articles
+      return@withContext FetchResult.success(articles)
+    } catch (ex: Exception) {
+      Timber.w(ex)
+      return@withContext FetchResult.failure<List<NewsArticle>>(
+          FetchException("Error fetching news", ex))
     }
   }
 }

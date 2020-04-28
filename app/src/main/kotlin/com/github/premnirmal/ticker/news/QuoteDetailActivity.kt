@@ -108,16 +108,6 @@ class QuoteDetailActivity : BaseGraphActivity() {
               .addProperty("Success", "False")
       )
     })
-    viewModel.unauthorized.observe(this, Observer {
-      news_container.visibility = View.GONE
-      InAppMessage.showMessage(this@QuoteDetailActivity, R.string.error_unauthorized, error = true)
-      analytics.trackGeneralEvent(
-          GeneralEvent("FetchNews")
-              .addProperty("Instrument", ticker)
-              .addProperty("Success", "False")
-              .addProperty("Unauthorized", "True")
-      )
-    })
     viewModel.fetchQuote(ticker)
   }
 
@@ -227,8 +217,8 @@ class QuoteDetailActivity : BaseGraphActivity() {
         val titleView: TextView = layout.findViewById(R.id.news_title)
         val subTitleView: TextView = layout.findViewById(R.id.news_subtitle)
         val dateView: TextView = layout.findViewById(R.id.published_at)
-        titleView.text = newsArticle.title
-        subTitleView.text = newsArticle.description
+        titleView.text = newsArticle.titleSanitized()
+        subTitleView.text = newsArticle.descriptionSanitized()
         dateView.text = newsArticle.dateString()
         sourceView.text = newsArticle.sourceName()
         val params = LinearLayout.LayoutParams(
@@ -240,7 +230,7 @@ class QuoteDetailActivity : BaseGraphActivity() {
         layout.tag = newsArticle
         layout.setOnClickListener {
           val article = it.tag as NewsArticle
-          CustomTabs.openTab(this, article.url.orEmpty())
+          CustomTabs.openTab(this, article.url)
         }
       }
     }

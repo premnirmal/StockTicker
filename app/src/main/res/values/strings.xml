@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-  <string name="robindahood_endpoint" translatable="false">https://robindahood.com/api/</string>
+  <string name="news_endpoint" translatable="false">https://news.google.com/</string>
   <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
   <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
   <string name="alpha_vantage_endpoint" translatable="false">https://www.alphavantage.co/</string>
@@ -24,6 +24,7 @@
   <string name="action_portfolio">Portfolio</string>
   <string name="action_widgets">Widgets</string>
   <string name="action_search">Search</string>
+  <string name="action_feed">News</string>
   <string name="action_settings">Settings</string>
   <string name="app_settings">App Settings</string>
   <string name="news_feed">News Feed</string>
@@ -64,7 +65,6 @@
   <string name="error_symbol">Invalid symbol</string>
   <string name="error_sharing">Error sharing quotes</string>
   <string name="error_fetching_stock">Error fetching stock</string>
-  <string name="error_unauthorized">Unauthorized</string>
   <string name="ticker_import_success">Quotes imported successfully</string>
   <string name="ticker_import_fail">Error importing quotes</string>
   <string name="no_network_message">No network connection</string>
@@ -134,6 +134,7 @@
   <string name="whats_new_in">What\'s new in v%1$s</string>
   <string name="enter_a_symbol">Enter a symbol</string>
   <string name="no_symbols">¯\\_(ツ)_/¯\nNo symbols</string>
+  <string name="error_fetching_news">¯\\_(ツ)_/¯\nError fetching news</string>
   <string name="widget_name">Widget name</string>
   <string name="widget_name_updated">Widget name updated</string>
   <string name="set">Set</string>
@@ -141,7 +142,7 @@
   <string name="total">Total</string>
   <string name="positions">Positions</string>
   <string name="recent_news">Recent News</string>
-  <string name="no_data">No data</string>
+  <string name="no_data">¯\\_(ツ)_/¯\nNo data</string>
   <string name="expand">Expand</string>
   <string name="one_month">1 Month</string>
   <string name="three_month">3 Months</string>

@@ -13,6 +13,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
@@ -37,7 +38,8 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
       mapOf<Int, String>(R.id.action_portfolio to HomeFragment::class.java.name,
           R.id.action_widgets to WidgetsFragment::class.java.name,
           R.id.action_search to SearchFragment::class.java.name,
-          R.id.action_settings to SettingsFragment::class.java.name)
+          R.id.action_settings to SettingsFragment::class.java.name,
+          R.id.action_feed to NewsFeedFragment::class.java.name)
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
@@ -137,6 +139,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         R.id.action_widgets -> WidgetsFragment()
         R.id.action_search -> SearchFragment()
         R.id.action_settings -> SettingsFragment()
+        R.id.action_feed -> NewsFeedFragment()
         else -> {
           throw IllegalStateException("Unknown bottom nav itemId: $itemId - ${item.title}")
         }
@@ -171,7 +174,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   override fun showWhatsNew() {
     appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-    val stringBuilder = StringBuilder()
+    val stringBuilder = StringBuilder().append("\n")
     val whatsNew = resources.getStringArray(R.array.whats_new)
     whatsNew.indices.forEach {
       stringBuilder.append("- ")

@@ -21,8 +21,8 @@ class GraphViewModel(application: Application): AndroidViewModel(application) {
   private val _quote = MutableLiveData<Quote>()
   val quote: LiveData<Quote>
     get() = _quote
-  private val _error = MutableLiveData<Exception>()
-  val error: LiveData<Exception>
+  private val _error = MutableLiveData<Throwable>()
+  val error: LiveData<Throwable>
     get() = _error
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>

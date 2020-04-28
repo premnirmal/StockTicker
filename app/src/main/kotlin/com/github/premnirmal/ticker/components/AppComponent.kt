@@ -18,11 +18,11 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.RefreshService
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.RequestInterceptor
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
 import com.github.premnirmal.ticker.news.GraphActivity
 import com.github.premnirmal.ticker.news.GraphViewModel
+import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
@@ -98,8 +98,6 @@ interface AppComponent {
 
   fun inject(newsProvider: NewsProvider)
 
-  fun inject(interceptor: RequestInterceptor)
-
   fun inject(interceptor: UserAgentInterceptor)
 
   // Widget
@@ -146,4 +144,5 @@ interface AppComponent {
 
   fun inject(graphViewModel: GraphViewModel)
 
+  fun inject(newsFeedViewModel: NewsFeedViewModel)
 }
