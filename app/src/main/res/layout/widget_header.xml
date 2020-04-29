@@ -67,6 +67,7 @@
         android:layout_height="@dimen/widget_refresh_icon_size"
         android:layout_gravity="center"
         android:indeterminateTint="@color/text_widget_header"
+        android:indeterminateTintMode="src_in"
         android:progressTint="@color/text_widget_header"
         android:visibility="gone"
         />
