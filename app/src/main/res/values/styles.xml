@@ -32,8 +32,16 @@
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
+  <style name="MediumTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Ubuntu-Medium.ttf</item>
+  </style>
+
+  <style name="LightTextView" parent="TextViewStyle">
+    <item name="fontPath">fonts/Ubuntu-Light.ttf</item>
+  </style>
+
   <style name="ItalicTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-MediumItalic.ttf</item>
+    <item name="fontPath">fonts/Ubuntu-Italic.ttf</item>
   </style>
 
   <style name="ThinTitleTextView" parent="TextViewStyle">

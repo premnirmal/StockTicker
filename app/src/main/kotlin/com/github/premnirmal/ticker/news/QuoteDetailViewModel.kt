@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -23,8 +24,8 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
   @Inject internal lateinit var historyProvider: IHistoryProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-  private val _quote = MutableLiveData<Quote>()
-  val quote: LiveData<Quote>
+  private val _quote = MutableLiveData<FetchResult<Quote>>()
+  val quote: LiveData<FetchResult<Quote>>
     get() = _quote
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>
@@ -45,14 +46,12 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
 
   fun fetchQuote(ticker: String) {
     viewModelScope.launch {
-      if (_quote.value != null) {
+      if (_quote.value != null && _quote.value!!.wasSuccessful) {
         _quote.postValue(_quote.value)
         return@launch
       }
       val fetchStock = stocksProvider.fetchStock(ticker)
-      if (fetchStock.wasSuccessful) {
-        _quote.value = fetchStock.data
-      }
+      _quote.value = fetchStock
     }
   }
 
@@ -89,7 +88,7 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
         _newsData.postValue(_newsData.value)
         return@launch
       }
-      val query = quote.newsQuery() + " stock"
+      val query = quote.newsQuery()
       val result = newsProvider.fetchNewsForQuery(query)
       when {
         result.wasSuccessful -> {

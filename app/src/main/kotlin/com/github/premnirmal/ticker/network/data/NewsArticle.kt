@@ -8,7 +8,7 @@ import org.threeten.bp.format.DateTimeFormatter
 import java.net.URL
 
 @Root(name = "item", strict = false)
-class NewsArticle {
+class NewsArticle : Comparable<NewsArticle> {
 
   companion object {
     private val OUTPUT_FORMATTER = DateTimeFormatter.ofPattern("MMM d")
@@ -45,5 +45,11 @@ class NewsArticle {
 
   fun titleSanitized(): String {
     return Html.fromHtml(title).toString()
+  }
+
+  // Comparable<NewsArticle>
+
+  override fun compareTo(other: NewsArticle): Int {
+    return other.date.compareTo(this.date)
   }
 }

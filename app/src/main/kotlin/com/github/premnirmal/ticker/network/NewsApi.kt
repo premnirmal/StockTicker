@@ -14,4 +14,7 @@ interface NewsApi {
    */
   @GET("rss/search/")
   suspend fun getNewsFeed(@Query(value = "q") query: String): NewsRssFeed
+
+  @GET("news/rss/headlines/section/topic/BUSINESS")
+  suspend fun getBusinessNews(): NewsRssFeed
 }

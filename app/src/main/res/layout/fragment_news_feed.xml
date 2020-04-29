@@ -63,7 +63,7 @@
           android:text="@string/error_fetching_news"
           android:textColor="@color/color_accent"
           android:textSize="@dimen/large_text"
-          style="@style/BoldTextView"
+          style="@style/MediumTextView"
           />
 
       <TextView
@@ -75,7 +75,7 @@
           android:text="@string/no_data"
           android:textColor="@color/color_accent"
           android:textSize="@dimen/large_text"
-          style="@style/BoldTextView"
+          style="@style/MediumTextView"
           />
 
       <androidx.recyclerview.widget.RecyclerView
