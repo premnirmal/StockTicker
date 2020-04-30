@@ -7,19 +7,20 @@
       android:icon="@drawable/ic_portfolio"
       app:showAsAction="always"/>
   <item
-      android:id="@+id/action_widgets"
-      android:title="@string/action_widgets"
-      android:icon="@drawable/ic_widget"
+      android:id="@+id/action_feed"
+      android:title="@string/action_feed"
+      android:icon="@drawable/ic_news"
       app:showAsAction="always"/>
   <item
       android:id="@+id/action_search"
       android:title="@string/action_search"
       android:icon="@drawable/ic_search"
       app:showAsAction="always"/>
+
   <item
-      android:id="@+id/action_feed"
-      android:title="@string/action_feed"
-      android:icon="@drawable/ic_news"
+      android:id="@+id/action_widgets"
+      android:title="@string/action_widgets"
+      android:icon="@drawable/ic_widget"
       app:showAsAction="always"/>
   <item
       android:id="@+id/action_settings"

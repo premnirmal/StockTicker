@@ -174,7 +174,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   override fun showWhatsNew() {
     appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-    val stringBuilder = StringBuilder().append("\n")
+    val stringBuilder = StringBuilder()
     val whatsNew = resources.getStringArray(R.array.whats_new)
     whatsNew.indices.forEach {
       stringBuilder.append("- ")
