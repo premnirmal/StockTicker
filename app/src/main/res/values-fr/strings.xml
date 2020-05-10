@@ -143,7 +143,7 @@
   <string name="tutorial">Tutoriel</string>
   <string name="how_to_title">Comment ajouter un widget</string>
   <string name="how_to">- Appuyer longuement sur un espace vide de votre écran d\'accueil pour ouvrir le menu\n\n- Maintenant sélectionnez l\'option \"Widgets\".\n\n- Sélectionnez le \"Stocks Widget\" dans la liste des widgets.\n\n- Vous pouvez ajouter plusieurs widgets ayant chacun leur propre portefeuille.</string>
-  <string name="db_viewer">Base de données de l'application</string>
-  <string name="discovered_db">Vous avez découvert l'entrée secrète vers le DB viewer</string>
+  <string name="db_viewer">Base de données de l\'application</string>
+  <string name="discovered_db">Vous avez découvert l\'entrée secrète vers le DB viewer</string>
   <string name="db_tap_count">Appuyer %1$d fois de plus pour dévérouiller le DB viewer</string>
 </resources>
