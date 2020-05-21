@@ -35,6 +35,7 @@
   <string name="add_ticker">Add Ticker</string>
   <string name="bg">Widget Background</string>
   <string name="layout_type">Widget Type</string>
+  <string name="widget_width">Widget Size</string>
   <string name="text_color">Text Color</string>
   <string name="start_time">Start Time</string>
   <string name="end_time">End Time</string>
@@ -56,6 +57,7 @@
   <string name="text_size_updated_message">Text size updated</string>
   <string name="bg_updated_message">Background updated</string>
   <string name="layout_updated_message">Layout type updated</string>
+  <string name="widget_width_updated_message">Widget size updated</string>
   <string name="text_color_updated_message">Text color updated</string>
   <string name="refresh_updated_message">Refresh interval updated</string>
   <string name="theme_updated_message">App theme updated</string>

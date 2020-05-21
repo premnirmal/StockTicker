@@ -34,6 +34,15 @@
     <item>2</item>
   </string-array>
 
+  <string-array name="widget_width_types">
+    <item>default</item>
+    <item>Single stock in a row</item>
+  </string-array>
+  <string-array name="widget_width_values">
+    <item>0</item>
+    <item>1</item>
+  </string-array>
+
   <string-array name="backgrounds">
     <item>Transparente</item>
     <item>Translúcido</item>

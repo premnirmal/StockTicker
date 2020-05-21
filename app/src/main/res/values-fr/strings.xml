@@ -46,6 +46,7 @@
   <string name="text_size_updated_message">Taille du texte mise à jour</string>
   <string name="bg_updated_message">Arrière-plan mis à jour</string>
   <string name="layout_updated_message">Format mis à jour</string>
+  <string name="widget_width_updated_message">Taille du widget mise à jour</string>
   <string name="text_color_updated_message">Couleur du texte mise à jour</string>
   <string name="refresh_updated_message">Intervalle d\'actualisation mis à jour</string>
   <string name="theme_updated_message">Thème de l\'application mis à jour</string>
