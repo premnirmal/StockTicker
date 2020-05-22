@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Mises à jour linguistiques, merci Hugo</item>
     <item>Création de la traduction</item>
+    <item>Corrections d\'erreurs</item>
   </string-array>
 </resources>

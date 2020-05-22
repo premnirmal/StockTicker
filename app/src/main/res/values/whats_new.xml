@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Language updates, thank you Hugo</item>
-    <item>More news</item>
     <item>Bug fixes</item>
   </string-array>
 </resources>

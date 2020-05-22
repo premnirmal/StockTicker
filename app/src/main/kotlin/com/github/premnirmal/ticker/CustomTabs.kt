@@ -17,6 +17,7 @@ object CustomTabs {
   private const val chromePackage = "com.android.chrome"
   private const val firefoxPreviewPackage = "org.mozilla.fenix"
   private const val firefoxPackage = "org.mozilla.firefox"
+  private const val edgePackage = "com.microsoft.emmx"
 
   fun openTab(
     context: Context,
@@ -79,8 +80,8 @@ object CustomTabs {
           && packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName!!) ->
         packageNameToUse = defaultViewHandlerPackageName
       packagesSupportingCustomTabs.contains(chromePackage) -> packageNameToUse = chromePackage
-      packagesSupportingCustomTabs.contains(firefoxPreviewPackage) -> packageNameToUse =
-        firefoxPreviewPackage
+      packagesSupportingCustomTabs.contains(edgePackage) -> packageNameToUse = edgePackage
+      packagesSupportingCustomTabs.contains(firefoxPreviewPackage) -> packageNameToUse = firefoxPreviewPackage
       packagesSupportingCustomTabs.contains(firefoxPackage) -> packageNameToUse = firefoxPackage
     }
     return packageNameToUse
