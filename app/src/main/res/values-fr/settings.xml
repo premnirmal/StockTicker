@@ -35,8 +35,8 @@
   </string-array>
 
   <string-array name="widget_width_types">
-    <item>default</item>
-    <item>Single stock in a row</item>
+    <item>Défaut</item>
+    <item>Stock unique consécutif</item>
   </string-array>
   <string-array name="widget_width_values">
     <item>0</item>

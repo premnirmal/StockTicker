@@ -138,9 +138,6 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
                   setWidgetSizeSetting(widgetData)
                   dialog.dismiss()
                   broadcastUpdateWidget()
-                  /*if (which == 2) {
-                    showDialog(getString(R.string.change_instructions))
-                  }*/
                   InAppMessage.showMessage(activity!!, R.string.widget_width_updated_message)
                 })
       }
