@@ -55,4 +55,8 @@ interface IStocksProvider {
     ticker: String,
     holding: Holding
   )
+
+  fun totalHoldings(): Pair<String, Int>
+
+  fun totalGainLoss(): Pair<String, String>
 }
