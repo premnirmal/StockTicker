@@ -106,7 +106,7 @@
   <string name="edit_positions">Edit Positions</string>
   <string name="add_stock">Add Stocks</string>
   <string name="holdings">Holdings</string>
-  <string name="average_price">Average Price</string>
+  <string name="average_price">Purchase Price</string>
   <string name="gain">Gain</string>
   <string name="loss">Loss</string>
   <string name="gain_loss">Gain/Loss</string>

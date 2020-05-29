@@ -96,7 +96,7 @@
   <string name="edit_positions">Modifier les positions</string>
   <string name="add_stock">Ajouter des actions</string>
   <string name="holdings">Parts</string>
-  <string name="average_price">Prix moyen</string>
+  <string name="average_price">Prix d’achat</string>
   <string name="gain">Gain</string>
   <string name="loss">Perte</string>
   <string name="gain_loss">Gain/Perte</string>
