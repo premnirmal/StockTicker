@@ -9,6 +9,11 @@ data class QuoteNet(
   @SerializedName("last_trade_price") override var lastTradePrice: Float = 0.toFloat()
   @SerializedName("change_percent") override var changePercent: Float = 0.toFloat()
   @SerializedName("change") override var change: Float = 0.toFloat()
+  @SerializedName("market_time") override var marketTime: Int = 0
+  @SerializedName("post_trade_price") override var postTradePrice: Float = 0.toFloat()
+  @SerializedName("post_change_percent") override var postChangePercent: Float = 0.toFloat()
+  @SerializedName("post_change") override var postChange: Float = 0.toFloat()
+  @SerializedName("post_market_time") override var postMarketTime: Int = 0
   @SerializedName("exchange") override var exchange: String? = ""
   @SerializedName("currency") override var currency: String? = ""
   @SerializedName("description") override var description: String? = ""

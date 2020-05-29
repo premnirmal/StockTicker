@@ -9,4 +9,9 @@ interface IQuoteNet {
   abstract var lastTradePrice: Float
   abstract var changePercent: Float
   abstract var change: Float
+  abstract var marketTime: Int
+  abstract var postTradePrice: Float
+  abstract var postChangePercent: Float
+  abstract var postChange: Float
+  abstract var postMarketTime: Int
 }

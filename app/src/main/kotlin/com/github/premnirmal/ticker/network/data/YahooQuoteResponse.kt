@@ -17,6 +17,11 @@ data class YahooQuoteNet(
   @SerializedName("regularMarketPrice") override var lastTradePrice: Float = 0.toFloat()
   @SerializedName("regularMarketChangePercent") override var changePercent: Float = 0.toFloat()
   @SerializedName("regularMarketChange") override var change: Float = 0.toFloat()
+  @SerializedName("regularMarketTime") override var marketTime: Int = 0
+  @SerializedName("postMarketPrice") override var postTradePrice: Float = 0.toFloat()
+  @SerializedName("postMarketChangePercent") override var postChangePercent: Float = 0.toFloat()
+  @SerializedName("postMarketChange") override var postChange: Float = 0.toFloat()
+  @SerializedName("postMarketTime") override var postMarketTime: Int = 0
   @SerializedName("exchange") override var exchange: String? = ""
   @SerializedName("currency") override var currency: String? = ""
   @SerializedName("description") override var description: String? = ""

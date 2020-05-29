@@ -99,9 +99,15 @@ class StocksApi {
   private fun IQuoteNet.toQuote(): Quote {
     val quote = Quote(this.symbol ?: "")
     quote.name = this.name ?: ""
-    quote.lastTradePrice = this.lastTradePrice
-    quote.changeInPercent = this.changePercent
-    quote.change = this.change
+    if(this.postMarketTime > this.marketTime) {
+      quote.lastTradePrice = this.postTradePrice
+      quote.changeInPercent = this.postChangePercent
+      quote.change = this.postChange
+    } else {
+      quote.lastTradePrice = this.lastTradePrice
+      quote.changeInPercent = this.changePercent
+      quote.change = this.change
+    }
     quote.stockExchange = this.exchange ?: ""
     quote.currency = this.currency ?: "US"
     quote.description = this.description ?: ""
