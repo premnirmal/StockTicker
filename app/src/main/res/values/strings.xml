@@ -126,7 +126,6 @@
   <string name="next_fetch">Next fetch: %1$s</string>
   <string name="last_fetch">Last fetch: %1$s</string>
   <string name="last_and_next_fetch">Last fetch: %1$s\nNext fetch: %2$s</string>
-  <string name="total_holdings">Total Holdings: %1$s (%2$d Stocks)</string>
   <string name="cannot_export_msg">Cannot export quotes without permission to write to external storage</string>
   <string name="cannot_import_msg">Cannot import quotes without permission to read external storage</string>
   <string name="cannot_share_msg">Cannot share quotes without permission to write to external storage</string>

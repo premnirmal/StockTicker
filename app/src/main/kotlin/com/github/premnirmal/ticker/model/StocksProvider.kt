@@ -65,9 +65,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   private var lastFetched: Long = 0L
   private var nextFetch: Long = 0L
-  private var totalHoldings: String = ""
-  private var totalGain: String = ""
-  private var totalLoss: String = ""
 
   private val exponentialBackoff: ExponentialBackoff
 
@@ -383,57 +380,5 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun nextFetchMs(): Long {
     return nextFetch
-  }
-
-  override fun totalHoldings(): Pair<String, Int> {
-    var totalHolding = 0.0f
-    var totalQuotesWithPosition = 0
-
-    if (this.tickers.isNotEmpty()) {
-      val portfolio: List<Quote> = getPortfolio()
-
-      for(quote in portfolio) {
-        if (quote.hasPositions()) {
-          totalQuotesWithPosition++
-          totalHolding += quote.holdings()
-        }
-      }
-    }
-    return Pair("%s".format(Quote.selectedFormat.format(totalHolding)), totalQuotesWithPosition)
-  }
-
-  override fun totalGainLoss(): Pair<String, String> {
-    var totalGainStr = ""
-    var totalLossStr = ""
-
-    if (this.tickers.isNotEmpty()) {
-      var totalGain = 0.0f
-      var totalLoss = 0.0f
-      val portfolio: List<Quote> = getPortfolio()
-
-      for(quote in portfolio) {
-        if (quote.hasPositions()) {
-          val gainLoss = quote.gainLoss()
-          if (gainLoss > 0.0f) {
-            totalGain += gainLoss
-          } else {
-            totalLoss += gainLoss
-          }
-        }
-      }
-
-      totalGainStr = if(totalGain != 0.0f) {
-        "+" + Quote.selectedFormat.format(totalGain)
-      } else {
-        ""
-      }
-
-      totalLossStr = if(totalLoss != 0.0f) {
-        Quote.selectedFormat.format(totalLoss)
-      } else {
-        ""
-      }
-    }
-    return Pair(totalGainStr, totalLossStr)
   }
 }

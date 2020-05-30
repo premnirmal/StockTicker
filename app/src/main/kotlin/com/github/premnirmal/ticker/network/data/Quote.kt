@@ -23,15 +23,6 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
         return arrayOfNulls(size)
       }
     }
-
-    // TODO: this should be in a tools helper class.
-    // Made it accessible in this class for now.
-    val selectedFormat: Format
-      get() = if (AppPreferences.INSTANCE.roundToTwoDecimalPlaces()) {
-        AppPreferences.DECIMAL_FORMAT_2DP
-      } else {
-        AppPreferences.DECIMAL_FORMAT
-      }
   }
 
   var name: String = ""
@@ -126,6 +117,13 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   fun newsQuery(): String {
     return "$symbol $name"
   }
+
+  private val selectedFormat: Format
+    get() = if (AppPreferences.INSTANCE.roundToTwoDecimalPlaces()) {
+      AppPreferences.DECIMAL_FORMAT_2DP
+    } else {
+      AppPreferences.DECIMAL_FORMAT
+    }
 
   override operator fun compareTo(other: Quote): Int =
     other.changeInPercent.compareTo(changeInPercent)

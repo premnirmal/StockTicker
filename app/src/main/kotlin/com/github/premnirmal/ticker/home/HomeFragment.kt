@@ -18,9 +18,6 @@ import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_home.subtitle
-import kotlinx.android.synthetic.main.fragment_home.totalHoldings
-import kotlinx.android.synthetic.main.fragment_home.totalGain
-import kotlinx.android.synthetic.main.fragment_home.totalLoss
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
@@ -52,17 +49,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private val subtitleText: String
     get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
 
-  private fun totalHoldings(): String
-  {
-    val (totalHolding, totalQuotesWithPosition) = stocksProvider.totalHoldings()
-    return getString(R.string.total_holdings, totalHolding, totalQuotesWithPosition)
-  }
-
-  private fun totalGainLoss(): Pair<String, String>
-  {
-    return stocksProvider.totalGainLoss()
-  }
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
@@ -83,10 +69,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
     subtitle.text = subtitleText
-    totalHoldings.text = totalHoldings()
-    val (totalGainStr, totalLossStr) = totalGainLoss()
-    totalGain.text = totalGainStr
-    totalLoss.text = totalLossStr
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -111,10 +93,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.notifyDataSetChanged()
     subtitle.text = subtitleText
-    totalHoldings.text = totalHoldings()
-    val (totalGainStr, totalLossStr) = totalGainLoss()
-    totalGain.text = totalGainStr
-    totalLoss.text = totalLossStr
   }
 
   private fun fetch() {

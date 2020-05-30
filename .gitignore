@@ -9,7 +9,6 @@
 app/build
 app/full-r8-config.txt
 app/prod/
-/.vs/
 
 #ignore keystore and keystore.properties
 *.jks
