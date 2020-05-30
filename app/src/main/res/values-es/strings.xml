@@ -95,7 +95,7 @@
   <string name="edit_positions">Editar Posiciones</string>
   <string name="add_stock">Añadir acciones</string>
   <string name="holdings">Valor</string>
-  <string name="average_price">Precio de compra</string>
+  <string name="average_price">Precio Promedio</string>
   <string name="gain">Ganancia</string>
   <string name="loss">Pérdida</string>
   <string name="gain_loss">Ganancia/Pérdida</string>
@@ -115,6 +115,7 @@
   <string name="next_fetch">Próxima: %1$s</string>
   <string name="last_fetch">Última: %1$s</string>
   <string name="last_and_next_fetch">Última: %1$s\nPróxima: %2$s</string>
+  <string name="total_holdings">Total Valor: %1$s (%2$d Acciones)</string>
   <string name="cannot_export_msg">No se pueden exportar citas sin permiso para escribir en un almacenamiento externo</string>
   <string name="cannot_import_msg">No se puede importar comillas sin permiso para leer almacenamiento externo</string>
   <string name="cannot_share_msg">No puede compartir comillas sin permiso para escribir en un almacenamiento externo</string>
