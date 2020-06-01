@@ -52,18 +52,20 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private lateinit var totalHoldingsViewModel: TotalHoldingsViewModel
 
   private val subtitleText: String
-    get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
+    get() = getString(
+        R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch()
+    )
 
   private val totalHoldingsText: String
     get() {
       val (totalHolding, totalQuotesWithPosition) = totalHoldingsViewModel.getTotalHoldings()
       return getString(R.string.total_holdings, totalHolding, totalQuotesWithPosition)
-  }
+    }
 
   private val totalGainLossText: Pair<String, String>
     get() {
       return totalHoldingsViewModel.getTotalGainLoss()
-  }
+    }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -71,19 +73,28 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
     // Set up the ViewModel for the total holdings.
     val factory = TotalHoldingsViewModelFactory(stocksProvider)
-    totalHoldingsViewModel = ViewModelProvider(this, factory).get(TotalHoldingsViewModel::class.java)
+    totalHoldingsViewModel =
+      ViewModelProvider(this, factory).get(TotalHoldingsViewModel::class.java)
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return inflater.inflate(R.layout.fragment_home, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
-    swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
-        R.color.sea)
+    swipe_container.setColorSchemeResources(
+        R.color.color_primary_dark, R.color.spicy_salmon,
+        R.color.sea
+    )
     swipe_container.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter
