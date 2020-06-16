@@ -42,6 +42,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             <h2>Quotes</h2>
             <table border="1">
             <tr>
+            <td>#</td>
             <td>Symbol</td><td>Name</td><td>LastTradePrice</td>
             <td>Change</td><td>Change %</td><td>Exchange</td>
             <td>Currency</td><td>Desc</td>
@@ -57,10 +58,12 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             """)
       val stringBuilder = StringBuilder().also { sb ->
         sb.append("<html><body>")
+        var count = 0
         dao.getQuotesWithHoldings()
             .forEach {
               val quote = it.quote
               qt.append("<tr>")
+                  .append("<td>${++count}</td>")
                   .append("<td>${quote.symbol}</td>")
                   .append("<td>${quote.name}</td>")
                   .append("<td>${quote.lastTradePrice}</td>")

@@ -59,3 +59,10 @@
 
 # MPAndroidChart
 -keep class com.github.mikephil.charting.** { *; }
+
+# XML
+-dontwarn org.xmlpull.v1.XmlPullParser
+-dontwarn org.xmlpull.v1.XmlSerializer
+-keep class org.xmlpull.v1.* {*;}
+# Retrofit simple xml
+-keep class org.simpleframework.xml.** { *; }

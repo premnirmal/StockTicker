@@ -1,16 +1,19 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.appcompat.app.AlertDialog.Builder
 import android.content.Intent
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog.Builder
 import androidx.fragment.app.Fragment
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
@@ -35,7 +38,8 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
       mapOf<Int, String>(R.id.action_portfolio to HomeFragment::class.java.name,
           R.id.action_widgets to WidgetsFragment::class.java.name,
           R.id.action_search to SearchFragment::class.java.name,
-          R.id.action_settings to SettingsFragment::class.java.name)
+          R.id.action_settings to SettingsFragment::class.java.name,
+          R.id.action_feed to NewsFeedFragment::class.java.name)
   }
 
   @Inject internal lateinit var appPreferences: AppPreferences
@@ -49,8 +53,10 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
-    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
+      window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+          or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    }
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
@@ -133,6 +139,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         R.id.action_widgets -> WidgetsFragment()
         R.id.action_search -> SearchFragment()
         R.id.action_settings -> SettingsFragment()
+        R.id.action_feed -> NewsFeedFragment()
         else -> {
           throw IllegalStateException("Unknown bottom nav itemId: $itemId - ${item.title}")
         }

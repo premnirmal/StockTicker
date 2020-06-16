@@ -12,8 +12,8 @@ import timber.log.Timber
 @RequiresApi(VERSION_CODES.LOLLIPOP)
 internal object AlarmSchedulerLollipop {
 
-  private val JOB_ID_SCHEDULE = 8424
-  private val FIVE_MINUTES_MS = 5 * 60 * 1000L
+  private const val JOB_ID_SCHEDULE = 8424
+  private const val FIVE_MINUTES_MS = 5 * 60 * 1000L
 
   internal fun scheduleUpdate(
     msToNextAlarm: Long,

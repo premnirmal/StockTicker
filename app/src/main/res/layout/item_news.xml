@@ -50,10 +50,12 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="4dp"
-      android:textSize="@dimen/larger_text"
+      android:textSize="@dimen/large_text"
+      android:maxLines="2"
+      android:ellipsize="end"
       android:textColor="@color/text_4"
       tools:text="Stock market rises!"
-      style="@style/BoldTextView"
+      style="@style/MediumTextView"
       />
 
   <TextView
@@ -65,6 +67,7 @@
       android:textColor="@color/text_3"
       android:textSize="@dimen/medium_text"
       tools:text="Lorem ipsum"
+      style="@style/LightTextView"
       />
 
 

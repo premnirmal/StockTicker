@@ -13,8 +13,8 @@ import javax.inject.Inject
 class UserAgentInterceptor : Interceptor {
 
   companion object {
-    const val USER_AGENT_FORMAT = "%s/%s(%s) (Android %s; %s %s)"
-    const val USER_AGENT_KEY = "UserAgent"
+    private const val USER_AGENT_FORMAT = "%s/%s(%s) (Android %s; %s %s)"
+    private const val USER_AGENT_KEY = "UserAgent"
   }
 
   @Inject internal lateinit var context: Context

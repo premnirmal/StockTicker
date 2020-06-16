@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.home
 
-import android.appwidget.AppWidgetManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +10,9 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -83,7 +82,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     lifecycleScope.launch {
       val flow = bus.receive<RefreshEvent>()
       flow.collect {
-        updateHeader()
+        if (isResumed) {
+          updateHeader()
+        }
       }
     }
   }

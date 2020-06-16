@@ -38,9 +38,9 @@ class HistoryProvider : IHistoryProvider {
         points.sorted()
       } catch (ex: Exception) {
         Timber.w(ex)
-        return@withContext FetchResult<List<DataPoint>>(_error = FetchException("Error fetching datapoints", ex))
+        return@withContext FetchResult.failure<List<DataPoint>>(FetchException("Error fetching datapoints", ex))
       }
-      return@withContext FetchResult<List<DataPoint>>(_data = dataPoints)
+      return@withContext FetchResult.success(dataPoints)
     }
   }
 
@@ -76,9 +76,8 @@ class HistoryProvider : IHistoryProvider {
       }
     } catch (ex: Exception) {
       Timber.w(ex)
-      return@withContext FetchResult<List<DataPoint>>(
-          _error = FetchException("Error fetching datapoints", ex))
+      return@withContext FetchResult.failure<List<DataPoint>>(FetchException("Error fetching datapoints", ex))
     }
-    return@withContext FetchResult(_data = dataPoints)
+    return@withContext FetchResult.success(dataPoints)
   }
 }

@@ -115,7 +115,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   }
 
   fun newsQuery(): String {
-    return symbol
+    return "$symbol $name"
   }
 
   private val selectedFormat: Format

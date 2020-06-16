@@ -27,304 +27,324 @@
 
     <ScrollView
         android:layout_width="0dp"
-        android:layout_weight="0.5"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:scrollbars="none"
-        android:layout_marginRight="4dp"
-        android:layout_marginEnd="4dp"
+        android:layout_weight="0.5"
         >
 
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="4dp"
+          android:layout_marginEnd="4dp"
           android:orientation="vertical"
           app:layout_scrollFlags="scroll|exitUntilCollapsed"
           android:paddingBottom="?actionBarSize"
           >
 
-      <TextView
-          app:layout_constraintTop_toTopOf="parent"
-          android:id="@+id/tickerName"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="16dp"
-          android:textSize="@dimen/xlarge_text"
-          app:layout_scrollFlags="scroll"
-          tools:text="Apple Inc."
-          style="@style/BoldTextView"
-          />
-
-      <ImageView
-          app:layout_constraintTop_toBottomOf="@id/tickerName"
-          app:layout_constraintEnd_toEndOf="parent"
-          android:id="@+id/expand_graph"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_gravity="top|end"
-          android:contentDescription="@string/expand"
-          android:onClick="openGraph"
-          android:padding="8dp"
-          android:src="@drawable/ic_expand"
-          />
-
-      <FrameLayout
-          app:layout_constraintTop_toBottomOf="@id/expand_graph"
-          android:id="@+id/graph_container"
-          android:layout_width="match_parent"
-          android:layout_height="0dp"
-          app:layout_constraintHeight_percent="0.5"
-          android:padding="8dp"
-          >
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/graphView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-
-        <ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dp"
-            />
-
-      </FrameLayout>
-
-      <LinearLayout
-          app:layout_constraintTop_toBottomOf="@id/graph_container"
-          android:id="@+id/price_container"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="8dp"
-          android:background="@drawable/card_bg"
-          android:orientation="vertical"
-          android:padding="16dp"
-          >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-          <TextView
-              android:id="@+id/lastTradePrice"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginEnd="2dp"
-              android:layout_marginRight="2dp"
-              android:textSize="@dimen/xlarge_text"
-              tools:text="$1200"
-              />
-          <TextView
-              android:id="@+id/change"
-              android:layout_width="0dp"
-              android:layout_height="wrap_content"
-              android:layout_marginLeft="2dp"
-              android:layout_marginStart="2dp"
-              android:layout_weight="1"
-              android:gravity="end|center_vertical"
-              android:lines="1"
-              android:textSize="@dimen/xlarge_text"
-              tools:text="+4.50 (2.00%)"
-              />
-        </LinearLayout>
         <TextView
-            android:id="@+id/exchange"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/tickerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="start"
-            android:textColor="@color/text_3"
-            android:textSize="@dimen/medium_text"
-            tools:text="NYSE"
-            />
-
-      </LinearLayout>
-
-      <LinearLayout
-          app:layout_constraintTop_toBottomOf="@id/price_container"
-          android:id="@+id/positions_header"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginBottom="8dp"
-          android:layout_marginEnd="16dp"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="8dp"
-          android:orientation="horizontal"
-          >
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:text="@string/positions"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
+            android:layout_margin="16dp"
+            android:textSize="@dimen/xlarge_text"
+            app:layout_scrollFlags="scroll"
+            tools:text="Apple Inc."
+            style="@style/BoldTextView"
             />
 
         <ImageView
-            android:id="@+id/edit_positions"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_edit"
+            app:layout_constraintTop_toBottomOf="@id/tickerName"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/expand_graph"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:contentDescription="@string/expand"
+            android:onClick="openGraph"
+            android:padding="8dp"
+            android:src="@drawable/ic_expand"
+            android:tint="@color/icon_tint"
             />
 
-      </LinearLayout>
-      <LinearLayout
-          app:layout_constraintTop_toBottomOf="@id/positions_header"
-          android:id="@+id/positions_container"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_margin="8dp"
-          android:background="@drawable/card_bg"
-          android:orientation="vertical"
-          >
+        <FrameLayout
+            app:layout_constraintTop_toBottomOf="@id/expand_graph"
+            android:id="@+id/graph_container"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:padding="8dp"
+            >
+          <com.github.mikephil.charting.charts.LineChart
+              android:id="@+id/graphView"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              />
+
+          <ProgressBar
+              android:id="@+id/progress"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_marginBottom="20dp"
+              />
+
+        </FrameLayout>
 
         <LinearLayout
+            app:layout_constraintTop_toBottomOf="@id/graph_container"
+            android:id="@+id/price_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_margin="8dp"
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            android:padding="16dp"
             >
           <LinearLayout
-              android:layout_width="0dp"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_weight="0.5"
-              android:gravity="center"
-              android:orientation="vertical"
-              android:padding="8dp"
+              android:orientation="horizontal"
               >
             <TextView
-                android:id="@+id/numShares"
+                android:id="@+id/lastTradePrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:gravity="center"
+                android:layout_marginEnd="2dp"
+                android:layout_marginRight="2dp"
                 android:textSize="@dimen/xlarge_text"
-                tools:text="3"
-                style="@style/BoldTextView"
+                tools:text="$1200"
                 />
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/change"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/shares"
-                android:textColor="@color/text_3"
+                android:layout_marginLeft="2dp"
+                android:layout_marginStart="2dp"
+                android:layout_weight="1"
+                android:gravity="end|center_vertical"
+                android:lines="1"
+                android:textSize="@dimen/xlarge_text"
+                tools:text="+4.50 (2.00%)"
                 />
-
           </LinearLayout>
-          <LinearLayout
-              android:layout_width="0dp"
+          <TextView
+              android:id="@+id/exchange"
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:layout_weight="0.5"
-              android:gravity="center"
-              android:orientation="vertical"
-              android:padding="8dp"
-              >
-            <TextView
-                android:id="@+id/equityValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:gravity="center"
-                android:textSize="@dimen/xlarge_text"
-                tools:text="$2,400.00"
-                style="@style/BoldTextView"
-                />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/equity_value"
-                android:textColor="@color/text_3"
-                />
-
-          </LinearLayout>
+              android:layout_marginTop="8dp"
+              android:gravity="start"
+              android:textColor="@color/text_3"
+              android:textSize="@dimen/medium_text"
+              tools:text="NYSE"
+              />
 
         </LinearLayout>
 
-        <com.github.premnirmal.ticker.ui.StockFieldView
-            android:id="@+id/average_price"
+        <LinearLayout
+            app:layout_constraintTop_toBottomOf="@id/price_container"
+            android:id="@+id/positions_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            app:center_text="true"
-            app:name="@string/average_price"
-            app:or="horizontal"
-            app:size="@dimen/larger_text"
-            />
-
-        <com.github.premnirmal.ticker.ui.StockFieldView
-            android:id="@+id/total_gain_loss"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            app:center_text="true"
-            app:name="@string/gain_loss"
-            app:or="horizontal"
-            app:size="@dimen/larger_text"
-            />
-
-        <com.github.premnirmal.ticker.ui.StockFieldView
-            android:id="@+id/day_change"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            app:center_text="true"
-            app:name="@string/day_change_amount"
-            app:or="horizontal"
-            app:size="@dimen/larger_text"
-            />
-
-      </LinearLayout>
-        <TextView
-            app:layout_constraintBottom_toTopOf="@id/positions_container"
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
-            android:textSize="@dimen/medium_text"
-            tools:text="Description"
-            />
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            >
+
+          <TextView
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_vertical"
+              android:layout_weight="1"
+              android:gravity="center_vertical"
+              android:text="@string/positions"
+              android:textSize="@dimen/thin_title_text"
+              style="@style/ThinTitleTextView"
+              />
+
+          <ImageView
+              android:id="@+id/edit_positions"
+              android:layout_width="20dp"
+              android:layout_height="20dp"
+              android:src="@drawable/ic_edit"
+              />
+
+        </LinearLayout>
+        <LinearLayout
+            app:layout_constraintTop_toBottomOf="@id/positions_header"
+            android:id="@+id/positions_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            >
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:baselineAligned="false"
+              >
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                >
+              <TextView
+                  android:id="@+id/numShares"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginBottom="2dp"
+                  android:gravity="center"
+                  android:textSize="@dimen/xlarge_text"
+                  tools:text="3"
+                  style="@style/BoldTextView"
+                  />
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/shares"
+                  android:textColor="@color/text_3"
+                  />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="8dp"
+                >
+              <TextView
+                  android:id="@+id/equityValue"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_marginBottom="2dp"
+                  android:gravity="center"
+                  android:textSize="@dimen/xlarge_text"
+                  tools:text="$2,400.00"
+                  style="@style/BoldTextView"
+                  />
+              <TextView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/equity_value"
+                  android:textColor="@color/text_3"
+                  />
+
+            </LinearLayout>
+
+          </LinearLayout>
+
+          <com.github.premnirmal.ticker.ui.StockFieldView
+              android:id="@+id/average_price"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="8dp"
+              android:layout_weight="1"
+              app:center_text="true"
+              app:name="@string/average_price"
+              app:or="horizontal"
+              app:size="@dimen/larger_text"
+              />
+
+          <com.github.premnirmal.ticker.ui.StockFieldView
+              android:id="@+id/total_gain_loss"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="8dp"
+              android:layout_weight="1"
+              app:center_text="true"
+              app:name="@string/gain_loss"
+              app:or="horizontal"
+              app:size="@dimen/larger_text"
+              />
+
+          <com.github.premnirmal.ticker.ui.StockFieldView
+              android:id="@+id/day_change"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="8dp"
+              android:layout_weight="1"
+              app:center_text="true"
+              app:name="@string/day_change_amount"
+              app:or="horizontal"
+              app:size="@dimen/larger_text"
+              />
+
+        </LinearLayout>
       </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
-        android:layout_marginLeft="4dp"
-        android:layout_marginStart="4dp"
+        android:orientation="vertical"
         >
 
-      <LinearLayout
-          android:id="@+id/news_container"
+      <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical"
-          app:layout_scrollFlags="scroll|exitUntilCollapsed"
-          >
+          android:layout_marginTop="16dp"
+          android:layout_marginLeft="16dp"
+          android:layout_marginStart="16dp"
+          android:gravity="center_vertical"
+          android:text="@string/recent_news"
+          android:textSize="@dimen/thin_title_text"
+          style="@style/ThinTitleTextView"
+          />
 
-        <TextView
-            android:layout_width="match_parent"
+      <ViewFlipper
+          android:id="@+id/news_container"
+          android:layout_height="match_parent"
+          android:layout_width="match_parent"
+          android:layout_marginLeft="4dp"
+          android:layout_marginStart="4dp"
+          android:layout_gravity="center"
+          >
+        <ProgressBar
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_margin="16dp"
-            android:gravity="center_vertical"
-            android:text="@string/recent_news"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_gravity="center"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/error_fetching_news"
+            android:textColor="@color/color_accent"
+            android:textSize="@dimen/large_text"
+            style="@style/MediumTextView"
             />
 
-      </LinearLayout>
-    </ScrollView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/no_data"
+            android:textColor="@color/color_accent"
+            android:textSize="@dimen/large_text"
+            style="@style/MediumTextView"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recycler_view"
+            android:scrollbars="vertical"
+            />
+      </ViewFlipper>
+    </LinearLayout>
 
   </LinearLayout>
 

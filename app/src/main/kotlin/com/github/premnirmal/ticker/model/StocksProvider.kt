@@ -9,7 +9,6 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.events.UnauthorizedEvent
 import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
@@ -72,7 +71,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   init {
     Injector.appComponent.inject(this)
     exponentialBackoff = ExponentialBackoff()
-    runBlocking { storage.migrateIfNecessary() }
     val tickers = storage.readTickers()
     this.tickers.addAll(tickers)
     if (this.tickers.isEmpty()) {
@@ -152,7 +150,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(Dispatchers.IO) {
     val quote = if (allowCache) quoteMap[ticker] else null
-    return@withContext quote?.let { FetchResult(quote) } ?: run {
+    return@withContext quote?.let { FetchResult.success(quote) } ?: run {
       try {
         return@run api.getStock(ticker)
       } catch (ex: Exception) {
@@ -160,7 +158,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         withContext(Dispatchers.Main) {
           InAppMessage.showToast(context, R.string.error_fetching_stock)
         }
-        return@run FetchResult<Quote>(_error = FetchException("Failed to fetch", ex))
+        return@run FetchResult.failure<Quote>(FetchException("Failed to fetch", ex))
       }
     }
   }
@@ -178,41 +176,30 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickers.isEmpty()) {
       bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-      return@withContext FetchResult<List<Quote>>(
-          _error = FetchException("No symbols in portfolio")
-      )
+      return@withContext FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
     } else {
       try {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fr = api.getStocks(tickers.toList())
-        if (!fr.wasAuthorized) {
-          if (!bus.send(UnauthorizedEvent())) {
-            withContext(Dispatchers.Main) {
-              InAppMessage.showToast(context, R.string.error_illegal_app)
-            }
-          }
-          return@withContext fr
+        val fetchedStocks = fr.data
+        if (fetchedStocks.isEmpty()) {
+          bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
+          return@withContext FetchResult.failure<List<Quote>>(FetchException("Refresh failed"))
         } else {
-          val fetchedStocks = fr.data
-          if (fetchedStocks.isEmpty()) {
-            bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
-            return@withContext FetchResult<List<Quote>>(_error = FetchException("Refresh failed"))
-          } else {
-            synchronized(tickers) {
-              tickers.addAll(fetchedStocks.map { it.symbol })
-            }
-            storage.saveQuotes(fetchedStocks)
-            fetchLocal()
-            lastFetched = api.lastFetched
-            saveLastFetched()
-            exponentialBackoff.reset()
-            scheduleUpdate(true)
-            return@withContext FetchResult(_data = fetchedStocks)
+          synchronized(tickers) {
+            tickers.addAll(fetchedStocks.map { it.symbol })
           }
+          storage.saveQuotes(fetchedStocks)
+          fetchLocal()
+          lastFetched = api.lastFetched
+          saveLastFetched()
+          exponentialBackoff.reset()
+          scheduleUpdate(true)
+          return@withContext FetchResult.success(fetchedStocks)
         }
       } catch (ex: Exception) {
-        Timber.e(ex)
+        Timber.w(ex)
         if (!bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))) {
           withContext(Dispatchers.Main) {
             InAppMessage.showToast(context, R.string.refresh_failed)
@@ -220,7 +207,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
         val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
         scheduleUpdateWithMs(backOffTimeMs)
-        return@withContext FetchResult<List<Quote>>(_error = FetchException("Failed to fetch", ex))
+        return@withContext FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } finally {
         appPreferences.setRefreshing(false)
       }

@@ -8,7 +8,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.HistoricalDataApi
 import com.github.premnirmal.ticker.network.NewsApi
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.Robindahood
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.SuggestionApi
 import com.github.premnirmal.ticker.network.YahooFinance
@@ -37,9 +36,6 @@ class MockNetworkModule {
   @Provides @Singleton internal fun provideGsonFactory(gson: Gson): GsonConverterFactory {
     return GsonConverterFactory.create(gson)
   }
-
-  @Provides @Singleton internal fun provideRobindahood(context: Context, okHttpClient: OkHttpClient,
-    gson: Gson, converterFactory: GsonConverterFactory): Robindahood = Mocker.provide(Robindahood::class)
 
   @Provides @Singleton internal fun provideYahooFinance(context: Context, okHttpClient: OkHttpClient,
     gson: Gson, converterFactory: GsonConverterFactory): YahooFinance = Mocker.provide(YahooFinance::class)

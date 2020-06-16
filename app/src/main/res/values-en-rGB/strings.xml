@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="text_color">Text colour</string>
+  <string name="text_color_updated_message">Text colour updated</string>
+</resources>

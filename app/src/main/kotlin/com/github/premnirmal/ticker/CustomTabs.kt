@@ -3,7 +3,10 @@ package com.github.premnirmal.ticker
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.PorterDuff.Mode.SRC_IN
 import android.net.Uri
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
 import com.github.premnirmal.tickerwidget.R
@@ -14,16 +17,22 @@ object CustomTabs {
   private const val chromePackage = "com.android.chrome"
   private const val firefoxPreviewPackage = "org.mozilla.fenix"
   private const val firefoxPackage = "org.mozilla.firefox"
+  private const val edgePackage = "com.microsoft.emmx"
 
   fun openTab(
     context: Context,
     url: String
   ) {
+    val closeButton = context.resources.getDrawable(R.drawable.ic_close)
+    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
+      closeButton.setTint(context.resources.getColor(R.color.icon_tint))
+      closeButton.setTintMode(SRC_IN)
+    }
     val customTabsIntent = CustomTabsIntent.Builder()
         .addDefaultShareMenuItem()
         .setToolbarColor(context.resources.getColor(R.color.color_primary))
         .setShowTitle(true)
-        .setCloseButtonIcon(context.resources.getDrawable(R.drawable.ic_close).toBitmap())
+        .setCloseButtonIcon(closeButton.toBitmap())
         .setExitAnimations(context, android.R.anim.fade_in, android.R.anim.fade_out)
         .build()
     val packageName = getPackageNameToUse(context, url)
@@ -71,8 +80,8 @@ object CustomTabs {
           && packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName!!) ->
         packageNameToUse = defaultViewHandlerPackageName
       packagesSupportingCustomTabs.contains(chromePackage) -> packageNameToUse = chromePackage
-      packagesSupportingCustomTabs.contains(firefoxPreviewPackage) -> packageNameToUse =
-        firefoxPreviewPackage
+      packagesSupportingCustomTabs.contains(edgePackage) -> packageNameToUse = edgePackage
+      packagesSupportingCustomTabs.contains(firefoxPreviewPackage) -> packageNameToUse = firefoxPreviewPackage
       packagesSupportingCustomTabs.contains(firefoxPackage) -> packageNameToUse = firefoxPackage
     }
     return packageNameToUse

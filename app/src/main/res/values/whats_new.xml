@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Using SQLite DB</item>
-    <item>Fix import/export on Android Q</item>
-    <item>UI tweaks</item>
+    <item>Bug fixes</item>
   </string-array>
 </resources>

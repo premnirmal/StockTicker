@@ -29,6 +29,12 @@
         android:visibility="gone"
         >
 
+      <com.github.mikephil.charting.charts.LineChart
+          android:id="@+id/graphView"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
+
       <TextView
           android:id="@+id/tickerName"
           android:layout_width="wrap_content"
@@ -51,12 +57,6 @@
           android:textSize="14dp"
           tools:text="GOOG"
           style="@style/BoldTextView"
-          />
-
-      <com.github.mikephil.charting.charts.LineChart
-          android:id="@+id/graphView"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
           />
 
     </RelativeLayout>

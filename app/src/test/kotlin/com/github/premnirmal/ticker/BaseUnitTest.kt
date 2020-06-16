@@ -49,7 +49,7 @@ abstract class BaseUnitTest : TestCase() {
     super.setUp()
     val iStocksProvider = Mocker.provide(IStocksProvider::class)
     doNothing().whenever(iStocksProvider).schedule()
-    whenever(iStocksProvider.fetch()).thenReturn(FetchResult(ArrayList()))
+    whenever(iStocksProvider.fetch()).thenReturn(FetchResult.success(ArrayList()))
     whenever(iStocksProvider.getTickers()).thenReturn(emptyList())
     whenever(iStocksProvider.addStock(any())).thenReturn(emptyList())
     whenever(iStocksProvider.lastFetched()).thenReturn("--")

@@ -17,6 +17,7 @@
   <integer name="text_size_large">18</integer>
 
   <dimen name="list_spacing">2dp</dimen>
+  <dimen name="list_spacing_double">4dp</dimen>
 
   <dimen name="portfolio_stock_vh_text_size">15sp</dimen>
   <dimen name="portfolio_stock_vh_name_text_size">12sp</dimen>
