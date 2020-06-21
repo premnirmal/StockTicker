@@ -22,6 +22,7 @@ class WidgetData {
     private const val PREFS_NAME_PREFIX = "stocks_widget_"
     private const val WIDGET_NAME = "WIDGET_NAME"
     private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
+    private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
     private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
     private const val WIDGET_BG = AppPreferences.WIDGET_BG
     private const val TEXT_COLOR = AppPreferences.TEXT_COLOR
@@ -119,6 +120,15 @@ class WidgetData {
     preferences.edit()
         .putBoolean(PERCENT, !state)
         .apply()
+  }
+
+
+  fun widgetSizePref(): Int = preferences.getInt(WIDGET_SIZE, 0)
+
+  fun setWidgetSizePref(value: Int) {
+    preferences.edit()
+            .putInt(WIDGET_SIZE, value)
+            .apply()
   }
 
   fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)

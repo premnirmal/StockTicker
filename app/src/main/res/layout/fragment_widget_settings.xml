@@ -108,6 +108,15 @@
     <include layout="@layout/divider"/>
 
     <com.github.premnirmal.ticker.ui.SettingsTextView
+        android:id="@+id/setting_widget_width"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title_text="@string/widget_width"
+        />
+
+    <include layout="@layout/divider"/>
+
+    <com.github.premnirmal.ticker.ui.SettingsTextView
         android:id="@+id/setting_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
