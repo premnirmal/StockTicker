@@ -148,7 +148,7 @@ android {
       debuggable true
       versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }
@@ -170,13 +170,6 @@ android {
     exclude "META-INF/LICENSE.txt"
     exclude "META-INF/NOTICE.txt"
   }
-    
-  lintOptions {
-        checkReleaseBuilds false
-        // Or, if you prefer, you can continue to check for errors in release builds,
-        // but continue the build even when errors are found:
-        abortOnError false
-    }
 }
 
 kapt {
@@ -211,7 +204,7 @@ dependencies {
   implementation "javax.annotation:javax.annotation-api:1.3.2"
 
   implementation "com.google.dagger:dagger:$DAGGER_VERSION"
-    kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
+  kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
   implementation ("com.squareup.okhttp3:okhttp:$OKHTTP_VERSION") {
     force = true
