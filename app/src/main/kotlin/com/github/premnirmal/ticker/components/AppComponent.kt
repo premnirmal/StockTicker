@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
+import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
@@ -145,4 +146,6 @@ interface AppComponent {
   fun inject(graphViewModel: GraphViewModel)
 
   fun inject(newsFeedViewModel: NewsFeedViewModel)
+
+  fun inject(totalHoldingsViewModel: HomeViewModel)
 }

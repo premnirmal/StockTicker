@@ -245,6 +245,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     return tickers
   }
 
+  override fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
+
   override fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
 
   override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position

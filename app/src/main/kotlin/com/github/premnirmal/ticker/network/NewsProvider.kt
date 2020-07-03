@@ -4,7 +4,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.NewsArticle
-import com.github.premnirmal.ticker.network.data.NewsRssFeed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -18,14 +17,14 @@ class NewsProvider {
 
   @Inject internal lateinit var newsApi: NewsApi
 
-  private var cachedBusinessFeed: NewsRssFeed? = null
+  private var cachedBusinessArticles: List<NewsArticle> = emptyList()
 
   init {
     Injector.appComponent.inject(this)
   }
 
   fun initCache() {
-    GlobalScope.launch { fetchBusinessNews() }
+    GlobalScope.launch { fetchMarketNews() }
   }
 
   suspend fun fetchNewsForQuery(query: String): FetchResult<List<NewsArticle>> =
@@ -41,15 +40,20 @@ class NewsProvider {
       }
     }
 
-  suspend fun fetchBusinessNews(useCache: Boolean = false): FetchResult<List<NewsArticle>> =
+  suspend fun fetchMarketNews(useCache: Boolean = false): FetchResult<List<NewsArticle>> =
     withContext(Dispatchers.IO) {
       try {
-        if (useCache && !cachedBusinessFeed?.articleList.isNullOrEmpty()) {
-          return@withContext FetchResult.success(checkNotNull(cachedBusinessFeed?.articleList).sorted())
+        if (useCache && cachedBusinessArticles.isNotEmpty()) {
+          return@withContext FetchResult.success(cachedBusinessArticles)
         }
-        val newsFeed = newsApi.getBusinessNews()
-        val articles = newsFeed.articleList?.sorted() ?: emptyList()
-        cachedBusinessFeed = newsFeed
+        val marketNewsArticles = newsApi.getNewsFeed(query = "stock market").articleList.orEmpty()
+        val businessNewsArticles = newsApi.getBusinessNews().articleList.orEmpty()
+        val articles: List<NewsArticle> = ArrayList<NewsArticle>().apply {
+          addAll(marketNewsArticles)
+          addAll(businessNewsArticles)
+          sort()
+        }
+        cachedBusinessArticles = articles
         return@withContext FetchResult.success(articles)
       } catch (ex: Exception) {
         Timber.w(ex)
