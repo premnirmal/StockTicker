@@ -55,4 +55,18 @@ interface IStocksProvider {
     ticker: String,
     holding: Holding
   )
-}
+
+  fun upsertNotes(
+    ticker: String,
+    notes: String
+  )
+
+  fun upsertAlertAbove(
+    ticker: String,
+    alertAbove: Float
+  )
+
+  fun upsertAlertBelow(
+    ticker: String,
+    alertBelow: Float
+  )}

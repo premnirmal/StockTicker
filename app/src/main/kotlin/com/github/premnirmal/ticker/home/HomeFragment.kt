@@ -47,23 +47,36 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private lateinit var adapter: HomePagerAdapter
 
   private val subtitleText: String
-    get() = getString(R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch())
+    get() = getString(
+        R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch()
+    )
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
+
+    // Setup the notification channel.
+    NotificationChannelFactory(context!!)
   }
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return inflater.inflate(R.layout.fragment_home, container, false)
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+  override fun onViewCreated(
+    view: View,
+    savedInstanceState: Bundle?
+  ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
-    swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
-        R.color.sea)
+    swipe_container.setColorSchemeResources(
+        R.color.color_primary_dark, R.color.spicy_salmon,
+        R.color.sea
+    )
     swipe_container.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter

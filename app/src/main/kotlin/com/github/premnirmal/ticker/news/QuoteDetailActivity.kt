@@ -20,6 +20,8 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
+import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SpacingDecoration
@@ -27,6 +29,10 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import com.github.premnirmal.tickerwidget.R.dimen
+import kotlinx.android.synthetic.main.activity_quote_detail.alert_above
+import kotlinx.android.synthetic.main.activity_quote_detail.alert_below
+import kotlinx.android.synthetic.main.activity_quote_detail.alert_header
+import kotlinx.android.synthetic.main.activity_quote_detail.alerts_container
 import kotlinx.android.synthetic.main.activity_quote_detail.average_price
 import kotlinx.android.synthetic.main.activity_quote_detail.change
 import kotlinx.android.synthetic.main.activity_quote_detail.day_change
@@ -37,6 +43,9 @@ import kotlinx.android.synthetic.main.activity_quote_detail.graphView
 import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
 import kotlinx.android.synthetic.main.activity_quote_detail.lastTradePrice
 import kotlinx.android.synthetic.main.activity_quote_detail.news_container
+import kotlinx.android.synthetic.main.activity_quote_detail.notes_container
+import kotlinx.android.synthetic.main.activity_quote_detail.notes_display
+import kotlinx.android.synthetic.main.activity_quote_detail.notes_header
 import kotlinx.android.synthetic.main.activity_quote_detail.numShares
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_container
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_header
@@ -51,7 +60,9 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
 
   companion object {
     const val TICKER = "TICKER"
-    private const val REQ_EDIT_POSITIONS = 12345
+    private const val REQ_EDIT_POSITIONS = 10001
+    private const val REQ_EDIT_NOTES = 10002
+    private const val REQ_EDIT_ALERTS = 10003
     private const val INDEX_PROGRESS = 0
     private const val INDEX_ERROR = 1
     private const val INDEX_EMPTY = 2
@@ -94,7 +105,9 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         fetch()
         setupUi()
       } else {
-        InAppMessage.showMessage(this@QuoteDetailActivity, R.string.error_fetching_stock, error = true)
+        InAppMessage.showMessage(
+            this@QuoteDetailActivity, R.string.error_fetching_stock, error = true
+        )
         progress.visibility = View.GONE
         graphView.setNoDataText(getString(R.string.error_fetching_stock))
         news_container.displayedChild = INDEX_ERROR
@@ -195,15 +208,55 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     exchange.text = quote.stockExchange
     updatePositionsUi()
-    edit_positions.setOnClickListener {
-      analytics.trackClickEvent(
-          ClickEvent("EditPositionClick")
-              .addProperty("Instrument", ticker)
-      )
-      val intent = Intent(this, AddPositionActivity::class.java)
-      intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
-      startActivityForResult(intent, REQ_EDIT_POSITIONS)
+
+    // Register the callback also for the header and content for easier usage.
+    positions_header.setOnClickListener {
+      positionOnClickListener()
     }
+
+    notes_header.setOnClickListener {
+      notesOnClickListener()
+    }
+    notes_container.setOnClickListener {
+      notesOnClickListener()
+    }
+
+    alert_header.setOnClickListener {
+      alertsOnClickListener()
+    }
+    alerts_container.setOnClickListener {
+      alertsOnClickListener()
+    }
+  }
+
+  private fun positionOnClickListener() {
+    analytics.trackClickEvent(
+        ClickEvent("EditPositionClick")
+            .addProperty("Instrument", ticker)
+    )
+    val intent = Intent(this, AddPositionActivity::class.java)
+    intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
+    startActivityForResult(intent, REQ_EDIT_POSITIONS)
+  }
+
+  private fun notesOnClickListener() {
+    analytics.trackClickEvent(
+        ClickEvent("EditNotesClick")
+            .addProperty("Instrument", ticker)
+    )
+    val intent = Intent(this, AddNotesActivity::class.java)
+    intent.putExtra(AddNotesActivity.TICKER, quote.symbol)
+    startActivityForResult(intent, REQ_EDIT_NOTES)
+  }
+
+  private fun alertsOnClickListener() {
+    analytics.trackClickEvent(
+        ClickEvent("EditAlertsClick")
+            .addProperty("Instrument", ticker)
+    )
+    val intent = Intent(this, AddAlertsActivity::class.java)
+    intent.putExtra(AddAlertsActivity.TICKER, quote.symbol)
+    startActivityForResult(intent, REQ_EDIT_ALERTS)
   }
 
   private fun fetchData() {
@@ -215,10 +268,24 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
   }
 
-  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+  override fun onActivityResult(
+    requestCode: Int,
+    resultCode: Int,
+    data: Intent?
+  ) {
     if (requestCode == REQ_EDIT_POSITIONS) {
       if (resultCode == Activity.RESULT_OK) {
         quote = checkNotNull(data?.getParcelableExtra(AddPositionActivity.QUOTE))
+      }
+    }
+    if (requestCode == REQ_EDIT_NOTES) {
+      if (resultCode == Activity.RESULT_OK) {
+        quote = checkNotNull(data?.getParcelableExtra(AddNotesActivity.QUOTE))
+      }
+    }
+    if (requestCode == REQ_EDIT_ALERTS) {
+      if (resultCode == Activity.RESULT_OK) {
+        quote = checkNotNull(data?.getParcelableExtra(AddAlertsActivity.QUOTE))
       }
     }
     super.onActivityResult(requestCode, resultCode, data)
@@ -247,6 +314,35 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       positions_header.visibility = View.VISIBLE
       numShares.text = quote.numSharesString()
       equityValue.text = quote.holdingsString()
+
+      val notesText = quote.properties?.notes
+      if (notesText.isNullOrEmpty()) {
+        notes_container.visibility = View.GONE
+      } else {
+        notes_container.visibility = View.VISIBLE
+        notes_display.setText(notesText)
+      }
+
+      val alertAbove = quote.getAlertAbove()
+      val alertBelow = quote.getAlertBelow()
+      if (alertAbove > 0.0f || alertBelow > 0.0f) {
+        alerts_container.visibility = View.VISIBLE
+      } else {
+        alerts_container.visibility = View.GONE
+      }
+      if (alertAbove > 0.0f) {
+        alert_above.visibility = View.VISIBLE
+        alert_above.setText(Quote.selectedFormat.format(alertAbove))
+      } else {
+        alert_above.visibility = View.GONE
+      }
+      if (alertBelow > 0.0f) {
+        alert_below.visibility = View.VISIBLE
+        alert_below.setText(Quote.selectedFormat.format(alertBelow))
+      } else {
+        alert_below.visibility = View.GONE
+      }
+
       if (quote.hasPositions()) {
         total_gain_loss.visibility = View.VISIBLE
         total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
@@ -271,6 +367,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       }
     } else {
       positions_container.visibility = View.GONE
+      notes_container.visibility = View.GONE
+      alerts_container.visibility = View.GONE
       positions_header.visibility = View.GONE
     }
   }

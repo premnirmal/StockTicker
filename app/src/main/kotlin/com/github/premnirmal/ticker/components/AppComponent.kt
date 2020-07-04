@@ -25,6 +25,8 @@ import com.github.premnirmal.ticker.news.GraphViewModel
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
+import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
+import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
@@ -55,6 +57,10 @@ interface AppComponent {
   fun inject(paranormalActivity: ParanormalActivity)
 
   fun inject(addPositionActivity: AddPositionActivity)
+
+  fun inject(addNotesActivity: AddNotesActivity)
+
+  fun inject(addAlertsActivity: AddAlertsActivity)
 
   fun inject(splashActivity: SplashActivity)
 

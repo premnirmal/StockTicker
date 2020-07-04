@@ -209,6 +209,7 @@ class AppPreferences {
     const val TRANSLUCENT = 1
     const val DARK = 2
     const val LIGHT = 3
+    const val CHANNEL_ID = "STOCKTICKER_CHANNEL_ID"
 
     val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)

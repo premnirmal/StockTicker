@@ -9,10 +9,12 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.home.NotificationFactory
 import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
+import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -163,6 +165,51 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
   }
 
+  private fun checkAlerts() {
+    synchronized(quoteMap) {
+      val portfolio: List<Quote> = getPortfolio()
+
+      for (quote in portfolio) {
+        if (quote.isAlertAbove()) {
+          quote.let {
+            val title = context.getString(
+                R.string.alert_above_notification_title, it.symbol,
+                Quote.selectedFormat.format(it.properties?.alertAbove!!),
+                Quote.selectedFormat.format(it.lastTradePrice)
+            )
+            val text = context.getString(
+                R.string.alert_above_notification, it.symbol, it.name,
+                Quote.selectedFormat.format(it.properties?.alertAbove!!),
+                Quote.selectedFormat.format(it.lastTradePrice)
+            )
+            val notification = NotificationFactory(context, title, text, quote.symbol)
+            notification.sendNotification()
+            // Remove alert.
+            upsertAlertAbove(quote.symbol, 0.0f)
+          }
+        } else
+          if (quote.isAlertBelow()) {
+            quote.let {
+              val title = context.getString(
+                  R.string.alert_below_notification_title, it.symbol,
+                  Quote.selectedFormat.format(it.properties?.alertBelow!!),
+                  Quote.selectedFormat.format(it.lastTradePrice)
+              )
+              val text = context.getString(
+                  R.string.alert_below_notification, it.symbol, it.name,
+                  Quote.selectedFormat.format(it.properties?.alertBelow!!),
+                  Quote.selectedFormat.format(it.lastTradePrice)
+              )
+              val notification = NotificationFactory(context, title, text, quote.symbol)
+              notification.sendNotification()
+              // Remove alert.
+              upsertAlertBelow(quote.symbol, 0.0f)
+            }
+          }
+      }
+    }
+  }
+
   /////////////////////
   // public api
   /////////////////////
@@ -189,6 +236,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         } else {
           synchronized(tickers) {
             tickers.addAll(fetchedStocks.map { it.symbol })
+            checkAlerts()
           }
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
@@ -286,6 +334,56 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       quote?.position = position
       launch {
         storage.removeHolding(ticker, holding)
+      }
+    }
+  }
+
+  override fun upsertNotes(
+    ticker: String,
+    notes: String
+  ) {
+    synchronized(quoteMap) {
+      val quote = quoteMap[ticker]
+      if (quote?.properties == null) {
+        quote?.properties = Properties(ticker)
+      }
+      quote?.properties?.notes = notes
+      launch {
+        storage.upsertProperties(quote?.properties!!)
+      }
+    }
+  }
+
+  override fun upsertAlertAbove(
+    ticker: String,
+    alertAbove: Float
+  ) {
+    synchronized(quoteMap) {
+      val quote = quoteMap[ticker]
+      if (quote?.properties == null) {
+        quote?.properties = Properties(ticker)
+      }
+      quote?.properties?.alertAbove = alertAbove
+
+      launch {
+        storage.upsertProperties(quote?.properties!!)
+      }
+    }
+  }
+
+  override fun upsertAlertBelow(
+    ticker: String,
+    alertBelow: Float
+  ) {
+    synchronized(quoteMap) {
+      val quote = quoteMap[ticker]
+      if (quote?.properties == null) {
+        quote?.properties = Properties(ticker)
+      }
+      quote?.properties?.alertBelow = alertBelow
+
+      launch {
+        storage.upsertProperties(quote?.properties!!)
       }
     }
   }

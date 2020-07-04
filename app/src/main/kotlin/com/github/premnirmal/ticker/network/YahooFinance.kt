@@ -14,7 +14,7 @@ interface YahooFinance {
    * @return A List of quotes.
    */
   @GET(
-      "quote?format=json&fields=symbol,regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketVolume,shortName,currency"
+      "quote?format=json&fields=symbol,regularMarketPrice,regularMarketChange,regularMarketChangePercent,regularMarketTime,postMarketPrice,postMarketChange,postMarketChangePercent,postMarketTime,regularMarketVolume,shortName,currency,trailingAnnualDividendRate,trailingAnnualDividendYield"
   )
   suspend fun getStocks(@Query(value = "symbols") query: String): YahooResponse
 }
