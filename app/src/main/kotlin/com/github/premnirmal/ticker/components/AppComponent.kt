@@ -13,6 +13,8 @@ import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
 import com.github.premnirmal.ticker.home.HomeViewModel
+import com.github.premnirmal.ticker.home.NotificationChannelFactory
+import com.github.premnirmal.ticker.home.NotificationsHandler
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
@@ -98,6 +100,10 @@ interface AppComponent {
   fun inject(exponentialBackoff: ExponentialBackoff)
 
   fun inject(generalProperties: GeneralProperties)
+
+  fun inject(notificationsHandler: NotificationsHandler)
+
+  fun inject(notificationChannelFactory: NotificationChannelFactory)
 
   // Network
 

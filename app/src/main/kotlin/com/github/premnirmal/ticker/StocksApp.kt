@@ -53,8 +53,6 @@ open class StocksApp : MultiDexApplication() {
       initStetho()
     }
     initNewsCache()
-    // Setup the notification channel.
-    NotificationChannelFactory(this)
   }
 
   open fun initStetho() {

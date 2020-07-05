@@ -47,10 +47,10 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   var position: Position? = null
   var properties: Properties? = null
 
-  fun isAlertAbove(): Boolean =
+  fun hasAlertAbove(): Boolean =
     this.properties != null && this.properties?.alertAbove!! > 0.0f && this.properties?.alertAbove!! < this.lastTradePrice
 
-  fun isAlertBelow(): Boolean =
+  fun hasAlertBelow(): Boolean =
     this.properties != null && this.properties?.alertBelow!! > 0.0f && this.properties?.alertBelow!! > this.lastTradePrice
 
   fun getAlertAbove(): Float = if (this.properties == null) {
