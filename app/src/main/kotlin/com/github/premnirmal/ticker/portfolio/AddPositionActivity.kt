@@ -3,9 +3,8 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.Spanned
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -24,7 +23,10 @@ import kotlinx.android.synthetic.main.activity_positions.tickerName
 import kotlinx.android.synthetic.main.activity_positions.toolbar
 import kotlinx.android.synthetic.main.activity_positions.totalShares
 import kotlinx.android.synthetic.main.activity_positions.totalValue
+import kotlinx.android.synthetic.main.layout_position_holding.view.remove_position
 import java.util.regex.Pattern
+import kotlinx.coroutines.runBlocking
+import java.text.NumberFormat
 import javax.inject.Inject
 
 /**
@@ -35,23 +37,6 @@ class AddPositionActivity : BaseActivity() {
   companion object {
     const val QUOTE = "QUOTE"
     const val TICKER = "TICKER"
-    private val PATTERN: Pattern =
-      Pattern.compile("[0-9]{0," + (5) + "}+((\\.[0-9]{0," + (5) + "})?)||(\\.)?")
-
-    private class DecimalDigitsInputFilter() : InputFilter {
-
-      override fun filter(
-        source: CharSequence,
-        start: Int,
-        end: Int,
-        dest: Spanned,
-        dStart: Int,
-        dEnd: Int
-      ): CharSequence? {
-        val matcher = PATTERN.matcher(dest)
-        return if (!matcher.matches()) "" else null
-      }
-    }
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
@@ -77,9 +62,6 @@ class AddPositionActivity : BaseActivity() {
 
     addButton.setOnClickListener { onAddClicked() }
 
-    price.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter())
-    shares.filters = arrayOf<InputFilter>(DecimalDigitsInputFilter())
-
     positionsHolder.removeAllViews()
     val position = stocksProvider.getPosition(ticker)
     position?.let {
@@ -100,16 +82,27 @@ class AddPositionActivity : BaseActivity() {
       var shares = 0f
       var success = true
       try {
-        price = priceText.toFloat()
+        val numberFormat: NumberFormat = NumberFormat.getNumberInstance()
+        price = numberFormat.parse(priceText)!!
+            .toFloat()
       } catch (e: NumberFormatException) {
         priceInputLayout.error = getString(R.string.invalid_number)
         success = false
       }
       try {
-        shares = sharesText.toFloat()
+        val numberFormat: NumberFormat = NumberFormat.getNumberInstance()
+        shares = numberFormat.parse(sharesText)!!
+            .toFloat()
       } catch (e: NumberFormatException) {
         sharesInputLayout.error = getString(R.string.invalid_number)
         success = false
+      }
+      // Check for zero shares.
+      if (success) {
+        if (shares == 0.0f) {
+          sharesInputLayout.error = getString(R.string.invalid_number)
+          success = false
+        }
       }
       if (success) {
         priceInputLayout.error = null
@@ -142,10 +135,19 @@ class AddPositionActivity : BaseActivity() {
     positionTotalValue.text = AppPreferences.DECIMAL_FORMAT.format(holding.totalValue())
     positionsHolder.addView(view)
     view.tag = holding
-    view.setOnClickListener {
-      stocksProvider.removePosition(ticker, holding)
-      positionsHolder.removeView(view)
-      updateTotal()
+    // Remove entry when right side 'x' icon is clicked.
+    view.remove_position.setOnClickListener {
+      AlertDialog.Builder(this)
+          .setTitle(R.string.remove)
+          .setMessage(getString(R.string.remove_holding, "${holding.shares}@${holding.price}"))
+          .setPositiveButton(R.string.remove) { dialog, _ ->
+            stocksProvider.removePosition(ticker, holding)
+            positionsHolder.removeView(view)
+            updateTotal()
+            dialog.dismiss()
+          }
+          .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
+          .show()
     }
   }
 

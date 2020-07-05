@@ -5,8 +5,10 @@ import androidx.room.withTransaction
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
+import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -48,9 +50,12 @@ class StocksStorage {
       return@withContext quotesWithHoldings.map { quoteWithHoldings ->
         val quote = quoteWithHoldings.quote.toQuote()
         val holdings = quoteWithHoldings.holdings.map { holdingTable ->
-          Holding(holdingTable.quoteSymbol, holdingTable.shares, holdingTable.price, holdingTable.id!!)
+          Holding(
+              holdingTable.quoteSymbol, holdingTable.shares, holdingTable.price, holdingTable.id!!
+          )
         }
         quote.position = Position(quote.symbol, holdings.toMutableList())
+        quote.properties = quoteWithHoldings.properties?.toProperties()
         quote
       }
     }
@@ -63,10 +68,14 @@ class StocksStorage {
   suspend fun saveQuotes(quotes: List<Quote>) = withContext(Dispatchers.IO) {
     val quoteRows = quotes.map { it.toQuoteRow() }
     val positions = quotes.mapNotNull { it.position }
+    val properties = quotes.mapNotNull { it.properties }
     db.withTransaction {
       quoteDao.upsertQuotes(quoteRows)
       positions.forEach {
         quoteDao.upsertHoldings(it.symbol, it.toHoldingRows())
+      }
+      properties.forEach {
+        quoteDao.upsertProperties(it.toPropertiesRow())
       }
     }
   }
@@ -83,13 +92,29 @@ class StocksStorage {
     quoteDao.insertHolding(holding.toHoldingRow())
   }
 
-  suspend fun removeHolding(ticker: String, holding: Holding) = db.withTransaction {
+  suspend fun removeHolding(
+    ticker: String,
+    holding: Holding
+  ) = db.withTransaction {
     quoteDao.deleteHolding(HoldingRow(holding.id, ticker, holding.shares, holding.price))
   }
 
+  suspend fun upsertProperties(
+    properties: Properties
+  ) = db.withTransaction {
+    quoteDao.upsertProperties(
+        PropertiesRow(
+            null, properties.symbol, properties.notes, properties.alertAbove, properties.alertBelow
+        )
+    )
+  }
+
   private fun Quote.toQuoteRow(): QuoteRow {
-    return QuoteRow(this.symbol, this.name, this.lastTradePrice, this.changeInPercent,
-        this.change, this.stockExchange, this.currency, this.description)
+    return QuoteRow(
+        this.symbol, this.name, this.lastTradePrice, this.changeInPercent,
+        this.change, this.stockExchange, this.currency,
+        this.isPostMarket, this.annualDividendRate, this.annualDividendYield
+    )
   }
 
   private fun Position.toHoldingRows(): List<HoldingRow> {
@@ -110,7 +135,18 @@ class StocksStorage {
     quote.change = this.change
     quote.stockExchange = this.stockExchange
     quote.currency = this.currency
-    quote.description = this.description
+    quote.isPostMarket = this.isPostMarket
+    quote.annualDividendRate = this.annualDividendRate
+    quote.annualDividendYield = this.annualDividendYield
+
     return quote
+  }
+
+  private fun PropertiesRow.toProperties(): Properties {
+    return Properties(this.quoteSymbol, this.notes, this.alertAbove, this.alertBelow)
+  }
+
+  private fun Properties.toPropertiesRow(): PropertiesRow {
+    return PropertiesRow(this.id, this.symbol, this.notes, this.alertAbove, this.alertBelow)
   }
 }

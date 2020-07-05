@@ -43,6 +43,16 @@
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name="com.github.premnirmal.ticker.portfolio.AddNotesActivity"
+            android:label="@string/add_notes"
+            android:theme="@style/AddPositionTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.github.premnirmal.ticker.portfolio.AddAlertsActivity"
+            android:label="@string/add_alerts"
+            android:theme="@style/AddPositionTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
             android:label="@string/action_Settings"
             android:theme="@style/WidgetSettingsTheme"
@@ -59,7 +69,8 @@
         <activity
             android:name="com.github.premnirmal.ticker.news.QuoteDetailActivity"
             android:label="@string/news_feed"
-            android:theme="@style/NewsFeedActivityTheme" />
+            android:theme="@style/NewsFeedActivityTheme"
+            android:parentActivityName="com.github.premnirmal.ticker.home.ParanormalActivity" />
         <activity
             android:name="com.github.premnirmal.ticker.news.GraphActivity"
             android:screenOrientation="landscape"

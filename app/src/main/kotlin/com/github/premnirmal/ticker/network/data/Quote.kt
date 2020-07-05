@@ -14,7 +14,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   companion object {
 
     @JvmField
-    val CREATOR = object: Creator<Quote> {
+    val CREATOR = object : Creator<Quote> {
       override fun createFromParcel(parcel: Parcel): Quote {
         return Quote(parcel)
       }
@@ -38,11 +38,32 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   var lastTradePrice: Float = 0.toFloat()
   var changeInPercent: Float = 0.toFloat()
   var change: Float = 0.toFloat()
+  var isPostMarket: Boolean = false
   var stockExchange: String = ""
   var currency: String = ""
-  var description: String = ""
+  var annualDividendRate: Float = 0.toFloat()
+  var annualDividendYield: Float = 0.toFloat()
 
   var position: Position? = null
+  var properties: Properties? = null
+
+  fun isAlertAbove(): Boolean =
+    this.properties != null && this.properties?.alertAbove!! > 0.0f && this.properties?.alertAbove!! < this.lastTradePrice
+
+  fun isAlertBelow(): Boolean =
+    this.properties != null && this.properties?.alertBelow!! > 0.0f && this.properties?.alertBelow!! > this.lastTradePrice
+
+  fun getAlertAbove(): Float = if (this.properties == null) {
+    0.0f
+  } else {
+    this.properties?.alertAbove!!
+  }
+
+  fun getAlertBelow(): Float = if (this.properties == null) {
+    0.0f
+  } else {
+    this.properties?.alertBelow!!
+  }
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
@@ -56,7 +77,8 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     return changeString
   }
 
-  fun changePercentString(): String = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
+  fun changePercentString(): String =
+    "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
 
   fun changePercentStringWithSign(): String {
     val changeString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
@@ -135,10 +157,13 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     lastTradePrice = parcel.readFloat()
     changeInPercent = parcel.readFloat()
     change = parcel.readFloat()
+    isPostMarket = parcel.readInt() != 0
     stockExchange = parcel.readString()!!
     currency = parcel.readString()!!
-    description = parcel.readString()!!
+    annualDividendRate = parcel.readFloat()
+    annualDividendYield = parcel.readFloat()
     position = parcel.readParcelable(Position::class.java.classLoader)
+    properties = parcel.readParcelable(Properties::class.java.classLoader)
   }
 
   override fun writeToParcel(
@@ -150,10 +175,13 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     parcel.writeFloat(lastTradePrice)
     parcel.writeFloat(changeInPercent)
     parcel.writeFloat(change)
+    parcel.writeInt(if (isPostMarket) 1 else 0)
     parcel.writeString(stockExchange)
     parcel.writeString(currency)
-    parcel.writeString(description)
+    parcel.writeFloat(annualDividendRate)
+    parcel.writeFloat(annualDividendYield)
     parcel.writeParcelable(position, flags)
+    parcel.writeParcelable(properties, flags)
   }
 
   override fun describeContents(): Int {

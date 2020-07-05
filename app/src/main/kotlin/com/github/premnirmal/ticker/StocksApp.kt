@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
+import com.github.premnirmal.ticker.home.NotificationChannelFactory
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -52,6 +53,8 @@ open class StocksApp : MultiDexApplication() {
       initStetho()
     }
     initNewsCache()
+    // Setup the notification channel.
+    NotificationChannelFactory(this)
   }
 
   open fun initStetho() {

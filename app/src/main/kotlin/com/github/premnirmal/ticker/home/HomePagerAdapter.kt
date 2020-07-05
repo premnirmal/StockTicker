@@ -41,6 +41,7 @@ class HomePagerAdapter(fm: androidx.fragment.app.FragmentManager) : FragmentPage
     }
   }
 
-  override fun getPageWidth(position: Int): Float =
-    if (count > 1) 0.95f else super.getPageWidth(position)
+  // TODO: check what the reason for this is. Breaks the layout on my phone (Pixel 3).
+//  override fun getPageWidth(position: Int): Float =
+//    if (count > 1) 0.95f else super.getPageWidth(position)
 }
