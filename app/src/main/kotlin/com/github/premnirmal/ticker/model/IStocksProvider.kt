@@ -41,6 +41,8 @@ interface IStocksProvider {
 
   fun addStocks(symbols: Collection<String>): Collection<String>
 
+  fun hasPositions(): Boolean
+
   fun hasPosition(ticker: String): Boolean
 
   fun getPosition(ticker: String): Position?

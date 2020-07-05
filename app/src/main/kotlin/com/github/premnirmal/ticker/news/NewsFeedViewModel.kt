@@ -26,7 +26,7 @@ class NewsFeedViewModel(application: Application) : AndroidViewModel(application
 
   fun fetchNews(forceRefresh: Boolean = false) {
     viewModelScope.launch {
-      val result = newsProvider.fetchBusinessNews(useCache = !forceRefresh)
+      val result = newsProvider.fetchMarketNews(useCache = !forceRefresh)
       _newsFeed.value = result
     }
   }

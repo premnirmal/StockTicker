@@ -217,6 +217,7 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"
   implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$LIFECYCLE_VERSION"
+  implementation "androidx.lifecycle:lifecycle-livedata-ktx:$LIFECYCLE_VERSION"
   implementation "androidx.lifecycle:lifecycle-common-java8:$LIFECYCLE_VERSION"
 
   implementation "com.jakewharton.threetenabp:threetenabp:1.2.2"
@@ -262,4 +263,5 @@ dependencies {
 configurations.all {
   resolutionStrategy.force 'org.objenesis:objenesis:2.5.1'
   resolutionStrategy.force "org.ow2.asm:asm:7.0"
+  exclude group: 'xpp3', module: 'xpp3'
 }

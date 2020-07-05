@@ -34,6 +34,15 @@
     <item>2</item>
   </string-array>
 
+  <string-array name="widget_width_types">
+    <item>Défaut</item>
+    <item>Stock unique consécutif</item>
+  </string-array>
+  <string-array name="widget_width_values">
+    <item>0</item>
+    <item>1</item>
+  </string-array>
+
   <string-array name="backgrounds">
     <item>Transparent</item>
     <item>Translucide</item>

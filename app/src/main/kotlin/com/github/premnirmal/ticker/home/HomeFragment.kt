@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
@@ -13,11 +15,13 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_home.subtitle
+import kotlinx.android.synthetic.main.fragment_home.totalHoldings
+import kotlinx.android.synthetic.main.fragment_home.totalGain
+import kotlinx.android.synthetic.main.fragment_home.totalLoss
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
@@ -37,7 +41,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     fun showTutorial()
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var bus: AsyncBus
   override val simpleName: String = "HomeFragment"
@@ -45,11 +48,25 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
+  private lateinit var totalHoldingsViewModel: HomeViewModel
 
   private val subtitleText: String
     get() = getString(
-        R.string.last_and_next_fetch, stocksProvider.lastFetched(), stocksProvider.nextFetch()
+        R.string.last_and_next_fetch, totalHoldingsViewModel.lastFetched(), totalHoldingsViewModel.nextFetch()
     )
+
+  private val totalHoldingsText: String
+    get() {
+      return if (totalHoldingsViewModel.hasHoldings) {
+        val (totalHolding, totalQuotesWithPosition) = totalHoldingsViewModel.getTotalHoldings()
+        getString(R.string.total_holdings, totalHolding, totalQuotesWithPosition)
+      } else ""
+    }
+
+  private val totalGainLossText: Pair<String, String>
+    get() {
+      return totalHoldingsViewModel.getTotalGainLoss()
+    }
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -57,6 +74,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
     // Setup the notification channel.
     NotificationChannelFactory(context!!)
+    // Set up the ViewModel for the total holdings.
+    totalHoldingsViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application))
+        .get(HomeViewModel::class.java)
   }
 
   override fun onCreateView(
@@ -82,6 +102,10 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
     subtitle.text = subtitleText
+    totalHoldings.text = totalHoldingsText
+    val (totalGainStr, totalLossStr) = totalGainLossText
+    totalGain.text = totalGainStr
+    totalLoss.text = totalLossStr
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -106,6 +130,10 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.notifyDataSetChanged()
     subtitle.text = subtitleText
+    totalHoldings.text = totalHoldingsText
+    val (totalGainStr, totalLossStr) = totalGainLossText
+    totalGain.text = totalGainStr
+    totalLoss.text = totalLossStr
   }
 
   private fun fetch() {
@@ -115,12 +143,11 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
-          lifecycleScope.launch {
-            stocksProvider.fetch()
+          totalHoldingsViewModel.fetch().observe(this, Observer {
             attemptingFetch = false
             swipe_container?.isRefreshing = false
             update()
-          }
+          })
         } else {
           attemptingFetch = false
           InAppMessage.showMessage(requireActivity(), R.string.refresh_failed, error = true)

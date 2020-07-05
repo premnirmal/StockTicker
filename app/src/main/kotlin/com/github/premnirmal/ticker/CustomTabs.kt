@@ -16,6 +16,7 @@ object CustomTabs {
   private var packageNameToUse: String? = null
   private const val chromePackage = "com.android.chrome"
   private const val firefoxPreviewPackage = "org.mozilla.fenix"
+  private const val firefoxBetaPackage = "org.mozilla.firefox_beta"
   private const val firefoxPackage = "org.mozilla.firefox"
   private const val edgePackage = "com.microsoft.emmx"
 
@@ -81,6 +82,7 @@ object CustomTabs {
         packageNameToUse = defaultViewHandlerPackageName
       packagesSupportingCustomTabs.contains(chromePackage) -> packageNameToUse = chromePackage
       packagesSupportingCustomTabs.contains(edgePackage) -> packageNameToUse = edgePackage
+      packagesSupportingCustomTabs.contains(firefoxBetaPackage) -> packageNameToUse = firefoxBetaPackage
       packagesSupportingCustomTabs.contains(firefoxPreviewPackage) -> packageNameToUse = firefoxPreviewPackage
       packagesSupportingCustomTabs.contains(firefoxPackage) -> packageNameToUse = firefoxPackage
     }

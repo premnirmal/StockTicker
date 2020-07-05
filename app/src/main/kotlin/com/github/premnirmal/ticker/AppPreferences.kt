@@ -199,6 +199,7 @@ class AppPreferences {
     const val TEXT_COLOR = "TEXT_COLOR"
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
+    const val WIDGET_SIZE = "WIDGET_SIZE"
     const val BOLD_CHANGE = "BOLD_CHANGE"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"
