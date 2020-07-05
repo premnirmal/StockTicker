@@ -10,11 +10,9 @@ import com.github.premnirmal.ticker.debug.DbViewerActivity
 import com.github.premnirmal.ticker.debug.DbViewerViewModel
 import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomePagerAdapter
+import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
-import com.github.premnirmal.ticker.home.HomeViewModel
-import com.github.premnirmal.ticker.home.NotificationChannelFactory
-import com.github.premnirmal.ticker.home.NotificationsHandler
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
@@ -31,6 +29,7 @@ import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
+import com.github.premnirmal.ticker.portfolio.NotesViewModel
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
@@ -101,10 +100,6 @@ interface AppComponent {
 
   fun inject(generalProperties: GeneralProperties)
 
-  fun inject(notificationsHandler: NotificationsHandler)
-
-  fun inject(notificationChannelFactory: NotificationChannelFactory)
-
   // Network
 
   fun inject(stocksApi: StocksApi)
@@ -160,4 +155,6 @@ interface AppComponent {
   fun inject(newsFeedViewModel: NewsFeedViewModel)
 
   fun inject(totalHoldingsViewModel: HomeViewModel)
+
+  fun inject(notesViewModel: NotesViewModel)
 }

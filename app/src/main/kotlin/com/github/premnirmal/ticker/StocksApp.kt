@@ -8,7 +8,7 @@ import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
-import com.github.premnirmal.ticker.home.NotificationChannelFactory
+import com.github.premnirmal.ticker.home.NotificationsHandler
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -28,6 +28,7 @@ open class StocksApp : MultiDexApplication() {
     @Inject lateinit var analytics: Analytics
     @Inject lateinit var appPreferences: AppPreferences
     @Inject lateinit var newsProvider: NewsProvider
+    @Inject lateinit var notificationsHandler: NotificationsHandler
   }
 
   private val holder = InjectionHolder()
@@ -53,6 +54,7 @@ open class StocksApp : MultiDexApplication() {
       initStetho()
     }
     initNewsCache()
+    holder.notificationsHandler.initialize()
   }
 
   open fun initStetho() {

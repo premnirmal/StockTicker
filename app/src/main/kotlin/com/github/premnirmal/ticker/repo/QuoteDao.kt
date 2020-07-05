@@ -80,13 +80,13 @@ interface QuoteDao {
 
   @Transaction
   suspend fun upsertProperties(
-    Properties: PropertiesRow
+    propertiesRow: PropertiesRow
   ) {
-    if (!Properties.quoteSymbol.isNullOrEmpty()) {
-      deletePropertiesByQuoteId(Properties.quoteSymbol)
+    if (propertiesRow.quoteSymbol.isNotEmpty()) {
+      deletePropertiesByQuoteId(propertiesRow.quoteSymbol)
     }
-    if (!Properties.notes.isNullOrEmpty() || Properties.alertAbove > 0.0f || Properties.alertBelow > 0.0f) {
-      insertProperties(Properties)
+    if (propertiesRow.notes.isNotEmpty() || propertiesRow.alertAbove > 0.0f || propertiesRow.alertBelow > 0.0f) {
+      insertProperties(propertiesRow)
     }
   }
 

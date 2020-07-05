@@ -13,11 +13,12 @@ import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.github.premnirmal.ticker.components.AsyncBus
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.FetchedEvent
-import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
+import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.Dispatchers
@@ -26,20 +27,27 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.absoluteValue
 
-object NotificationsHandler {
+@Singleton
+class NotificationsHandler @Inject constructor(
+  private val context: Context,
+  private val bus: AsyncBus,
+  private val stocksProvider: IStocksProvider,
+  private val stocksStorage: StocksStorage
+) {
 
-  @Inject lateinit var context: Context
-  @Inject lateinit var bus: AsyncBus
-  @Inject lateinit var stocksProvider: StocksProvider
+  companion object {
+    const val CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
+  }
 
   private val notificationFactory: NotificationFactory by lazy {
     NotificationFactory(context)
   }
 
-  init {
-    Injector.appComponent.inject(this)
+  fun initialize() {
+    createChannels()
     GlobalScope.launch(Dispatchers.Default) {
       val flow = bus.receive<FetchedEvent>()
       flow.collect {
@@ -48,40 +56,14 @@ object NotificationsHandler {
     }
   }
 
-  private fun checkAlerts() {
-    val portfolio: List<Quote> = stocksProvider.getPortfolio()
-    for (quote in portfolio) {
-      if (quote.hasAlertAbove()) {
-        notificationFactory.sendNotification(quote)
-        // Remove alert.
-        upsertAlertAbove(quote.symbol, 0.0f)
-      } else if (quote.hasAlertBelow()) {
-        notificationFactory.sendNotification(quote)
-        // Remove alert.
-        upsertAlertBelow(quote.symbol, 0.0f)
-      } else if (quote.changeInPercent.absoluteValue >= 10f) {
-        notificationFactory.sendNotification(quote)
-      }
-    }
-  }
-}
-
-object NotificationChannelFactory {
-
-  const val CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
-
-  @Inject
-  lateinit var context: Context
-
-  init {
-    Injector.appComponent.inject(this)
+  private fun createChannels() {
     // Create the NotificationChannel, but only on API 26+ because
     // the NotificationChannel class is new and not in the support library
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
       val name = "Alerts"
       val descriptionText = "StockTicker Alerts"
       val importance = NotificationManager.IMPORTANCE_DEFAULT
-      val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+      val channel = NotificationChannel(NotificationsHandler.CHANNEL_ID, name, importance).apply {
         description = descriptionText
         setShowBadge(true)
         lockscreenVisibility = Notification.VISIBILITY_PUBLIC
@@ -89,6 +71,39 @@ object NotificationChannelFactory {
       // Register the channel with the system
       NotificationManagerCompat.from(context)
           .createNotificationChannel(channel)
+    }
+  }
+
+  private suspend fun checkAlerts() {
+    val portfolio: List<Quote> = stocksProvider.getPortfolio()
+    for (quote in portfolio) {
+      if (quote.hasAlertAbove()) {
+        notificationFactory.sendNotification(quote)
+        // Remove alert.
+        with(quote) {
+          if (properties == null) {
+            properties = Properties(symbol)
+          }
+          properties!!
+        }.also {
+          it.alertAbove = 0.0f
+          stocksStorage.saveQuoteProperties(it)
+        }
+      } else if (quote.hasAlertBelow()) {
+        notificationFactory.sendNotification(quote)
+        // Remove alert.
+        with(quote) {
+          if (properties == null) {
+            properties = Properties(symbol)
+          }
+          properties!!
+        }.also {
+          it.alertBelow = 0.0f
+          stocksStorage.saveQuoteProperties(it)
+        }
+      } else if (quote.changeInPercent.absoluteValue >= 10f) {
+        notificationFactory.sendNotification(quote)
+      }
     }
   }
 }
@@ -105,18 +120,14 @@ private class NotificationFactory(private val context: Context) {
     title: String,
     body: String
   ): Builder {
-    return Builder(context, NotificationChannelFactory.CHANNEL_ID)
+    return Builder(context, NotificationsHandler.CHANNEL_ID)
         .setSmallIcon(R.mipmap.ic_splash)
-        .setContentTitle(
-            title
-        )
+        .setContentTitle(title)
         .setStyle(
             NotificationCompat.BigTextStyle()
                 .bigText(body)
         )
-        .setDefaults(
-            NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE
-        )
+        .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setAutoCancel(true)
   }
@@ -148,11 +159,10 @@ private class NotificationFactory(private val context: Context) {
         }
     with(NotificationManagerCompat.from(context)) {
       // NotificationId is a unique int for each notification.
-      notify(
-          notificationId, createNotificationBuilder(title, text)
+      val notification = createNotificationBuilder(title, text)
           .setContentIntent(pendingIntent)
           .build()
-      )
+      notify(notificationId, notification)
     }
   }
 }

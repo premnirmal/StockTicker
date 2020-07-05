@@ -10,12 +10,10 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.home.NotificationFactory
 import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
-import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -292,56 +290,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       quote?.position = position
       launch {
         storage.removeHolding(ticker, holding)
-      }
-    }
-  }
-
-  override fun upsertNotes(
-    ticker: String,
-    notes: String
-  ) {
-    synchronized(quoteMap) {
-      val quote = quoteMap[ticker]
-      if (quote?.properties == null) {
-        quote?.properties = Properties(ticker)
-      }
-      quote?.properties?.notes = notes
-      launch {
-        storage.upsertProperties(quote?.properties!!)
-      }
-    }
-  }
-
-  override fun upsertAlertAbove(
-    ticker: String,
-    alertAbove: Float
-  ) {
-    synchronized(quoteMap) {
-      val quote = quoteMap[ticker]
-      if (quote?.properties == null) {
-        quote?.properties = Properties(ticker)
-      }
-      quote?.properties?.alertAbove = alertAbove
-
-      launch {
-        storage.upsertProperties(quote?.properties!!)
-      }
-    }
-  }
-
-  override fun upsertAlertBelow(
-    ticker: String,
-    alertBelow: Float
-  ) {
-    synchronized(quoteMap) {
-      val quote = quoteMap[ticker]
-      if (quote?.properties == null) {
-        quote?.properties = Properties(ticker)
-      }
-      quote?.properties?.alertBelow = alertBelow
-
-      launch {
-        storage.upsertProperties(quote?.properties!!)
       }
     }
   }

@@ -99,14 +99,10 @@ class StocksStorage {
     quoteDao.deleteHolding(HoldingRow(holding.id, ticker, holding.shares, holding.price))
   }
 
-  suspend fun upsertProperties(
+  suspend fun saveQuoteProperties(
     properties: Properties
   ) = db.withTransaction {
-    quoteDao.upsertProperties(
-        PropertiesRow(
-            null, properties.symbol, properties.notes, properties.alertAbove, properties.alertBelow
-        )
-    )
+    quoteDao.upsertProperties(properties.toPropertiesRow())
   }
 
   private fun Quote.toQuoteRow(): QuoteRow {
