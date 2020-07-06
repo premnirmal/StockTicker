@@ -33,7 +33,7 @@ class AddNotesActivity : BaseActivity() {
       finish()
     }
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-      ticker = intent.getStringExtra(TICKER)
+      ticker = intent.getStringExtra(TICKER)!!
     } else {
       ticker = ""
       InAppMessage.showToast(this, R.string.error_symbol)
@@ -44,7 +44,7 @@ class AddNotesActivity : BaseActivity() {
 
     val quote = stocksProvider.getStock(ticker)
     if (quote?.properties != null) {
-      notesInputEditText.setText(quote?.properties!!.notes)
+      notesInputEditText.setText(quote.properties!!.notes)
     }
 
     addButton.setOnClickListener { onUpdateClicked() }

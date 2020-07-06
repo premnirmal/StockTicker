@@ -38,7 +38,7 @@ class AddAlertsActivity : BaseActivity() {
       finish()
     }
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-      ticker = intent.getStringExtra(TICKER)
+      ticker = intent.getStringExtra(TICKER)!!
     } else {
       ticker = ""
       InAppMessage.showToast(this, R.string.error_symbol)
@@ -85,14 +85,14 @@ class AddAlertsActivity : BaseActivity() {
       }
     }
 
-    if (alertAbove!! > 0.0f && alertBelow!! > 0.0f) {
+    if (alertAbove > 0.0f && alertBelow > 0.0f) {
       if (alertAboveInputEditText.isFocused) {
-        if (success && alertBelow != null && alertBelow!! >= alertAbove) {
+        if (success && alertBelow >= alertAbove) {
           alertAboveInputLayout.error = getString(R.string.alert_below_error)
           success = false
         }
       } else {
-        if (success && alertAbove != null && alertBelow >= alertAbove!!) {
+        if (success && alertBelow >= alertAbove) {
           alertBelowInputLayout.error = getString(R.string.alert_above_error)
           success = false
         }

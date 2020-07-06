@@ -26,12 +26,12 @@ class NotificationFactory(
 ) {
   private val notificationId: Int = NotificationID.Id
 
-  val intent = Intent(context!!, QuoteDetailActivity::class.java).apply {
+  val intent = Intent(context, QuoteDetailActivity::class.java).apply {
     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     putExtra(QuoteDetailActivity.TICKER, symbol)
   }
 
-  private val pendingIntent: PendingIntent? = TaskStackBuilder.create(context!!)
+  private val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
       .run {
         // Add the intent, which inflates the back stack
         addNextIntentWithParentStack(intent)
@@ -40,7 +40,7 @@ class NotificationFactory(
       }
 
   private val notificationBuilder: Builder =
-    Builder(context!!, AppPreferences.CHANNEL_ID)
+    Builder(context, AppPreferences.CHANNEL_ID)
         .setSmallIcon(R.mipmap.ic_splash)
         .setContentTitle(
             title
@@ -57,7 +57,7 @@ class NotificationFactory(
         .setAutoCancel(true)
 
   fun sendNotification() {
-    with(NotificationManagerCompat.from(context!!)) {
+    with(NotificationManagerCompat.from(context)) {
       // NotificationId is a unique int for each notification.
       notify(notificationId, notificationBuilder.build())
     }
