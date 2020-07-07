@@ -191,6 +191,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
           synchronized(tickers) {
             tickers.addAll(fetchedStocks.map { it.symbol })
           }
+          fetchedStocks.first().changeInPercent = 12f
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
           lastFetched = api.lastFetched

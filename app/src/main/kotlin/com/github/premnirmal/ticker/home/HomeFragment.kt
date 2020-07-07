@@ -1,10 +1,13 @@
 package com.github.premnirmal.ticker.home
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -18,10 +21,8 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.layout
 import kotlinx.android.synthetic.main.fragment_home.subtitle
-import kotlinx.android.synthetic.main.fragment_home.totalHoldings
-import kotlinx.android.synthetic.main.fragment_home.totalGain
-import kotlinx.android.synthetic.main.fragment_home.totalLoss
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
@@ -48,33 +49,30 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
-  private lateinit var totalHoldingsViewModel: HomeViewModel
+  private lateinit var viewModel: HomeViewModel
 
   private val subtitleText: String
     get() = getString(
-        R.string.last_and_next_fetch, totalHoldingsViewModel.lastFetched(), totalHoldingsViewModel.nextFetch()
+        R.string.last_and_next_fetch, viewModel.lastFetched(), viewModel.nextFetch()
     )
 
   private val totalHoldingsText: String
     get() {
-      return if (totalHoldingsViewModel.hasHoldings) {
-        val (totalHolding, totalQuotesWithPosition) = totalHoldingsViewModel.getTotalHoldings()
+      return if (viewModel.hasHoldings) {
+        val (totalHolding, totalQuotesWithPosition) = viewModel.getTotalHoldings()
         getString(R.string.total_holdings, totalHolding, totalQuotesWithPosition)
       } else ""
     }
 
   private val totalGainLossText: Pair<String, String>
-    get() {
-      return totalHoldingsViewModel.getTotalGainLoss()
-    }
+    get() = viewModel.getTotalGainLoss()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
 
     // Set up the ViewModel for the total holdings.
-    totalHoldingsViewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application))
-        .get(HomeViewModel::class.java)
+    viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
   }
 
   override fun onCreateView(
@@ -100,10 +98,28 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     view_pager.adapter = adapter
     tabs.setupWithViewPager(view_pager)
     subtitle.text = subtitleText
-    totalHoldings.text = totalHoldingsText
+    toolbar.setOnMenuItemClickListener {
+      showTotalHoldingsPopup()
+      true
+    }
+    toolbar.menu.findItem(R.id.total_holdings).apply {
+      isVisible = viewModel.hasHoldings
+      isEnabled = viewModel.hasHoldings
+    }
+  }
+
+  private fun showTotalHoldingsPopup() {
+    val popupWindow = PopupWindow(requireContext(), null)
+    val popupView = LayoutInflater.from(requireContext())
+        .inflate(layout.layout_holdings_popup, null)
+    popupWindow.contentView = popupView
+    popupWindow.isOutsideTouchable = true
+    popupWindow.setBackgroundDrawable(resources.getDrawable(R.drawable.card_bg))
+    popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
     val (totalGainStr, totalLossStr) = totalGainLossText
-    totalGain.text = totalGainStr
-    totalLoss.text = totalLossStr
+    popupView.findViewById<TextView>(R.id.totalGain).text = totalGainStr
+    popupView.findViewById<TextView>(R.id.totalLoss).text = totalLossStr
+    popupWindow.showAtLocation(toolbar, Gravity.TOP, toolbar.width / 2, toolbar.height)
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -128,10 +144,10 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.notifyDataSetChanged()
     subtitle.text = subtitleText
-    totalHoldings.text = totalHoldingsText
-    val (totalGainStr, totalLossStr) = totalGainLossText
-    totalGain.text = totalGainStr
-    totalLoss.text = totalLossStr
+    toolbar.menu.findItem(R.id.total_holdings).apply {
+      isVisible = viewModel.hasHoldings
+      isEnabled = viewModel.hasHoldings
+    }
   }
 
   private fun fetch() {
@@ -141,7 +157,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
-          totalHoldingsViewModel.fetch().observe(this, Observer {
+          viewModel.fetch().observe(this, Observer {
             attemptingFetch = false
             swipe_container?.isRefreshing = false
             update()

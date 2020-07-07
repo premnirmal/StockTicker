@@ -50,7 +50,7 @@
           android:contentDescription="@string/expand"
           android:onClick="openGraph"
           android:padding="8dp"
-          android:src="@drawable/ic_expand"
+          android:src="@drawable/ic_enlarge"
           android:tint="@color/icon_tint"
           />
 
@@ -267,64 +267,6 @@
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:id="@+id/notes_header"
-          android:layout_marginBottom="8dp"
-          android:layout_marginEnd="16dp"
-          android:layout_marginStart="16dp"
-          android:layout_marginTop="8dp"
-          android:orientation="horizontal"
-          >
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:text="@string/notes"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
-            />
-
-        <ImageView
-            android:id="@+id/edit_notes"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_edit"
-            android:tint="@color/icon_tint"
-            />
-
-      </LinearLayout>
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:id="@+id/notes_container"
-          android:visibility="gone"
-          android:layout_margin="8dp"
-          android:background="@drawable/card_bg"
-          android:orientation="vertical"
-          >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-
-          <TextView
-              android:id="@+id/notes_display"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_margin="8dp"
-              />
-      </LinearLayout>
-
-      </LinearLayout>
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
           android:id="@+id/alert_header"
           android:layout_marginBottom="8dp"
           android:layout_marginEnd="16dp"
@@ -363,13 +305,6 @@
           android:orientation="vertical"
           >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            >
-        </LinearLayout>
-
         <com.github.premnirmal.ticker.ui.StockFieldView
             android:id="@+id/alert_above"
             android:layout_width="match_parent"
@@ -392,6 +327,59 @@
             app:name="@string/alert_below"
             app:or="horizontal"
             app:size="@dimen/larger_text"
+            />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/notes_header"
+          android:layout_marginBottom="8dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="8dp"
+          android:orientation="horizontal"
+          >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/notes"
+            android:textSize="@dimen/thin_title_text"
+            style="@style/ThinTitleTextView"
+            />
+
+        <ImageView
+            android:id="@+id/edit_notes"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_edit"
+            android:tint="@color/icon_tint"
+            />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/notes_container"
+          android:visibility="gone"
+          android:layout_margin="8dp"
+          android:orientation="vertical"
+          >
+
+        <TextView
+            android:id="@+id/notes_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
             />
 
       </LinearLayout>

@@ -36,7 +36,6 @@ import kotlinx.android.synthetic.main.activity_quote_detail.alerts_container
 import kotlinx.android.synthetic.main.activity_quote_detail.average_price
 import kotlinx.android.synthetic.main.activity_quote_detail.change
 import kotlinx.android.synthetic.main.activity_quote_detail.day_change
-import kotlinx.android.synthetic.main.activity_quote_detail.edit_positions
 import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
 import kotlinx.android.synthetic.main.activity_quote_detail.exchange
 import kotlinx.android.synthetic.main.activity_quote_detail.graphView
@@ -320,7 +319,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         notes_container.visibility = View.GONE
       } else {
         notes_container.visibility = View.VISIBLE
-        notes_display.setText(notesText)
+        notes_display.text = notesText
       }
 
       val alertAbove = quote.getAlertAbove()

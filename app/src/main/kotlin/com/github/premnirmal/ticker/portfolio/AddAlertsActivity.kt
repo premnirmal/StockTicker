@@ -3,21 +3,20 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.lifecycle.ViewModelProvider
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputEditText
 import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputLayout
 import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputEditText
 import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputLayout
-import kotlinx.android.synthetic.main.activity_notes.addButton
-import kotlinx.android.synthetic.main.activity_notes.tickerName
-import kotlinx.android.synthetic.main.activity_notes.toolbar
+import kotlinx.android.synthetic.main.activity_alerts.addButton
+import kotlinx.android.synthetic.main.activity_alerts.tickerName
+import kotlinx.android.synthetic.main.activity_alerts.toolbar
 import java.text.NumberFormat
-import javax.inject.Inject
 
 class AddAlertsActivity : BaseActivity() {
 
@@ -26,8 +25,8 @@ class AddAlertsActivity : BaseActivity() {
     const val TICKER = "TICKER"
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
   internal lateinit var ticker: String
+  private lateinit var viewModel: AlertsViewModel
   override val simpleName: String = "AddAlertsActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,20 +37,30 @@ class AddAlertsActivity : BaseActivity() {
       finish()
     }
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-      ticker = intent.getStringExtra(TICKER)
+      ticker = intent.getStringExtra(TICKER)!!
     } else {
       ticker = ""
       InAppMessage.showToast(this, R.string.error_symbol)
       finish()
       return
     }
+    viewModel = ViewModelProvider(this).get(AlertsViewModel::class.java)
+    viewModel.symbol = ticker
     tickerName.text = ticker
 
-    val quote = stocksProvider.getStock(ticker)
-    val alertAbove = quote?.getAlertAbove()
-    alertAboveInputEditText.setText(Quote.selectedFormat.format(alertAbove))
-    val alertBelow = quote?.getAlertBelow()
-    alertBelowInputEditText.setText(Quote.selectedFormat.format(alertBelow))
+    val quote = viewModel.quote
+    val alertAbove = quote?.getAlertAbove() ?: 0f
+    if (alertAbove != 0.0f) {
+      alertAboveInputEditText.setText(Quote.selectedFormat.format(alertAbove))
+    } else {
+      alertAboveInputEditText.setText("")
+    }
+    val alertBelow = quote?.getAlertBelow() ?: 0f
+    if (alertBelow != 0.0f) {
+      alertBelowInputEditText.setText(Quote.selectedFormat.format(alertBelow))
+    } else {
+      alertBelowInputEditText.setText("")
+    }
 
     addButton.setOnClickListener { onAddClicked() }
   }
@@ -85,22 +94,21 @@ class AddAlertsActivity : BaseActivity() {
       }
     }
 
-    if (alertAbove!! > 0.0f && alertBelow!! > 0.0f) {
+    if (alertAbove > 0.0f && alertBelow > 0.0f) {
       if (alertAboveInputEditText.isFocused) {
-        if (success && alertBelow != null && alertBelow!! >= alertAbove) {
+        if (success && alertBelow >= alertAbove) {
           alertAboveInputLayout.error = getString(R.string.alert_below_error)
           success = false
         }
       } else {
-        if (success && alertAbove != null && alertBelow >= alertAbove!!) {
+        if (success && alertBelow >= alertAbove) {
           alertBelowInputLayout.error = getString(R.string.alert_above_error)
           success = false
         }
       }
     }
     if (success) {
-      stocksProvider.upsertAlertAbove(ticker, alertAbove)
-      stocksProvider.upsertAlertBelow(ticker, alertBelow)
+      viewModel.setAlerts(alertAbove, alertBelow)
       updateActivityResult()
       dismissKeyboard()
       finish()
@@ -108,7 +116,7 @@ class AddAlertsActivity : BaseActivity() {
   }
 
   private fun updateActivityResult() {
-    val quote = checkNotNull(stocksProvider.getStock(ticker))
+    val quote = checkNotNull(viewModel.quote)
     val data = Intent()
     data.putExtra(QUOTE, quote)
     setResult(Activity.RESULT_OK, data)

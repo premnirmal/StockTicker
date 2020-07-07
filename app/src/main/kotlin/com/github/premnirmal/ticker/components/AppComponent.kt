@@ -29,6 +29,7 @@ import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
+import com.github.premnirmal.ticker.portfolio.AlertsViewModel
 import com.github.premnirmal.ticker.portfolio.NotesViewModel
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
@@ -157,4 +158,6 @@ interface AppComponent {
   fun inject(totalHoldingsViewModel: HomeViewModel)
 
   fun inject(notesViewModel: NotesViewModel)
+
+  fun inject(alertsViewModel: AlertsViewModel)
 }

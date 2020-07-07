@@ -10,7 +10,7 @@ import com.github.premnirmal.ticker.repo.StocksStorage
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NotesViewModel : ViewModel() {
+class AlertsViewModel : ViewModel() {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var stocksStorage: StocksStorage
@@ -23,12 +23,17 @@ class NotesViewModel : ViewModel() {
     Injector.appComponent.inject(this)
   }
 
-  fun setNotes(notesText: String) {
+  fun setAlerts(
+    alertAbove: Float,
+    alertBelow: Float
+  ) {
     viewModelScope.launch {
       quote?.let {
         val properties = it.properties ?: Properties(symbol)
-        it.properties = properties
-        properties.notes = notesText
+        it.properties = properties.apply {
+          this.alertAbove = alertAbove
+          this.alertBelow = alertBelow
+        }
         stocksStorage.saveQuoteProperties(properties)
       }
     }

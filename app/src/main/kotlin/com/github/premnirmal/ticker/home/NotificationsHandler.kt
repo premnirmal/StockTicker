@@ -78,7 +78,7 @@ class NotificationsHandler @Inject constructor(
     val portfolio: List<Quote> = stocksProvider.getPortfolio()
     for (quote in portfolio) {
       if (quote.hasAlertAbove()) {
-        notificationFactory.sendNotification(quote)
+        notificationFactory.sendNotificationForRise(quote)
         // Remove alert.
         with(quote) {
           if (properties == null) {
@@ -90,7 +90,7 @@ class NotificationsHandler @Inject constructor(
           stocksStorage.saveQuoteProperties(it)
         }
       } else if (quote.hasAlertBelow()) {
-        notificationFactory.sendNotification(quote)
+        notificationFactory.sendNotificationForFall(quote)
         // Remove alert.
         with(quote) {
           if (properties == null) {
@@ -102,7 +102,7 @@ class NotificationsHandler @Inject constructor(
           stocksStorage.saveQuoteProperties(it)
         }
       } else if (quote.changeInPercent.absoluteValue >= 10f) {
-        notificationFactory.sendNotification(quote)
+        notificationFactory.sendGenericAlert(quote)
       }
     }
   }
@@ -118,10 +118,12 @@ private class NotificationFactory(private val context: Context) {
 
   private fun createNotificationBuilder(
     title: String,
-    body: String
+    body: String,
+    quote: Quote
   ): Builder {
+    val icon = if (quote.changeInPercent >= 0f) R.drawable.ic_trending_up else R.drawable.ic_trending_down
     return Builder(context, NotificationsHandler.CHANNEL_ID)
-        .setSmallIcon(R.mipmap.ic_splash)
+        .setSmallIcon(icon)
         .setContentTitle(title)
         .setStyle(
             NotificationCompat.BigTextStyle()
@@ -132,7 +134,7 @@ private class NotificationFactory(private val context: Context) {
         .setAutoCancel(true)
   }
 
-  fun sendNotification(
+  fun sendNotificationForRise(
     quote: Quote
   ) {
     val title = context.getString(
@@ -159,7 +161,67 @@ private class NotificationFactory(private val context: Context) {
         }
     with(NotificationManagerCompat.from(context)) {
       // NotificationId is a unique int for each notification.
-      val notification = createNotificationBuilder(title, text)
+      val notification = createNotificationBuilder(title, text, quote)
+          .setContentIntent(pendingIntent)
+          .build()
+      notify(notificationId, notification)
+    }
+  }
+
+  fun sendNotificationForFall(
+    quote: Quote
+  ) {
+    val title = context.getString(
+        R.string.alert_below_notification_title, quote.symbol,
+        Quote.selectedFormat.format(quote.properties!!.alertBelow),
+        Quote.selectedFormat.format(quote.lastTradePrice)
+    )
+    val text = context.getString(
+        R.string.alert_below_notification, quote.symbol, quote.name,
+        Quote.selectedFormat.format(quote.properties!!.alertBelow),
+        Quote.selectedFormat.format(quote.lastTradePrice)
+    )
+    val intent = Intent(context, QuoteDetailActivity::class.java).apply {
+      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+      putExtra(QuoteDetailActivity.TICKER, quote.symbol)
+    }
+    val notificationId = NotificationID.nextId
+    val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
+        .run {
+          // Add the intent, which inflates the back stack
+          addNextIntentWithParentStack(intent)
+          // Get the PendingIntent containing the entire back stack
+          getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+    with(NotificationManagerCompat.from(context)) {
+      // NotificationId is a unique int for each notification.
+      val notification = createNotificationBuilder(title, text, quote)
+          .setContentIntent(pendingIntent)
+          .build()
+      notify(notificationId, notification)
+    }
+  }
+
+  fun sendGenericAlert(
+    quote: Quote
+  ) {
+    val title = "${quote.symbol}"
+    val text = "${quote.changePercentStringWithSign()} ${quote.name}"
+    val intent = Intent(context, QuoteDetailActivity::class.java).apply {
+      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+      putExtra(QuoteDetailActivity.TICKER, quote.symbol)
+    }
+    val notificationId = NotificationID.nextId
+    val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
+        .run {
+          // Add the intent, which inflates the back stack
+          addNextIntentWithParentStack(intent)
+          // Get the PendingIntent containing the entire back stack
+          getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+    with(NotificationManagerCompat.from(context)) {
+      // NotificationId is a unique int for each notification.
+      val notification = createNotificationBuilder(title, text, quote)
           .setContentIntent(pendingIntent)
           .build()
       notify(notificationId, notification)

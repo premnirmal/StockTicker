@@ -161,4 +161,5 @@
   <string name="add_notes">Añadir notas</string>
   <string name="add_alerts">Añadir alertas</string>
   <string name="remove_holding">¿Está seguro de que desea eliminar la entrada %1$s de su cartera?</string>
+  <string name="save">Hecho</string>
 </resources>

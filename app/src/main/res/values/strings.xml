@@ -173,4 +173,5 @@
   <string name="add_notes">Add Notes</string>
   <string name="add_alerts">Add Alerts</string>
   <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
+  <string name="save">Save</string>
 </resources>

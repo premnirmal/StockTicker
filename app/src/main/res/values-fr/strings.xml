@@ -161,5 +161,6 @@
   <string name="alert_dismiss">Rejeter</string>
   <string name="add_notes">Ajouter des notess</string>
   <string name="add_alerts">Ajouter des alertes</string>
-  <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille ?</string>
+  <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille?</string>
+  <string name="save">Sauvegardez</string>
 </resources>
