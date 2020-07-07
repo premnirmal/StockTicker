@@ -25,7 +25,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -112,12 +111,6 @@ class NotificationsHandler @Inject constructor(
   }
 }
 
-private object NotificationID {
-  private val c: AtomicInteger = AtomicInteger(1)
-  val nextId: Int
-    get() = c.incrementAndGet()
-}
-
 private class NotificationFactory(private val context: Context) {
 
   private fun createNotificationBuilder(
@@ -151,25 +144,7 @@ private class NotificationFactory(private val context: Context) {
         Quote.selectedFormat.format(quote.properties!!.alertAbove),
         Quote.selectedFormat.format(quote.lastTradePrice)
     )
-    val intent = Intent(context, QuoteDetailActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-      putExtra(QuoteDetailActivity.TICKER, quote.symbol)
-    }
-    val notificationId = NotificationID.nextId
-    val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
-        .run {
-          // Add the intent, which inflates the back stack
-          addNextIntentWithParentStack(intent)
-          // Get the PendingIntent containing the entire back stack
-          getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
-    with(NotificationManagerCompat.from(context)) {
-      // NotificationId is a unique int for each notification.
-      val notification = createNotificationBuilder(title, text, quote)
-          .setContentIntent(pendingIntent)
-          .build()
-      notify(notificationId, notification)
-    }
+    sendNotification(quote, title, text)
   }
 
   fun sendNotificationForFall(
@@ -185,25 +160,7 @@ private class NotificationFactory(private val context: Context) {
         Quote.selectedFormat.format(quote.properties!!.alertBelow),
         Quote.selectedFormat.format(quote.lastTradePrice)
     )
-    val intent = Intent(context, QuoteDetailActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-      putExtra(QuoteDetailActivity.TICKER, quote.symbol)
-    }
-    val notificationId = NotificationID.nextId
-    val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
-        .run {
-          // Add the intent, which inflates the back stack
-          addNextIntentWithParentStack(intent)
-          // Get the PendingIntent containing the entire back stack
-          getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
-        }
-    with(NotificationManagerCompat.from(context)) {
-      // NotificationId is a unique int for each notification.
-      val notification = createNotificationBuilder(title, text, quote)
-          .setContentIntent(pendingIntent)
-          .build()
-      notify(notificationId, notification)
-    }
+    sendNotification(quote, title, text)
   }
 
   fun sendGenericAlert(
@@ -211,11 +168,19 @@ private class NotificationFactory(private val context: Context) {
   ) {
     val title = quote.symbol
     val text = "${quote.changePercentStringWithSign()} ${quote.name}"
+    sendNotification(quote, title, text)
+  }
+
+  private fun sendNotification(
+    quote: Quote,
+    title: String,
+    text: String
+  ) {
+    val notificationId = quote.symbol.hashCode()
     val intent = Intent(context, QuoteDetailActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
       putExtra(QuoteDetailActivity.TICKER, quote.symbol)
     }
-    val notificationId = NotificationID.nextId
     val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
         .run {
           // Add the intent, which inflates the back stack
