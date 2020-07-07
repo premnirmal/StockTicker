@@ -148,7 +148,7 @@ android {
       debuggable true
       versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
-      minifyEnabled false
+      minifyEnabled true
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }

@@ -63,7 +63,7 @@ class NotificationsHandler @Inject constructor(
       val name = "Alerts"
       val descriptionText = "StockTicker Alerts"
       val importance = NotificationManager.IMPORTANCE_DEFAULT
-      val channel = NotificationChannel(NotificationsHandler.CHANNEL_ID, name, importance).apply {
+      val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
         description = descriptionText
         setShowBadge(true)
         lockscreenVisibility = Notification.VISIBILITY_PUBLIC
@@ -77,32 +77,36 @@ class NotificationsHandler @Inject constructor(
   private suspend fun checkAlerts() {
     val portfolio: List<Quote> = stocksProvider.getPortfolio()
     for (quote in portfolio) {
-      if (quote.hasAlertAbove()) {
-        notificationFactory.sendNotificationForRise(quote)
-        // Remove alert.
-        with(quote) {
-          if (properties == null) {
-            properties = Properties(symbol)
+      when {
+        quote.hasAlertAbove() -> {
+          notificationFactory.sendNotificationForRise(quote)
+          // Remove alert.
+          with(quote) {
+            if (properties == null) {
+              properties = Properties(symbol)
+            }
+            properties!!
+          }.also {
+            it.alertAbove = 0.0f
+            stocksStorage.saveQuoteProperties(it)
           }
-          properties!!
-        }.also {
-          it.alertAbove = 0.0f
-          stocksStorage.saveQuoteProperties(it)
         }
-      } else if (quote.hasAlertBelow()) {
-        notificationFactory.sendNotificationForFall(quote)
-        // Remove alert.
-        with(quote) {
-          if (properties == null) {
-            properties = Properties(symbol)
+        quote.hasAlertBelow() -> {
+          notificationFactory.sendNotificationForFall(quote)
+          // Remove alert.
+          with(quote) {
+            if (properties == null) {
+              properties = Properties(symbol)
+            }
+            properties!!
+          }.also {
+            it.alertBelow = 0.0f
+            stocksStorage.saveQuoteProperties(it)
           }
-          properties!!
-        }.also {
-          it.alertBelow = 0.0f
-          stocksStorage.saveQuoteProperties(it)
         }
-      } else if (quote.changeInPercent.absoluteValue >= 10f) {
-        notificationFactory.sendGenericAlert(quote)
+        quote.changeInPercent.absoluteValue >= 10f -> {
+          notificationFactory.sendGenericAlert(quote)
+        }
       }
     }
   }
@@ -205,7 +209,7 @@ private class NotificationFactory(private val context: Context) {
   fun sendGenericAlert(
     quote: Quote
   ) {
-    val title = "${quote.symbol}"
+    val title = quote.symbol
     val text = "${quote.changePercentStringWithSign()} ${quote.name}"
     val intent = Intent(context, QuoteDetailActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
