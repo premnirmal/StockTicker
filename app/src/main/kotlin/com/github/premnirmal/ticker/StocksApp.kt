@@ -8,8 +8,8 @@ import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
-import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.network.NewsProvider
+import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -54,18 +54,22 @@ open class StocksApp : MultiDexApplication() {
       initStetho()
     }
     initNewsCache()
+    initNotificationHandler()
+  }
+
+  protected open fun initNotificationHandler() {
     holder.notificationsHandler.initialize()
   }
 
-  open fun initStetho() {
+  protected open fun initStetho() {
     StethoInitializer.initialize(this)
   }
 
-  open fun initThreeTen() {
+  protected open fun initThreeTen() {
     AndroidThreeTen.init(this)
   }
 
-  open fun createAppComponent(): AppComponent {
+  protected open fun createAppComponent(): AppComponent {
     return DaggerAppComponent.builder()
         .appModule(AppModule(this))
         .build()
