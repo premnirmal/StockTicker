@@ -163,4 +163,6 @@
   <string name="add_alerts">Ajouter des alertes</string>
   <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille?</string>
   <string name="save">Sauvegardez</string>
+  <string name="desc_channel_alerts">Alertes de stock</string>
+  <string name="desc_channel_summary">Résumé quotidien</string>
 </resources>

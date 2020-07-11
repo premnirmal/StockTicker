@@ -38,11 +38,16 @@ class NotificationsHandler @Inject constructor(
 ) {
 
   companion object {
-    const val CHANNEL_ID = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
+    const val CHANNEL_ID_ALERTS = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
+    const val CHANNEL_ID_SUMMARY = "${BuildConfig.APPLICATION_ID}.notifications.SUMMARY"
   }
 
   private val notificationFactory: NotificationFactory by lazy {
     NotificationFactory(context)
+  }
+
+  private val notificationManager: NotificationManagerCompat by lazy {
+    NotificationManagerCompat.from(context)
   }
 
   fun initialize() {
@@ -59,17 +64,30 @@ class NotificationsHandler @Inject constructor(
     // Create the NotificationChannel, but only on API 26+ because
     // the NotificationChannel class is new and not in the support library
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
-      val name = "Alerts"
-      val descriptionText = "Stock Alert"
-      val importance = NotificationManager.IMPORTANCE_DEFAULT
-      val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-        description = descriptionText
-        setShowBadge(true)
-        lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+      with("Alerts") {
+        val name = this
+        val descriptionText = context.getString(R.string.desc_channel_alerts)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID_ALERTS, name, importance).apply {
+          description = descriptionText
+          setShowBadge(true)
+          lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        }
+        // Register the channel with the system
+        notificationManager.createNotificationChannel(channel)
       }
-      // Register the channel with the system
-      NotificationManagerCompat.from(context)
-          .createNotificationChannel(channel)
+      with("Summary") {
+        val name = this
+        val descriptionText = context.getString(R.string.desc_channel_summary)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID_SUMMARY, name, importance).apply {
+          description = descriptionText
+          setShowBadge(true)
+          lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+        }
+        // Register the channel with the system
+        notificationManager.createNotificationChannel(channel)
+      }
     }
   }
 
@@ -82,8 +100,7 @@ class NotificationsHandler @Inject constructor(
           // Remove alert.
           with(quote) {
             if (properties == null) {
-              properties =
-                Properties(symbol)
+              properties = Properties(symbol)
             }
             properties!!
           }.also {
@@ -96,8 +113,7 @@ class NotificationsHandler @Inject constructor(
           // Remove alert.
           with(quote) {
             if (properties == null) {
-              properties =
-                Properties(symbol)
+              properties = Properties(symbol)
             }
             properties!!
           }.also {
@@ -115,13 +131,17 @@ class NotificationsHandler @Inject constructor(
 
 private class NotificationFactory(private val context: Context) {
 
+  private val notificationManager: NotificationManagerCompat by lazy {
+    NotificationManagerCompat.from(context)
+  }
+
   private fun createNotificationBuilder(
     title: String,
     body: String,
     quote: Quote
   ): Builder {
     val icon = if (quote.changeInPercent >= 0f) R.drawable.ic_trending_up else R.drawable.ic_trending_down
-    return Builder(context, NotificationsHandler.CHANNEL_ID)
+    return Builder(context, NotificationsHandler.CHANNEL_ID_ALERTS)
         .setSmallIcon(icon)
         .setContentTitle(title)
         .setStyle(
@@ -190,7 +210,7 @@ private class NotificationFactory(private val context: Context) {
           // Get the PendingIntent containing the entire back stack
           getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-    with(NotificationManagerCompat.from(context)) {
+    with(notificationManager) {
       // NotificationId is a unique int for each notification.
       val notification = createNotificationBuilder(title, text, quote)
           .setContentIntent(pendingIntent)

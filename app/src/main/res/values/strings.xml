@@ -174,4 +174,6 @@
   <string name="add_alerts">Add Alerts</string>
   <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
   <string name="save">Save</string>
+  <string name="desc_channel_alerts">Stock alerts</string>
+  <string name="desc_channel_summary">Daily summary</string>
 </resources>

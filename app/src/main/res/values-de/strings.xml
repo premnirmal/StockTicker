@@ -164,4 +164,6 @@
   <string name="add_alerts">Benachrichtigungen hinzufügen</string>
   <string name="remove_holding">Möchten Sie den Eintrag %1$s wirklich aus Ihrem Portfolio entfernen?</string>
   <string name="save">Speichern</string>
+  <string name="desc_channel_alerts">Lagerwarnungen</string>
+  <string name="desc_channel_summary">Tägliche Zusammenfassung</string>
 </resources>

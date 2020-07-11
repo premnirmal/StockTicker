@@ -162,4 +162,6 @@
   <string name="add_alerts">Añadir alertas</string>
   <string name="remove_holding">¿Está seguro de que desea eliminar la entrada %1$s de su cartera?</string>
   <string name="save">Hecho</string>
+  <string name="desc_channel_alerts">Alertas de stock</string>
+  <string name="desc_channel_summary">Resumen diario</string>
 </resources>
