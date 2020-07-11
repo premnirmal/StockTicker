@@ -365,10 +365,12 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         average_price.visibility = View.GONE
       }
     } else {
-      positions_container.visibility = View.GONE
-      notes_container.visibility = View.GONE
-      alerts_container.visibility = View.GONE
       positions_header.visibility = View.GONE
+      positions_container.visibility = View.GONE
+      notes_header.visibility = View.GONE
+      notes_container.visibility = View.GONE
+      alert_header.visibility = View.GONE
+      alerts_container.visibility = View.GONE
     }
   }
 

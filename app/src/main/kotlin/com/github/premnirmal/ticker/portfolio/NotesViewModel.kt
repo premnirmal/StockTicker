@@ -26,7 +26,9 @@ class NotesViewModel : ViewModel() {
   fun setNotes(notesText: String) {
     viewModelScope.launch {
       quote?.let {
-        val properties = it.properties ?: Properties(symbol)
+        val properties = it.properties ?: Properties(
+            symbol
+        )
         it.properties = properties
         properties.notes = notesText
         stocksStorage.saveQuoteProperties(properties)

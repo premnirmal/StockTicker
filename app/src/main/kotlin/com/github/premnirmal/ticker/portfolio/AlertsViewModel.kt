@@ -29,7 +29,9 @@ class AlertsViewModel : ViewModel() {
   ) {
     viewModelScope.launch {
       quote?.let {
-        val properties = it.properties ?: Properties(symbol)
+        val properties = it.properties ?: Properties(
+            symbol
+        )
         it.properties = properties.apply {
           this.alertAbove = alertAbove
           this.alertBelow = alertBelow

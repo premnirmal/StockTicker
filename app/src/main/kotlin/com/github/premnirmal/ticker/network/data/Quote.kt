@@ -48,22 +48,14 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   var properties: Properties? = null
 
   fun hasAlertAbove(): Boolean =
-    this.properties != null && this.properties?.alertAbove!! > 0.0f && this.properties?.alertAbove!! < this.lastTradePrice
+    this.properties != null && this.properties!!.alertAbove > 0.0f && this.properties!!.alertAbove < this.lastTradePrice
 
   fun hasAlertBelow(): Boolean =
-    this.properties != null && this.properties?.alertBelow!! > 0.0f && this.properties?.alertBelow!! > this.lastTradePrice
+    this.properties != null && this.properties!!.alertBelow > 0.0f && this.properties!!.alertBelow > this.lastTradePrice
 
-  fun getAlertAbove(): Float = if (this.properties == null) {
-    0.0f
-  } else {
-    this.properties?.alertAbove!!
-  }
+  fun getAlertAbove(): Float = this.properties?.alertAbove ?: 0.0f
 
-  fun getAlertBelow(): Float = if (this.properties == null) {
-    0.0f
-  } else {
-    this.properties?.alertBelow!!
-  }
+  fun getAlertBelow(): Float = this.properties?.alertBelow ?: 0.0f
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
@@ -163,7 +155,8 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     annualDividendRate = parcel.readFloat()
     annualDividendYield = parcel.readFloat()
     position = parcel.readParcelable(Position::class.java.classLoader)
-    properties = parcel.readParcelable(Properties::class.java.classLoader)
+    properties = parcel.readParcelable(
+        Properties::class.java.classLoader)
   }
 
   override fun writeToParcel(

@@ -60,7 +60,7 @@ class NotificationsHandler @Inject constructor(
     // the NotificationChannel class is new and not in the support library
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
       val name = "Alerts"
-      val descriptionText = "StockTicker Alerts"
+      val descriptionText = "Stock Alert"
       val importance = NotificationManager.IMPORTANCE_DEFAULT
       val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
         description = descriptionText
@@ -82,7 +82,8 @@ class NotificationsHandler @Inject constructor(
           // Remove alert.
           with(quote) {
             if (properties == null) {
-              properties = Properties(symbol)
+              properties =
+                Properties(symbol)
             }
             properties!!
           }.also {
@@ -95,7 +96,8 @@ class NotificationsHandler @Inject constructor(
           // Remove alert.
           with(quote) {
             if (properties == null) {
-              properties = Properties(symbol)
+              properties =
+                Properties(symbol)
             }
             properties!!
           }.also {

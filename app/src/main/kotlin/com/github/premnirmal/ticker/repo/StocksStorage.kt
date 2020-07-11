@@ -5,9 +5,9 @@ import androidx.room.withTransaction
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
-import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.google.gson.Gson
@@ -139,7 +139,9 @@ class StocksStorage {
   }
 
   private fun PropertiesRow.toProperties(): Properties {
-    return Properties(this.quoteSymbol, this.notes, this.alertAbove, this.alertBelow)
+    return Properties(
+        this.quoteSymbol, this.notes, this.alertAbove, this.alertBelow
+    )
   }
 
   private fun Properties.toPropertiesRow(): PropertiesRow {
