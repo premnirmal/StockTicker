@@ -16,7 +16,7 @@ import com.github.premnirmal.ticker.home.SplashActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
-import com.github.premnirmal.ticker.model.RefreshService
+import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
@@ -26,6 +26,7 @@ import com.github.premnirmal.ticker.news.GraphViewModel
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
+import com.github.premnirmal.ticker.notifications.DailySummaryNotificationWorker
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
@@ -95,11 +96,13 @@ interface AppComponent {
 
   fun inject(refreshReceiver: RefreshReceiver)
 
-  fun inject(refreshService: RefreshService)
+  fun inject(refreshWorker: RefreshWorker)
 
   fun inject(exponentialBackoff: ExponentialBackoff)
 
   fun inject(generalProperties: GeneralProperties)
+
+  fun inject(dailySummaryNotificationWorker: DailySummaryNotificationWorker)
 
   // Network
 

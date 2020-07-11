@@ -8,7 +8,7 @@ import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
-import com.github.premnirmal.ticker.home.NotificationsHandler
+import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R

@@ -105,7 +105,7 @@
   <string name="day_change_percent">% cambio de día</string>
   <string name="day_change_amount">Cambio de día</string>
   <string name="autosort_disabled">La clasificación automática se ha deshabilitado. Ahora puede arrastrar y soltar para ordenar.</string>
-  <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de tu cartera?</string>
+  <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de su cartera?</string>
   <string name="ok">OK</string>
   <string name="cancel">Cancelar</string>
   <string name="invalid_number">Número inválido</string>
@@ -164,4 +164,5 @@
   <string name="save">Hecho</string>
   <string name="desc_channel_alerts">Alertas de stock</string>
   <string name="desc_channel_summary">Resumen diario</string>
+  <string name="notification_summary_title">¿Cómo estuvo su cartera hoy?</string>
 </resources>
