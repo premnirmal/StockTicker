@@ -107,7 +107,7 @@
   <string name="day_change_percent">% Bestandsänderung</string>
   <string name="day_change_amount">Bestands- änderung</string>
   <string name="autosort_disabled">Die automatische Sortierung wurde deaktiviert. Sie können jetzt per Drag&amp;Drop sortieren.</string>
-  <string name="remove_prompt">Sind Sie sicher, dass Sie \'%1$s\' (%2$s) aus Ihrem Portfolio entfernen möchten?</string>
+  <string name="remove_prompt">Sind Sie sicher, dass Sie \'%1$s\' aus Ihrem Portfolio entfernen möchten?</string>
   <string name="ok">OK</string>
   <string name="cancel">Abbrechen</string>
   <string name="invalid_number">Ungültige Eingabe</string>
