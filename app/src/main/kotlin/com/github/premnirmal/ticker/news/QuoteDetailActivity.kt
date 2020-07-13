@@ -311,6 +311,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     if (isInPortfolio) {
       positions_container.visibility = View.VISIBLE
       positions_header.visibility = View.VISIBLE
+      notes_header.visibility = View.VISIBLE
+      alert_header.visibility = View.VISIBLE
       numShares.text = quote.numSharesString()
       equityValue.text = quote.holdingsString()
 

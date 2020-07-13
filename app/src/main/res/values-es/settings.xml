@@ -6,21 +6,11 @@
     <item>Medio</item>
     <item>Grande</item>
   </string-array>
-  <string-array name="font_sizes_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-  </string-array>
 
   <string-array name="app_themes">
     <item>Clara</item>
     <item>Oscura</item>
     <item>Seguir sistema</item>
-  </string-array>
-  <string-array name="app_themes_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
   </string-array>
 
   <string-array name="layout_types">
@@ -28,19 +18,10 @@
     <item>Pestañas</item>
     <item>Fijo</item>
   </string-array>
-  <string-array name="layout_types_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-  </string-array>
 
   <string-array name="widget_width_types">
     <item>Defecto</item>
     <item>Stock único en una fila</item>
-  </string-array>
-  <string-array name="widget_width_values">
-    <item>0</item>
-    <item>1</item>
   </string-array>
 
   <string-array name="backgrounds">
@@ -49,12 +30,6 @@
     <item>Oscuro</item>
     <item>Claro</item>
   </string-array>
-  <string-array name="backgrounds_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-  </string-array>
 
   <string-array name="text_colors">
     <item>Blanco</item>
@@ -62,16 +37,11 @@
   </string-array>
 
   <string-array name="sync_periods">
+    <item>5 minutos</item>
     <item>15 minutos</item>
     <item>30 minutos</item>
     <item>45 minutos</item>
     <item>1 hora</item>
-  </string-array>
-  <string-array name="sync_periods_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
   </string-array>
 
 </resources>
