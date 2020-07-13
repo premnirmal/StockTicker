@@ -155,8 +155,8 @@
   <string name="alert_below_error">Alerta arriba debe ser más que Alerta abajow</string>
   <string name="alert_above_notification_title">%1$s está por encima de %2$s a %3$s</string>
   <string name="alert_below_notification_title">%1$s está por debajo de %2$s a %3$s</string>
-  <string name="alert_above_notification">La acción %1$s, %2$s, está por encima de %3$s a %4$s.</string>
-  <string name="alert_below_notification">La acción %1$s, %2$s, está por debajo de %3$s a %4$s.</string>
+  <string name="alert_above_notification">La acción %1$s, está por encima de %2$s a %3$s.</string>
+  <string name="alert_below_notification">La acción %1$s, está por debajo de %2$s a %3$s.</string>
   <string name="alert_dismiss">Despedir</string>
   <string name="add_notes">Añadir notas</string>
   <string name="add_alerts">Añadir alertas</string>

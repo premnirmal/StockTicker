@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.tickerwidget.BuildConfig
 import javax.inject.Inject
 
 class DailySummaryNotificationWorker(
@@ -13,7 +12,7 @@ class DailySummaryNotificationWorker(
 ) : CoroutineWorker(context, parameters) {
 
   companion object {
-    const val TAG = "${BuildConfig.APPLICATION_ID}.notifications.DAILY_SUMMARY_NOTIFICATIONS_WORKER"
+    const val TAG = "DailySummaryNotificationWorker"
   }
 
   @Inject lateinit var notificationsHandler: NotificationsHandler

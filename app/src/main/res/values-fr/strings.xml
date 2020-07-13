@@ -156,8 +156,8 @@
   <string name="alert_below_error">Alerte ci-dessus doit être plus quen Alerte ci-dessous</string>
   <string name="alert_above_notification_title">%1$s est supérieure à %2$s à %3$s</string>
   <string name="alert_below_notification_title">%1$s est inférieure à %2$s à %3$s</string>
-  <string name="alert_above_notification">L’action %1$s, %2$s, est supérieure à %3$s à %4$s.</string>
-  <string name="alert_below_notification">L’action %1$s, %2$s, est inférieure à %3$s à %4$s.</string>
+  <string name="alert_above_notification">L’action %1$s, est supérieure à %2$s à %3$s.</string>
+  <string name="alert_below_notification">L’action %1$s, est inférieure à %2$s à %3$s.</string>
   <string name="alert_dismiss">Rejeter</string>
   <string name="add_notes">Ajouter des notess</string>
   <string name="add_alerts">Ajouter des alertes</string>

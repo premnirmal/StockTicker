@@ -1,12 +1,17 @@
 package com.github.premnirmal.ticker.debug
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.model.RefreshWorker
+import com.github.premnirmal.ticker.notifications.DailySummaryNotificationWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +43,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
   fun generateDatabaseHtml() {
     viewModelScope.launch(Dispatchers.IO) {
       _showProgress.postValue(true)
-      val qt = StringBuilder()
+      val quotesInfo = StringBuilder()
           .append(
               """
             <h2>Quotes</h2>
@@ -51,7 +56,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             </tr>
             """
           )
-      val ht = StringBuilder()
+      val holdingsInfo = StringBuilder()
           .append(
               """
             <h2>Holdings</h2>
@@ -61,7 +66,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             </tr>
             """
           )
-      val pt = StringBuilder()
+      val propsInfo = StringBuilder()
           .append(
               """
             <h2>Properties</h2>
@@ -73,23 +78,24 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
           )
       val stringBuilder = StringBuilder().also { sb ->
         sb.append(
-            "<html><body>\n" +
-                "    <style>\n" +
-                "        table, th, td {\n" +
-                "            border: 1px solid black;\n" +
-                "            border-collapse: collapse;\n" +
-                "            padding: 2px;\n" +
-                "        }\n" +
-                "        th {\n" +
-                "          background-color: lightgray;\n" +
-                "        }\n" +
-                "    </style>"
+            """<html><body>
+                    <style>
+                        table, th, td {
+                            border: 1px solid black;
+                            border-collapse: collapse;
+                            padding: 2px;
+                        }
+                        th {
+                          background-color: lightgray;
+                        }
+                    </style>
+          """
         )
         var count = 0
         dao.getQuotesWithHoldings()
             .forEach {
               val quote = it.quote
-              qt.append("<tr>")
+              quotesInfo.append("<tr>")
                   .append("<td>${++count}</td>")
                   .append("<td>${quote.symbol}</td>")
                   .append("<td>${quote.name}</td>")
@@ -111,7 +117,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
 
               val holdings = it.holdings
               holdings.forEach { holding ->
-                ht.append("<tr>")
+                holdingsInfo.append("<tr>")
                     .append("<td>${holding.id}</td>")
                     .append("<td>${holding.quoteSymbol}</td>")
                     .append("<td>${holding.shares}</td>")
@@ -121,7 +127,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
               }
               val properties = it.properties
               if (properties != null) {
-                pt.append("<tr>")
+                propsInfo.append("<tr>")
                     .append("<td>${properties.id}</td>")
                     .append("<td>${properties.quoteSymbol}</td>")
                     .append("<td>${properties.notes}</td>")
@@ -131,12 +137,14 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
                 yield()
               }
             }
-        qt.append("</table>")
-        ht.append("</table>")
-        pt.append("</table>")
-        sb.append(qt)
-            .append(ht)
-            .append(pt)
+        quotesInfo.append("</table>")
+        holdingsInfo.append("</table>")
+        propsInfo.append("</table>")
+        val workerInfo = extractWorkerInfo(getApplication<Application>())
+        sb.append(quotesInfo)
+            .append(holdingsInfo)
+            .append(propsInfo)
+            .append(workerInfo)
             .append("</body></html>")
       }
       val file = File(getApplication<StocksApp>().cacheDir, FILENAME)
@@ -150,5 +158,34 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
       _htmlFile.postValue(file)
       _showProgress.postValue(false)
     }
+  }
+
+  private fun extractWorkerInfo(context: Context): StringBuilder {
+    val sb = StringBuilder().append(
+        """
+            <h2>Scheduled Work</h2>
+            <table>
+            <tr>
+            <th>Tag</th><th>State</th><th>RunAttemptCount</th>
+            </tr>
+            """
+    )
+    with(WorkManager.getInstance(context)) {
+      pruneWork()
+      val workInfos = ArrayList<WorkInfo>().apply {
+        addAll(getWorkInfosByTag(RefreshWorker.TAG).get())
+        addAll(getWorkInfosByTag(DailySummaryNotificationWorker.TAG).get())
+      }
+      for (wi in workInfos) {
+        sb.append("<tr>")
+            .append("<td>${wi.tags.minBy { it.length }!!}</td>")
+            .append("<td>${wi.state.name}</td>")
+            .append("<td>${wi.runAttemptCount}</td>")
+            .append("</tr>")
+
+      }
+    }
+    sb.append("</table>")
+    return sb
   }
 }

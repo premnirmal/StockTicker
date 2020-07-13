@@ -6,15 +6,17 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo.State
 import androidx.work.WorkManager
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.home.ParanormalActivity
@@ -22,7 +24,6 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
-import com.github.premnirmal.ticker.notifications.NotificationsHandler.Companion.NOTIFICATION_ID_SUMMARY
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
@@ -30,11 +31,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import org.threeten.bp.DayOfWeek
+import org.threeten.bp.Duration
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.TimeUnit.HOURS
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
@@ -44,13 +49,15 @@ class NotificationsHandler @Inject constructor(
   private val context: Context,
   private val bus: AsyncBus,
   private val stocksProvider: IStocksProvider,
-  private val stocksStorage: StocksStorage
+  private val stocksStorage: StocksStorage,
+  private val appPreferences: AppPreferences
 ) {
 
   companion object {
     const val CHANNEL_ID_ALERTS = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
     const val CHANNEL_ID_SUMMARY = "${BuildConfig.APPLICATION_ID}.notifications.SUMMARY"
-    const val NOTIFICATION_ID_SUMMARY = 45678
+
+    private const val PREFS_NOTIFICATIONS = "${BuildConfig.APPLICATION_ID}.notifications.PREFS"
   }
 
   private val notificationFactory: NotificationFactory by lazy {
@@ -59,6 +66,10 @@ class NotificationsHandler @Inject constructor(
 
   private val notificationManager: NotificationManagerCompat by lazy {
     NotificationManagerCompat.from(context)
+  }
+
+  private val notificationPrefs: SharedPreferences by lazy {
+    context.getSharedPreferences(PREFS_NOTIFICATIONS, Context.MODE_PRIVATE)
   }
 
   fun initialize() {
@@ -74,7 +85,7 @@ class NotificationsHandler @Inject constructor(
 
   fun notifyDailySummary() {
     val today = LocalDate.now()
-    if (today.dayOfWeek != DayOfWeek.SATURDAY && today.dayOfWeek != DayOfWeek.SUNDAY) {
+    if (appPreferences.updateDays().contains(today.dayOfWeek)) {
       val topQuotes = stocksProvider.getPortfolio()
           .sortedByDescending { it.changeInPercent.absoluteValue }
           .take(4)
@@ -86,20 +97,24 @@ class NotificationsHandler @Inject constructor(
 
   private fun enqueueNotification() {
     with(WorkManager.getInstance(context)) {
+      val workInfos = this.getWorkInfosByTag(DailySummaryNotificationWorker.TAG)
+      val state = workInfos.get().firstOrNull()?.state
+      if (state == State.ENQUEUED) {
+        this.cancelAllWorkByTag(DailySummaryNotificationWorker.TAG)
+      }
+      val endTime = appPreferences.endTime()
       var firstWorkerDue = ZonedDateTime.now()
-          .withHour(20)
-          .withMinute(15)
+          .withHour(endTime[0] + 2)
+          .withMinute(endTime[2])
       if (firstWorkerDue.isBefore(ZonedDateTime.now())) {
         firstWorkerDue = firstWorkerDue.plusHours(24)
       }
-      val delay = firstWorkerDue.toInstant()
-          .toEpochMilli() - ZonedDateTime.now()
-          .toInstant()
-          .toEpochMilli()
+      val delay = firstWorkerDue.toInstant().toEpochMilli() - ZonedDateTime.now().toInstant().toEpochMilli()
       val request = PeriodicWorkRequestBuilder<DailySummaryNotificationWorker>(24, HOURS)
           .setInitialDelay(delay, MILLISECONDS)
+          .addTag(DailySummaryNotificationWorker.TAG)
           .build()
-      enqueueUniquePeriodicWork(DailySummaryNotificationWorker.TAG, REPLACE, request)
+      this.enqueue(request)
     }
   }
 
@@ -112,7 +127,8 @@ class NotificationsHandler @Inject constructor(
         val descriptionText = context.getString(R.string.desc_channel_alerts)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel(
-            CHANNEL_ID_ALERTS, name, importance).apply {
+            CHANNEL_ID_ALERTS, name, importance
+        ).apply {
           description = descriptionText
           setShowBadge(true)
           lockscreenVisibility = Notification.VISIBILITY_PUBLIC
@@ -125,7 +141,8 @@ class NotificationsHandler @Inject constructor(
         val descriptionText = context.getString(R.string.desc_channel_summary)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel(
-            CHANNEL_ID_SUMMARY, name, importance).apply {
+            CHANNEL_ID_SUMMARY, name, importance
+        ).apply {
           description = descriptionText
           setShowBadge(true)
           lockscreenVisibility = Notification.VISIBILITY_PUBLIC
@@ -167,11 +184,38 @@ class NotificationsHandler @Inject constructor(
           }
         }
         quote.changeInPercent.absoluteValue >= 10f -> {
-          notificationFactory.sendGenericAlert(quote)
+          if (!hasNotifiedGenericAlert(quote)) {
+            notificationFactory.sendGenericAlert(quote)
+            notificationPrefs.edit()
+                .putLong(quote.symbol, ZonedDateTime.now()
+                    .toInstant()
+                    .toEpochMilli()
+                )
+                .apply()
+          }
         }
       }
     }
   }
+
+  private fun hasNotifiedGenericAlert(quote: Quote): Boolean {
+    val lastNotifiedTimeMs = notificationPrefs.getLong(quote.symbol, 0L)
+    val now = ZonedDateTime.now()
+    if (lastNotifiedTimeMs > 0L) {
+      val lastNotifiedTime =
+        ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastNotifiedTimeMs), ZoneId.systemDefault())
+      if (Duration.between(now, lastNotifiedTime).toHours() < 24) {
+        return true
+      }
+    }
+    return false
+  }
+}
+
+private object NotificationID {
+  private val atomicInteger: AtomicInteger = AtomicInteger(1)
+  val nextID: Int
+    get() = atomicInteger.incrementAndGet()
 }
 
 private class NotificationFactory(private val context: Context) {
@@ -185,8 +229,10 @@ private class NotificationFactory(private val context: Context) {
     body: String,
     quote: Quote
   ): Builder {
-    val icon = if (quote.changeInPercent >= 0f) R.drawable.ic_trending_up else R.drawable.ic_trending_down
-    return Builder(context,
+    val icon =
+      if (quote.changeInPercent >= 0f) R.drawable.ic_trending_up else R.drawable.ic_trending_down
+    return Builder(
+        context,
         NotificationsHandler.CHANNEL_ID_ALERTS
     )
         .setSmallIcon(icon)
@@ -209,7 +255,7 @@ private class NotificationFactory(private val context: Context) {
         Quote.selectedFormat.format(quote.lastTradePrice)
     )
     val text = context.getString(
-        R.string.alert_above_notification, quote.symbol, quote.name,
+        R.string.alert_above_notification, quote.name,
         Quote.selectedFormat.format(quote.properties!!.alertAbove),
         Quote.selectedFormat.format(quote.lastTradePrice)
     )
@@ -225,7 +271,7 @@ private class NotificationFactory(private val context: Context) {
         Quote.selectedFormat.format(quote.lastTradePrice)
     )
     val text = context.getString(
-        R.string.alert_below_notification, quote.symbol, quote.name,
+        R.string.alert_below_notification, quote.name,
         Quote.selectedFormat.format(quote.properties!!.alertBelow),
         Quote.selectedFormat.format(quote.lastTradePrice)
     )
@@ -252,7 +298,7 @@ private class NotificationFactory(private val context: Context) {
         text.append('\n')
       }
     }
-    val notificationId = NOTIFICATION_ID_SUMMARY
+    val notificationId = NotificationID.nextID
     val intent = Intent(context, ParanormalActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
@@ -265,7 +311,8 @@ private class NotificationFactory(private val context: Context) {
         }
     val icon = R.drawable.ic_trending_up
     with(notificationManager) {
-      val notification = Builder(context,
+      val notification = Builder(
+          context,
           NotificationsHandler.CHANNEL_ID_SUMMARY
       )
           .setSmallIcon(icon)
@@ -288,7 +335,7 @@ private class NotificationFactory(private val context: Context) {
     title: String,
     text: String
   ) {
-    val notificationId = quote.symbol.hashCode()
+    val notificationId = NotificationID.nextID
     val intent = Intent(context, QuoteDetailActivity::class.java).apply {
       flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
       putExtra(QuoteDetailActivity.TICKER, quote.symbol)

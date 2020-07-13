@@ -1,8 +1,6 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.Context
-import android.os.Build.VERSION_CODES
-import androidx.annotation.RequiresApi
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.github.premnirmal.ticker.components.Injector
@@ -10,6 +8,10 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import javax.inject.Inject
 
 class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+
+  companion object {
+    const val TAG = "RefreshWorker"
+  }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
 

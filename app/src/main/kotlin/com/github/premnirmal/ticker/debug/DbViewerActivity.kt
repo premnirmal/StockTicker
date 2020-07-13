@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.activity_db_viewer.webview
 class DbViewerActivity : BaseActivity() {
 
   override val simpleName: String
-    get() = "DbViewerActivity"
+    get() = "DebugViewerActivity"
 
   private val viewModel: DbViewerViewModel by lazy {
     ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))

@@ -122,10 +122,12 @@ class AlarmScheduler {
                 .setRequiredNetworkType(CONNECTED)
                 .build()
         )
+        .addTag(RefreshWorker.TAG)
         .setInitialDelay(msToNextAlarm, MILLISECONDS)
         .build()
-    WorkManager.getInstance(context)
-        .enqueue(workRequest)
+    with(WorkManager.getInstance(context)) {
+      this.enqueue(workRequest)
+    }
     return nextAlarmDate
   }
 }
