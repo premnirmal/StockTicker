@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_bg"
+    android:orientation="vertical"
+    >
+
+  <com.google.android.material.appbar.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_toolbar"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:title="@string/notes"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        app:menu="@menu/menu_notes"
+        />
+
+  </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/tickerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:textSize="@dimen/xlarge_text"
+        tools:text="GOOG"
+        style="@style/BoldTextView"
+        />
+
+    <EditText
+        android:id="@+id/notesInputEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:fadeScrollbars="false"
+        android:hint="@string/add_notes"
+        android:gravity="top"
+        android:inputType="textMultiLine|textCapSentences"
+        android:padding="8dp"
+        android:scrollbarSize="4dp"
+        android:scrollbars="vertical"
+        android:textColor="@color/text_1"
+        android:textSize="@dimen/large_text"
+        android:cursorVisible="true"
+        />
+
+  </LinearLayout>

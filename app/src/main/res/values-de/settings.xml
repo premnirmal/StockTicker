@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+  <string-array name="font_sizes">
+    <item>Klein</item>
+    <item>Mittel</item>
+    <item>Groß</item>
+  </string-array>
+
+  <string-array name="app_themes">
+    <item>Hell</item>
+    <item>Dunkel</item>
+    <item>Systemstandardeinstellung</item>
+  </string-array>
+
+  <string-array name="layout_types">
+    <item>Animiert</item>
+    <item>Tabs</item>
+    <item>Fest</item>
+  </string-array>
+
+  <string-array name="widget_width_types">
+    <item>Standard</item>
+    <item>Einzeilig darstellen</item>
+  </string-array>
+
+  <string-array name="backgrounds">
+    <item>Transparent</item>
+    <item>Translucent</item>
+    <item>Dunkel</item>
+    <item>Hell</item>
+  </string-array>
+
+  <string-array name="text_colors">
+    <item>Weiß</item>
+    <item>Schwarz</item>
+  </string-array>
+
+  <string-array name="sync_periods">
+    <item>5 Minuten</item>
+    <item>15 Minuten</item>
+    <item>30 Minuten</item>
+    <item>45 Minuten</item>
+    <item>1 Stunde</item>
+  </string-array>
+
+  <string-array name="days">
+    <item>Montag</item>
+    <item>Dienstag</item>
+    <item>Mittwoch</item>
+    <item>Donnerstag</item>
+    <item>Freitag</item>
+    <item>Samstag</item>
+    <item>Sonntag</item>
+  </string-array>
+</resources>

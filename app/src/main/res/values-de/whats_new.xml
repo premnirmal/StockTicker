@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+  <string-array name="whats_new">
+    <item>Ein 5-Minuten-Aktualisierungsintervall wurde hinzugefügt</item>
+    <item>Deutsche Übersetzungen. Danke an @jurgen178</item>
+    <item>Aktienwert-Benachrichtigungen. Danke an @jurgen178</item>
+  </string-array>
+</resources>

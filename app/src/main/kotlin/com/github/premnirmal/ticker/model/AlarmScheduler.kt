@@ -1,11 +1,12 @@
 package com.github.premnirmal.ticker.model
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
+import androidx.work.Constraints
+import androidx.work.NetworkType.CONNECTED
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
@@ -15,6 +16,7 @@ import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.util.concurrent.TimeUnit.MILLISECONDS
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -114,27 +116,16 @@ class AlarmScheduler {
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)
     val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      AlarmSchedulerLollipop.scheduleUpdate(msToNextAlarm, context)
-    } else {
-      val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-      val pendingIntent =
-        PendingIntent.getBroadcast(
-            context.applicationContext, 0, updateReceiverIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+    val workRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<RefreshWorker>()
+        .setConstraints(
+            Constraints.Builder()
+                .setRequiredNetworkType(CONNECTED)
+                .build()
         )
-      if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-        alarmManager.setExact(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            clock.elapsedRealtime() + msToNextAlarm, pendingIntent
-        )
-      } else {
-        alarmManager.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            clock.elapsedRealtime() + msToNextAlarm, pendingIntent
-        )
-      }
-    }
+        .setInitialDelay(msToNextAlarm, MILLISECONDS)
+        .build()
+    WorkManager.getInstance(context)
+        .enqueue(workRequest)
     return nextAlarmDate
   }
 }

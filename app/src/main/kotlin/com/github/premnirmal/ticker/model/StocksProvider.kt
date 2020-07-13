@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
+import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
@@ -196,6 +197,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
           saveLastFetched()
           exponentialBackoff.reset()
           scheduleUpdate(true)
+          bus.send(FetchedEvent())
           return@withContext FetchResult.success(fetchedStocks)
         }
       } catch (ex: Exception) {

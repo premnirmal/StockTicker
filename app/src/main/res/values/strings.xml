@@ -159,4 +159,22 @@
   <string name="db_viewer">Application database</string>
   <string name="discovered_db">You have discovered the secret entrance to the DB viewer</string>
   <string name="db_tap_count">Tap %1$d more times to unlock the DB viewer</string>
+  <string name="notes">Notes</string>
+  <string name="alerts">Alerts</string>
+  <string name="alert_above">Alert Above</string>
+  <string name="alert_below">Alert Below</string>
+  <string name="alert_above_error">Alert Below must be less than Alert Above</string>
+  <string name="alert_below_error">Alert Above must be more than Alert Below</string>
+  <string name="alert_above_notification_title">%1$s is now above %2$s at %3$s</string>
+  <string name="alert_below_notification_title">%1$s is now below %2$s at %3$s</string>
+  <string name="alert_above_notification">The Stock %1$s, %2$s, is now above %3$s at %4$s.</string>
+  <string name="alert_below_notification">The Stock %1$s, %2$s, is now below %3$s at %4$s.</string>
+  <string name="alert_dismiss">Dismiss</string>
+  <string name="add_notes">Add Notes</string>
+  <string name="add_alerts">Add Alerts</string>
+  <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
+  <string name="save">Save</string>
+  <string name="desc_channel_alerts">Stock alerts</string>
+  <string name="desc_channel_summary">Daily summary</string>
+  <string name="notification_summary_title">How did your watch list do today?</string>
 </resources>

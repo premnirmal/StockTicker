@@ -25,4 +25,8 @@ class TestApplication : StocksApp() {
   override fun initStetho() {
     // No-op
   }
+
+  override fun initNotificationHandler() {
+    // No-op
+  }
 }

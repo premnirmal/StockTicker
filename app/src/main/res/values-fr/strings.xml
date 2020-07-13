@@ -148,4 +148,22 @@
   <string name="db_viewer">Base de données de l\'application</string>
   <string name="discovered_db">Vous avez découvert l\'entrée secrète vers le DB viewer</string>
   <string name="db_tap_count">Appuyer %1$d fois de plus pour dévérouiller le DB viewer</string>
+  <string name="notes">Notes</string>
+  <string name="alerts">Alertes</string>
+  <string name="alert_above">Alerte ci-dessus</string>
+  <string name="alert_below">Alerte ci-dessous</string>
+  <string name="alert_above_error">Alerte ci-dessous doit être inférieur à Alerte ci-dessus</string>
+  <string name="alert_below_error">Alerte ci-dessus doit être plus quen Alerte ci-dessous</string>
+  <string name="alert_above_notification_title">%1$s est supérieure à %2$s à %3$s</string>
+  <string name="alert_below_notification_title">%1$s est inférieure à %2$s à %3$s</string>
+  <string name="alert_above_notification">L’action %1$s, %2$s, est supérieure à %3$s à %4$s.</string>
+  <string name="alert_below_notification">L’action %1$s, %2$s, est inférieure à %3$s à %4$s.</string>
+  <string name="alert_dismiss">Rejeter</string>
+  <string name="add_notes">Ajouter des notess</string>
+  <string name="add_alerts">Ajouter des alertes</string>
+  <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille?</string>
+  <string name="save">Sauvegardez</string>
+  <string name="desc_channel_alerts">Alertes de stock</string>
+  <string name="desc_channel_summary">Résumé quotidien</string>
+  <string name="notification_summary_title">Comment s\'est passé votre portefeuille aujourd\'hui?</string>
 </resources>

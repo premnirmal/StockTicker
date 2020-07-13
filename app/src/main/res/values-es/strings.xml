@@ -105,7 +105,7 @@
   <string name="day_change_percent">% cambio de día</string>
   <string name="day_change_amount">Cambio de día</string>
   <string name="autosort_disabled">La clasificación automática se ha deshabilitado. Ahora puede arrastrar y soltar para ordenar.</string>
-  <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de tu cartera?</string>
+  <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de su cartera?</string>
   <string name="ok">OK</string>
   <string name="cancel">Cancelar</string>
   <string name="invalid_number">Número inválido</string>
@@ -147,4 +147,22 @@
   <string name="db_viewer">Base de datos de la aplicación</string>
   <string name="discovered_db">Has descubierto la entrada secreta al DB Viewer</string>
   <string name="db_tap_count">Toque %1$d veces más para desbloquear el visor de DB</string>
+  <string name="notes">Notas</string>
+  <string name="alerts">Alertas</string>
+  <string name="alert_above">Alerta arriba</string>
+  <string name="alert_below">Alerta abajo</string>
+  <string name="alert_above_error">Alerta abajo debe ser menor que Alerta arriba</string>
+  <string name="alert_below_error">Alerta arriba debe ser más que Alerta abajow</string>
+  <string name="alert_above_notification_title">%1$s está por encima de %2$s a %3$s</string>
+  <string name="alert_below_notification_title">%1$s está por debajo de %2$s a %3$s</string>
+  <string name="alert_above_notification">La acción %1$s, %2$s, está por encima de %3$s a %4$s.</string>
+  <string name="alert_below_notification">La acción %1$s, %2$s, está por debajo de %3$s a %4$s.</string>
+  <string name="alert_dismiss">Despedir</string>
+  <string name="add_notes">Añadir notas</string>
+  <string name="add_alerts">Añadir alertas</string>
+  <string name="remove_holding">¿Está seguro de que desea eliminar la entrada %1$s de su cartera?</string>
+  <string name="save">Hecho</string>
+  <string name="desc_channel_alerts">Alertas de stock</string>
+  <string name="desc_channel_summary">Resumen diario</string>
+  <string name="notification_summary_title">¿Cómo estuvo su cartera hoy?</string>
 </resources>

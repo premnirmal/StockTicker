@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import java.io.File
+import java.util.Locale
 import javax.inject.Inject
 
 class DbViewerViewModel(application: Application) : AndroidViewModel(application) {
@@ -22,11 +23,11 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
 
   private val _showProgress = MutableLiveData<Boolean>()
   val showProgress: LiveData<Boolean>
-      get() = _showProgress
+    get() = _showProgress
 
   private val _htmlFile = MutableLiveData<File>()
   val htmlFile: LiveData<File>
-      get() = _htmlFile
+    get() = _htmlFile
 
   @Inject lateinit var dao: QuoteDao
 
@@ -38,26 +39,52 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
     viewModelScope.launch(Dispatchers.IO) {
       _showProgress.postValue(true)
       val qt = StringBuilder()
-          .append("""
+          .append(
+              """
             <h2>Quotes</h2>
-            <table border="1">
+            <table>
             <tr>
-            <td>#</td>
-            <td>Symbol</td><td>Name</td><td>LastTradePrice</td>
-            <td>Change</td><td>Change %</td><td>Exchange</td>
-            <td>Currency</td><td>Desc</td>
+            <th>#</th>
+            <th>Symbol</th><th>Name</th><th>Last&nbsp;trade&nbsp;price</th>
+            <th>Change</th><th>Change %</th><th>Exchange</th>
+            <th>Currency</th><th>Dividend</th>
             </tr>
-            """)
+            """
+          )
       val ht = StringBuilder()
-          .append("""
+          .append(
+              """
             <h2>Holdings</h2>
-            <table border="1">
+            <table>
             <tr>
-            <td>id</td><td>Symbol</td><td>Shares</td><td>Price</td>
+            <th>id</th><th>Symbol</th><th>Shares</th><th>Price</th>
             </tr>
-            """)
+            """
+          )
+      val pt = StringBuilder()
+          .append(
+              """
+            <h2>Properties</h2>
+            <table>
+            <tr>
+            <th>id</th><th>Symbol</th><th>Notes</th><th>Alert&nbsp;Above</th><th>Alert&nbsp;Below</th>
+            </tr>
+            """
+          )
       val stringBuilder = StringBuilder().also { sb ->
-        sb.append("<html><body>")
+        sb.append(
+            "<html><body>\n" +
+                "    <style>\n" +
+                "        table, th, td {\n" +
+                "            border: 1px solid black;\n" +
+                "            border-collapse: collapse;\n" +
+                "            padding: 2px;\n" +
+                "        }\n" +
+                "        th {\n" +
+                "          background-color: lightgray;\n" +
+                "        }\n" +
+                "    </style>"
+        )
         var count = 0
         dao.getQuotesWithHoldings()
             .forEach {
@@ -71,7 +98,15 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
                   .append("<td>${quote.changeInPercent}%</td>")
                   .append("<td>${quote.stockExchange}</td>")
                   .append("<td>${quote.currency}</td>")
-                  .append("<td>${quote.description}</td>")
+                  .append(
+                      if (quote.annualDividendRate > 0.0f && quote.annualDividendYield > 0.0f) {
+                        "<td>${quote.annualDividendRate} (${String.format(
+                            Locale.ENGLISH, "%.2f", quote.annualDividendYield * 100
+                        )}%)</td>"
+                      } else {
+                        "<td></td>"
+                      }
+                  )
                   .append("</tr>")
 
               val holdings = it.holdings
@@ -84,12 +119,24 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
                     .append("</tr>")
                 yield()
               }
-              yield()
+              val properties = it.properties
+              if (properties != null) {
+                pt.append("<tr>")
+                    .append("<td>${properties.id}</td>")
+                    .append("<td>${properties.quoteSymbol}</td>")
+                    .append("<td>${properties.notes}</td>")
+                    .append("<td>${properties.alertAbove}</td>")
+                    .append("<td>${properties.alertBelow}</td>")
+                    .append("</tr>")
+                yield()
+              }
             }
         qt.append("</table>")
         ht.append("</table>")
+        pt.append("</table>")
         sb.append(qt)
             .append(ht)
+            .append(pt)
             .append("</body></html>")
       }
       val file = File(getApplication<StocksApp>().cacheDir, FILENAME)

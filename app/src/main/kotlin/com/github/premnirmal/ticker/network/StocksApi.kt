@@ -103,8 +103,9 @@ class StocksApi {
     quote.changeInPercent = this.changePercent
     quote.change = this.change
     quote.stockExchange = this.exchange ?: ""
-    quote.currency = this.currency ?: "US"
-    quote.description = this.description ?: ""
+    quote.currency = this.currency ?: "USD"
+    quote.annualDividendRate = this.annualDividendRate
+    quote.annualDividendYield = this.annualDividendYield
     return quote
   }
 }

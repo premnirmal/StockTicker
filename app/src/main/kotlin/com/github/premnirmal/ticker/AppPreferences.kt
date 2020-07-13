@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker
 
-import android.app.AlarmManager
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
@@ -44,9 +43,13 @@ class AppPreferences {
 
   val updateIntervalMs: Long
     get() {
-      val pref = sharedPreferences.getInt(UPDATE_INTERVAL, 1)
-      val ms = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
-      return ms
+      return when(sharedPreferences.getInt(UPDATE_INTERVAL, 1)) {
+        0 -> 5 * 60 * 1000L
+        1 -> 15 * 60 * 1000L
+        2 -> 30 * 60 * 1000L
+        3 -> 60 * 60 * 1000L
+        else -> 15 * 60 * 1000L
+      }
     }
 
   fun timeAsIntArray(time: String): IntArray {
