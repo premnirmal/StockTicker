@@ -52,22 +52,22 @@ class AppPreferences {
       }
     }
 
-  fun timeAsIntArray(time: String): IntArray {
+  fun parseTime(time: String): Time {
     val split = time.split(":".toRegex())
         .dropLastWhile { it.isEmpty() }
         .toTypedArray()
     val times = intArrayOf(split[0].toInt(), split[1].toInt())
-    return times
+    return Time(times[0], times[1])
   }
 
-  fun startTime(): IntArray {
+  fun startTime(): Time {
     val startTimeString = sharedPreferences.getString(START_TIME, "09:30")!!
-    return timeAsIntArray(startTimeString)
+    return parseTime(startTimeString)
   }
 
-  fun endTime(): IntArray {
+  fun endTime(): Time {
     val endTimeString = sharedPreferences.getString(END_TIME, "16:00")!!
-    return timeAsIntArray(endTimeString)
+    return parseTime(endTimeString)
   }
 
   fun updateDaysRaw(): Set<String> {
@@ -159,6 +159,11 @@ class AppPreferences {
           || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
           || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "samsung".equals(Build.MANUFACTURER, ignoreCase = true))
     }
+
+  data class Time(
+    val hour: Int,
+    val minute: Int
+  )
 
   companion object {
 

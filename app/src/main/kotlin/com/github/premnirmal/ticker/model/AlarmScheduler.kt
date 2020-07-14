@@ -43,14 +43,14 @@ class AlarmScheduler {
     val endTimez = appPreferences.endTime()
     // whether the start time is after the end time e.g. start time is 11pm and end time is 5am
     val inverse =
-      startTimez[0] > endTimez[0] || (startTimez[0] == endTimez[0] && startTimez[1] > endTimez[1])
+      startTimez.hour > endTimez.hour || (startTimez.hour == endTimez.hour && startTimez.minute > endTimez.minute)
     val now: ZonedDateTime = clock.todayZoned()
     val startTime = clock.todayZoned()
-        .withHour(startTimez[0])
-        .withMinute(startTimez[1])
+        .withHour(startTimez.hour)
+        .withMinute(startTimez.minute)
     var endTime = clock.todayZoned()
-        .withHour(endTimez[0])
-        .withMinute(endTimez[1])
+        .withHour(endTimez.hour)
+        .withMinute(endTimez.minute)
     if (inverse && now.isAfter(startTime)) {
       endTime = endTime.plusDays(1)
     }
@@ -74,15 +74,15 @@ class AlarmScheduler {
       nextAlarmDate = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
         nextAlarmDate.plusMinutes(1)
       } else {
-        nextAlarmDate.withHour(startTimez[0])
-            .withMinute(startTimez[1])
+        nextAlarmDate.withHour(startTimez.hour)
+            .withMinute(startTimez.minute)
       }
     } else {
       if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
         nextAlarmDate = nextAlarmDate.plusMinutes(1)
       } else {
-        nextAlarmDate = nextAlarmDate.withHour(startTimez[0])
-            .withMinute(startTimez[1])
+        nextAlarmDate = nextAlarmDate.withHour(startTimez.hour)
+            .withMinute(startTimez.minute)
 
         var count = 0
         if (inverse) {

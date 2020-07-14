@@ -38,7 +38,6 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.TimeUnit.HOURS
 import java.util.concurrent.TimeUnit.MILLISECONDS
-import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -104,8 +103,8 @@ class NotificationsHandler @Inject constructor(
       }
       val endTime = appPreferences.endTime()
       var firstWorkerDue = ZonedDateTime.now()
-          .withHour(endTime[0] + 2)
-          .withMinute(endTime[2])
+          .withHour(endTime.hour + 2)
+          .withMinute(endTime.minute)
       if (firstWorkerDue.isBefore(ZonedDateTime.now())) {
         firstWorkerDue = firstWorkerDue.plusHours(24)
       }

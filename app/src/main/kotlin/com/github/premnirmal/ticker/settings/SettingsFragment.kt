@@ -315,9 +315,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preference: Preference,
           newValue: Any
         ): Boolean {
-          val startTimez = appPreferences.timeAsIntArray(newValue.toString())
+          val startTimez = appPreferences.parseTime(newValue.toString())
           val endTimez = appPreferences.endTime()
-          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+          if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
@@ -339,7 +339,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       run {
         val endTimez = appPreferences.endTime()
         val startTimez = appPreferences.startTime()
-        if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+        if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
           endTimePref.setSummary(R.string.incorrect_time_update_error)
         }
       }
@@ -348,9 +348,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preference: Preference,
           newValue: Any
         ): Boolean {
-          val endTimez = appPreferences.timeAsIntArray(newValue.toString())
+          val endTimez = appPreferences.parseTime(newValue.toString())
           val startTimez = appPreferences.startTime()
-          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+          if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
@@ -637,12 +637,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     )
     if (pref.key == AppPreferences.START_TIME) {
       val startTime = appPreferences.startTime()
-      pref.lastHour = startTime[0]
-      pref.lastMinute = startTime[1]
+      pref.lastHour = startTime.hour
+      pref.lastMinute = startTime.minute
     } else {
       val endTime = appPreferences.endTime()
-      pref.lastHour = endTime[0]
-      pref.lastMinute = endTime[1]
+      pref.lastHour = endTime.hour
+      pref.lastMinute = endTime.minute
     }
     val dialog = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
       TimePickerDialog(
@@ -691,9 +691,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
     val minuteString = if (lastMinute < 10) "0$lastMinute" else lastMinute.toString()
     val time = "$hourString:$minuteString"
-    val startTimez = appPreferences.timeAsIntArray(time)
+    val startTimez = appPreferences.parseTime(time)
     val endTimez = appPreferences.endTime()
-    if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+    if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
       showDialog(getString(R.string.incorrect_time_update_error))
     } else {
       preferences.edit()
