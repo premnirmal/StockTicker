@@ -76,7 +76,7 @@ open class StocksApp : MultiDexApplication() {
   }
 
   protected open fun initLogger() {
-    Timber.plant(LoggingTree(this))
+    Timber.plant(LoggingTree())
   }
 
   protected open fun initAnalytics() {

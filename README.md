@@ -15,6 +15,7 @@
 - A homescreen widget that shows your stock portolio in a resizable grid.
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours.
+- Displays price change and summary alerts
 
 ### Importing and exporting
 - You can import a list of tickers by selecting **import tickers** from the settings menu. All you need is a textfile with your tickers in *comma-separated* format, or in *json format*.

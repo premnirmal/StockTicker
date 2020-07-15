@@ -2,7 +2,8 @@ apply from: "../build.gradle"
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
-apply plugin: "io.fabric"
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: "com.getkeepsafe.dexcount"
 apply plugin: "kotlin-kapt"
 
@@ -10,12 +11,14 @@ buildscript {
   repositories {
     jcenter()
     mavenCentral()
-    maven { url "https://maven.fabric.io/public" }
+    google()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "io.fabric.tools:gradle:1.31.2"
+    classpath 'com.google.gms:google-services:4.3.3'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
+
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
     classpath('com.github.ayvazj.gradle.plugins.androlate:androlate:0.1')
@@ -25,7 +28,6 @@ buildscript {
 repositories {
   jcenter()
   mavenCentral()
-  maven { url "https://maven.fabric.io/public" }
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
   maven { url "https://maven.google.com" }
@@ -181,13 +183,13 @@ kapt {
 
 ext {
   LIFECYCLE_VERSION = "2.2.0"
-  DAGGER_VERSION = "2.20"
+  DAGGER_VERSION = "2.27"
   MOCKITO_VERSION = "3.1.0"
   JUNIT_VERSION = "4.12"
   RETROFIT_VERSION = "2.7.1"
-  OKHTTP_VERSION = "3.12.10"
+  OKHTTP_VERSION = "3.14.4"
   ROBOLECTRIC_VERSION = "4.3.1"
-  COROUTINES_VERSION = "1.3.5"
+  COROUTINES_VERSION = "1.3.7"
   ROOM_VERSION = "2.2.5"
   WORK_VERSION = "2.4.0"
 }
@@ -210,7 +212,7 @@ dependencies {
   implementation "com.google.dagger:dagger:$DAGGER_VERSION"
   kapt "com.google.dagger:dagger-compiler:$DAGGER_VERSION"
 
-  implementation ("com.squareup.okhttp3:okhttp:$OKHTTP_VERSION")
+  implementation "com.squareup.okhttp3:okhttp:$OKHTTP_VERSION"
   implementation "com.squareup.okhttp3:logging-interceptor:$OKHTTP_VERSION"
   implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
   implementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
@@ -236,10 +238,8 @@ dependencies {
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
   debugImplementation 'com.facebook.stetho:stetho:1.5.1'
 
-  prodImplementation("com.crashlytics.sdk.android:crashlytics:2.10.1@aar") {
-    transitive = true
-  }
-  prodImplementation("com.google.firebase:firebase-analytics:17.4.4")
+  prodImplementation "com.google.firebase:firebase-crashlytics:17.1.1"
+  prodImplementation "com.google.firebase:firebase-analytics:17.4.4"
 
   debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.4'
 
