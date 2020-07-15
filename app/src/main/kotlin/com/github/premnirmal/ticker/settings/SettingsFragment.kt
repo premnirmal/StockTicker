@@ -408,6 +408,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           true
         }
     }
+
+    run {
+      val notifPref = findPreference<CheckBoxPreference>(AppPreferences.SETTING_NOTIFICATION_ALERTS)
+      notifPref.isChecked = appPreferences.notificationAlerts()
+      notifPref.onPreferenceChangeListener =
+        Preference.OnPreferenceChangeListener { _, newValue ->
+          appPreferences.setNotificationAlerts(newValue as Boolean)
+          true
+        }
+    }
   }
 
   private fun <T : Preference> findPreference(key: String): T {

@@ -138,6 +138,14 @@ class AppPreferences {
         .apply()
   }
 
+  fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
+
+  fun setNotificationAlerts(set: Boolean) {
+    sharedPreferences.edit()
+        .putBoolean(SETTING_NOTIFICATION_ALERTS, set)
+        .apply()
+  }
+
   var themePref: Int
     get() = sharedPreferences.getInt(APP_THEME, 2)
     set(value) = sharedPreferences.edit().putInt(APP_THEME, value).apply()
@@ -202,6 +210,7 @@ class AppPreferences {
     const val SETTING_NUKE = "SETTING_NUKE"
     const val SETTING_PRIVACY_POLICY = "SETTING_PRIVACY_POLICY"
     const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
+    const val SETTING_NOTIFICATION_ALERTS = "SETTING_NOTIFICATION_ALERTS"
     const val WIDGET_BG = "WIDGET_BG"
     const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
     const val TEXT_COLOR = "TEXT_COLOR"

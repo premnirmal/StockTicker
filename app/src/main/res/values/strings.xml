@@ -44,6 +44,8 @@
   <string name="update_days_desc">Updates will occur on these days</string>
   <string name="round_two_dp">Round to 2 dp</string>
   <string name="round_two_dp_desc">Round the change and value to 2 decimal places</string>
+  <string name="notification_alerts">Notification Alerts</string>
+  <string name="notification_alerts_desc">Receive notification alerts</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
   <string name="hide_header">Hide widget header</string>
@@ -170,6 +172,7 @@
   <string name="alert_above_notification">%1$s is now above %2$s at %3$s</string>
   <string name="alert_below_notification">%1$s is now below %2$s at %3$s</string>
   <string name="alert_dismiss">Dismiss</string>
+  <string name="alerts_disabled">Alerts disabled, check settings</string>
   <string name="add_notes">Add Notes</string>
   <string name="add_alerts">Add Alerts</string>
   <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>

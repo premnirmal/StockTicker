@@ -35,6 +35,8 @@
   <string name="round_two_dp_desc">Arrondir l\'évolution et la valeur à 2 décimales</string>
   <string name="auto_sort">Tri automatique</string>
   <string name="auto_sort_desc">Les actions seront classées selon leur évolution en pourcentage.</string>
+  <string name="notification_alerts">Alertes de notification</string>
+  <string name="notification_alerts_desc">Recevoir des alertes de notification</string>
   <string name="hide_header">Cacher l\'en-tête du widget</string>
   <string name="hide_header_desc">Bouton d\'actualisation et heure de récupération</string>
   <string name="refresh_on_screen_unlock">Actualisation lorsque l\'écran est déverrouillé</string>
@@ -159,6 +161,7 @@
   <string name="alert_above_notification">L’action %1$s, est supérieure à %2$s à %3$s.</string>
   <string name="alert_below_notification">L’action %1$s, est inférieure à %2$s à %3$s.</string>
   <string name="alert_dismiss">Rejeter</string>
+  <string name="alerts_disabled">Alertes désactivées, vérifiez les paramètres</string>
   <string name="add_notes">Ajouter des notess</string>
   <string name="add_alerts">Ajouter des alertes</string>
   <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille?</string>

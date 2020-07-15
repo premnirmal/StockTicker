@@ -83,13 +83,15 @@ class NotificationsHandler @Inject constructor(
   }
 
   fun notifyDailySummary() {
-    val today = LocalDate.now()
-    if (appPreferences.updateDays().contains(today.dayOfWeek)) {
-      val topQuotes = stocksProvider.getPortfolio()
-          .sortedByDescending { it.changeInPercent.absoluteValue }
-          .take(4)
-      if (topQuotes.isNotEmpty()) {
-        notificationFactory.sendSummary(topQuotes)
+    if (appPreferences.notificationAlerts()) {
+      val today = LocalDate.now()
+      if (appPreferences.updateDays().contains(today.dayOfWeek)) {
+        val topQuotes = stocksProvider.getPortfolio()
+            .sortedByDescending { it.changeInPercent.absoluteValue }
+            .take(4)
+        if (topQuotes.isNotEmpty()) {
+          notificationFactory.sendSummary(topQuotes)
+        }
       }
     }
   }
@@ -153,6 +155,8 @@ class NotificationsHandler @Inject constructor(
   }
 
   private suspend fun checkAlerts() {
+    if (!appPreferences.notificationAlerts()) return
+
     val portfolio: List<Quote> = stocksProvider.getPortfolio()
     for (quote in portfolio) {
       when {
@@ -298,9 +302,7 @@ private class NotificationFactory(private val context: Context) {
       }
     }
     val notificationId = NotificationID.nextID
-    val intent = Intent(context, ParanormalActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-    }
+    val intent = Intent(context, ParanormalActivity::class.java)
     val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
         .run {
           // Add the intent, which inflates the back stack
@@ -336,13 +338,12 @@ private class NotificationFactory(private val context: Context) {
   ) {
     val notificationId = NotificationID.nextID
     val intent = Intent(context, QuoteDetailActivity::class.java).apply {
-      flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
       putExtra(QuoteDetailActivity.TICKER, quote.symbol)
     }
     val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
         .run {
           // Add the intent, which inflates the back stack
-          addNextIntentWithParentStack(intent)
+          addNextIntent(intent)
           // Get the PendingIntent containing the entire back stack
           getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
         }

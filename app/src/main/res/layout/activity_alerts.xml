@@ -37,6 +37,19 @@
         >
 
       <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@color/error_red"
+          android:gravity="center"
+          android:padding="@dimen/activity_horizontal_margin"
+          android:textColor="@color/snackbar_text"
+          android:text="@string/alerts_disabled"
+          android:visibility="gone"
+          tools:visibility="visible"
+          android:id="@+id/alerts_disabled_message"
+          />
+
+      <TextView
           android:id="@+id/tickerName"
           style="@style/BoldTextView"
           android:layout_width="match_parent"
