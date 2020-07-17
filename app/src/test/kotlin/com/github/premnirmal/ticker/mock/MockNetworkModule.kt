@@ -5,7 +5,7 @@ import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.HistoricalDataApi
+import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.NewsApi
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
@@ -56,8 +56,8 @@ class MockNetworkModule {
     Mocker.provide(NewsProvider::class)
 
   @Provides @Singleton internal fun provideHistoricalDataApi(context: Context,
-    okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory): HistoricalDataApi =
-    Mocker.provide(HistoricalDataApi::class)
+    okHttpClient: OkHttpClient, gson: Gson, converterFactory: GsonConverterFactory): ChartApi =
+    Mocker.provide(ChartApi::class)
 
   @Provides @Singleton internal fun provideHistoricalDataProvider(): IHistoryProvider =
     Mocker.provide(IHistoryProvider::class)

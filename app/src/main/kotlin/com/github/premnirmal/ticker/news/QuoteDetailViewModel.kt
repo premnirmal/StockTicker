@@ -69,7 +69,7 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
         _data.postValue(_data.value)
         return@launch
       }
-      val result = historyProvider.getHistoricalDataShort(symbol)
+      val result = historyProvider.fetchDataShort(symbol)
       if (result.wasSuccessful) {
         _data.value = result.data
       } else {

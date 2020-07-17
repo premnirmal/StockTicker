@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_graph.one_year
 import kotlinx.android.synthetic.main.activity_graph.progress
 import kotlinx.android.synthetic.main.activity_graph.three_month
 import kotlinx.android.synthetic.main.activity_graph.tickerName
+import kotlinx.android.synthetic.main.activity_graph.two_weeks
 
 class GraphActivity : BaseGraphActivity() {
 
@@ -61,6 +62,7 @@ class GraphActivity : BaseGraphActivity() {
     viewModel.fetchStock(ticker)
     var view: View? = null
     when (range) {
+      Range.TWO_WEEKS -> view = two_weeks
       Range.ONE_MONTH -> view = one_month
       Range.THREE_MONTH -> view = three_month
       Range.ONE_YEAR -> view = one_year
@@ -106,6 +108,7 @@ class GraphActivity : BaseGraphActivity() {
    */
   fun updateRange(v: View) {
     when (v.id) {
+      R.id.two_weeks -> range = Range.TWO_WEEKS
       R.id.one_month -> range = Range.ONE_MONTH
       R.id.three_month -> range = Range.THREE_MONTH
       R.id.one_year -> range = Range.ONE_YEAR
