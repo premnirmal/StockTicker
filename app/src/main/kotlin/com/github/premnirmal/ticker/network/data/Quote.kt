@@ -79,6 +79,15 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     }
     return changeString
   }
+  fun dividendInfo(): String {
+    return if (annualDividendRate <= 0f || annualDividendYield <= 0f) {
+      "--"
+    } else {
+      "${AppPreferences.DECIMAL_FORMAT_2DP.format(
+          annualDividendRate
+      )}% (${AppPreferences.DECIMAL_FORMAT_2DP.format(annualDividendYield)})"
+    }
+  }
 
   private fun positionPrice(): Float = position?.let { it ->
     it.averagePrice()

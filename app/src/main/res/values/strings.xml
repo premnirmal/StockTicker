@@ -180,4 +180,5 @@
   <string name="desc_channel_alerts">Stock alerts</string>
   <string name="desc_channel_summary">Daily summary</string>
   <string name="notification_summary_title">How did your watch list do today?</string>
+  <string name="dividend">Dividend</string>
 </resources>

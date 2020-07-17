@@ -170,4 +170,5 @@
   <string name="desc_channel_alerts">Lagerwarnungen</string>
   <string name="desc_channel_summary">Tägliche Zusammenfassung</string>
   <string name="notification_summary_title">Wie hat sich Ihr Portfolio heute entwickelt?</string>
+  <string name="dividend">Dividende</string>
 </resources>

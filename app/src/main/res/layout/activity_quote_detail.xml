@@ -111,6 +111,34 @@
               tools:text="+4.50 (2.00%)"
               />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            >
+          <TextView
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginEnd="2dp"
+              android:layout_marginRight="2dp"
+              android:textSize="@dimen/xlarge_text"
+              android:text="@string/dividend"
+              />
+          <TextView
+              android:id="@+id/dividend"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="2dp"
+              android:layout_marginStart="2dp"
+              android:layout_weight="1"
+              android:gravity="end|center_vertical"
+              android:lines="1"
+              android:textSize="@dimen/xlarge_text"
+              tools:text="+4.50 (2.00%)"
+              />
+        </LinearLayout>
         <TextView
             android:id="@+id/exchange"
             android:layout_width="match_parent"

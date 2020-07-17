@@ -101,12 +101,13 @@ class NotificationsHandler @Inject constructor(
       val workInfos = this.getWorkInfosByTag(DailySummaryNotificationWorker.TAG)
       val state = workInfos.get().firstOrNull()?.state
       if (state == State.ENQUEUED) {
-        this.cancelAllWorkByTag(DailySummaryNotificationWorker.TAG)
+        return
       }
       val endTime = appPreferences.endTime()
       var firstWorkerDue = ZonedDateTime.now()
-          .withHour(endTime.hour + 2)
+          .withHour(endTime.hour)
           .withMinute(endTime.minute)
+          .plusHours(2)
       if (firstWorkerDue.isBefore(ZonedDateTime.now())) {
         firstWorkerDue = firstWorkerDue.plusHours(24)
       }

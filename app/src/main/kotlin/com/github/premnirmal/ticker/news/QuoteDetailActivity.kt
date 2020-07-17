@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_quote_detail.alerts_container
 import kotlinx.android.synthetic.main.activity_quote_detail.average_price
 import kotlinx.android.synthetic.main.activity_quote_detail.change
 import kotlinx.android.synthetic.main.activity_quote_detail.day_change
+import kotlinx.android.synthetic.main.activity_quote_detail.dividend
 import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
 import kotlinx.android.synthetic.main.activity_quote_detail.exchange
 import kotlinx.android.synthetic.main.activity_quote_detail.graphView
@@ -205,6 +206,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       change.setTextColor(resources.getColor(color.negative_red))
       lastTradePrice.setTextColor(resources.getColor(color.negative_red))
     }
+    dividend.text = quote.dividendInfo()
     exchange.text = quote.stockExchange
     updatePositionsUi()
 

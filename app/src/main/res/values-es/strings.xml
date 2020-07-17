@@ -168,4 +168,5 @@
   <string name="desc_channel_alerts">Alertas de stock</string>
   <string name="desc_channel_summary">Resumen diario</string>
   <string name="notification_summary_title">¿Cómo estuvo su cartera hoy?</string>
+  <string name="dividend">Dividendo</string>
 </resources>
