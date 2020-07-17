@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.CandleStickChart
+import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.activity_graph.one_year
 import kotlinx.android.synthetic.main.activity_graph.progress
 import kotlinx.android.synthetic.main.activity_graph.three_month
 import kotlinx.android.synthetic.main.activity_graph.tickerName
+import kotlinx.android.synthetic.main.activity_graph.two_weeks
 
 class GraphActivity : BaseGraphActivity() {
 
@@ -61,6 +62,7 @@ class GraphActivity : BaseGraphActivity() {
     viewModel.fetchStock(ticker)
     var view: View? = null
     when (range) {
+      Range.TWO_WEEKS -> view = two_weeks
       Range.ONE_MONTH -> view = one_month
       Range.THREE_MONTH -> view = three_month
       Range.ONE_YEAR -> view = one_year
@@ -89,13 +91,13 @@ class GraphActivity : BaseGraphActivity() {
     }
   }
 
-  override fun onGraphDataAdded(graphView: CandleStickChart) {
+  override fun onGraphDataAdded(graphView: LineChart) {
     progress.visibility = View.GONE
     graph_holder.visibility = View.VISIBLE
     graphView.animateX(DURATION, Easing.EasingOption.EaseInOutCubic)
   }
 
-  override fun onNoGraphData(graphView: CandleStickChart) {
+  override fun onNoGraphData(graphView: LineChart) {
     progress.visibility = View.GONE
     graph_holder.visibility = View.VISIBLE
   }
@@ -106,6 +108,7 @@ class GraphActivity : BaseGraphActivity() {
    */
   fun updateRange(v: View) {
     when (v.id) {
+      R.id.two_weeks -> range = Range.TWO_WEEKS
       R.id.one_month -> range = Range.ONE_MONTH
       R.id.three_month -> range = Range.THREE_MONTH
       R.id.one_year -> range = Range.ONE_YEAR

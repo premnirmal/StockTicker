@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.mikephil.charting.charts.CandleStickChart
+import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
@@ -401,12 +401,12 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
   }
 
-  override fun onGraphDataAdded(graphView: CandleStickChart) {
+  override fun onGraphDataAdded(graphView: LineChart) {
     progress.visibility = View.GONE
     analytics.trackGeneralEvent(GeneralEvent("GraphLoaded"))
   }
 
-  override fun onNoGraphData(graphView: CandleStickChart) {
+  override fun onNoGraphData(graphView: LineChart) {
     progress.visibility = View.GONE
     analytics.trackGeneralEvent(GeneralEvent("NoGraphData"))
   }

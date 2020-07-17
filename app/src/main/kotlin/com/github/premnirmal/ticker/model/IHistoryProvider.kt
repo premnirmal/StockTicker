@@ -19,7 +19,6 @@ interface IHistoryProvider {
     class DateRange(duration: Duration) : Range(duration)
     companion object {
       val ONE_DAY = DateRange(Duration.ofDays(1))
-      val FIVE_DAYS = DateRange(Duration.ofDays(5))
       val TWO_WEEKS = DateRange(Duration.ofDays(14))
       val ONE_MONTH = DateRange(Duration.ofDays(30))
       val THREE_MONTH = DateRange(Duration.ofDays(90))

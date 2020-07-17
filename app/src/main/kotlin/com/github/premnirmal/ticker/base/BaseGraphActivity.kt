@@ -1,13 +1,11 @@
 package com.github.premnirmal.ticker.base
 
 import android.graphics.Color
-import android.graphics.Paint
-import com.github.mikephil.charting.charts.CandleStickChart
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.components.YAxis.AxisDependency.RIGHT
-import com.github.mikephil.charting.data.CandleData
-import com.github.mikephil.charting.data.CandleDataSet
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
@@ -20,7 +18,7 @@ abstract class BaseGraphActivity : BaseActivity() {
   protected var dataPoints: List<DataPoint>? = null
 
   protected fun setupGraphView() {
-    val graphView: CandleStickChart = findViewById(R.id.graphView)
+    val graphView: LineChart = findViewById(R.id.graphView)
     graphView.isDoubleTapToZoomEnabled = false
     graphView.axisLeft.setDrawGridLines(false)
     graphView.axisLeft.setDrawAxisLine(false)
@@ -32,7 +30,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.setXAxisRenderer(
         MultilineXAxisRenderer(
             graphView.viewPortHandler, graphView.xAxis,
-            graphView.getTransformer(RIGHT)
+            graphView.getTransformer(YAxis.AxisDependency.RIGHT)
         )
     )
     graphView.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
@@ -44,7 +42,7 @@ abstract class BaseGraphActivity : BaseActivity() {
   }
 
   protected fun loadGraph(ticker: String) {
-    val graphView: CandleStickChart = findViewById(R.id.graphView)
+    val graphView: LineChart = findViewById(R.id.graphView)
     if (dataPoints == null || dataPoints!!.isEmpty()) {
       onNoGraphData(graphView)
       graphView.setNoDataText(getString(R.string.no_data))
@@ -52,20 +50,22 @@ abstract class BaseGraphActivity : BaseActivity() {
       return
     }
     graphView.setNoDataText("")
-    graphView.candleData?.clearValues()
-    val series = CandleDataSet(dataPoints, ticker)
-//    series.setDrawHorizontalHighlightIndicator(false)
+    graphView.lineData?.clearValues()
+    val series = LineDataSet(dataPoints, ticker)
+    series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)
-    series.color = Color.rgb(80, 80, 80)
-    series.shadowColor = resources.getColor(R.color.disabled_grey)
-    series.shadowWidth = 5f
-    series.decreasingColor = resources.getColor(R.color.error_red)
-    series.decreasingPaintStyle = Paint.Style.FILL
-    series.increasingColor = resources.getColor(R.color.positive_green)
-    series.increasingPaintStyle = Paint.Style.FILL
-    series.neutralColor = Color.LTGRAY
+    val colorAccent = resources.getColor(R.color.color_accent)
+    series.setDrawFilled(true)
+    series.color = colorAccent
+    series.fillColor = colorAccent
+    series.fillAlpha = 150
+    series.setDrawCircles(true)
+    series.mode = LineDataSet.Mode.CUBIC_BEZIER
+    series.cubicIntensity = 0.07f
+    series.lineWidth = 2f
+    series.setDrawCircles(false)
     series.highLightColor = Color.GRAY
-    val lineData = CandleData(series)
+    val lineData = LineData(series)
     graphView.data = lineData
     val xAxis: XAxis = graphView.xAxis
     val yAxis: YAxis = graphView.axisRight
@@ -87,8 +87,8 @@ abstract class BaseGraphActivity : BaseActivity() {
     onGraphDataAdded(graphView)
   }
 
-  protected abstract fun onGraphDataAdded(graphView: CandleStickChart)
+  protected abstract fun onGraphDataAdded(graphView: LineChart)
 
-  protected abstract fun onNoGraphData(graphView: CandleStickChart)
+  protected abstract fun onNoGraphData(graphView: LineChart)
 
 }
