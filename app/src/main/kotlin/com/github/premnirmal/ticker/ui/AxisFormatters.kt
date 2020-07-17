@@ -10,7 +10,9 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.github.premnirmal.ticker.AppPreferences
-import org.threeten.bp.LocalDate
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 
 class DateAxisFormatter : IAxisValueFormatter {
 
@@ -18,7 +20,7 @@ class DateAxisFormatter : IAxisValueFormatter {
     value: Float,
     axis: AxisBase
   ): String {
-    val date = LocalDate.ofEpochDay(value.toLong())
+    val date = LocalDateTime.ofInstant(Instant.ofEpochSecond(value.toLong()), ZoneId.systemDefault()).toLocalDate()
     return date.format(AppPreferences.AXIS_DATE_FORMATTER)
   }
 }

@@ -230,7 +230,7 @@ class AppPreferences {
 
     val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)
-    val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd")
+    val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd-yyyy")
 
     val DECIMAL_FORMAT: Format = DecimalFormat("0.00##")
     val DECIMAL_FORMAT_2DP: Format = DecimalFormat("0.00")
