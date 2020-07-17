@@ -74,7 +74,7 @@
             android:layout_height="300dp"
             android:padding="8dp"
             >
-          <com.github.mikephil.charting.charts.LineChart
+          <com.github.mikephil.charting.charts.CandleStickChart
               android:id="@+id/graphView"
               android:layout_width="match_parent"
               android:layout_height="match_parent"

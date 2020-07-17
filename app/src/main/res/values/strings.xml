@@ -4,8 +4,7 @@
   <string name="news_endpoint" translatable="false">https://news.google.com/</string>
   <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
   <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
-  <string name="alpha_vantage_endpoint" translatable="false">https://www.alphavantage.co/</string>
-  <string name="alpha_vantage_api_key" translatable="false">9VQGQDBGD0L1B3IH</string>
+  <string name="historical_data_endpoint" translatable="false">https://query1.finance.yahoo.com/v8/finance/</string>
   <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
   <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/StockTicker/blob/master/PRIVACY_POLICY.md</string>
   <string name="dotdotdot" translatable="false">…</string>

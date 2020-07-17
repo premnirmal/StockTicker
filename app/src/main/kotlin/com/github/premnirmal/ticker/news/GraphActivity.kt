@@ -8,7 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.github.mikephil.charting.animation.Easing
-import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.CandleStickChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -89,13 +89,13 @@ class GraphActivity : BaseGraphActivity() {
     }
   }
 
-  override fun onGraphDataAdded(graphView: LineChart) {
+  override fun onGraphDataAdded(graphView: CandleStickChart) {
     progress.visibility = View.GONE
     graph_holder.visibility = View.VISIBLE
     graphView.animateX(DURATION, Easing.EasingOption.EaseInOutCubic)
   }
 
-  override fun onNoGraphData(graphView: LineChart) {
+  override fun onNoGraphData(graphView: CandleStickChart) {
     progress.visibility = View.GONE
     graph_holder.visibility = View.VISIBLE
   }
