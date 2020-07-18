@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IHistoryProvider
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
@@ -63,13 +64,9 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
     stocksProvider.removeStock(ticker)
   }
 
-  fun fetchHistoricalDataShort(symbol: String) {
+  fun fetchChartData(symbol: String, range: Range) {
     viewModelScope.launch {
-      if (_data.value != null) {
-        _data.postValue(_data.value)
-        return@launch
-      }
-      val result = historyProvider.fetchDataShort(symbol)
+      val result = historyProvider.fetchDataByRange(symbol, range)
       if (result.wasSuccessful) {
         _data.value = result.data
       } else {

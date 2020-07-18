@@ -24,8 +24,6 @@ import kotlinx.android.synthetic.main.activity_positions.toolbar
 import kotlinx.android.synthetic.main.activity_positions.totalShares
 import kotlinx.android.synthetic.main.activity_positions.totalValue
 import kotlinx.android.synthetic.main.layout_position_holding.view.remove_position
-import java.util.regex.Pattern
-import kotlinx.coroutines.runBlocking
 import java.text.NumberFormat
 import javax.inject.Inject
 
@@ -51,7 +49,7 @@ class AddPositionActivity : BaseActivity() {
       finish()
     }
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
-      ticker = intent.getStringExtra(TICKER)
+      ticker = intent.getStringExtra(TICKER)!!
     } else {
       ticker = ""
       InAppMessage.showToast(this, R.string.error_symbol)

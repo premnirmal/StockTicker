@@ -31,6 +31,7 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -38,6 +39,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -80,6 +82,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var db: QuotesDB
+  @Inject internal lateinit var notificationsHandler: NotificationsHandler
 
   // ChildFragment
 
@@ -326,6 +329,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             startTimePref.summary = newValue.toString()
             stocksProvider.schedule()
+            notificationsHandler.enqueueNotification(REPLACE)
             InAppMessage.showMessage(requireActivity(), R.string.start_time_updated)
             return true
           }
@@ -359,6 +363,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             endTimePref.summary = newValue.toString()
             stocksProvider.schedule()
+            notificationsHandler.enqueueNotification(REPLACE)
             InAppMessage.showMessage(requireActivity(), R.string.end_time_updated)
             return true
           }
@@ -392,6 +397,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 it.getDisplayName(SHORT, Locale.getDefault())
               }
           stocksProvider.schedule()
+          notificationsHandler.enqueueNotification(REPLACE)
           InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
           broadcastUpdateWidget()
           return true
@@ -711,6 +717,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           .apply()
       preference.summary = time
       stocksProvider.schedule()
+      notificationsHandler.enqueueNotification(REPLACE)
       InAppMessage.showMessage(requireActivity(), messageRes)
     }
   }

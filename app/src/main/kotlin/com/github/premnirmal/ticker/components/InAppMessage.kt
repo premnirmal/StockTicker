@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.snackbar.Snackbar
 
@@ -40,19 +41,8 @@ object InAppMessage {
     snackbar.show()
   }
 
-  fun showMessage(view: ViewGroup, messageResId: Int, error: Boolean) {
-    showMessage(view, view.resources.getString(messageResId), error)
-  }
-
   fun showMessage(view: ViewGroup, message: String, error: Boolean) {
     val snackbar = createSnackbar(view, message, error)
-    snackbar.show()
-  }
-
-  fun showMessage(activity: Activity, message: CharSequence, actionText: CharSequence,
-                  actionClick: View.OnClickListener, error: Boolean = false) {
-    val snackbar = createSnackbar(activity.getRootView(), message, error)
-    snackbar.setAction(actionText, actionClick)
     snackbar.show()
   }
 
@@ -69,7 +59,7 @@ object InAppMessage {
       snackBarView.background = view.context.resources.getDrawable(bg)
     }
     val text = snackBarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-    text.setTextColor(view.context.resources.getColor(if (error) R.color.white else R.color.snackbar_text))
+    text.setTextColor(ContextCompat.getColor(view.context, if (error) R.color.white else R.color.snackbar_text))
     return snackbar
   }
 }

@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
@@ -18,6 +19,7 @@ import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
@@ -42,18 +44,23 @@ import kotlinx.android.synthetic.main.activity_quote_detail.exchange
 import kotlinx.android.synthetic.main.activity_quote_detail.graphView
 import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
 import kotlinx.android.synthetic.main.activity_quote_detail.lastTradePrice
+import kotlinx.android.synthetic.main.activity_quote_detail.max
 import kotlinx.android.synthetic.main.activity_quote_detail.news_container
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_container
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_display
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_header
 import kotlinx.android.synthetic.main.activity_quote_detail.numShares
+import kotlinx.android.synthetic.main.activity_quote_detail.one_month
+import kotlinx.android.synthetic.main.activity_quote_detail.one_year
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_container
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_header
 import kotlinx.android.synthetic.main.activity_quote_detail.progress
 import kotlinx.android.synthetic.main.activity_quote_detail.recycler_view
+import kotlinx.android.synthetic.main.activity_quote_detail.three_month
 import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
 import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
 import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
+import kotlinx.android.synthetic.main.activity_quote_detail.two_weeks
 import javax.inject.Inject
 
 class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListener {
@@ -75,6 +82,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private lateinit var ticker: String
   private lateinit var quote: Quote
   private lateinit var viewModel: QuoteDetailViewModel
+  override var range: Range = Range.TWO_WEEKS
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -140,6 +148,15 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       )
     })
     viewModel.fetchQuote(ticker)
+    var view: View? = null
+    when (range) {
+      Range.TWO_WEEKS -> view = two_weeks
+      Range.ONE_MONTH -> view = one_month
+      Range.THREE_MONTH -> view = three_month
+      Range.ONE_YEAR -> view = one_year
+      Range.MAX -> view = max
+    }
+    view?.isEnabled = false
   }
 
   private fun setupUi() {
@@ -200,11 +217,11 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
     change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
-      change.setTextColor(resources.getColor(color.positive_green))
-      lastTradePrice.setTextColor(resources.getColor(color.positive_green))
+      change.setTextColor(ContextCompat.getColor(this, color.positive_green))
+      lastTradePrice.setTextColor(ContextCompat.getColor(this, color.positive_green))
     } else {
-      change.setTextColor(resources.getColor(color.negative_red))
-      lastTradePrice.setTextColor(resources.getColor(color.negative_red))
+      change.setTextColor(ContextCompat.getColor(this, color.negative_red))
+      lastTradePrice.setTextColor(ContextCompat.getColor(this, color.negative_red))
     }
     dividend.text = quote.dividendInfo()
     exchange.text = quote.stockExchange
@@ -262,7 +279,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
 
   private fun fetchData() {
     if (isNetworkOnline()) {
-      viewModel.fetchHistoricalDataShort(quote.symbol)
+      progress.visibility = View.VISIBLE
+      viewModel.fetchChartData(quote.symbol, range)
     } else {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.no_network_message))
@@ -350,18 +368,18 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         total_gain_loss.visibility = View.VISIBLE
         total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
         if (quote.gainLoss() >= 0) {
-          total_gain_loss.setTextColor(resources.getColor(color.positive_green))
+          total_gain_loss.setTextColor(ContextCompat.getColor(this, color.positive_green))
         } else {
-          total_gain_loss.setTextColor(resources.getColor(color.negative_red))
+          total_gain_loss.setTextColor(ContextCompat.getColor(this, color.negative_red))
         }
         average_price.visibility = View.VISIBLE
         average_price.setText(quote.averagePositionPrice())
         day_change.visibility = View.VISIBLE
         day_change.setText(quote.dayChangeString())
         if (quote.change > 0 || quote.changeInPercent >= 0) {
-          day_change.setTextColor(resources.getColor(color.positive_green))
+          day_change.setTextColor(ContextCompat.getColor(this, color.positive_green))
         } else {
-          day_change.setTextColor(resources.getColor(color.negative_red))
+          day_change.setTextColor(ContextCompat.getColor(this, color.negative_red))
         }
       } else {
         total_gain_loss.visibility = View.GONE
@@ -399,6 +417,10 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     } else {
       news_container.displayedChild = INDEX_ERROR
     }
+  }
+
+  override fun fetchGraphData() {
+    fetchData()
   }
 
   override fun onGraphDataAdded(graphView: LineChart) {

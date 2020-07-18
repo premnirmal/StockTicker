@@ -152,6 +152,10 @@
   <string name="one_month">1 Month</string>
   <string name="three_month">3 Months</string>
   <string name="one_year">1 Year</string>
+  <string name="two_weeks_short">2W</string>
+  <string name="one_month_short">1M</string>
+  <string name="three_month_short">3M</string>
+  <string name="one_year_short">1Y</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Error loading graph</string>
   <string name="widgets">Widgets</string>

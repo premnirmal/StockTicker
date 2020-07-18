@@ -79,6 +79,76 @@
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:orientation="horizontal"
+          android:layout_margin="@dimen/activity_vertical_margin"
+          >
+
+        <Button
+            android:id="@+id/two_weeks"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:onClick="updateRange"
+            android:text="@string/two_weeks_short"
+            style="@style/ButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/one_month"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:onClick="updateRange"
+            android:text="@string/one_month_short"
+            style="@style/ButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/three_month"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:onClick="updateRange"
+            android:text="@string/three_month_short"
+            style="@style/ButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/one_year"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:onClick="updateRange"
+            android:text="@string/one_year_short"
+            style="@style/ButtonStyle"
+            />
+
+        <Button
+            android:id="@+id/max"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:onClick="updateRange"
+            android:text="@string/max"
+            style="@style/ButtonStyle"
+            />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
           android:layout_margin="8dp"
           android:background="@drawable/card_bg"
           android:orientation="vertical"

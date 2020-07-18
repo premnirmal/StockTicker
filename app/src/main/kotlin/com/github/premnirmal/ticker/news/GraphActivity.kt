@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.news
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
@@ -34,10 +33,10 @@ class GraphActivity : BaseGraphActivity() {
   }
 
   override val simpleName: String = "GraphActivity"
-  private var range = Range.THREE_MONTH
   private lateinit var ticker: String
   protected lateinit var quote: Quote
   private lateinit var viewModel: GraphViewModel
+  override var range: Range = Range.THREE_MONTH
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -74,13 +73,13 @@ class GraphActivity : BaseGraphActivity() {
   override fun onStart() {
     super.onStart()
     if (dataPoints == null) {
-      getData()
+      fetchGraphData()
     } else {
       loadGraph(ticker)
     }
   }
 
-  private fun getData() {
+  override fun fetchGraphData() {
     if (isNetworkOnline()) {
       graph_holder.visibility = View.GONE
       progress.visibility = View.VISIBLE
@@ -100,23 +99,5 @@ class GraphActivity : BaseGraphActivity() {
   override fun onNoGraphData(graphView: LineChart) {
     progress.visibility = View.GONE
     graph_holder.visibility = View.VISIBLE
-  }
-
-  /**
-   * xml OnClick
-   * @param v
-   */
-  fun updateRange(v: View) {
-    when (v.id) {
-      R.id.two_weeks -> range = Range.TWO_WEEKS
-      R.id.one_month -> range = Range.ONE_MONTH
-      R.id.three_month -> range = Range.THREE_MONTH
-      R.id.one_year -> range = Range.ONE_YEAR
-      R.id.max -> range = Range.MAX
-    }
-    val parent = v.parent as ViewGroup
-    (0 until parent.childCount).map { parent.getChildAt(it) }
-        .forEach { it.isEnabled = it != v }
-    getData()
   }
 }

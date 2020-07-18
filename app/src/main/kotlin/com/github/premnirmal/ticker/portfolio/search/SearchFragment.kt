@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -87,7 +88,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
       toolbar.setNavigationIcon(R.drawable.ic_close)
       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-        toolbar.navigationIcon?.setTint(resources.getColor(R.color.icon_tint))
+        toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
         toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
       }
       toolbar.setNavigationOnClickListener { requireActivity().finish() }

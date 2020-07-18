@@ -126,6 +126,7 @@ class AlarmScheduler {
         .setInitialDelay(msToNextAlarm, MILLISECONDS)
         .build()
     with(WorkManager.getInstance(context)) {
+      cancelAllWorkByTag(RefreshWorker.TAG)
       this.enqueue(workRequest)
     }
     return nextAlarmDate

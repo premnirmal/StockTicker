@@ -47,8 +47,8 @@ dexcount {
 }
 
 android {
-  compileSdkVersion 29
-  buildToolsVersion '29.0.2'
+  compileSdkVersion 30
+  buildToolsVersion '30.0.0'
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -60,7 +60,7 @@ android {
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 16
-    targetSdkVersion 29
+    targetSdkVersion 30
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code

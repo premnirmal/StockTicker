@@ -43,7 +43,7 @@ class GraphViewModel(application: Application): AndroidViewModel(application) {
     }
   }
 
-  fun fetchHistoricalDataByRange(ticker: String, range: IHistoryProvider.Range.DateRange) {
+  fun fetchHistoricalDataByRange(ticker: String, range: IHistoryProvider.Range) {
     viewModelScope.launch {
       val result = historyProvider.fetchDataByRange(ticker, range)
       if (result.wasSuccessful) {

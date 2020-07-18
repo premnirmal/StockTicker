@@ -13,8 +13,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingPeriodicWorkPolicy.KEEP
 import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkInfo.State
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AsyncBus
@@ -96,13 +97,8 @@ class NotificationsHandler @Inject constructor(
     }
   }
 
-  private fun enqueueNotification() {
+  fun enqueueNotification(policy: ExistingPeriodicWorkPolicy = KEEP) {
     with(WorkManager.getInstance(context)) {
-      val workInfos = this.getWorkInfosByTag(DailySummaryNotificationWorker.TAG)
-      val state = workInfos.get().firstOrNull()?.state
-      if (state == State.ENQUEUED) {
-        return
-      }
       val endTime = appPreferences.endTime()
       var firstWorkerDue = ZonedDateTime.now()
           .withHour(endTime.hour)
@@ -116,7 +112,7 @@ class NotificationsHandler @Inject constructor(
           .setInitialDelay(delay, MILLISECONDS)
           .addTag(DailySummaryNotificationWorker.TAG)
           .build()
-      this.enqueue(request)
+      this.enqueueUniquePeriodicWork(DailySummaryNotificationWorker.TAG, policy, request)
     }
   }
 

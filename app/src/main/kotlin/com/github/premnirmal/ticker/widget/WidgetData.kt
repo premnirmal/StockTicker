@@ -6,13 +6,13 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import java.util.Arrays
 import javax.inject.Inject
 
 class WidgetData {
@@ -63,7 +63,7 @@ class WidgetData {
       ArrayList()
     } else {
       ArrayList(
-          Arrays.asList(
+          listOf(
               *tickerListVars.split(",".toRegex()).dropLastWhile(String::isEmpty).toTypedArray()
           )
       )
@@ -81,10 +81,9 @@ class WidgetData {
     }
   }
 
-  var positiveTextColor: Int = 0
+  val positiveTextColor: Int
     @ColorRes get() {
-      val bgPref = preferences.getInt(WIDGET_BG, TRANSPARENT)
-      return when (bgPref) {
+      return when (preferences.getInt(WIDGET_BG, TRANSPARENT)) {
         TRANSLUCENT -> R.color.text_widget_positive
         DARK -> R.color.text_widget_positive
         LIGHT -> R.color.text_widget_positive_dark
@@ -141,13 +140,12 @@ class WidgetData {
 
   @ColorInt fun textColor(): Int {
     val pref = textColorPref()
-    return if (pref == 0) context.resources.getColor(R.color.widget_text)
-    else context.resources.getColor(R.color.dark_widget_text)
+    return if (pref == 0) ContextCompat.getColor(context, R.color.widget_text)
+    else ContextCompat.getColor(context, R.color.dark_widget_text)
   }
 
   @LayoutRes fun stockViewLayout(): Int {
-    val pref = layoutPref()
-    return when (pref) {
+    return when (layoutPref()) {
       0 -> R.layout.stockview
       1 -> R.layout.stockview2
       else -> R.layout.stockview3
@@ -167,8 +165,7 @@ class WidgetData {
   }
 
   @DrawableRes fun backgroundResource(): Int {
-    val bgPref = bgPref()
-    return when (bgPref) {
+    return when (bgPref()) {
       TRANSLUCENT -> R.drawable.translucent_widget_bg
       DARK -> R.drawable.dark_widget_bg
       LIGHT -> R.drawable.light_widget_bg
