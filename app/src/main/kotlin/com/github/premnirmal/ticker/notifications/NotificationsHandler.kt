@@ -281,7 +281,7 @@ private class NotificationFactory(private val context: Context) {
   fun sendGenericAlert(
     quote: Quote
   ) {
-    val title = quote.symbol
+    val title = "${quote.symbol} ${quote.changePercentStringWithSign()}"
     val text = "${quote.changePercentStringWithSign()} ${quote.name}"
     sendNotification(quote, title, text)
   }
