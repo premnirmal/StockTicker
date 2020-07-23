@@ -103,7 +103,7 @@ class NotificationsHandler @Inject constructor(
       var firstWorkerDue = ZonedDateTime.now()
           .withHour(endTime.hour)
           .withMinute(endTime.minute)
-          .plusHours(2)
+          .plusHours(1)
       if (firstWorkerDue.isBefore(ZonedDateTime.now())) {
         firstWorkerDue = firstWorkerDue.plusHours(24)
       }
