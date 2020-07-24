@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_notes.notesInputEditText
 import kotlinx.android.synthetic.main.activity_notes.tickerName

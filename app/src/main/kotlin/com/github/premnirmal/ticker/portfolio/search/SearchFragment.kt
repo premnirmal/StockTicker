@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -28,6 +29,7 @@ import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.showKeyboard
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
@@ -113,6 +115,13 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
             }
       }
       adapter.notifyDataSetChanged()
+    }
+  }
+
+  override fun onHiddenChanged(hidden: Boolean) {
+    super.onHiddenChanged(hidden)
+    if (hidden) dismissKeyboard() else {
+      search_view.showKeyboard()
     }
   }
 

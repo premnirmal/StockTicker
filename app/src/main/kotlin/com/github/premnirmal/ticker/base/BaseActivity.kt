@@ -3,8 +3,6 @@ package com.github.premnirmal.ticker.base
 import android.content.Context
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.analytics.Analytics
@@ -73,13 +71,5 @@ abstract class BaseActivity : AppCompatActivity() {
   protected fun showErrorAndFinish() {
     InAppMessage.showToast(this, R.string.error_symbol)
     finish()
-  }
-
-  protected fun dismissKeyboard() {
-    val view = currentFocus
-    if (view is TextView) {
-      val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-      imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
   }
 }

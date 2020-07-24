@@ -30,7 +30,7 @@ class DbViewerActivity : BaseActivity() {
       finish()
     }
 
-    viewModel.htmlFile.observe(this, Observer {
+    viewModel.htmlText.observe(this, Observer {
       webview.loadUrl("file://${it.absolutePath}")
     })
 
