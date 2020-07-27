@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
@@ -44,8 +43,7 @@ class GraphActivity : BaseGraphActivity() {
     setContentView(R.layout.activity_graph)
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
-    viewModel = ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
-        .get(GraphViewModel::class.java)
+    viewModel = ViewModelProvider(this).get(GraphViewModel::class.java)
     viewModel.quote.observe(this, Observer { quote ->
       this.quote = quote
       tickerName.text = ticker

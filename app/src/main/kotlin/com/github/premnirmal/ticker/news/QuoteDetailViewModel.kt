@@ -1,9 +1,8 @@
 package com.github.premnirmal.ticker.news
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchResult
@@ -18,7 +17,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class QuoteDetailViewModel(application: Application): AndroidViewModel(application) {
+class QuoteDetailViewModel : ViewModel() {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var newsProvider: NewsProvider
@@ -73,10 +72,6 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
         _dataFetchError.postValue(result.error)
       }
     }
-  }
-
-  fun hasTicker(ticker: String): Boolean {
-    return stocksProvider.hasTicker(ticker)
   }
 
   fun fetchNews(quote: Quote) {

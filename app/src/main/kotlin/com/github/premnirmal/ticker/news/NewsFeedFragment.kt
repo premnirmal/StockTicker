@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -39,8 +38,7 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     viewModel =
-      ViewModelProvider(this, AndroidViewModelFactory.getInstance(requireActivity().application))
-          .get(NewsFeedViewModel::class.java)
+      ViewModelProvider(this).get(NewsFeedViewModel::class.java)
     viewModel.newsFeed.observe(this, Observer {
       if (it.wasSuccessful) {
         if (it.data.isEmpty()) {

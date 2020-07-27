@@ -9,7 +9,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.CustomTabs
@@ -105,8 +104,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
 
-    viewModel = ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
-        .get(QuoteDetailViewModel::class.java)
+    viewModel = ViewModelProvider(this).get(QuoteDetailViewModel::class.java)
     viewModel.quote.observe(this, Observer { result ->
       if (result.wasSuccessful) {
         quote = result.data
@@ -327,7 +325,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   }
 
   private fun updatePositionsUi() {
-    val isInPortfolio = viewModel.hasTicker(ticker)
+    val isInPortfolio = viewModel.isInPortfolio(ticker)
     if (isInPortfolio) {
       positions_container.visibility = View.VISIBLE
       positions_header.visibility = View.VISIBLE
