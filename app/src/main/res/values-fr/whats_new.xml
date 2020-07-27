@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Ajouter le même stock à plusieurs portefeuilles</item>
     <item>Ajout d\'un intervalle de mise à jour de 5 minutes</item>
     <item>Traductions allemandes. Merci @jurgen178</item>
     <item>Alertes de prix. Merci @jurgen178</item>
