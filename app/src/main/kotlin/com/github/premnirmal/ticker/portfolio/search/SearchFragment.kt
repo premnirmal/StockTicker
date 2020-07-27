@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -105,6 +106,13 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     if (viewModel.searchResult.value?.wasSuccessful == true) {
       adapter.setData(viewModel.searchResult.value!!.data)
     }
+    viewModel.searchResult.observe(viewLifecycleOwner, Observer {
+      if (it.wasSuccessful) {
+        adapter.setData(it.data)
+      } else {
+        InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
+      }
+    })
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -123,7 +131,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     ticker: String,
     widgetId: Int
   ) {
-    if (!viewModel.addTickerToWidget(ticker, widgetId)) {
+    if (viewModel.addTickerToWidget(ticker, widgetId)) {
       InAppMessage.showToast(requireActivity(), getString(R.string.added_to_list, ticker))
     } else {
       requireActivity().showDialog(getString(R.string.already_in_portfolio, ticker))
@@ -190,7 +198,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
                 .setItems(widgetNames) { dialog, which ->
                   val id = widgetDatas[which].widgetId
                   addTickerToWidget(ticker, id)
-                  suggestion.exists = !suggestion.exists
+                  suggestion.exists = viewModel.doesSuggestionExist(suggestion)
                   adapter.notifyDataSetChanged()
                   dialog.dismiss()
                 }
