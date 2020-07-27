@@ -67,7 +67,7 @@
             android:layout_height="match_parent"
             />
 
-        <com.github.mikephil.charting.charts.LineChart
+        <com.github.mikephil.charting.charts.CandleStickChart
             android:id="@+id/candleChartView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

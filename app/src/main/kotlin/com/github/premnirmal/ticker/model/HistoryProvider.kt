@@ -59,6 +59,7 @@ class HistoryProvider : IHistoryProvider {
         timestamp.mapIndexed { i, stamp ->
           val dataQuote = indicators.quote.first()
           DataPoint(
+              stamp + meta.gmtoffset,
               stamp.toFloat(), dataQuote.high[i].toFloat(), dataQuote.low[i].toFloat(),
               dataQuote.open[i].toFloat(), dataQuote.close[i].toFloat()
           )

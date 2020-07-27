@@ -10,12 +10,14 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.charts.CandleStickChart
+import com.github.mikephil.charting.charts.Chart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
-import com.github.premnirmal.ticker.base.BaseGraphActivity.ChartType.Line
+import com.github.premnirmal.ticker.base.BaseGraphActivity.ChartType.CandleStick
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -36,14 +38,15 @@ import kotlinx.android.synthetic.main.activity_quote_detail.alert_below
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_header
 import kotlinx.android.synthetic.main.activity_quote_detail.alerts_container
 import kotlinx.android.synthetic.main.activity_quote_detail.average_price
+import kotlinx.android.synthetic.main.activity_quote_detail.candleChartView
 import kotlinx.android.synthetic.main.activity_quote_detail.change
 import kotlinx.android.synthetic.main.activity_quote_detail.day_change
 import kotlinx.android.synthetic.main.activity_quote_detail.dividend
 import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
 import kotlinx.android.synthetic.main.activity_quote_detail.exchange
-import kotlinx.android.synthetic.main.activity_quote_detail.graphView
 import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
 import kotlinx.android.synthetic.main.activity_quote_detail.lastTradePrice
+import kotlinx.android.synthetic.main.activity_quote_detail.lineChartView
 import kotlinx.android.synthetic.main.activity_quote_detail.max
 import kotlinx.android.synthetic.main.activity_quote_detail.news_container
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_container
@@ -81,7 +84,11 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private lateinit var quote: Quote
   private lateinit var viewModel: QuoteDetailViewModel
   override var range: Range = Range.TWO_WEEKS
-  override var chartType: ChartType = Line
+  override var chartType: ChartType = CandleStick
+  override val candleStickChart: CandleStickChart
+    get() = candleChartView
+  override val lineChart: LineChart
+    get() = lineChartView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -115,7 +122,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
             this@QuoteDetailActivity, R.string.error_fetching_stock, error = true
         )
         progress.visibility = View.GONE
-        graphView.setNoDataText(getString(R.string.error_fetching_stock))
+        lineChart.setNoDataText(getString(R.string.error_fetching_stock))
+        candleStickChart.setNoDataText(getString(R.string.error_fetching_stock))
         news_container.displayedChild = INDEX_ERROR
       }
     })
@@ -125,7 +133,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     })
     viewModel.dataFetchError.observe(this, Observer {
       progress.visibility = View.GONE
-      graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+      lineChart.setNoDataText(getString(R.string.graph_fetch_failed))
+      candleStickChart.setNoDataText(getString(R.string.graph_fetch_failed))
       InAppMessage.showMessage(this@QuoteDetailActivity, R.string.graph_fetch_failed, error = true)
     })
     viewModel.newsData.observe(this, Observer { data ->
@@ -278,7 +287,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       viewModel.fetchChartData(quote.symbol, range)
     } else {
       progress.visibility = View.GONE
-      graphView.setNoDataText(getString(R.string.no_network_message))
+      lineChart.setNoDataText(getString(R.string.no_network_message))
+      candleStickChart.setNoDataText(getString(R.string.no_network_message))
     }
   }
 
@@ -418,12 +428,12 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     fetchData()
   }
 
-  override fun onGraphDataAdded(graphView: LineChart) {
+  override fun onGraphDataAdded(graphView: Chart<*>) {
     progress.visibility = View.GONE
     analytics.trackGeneralEvent(GeneralEvent("GraphLoaded"))
   }
 
-  override fun onNoGraphData(graphView: LineChart) {
+  override fun onNoGraphData(graphView: Chart<*>) {
     progress.visibility = View.GONE
     analytics.trackGeneralEvent(GeneralEvent("NoGraphData"))
   }

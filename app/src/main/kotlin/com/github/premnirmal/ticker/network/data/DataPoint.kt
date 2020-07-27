@@ -10,6 +10,7 @@ import java.io.Serializable
 
 @Parcelize
 class DataPoint(
+  val epochDateTime: Long,
   val xVal: Float,
   val shadowH: Float,
   val shadowL: Float,

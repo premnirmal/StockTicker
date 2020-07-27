@@ -16,21 +16,23 @@ import com.github.mikephil.charting.components.YAxis.AxisDependency
 import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition.OUTSIDE_CHART
 import com.github.mikephil.charting.data.CandleData
 import com.github.mikephil.charting.data.CandleDataSet
-import com.github.mikephil.charting.data.CandleEntry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineDataSet.Mode.CUBIC_BEZIER
+import com.github.premnirmal.ticker.base.BaseGraphActivity.ChartType.CandleStick
+import com.github.premnirmal.ticker.base.BaseGraphActivity.ChartType.Line
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion
 import com.github.premnirmal.ticker.network.data.DataPoint
-import com.github.premnirmal.ticker.news.StockViewRange
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
+import com.github.premnirmal.ticker.ui.DateTimeAxisFormatter
 import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
 import com.github.premnirmal.ticker.ui.TextMarkerView
+import com.github.premnirmal.ticker.ui.TextMarkerViewCandleChart
 import com.github.premnirmal.ticker.ui.ValueAxisFormatter
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import com.github.premnirmal.tickerwidget.R.string
+import org.threeten.bp.format.DateTimeFormatter
 
 abstract class BaseGraphActivity : BaseActivity() {
 
@@ -41,8 +43,12 @@ abstract class BaseGraphActivity : BaseActivity() {
 
   enum class ChartType {
     Line,
-    Candle,
+    CandleStick,
   }
+
+  private val axisDateTimeFormatter: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+  private val axisDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd-yyyy")
 
   protected var dataPoints: List<DataPoint>? = null
   protected abstract var range: Range
@@ -103,15 +109,20 @@ abstract class BaseGraphActivity : BaseActivity() {
     candleStickChart.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
     candleStickChart.legend.isEnabled = false
     candleStickChart.description = null
-    candleStickChart.setNoDataTextColor(resources.getColor(R.color.color_accent))
+    candleStickChart.setNoDataTextColor(ContextCompat.getColor(this, R.color.color_accent))
     candleStickChart.setNoDataText("")
   }
 
   protected fun loadGraph(ticker: String) {
-    loadLineChart(ticker)
+    when (chartType) {
+      Line -> loadLineChart(ticker)
+      CandleStick -> loadCandleStickChart(ticker)
+    }
   }
 
-  protected fun loadCandleStickChart(ticker: String) {
+  private fun loadCandleStickChart(ticker: String) {
+    lineChart.visibility = View.GONE
+    candleStickChart.visibility = View.VISIBLE
     if (dataPoints == null || dataPoints!!.isEmpty()) {
       onNoGraphData(candleStickChart)
       candleStickChart.setNoDataText(getString(string.no_data))
@@ -131,28 +142,25 @@ abstract class BaseGraphActivity : BaseActivity() {
     series.neutralColor = Color.LTGRAY
     series.setDrawValues(false)
     candleStickChart.data = CandleData(series)
-
     val xAxis: XAxis = candleStickChart.xAxis
     val yAxis: YAxis = candleStickChart.axisRight
 
     // TODO ofLocalizedTime and ofLocalizeDateTime does not work with the formatters, use ofPattern for now
     when (range) {
       Range.TWO_WEEKS -> {
-        candleStickChart.marker = TextMarkerViewCandleChart(this, axisDateTimeFormatter, stockDataEntries!!)
-        xAxis.valueFormatter = DateTimeAxisFormatter(stockDataEntries!!, axisDateFormatter)
+        candleStickChart.marker = TextMarkerViewCandleChart(this, axisDateTimeFormatter, dataPoints!!)
+        xAxis.valueFormatter = DateTimeAxisFormatter(dataPoints!!, axisDateFormatter)
       }
       Range.ONE_MONTH -> {
-        candleStickChart.marker = TextMarkerViewCandleChart(this, axisDateTimeFormatter, stockDataEntries!!)
-        xAxis.valueFormatter = DateTimeAxisFormatter(stockDataEntries!!, axisDateFormatter)
+        candleStickChart.marker = TextMarkerViewCandleChart(this, axisDateTimeFormatter, dataPoints!!)
+        xAxis.valueFormatter = DateTimeAxisFormatter(dataPoints!!, axisDateFormatter)
       }
       else -> {
-        candleStickChart.marker = TextMarkerViewCandleChart(this, axisDateFormatter, stockDataEntries!!)
-        xAxis.valueFormatter = DateTimeAxisFormatter(stockDataEntries!!, axisDateFormatter)
+        candleStickChart.marker = TextMarkerViewCandleChart(this, axisDateFormatter, dataPoints!!)
+        xAxis.valueFormatter = DateTimeAxisFormatter(dataPoints!!, axisDateFormatter)
       }
     }
-
     yAxis.valueFormatter = ValueAxisFormatter()
-
     xAxis.position = BOTTOM
     xAxis.textSize = 10f
     yAxis.textSize = 10f
@@ -170,6 +178,8 @@ abstract class BaseGraphActivity : BaseActivity() {
   }
 
   private fun loadLineChart(ticker: String) {
+    lineChart.visibility = View.VISIBLE
+    candleStickChart.visibility = View.GONE
     if (dataPoints == null || dataPoints!!.isEmpty()) {
       onNoGraphData(lineChart)
       lineChart.setNoDataText(getString(string.no_data))
