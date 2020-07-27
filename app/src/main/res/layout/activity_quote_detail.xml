@@ -60,10 +60,18 @@
           android:layout_height="200dp"
           android:padding="8dp"
           >
+
         <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/graphView"
+            android:id="@+id/lineChartView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/candleChartView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
             />
 
         <ProgressBar

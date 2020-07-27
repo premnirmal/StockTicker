@@ -41,7 +41,7 @@ class GraphActivity : BaseGraphActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_graph)
-    setupGraphView()
+    setupGraphViews()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     viewModel = ViewModelProvider(this).get(GraphViewModel::class.java)
     viewModel.quote.observe(this, Observer { quote ->

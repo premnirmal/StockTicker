@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
+import com.github.premnirmal.ticker.base.BaseGraphActivity.ChartType.Line
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -80,6 +81,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private lateinit var quote: Quote
   private lateinit var viewModel: QuoteDetailViewModel
   override var range: Range = Range.TWO_WEEKS
+  override var chartType: ChartType = Line
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -99,7 +101,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     )
     recycler_view.adapter = adapter
     recycler_view.isNestedScrollingEnabled = false
-    setupGraphView()
+    setupGraphViews()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
 
     viewModel = ViewModelProvider(this).get(QuoteDetailViewModel::class.java)
