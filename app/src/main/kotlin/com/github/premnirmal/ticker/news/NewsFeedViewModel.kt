@@ -1,9 +1,8 @@
 package com.github.premnirmal.ticker.news
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchResult
@@ -12,7 +11,7 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NewsFeedViewModel(application: Application) : AndroidViewModel(application) {
+class NewsFeedViewModel : ViewModel() {
 
   @Inject lateinit var newsProvider: NewsProvider
 

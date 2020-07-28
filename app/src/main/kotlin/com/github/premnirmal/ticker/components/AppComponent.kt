@@ -36,6 +36,7 @@ import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
+import com.github.premnirmal.ticker.portfolio.search.SearchViewModel
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
@@ -163,4 +164,6 @@ interface AppComponent {
   fun inject(notesViewModel: NotesViewModel)
 
   fun inject(alertsViewModel: AlertsViewModel)
+
+  fun inject(searchViewModel: SearchViewModel)
 }

@@ -9,7 +9,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.CustomTabs
@@ -61,7 +60,6 @@ import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
 import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
 import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
 import kotlinx.android.synthetic.main.activity_quote_detail.two_weeks
-import javax.inject.Inject
 
 class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListener {
 
@@ -77,7 +75,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   }
 
   override val simpleName: String = "NewsFeedActivity"
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   private lateinit var adapter: NewsFeedAdapter
   private lateinit var ticker: String
   private lateinit var quote: Quote
@@ -105,8 +102,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
 
-    viewModel = ViewModelProvider(this, AndroidViewModelFactory.getInstance(application))
-        .get(QuoteDetailViewModel::class.java)
+    viewModel = ViewModelProvider(this).get(QuoteDetailViewModel::class.java)
     viewModel.quote.observe(this, Observer { result ->
       if (result.wasSuccessful) {
         quote = result.data
@@ -162,10 +158,10 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private fun setupUi() {
     toolbar.menu.clear()
     toolbar.inflateMenu(R.menu.menu_news_feed)
-    val isInPortfolio = viewModel.isInPortfolio(ticker)
+    val showRemove = viewModel.showAddOrRemove(ticker)
     val addMenuItem = toolbar.menu.findItem(R.id.action_add)
     val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
-    if (isInPortfolio) {
+    if (showRemove) {
       addMenuItem.isVisible = false
       removeMenuItem.isVisible = true
     } else {
@@ -175,25 +171,22 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     toolbar.setOnMenuItemClickListener { menuItem ->
       when (menuItem.itemId) {
         R.id.action_add -> {
-          if (widgetDataProvider.hasWidget()) {
-            val widgetIds = widgetDataProvider.getAppWidgetIds()
-            if (widgetIds.size > 1) {
-              val widgets =
-                widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
-                    .sortedBy { it.widgetName() }
-              val widgetNames = widgets.map { it.widgetName() }
+          if (viewModel.hasWidget()) {
+            val widgetDatas = viewModel.getWidgetDatas()
+            if (widgetDatas.size > 1) {
+              val widgetNames = widgetDatas.map { it.widgetName() }
                   .toTypedArray()
               AlertDialog.Builder(this)
                   .setTitle(R.string.select_widget)
                   .setItems(widgetNames) { dialog, which ->
-                    val id = widgets[which].widgetId
+                    val id = widgetDatas[which].widgetId
                     addTickerToWidget(ticker, id)
                     dialog.dismiss()
                   }
                   .create()
                   .show()
             } else {
-              addTickerToWidget(ticker, widgetIds.first())
+              addTickerToWidget(ticker, widgetDatas.first().widgetId)
             }
           } else {
             addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
@@ -327,7 +320,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   }
 
   private fun updatePositionsUi() {
-    val isInPortfolio = viewModel.hasTicker(ticker)
+    val isInPortfolio = viewModel.isInPortfolio(ticker)
     if (isInPortfolio) {
       positions_container.visibility = View.VISIBLE
       positions_header.visibility = View.VISIBLE
@@ -450,15 +443,18 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     ticker: String,
     widgetId: Int
   ) {
-    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    if (!widgetData.hasTicker(ticker)) {
-      widgetData.addTicker(ticker)
-      widgetDataProvider.broadcastUpdateWidget(widgetId)
+    if (viewModel.addTickerToWidget(ticker, widgetId)) {
+      InAppMessage.showToast(this, getString(R.string.added_to_list, ticker))
+      val showRemove = viewModel.showAddOrRemove(ticker)
       val addMenuItem = toolbar.menu.findItem(R.id.action_add)
       val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
-      addMenuItem.isVisible = false
-      removeMenuItem.isVisible = true
-      InAppMessage.showMessage(this, getString(R.string.added_to_list, ticker))
+      if (showRemove) {
+        addMenuItem.isVisible = false
+        removeMenuItem.isVisible = true
+      } else {
+        removeMenuItem.isVisible = false
+        addMenuItem.isVisible = true
+      }
     } else {
       showDialog(getString(R.string.already_in_portfolio, ticker))
     }

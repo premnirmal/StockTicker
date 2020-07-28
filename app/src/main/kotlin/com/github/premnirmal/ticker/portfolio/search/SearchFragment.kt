@@ -13,7 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -23,8 +24,6 @@ import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
@@ -36,11 +35,6 @@ import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
 import kotlinx.android.synthetic.main.fragment_search.recycler_view
 import kotlinx.android.synthetic.main.fragment_search.search_view
 import kotlinx.android.synthetic.main.fragment_search.toolbar
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import timber.log.Timber
-import javax.inject.Inject
 
 class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
 
@@ -48,7 +42,10 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     private const val ARG_SHOW_NAV_ICON = "SHOW_NAV_ICON"
 
-    fun newInstance(widgetId: Int, showNavIcon: Boolean = false): SearchFragment {
+    fun newInstance(
+      widgetId: Int,
+      showNavIcon: Boolean = false
+    ): SearchFragment {
       val fragment = SearchFragment()
       val args = Bundle()
       args.putInt(ARG_WIDGET_ID, widgetId)
@@ -58,9 +55,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  @Inject internal lateinit var stocksApi: StocksApi
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  private lateinit var viewModel: SearchViewModel
   private lateinit var adapter: SuggestionsAdapter
   override val simpleName: String = "SearchFragment"
 
@@ -69,22 +64,23 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
+    viewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
     arguments?.let {
       setData(it)
     }
   }
 
   override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
   ): View? {
     return inflater.inflate(R.layout.fragment_search, container, false)
   }
 
   override fun onViewCreated(
-      view: View,
-      savedInstanceState: Bundle?
+    view: View,
+    savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
@@ -107,15 +103,16 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     search_view.addTextChangedListener(this)
 
     savedInstanceState?.let { selectedWidgetId = it.getInt(ARG_WIDGET_ID, -1) }
-    lifecycleScope.launch {
-      withContext(Dispatchers.Default) {
-        adapter.getData()
-            .forEach {
-              it.exists = stocksProvider.hasTicker(it.symbol)
-            }
-      }
-      adapter.notifyDataSetChanged()
+    if (viewModel.searchResult.value?.wasSuccessful == true) {
+      adapter.setData(viewModel.searchResult.value!!.data)
     }
+    viewModel.searchResult.observe(viewLifecycleOwner, Observer {
+      if (it.wasSuccessful) {
+        adapter.setData(it.data)
+      } else {
+        InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
+      }
+    })
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -131,13 +128,10 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   private fun addTickerToWidget(
-      ticker: String,
-      widgetId: Int
+    ticker: String,
+    widgetId: Int
   ) {
-    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    if (!widgetData.hasTicker(ticker)) {
-      widgetData.addTicker(ticker)
-      widgetDataProvider.broadcastUpdateWidget(widgetId)
+    if (viewModel.addTickerToWidget(ticker, widgetId)) {
       InAppMessage.showToast(requireActivity(), getString(R.string.added_to_list, ticker))
     } else {
       requireActivity().showDialog(getString(R.string.already_in_portfolio, ticker))
@@ -145,19 +139,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   override fun beforeTextChanged(
-      s: CharSequence,
-      start: Int,
-      count: Int,
-      after: Int
+    s: CharSequence,
+    start: Int,
+    count: Int,
+    after: Int
   ) {
     // Do nothing.
   }
 
   override fun onTextChanged(
-      s: CharSequence,
-      start: Int,
-      before: Int,
-      count: Int
+    s: CharSequence,
+    start: Int,
+    before: Int,
+    count: Int
   ) {
     // Do nothing.
   }
@@ -168,22 +162,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         .replace(" ".toRegex(), "")
     if (query.isNotEmpty()) {
       if (requireActivity().isNetworkOnline()) {
-        lifecycleScope.launch {
-          val suggestions = stocksApi.getSuggestions(query)
-          if (suggestions.wasSuccessful) {
-            val data = withContext(Dispatchers.Default) {
-              suggestions.data.map {
-                val sug = Suggestion.fromSuggestionNet(it)
-                sug.exists = stocksProvider.hasTicker(sug.symbol)
-                sug
-              }
-            }
-            adapter.setData(data)
-          } else {
-            Timber.w(suggestions.error)
-            InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
-          }
-        }
+        viewModel.fetchResults(query)
       } else {
         InAppMessage.showToast(requireActivity(), R.string.no_network_message)
       }
@@ -209,20 +188,17 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         addTickerToWidget(ticker, selectedWidgetId)
         return true
       } else {
-        if (widgetDataProvider.hasWidget()) {
-          val widgetIds = widgetDataProvider.getAppWidgetIds()
-          if (widgetIds.size > 1) {
-            val widgets =
-              widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
-                  .sortedBy { it.widgetName() }
-            val widgetNames = widgets.map { it.widgetName() }
+        if (viewModel.hasWidget()) {
+          val widgetDatas = viewModel.getWidgetDatas()
+          if (widgetDatas.size > 1) {
+            val widgetNames = widgetDatas.map { it.widgetName() }
                 .toTypedArray()
             AlertDialog.Builder(requireActivity())
                 .setTitle(R.string.select_widget)
                 .setItems(widgetNames) { dialog, which ->
-                  val id = widgets[which].widgetId
+                  val id = widgetDatas[which].widgetId
                   addTickerToWidget(ticker, id)
-                  suggestion.exists = !suggestion.exists
+                  suggestion.exists = viewModel.doesSuggestionExist(suggestion)
                   adapter.notifyDataSetChanged()
                   dialog.dismiss()
                 }
@@ -230,7 +206,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
                 .show()
             return false
           } else {
-            addTickerToWidget(ticker, widgetIds.first())
+            addTickerToWidget(ticker, widgetDatas.first().widgetId)
             return true
           }
         } else {
@@ -239,13 +215,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
         }
       }
     } else {
-      if (selectedWidgetId > 0) {
-        val widgetData = widgetDataProvider.dataForWidgetId(selectedWidgetId)
-        widgetData.removeStock(ticker)
-      } else {
-        val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
-        widgetData?.removeStock(ticker)
-      }
+      viewModel.removeStock(ticker, selectedWidgetId)
       return true
     }
   }

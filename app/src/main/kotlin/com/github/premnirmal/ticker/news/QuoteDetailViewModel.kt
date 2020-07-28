@@ -1,9 +1,8 @@
 package com.github.premnirmal.ticker.news
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchResult
@@ -14,11 +13,12 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class QuoteDetailViewModel(application: Application): AndroidViewModel(application) {
+class QuoteDetailViewModel : ViewModel() {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var newsProvider: NewsProvider
@@ -56,11 +56,25 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
     }
   }
 
+  /**
+   * true = show remove
+   * false = show add
+   */
+  fun showAddOrRemove(ticker: String): Boolean {
+    return if (widgetDataProvider.widgetCount > 1) {
+      false
+    } else {
+      isInPortfolio(ticker)
+    }
+  }
+
   fun isInPortfolio(ticker: String): Boolean {
     return stocksProvider.hasTicker(ticker)
   }
 
   fun removeStock(ticker: String) {
+    val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
+    widgetData.forEach { it.removeStock(ticker) }
     stocksProvider.removeStock(ticker)
   }
 
@@ -73,10 +87,6 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
         _dataFetchError.postValue(result.error)
       }
     }
-  }
-
-  fun hasTicker(ticker: String): Boolean {
-    return stocksProvider.hasTicker(ticker)
   }
 
   fun fetchNews(quote: Quote) {
@@ -95,6 +105,30 @@ class QuoteDetailViewModel(application: Application): AndroidViewModel(applicati
           _newsError.value = result.error
         }
       }
+    }
+  }
+
+  fun getWidgetDatas(): List<WidgetData> {
+    val widgetIds = widgetDataProvider.getAppWidgetIds()
+    return widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
+        .sortedBy { it.widgetName() }
+  }
+
+  fun hasWidget(): Boolean {
+    return widgetDataProvider.hasWidget()
+  }
+
+  fun addTickerToWidget(
+    ticker: String,
+    widgetId: Int
+  ): Boolean {
+    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+    return if (!widgetData.hasTicker(ticker)) {
+      widgetData.addTicker(ticker)
+      widgetDataProvider.broadcastUpdateWidget(widgetId)
+      true
+    } else {
+      false
     }
   }
 }
