@@ -37,8 +37,8 @@
   <string name="round_two_dp_desc">Die Werte und Änderungen werden auf zwei Nachkommastellen gerundet.</string>
   <string name="auto_sort">Automatisches Sortieren</string>
   <string name="auto_sort_desc">Die Aktien werden nach prozentualer Änderung sortiert.</string>
-  <string name="notification_alerts">Benachrichtigungsbenachrichtigungen</string>
-  <string name="notification_alerts_desc">Benachrichtigungsbenachrichtigungen erhalten</string>
+  <string name="notification_alerts">Benachrichtigungen erhalten</string>
+  <string name="notification_alerts_desc">Legt fest ob Benachrichtigungen erhalten werden.</string>
   <string name="hide_header">Widget-Kopfzeile ausblenden</string>
   <string name="hide_header_desc">Schaltfläche zum Abrufen der Zeit und zum Aktualisieren.</string>
   <string name="refresh_on_screen_unlock">Beim Entsperren aktualisieren</string>
