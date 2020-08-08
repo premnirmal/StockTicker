@@ -20,16 +20,15 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
   }
 
   override suspend fun doWork(): Result {
-    if (applicationContext.isNetworkOnline()) {
+    return if (applicationContext.isNetworkOnline()) {
       val result = stocksProvider.fetch()
       if (result.hasError) {
-        return Result.retry()
+        Result.retry()
       } else {
-        return Result.success()
+        Result.success()
       }
     } else {
-      stocksProvider.scheduleSoon()
-      return Result.retry()
+      Result.retry()
     }
   }
 }

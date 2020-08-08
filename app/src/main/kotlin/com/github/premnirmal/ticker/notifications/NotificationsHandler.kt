@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingPeriodicWorkPolicy.KEEP
 import androidx.work.PeriodicWorkRequestBuilder
@@ -34,11 +35,11 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.TimeUnit.HOURS
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.MINUTES
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -85,14 +86,11 @@ class NotificationsHandler @Inject constructor(
 
   fun notifyDailySummary() {
     if (appPreferences.notificationAlerts()) {
-      val today = LocalDate.now()
-      if (appPreferences.updateDays().contains(today.dayOfWeek)) {
-        val topQuotes = stocksProvider.getPortfolio()
-            .sortedByDescending { it.changeInPercent.absoluteValue }
-            .take(4)
-        if (topQuotes.isNotEmpty()) {
-          notificationFactory.sendSummary(topQuotes)
-        }
+      val topQuotes = stocksProvider.getPortfolio()
+          .sortedByDescending { it.changeInPercent.absoluteValue }
+          .take(4)
+      if (topQuotes.isNotEmpty()) {
+        notificationFactory.sendSummary(topQuotes)
       }
     }
   }
@@ -111,6 +109,7 @@ class NotificationsHandler @Inject constructor(
       val request = PeriodicWorkRequestBuilder<DailySummaryNotificationWorker>(24, HOURS)
           .setInitialDelay(delay, MILLISECONDS)
           .addTag(DailySummaryNotificationWorker.TAG)
+          .setBackoffCriteria(LINEAR, 1L, MINUTES)
           .build()
       this.enqueueUniquePeriodicWork(DailySummaryNotificationWorker.TAG, policy, request)
     }

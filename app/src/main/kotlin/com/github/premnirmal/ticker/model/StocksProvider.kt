@@ -10,7 +10,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -220,10 +219,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     scheduleUpdate()
   }
 
-  override fun scheduleSoon() {
-    scheduleUpdateWithMs(5L.minutesInMs(), true)
-  }
-
   override fun addStock(ticker: String): Collection<String> {
     synchronized(quoteMap) {
       if (!tickers.contains(ticker)) {
@@ -314,9 +309,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       saveTickers()
       quoteMap.remove(ticker)
     }
-    scheduleUpdate(true)
     launch {
       storage.removeQuoteBySymbol(ticker)
+      bus.send(RefreshEvent())
     }
     return tickers
   }
@@ -332,7 +327,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     launch {
       storage.removeQuotesBySymbol(symbols.toList())
     }
-    scheduleUpdate(true)
+    bus.send(RefreshEvent())
   }
 
   override suspend fun fetchStock(ticker: String): FetchResult<Quote> {

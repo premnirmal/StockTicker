@@ -11,6 +11,7 @@ import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestion
+import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.Dispatchers
@@ -19,6 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.Locale
 import javax.inject.Inject
 
 class SearchViewModel : ViewModel() {
@@ -38,12 +40,18 @@ class SearchViewModel : ViewModel() {
   }
 
   fun fetchResults(query: String) {
+    if (query.isEmpty()) return
     searchJob?.cancel()
     searchJob = viewModelScope.launch(Dispatchers.Default) {
       delay(500L)
       val suggestions = stocksApi.getSuggestions(query)
       if (suggestions.wasSuccessful) {
-        val data = suggestions.data.map {
+        val suggestionList = suggestions.data.toMutableList()
+        val querySuggestion = SuggestionNet(query.toUpperCase(Locale.getDefault()))
+        if (!suggestionList.contains(querySuggestion)) {
+          suggestionList.add(querySuggestion)
+        }
+        val data = suggestionList.map {
           ensureActive()
           val sug = Suggestion.fromSuggestionNet(it)
           sug.exists = doesSuggestionExist(sug)

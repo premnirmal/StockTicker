@@ -1,22 +1,21 @@
 package com.github.premnirmal.ticker.model
 
 import android.content.Context
-import android.content.Intent
+import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
 import androidx.work.NetworkType.CONNECTED
-import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -103,8 +102,7 @@ class AlarmScheduler {
       }
     }
 
-    val msToNextAlarm = nextAlarmDate.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
-    return msToNextAlarm
+    return nextAlarmDate.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
   }
 
   fun scheduleUpdate(
@@ -112,11 +110,9 @@ class AlarmScheduler {
     context: Context
   ): ZonedDateTime {
     Timber.i("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
-    val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
-    updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)
     val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    val workRequest: OneTimeWorkRequest = OneTimeWorkRequestBuilder<RefreshWorker>()
+    val workRequest = OneTimeWorkRequestBuilder<RefreshWorker>()
         .setConstraints(
             Constraints.Builder()
                 .setRequiredNetworkType(CONNECTED)
@@ -124,9 +120,9 @@ class AlarmScheduler {
         )
         .addTag(RefreshWorker.TAG)
         .setInitialDelay(msToNextAlarm, MILLISECONDS)
+        .setBackoffCriteria(LINEAR, 1L, MINUTES)
         .build()
     with(WorkManager.getInstance(context)) {
-      cancelAllWorkByTag(RefreshWorker.TAG)
       this.enqueue(workRequest)
     }
     return nextAlarmDate

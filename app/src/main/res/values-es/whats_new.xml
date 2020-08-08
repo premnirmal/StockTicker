@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Agregue el mismo stock a múltiples carteras</item>
-    <item>Se agregó un intervalo de actualización de 5 minutos</item>
-    <item>Traducciones alemanas. Gracias @jurgen178</item>
-    <item>Alertas de precios. Gracias @jurgen178</item>
+    <item>Corregir errores</item>
   </string-array>
 </resources>

@@ -19,8 +19,6 @@ interface IStocksProvider {
 
   fun schedule()
 
-  fun scheduleSoon()
-
   fun getTickers(): List<String>
 
   fun getPortfolio(): List<Quote>
