@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
+import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -151,7 +152,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   private fun fetch() {
     if (!attemptingFetch) {
-      if (true) {//requireActivity().isNetworkOnline()) {
+      if (requireActivity().isNetworkOnline()) {
         fetchCount++
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
