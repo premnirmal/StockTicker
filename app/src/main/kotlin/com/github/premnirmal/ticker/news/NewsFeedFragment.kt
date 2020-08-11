@@ -39,24 +39,6 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
     super.onCreate(savedInstanceState)
     viewModel =
       ViewModelProvider(this).get(NewsFeedViewModel::class.java)
-    viewModel.newsFeed.observe(viewLifecycleOwner, Observer {
-      if (it.wasSuccessful) {
-        if (it.data.isEmpty()) {
-          view_flipper.displayedChild = INDEX_EMPTY
-        } else {
-          adapter.setData(it.data)
-          view_flipper.displayedChild = INDEX_DATA
-        }
-      } else {
-        InAppMessage.showMessage(requireActivity(), R.string.news_fetch_failed, error = true)
-        if (adapter.itemCount == 0) {
-          view_flipper.displayedChild = INDEX_ERROR
-        } else {
-          view_flipper.displayedChild = INDEX_DATA
-        }
-      }
-      swipe_container.isRefreshing = false
-    })
   }
 
   override fun onCreateView(
@@ -84,6 +66,24 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { refreshNews() }
+    viewModel.newsFeed.observe(viewLifecycleOwner, Observer {
+      if (it.wasSuccessful) {
+        if (it.data.isEmpty()) {
+          view_flipper.displayedChild = INDEX_EMPTY
+        } else {
+          adapter.setData(it.data)
+          view_flipper.displayedChild = INDEX_DATA
+        }
+      } else {
+        InAppMessage.showMessage(requireActivity(), R.string.news_fetch_failed, error = true)
+        if (adapter.itemCount == 0) {
+          view_flipper.displayedChild = INDEX_ERROR
+        } else {
+          view_flipper.displayedChild = INDEX_DATA
+        }
+      }
+      swipe_container.isRefreshing = false
+    })
   }
 
   override fun onStart() {
