@@ -17,7 +17,6 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
-import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -142,7 +141,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   private fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
-    adapter.notifyDataSetChanged()
+    adapter.setData(widgetDataProvider.widgetDataList())
     subtitle.text = subtitleText
     toolbar.menu.findItem(R.id.total_holdings).apply {
       isVisible = viewModel.hasHoldings
@@ -152,15 +151,17 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   private fun fetch() {
     if (!attemptingFetch) {
-      if (requireActivity().isNetworkOnline()) {
+      if (true) {//requireActivity().isNetworkOnline()) {
         fetchCount++
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
-          viewModel.fetch().observe(this, Observer {
+          viewModel.fetch().observe(viewLifecycleOwner, Observer { success ->
             attemptingFetch = false
             swipe_container?.isRefreshing = false
-            update()
+            if (success) {
+              update()
+            }
           })
         } else {
           attemptingFetch = false

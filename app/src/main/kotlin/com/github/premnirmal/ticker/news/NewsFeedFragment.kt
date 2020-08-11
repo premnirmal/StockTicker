@@ -39,7 +39,7 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
     super.onCreate(savedInstanceState)
     viewModel =
       ViewModelProvider(this).get(NewsFeedViewModel::class.java)
-    viewModel.newsFeed.observe(this, Observer {
+    viewModel.newsFeed.observe(viewLifecycleOwner, Observer {
       if (it.wasSuccessful) {
         if (it.data.isEmpty()) {
           view_flipper.displayedChild = INDEX_EMPTY

@@ -71,8 +71,8 @@ class HomeViewModel : ViewModel() {
   }
 
   fun fetch() = liveData {
-    stocksProvider.fetch()
-    emit(true)
+    val fetch = stocksProvider.fetch()
+    emit(fetch.wasSuccessful)
   }
 
   fun lastFetched(): String {

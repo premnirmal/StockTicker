@@ -99,10 +99,13 @@ class StockWidget : AppWidgetProvider() {
     appWidgetIds?.let { id ->
       id.forEach { widgetId ->
         val removed = widgetDataProvider.removeWidget(widgetId)
-        removed?.getTickers()?.forEach { ticker ->
-          if (!widgetDataProvider.containsTicker(ticker)) {
-            stocksProvider.removeStock(ticker)
-          }
+        if (widgetDataProvider.getAppWidgetIds().isNotEmpty()) {
+          removed?.getTickers()
+              ?.forEach { ticker ->
+                if (!widgetDataProvider.containsTicker(ticker)) {
+                  stocksProvider.removeStock(ticker)
+                }
+              }
         }
       }
     }

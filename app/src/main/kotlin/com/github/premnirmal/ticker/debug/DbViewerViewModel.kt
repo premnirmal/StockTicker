@@ -174,6 +174,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
       pruneWork()
       val workInfos = ArrayList<WorkInfo>().apply {
         addAll(getWorkInfosByTag(RefreshWorker.TAG).get())
+        addAll(getWorkInfosByTag(RefreshWorker.TAG_PERIODIC).get())
         addAll(getWorkInfosByTag(DailySummaryNotificationWorker.TAG).get())
       }
       for (wi in workInfos) {

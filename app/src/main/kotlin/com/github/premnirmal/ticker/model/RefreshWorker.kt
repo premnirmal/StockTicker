@@ -11,6 +11,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
 
   companion object {
     const val TAG = "RefreshWorker"
+    const val TAG_PERIODIC = "RefreshWorker_Periodic"
   }
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
@@ -23,7 +24,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
     return if (applicationContext.isNetworkOnline()) {
       val result = stocksProvider.fetch()
       if (result.hasError) {
-        Result.retry()
+        Result.failure()
       } else {
         Result.success()
       }

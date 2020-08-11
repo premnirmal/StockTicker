@@ -3,8 +3,10 @@ package com.github.premnirmal.ticker.model
 import android.content.Context
 import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
@@ -120,11 +122,23 @@ class AlarmScheduler {
         )
         .addTag(RefreshWorker.TAG)
         .setInitialDelay(msToNextAlarm, MILLISECONDS)
-        .setBackoffCriteria(LINEAR, 1L, MINUTES)
         .build()
     with(WorkManager.getInstance(context)) {
+      this.cancelAllWorkByTag(RefreshWorker.TAG)
       this.enqueue(workRequest)
     }
     return nextAlarmDate
+  }
+
+  fun enqueuePeriodicRefresh(context: Context) {
+    with(WorkManager.getInstance(context)) {
+      val delayMs = appPreferences.updateIntervalMs
+      val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
+          .setInitialDelay(delayMs, MILLISECONDS)
+          .addTag(RefreshWorker.TAG_PERIODIC)
+          .setBackoffCriteria(LINEAR, 1L, MINUTES)
+          .build()
+      this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
+    }
   }
 }

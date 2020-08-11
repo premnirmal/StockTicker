@@ -26,6 +26,7 @@ abstract class BaseActivity : AppCompatActivity() {
   abstract val simpleName: String
   @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var analytics: Analytics
+  open val subscribeToErrorEvents = true
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
@@ -41,11 +42,13 @@ abstract class BaseActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
-    lifecycleScope.launch {
-      val errorFlow = bus.receive<ErrorEvent>()
-      errorFlow.collect { event ->
-        if (this.isActive) {
-          showDialog(event.message)
+    if (subscribeToErrorEvents) {
+      lifecycleScope.launch {
+        val errorFlow = bus.receive<ErrorEvent>()
+        errorFlow.collect { event ->
+          if (this.isActive) {
+            showDialog(event.message)
+          }
         }
       }
     }

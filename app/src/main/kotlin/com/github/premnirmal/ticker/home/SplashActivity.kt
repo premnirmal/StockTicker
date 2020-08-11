@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 
 class SplashActivity : BaseActivity() {
   override val simpleName: String = "SplashActivity"
+  override val subscribeToErrorEvents = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

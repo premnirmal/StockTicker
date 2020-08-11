@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.network.data.Quote
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,6 +28,16 @@ class WidgetDataProvider {
 
   fun getAppWidgetIds(): IntArray =
     widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+
+  fun widgetDataList(): List<WidgetData> {
+    val appWidgetIds = getAppWidgetIds().toMutableSet()
+    if (appWidgetIds.isEmpty()) {
+      appWidgetIds.add(INVALID_WIDGET_ID)
+    }
+    return appWidgetIds.map {
+      dataForWidgetId(it)
+    }
+  }
 
   fun dataForWidgetId(widgetId: Int): WidgetData {
     synchronized(widgets) {
@@ -89,18 +98,6 @@ class WidgetDataProvider {
 
   fun widgetDataWithStock(ticker: String) =
     widgets.filter { it.value.hasTicker(ticker) }.values.toList()
-
-  fun moveQuoteToDifferentWidget(
-    oldWidgetId: Int,
-    quote: Quote,
-    newWidgetId: Int
-  ) {
-    val oldWidget = widgets[oldWidgetId]!!
-    val newWidget = widgets[newWidgetId]!!
-    newWidget.addTicker(quote.symbol)
-    oldWidget.removeStock(quote.symbol)
-    broadcastUpdateAllWidgets()
-  }
 
   fun updateWidgets(tickerList: List<String>) {
     if (hasWidget()) {

@@ -78,6 +78,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
     lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
+    alarmScheduler.enqueuePeriodicRefresh(context)
     if (lastFetched == 0L) {
       launch {
         fetch()
@@ -119,6 +120,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     msToNextAlarm: Long,
     refresh: Boolean = false
   ) {
+    alarmScheduler.enqueuePeriodicRefresh(context)
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     nextFetch = updateTime.toInstant()
         .toEpochMilli()
@@ -182,6 +184,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fr = api.getStocks(tickers.toList())
+        if (fr.hasError) {
+          throw fr.error
+        }
         val fetchedStocks = fr.data
         if (fetchedStocks.isEmpty()) {
           bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
@@ -199,7 +204,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
           bus.send(FetchedEvent())
           return@withContext FetchResult.success(fetchedStocks)
         }
-      } catch (ex: Exception) {
+      } catch (ex: Throwable) {
         Timber.w(ex)
         if (!bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))) {
           withContext(Dispatchers.Main) {

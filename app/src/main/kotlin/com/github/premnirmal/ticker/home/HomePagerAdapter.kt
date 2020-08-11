@@ -1,47 +1,37 @@
 package com.github.premnirmal.ticker.home
 
-import android.appwidget.AppWidgetManager
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import javax.inject.Inject
+import com.github.premnirmal.ticker.widget.WidgetData
 
-class HomePagerAdapter(fm: androidx.fragment.app.FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+class HomePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  private var widgetDataList = emptyList<WidgetData>()
 
-  init {
-    Injector.appComponent.inject(this)
-  }
-
-  override fun getItem(position: Int): androidx.fragment.app.Fragment {
-    val appWidgetIds = appWidgetIds()
-    return if (appWidgetIds.isEmpty()) {
+  override fun getItem(position: Int): Fragment {
+    return if (widgetDataList.isEmpty()) {
       PortfolioFragment.newInstance()
     } else {
-      PortfolioFragment.newInstance(appWidgetIds[position])
+      PortfolioFragment.newInstance(widgetDataList[position].widgetId)
     }
   }
 
-  private fun appWidgetIds(): IntArray = widgetDataProvider.getAppWidgetIds()
+  fun setData(widgetData: List<WidgetData>) {
+    this.widgetDataList = widgetData
+    notifyDataSetChanged()
+  }
 
   override fun getCount(): Int {
-    val appWidgetIds = appWidgetIds()
-    return if (appWidgetIds.isEmpty()) 1 else appWidgetIds.size
+    return widgetDataList.size
   }
 
   override fun getPageTitle(position: Int): CharSequence {
-    val appWidgetIds = appWidgetIds()
-    return if (appWidgetIds.isEmpty() || appWidgetIds[position] == AppWidgetManager.INVALID_APPWIDGET_ID) {
-      ""
-    } else {
-      val widgetData = widgetDataProvider.dataForWidgetId(appWidgetIds[position])
-      widgetData.widgetName()
-    }
+    val widgetData = widgetDataList[position]
+    return widgetData.widgetName()
   }
 
-  // TODO: check what the reason for this is. Breaks the layout on my phone (Pixel 3).
-//  override fun getPageWidth(position: Int): Float =
-//    if (count > 1) 0.95f else super.getPageWidth(position)
+  override fun getPageWidth(position: Int): Float =
+    if (count > 1) 0.95f else super.getPageWidth(position)
 }

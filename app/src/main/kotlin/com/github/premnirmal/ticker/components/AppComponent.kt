@@ -9,7 +9,6 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.debug.DbViewerActivity
 import com.github.premnirmal.ticker.debug.DbViewerViewModel
 import com.github.premnirmal.ticker.home.HomeFragment
-import com.github.premnirmal.ticker.home.HomePagerAdapter
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
@@ -130,8 +129,6 @@ interface AppComponent {
   fun inject(holder: BaseFragment.InjectionHolder)
 
   fun inject(holder: PortfolioFragment.InjectionHolder)
-
-  fun inject(homeAdapter: HomePagerAdapter)
 
   fun inject(homeFragment: HomeFragment)
 
