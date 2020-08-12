@@ -18,8 +18,3 @@ app/keystore.*
 
 #google services
 app/google-services.json
-app/src/dev/google-services.json
-app/src/prod/google-services.json
-
-#google translate secret
-app/translate.properties
