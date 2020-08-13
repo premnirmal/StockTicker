@@ -48,8 +48,8 @@ dexcount {
 }
 
 android {
-  compileSdkVersion 30
-  buildToolsVersion "30.0.0"
+  compileSdkVersion 29
+  buildToolsVersion "29.0.2"
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -61,7 +61,7 @@ android {
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 16
-    targetSdkVersion 30
+    targetSdkVersion 29
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code
@@ -270,12 +270,12 @@ configurations.all {
 }
 
 android.applicationVariants.all { variant ->
-  if (!variant.name.contains("prod")) {
+  if (!variant.name.toLowerCase().contains("prod")) {
     def googleTask = tasks.findByName("process${variant.name.capitalize()}GoogleServices")
     def crashlyticsMappingTask = tasks.findByName("uploadCrashlyticsMappingFile${variant.name.capitalize()}")
-    println("flavor: " + variant.name)
-    println("task1: " + googleTask.name)
-    println("task2: " + crashlyticsMappingTask.name)
+    println("flavor: ${variant.name}")
+    println("disabling ${googleTask.name}")
+    println("disabling ${crashlyticsMappingTask.name}")
     googleTask.enabled = false
     crashlyticsMappingTask.enabled = false
   }
