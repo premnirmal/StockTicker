@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="portfolio">Portafolio</string>
-  <string name="widget_label">StocksWidget</string>
+  <string name="widget_label">Stocks Tracker Widget</string>
   <string name="action_add">Añadir</string>
   <string name="action_export">Exportar su cartera</string>
   <string name="action_share">Comparte su portafolio</string>
@@ -16,7 +16,7 @@
   <string name="action_search">Buscar</string>
   <string name="action_feed">Noticias</string>
   <string name="action_settings">Configuraciones</string>
-  <string name="app_settings">Ajustes de Aplicacion</string>
+  <string name="app_settings">Configuraciones</string>
   <string name="news_feed">Noticias</string>
   <string name="action_Settings">Configuración del widget</string>
   <string name="action_rearrage">Reorganizar Acciones</string>

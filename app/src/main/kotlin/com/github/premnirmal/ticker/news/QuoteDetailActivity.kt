@@ -266,6 +266,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   }
 
   private fun fetchData() {
+    if (!::quote.isInitialized) return
+
     if (isNetworkOnline()) {
       progress.visibility = View.VISIBLE
       viewModel.fetchChartData(quote.symbol, range)

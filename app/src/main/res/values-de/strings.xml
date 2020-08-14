@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="portfolio">Portfolio</string>
-  <string name="widget_label">StocksWidget</string>
+  <string name="widget_label">Stocks Tracker Widget</string>
   <string name="action_add">Hinzufügen</string>
   <string name="action_export">Aktienliste Exportieren</string>
   <string name="action_share">Portfolio teilen</string>
@@ -17,7 +17,7 @@
   <string name="action_search">Suchen</string>
   <string name="action_feed">News</string>
   <string name="action_settings">Einstellungen</string>
-  <string name="app_settings">App-Einstellungen</string>
+  <string name="app_settings">Einstellungen</string>
   <string name="news_feed">Neueste Nachrichten</string>
   <string name="action_Settings">Widget-Einstellungen</string>
   <string name="action_rearrage">Aktien umsortieren</string>

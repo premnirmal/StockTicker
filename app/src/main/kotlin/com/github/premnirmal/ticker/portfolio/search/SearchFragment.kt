@@ -84,7 +84,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   ) {
     super.onViewCreated(view, savedInstanceState)
     if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
-      toolbar.setNavigationIcon(R.drawable.ic_close)
+      toolbar.setNavigationIcon(R.drawable.ic_back)
       if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
         toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
         toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)

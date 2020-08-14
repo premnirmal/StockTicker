@@ -10,7 +10,7 @@
   <string name="dotdotdot" translatable="false">…</string>
 
   <string name="portfolio">Portfolio</string>
-  <string name="widget_label">StocksWidget</string>
+  <string name="widget_label">Stocks Tracker Widget</string>
   <string name="action_add">Add</string>
   <string name="action_export">Export Quotes</string>
   <string name="action_share">Share Portfolio</string>
@@ -25,8 +25,8 @@
   <string name="action_search">Search</string>
   <string name="action_feed">News</string>
   <string name="action_settings">Settings</string>
-  <string name="app_settings">App Settings</string>
-  <string name="news_feed">News Feed</string>
+  <string name="app_settings">Settings</string>
+  <string name="news_feed">News</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange Stocks</string>
   <string name="action_update">Refresh Now</string>

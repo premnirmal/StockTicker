@@ -64,8 +64,8 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
-    widgetId = arguments!!.getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-    showAddStocks = arguments!!.getBoolean(ARG_SHOW_ADD_STOCKS, true)
+    widgetId = requireArguments().getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+    showAddStocks = requireArguments().getBoolean(ARG_SHOW_ADD_STOCKS, true)
   }
 
   override fun onCreateView(
