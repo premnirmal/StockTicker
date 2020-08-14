@@ -93,8 +93,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
       quote: Quote,
       position: Int
   ) {
-    analytics.trackClickEvent(ClickEvent("InstrumentClick")
-        .addProperty("Instrument", quote.symbol))
+    analytics.trackClickEvent(ClickEvent("InstrumentClick"))
     val intent = Intent(view.context, QuoteDetailActivity::class.java)
     intent.putExtra(QuoteDetailActivity.TICKER, quote.symbol)
     startActivity(intent)

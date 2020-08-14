@@ -129,7 +129,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     viewModel.newsData.observe(this, Observer { data ->
       analytics.trackGeneralEvent(
           GeneralEvent("FetchNews")
-              .addProperty("Instrument", ticker)
               .addProperty("Success", "True")
       )
       setUpArticles(data)
@@ -139,7 +138,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       InAppMessage.showMessage(this@QuoteDetailActivity, R.string.news_fetch_failed, error = true)
       analytics.trackGeneralEvent(
           GeneralEvent("FetchNews")
-              .addProperty("Instrument", ticker)
               .addProperty("Success", "False")
       )
     })
@@ -243,7 +241,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private fun positionOnClickListener() {
     analytics.trackClickEvent(
         ClickEvent("EditPositionClick")
-            .addProperty("Instrument", ticker)
     )
     val intent = Intent(this, AddPositionActivity::class.java)
     intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
@@ -253,7 +250,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private fun notesOnClickListener() {
     analytics.trackClickEvent(
         ClickEvent("EditNotesClick")
-            .addProperty("Instrument", ticker)
     )
     val intent = Intent(this, AddNotesActivity::class.java)
     intent.putExtra(AddNotesActivity.TICKER, quote.symbol)
@@ -263,7 +259,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private fun alertsOnClickListener() {
     analytics.trackClickEvent(
         ClickEvent("EditAlertsClick")
-            .addProperty("Instrument", ticker)
     )
     val intent = Intent(this, AddAlertsActivity::class.java)
     intent.putExtra(AddAlertsActivity.TICKER, quote.symbol)
@@ -432,7 +427,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   fun openGraph(v: View) {
     analytics.trackClickEvent(
         ClickEvent("GraphClick")
-            .addProperty("Instrument", ticker)
     )
     val intent = Intent(this, GraphActivity::class.java)
     intent.putExtra(GraphActivity.TICKER, ticker)
