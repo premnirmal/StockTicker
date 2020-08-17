@@ -2,7 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="portfolio">Portfolio</string>
-  <string name="widget_label">Stocks Tracker Widget</string>
   <string name="action_add">Hinzufügen</string>
   <string name="action_export">Aktienliste Exportieren</string>
   <string name="action_share">Portfolio teilen</string>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="portfolio">Portafolio</string>
-  <string name="widget_label">Stocks Tracker Widget</string>
   <string name="action_add">Añadir</string>
   <string name="action_export">Exportar su cartera</string>
   <string name="action_share">Comparte su portafolio</string>
