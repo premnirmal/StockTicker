@@ -28,18 +28,10 @@ class DailySummaryNotificationWorker(
 
   override suspend fun doWork(): Result {
     val today = LocalDate.now()
-    return if (appPreferences.updateDays()
-            .contains(today.dayOfWeek)
-    ) {
-      val fetch = stocksProvider.fetch()
-      if (fetch.wasSuccessful) {
-        notificationsHandler.notifyDailySummary()
-        Result.success()
-      } else {
-        Result.retry()
-      }
-    } else {
-      Result.success()
+    if (appPreferences.updateDays().contains(today.dayOfWeek)) {
+      stocksProvider.fetch()
+      notificationsHandler.notifyDailySummary()
     }
+    return Result.success()
   }
 }

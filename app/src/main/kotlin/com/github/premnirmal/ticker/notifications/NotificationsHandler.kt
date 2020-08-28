@@ -17,6 +17,8 @@ import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingPeriodicWorkPolicy.KEEP
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo.State.ENQUEUED
+import androidx.work.WorkInfo.State.RUNNING
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AsyncBus
@@ -39,7 +41,7 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import java.util.concurrent.TimeUnit.HOURS
 import java.util.concurrent.TimeUnit.MILLISECONDS
-import java.util.concurrent.TimeUnit.MINUTES
+import java.util.concurrent.TimeUnit.SECONDS
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -75,7 +77,9 @@ class NotificationsHandler @Inject constructor(
 
   fun initialize() {
     createChannels()
-    enqueueNotification()
+    if (!isNotificationEnqueued) {
+      enqueueDailySummaryNotification()
+    }
     GlobalScope.launch(Dispatchers.Default) {
       val flow = bus.receive<FetchedEvent>()
       flow.collect {
@@ -95,7 +99,15 @@ class NotificationsHandler @Inject constructor(
     }
   }
 
-  fun enqueueNotification(policy: ExistingPeriodicWorkPolicy = KEEP) {
+  private val isNotificationEnqueued: Boolean
+    get() = with(WorkManager.getInstance(context)) {
+      getWorkInfosByTag(DailySummaryNotificationWorker.TAG).get()
+          .any {
+            it.state == ENQUEUED || it.state == RUNNING
+          }
+    }
+
+  fun enqueueDailySummaryNotification(policy: ExistingPeriodicWorkPolicy = KEEP) {
     with(WorkManager.getInstance(context)) {
       val endTime = appPreferences.endTime()
       var firstWorkerDue = ZonedDateTime.now()
@@ -109,7 +121,7 @@ class NotificationsHandler @Inject constructor(
       val request = PeriodicWorkRequestBuilder<DailySummaryNotificationWorker>(24, HOURS)
           .setInitialDelay(delay, MILLISECONDS)
           .addTag(DailySummaryNotificationWorker.TAG)
-          .setBackoffCriteria(LINEAR, 1L, MINUTES)
+          .setBackoffCriteria(LINEAR, 20, SECONDS)
           .build()
       this.enqueueUniquePeriodicWork(DailySummaryNotificationWorker.TAG, policy, request)
     }
