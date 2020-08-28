@@ -120,7 +120,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     msToNextAlarm: Long,
     refresh: Boolean = false
   ) {
-    alarmScheduler.enqueuePeriodicRefresh(context)
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     nextFetch = updateTime.toInstant()
         .toEpochMilli()
@@ -222,6 +221,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun schedule() {
     scheduleUpdate()
+    alarmScheduler.enqueuePeriodicRefresh(context, force = true)
   }
 
   override fun addStock(ticker: String): Collection<String> {

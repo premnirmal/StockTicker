@@ -7,6 +7,8 @@ import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo.State.ENQUEUED
+import androidx.work.WorkInfo.State.RUNNING
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
@@ -130,15 +132,22 @@ class AlarmScheduler {
     return nextAlarmDate
   }
 
-  fun enqueuePeriodicRefresh(context: Context) {
+  fun enqueuePeriodicRefresh(context: Context, force: Boolean = true) {
     with(WorkManager.getInstance(context)) {
-      val delayMs = appPreferences.updateIntervalMs
-      val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
-          .setInitialDelay(delayMs, MILLISECONDS)
-          .addTag(RefreshWorker.TAG_PERIODIC)
-          .setBackoffCriteria(LINEAR, 1L, MINUTES)
-          .build()
-      this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
+      val enqueuedAlready = getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
+          .get()
+          .any {
+            it.state == ENQUEUED || it.state == RUNNING
+          }
+      if (!enqueuedAlready || force) {
+        val delayMs = appPreferences.updateIntervalMs
+        val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
+            .setInitialDelay(delayMs, MILLISECONDS)
+            .addTag(RefreshWorker.TAG_PERIODIC)
+            .setBackoffCriteria(LINEAR, 1L, MINUTES)
+            .build()
+        this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
+      }
     }
   }
 }
