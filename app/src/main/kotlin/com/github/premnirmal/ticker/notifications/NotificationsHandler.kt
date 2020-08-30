@@ -14,8 +14,10 @@ import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.work.BackoffPolicy.LINEAR
+import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingPeriodicWorkPolicy.KEEP
+import androidx.work.NetworkType.CONNECTED
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkInfo.State.RUNNING
@@ -117,11 +119,15 @@ class NotificationsHandler @Inject constructor(
       if (firstWorkerDue.isBefore(ZonedDateTime.now())) {
         firstWorkerDue = firstWorkerDue.plusHours(24)
       }
+      val constraints = Constraints.Builder()
+          .setRequiredNetworkType(CONNECTED)
+          .build()
       val delay = firstWorkerDue.toInstant().toEpochMilli() - ZonedDateTime.now().toInstant().toEpochMilli()
       val request = PeriodicWorkRequestBuilder<DailySummaryNotificationWorker>(24, HOURS)
           .setInitialDelay(delay, MILLISECONDS)
           .addTag(DailySummaryNotificationWorker.TAG)
           .setBackoffCriteria(LINEAR, 20, SECONDS)
+          .setConstraints(constraints)
           .build()
       this.enqueueUniquePeriodicWork(DailySummaryNotificationWorker.TAG, policy, request)
     }

@@ -141,10 +141,14 @@ class AlarmScheduler {
           }
       if (!enqueuedAlready || force) {
         val delayMs = appPreferences.updateIntervalMs
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(CONNECTED)
+            .build()
         val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
             .setInitialDelay(delayMs, MILLISECONDS)
             .addTag(RefreshWorker.TAG_PERIODIC)
             .setBackoffCriteria(LINEAR, 1L, MINUTES)
+            .setConstraints(constraints)
             .build()
         this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
       }
