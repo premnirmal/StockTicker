@@ -9,13 +9,13 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.debug.DbViewerActivity
 import com.github.premnirmal.ticker.debug.DbViewerViewModel
 import com.github.premnirmal.ticker.home.HomeFragment
-import com.github.premnirmal.ticker.home.HomePagerAdapter
+import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.home.SplashActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.ExponentialBackoff
 import com.github.premnirmal.ticker.model.HistoryProvider
-import com.github.premnirmal.ticker.model.RefreshService
+import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
@@ -25,11 +25,17 @@ import com.github.premnirmal.ticker.news.GraphViewModel
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
+import com.github.premnirmal.ticker.notifications.DailySummaryNotificationWorker
+import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
+import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
+import com.github.premnirmal.ticker.portfolio.AlertsViewModel
+import com.github.premnirmal.ticker.portfolio.NotesViewModel
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
+import com.github.premnirmal.ticker.portfolio.search.SearchViewModel
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
@@ -55,6 +61,10 @@ interface AppComponent {
   fun inject(paranormalActivity: ParanormalActivity)
 
   fun inject(addPositionActivity: AddPositionActivity)
+
+  fun inject(addNotesActivity: AddNotesActivity)
+
+  fun inject(addAlertsActivity: AddAlertsActivity)
 
   fun inject(splashActivity: SplashActivity)
 
@@ -86,11 +96,13 @@ interface AppComponent {
 
   fun inject(refreshReceiver: RefreshReceiver)
 
-  fun inject(refreshService: RefreshService)
+  fun inject(refreshWorker: RefreshWorker)
 
   fun inject(exponentialBackoff: ExponentialBackoff)
 
   fun inject(generalProperties: GeneralProperties)
+
+  fun inject(dailySummaryNotificationWorker: DailySummaryNotificationWorker)
 
   // Network
 
@@ -118,8 +130,6 @@ interface AppComponent {
 
   fun inject(holder: PortfolioFragment.InjectionHolder)
 
-  fun inject(homeAdapter: HomePagerAdapter)
-
   fun inject(homeFragment: HomeFragment)
 
   fun inject(fragment: SearchFragment)
@@ -145,4 +155,12 @@ interface AppComponent {
   fun inject(graphViewModel: GraphViewModel)
 
   fun inject(newsFeedViewModel: NewsFeedViewModel)
+
+  fun inject(totalHoldingsViewModel: HomeViewModel)
+
+  fun inject(notesViewModel: NotesViewModel)
+
+  fun inject(alertsViewModel: AlertsViewModel)
+
+  fun inject(searchViewModel: SearchViewModel)
 }

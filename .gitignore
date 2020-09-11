@@ -9,23 +9,12 @@
 app/build
 app/full-r8-config.txt
 app/prod/
+/.vs/
 
 #ignore keystore and keystore.properties
 *.jks
 keystore.*
 app/keystore.*
 
-#crashlytics secret
-fabric.properties
-crashlytics.properties
-app/src/prod/AndroidManifest.xml
-app/src/main/assets/crashlytics-build.properties
-app/src/main/res/values/com_crashlytics_export_strings.xml
-
 #google services
 app/google-services.json
-app/src/dev/google-services.json
-app/src/prod/google-services.json
-
-#google translate secret
-app/translate.properties

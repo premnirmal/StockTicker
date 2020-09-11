@@ -1,11 +1,24 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="?attr/actionBarSize"
     android:background="@color/default_bg"
+    android:paddingBottom="?attr/actionBarSize"
     >
+
+  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+      android:id="@+id/swipe_container"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      >
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
   <com.google.android.material.appbar.AppBarLayout
       android:id="@+id/app_bar_layout"
@@ -18,9 +31,9 @@
         android:id="@+id/collapsingToolbarLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:contentScrim="@color/home_toolbar_scrim"
         app:titleEnabled="false"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed"
         >
 
       <ImageView
@@ -44,20 +57,18 @@
             android:id="@+id/subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
             android:layout_marginBottom="5dp"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="@dimen/activity_horizontal_margin"
             android:gravity="start"
             android:textColor="@color/text_1"
             android:textSize="@dimen/text_size"
-            app:layout_collapseMode="parallax"
             />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_collapseMode="pin"
             app:tabBackground="@color/tab_background"
             app:tabGravity="fill"
             app:tabIndicatorColor="@color/color_accent"
@@ -73,26 +84,13 @@
           android:id="@+id/toolbar"
           android:layout_width="match_parent"
           android:layout_height="?attr/actionBarSize"
-          app:title="@string/app_name"
           app:layout_collapseMode="pin"
+          app:title="@string/app_name"
           app:titleTextAppearance="@style/ActionBarTitleText"
+          app:menu="@menu/menu_home"
           />
     </com.google.android.material.appbar.CollapsingToolbarLayout>
 
   </com.google.android.material.appbar.AppBarLayout>
-
-  <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-      android:id="@+id/swipe_container"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      app:layout_behavior="@string/appbar_scrolling_view_behavior"
-      >
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
-  </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

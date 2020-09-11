@@ -31,6 +31,7 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -38,6 +39,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -80,6 +82,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var db: QuotesDB
+  @Inject internal lateinit var notificationsHandler: NotificationsHandler
 
   // ChildFragment
 
@@ -315,9 +318,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preference: Preference,
           newValue: Any
         ): Boolean {
-          val startTimez = appPreferences.timeAsIntArray(newValue.toString())
+          val startTimez = appPreferences.parseTime(newValue.toString())
           val endTimez = appPreferences.endTime()
-          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+          if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
@@ -326,6 +329,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             startTimePref.summary = newValue.toString()
             stocksProvider.schedule()
+            notificationsHandler.enqueueDailySummaryNotification(REPLACE)
             InAppMessage.showMessage(requireActivity(), R.string.start_time_updated)
             return true
           }
@@ -339,7 +343,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       run {
         val endTimez = appPreferences.endTime()
         val startTimez = appPreferences.startTime()
-        if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+        if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
           endTimePref.setSummary(R.string.incorrect_time_update_error)
         }
       }
@@ -348,9 +352,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preference: Preference,
           newValue: Any
         ): Boolean {
-          val endTimez = appPreferences.timeAsIntArray(newValue.toString())
+          val endTimez = appPreferences.parseTime(newValue.toString())
           val startTimez = appPreferences.startTime()
-          if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+          if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
             showDialog(getString(R.string.incorrect_time_update_error))
             return false
           } else {
@@ -359,6 +363,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             endTimePref.summary = newValue.toString()
             stocksProvider.schedule()
+            notificationsHandler.enqueueDailySummaryNotification(REPLACE)
             InAppMessage.showMessage(requireActivity(), R.string.end_time_updated)
             return true
           }
@@ -392,6 +397,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 it.getDisplayName(SHORT, Locale.getDefault())
               }
           stocksProvider.schedule()
+          notificationsHandler.enqueueDailySummaryNotification(REPLACE)
           InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
           broadcastUpdateWidget()
           return true
@@ -405,6 +411,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       round2dpPref.onPreferenceChangeListener =
         Preference.OnPreferenceChangeListener { _, newValue ->
           appPreferences.setRoundToTwoDecimalPlaces(newValue as Boolean)
+          true
+        }
+    }
+
+    run {
+      val notifPref = findPreference<CheckBoxPreference>(AppPreferences.SETTING_NOTIFICATION_ALERTS)
+      notifPref.isChecked = appPreferences.notificationAlerts()
+      notifPref.onPreferenceChangeListener =
+        Preference.OnPreferenceChangeListener { _, newValue ->
+          appPreferences.setNotificationAlerts(newValue as Boolean)
           true
         }
     }
@@ -637,12 +653,12 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     )
     if (pref.key == AppPreferences.START_TIME) {
       val startTime = appPreferences.startTime()
-      pref.lastHour = startTime[0]
-      pref.lastMinute = startTime[1]
+      pref.lastHour = startTime.hour
+      pref.lastMinute = startTime.minute
     } else {
       val endTime = appPreferences.endTime()
-      pref.lastHour = endTime[0]
-      pref.lastMinute = endTime[1]
+      pref.lastHour = endTime.hour
+      pref.lastMinute = endTime.minute
     }
     val dialog = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
       TimePickerDialog(
@@ -691,9 +707,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
     val minuteString = if (lastMinute < 10) "0$lastMinute" else lastMinute.toString()
     val time = "$hourString:$minuteString"
-    val startTimez = appPreferences.timeAsIntArray(time)
+    val startTimez = appPreferences.parseTime(time)
     val endTimez = appPreferences.endTime()
-    if (endTimez[0] == startTimez[0] && endTimez[1] == startTimez[1]) {
+    if (endTimez.hour == startTimez.hour && endTimez.minute == startTimez.minute) {
       showDialog(getString(R.string.incorrect_time_update_error))
     } else {
       preferences.edit()
@@ -701,6 +717,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           .apply()
       preference.summary = time
       stocksProvider.schedule()
+      notificationsHandler.enqueueDailySummaryNotification(REPLACE)
       InAppMessage.showMessage(requireActivity(), messageRes)
     }
   }

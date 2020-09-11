@@ -7,6 +7,7 @@ import android.graphics.PorterDuff
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
@@ -31,7 +32,7 @@ class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
       finish()
     }
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      toolbar.navigationIcon?.setTint(resources.getColor(R.color.icon_tint))
+      toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.icon_tint))
       toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
     }
     toolbar.inflateMenu(R.menu.menu_widget_settings)

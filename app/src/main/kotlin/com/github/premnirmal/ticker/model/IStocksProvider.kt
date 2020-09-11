@@ -19,8 +19,6 @@ interface IStocksProvider {
 
   fun schedule()
 
-  fun scheduleSoon()
-
   fun getTickers(): List<String>
 
   fun getPortfolio(): List<Quote>
@@ -40,6 +38,8 @@ interface IStocksProvider {
   fun addStock(ticker: String): Collection<String>
 
   fun addStocks(symbols: Collection<String>): Collection<String>
+
+  fun hasPositions(): Boolean
 
   fun hasPosition(ticker: String): Boolean
 

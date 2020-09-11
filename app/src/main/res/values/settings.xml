@@ -6,7 +6,7 @@
     <item>Medium</item>
     <item>Large</item>
   </string-array>
-  <string-array name="font_sizes_values">
+  <string-array name="font_sizes_values" translatable="false">
     <item>0</item>
     <item>1</item>
     <item>2</item>
@@ -17,7 +17,7 @@
     <item>Dark</item>
     <item>Follow system</item>
   </string-array>
-  <string-array name="app_themes_values">
+  <string-array name="app_themes_values" translatable="false">
     <item>0</item>
     <item>1</item>
     <item>2</item>
@@ -29,10 +29,19 @@
     <item>Fixed</item>
   </string-array>
 
-  <string-array name="layout_types_values">
+  <string-array name="layout_types_values" translatable="false">
     <item>0</item>
     <item>1</item>
     <item>2</item>
+  </string-array>
+
+  <string-array name="widget_width_types">
+    <item>Default</item>
+    <item>Single stock in a row</item>
+  </string-array>
+  <string-array name="widget_width_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
   </string-array>
 
   <string-array name="backgrounds">
@@ -42,7 +51,7 @@
     <item>Light</item>
   </string-array>
 
-  <string-array name="backgrounds_values">
+  <string-array name="backgrounds_values" translatable="false">
     <item>0</item>
     <item>1</item>
     <item>2</item>
@@ -55,16 +64,18 @@
   </string-array>
 
   <string-array name="sync_periods">
+    <item>5 minutes</item>
     <item>15 minutes</item>
     <item>30 minutes</item>
     <item>45 minutes</item>
     <item>1 hour</item>
   </string-array>
-  <string-array name="sync_periods_values">
+  <string-array name="sync_periods_values" translatable="false">
     <item>0</item>
     <item>1</item>
     <item>2</item>
     <item>3</item>
+    <item>4</item>
   </string-array>
 
   <string-array name="days">
@@ -76,7 +87,7 @@
     <item>Saturday</item>
     <item>Sunday</item>
   </string-array>
-  <string-array name="days_values">
+  <string-array name="days_values" translatable="false">
     <item>1</item>
     <item>2</item>
     <item>3</item>

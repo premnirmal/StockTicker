@@ -70,7 +70,6 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   class InjectionHolder {
 
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-
     @Inject internal lateinit var bus: AsyncBus
 
     init {
@@ -94,8 +93,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
       quote: Quote,
       position: Int
   ) {
-    analytics.trackClickEvent(ClickEvent("InstrumentClick")
-        .addProperty("Instrument", quote.symbol))
+    analytics.trackClickEvent(ClickEvent("InstrumentClick"))
     val intent = Intent(view.context, QuoteDetailActivity::class.java)
     intent.putExtra(QuoteDetailActivity.TICKER, quote.symbol)
     startActivity(intent)
@@ -108,39 +106,10 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   ) {
     val popupWindow = PopupMenu(view.context, view)
     popupWindow.menuInflater.inflate(R.menu.menu_portfolio, popupWindow.menu)
-    val moveToWidgetItem = popupWindow.menu.findItem(R.id.move_to_widget)
-    moveToWidgetItem.isEnabled = widgetId !=
-        AppWidgetManager.INVALID_APPWIDGET_ID && holder.widgetDataProvider.getAppWidgetIds().size >
-        1
     popupWindow.setOnMenuItemClickListener { menuItem ->
-      val itemId = menuItem.itemId
-      when (itemId) {
+      when (menuItem.itemId) {
         R.id.remove -> {
           promptRemove(quote)
-        }
-        R.id.move_to_widget -> {
-          val widgetDataProvider = holder.widgetDataProvider
-          val appWidgetIds = widgetDataProvider.getAppWidgetIds()
-          val widgetNames = appWidgetIds.map {
-            widgetDataProvider.dataForWidgetId(it)
-                .widgetName()
-          }
-              .toTypedArray()
-          val currentWidgetIndex = appWidgetIds.indexOf(widgetId)
-          AlertDialog.Builder(requireContext())
-              .setSingleChoiceItems(widgetNames, currentWidgetIndex) { dialog, which ->
-                if (which != currentWidgetIndex) {
-                  widgetDataProvider.moveQuoteToDifferentWidget(
-                      widgetId, quote,
-                      appWidgetIds[which]
-                  )
-                  stocksAdapter.remove(quote)
-                  holder.bus.send(RefreshEvent())
-                  dialog.dismiss()
-                }
-              }
-              .setTitle(R.string.select_widget)
-              .show()
         }
       }
       true
@@ -151,7 +120,7 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     holder = InjectionHolder()
-    widgetId = arguments!!.getInt(KEY_WIDGET_ID)
+    widgetId = requireArguments().getInt(KEY_WIDGET_ID)
   }
 
   override fun onResume() {

@@ -61,7 +61,7 @@ class StockWidget : AppWidgetProvider() {
       } else {
         appWidgetManager.getAppWidgetInfo(widgetId)?.minWidth ?: 0
       }
-      val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
+      val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth, widgetId)
       updateWidget(context, widgetId, remoteViews, appWidgetManager)
       appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, R.id.list)
     }
@@ -76,7 +76,7 @@ class StockWidget : AppWidgetProvider() {
   ) {
     super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions)
     val minimumWidth = getMinWidgetWidth(newOptions)
-    val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth)
+    val remoteViews: RemoteViews = createRemoteViews(context, minimumWidth , appWidgetId)
     updateWidget(context, appWidgetId, remoteViews, appWidgetManager)
   }
 
@@ -99,10 +99,13 @@ class StockWidget : AppWidgetProvider() {
     appWidgetIds?.let { id ->
       id.forEach { widgetId ->
         val removed = widgetDataProvider.removeWidget(widgetId)
-        removed?.getTickers()?.forEach { ticker ->
-          if (!widgetDataProvider.containsTicker(ticker)) {
-            stocksProvider.removeStock(ticker)
-          }
+        if (widgetDataProvider.getAppWidgetIds().isNotEmpty()) {
+          removed?.getTickers()
+              ?.forEach { ticker ->
+                if (!widgetDataProvider.containsTicker(ticker)) {
+                  stocksProvider.removeStock(ticker)
+                }
+              }
         }
       }
     }
@@ -110,8 +113,10 @@ class StockWidget : AppWidgetProvider() {
 
   private fun createRemoteViews(
     context: Context,
-    min_width: Int
+    min_width: Int,
+    appWidgetId: Int
   ): RemoteViews = when {
+      widgetDataProvider.dataForWidgetId(appWidgetId).widgetSizePref() == 1 -> RemoteViews(context.packageName, layout.widget_1x1)
       min_width > 750 -> RemoteViews(context.packageName, layout.widget_4x1)
       min_width > 500 -> RemoteViews(context.packageName, layout.widget_3x1)
       min_width > 250 -> // 3x2

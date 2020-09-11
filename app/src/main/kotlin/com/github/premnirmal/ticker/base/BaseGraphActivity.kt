@@ -1,11 +1,15 @@
 package com.github.premnirmal.ticker.base
 
 import android.graphics.Color
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
@@ -16,6 +20,7 @@ import com.github.premnirmal.tickerwidget.R
 abstract class BaseGraphActivity : BaseActivity() {
 
   protected var dataPoints: List<DataPoint>? = null
+  protected abstract var range: Range
 
   protected fun setupGraphView() {
     val graphView: LineChart = findViewById(R.id.graphView)
@@ -36,7 +41,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
     graphView.legend.isEnabled = false
     graphView.description = null
-    graphView.setNoDataTextColor(resources.getColor(R.color.color_accent))
+    graphView.setNoDataTextColor(ContextCompat.getColor(this, R.color.color_accent))
     graphView.setNoDataText("")
     graphView.marker = TextMarkerView(this)
   }
@@ -54,7 +59,7 @@ abstract class BaseGraphActivity : BaseActivity() {
     val series = LineDataSet(dataPoints, ticker)
     series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)
-    val colorAccent = resources.getColor(R.color.color_accent)
+    val colorAccent = ContextCompat.getColor(this, R.color.color_accent)
     series.setDrawFilled(true)
     series.color = colorAccent
     series.fillColor = colorAccent
@@ -86,6 +91,26 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.invalidate()
     onGraphDataAdded(graphView)
   }
+
+  /**
+   * xml OnClick
+   * @param v
+   */
+  fun updateRange(v: View) {
+    when (v.id) {
+      R.id.two_weeks -> range = Range.TWO_WEEKS
+      R.id.one_month -> range = Range.ONE_MONTH
+      R.id.three_month -> range = Range.THREE_MONTH
+      R.id.one_year -> range = Range.ONE_YEAR
+      R.id.max -> range = Range.MAX
+    }
+    val parent = v.parent as ViewGroup
+    (0 until parent.childCount).map { parent.getChildAt(it) }
+        .forEach { it.isEnabled = it != v }
+    fetchGraphData()
+  }
+
+  protected abstract fun fetchGraphData()
 
   protected abstract fun onGraphDataAdded(graphView: LineChart)
 

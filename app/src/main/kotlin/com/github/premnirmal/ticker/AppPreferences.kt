@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker
 
-import android.app.AlarmManager
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Environment
@@ -44,27 +43,31 @@ class AppPreferences {
 
   val updateIntervalMs: Long
     get() {
-      val pref = sharedPreferences.getInt(UPDATE_INTERVAL, 1)
-      val ms = AlarmManager.INTERVAL_FIFTEEN_MINUTES * (pref + 1)
-      return ms
+      return when(sharedPreferences.getInt(UPDATE_INTERVAL, 1)) {
+        0 -> 5 * 60 * 1000L
+        1 -> 15 * 60 * 1000L
+        2 -> 30 * 60 * 1000L
+        3 -> 60 * 60 * 1000L
+        else -> 15 * 60 * 1000L
+      }
     }
 
-  fun timeAsIntArray(time: String): IntArray {
+  fun parseTime(time: String): Time {
     val split = time.split(":".toRegex())
         .dropLastWhile { it.isEmpty() }
         .toTypedArray()
     val times = intArrayOf(split[0].toInt(), split[1].toInt())
-    return times
+    return Time(times[0], times[1])
   }
 
-  fun startTime(): IntArray {
+  fun startTime(): Time {
     val startTimeString = sharedPreferences.getString(START_TIME, "09:30")!!
-    return timeAsIntArray(startTimeString)
+    return parseTime(startTimeString)
   }
 
-  fun endTime(): IntArray {
+  fun endTime(): Time {
     val endTimeString = sharedPreferences.getString(END_TIME, "16:00")!!
-    return timeAsIntArray(endTimeString)
+    return parseTime(endTimeString)
   }
 
   fun updateDaysRaw(): Set<String> {
@@ -135,6 +138,14 @@ class AppPreferences {
         .apply()
   }
 
+  fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
+
+  fun setNotificationAlerts(set: Boolean) {
+    sharedPreferences.edit()
+        .putBoolean(SETTING_NOTIFICATION_ALERTS, set)
+        .apply()
+  }
+
   var themePref: Int
     get() = sharedPreferences.getInt(APP_THEME, 2)
     set(value) = sharedPreferences.edit().putInt(APP_THEME, value).apply()
@@ -156,6 +167,11 @@ class AppPreferences {
           || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "xiaomi".equals(Build.MANUFACTURER, ignoreCase = true)
           || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "samsung".equals(Build.MANUFACTURER, ignoreCase = true))
     }
+
+  data class Time(
+    val hour: Int,
+    val minute: Int
+  )
 
   companion object {
 
@@ -194,11 +210,13 @@ class AppPreferences {
     const val SETTING_NUKE = "SETTING_NUKE"
     const val SETTING_PRIVACY_POLICY = "SETTING_PRIVACY_POLICY"
     const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
+    const val SETTING_NOTIFICATION_ALERTS = "SETTING_NOTIFICATION_ALERTS"
     const val WIDGET_BG = "WIDGET_BG"
     const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
     const val TEXT_COLOR = "TEXT_COLOR"
     const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
+    const val WIDGET_SIZE = "WIDGET_SIZE"
     const val BOLD_CHANGE = "BOLD_CHANGE"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"

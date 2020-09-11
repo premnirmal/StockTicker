@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.network.NewsProvider
+import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -27,6 +28,7 @@ open class StocksApp : MultiDexApplication() {
     @Inject lateinit var analytics: Analytics
     @Inject lateinit var appPreferences: AppPreferences
     @Inject lateinit var newsProvider: NewsProvider
+    @Inject lateinit var notificationsHandler: NotificationsHandler
   }
 
   private val holder = InjectionHolder()
@@ -52,24 +54,29 @@ open class StocksApp : MultiDexApplication() {
       initStetho()
     }
     initNewsCache()
+    initNotificationHandler()
   }
 
-  open fun initStetho() {
+  protected open fun initNotificationHandler() {
+    holder.notificationsHandler.initialize()
+  }
+
+  protected open fun initStetho() {
     StethoInitializer.initialize(this)
   }
 
-  open fun initThreeTen() {
+  protected open fun initThreeTen() {
     AndroidThreeTen.init(this)
   }
 
-  open fun createAppComponent(): AppComponent {
+  protected open fun createAppComponent(): AppComponent {
     return DaggerAppComponent.builder()
         .appModule(AppModule(this))
         .build()
   }
 
   protected open fun initLogger() {
-    Timber.plant(LoggingTree(this))
+    Timber.plant(LoggingTree())
   }
 
   protected open fun initAnalytics() {

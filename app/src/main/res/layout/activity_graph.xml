@@ -29,12 +29,6 @@
         android:visibility="gone"
         >
 
-      <com.github.mikephil.charting.charts.LineChart
-          android:id="@+id/graphView"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          />
-
       <TextView
           android:id="@+id/tickerName"
           android:layout_width="wrap_content"
@@ -59,6 +53,12 @@
           style="@style/BoldTextView"
           />
 
+      <com.github.mikephil.charting.charts.LineChart
+          android:id="@+id/graphView"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
+
     </RelativeLayout>
   </FrameLayout>
 
@@ -68,6 +68,17 @@
       android:layout_gravity="center_horizontal"
       android:orientation="horizontal"
       >
+
+    <Button
+        android:id="@+id/two_weeks"
+        android:layout_width="100dp"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:gravity="center"
+        android:onClick="updateRange"
+        android:text="@string/two_weeks"
+        style="@style/ButtonStyle"
+        />
 
     <Button
         android:id="@+id/one_month"

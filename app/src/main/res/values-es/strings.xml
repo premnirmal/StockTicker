@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="portfolio">Portafolio</string>
-  <string name="widget_label">StocksWidget</string>
   <string name="action_add">Añadir</string>
   <string name="action_export">Exportar su cartera</string>
   <string name="action_share">Comparte su portafolio</string>
@@ -16,7 +15,7 @@
   <string name="action_search">Buscar</string>
   <string name="action_feed">Noticias</string>
   <string name="action_settings">Configuraciones</string>
-  <string name="app_settings">Ajustes de Aplicacion</string>
+  <string name="app_settings">Configuraciones</string>
   <string name="news_feed">Noticias</string>
   <string name="action_Settings">Configuración del widget</string>
   <string name="action_rearrage">Reorganizar Acciones</string>
@@ -35,6 +34,8 @@
   <string name="round_two_dp_desc">Redondea el cambio y el valor a 2 decimales</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Las existencias se ordenarán por cambio porcentual.</string>
+  <string name="notification_alerts">Alertas de notificación</string>
+  <string name="notification_alerts_desc">Recibir alertas de notificación</string>
   <string name="hide_header">Hide widget header</string>
   <string name="hide_header_desc">Fetch tiempo y botón de actualización.</string>
   <string name="refresh_on_screen_unlock">Actualizar al desbloquear</string>
@@ -46,6 +47,7 @@
   <string name="text_size_updated_message">Tamaño del texto actualizado</string>
   <string name="bg_updated_message">Antecedentes actualizados</string>
   <string name="layout_updated_message">Tipo de diseño actualizado</string>
+  <string name="widget_width_updated_message">Tamaño del widget actualizado</string>
   <string name="text_color_updated_message">Color del texto actualizado</string>
   <string name="refresh_updated_message">Actualización del intervalo actualizado</string>
   <string name="theme_updated_message">Actualización de la tema de la aplicación</string>
@@ -104,7 +106,7 @@
   <string name="day_change_percent">% cambio de día</string>
   <string name="day_change_amount">Cambio de día</string>
   <string name="autosort_disabled">La clasificación automática se ha deshabilitado. Ahora puede arrastrar y soltar para ordenar.</string>
-  <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de tu cartera?</string>
+  <string name="remove_prompt">¿Estás seguro de que deseas eliminar%1$s de su cartera?</string>
   <string name="ok">OK</string>
   <string name="cancel">Cancelar</string>
   <string name="invalid_number">Número inválido</string>
@@ -115,6 +117,7 @@
   <string name="next_fetch">Próxima: %1$s</string>
   <string name="last_fetch">Última: %1$s</string>
   <string name="last_and_next_fetch">Última: %1$s\nPróxima: %2$s</string>
+  <string name="total_holdings">Total Valor: %1$s (%2$d Acciones)</string>
   <string name="cannot_export_msg">No se pueden exportar citas sin permiso para escribir en un almacenamiento externo</string>
   <string name="cannot_import_msg">No se puede importar comillas sin permiso para leer almacenamiento externo</string>
   <string name="cannot_share_msg">No puede compartir comillas sin permiso para escribir en un almacenamiento externo</string>
@@ -133,9 +136,14 @@
   <string name="recent_news">Noticias recientes</string>
   <string name="no_data">No datos</string>
   <string name="expand">Expande</string>
+  <string name="two_weeks">2 semanas</string>
   <string name="one_month">1 mes</string>
   <string name="three_month">3 meses</string>
   <string name="one_year">1 año</string>
+  <string name="two_weeks_short">2W</string>
+  <string name="one_month_short">1M</string>
+  <string name="three_month_short">3M</string>
+  <string name="one_year_short">1Y</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Error al cargar los datos del gráfico</string>
   <string name="widgets">Widgets</string>
@@ -145,4 +153,24 @@
   <string name="db_viewer">Base de datos de la aplicación</string>
   <string name="discovered_db">Has descubierto la entrada secreta al DB Viewer</string>
   <string name="db_tap_count">Toque %1$d veces más para desbloquear el visor de DB</string>
+  <string name="notes">Notas</string>
+  <string name="alerts">Alertas</string>
+  <string name="alert_above">Alerta arriba</string>
+  <string name="alert_below">Alerta abajo</string>
+  <string name="alert_above_error">Alerta abajo debe ser menor que Alerta arriba</string>
+  <string name="alert_below_error">Alerta arriba debe ser más que Alerta abajow</string>
+  <string name="alert_above_notification_title">%1$s está por encima de %2$s a %3$s</string>
+  <string name="alert_below_notification_title">%1$s está por debajo de %2$s a %3$s</string>
+  <string name="alert_above_notification">La acción %1$s, está por encima de %2$s a %3$s.</string>
+  <string name="alert_below_notification">La acción %1$s, está por debajo de %2$s a %3$s.</string>
+  <string name="alert_dismiss">Despedir</string>
+  <string name="alerts_disabled">Alertas desactivadas, verifique la configuración</string>
+  <string name="add_notes">Añadir notas</string>
+  <string name="add_alerts">Añadir alertas</string>
+  <string name="remove_holding">¿Está seguro de que desea eliminar la entrada %1$s de su cartera?</string>
+  <string name="save">Hecho</string>
+  <string name="desc_channel_alerts">Alertas de stock</string>
+  <string name="desc_channel_summary">Resumen diario</string>
+  <string name="notification_summary_title">¿Cómo estuvo su cartera hoy?</string>
+  <string name="dividend">Dividendo</string>
 </resources>

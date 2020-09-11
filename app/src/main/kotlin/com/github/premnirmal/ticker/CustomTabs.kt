@@ -9,6 +9,7 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
+import androidx.core.content.ContextCompat
 import com.github.premnirmal.tickerwidget.R
 
 object CustomTabs {
@@ -16,6 +17,7 @@ object CustomTabs {
   private var packageNameToUse: String? = null
   private const val chromePackage = "com.android.chrome"
   private const val firefoxPreviewPackage = "org.mozilla.fenix"
+  private const val firefoxBetaPackage = "org.mozilla.firefox_beta"
   private const val firefoxPackage = "org.mozilla.firefox"
   private const val edgePackage = "com.microsoft.emmx"
 
@@ -25,12 +27,12 @@ object CustomTabs {
   ) {
     val closeButton = context.resources.getDrawable(R.drawable.ic_close)
     if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      closeButton.setTint(context.resources.getColor(R.color.icon_tint))
+      closeButton.setTint(ContextCompat.getColor(context, R.color.icon_tint))
       closeButton.setTintMode(SRC_IN)
     }
     val customTabsIntent = CustomTabsIntent.Builder()
         .addDefaultShareMenuItem()
-        .setToolbarColor(context.resources.getColor(R.color.color_primary))
+        .setToolbarColor(ContextCompat.getColor(context, R.color.color_primary))
         .setShowTitle(true)
         .setCloseButtonIcon(closeButton.toBitmap())
         .setExitAnimations(context, android.R.anim.fade_in, android.R.anim.fade_out)
@@ -81,6 +83,7 @@ object CustomTabs {
         packageNameToUse = defaultViewHandlerPackageName
       packagesSupportingCustomTabs.contains(chromePackage) -> packageNameToUse = chromePackage
       packagesSupportingCustomTabs.contains(edgePackage) -> packageNameToUse = edgePackage
+      packagesSupportingCustomTabs.contains(firefoxBetaPackage) -> packageNameToUse = firefoxBetaPackage
       packagesSupportingCustomTabs.contains(firefoxPreviewPackage) -> packageNameToUse = firefoxPreviewPackage
       packagesSupportingCustomTabs.contains(firefoxPackage) -> packageNameToUse = firefoxPackage
     }

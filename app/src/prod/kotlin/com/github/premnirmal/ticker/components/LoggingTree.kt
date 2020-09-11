@@ -1,28 +1,17 @@
 package com.github.premnirmal.ticker.components
 
-import android.content.Context
 import android.util.Log
-import com.crashlytics.android.Crashlytics
-import com.crashlytics.android.answers.Answers
-import com.crashlytics.android.core.CrashlyticsCore
 import com.github.premnirmal.tickerwidget.BuildConfig
-import io.fabric.sdk.android.Fabric
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-class LoggingTree(context: Context) : Timber.Tree() {
+class LoggingTree : Timber.Tree() {
 
-  init {
-    val kit = Crashlytics.Builder()
-        .core(
-            CrashlyticsCore.Builder()
-                .disabled(BuildConfig.DEBUG)
-                .build()
-        )
-        .build()
-    Fabric.with(context, kit, Answers())
+  private val crashlytics: FirebaseCrashlytics = FirebaseCrashlytics.getInstance().apply {
+    setCrashlyticsCollectionEnabled(!BuildConfig.DEBUG)
   }
 
   override fun log(
@@ -34,11 +23,9 @@ class LoggingTree(context: Context) : Timber.Tree() {
     if (priority == Log.VERBOSE || priority == Log.DEBUG) {
       return
     }
-    if (message != null) {
-      Crashlytics.log(message)
-    }
+    crashlytics.log(message)
     if (t != null) {
-      Crashlytics.logException(t)
+      crashlytics.recordException(t)
     }
   }
 }

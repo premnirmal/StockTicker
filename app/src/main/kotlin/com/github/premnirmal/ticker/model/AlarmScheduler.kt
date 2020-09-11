@@ -1,20 +1,25 @@
 package com.github.premnirmal.ticker.model
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
+import androidx.work.BackoffPolicy.LINEAR
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
+import androidx.work.NetworkType.CONNECTED
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkInfo.State.ENQUEUED
+import androidx.work.WorkInfo.State.RUNNING
+import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.util.concurrent.TimeUnit.MILLISECONDS
+import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -41,14 +46,14 @@ class AlarmScheduler {
     val endTimez = appPreferences.endTime()
     // whether the start time is after the end time e.g. start time is 11pm and end time is 5am
     val inverse =
-      startTimez[0] > endTimez[0] || (startTimez[0] == endTimez[0] && startTimez[1] > endTimez[1])
+      startTimez.hour > endTimez.hour || (startTimez.hour == endTimez.hour && startTimez.minute > endTimez.minute)
     val now: ZonedDateTime = clock.todayZoned()
     val startTime = clock.todayZoned()
-        .withHour(startTimez[0])
-        .withMinute(startTimez[1])
+        .withHour(startTimez.hour)
+        .withMinute(startTimez.minute)
     var endTime = clock.todayZoned()
-        .withHour(endTimez[0])
-        .withMinute(endTimez[1])
+        .withHour(endTimez.hour)
+        .withMinute(endTimez.minute)
     if (inverse && now.isAfter(startTime)) {
       endTime = endTime.plusDays(1)
     }
@@ -72,15 +77,15 @@ class AlarmScheduler {
       nextAlarmDate = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
         nextAlarmDate.plusMinutes(1)
       } else {
-        nextAlarmDate.withHour(startTimez[0])
-            .withMinute(startTimez[1])
+        nextAlarmDate.withHour(startTimez.hour)
+            .withMinute(startTimez.minute)
       }
     } else {
       if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
         nextAlarmDate = nextAlarmDate.plusMinutes(1)
       } else {
-        nextAlarmDate = nextAlarmDate.withHour(startTimez[0])
-            .withMinute(startTimez[1])
+        nextAlarmDate = nextAlarmDate.withHour(startTimez.hour)
+            .withMinute(startTimez.minute)
 
         var count = 0
         if (inverse) {
@@ -101,8 +106,7 @@ class AlarmScheduler {
       }
     }
 
-    val msToNextAlarm = nextAlarmDate.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
-    return msToNextAlarm
+    return nextAlarmDate.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
   }
 
   fun scheduleUpdate(
@@ -110,31 +114,44 @@ class AlarmScheduler {
     context: Context
   ): ZonedDateTime {
     Timber.i("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
-    val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
-    updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
     val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)
     val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-      AlarmSchedulerLollipop.scheduleUpdate(msToNextAlarm, context)
-    } else {
-      val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-      val pendingIntent =
-        PendingIntent.getBroadcast(
-            context.applicationContext, 0, updateReceiverIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+    val workRequest = OneTimeWorkRequestBuilder<RefreshWorker>()
+        .setConstraints(
+            Constraints.Builder()
+                .setRequiredNetworkType(CONNECTED)
+                .build()
         )
-      if (VERSION.SDK_INT >= VERSION_CODES.KITKAT) {
-        alarmManager.setExact(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            clock.elapsedRealtime() + msToNextAlarm, pendingIntent
-        )
-      } else {
-        alarmManager.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
-            clock.elapsedRealtime() + msToNextAlarm, pendingIntent
-        )
-      }
+        .addTag(RefreshWorker.TAG)
+        .setInitialDelay(msToNextAlarm, MILLISECONDS)
+        .build()
+    with(WorkManager.getInstance(context)) {
+      this.cancelAllWorkByTag(RefreshWorker.TAG)
+      this.enqueue(workRequest)
     }
     return nextAlarmDate
+  }
+
+  fun enqueuePeriodicRefresh(context: Context, force: Boolean = true) {
+    with(WorkManager.getInstance(context)) {
+      val enqueuedAlready = getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
+          .get()
+          .any {
+            it.state == ENQUEUED || it.state == RUNNING
+          }
+      if (!enqueuedAlready || force) {
+        val delayMs = appPreferences.updateIntervalMs
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(CONNECTED)
+            .build()
+        val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
+            .setInitialDelay(delayMs, MILLISECONDS)
+            .addTag(RefreshWorker.TAG_PERIODIC)
+            .setBackoffCriteria(LINEAR, 1L, MINUTES)
+            .setConstraints(constraints)
+            .build()
+        this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
+      }
+    }
   }
 }

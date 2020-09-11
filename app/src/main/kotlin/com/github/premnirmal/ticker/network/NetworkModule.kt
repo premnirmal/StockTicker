@@ -102,13 +102,13 @@ class NetworkModule {
   @Provides @Singleton internal fun provideHistoricalDataApi(
       context: Context, okHttpClient: OkHttpClient,
       converterFactory: GsonConverterFactory
-  ): HistoricalDataApi {
+  ): ChartApi {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
-        .baseUrl(context.getString(R.string.alpha_vantage_endpoint))
+        .baseUrl(context.getString(R.string.historical_data_endpoint))
         .addConverterFactory(converterFactory)
         .build()
-    val api = retrofit.create(HistoricalDataApi::class.java)
+    val api = retrofit.create(ChartApi::class.java)
     return api
   }
 

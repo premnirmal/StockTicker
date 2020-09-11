@@ -12,10 +12,11 @@ import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
-import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.network.NetworkModule
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
+import com.github.premnirmal.ticker.repo.StocksStorage
+import com.github.premnirmal.ticker.repo.migrations.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -49,12 +50,14 @@ class AppModule(private val app: StocksApp) {
 
   @Provides @Singleton fun provideStorage(): StocksStorage =
     StocksStorage()
-  
+
   @Provides @Singleton fun provideQuotesDB(context: Context): QuotesDB {
     return Room.databaseBuilder(
         context.applicationContext,
         QuotesDB::class.java, "quotes-db"
-    ).build()
+    )
+        .addMigrations(MIGRATION_1_2)
+        .build()
   }
 
   @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao {

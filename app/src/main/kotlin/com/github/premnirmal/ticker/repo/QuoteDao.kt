@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.github.premnirmal.ticker.repo.data.QuoteWithHoldings
 
@@ -26,7 +27,10 @@ interface QuoteDao {
   suspend fun upsertQuote(quote: QuoteRow): Long
 
   @Transaction
-  suspend fun upsertQuoteAndHolding(quote: QuoteRow, holdings: List<HoldingRow>?) {
+  suspend fun upsertQuoteAndHolding(
+    quote: QuoteRow,
+    holdings: List<HoldingRow>?
+  ) {
     upsertQuote(quote)
     holdings?.let { upsertHoldings(quote.symbol, it) }
   }
@@ -47,7 +51,10 @@ interface QuoteDao {
   suspend fun deleteQuoteById(symbol: String)
 
   @Transaction
-  suspend fun upsertHoldings(symbol: String, holdings: List<HoldingRow>) {
+  suspend fun upsertHoldings(
+    symbol: String,
+    holdings: List<HoldingRow>
+  ) {
     deleteHoldingsByQuoteId(symbol)
     insertHoldings(holdings)
   }
@@ -70,4 +77,23 @@ interface QuoteDao {
 
   @Delete
   suspend fun deleteHolding(holding: HoldingRow)
+
+  @Transaction
+  suspend fun upsertProperties(
+    propertiesRow: PropertiesRow
+  ) {
+    if (propertiesRow.quoteSymbol.isNotEmpty()) {
+      deletePropertiesByQuoteId(propertiesRow.quoteSymbol)
+    }
+    if (propertiesRow.notes.isNotEmpty() || propertiesRow.alertAbove > 0.0f || propertiesRow.alertBelow > 0.0f) {
+      insertProperties(propertiesRow)
+    }
+  }
+
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  @JvmSuppressWildcards
+  suspend fun insertProperties(quote: PropertiesRow)
+
+  @Query("DELETE FROM PropertiesRow WHERE properties_quote_symbol = :symbol")
+  suspend fun deletePropertiesByQuoteId(symbol: String)
 }

@@ -66,3 +66,9 @@
 -keep class org.xmlpull.v1.* {*;}
 # Retrofit simple xml
 -keep class org.simpleframework.xml.** { *; }
+
+# Leak canary
+-keep class com.squareup.haha.** { *; }
+-keep class com.squareup.leakcanary.** { *; }
+-keep class leakcanary.** { *; }
+-keep class shark.** { *; }

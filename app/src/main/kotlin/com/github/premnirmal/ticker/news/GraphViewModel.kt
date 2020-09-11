@@ -1,9 +1,8 @@
 package com.github.premnirmal.ticker.news
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IHistoryProvider
@@ -13,7 +12,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GraphViewModel(application: Application): AndroidViewModel(application) {
+class GraphViewModel: ViewModel() {
 
   @Inject lateinit var stocksProvider: IStocksProvider
   @Inject lateinit var historyProvider: IHistoryProvider
@@ -43,9 +42,9 @@ class GraphViewModel(application: Application): AndroidViewModel(application) {
     }
   }
 
-  fun fetchHistoricalDataByRange(ticker: String, range: IHistoryProvider.Range.DateRange) {
+  fun fetchHistoricalDataByRange(ticker: String, range: IHistoryProvider.Range) {
     viewModelScope.launch {
-      val result = historyProvider.getHistoricalDataByRange(ticker, range)
+      val result = historyProvider.fetchDataByRange(ticker, range)
       if (result.wasSuccessful) {
         _data.value = result.data
       } else {

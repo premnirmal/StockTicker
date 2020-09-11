@@ -8,8 +8,8 @@ import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
+import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
-import com.github.premnirmal.ticker.minutesInMs
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -78,6 +78,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
     lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     nextFetch = preferences.getLong(NEXT_FETCH, 0L)
+    alarmScheduler.enqueuePeriodicRefresh(context)
     if (lastFetched == 0L) {
       launch {
         fetch()
@@ -182,6 +183,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         appPreferences.setRefreshing(true)
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fr = api.getStocks(tickers.toList())
+        if (fr.hasError) {
+          throw fr.error
+        }
         val fetchedStocks = fr.data
         if (fetchedStocks.isEmpty()) {
           bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
@@ -196,9 +200,10 @@ class StocksProvider : IStocksProvider, CoroutineScope {
           saveLastFetched()
           exponentialBackoff.reset()
           scheduleUpdate(true)
+          bus.send(FetchedEvent())
           return@withContext FetchResult.success(fetchedStocks)
         }
-      } catch (ex: Exception) {
+      } catch (ex: Throwable) {
         Timber.w(ex)
         if (!bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))) {
           withContext(Dispatchers.Main) {
@@ -216,10 +221,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun schedule() {
     scheduleUpdate()
-  }
-
-  override fun scheduleSoon() {
-    scheduleUpdateWithMs(5L.minutesInMs(), true)
+    alarmScheduler.enqueuePeriodicRefresh(context, force = true)
   }
 
   override fun addStock(ticker: String): Collection<String> {
@@ -244,6 +246,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
     return tickers
   }
+
+  override fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
 
   override fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
 
@@ -310,9 +314,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       saveTickers()
       quoteMap.remove(ticker)
     }
-    scheduleUpdate(true)
     launch {
       storage.removeQuoteBySymbol(ticker)
+      bus.send(RefreshEvent())
     }
     return tickers
   }
@@ -328,7 +332,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     launch {
       storage.removeQuotesBySymbol(symbols.toList())
     }
-    scheduleUpdate(true)
+    bus.send(RefreshEvent())
   }
 
   override suspend fun fetchStock(ticker: String): FetchResult<Quote> {

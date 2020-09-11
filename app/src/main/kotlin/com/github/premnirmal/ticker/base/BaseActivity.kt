@@ -3,8 +3,6 @@ package com.github.premnirmal.ticker.base
 import android.content.Context
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.analytics.Analytics
@@ -28,6 +26,7 @@ abstract class BaseActivity : AppCompatActivity() {
   abstract val simpleName: String
   @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var analytics: Analytics
+  open val subscribeToErrorEvents = true
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
@@ -43,11 +42,13 @@ abstract class BaseActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
-    lifecycleScope.launch {
-      val errorFlow = bus.receive<ErrorEvent>()
-      errorFlow.collect { event ->
-        if (this.isActive) {
-          showDialog(event.message)
+    if (subscribeToErrorEvents) {
+      lifecycleScope.launch {
+        val errorFlow = bus.receive<ErrorEvent>()
+        errorFlow.collect { event ->
+          if (this.isActive) {
+            showDialog(event.message)
+          }
         }
       }
     }
@@ -73,13 +74,5 @@ abstract class BaseActivity : AppCompatActivity() {
   protected fun showErrorAndFinish() {
     InAppMessage.showToast(this, R.string.error_symbol)
     finish()
-  }
-
-  protected fun dismissKeyboard() {
-    val view = currentFocus
-    if (view is TextView) {
-      val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-      imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
   }
 }

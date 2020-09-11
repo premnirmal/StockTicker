@@ -11,6 +11,7 @@ import android.text.style.StyleSpan
 import android.util.TypedValue
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
@@ -110,9 +111,9 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       val color: Int
       color = if (change < 0f || changeInPercent < 0f) {
-        context.resources.getColor(widgetData.negativeTextColor)
+        ContextCompat.getColor(context, widgetData.negativeTextColor)
       } else {
-        context.resources.getColor(widgetData.positiveTextColor)
+        ContextCompat.getColor(context, widgetData.positiveTextColor)
       }
       if (stockViewLayout == R.layout.stockview3) {
         remoteViews.setTextColor(R.id.change, color)

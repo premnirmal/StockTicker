@@ -68,6 +68,14 @@
       app:title="@string/update_days"/>
 
   <CheckBoxPreference
+      app:key="SETTING_NOTIFICATION_ALERTS"
+      app:selectable="true"
+      app:iconSpaceReserved="false"
+      app:summary="@string/notification_alerts"
+      app:title="@string/notification_alerts_desc"
+      />
+
+  <CheckBoxPreference
       app:key="SETTING_AUTOSORT"
       app:selectable="true"
       app:iconSpaceReserved="false"

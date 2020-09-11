@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="portfolio">Portefeuille</string>
-  <string name="widget_label">StocksWidget</string>
   <string name="action_add">Ajouter</string>
   <string name="action_export">Exporter côtes</string>
   <string name="action_share">Partager portefeuille</string>
@@ -16,8 +15,8 @@
   <string name="action_search">Rechercher</string>
   <string name="action_feed">Actualités</string>
   <string name="action_settings">Paramètres</string>
-  <string name="app_settings">Paramètres de l\'application</string>
-  <string name="news_feed">Fil d\'actualités</string>
+  <string name="app_settings">Paramètres</string>
+  <string name="news_feed">Actualités</string>
   <string name="action_Settings">Paramètres de widget</string>
   <string name="action_rearrage">Réorganiser les actions</string>
   <string name="action_update">Actualiser maintenant</string>
@@ -35,6 +34,8 @@
   <string name="round_two_dp_desc">Arrondir l\'évolution et la valeur à 2 décimales</string>
   <string name="auto_sort">Tri automatique</string>
   <string name="auto_sort_desc">Les actions seront classées selon leur évolution en pourcentage.</string>
+  <string name="notification_alerts">Alertes de notification</string>
+  <string name="notification_alerts_desc">Recevoir des alertes de notification</string>
   <string name="hide_header">Cacher l\'en-tête du widget</string>
   <string name="hide_header_desc">Bouton d\'actualisation et heure de récupération</string>
   <string name="refresh_on_screen_unlock">Actualisation lorsque l\'écran est déverrouillé</string>
@@ -46,6 +47,7 @@
   <string name="text_size_updated_message">Taille du texte mise à jour</string>
   <string name="bg_updated_message">Arrière-plan mis à jour</string>
   <string name="layout_updated_message">Format mis à jour</string>
+  <string name="widget_width_updated_message">Taille du widget mise à jour</string>
   <string name="text_color_updated_message">Couleur du texte mise à jour</string>
   <string name="refresh_updated_message">Intervalle d\'actualisation mis à jour</string>
   <string name="theme_updated_message">Thème de l\'application mis à jour</string>
@@ -116,6 +118,7 @@
   <string name="next_fetch">Prochaine récupération : %1$s</string>
   <string name="last_fetch">Dernière récupération : %1$s</string>
   <string name="last_and_next_fetch">Dernière récupération : %1$s\nProchaine récupération : %2$s</string>
+  <string name="total_holdings">Total Parts : %1$s (%2$d Actions)</string>
   <string name="cannot_export_msg">Export des actions impossible sans la permission d\'écrire sur la mémoire de stockage externe</string>
   <string name="cannot_import_msg">Import des actions impossible sans la permission de lire la mémoire de stockage externe</string>
   <string name="cannot_share_msg">Partage des actions impossible sans la permission d\'écrire sur la mémoire de stockage externe</string>
@@ -134,9 +137,14 @@
   <string name="recent_news">Actualités récentes</string>
   <string name="no_data">¯\\_(ツ)_/¯\nAucune donnée</string>
   <string name="expand">Étendre</string>
+  <string name="two_weeks">2 semaines</string>
   <string name="one_month">1 mois</string>
   <string name="three_month">3 mois</string>
   <string name="one_year">1 an</string>
+  <string name="two_weeks_short">2W</string>
+  <string name="one_month_short">1M</string>
+  <string name="three_month_short">3M</string>
+  <string name="one_year_short">1Y</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Erreur de chargement du graphique</string>
   <string name="widgets">Widgets</string>
@@ -146,4 +154,24 @@
   <string name="db_viewer">Base de données de l\'application</string>
   <string name="discovered_db">Vous avez découvert l\'entrée secrète vers le DB viewer</string>
   <string name="db_tap_count">Appuyer %1$d fois de plus pour dévérouiller le DB viewer</string>
+  <string name="notes">Notes</string>
+  <string name="alerts">Alertes</string>
+  <string name="alert_above">Alerte ci-dessus</string>
+  <string name="alert_below">Alerte ci-dessous</string>
+  <string name="alert_above_error">Alerte ci-dessous doit être inférieur à Alerte ci-dessus</string>
+  <string name="alert_below_error">Alerte ci-dessus doit être plus quen Alerte ci-dessous</string>
+  <string name="alert_above_notification_title">%1$s est supérieure à %2$s à %3$s</string>
+  <string name="alert_below_notification_title">%1$s est inférieure à %2$s à %3$s</string>
+  <string name="alert_above_notification">L’action %1$s, est supérieure à %2$s à %3$s.</string>
+  <string name="alert_below_notification">L’action %1$s, est inférieure à %2$s à %3$s.</string>
+  <string name="alert_dismiss">Rejeter</string>
+  <string name="alerts_disabled">Alertes désactivées, vérifiez les paramètres</string>
+  <string name="add_notes">Ajouter des notess</string>
+  <string name="add_alerts">Ajouter des alertes</string>
+  <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille?</string>
+  <string name="save">Sauvegardez</string>
+  <string name="desc_channel_alerts">Alertes de stock</string>
+  <string name="desc_channel_summary">Résumé quotidien</string>
+  <string name="notification_summary_title">Comment s\'est passé votre portefeuille aujourd\'hui?</string>
+  <string name="dividend">Dividende</string>
 </resources>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_bg"
+    >
+
+  <com.google.android.material.appbar.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_toolbar"
+        app:title="@string/add_alerts"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        />
+
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@color/error_red"
+          android:gravity="center"
+          android:padding="@dimen/activity_horizontal_margin"
+          android:textColor="@color/snackbar_text"
+          android:text="@string/alerts_disabled"
+          android:visibility="gone"
+          tools:visibility="visible"
+          android:id="@+id/alerts_disabled_message"
+          />
+
+      <TextView
+          android:id="@+id/tickerName"
+          style="@style/BoldTextView"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="20dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center"
+          android:textSize="@dimen/xlarge_text"
+          tools:text="GOOG"
+          />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="10dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center_vertical"
+          android:orientation="horizontal"
+          >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.4"
+            android:text="@string/alert_above"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/alertAboveInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="0.6"
+            app:endIconMode="clear_text"
+            >
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/alertAboveInputEditText"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end"
+              android:inputType="numberDecimal"
+              android:digits="0123456789.,"
+              android:textSize="@dimen/large_text"
+              android:maxLength="9"
+              android:maxLines="1"
+              android:nextFocusDown="@+id/alertBelowInputEditText"
+              android:nextFocusForward="@+id/alertBelowInputEditText"
+              android:textAlignment="textEnd"
+              />
+        </com.google.android.material.textfield.TextInputLayout>
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="10dp"
+          android:layout_marginRight="16dp"
+          android:gravity="center_vertical"
+          android:orientation="horizontal"
+          >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.4"
+            android:text="@string/alert_below"
+            />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/alertBelowInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_weight="0.6"
+            app:endIconMode="clear_text"
+            >
+          <com.google.android.material.textfield.TextInputEditText
+              android:id="@+id/alertBelowInputEditText"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:gravity="end"
+              android:inputType="numberDecimal"
+              android:digits="0123456789.,"
+              android:imeOptions="actionDone"
+              android:textSize="@dimen/large_text"
+              android:maxLength="9"
+              android:maxLines="1"
+              android:textAlignment="textEnd"
+              />
+        </com.google.android.material.textfield.TextInputLayout>
+
+      </LinearLayout>
+
+      <Button
+          android:id="@+id/addButton"
+          android:layout_width="match_parent"
+          android:layout_height="45dp"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginStart="16dp"
+          android:layout_marginLeft="16dp"
+          android:layout_marginTop="20dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginRight="16dp"
+          android:layout_marginBottom="20dp"
+          android:text="@string/add"
+          />
+
+    </LinearLayout>
+  </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

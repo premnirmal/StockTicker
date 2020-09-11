@@ -28,6 +28,7 @@ import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_chec
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
 import javax.inject.Inject
@@ -63,8 +64,8 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
-    widgetId = arguments!!.getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-    showAddStocks = arguments!!.getBoolean(ARG_SHOW_ADD_STOCKS, true)
+    widgetId = requireArguments().getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+    showAddStocks = requireArguments().getBoolean(ARG_SHOW_ADD_STOCKS, true)
   }
 
   override fun onCreateView(
@@ -84,6 +85,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     setWidgetNameSetting(widgetData)
     setLayoutTypeSetting(widgetData)
+    setWidgetSizeSetting(widgetData)
     setBgSetting(widgetData)
     setTextColorSetting(widgetData)
     setBoldSetting(widgetData)
@@ -91,7 +93,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setHideHeaderSetting(widgetData)
 
     arrayOf(
-        setting_add_stock, setting_widget_name, setting_layout_type, setting_background,
+        setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width, setting_background,
         setting_text_color, setting_bold, setting_autosort, setting_hide_header
     ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
@@ -128,6 +130,18 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
               InAppMessage.showMessage(activity!!, R.string.layout_updated_message)
             })
       }
+
+      R.id.setting_widget_width -> {
+        showDialogPreference(R.array.widget_width_types,
+                DialogInterface.OnClickListener { dialog, which ->
+                  widgetData.setWidgetSizePref(which)
+                  setWidgetSizeSetting(widgetData)
+                  dialog.dismiss()
+                  broadcastUpdateWidget()
+                  InAppMessage.showMessage(activity!!, R.string.widget_width_updated_message)
+                })
+      }
+
       R.id.setting_background -> {
         showDialogPreference(R.array.backgrounds, DialogInterface.OnClickListener { dialog, which ->
           widgetData.setBgPref(which)
@@ -186,6 +200,10 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setting_widget_name.setSubtitle(widgetData.widgetName())
   }
 
+  private fun setWidgetSizeSetting(widgetData: WidgetData) {
+    val widgetSizeTypeDesc = resources.getStringArray(R.array.widget_width_types)[widgetData.widgetSizePref()]
+    setting_widget_width.setSubtitle(widgetSizeTypeDesc)
+  }
   private fun setLayoutTypeSetting(widgetData: WidgetData) {
     val layoutTypeDesc = resources.getStringArray(R.array.layout_types)[widgetData.layoutPref()]
     setting_layout_type.setSubtitle(layoutTypeDesc)
