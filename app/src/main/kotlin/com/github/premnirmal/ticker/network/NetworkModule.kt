@@ -51,7 +51,7 @@ class NetworkModule {
   }
 
   @Provides @Singleton internal fun provideGson(): Gson {
-    return GsonBuilder().create()
+    return GsonBuilder().setLenient().create()
   }
 
   @Provides @Singleton internal fun provideGsonFactory(gson: Gson): GsonConverterFactory {

@@ -73,7 +73,7 @@ internal object PortfolioExporter {
       val jsonString = gson.toJson(quoteList)
       val contentResolver = context.applicationContext.contentResolver
       try {
-        contentResolver.openFileDescriptor(uri, "w")
+        contentResolver.openFileDescriptor(uri, "rwt")
             ?.use {
               FileOutputStream(it.fileDescriptor).use { fileOutputStream ->
                 fileOutputStream.write(jsonString.toByteArray())

@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.debug
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import com.github.premnirmal.ticker.base.BaseActivity
@@ -29,12 +28,13 @@ class DbViewerActivity : BaseActivity() {
     toolbar.setNavigationOnClickListener {
       finish()
     }
+    webview.settings.allowFileAccess = true
 
-    viewModel.htmlText.observe(this, Observer {
+    viewModel.htmlFile.observe(this, {
       webview.loadUrl("file://${it.absolutePath}")
     })
 
-    viewModel.showProgress.observe(this, Observer { show ->
+    viewModel.showProgress.observe(this, { show ->
       progress.visibility = if (show) View.VISIBLE else View.GONE
     })
 

@@ -31,7 +31,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
     get() = _showProgress
 
   private val _htmlFile = MutableLiveData<File>()
-  val htmlText: LiveData<File>
+  val htmlFile: LiveData<File>
     get() = _htmlFile
 
   @Inject lateinit var dao: QuoteDao
@@ -147,7 +147,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             .append(workerInfo)
             .append("</body></html>")
       }
-      val file = File(getApplication<StocksApp>().externalCacheDir, FILENAME)
+      val file = File(getApplication<StocksApp>().cacheDir, FILENAME)
       if (!file.exists()) {
         file.createNewFile()
       } else {
@@ -179,7 +179,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
       }
       for (wi in workInfos) {
         sb.append("<tr>")
-            .append("<td>${wi.tags.minBy { it.length }!!}</td>")
+            .append("<td>${wi.tags.minByOrNull { it.length }!!}</td>")
             .append("<td>${wi.state.name}</td>")
             .append("<td>${wi.runAttemptCount}</td>")
             .append("</tr>")
