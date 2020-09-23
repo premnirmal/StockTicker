@@ -265,11 +265,11 @@ class WidgetData {
   fun removeStock(ticker: String) {
     synchronized(tickerList) {
       tickerList.remove(ticker)
-      if (!widgetDataProvider.containsTicker(ticker)) {
-        stocksProvider.removeStock(ticker)
-      }
-      save()
     }
+    if (!widgetDataProvider.containsTicker(ticker)) {
+      stocksProvider.removeStock(ticker)
+    }
+    save()
   }
 
   fun addAllFromStocksProvider() {
