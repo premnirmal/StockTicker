@@ -1,6 +1,10 @@
 package com.github.premnirmal.ticker.model
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import androidx.core.content.getSystemService
 import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
@@ -13,6 +17,7 @@ import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -129,6 +134,10 @@ class AlarmScheduler {
       this.cancelAllWorkByTag(RefreshWorker.TAG)
       this.enqueue(workRequest)
     }
+    val refreshReceiverIntent = Intent(context, RefreshReceiver::class.java)
+    val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_ONE_SHOT)
+    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
     return nextAlarmDate
   }
 

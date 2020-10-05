@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Traducciones al portugués (BR)</item>
+    <item>Usando AlarmManager para una mejor actualización del fondo</item>
+    <item>Traducciones al portugués (BR) - gracias @iraamaro</item>
     <item>Orientación a Android 11</item>
     <item>Corregir errores</item>
   </string-array>

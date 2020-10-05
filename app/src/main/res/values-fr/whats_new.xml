@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
-    <item>Traductions en portugais (BR)</item>
+    <item>Utilisation d\'AlarmManager pour un meilleur rafraîchissement de l\'arrière-plan.</item>
+    <item>Traductions en portugais (BR) - merci @iraamaro</item>
     <item>Cibler Android 11</item>
     <item>Corriger les erreurs</item>
   </string-array>
