@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+
+  <string name="news_endpoint" translatable="false">https://news.google.com/</string>
+  <string name="suggestions_endpoint" translatable="false">https://s.yimg.com/aq/</string>
+  <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
+  <string name="alpha_vantage_endpoint" translatable="false">https://www.alphavantage.co/</string>
+  <string name="alpha_vantage_api_key" translatable="false">9VQGQDBGD0L1B3IH</string>
+  <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
+  <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/StockTicker/blob/master/PRIVACY_POLICY.md</string>
+  <string name="dotdotdot" translatable="false">…</string>
+
+  <string name="portfolio">Portfolio</string>
+  <string name="widget_label">StocksWidget</string>
+  <string name="action_add">Add</string>
+  <string name="action_export">Export Quotes</string>
+  <string name="action_share">Share Portfolio</string>
+  <string name="action_nuke">Clear app data</string>
+  <string name="privacy_policy">Privacy Policy</string>
+  <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
+  <string name="export_desc">Export your portfolio to a .json file</string>
+  <string name="action_import">Import Quotes</string>
+  <string name="import_desc">Import quotes from a comma separated .txt file, or a .json file</string>
+  <string name="action_portfolio">Portfolio</string>
+  <string name="action_widgets">Widgets</string>
+  <string name="action_search">Search</string>
+  <string name="action_feed">News</string>
+  <string name="action_settings">Settings</string>
+  <string name="app_settings">App Settings</string>
+  <string name="news_feed">News Feed</string>
+  <string name="action_Settings">Widget Settings</string>
+  <string name="action_rearrage">Rearrange Stocks</string>
+  <string name="action_update">Refresh Now</string>
+  <string name="are_you_sure">Are you sure?</string>
+  <string name="add_ticker">Add Ticker</string>
+  <string name="bg">Widget Background</string>
+  <string name="layout_type">Widget Type</string>
+  <string name="text_color">Text Color</string>
+  <string name="start_time">Start Time</string>
+  <string name="end_time">End Time</string>
+  <string name="update_interval">Update Interval</string>
+  <string name="update_days">Update days</string>
+  <string name="update_days_desc">Updates will occur on these days</string>
+  <string name="round_two_dp">Round to 2 dp</string>
+  <string name="round_two_dp_desc">Round the change and value to 2 decimal places</string>
+  <string name="auto_sort">Autosort</string>
+  <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
+  <string name="hide_header">Hide widget header</string>
+  <string name="hide_header_desc">Fetch time and refresh button.</string>
+  <string name="refresh_on_screen_unlock">Refresh on unlock</string>
+  <string name="refresh_on_screen_unlock_desc">Refresh when the screen unlocks (only during set hours).</string>
+  <string name="bold_change">Bold text</string>
+  <string name="bold_change_desc">Show changes and market value in bold</string>
+  <string name="choose_text_size">Widget Text Size</string>
+  <string name="app_theme">App Theme</string>
+  <string name="text_size_updated_message">Text size updated</string>
+  <string name="bg_updated_message">Background updated</string>
+  <string name="layout_updated_message">Layout type updated</string>
+  <string name="text_color_updated_message">Text color updated</string>
+  <string name="refresh_updated_message">Refresh interval updated</string>
+  <string name="theme_updated_message">App theme updated</string>
+  <string name="days_updated_message">Update days updated</string>
+  <string name="days_updated_error_message">Error - you must select days</string>
+  <string name="error_exporting">Error exporting file</string>
+  <string name="error_symbol">Invalid symbol</string>
+  <string name="error_sharing">Error sharing quotes</string>
+  <string name="error_fetching_stock">Error fetching stock</string>
+  <string name="ticker_import_success">Quotes imported successfully</string>
+  <string name="ticker_import_fail">Error importing quotes</string>
+  <string name="no_network_message">No network connection</string>
+  <string name="refresh_failed">Refresh failed</string>
+  <string name="news_fetch_failed">Failed to fetch news</string>
+  <string name="graph_fetch_failed">Failed to fetch data</string>
+  <string name="error_fetching_suggestions">Error fetching suggestions</string>
+  <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
+  <string name="package_replaced_string" translatable="false">com.github.premnirmal.tickerwidget</string>
+  <string name="only_updates_on_weekdays">Only updates on weekdays</string>
+  <string name="end_time_updated">End time updated</string>
+  <string name="start_time_updated">Start time updated</string>
+  <string name="incorrect_time_update_error">Start time must not equal end time</string>
+  <string name="share_email_subject">Here are my tickers I created using StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
+  <string name="my_stock_portfolio">My Stock Portfolio</string>
+  <string name="number_of_shares">No. of Shares</string>
+  <string name="shares">Shares</string>
+  <string name="equity_value">Equity Value</string>
+  <string name="value">Value</string>
+  <string name="price">Price</string>
+  <string name="add_position">Add Position</string>
+  <string name="add">Add</string>
+  <string name="done">Done</string>
+  <string name="skip">Skip</string>
+  <string name="edit_position">Edit Position</string>
+  <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
+  <string name="remove">Remove</string>
+  <string name="move_to_different_widget">Move to different widget</string>
+  <string name="select_widget">Select Widget</string>
+  <string name="change_instructions">On your widget, click on the change to switch between change percent and change value</string>
+  <string name="no_symbols_in_portfolio">No symbols in portfolio.</string>
+  <string name="like_our_app">Like our app?</string>
+  <string name="please_rate">Please rate us on the PlayStore, we would love to hear what you have to say!</string>
+  <string name="yes">Yes</string>
+  <string name="no">No</string>
+  <string name="later">Later</string>
+  <string name="enable_google_finance">Enable alternate finance API?</string>
+  <string name="enable_google_finance_desc">In beta. Please disable if it doesn\'t give accurate quotes.</string>
+  <string name="edit_positions">Edit Positions</string>
+  <string name="add_stock">Add Stocks</string>
+  <string name="holdings">Holdings</string>
+  <string name="average_price">Average Price</string>
+  <string name="gain">Gain</string>
+  <string name="loss">Loss</string>
+  <string name="gain_loss">Gain/Loss</string>
+  <string name="change_percent">% Change</string>
+  <string name="change_amount">Change</string>
+  <string name="day_change_percent">% Day Change</string>
+  <string name="day_change_amount">Day Change</string>
+  <string name="autosort_disabled">Auto-sort has been disabled. You can now drag and drop to sort.</string>
+  <string name="remove_prompt">Are you sure you want to remove %1$s from your portfolio?</string>
+  <string name="ok">OK</string>
+  <string name="cancel">Cancel</string>
+  <string name="invalid_number">Invalid number</string>
+  <string name="invalid_time">Invalid time</string>
+  <string name="add_positions_prompt">Do you want to add positions for %1$s?</string>
+  <string name="already_in_portfolio">%1$s is already in your portfolio</string>
+  <string name="added_to_list">%1$s added to your portfolio</string>
+  <string name="next_fetch">Next fetch: %1$s</string>
+  <string name="last_fetch">Last fetch: %1$s</string>
+  <string name="last_and_next_fetch">Last fetch: %1$s\nNext fetch: %2$s</string>
+  <string name="cannot_export_msg">Cannot export quotes without permission to write to external storage</string>
+  <string name="cannot_import_msg">Cannot import quotes without permission to read external storage</string>
+  <string name="cannot_share_msg">Cannot share quotes without permission to write to external storage</string>
+  <string name="exported_to">Exported successfully</string>
+  <string name="whats_new">What\'s new</string>
+  <string name="whats_new_in">What\'s new in v%1$s</string>
+  <string name="enter_a_symbol">Enter a symbol</string>
+  <string name="no_symbols">¯\\_(ツ)_/¯\nNo symbols</string>
+  <string name="error_fetching_news">¯\\_(ツ)_/¯\nError fetching news</string>
+  <string name="widget_name">Widget name</string>
+  <string name="widget_name_updated">Widget name updated</string>
+  <string name="set">Set</string>
+  <string name="current_positions">Current Positions</string>
+  <string name="total">Total</string>
+  <string name="positions">Positions</string>
+  <string name="recent_news">Recent News</string>
+  <string name="no_data">¯\\_(ツ)_/¯\nNo data</string>
+  <string name="expand">Expand</string>
+  <string name="one_month">1 Month</string>
+  <string name="three_month">3 Months</string>
+  <string name="one_year">1 Year</string>
+  <string name="max">Max</string>
+  <string name="error_loading_graph">Error loading graph</string>
+  <string name="widgets">Widgets</string>
+  <string name="tutorial">Tutorial</string>
+  <string name="how_to_title">How to add a widget</string>
+  <string name="how_to">- Long-press an empty space on your home screen to bring up the menu\n\n- Now select the \'Widgets\' option.\n\n- Select the \'Stocks Widget\' item from the list of widgets.\n\n- You can add multiple widgets each with their own portfolio.</string>
+  <string name="db_viewer">Application database</string>
+  <string name="discovered_db">You have discovered the secret entrance to the DB viewer</string>
+  <string name="db_tap_count">Tap %1$d more times to unlock the DB viewer</string>
+</resources>
