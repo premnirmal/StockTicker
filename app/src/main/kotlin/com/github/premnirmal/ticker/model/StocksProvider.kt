@@ -28,7 +28,6 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
-import java.util.ArrayList
 import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -341,9 +340,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun getStock(ticker: String): Quote? = quoteMap[ticker]
 
-  override fun getTickers(): List<String> = ArrayList(tickers)
+  override fun getTickers(): List<String> = tickers.toList()
 
-  override fun getPortfolio(): List<Quote> = quoteMap.map { it.value }
+  override fun getPortfolio(): List<Quote> = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
 
   override fun addPortfolio(portfolio: List<Quote>) {
     synchronized(quoteMap) {

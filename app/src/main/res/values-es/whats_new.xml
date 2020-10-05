@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>Orientación a Android 11</item>
     <item>Corregir errores</item>
   </string-array>
 </resources>
