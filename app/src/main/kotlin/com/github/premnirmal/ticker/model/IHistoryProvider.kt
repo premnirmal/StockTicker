@@ -14,16 +14,28 @@ interface IHistoryProvider {
     range: Range
   ): FetchResult<List<DataPoint>>
 
-  sealed class Range(val duration: Duration) : Serializable {
+  sealed class Range(val name: String, val duration: Duration) : Serializable {
     val end = LocalDate.now().minusDays(duration.toDays())
-    class DateRange(duration: Duration) : Range(duration)
+    class DateRange(name: String, duration: Duration) : Range(name, duration)
     companion object {
-      val ONE_DAY = DateRange(Duration.ofDays(1))
-      val TWO_WEEKS = DateRange(Duration.ofDays(14))
-      val ONE_MONTH = DateRange(Duration.ofDays(30))
-      val THREE_MONTH = DateRange(Duration.ofDays(90))
-      val ONE_YEAR = DateRange(Duration.ofDays(365))
-      val MAX = DateRange(Duration.ofDays(20 * 365))
+      val ONE_DAY = DateRange("ONE_DAY", Duration.ofDays(1))
+      val TWO_WEEKS = DateRange("TWO_WEEKS", Duration.ofDays(14))
+      val ONE_MONTH = DateRange("ONE_MONTH", Duration.ofDays(30))
+      val THREE_MONTH = DateRange("THREE_MONTH", Duration.ofDays(90))
+      val ONE_YEAR = DateRange("ONE_YEAR", Duration.ofDays(365))
+      val MAX = DateRange("MAX", Duration.ofDays(20 * 365))
+
+      fun from(name: String): Range {
+        return when(name) {
+          "ONE_DAY" -> ONE_DAY
+          "TWO_WEEKS" -> TWO_WEEKS
+          "ONE_MONTH" -> ONE_MONTH
+          "THREE_MONTH" -> THREE_MONTH
+          "ONE_YEAR" -> ONE_YEAR
+          "MAX" -> MAX
+          else -> throw IllegalArgumentException("Unknown name $name")
+        }
+      }
     }
   }
 }
