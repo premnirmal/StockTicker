@@ -13,19 +13,11 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.work.BackoffPolicy.LINEAR
-import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingPeriodicWorkPolicy.KEEP
-import androidx.work.NetworkType.CONNECTED
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkInfo.State.ENQUEUED
-import androidx.work.WorkInfo.State.RUNNING
-import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.home.ParanormalActivity
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
@@ -41,9 +33,7 @@ import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
-import java.util.concurrent.TimeUnit.HOURS
-import java.util.concurrent.TimeUnit.MILLISECONDS
-import java.util.concurrent.TimeUnit.SECONDS
+import timber.log.Timber
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -55,6 +45,7 @@ class NotificationsHandler @Inject constructor(
   private val bus: AsyncBus,
   private val stocksProvider: IStocksProvider,
   private val stocksStorage: StocksStorage,
+  private val alarmScheduler: AlarmScheduler,
   private val appPreferences: AppPreferences
 ) {
 
@@ -79,9 +70,7 @@ class NotificationsHandler @Inject constructor(
 
   fun initialize() {
     createChannels()
-    if (!isNotificationEnqueued) {
-      enqueueDailySummaryNotification()
-    }
+    enqueueDailySummaryNotification()
     GlobalScope.launch(Dispatchers.Default) {
       val flow = bus.receive<FetchedEvent>()
       flow.collect {
@@ -101,36 +90,23 @@ class NotificationsHandler @Inject constructor(
     }
   }
 
-  private val isNotificationEnqueued: Boolean
-    get() = with(WorkManager.getInstance(context)) {
-      getWorkInfosByTag(DailySummaryNotificationWorker.TAG).get()
-          .any {
-            it.state == ENQUEUED || it.state == RUNNING
-          }
+  fun enqueueDailySummaryNotification() {
+    val endTime = appPreferences.endTime()
+    var firstNotificationDue = ZonedDateTime.now()
+        .withHour(endTime.hour)
+        .withMinute(endTime.minute)
+        .plusHours(1)
+    if (firstNotificationDue.isBefore(ZonedDateTime.now())) {
+      firstNotificationDue = firstNotificationDue.plusHours(24)
     }
-
-  fun enqueueDailySummaryNotification(policy: ExistingPeriodicWorkPolicy = KEEP) {
-    with(WorkManager.getInstance(context)) {
-      val endTime = appPreferences.endTime()
-      var firstWorkerDue = ZonedDateTime.now()
-          .withHour(endTime.hour)
-          .withMinute(endTime.minute)
-          .plusHours(1)
-      if (firstWorkerDue.isBefore(ZonedDateTime.now())) {
-        firstWorkerDue = firstWorkerDue.plusHours(24)
-      }
-      val constraints = Constraints.Builder()
-          .setRequiredNetworkType(CONNECTED)
-          .build()
-      val delay = firstWorkerDue.toInstant().toEpochMilli() - ZonedDateTime.now().toInstant().toEpochMilli()
-      val request = PeriodicWorkRequestBuilder<DailySummaryNotificationWorker>(24, HOURS)
-          .setInitialDelay(delay, MILLISECONDS)
-          .addTag(DailySummaryNotificationWorker.TAG)
-          .setBackoffCriteria(LINEAR, 20, SECONDS)
-          .setConstraints(constraints)
-          .build()
-      this.enqueueUniquePeriodicWork(DailySummaryNotificationWorker.TAG, policy, request)
-    }
+    val delay = firstNotificationDue.toInstant()
+        .toEpochMilli() - ZonedDateTime.now()
+        .toInstant()
+        .toEpochMilli()
+    Timber.d("NotificationsHandler enqueueDailySummaryNotification ${firstNotificationDue.toInstant()} delay:${delay}ms")
+    alarmScheduler.scheduleDailySummaryNotification(
+        context, delay, Duration.ofHours(24).toMillis()
+    )
   }
 
   private fun createChannels() {
@@ -201,7 +177,7 @@ class NotificationsHandler @Inject constructor(
           }
         }
         quote.changeInPercent.absoluteValue >= 10f -> {
-          if (!hasNotifiedGenericAlert(quote)) {
+          if (!hasRecentlyNotifiedGenericAlert(quote)) {
             notificationFactory.sendGenericAlert(quote)
             notificationPrefs.edit()
                 .putLong(quote.symbol, ZonedDateTime.now()
@@ -215,13 +191,13 @@ class NotificationsHandler @Inject constructor(
     }
   }
 
-  private fun hasNotifiedGenericAlert(quote: Quote): Boolean {
+  private fun hasRecentlyNotifiedGenericAlert(quote: Quote): Boolean {
     val lastNotifiedTimeMs = notificationPrefs.getLong(quote.symbol, 0L)
-    val now = ZonedDateTime.now()
     if (lastNotifiedTimeMs > 0L) {
+      val now = ZonedDateTime.now()
       val lastNotifiedTime =
         ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastNotifiedTimeMs), ZoneId.systemDefault())
-      if (Duration.between(now, lastNotifiedTime).toHours() < 24) {
+      if (Duration.between(now, lastNotifiedTime).toHours().absoluteValue < 24) {
         return true
       }
     }
@@ -324,7 +300,18 @@ private class NotificationFactory(private val context: Context) {
           // Get the PendingIntent containing the entire back stack
           getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-    val icon = R.drawable.ic_trending_up
+    val icon = when {
+      topQuotes.map { it.changeInPercent }.average() >= 2f -> {
+        R.drawable.ic_trending_up
+      }
+      topQuotes.map { it.changeInPercent }.average() <= 2f -> {
+        R.drawable.ic_trending_down
+      }
+      topQuotes.count { it.changeInPercent > 1f } >= topQuotes.count { it.changeInPercent < 1f } -> {
+        R.drawable.ic_trending_up
+      }
+      else -> R.drawable.ic_trending_down
+    }
     with(notificationManager) {
       val notification = Builder(
           context,

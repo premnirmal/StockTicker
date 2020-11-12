@@ -25,7 +25,7 @@ import com.github.premnirmal.ticker.news.GraphViewModel
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
-import com.github.premnirmal.ticker.notifications.DailySummaryNotificationWorker
+import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
@@ -102,7 +102,7 @@ interface AppComponent {
 
   fun inject(generalProperties: GeneralProperties)
 
-  fun inject(dailySummaryNotificationWorker: DailySummaryNotificationWorker)
+  fun inject(dailySummaryNotificationReceiver: DailySummaryNotificationReceiver)
 
   // Network
 

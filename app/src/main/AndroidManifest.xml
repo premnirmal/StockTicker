@@ -91,11 +91,10 @@
             android:name="com.github.premnirmal.ticker.widget.RefreshReceiver"
             android:enabled="true"
             android:exported="false" />
-
-        <service
-            android:name="com.github.premnirmal.ticker.model.RefreshWorker"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <receiver
+            android:name="com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver"
+            android:enabled="true"
+            android:exported="false" />
 
         <receiver
             android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"

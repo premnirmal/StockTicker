@@ -17,6 +17,7 @@ import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
@@ -118,7 +119,7 @@ class AlarmScheduler {
     msToNextAlarm: Long,
     context: Context
   ): ZonedDateTime {
-    Timber.i("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
+    Timber.d("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
     val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)
     val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
     val workRequest = OneTimeWorkRequestBuilder<RefreshWorker>()
@@ -162,5 +163,24 @@ class AlarmScheduler {
         this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
       }
     }
+  }
+
+  fun scheduleDailySummaryNotification(context: Context, initialDelay: Long, interval: Long) {
+    Timber.d("enqueueDailySummaryNotification delay:${initialDelay}ms")
+    val receiverIntent = Intent(context, DailySummaryNotificationReceiver::class.java)
+    val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
+    val pendingIntent =
+      PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_ONE_SHOT)
+    alarmManager.cancel(pendingIntent)
+    alarmManager.setRepeating(
+        AlarmManager.ELAPSED_REALTIME_WAKEUP,
+        clock.elapsedRealtime() + initialDelay,
+        interval,
+        pendingIntent
+    )
+  }
+
+  companion object {
+    private const val REQUEST_CODE_SUMMARY_NOTIFICATION = 123
   }
 }

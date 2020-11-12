@@ -320,7 +320,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             startTimePref.summary = newValue.toString()
             stocksProvider.schedule()
-            notificationsHandler.enqueueDailySummaryNotification(REPLACE)
+            notificationsHandler.enqueueDailySummaryNotification()
             InAppMessage.showMessage(requireActivity(), R.string.start_time_updated)
             return true
           }
@@ -354,7 +354,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 .apply()
             endTimePref.summary = newValue.toString()
             stocksProvider.schedule()
-            notificationsHandler.enqueueDailySummaryNotification(REPLACE)
+            notificationsHandler.enqueueDailySummaryNotification()
             InAppMessage.showMessage(requireActivity(), R.string.end_time_updated)
             return true
           }
@@ -388,7 +388,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
                 it.getDisplayName(SHORT, Locale.getDefault())
               }
           stocksProvider.schedule()
-          notificationsHandler.enqueueDailySummaryNotification(REPLACE)
+          notificationsHandler.enqueueDailySummaryNotification()
           InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
           broadcastUpdateWidget()
           return true
@@ -667,7 +667,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           .apply()
       preference.summary = time
       stocksProvider.schedule()
-      notificationsHandler.enqueueDailySummaryNotification(REPLACE)
+      notificationsHandler.enqueueDailySummaryNotification()
       InAppMessage.showMessage(requireActivity(), messageRes)
     }
   }

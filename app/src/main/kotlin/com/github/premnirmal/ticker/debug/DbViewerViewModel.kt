@@ -11,7 +11,6 @@ import androidx.work.WorkManager
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.RefreshWorker
-import com.github.premnirmal.ticker.notifications.DailySummaryNotificationWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -175,7 +174,6 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
       val workInfos = ArrayList<WorkInfo>().apply {
         addAll(getWorkInfosByTag(RefreshWorker.TAG).get())
         addAll(getWorkInfosByTag(RefreshWorker.TAG_PERIODIC).get())
-        addAll(getWorkInfosByTag(DailySummaryNotificationWorker.TAG).get())
       }
       for (wi in workInfos) {
         sb.append("<tr>")
