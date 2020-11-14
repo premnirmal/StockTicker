@@ -1,8 +1,10 @@
 package com.github.premnirmal.ticker.news
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
+import android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
@@ -40,7 +42,11 @@ class GraphActivity : BaseGraphActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     // Hide the status bar.
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+    setContentView(R.layout.activity_graph)
+    if (Build.VERSION.SDK_INT >= 28) {
+      window.attributes.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+    }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
         hide(WindowInsets.Type.statusBars())
         hide(WindowInsets.Type.navigationBars())
@@ -48,7 +54,6 @@ class GraphActivity : BaseGraphActivity() {
     } else {
       window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
     }
-    setContentView(R.layout.activity_graph)
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     viewModel = ViewModelProvider(this).get(GraphViewModel::class.java)

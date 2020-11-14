@@ -1,10 +1,12 @@
 package com.github.premnirmal.ticker.home
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowInsets
+import android.view.WindowManager.LayoutParams
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
@@ -23,9 +25,13 @@ class SplashActivity : BaseActivity() {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_splash)
+    if (Build.VERSION.SDK_INT >= 28) {
+      window.attributes.layoutInDisplayCutoutMode =
+        LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+    }
     touch_interceptor.setOnTouchListener(onTouchListener)
     // Hide the status bar.
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {
         hide(WindowInsets.Type.statusBars())
         hide(WindowInsets.Type.navigationBars())
