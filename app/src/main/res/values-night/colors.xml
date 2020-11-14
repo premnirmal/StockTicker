@@ -7,6 +7,7 @@
   <color name="button_disabled">#638ca6</color>
   <color name="button_enabled">#00a896</color>
   <color name="default_bg">#191919</color>
+  <color name="color_splash">#191919</color>
   <color name="graph_bg">#000000</color>
   <color name="color_statusbar">@color/color_primary</color>
   <color name="bg_toolbar">@color/color_primary</color>

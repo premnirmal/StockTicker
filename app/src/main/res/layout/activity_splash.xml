@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/transparent"
-    android:fitsSystemWindows="true"
     >
 
   <androidx.constraintlayout.widget.Guideline
@@ -19,11 +18,18 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:background="@drawable/bg_ic_splash"
+      android:id="@+id/icon"
       android:padding="@dimen/activity_horizontal_margin"
-      android:src="@mipmap/ic_splash"
+      android:src="@drawable/ic_splash"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@+id/guideline"
+      />
+
+  <View
+      android:id="@+id/touch_interceptor"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
       />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

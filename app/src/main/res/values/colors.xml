@@ -12,6 +12,7 @@
   <color name="button_disabled">#cdaca1</color>
   <color name="button_enabled">#be6663</color>
   <color name="default_bg">#ffffff</color>
+  <color name="color_splash">#ffffff</color>
   <color name="color_statusbar">@color/color_primary</color>
   <color name="bg_toolbar">@color/color_primary</color>
   <color name="graph_bg">#ffffff</color>

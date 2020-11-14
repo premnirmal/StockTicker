@@ -1,9 +1,8 @@
 package com.github.premnirmal.ticker.news
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
+import android.view.WindowInsets
 import androidx.lifecycle.ViewModelProvider
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
@@ -40,30 +39,39 @@ class GraphActivity : BaseGraphActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
+    // Hide the status bar.
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+      window.insetsController?.apply {
+        hide(WindowInsets.Type.statusBars())
+        hide(WindowInsets.Type.navigationBars())
+      }
+    } else {
+      window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
+    }
     setContentView(R.layout.activity_graph)
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     viewModel = ViewModelProvider(this).get(GraphViewModel::class.java)
-    viewModel.quote.observe(this, Observer { quote ->
+    viewModel.quote.observe(this, { quote ->
       this.quote = quote
       tickerName.text = ticker
       desc.text = quote.name
     })
-    viewModel.data.observe(this, Observer { data ->
+    viewModel.data.observe(this, { data ->
       dataPoints = data
       loadGraph(ticker)
     })
-    viewModel.error.observe(this, Observer {
+    viewModel.error.observe(this, {
       showErrorAndFinish()
     })
     viewModel.fetchStock(ticker)
-    var view: View? = null
-    when (range) {
-      Range.TWO_WEEKS -> view = two_weeks
-      Range.ONE_MONTH -> view = one_month
-      Range.THREE_MONTH -> view = three_month
-      Range.ONE_YEAR -> view = one_year
-      Range.MAX -> view = max
+    val view = when (range) {
+      Range.TWO_WEEKS -> two_weeks
+      Range.ONE_MONTH -> one_month
+      Range.THREE_MONTH -> three_month
+      Range.ONE_YEAR -> one_year
+      Range.MAX -> max
+      else -> throw UnsupportedOperationException("Range not supported")
     }
     view?.isEnabled = false
   }
@@ -84,7 +92,7 @@ class GraphActivity : BaseGraphActivity() {
       viewModel.fetchHistoricalDataByRange(ticker, range)
     } else {
       showDialog(getString(R.string.no_network_message),
-          DialogInterface.OnClickListener { _, _ -> finish() }, cancelable = false)
+          { _, _ -> finish() }, cancelable = false)
     }
   }
 

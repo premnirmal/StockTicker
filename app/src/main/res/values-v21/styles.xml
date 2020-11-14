@@ -57,7 +57,8 @@
   </style>
 
   <style name="GraphActivityTheme" parent="AppTheme">
-    <item name="android:navigationBarColor">@color/graph_bg</item>
+    <item name="android:navigationBarColor">@android:color/transparent</item>
+    <item name="android:windowTranslucentNavigation">true</item>
   </style>
 
   <style name="AddPositionTheme" parent="AppTheme">
@@ -68,7 +69,6 @@
     <item name="android:windowBackground">@drawable/bg_splash</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="android:navigationBarColor">@android:color/transparent</item>
-    <item name="android:windowTranslucentStatus">true</item>
     <item name="android:windowTranslucentNavigation">true</item>
   </style>
 

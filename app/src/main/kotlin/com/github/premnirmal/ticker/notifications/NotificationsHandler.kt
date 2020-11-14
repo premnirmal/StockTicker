@@ -301,13 +301,9 @@ private class NotificationFactory(private val context: Context) {
           getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
         }
     val icon = when {
-      topQuotes.map { it.changeInPercent }.average() >= 2f -> {
-        R.drawable.ic_trending_up
-      }
-      topQuotes.map { it.changeInPercent }.average() <= 2f -> {
-        R.drawable.ic_trending_down
-      }
-      topQuotes.count { it.changeInPercent > 1f } >= topQuotes.count { it.changeInPercent < 1f } -> {
+      topQuotes.map { it.changeInPercent }.average() >= 2f -> R.drawable.ic_trending_up
+      topQuotes.map { it.changeInPercent }.average() <= 2f -> R.drawable.ic_trending_down
+      topQuotes.count { it.changeInPercent >= 0f } >= topQuotes.count { it.changeInPercent < 0f } -> {
         R.drawable.ic_trending_up
       }
       else -> R.drawable.ic_trending_down

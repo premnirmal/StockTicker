@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string-array name="whats_new">
+    <item>UI-Optimierungen</item>
     <item>Verwenden von AlarmManager für eine bessere Hintergrundaktualisierung und Benachrichtigungen</item>
     <item>Portugiesische (BR) Übersetzungen - Vielen Dank, dass Sie @iraamaro</item>
     <item>Targeting für Android 11</item>
