@@ -230,10 +230,8 @@ private class NotificationFactory(private val context: Context) {
     )
         .setSmallIcon(icon)
         .setContentTitle(title)
-        .setStyle(
-            NotificationCompat.BigTextStyle()
-                .bigText(body)
-        )
+        .setContentText(body)
+        .setStyle(NotificationCompat.BigTextStyle().bigText(body))
         .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         .setAutoCancel(true)
@@ -302,10 +300,10 @@ private class NotificationFactory(private val context: Context) {
         }
     val icon = when {
       topQuotes.map { it.changeInPercent }.average() >= 2f -> R.drawable.ic_trending_up
-      topQuotes.map { it.changeInPercent }.average() <= 2f -> R.drawable.ic_trending_down
       topQuotes.count { it.changeInPercent >= 0f } >= topQuotes.count { it.changeInPercent < 0f } -> {
         R.drawable.ic_trending_up
       }
+      topQuotes.map { it.changeInPercent }.average() <= -2f -> R.drawable.ic_trending_down
       else -> R.drawable.ic_trending_down
     }
     with(notificationManager) {
@@ -315,10 +313,8 @@ private class NotificationFactory(private val context: Context) {
       )
           .setSmallIcon(icon)
           .setContentTitle(title)
-          .setStyle(
-              NotificationCompat.BigTextStyle()
-                  .bigText(text)
-          )
+          .setContentText(text)
+          .setStyle(NotificationCompat.BigTextStyle().bigText(text))
           .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
           .setPriority(NotificationCompat.PRIORITY_DEFAULT)
           .setAutoCancel(true)
