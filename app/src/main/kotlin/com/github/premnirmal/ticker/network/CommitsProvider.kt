@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CommitsProvider @Inject constructor(val githubApi: GithubApi) {
+class CommitsProvider @Inject constructor(private val githubApi: GithubApi) {
 
   private var cachedCommits: List<RepoCommit>? = null
 
