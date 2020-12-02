@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-  <string-array name="whats_new">
-    <item>Bug fixes</item>
-    <item>UI tweaks</item>
-    <item>Using AlarmManager for better background refreshing and notifications</item>
-  </string-array>
-</resources>

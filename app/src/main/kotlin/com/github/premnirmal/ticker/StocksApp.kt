@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
+import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.tickerwidget.BuildConfig
@@ -28,6 +29,7 @@ open class StocksApp : MultiDexApplication() {
     @Inject lateinit var analytics: Analytics
     @Inject lateinit var appPreferences: AppPreferences
     @Inject lateinit var newsProvider: NewsProvider
+    @Inject lateinit var commitsProvider: CommitsProvider
     @Inject lateinit var notificationsHandler: NotificationsHandler
   }
 
@@ -85,5 +87,9 @@ open class StocksApp : MultiDexApplication() {
 
   protected open fun initNewsCache() {
     holder.newsProvider.initCache()
+  }
+
+  protected open fun initCommitCache() {
+    holder.commitsProvider.initCache()
   }
 }

@@ -174,4 +174,5 @@
   <string name="desc_channel_summary">Résumé quotidien</string>
   <string name="notification_summary_title">Comment s\'est passé votre portefeuille aujourd\'hui?</string>
   <string name="dividend">Dividende</string>
+  <string name="error">Erreur</string>
 </resources>

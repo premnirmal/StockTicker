@@ -9,10 +9,12 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
@@ -24,6 +26,7 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_paranormal.bottom_navigation
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -44,6 +47,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var commitsProvider: CommitsProvider
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
@@ -173,9 +177,13 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   override fun showWhatsNew() {
-    appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-    val whatsNew = resources.getStringArray(R.array.whats_new).joinToString("\n- ", "- ")
-    showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), whatsNew)
+    lifecycleScope.launch {
+      commitsProvider.fetchWhatsNew()?.let {
+        val whatsNew = it.joinToString("\n\u25CF ", "\u25CF ")
+        showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), whatsNew)
+        appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
+      } ?: showDialog(getString(R.string.error))
+    }
   }
 
   // WidgetSettingsFragment.Parent

@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-  <string-array name="whats_new">
-    <item>Corregir errores</item>
-    <item>Ajustes de la interfaz de usuario</item>
-    <item>Usando AlarmManager para una mejor actualización del fondo y notificaciones</item>
-  </string-array>
-</resources>

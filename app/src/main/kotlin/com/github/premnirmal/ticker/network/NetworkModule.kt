@@ -112,6 +112,19 @@ class NetworkModule {
     return api
   }
 
+  @Provides @Singleton internal fun provideGithubApi(
+    context: Context,
+    okHttpClient: OkHttpClient,
+    converterFactory: GsonConverterFactory
+  ): GithubApi {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.github_endoint))
+        .addConverterFactory(converterFactory)
+        .build()
+    return retrofit.create(GithubApi::class.java)
+  }
+
   @Provides @Singleton internal fun provideNewsProvider(): NewsProvider = NewsProvider()
 
   @Provides @Singleton internal fun provideStocksProvider(): IStocksProvider = StocksProvider()

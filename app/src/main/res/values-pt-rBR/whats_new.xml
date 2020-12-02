@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-  <string-array name="whats_new">
-    <item>Usando AlarmManager para uma melhor atualização do plano de fundo.</item>
-    <item>Traduções para português (BR) - Obrigada @iraamaro</item>
-    <item>Preparo para o Android 11</item>
-    <item>Conserto de falhas</item>
-  </string-array>
-</resources>
