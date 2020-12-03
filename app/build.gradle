@@ -16,11 +16,11 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "com.google.gms:google-services:4.3.3"
-    classpath "com.google.firebase:firebase-crashlytics-gradle:2.3.0"
+    classpath "com.google.gms:google-services:4.3.4"
+    classpath "com.google.firebase:firebase-crashlytics-gradle:2.4.1"
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.2"
+    classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0'
   }
 }
 
@@ -184,7 +184,7 @@ ext {
   LIFECYCLE_VERSION = "2.2.0"
   DAGGER_VERSION = "2.27"
   MOCKITO_VERSION = "3.1.0"
-  JUNIT_VERSION = "4.12"
+  JUNIT_VERSION = "4.13.1"
   RETROFIT_VERSION = "2.7.1"
   OKHTTP_VERSION = "4.9.0"
   ROBOLECTRIC_VERSION = "4.4"
@@ -236,10 +236,9 @@ dependencies {
   implementation "androidx.room:room-runtime:$ROOM_VERSION"
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
-  debugImplementation "com.facebook.stetho:stetho:1.5.1"
 
-  prodImplementation "com.google.firebase:firebase-crashlytics:17.2.2"
-  prodImplementation "com.google.firebase:firebase-analytics:17.6.0"
+  prodImplementation "com.google.firebase:firebase-crashlytics:17.3.0"
+  prodImplementation "com.google.firebase:firebase-analytics:18.0.0"
 
   debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
 

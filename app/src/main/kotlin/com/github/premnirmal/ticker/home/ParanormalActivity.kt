@@ -177,12 +177,18 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
   }
 
   override fun showWhatsNew() {
+    val dialog = showDialog(
+        getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
+        getString(R.string.loading)
+    )
     lifecycleScope.launch {
       commitsProvider.fetchWhatsNew()?.let {
         val whatsNew = it.joinToString("\n\u25CF ", "\u25CF ")
-        showDialog(getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), whatsNew)
+        dialog.setMessage(whatsNew)
         appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-      } ?: showDialog(getString(R.string.error))
+      } ?: run {
+        dialog.setMessage(getString(R.string.error_fetching_whats_new) + " :(")
+      }
     }
   }
 

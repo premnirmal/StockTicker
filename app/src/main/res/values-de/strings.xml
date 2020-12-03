@@ -176,4 +176,6 @@
   <string name="notification_summary_title">Wie hat sich Ihr Portfolio heute entwickelt?</string>
   <string name="dividend">Dividende</string>
   <string name="error">Fehler</string>
+  <string name="error_fetching_whats_new">Fehler beim Abrufen der neuen Funktionen</string>
+  <string name="loading">Wird geladen</string>
 </resources>

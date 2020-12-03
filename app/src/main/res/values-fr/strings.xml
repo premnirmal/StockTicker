@@ -175,4 +175,6 @@
   <string name="notification_summary_title">Comment s\'est passé votre portefeuille aujourd\'hui?</string>
   <string name="dividend">Dividende</string>
   <string name="error">Erreur</string>
+  <string name="error_fetching_whats_new">Erreur lors de la récupération des nouveautés</string>
+  <string name="loading">Chargement</string>
 </resources>

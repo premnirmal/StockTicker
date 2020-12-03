@@ -52,19 +52,13 @@ open class StocksApp : MultiDexApplication() {
     Injector.appComponent.inject(holder)
     AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
     initAnalytics()
-    if (BuildConfig.DEBUG) {
-      initStetho()
-    }
-    initNewsCache()
+    initCommitCache()
     initNotificationHandler()
+    initNewsCache()
   }
 
   protected open fun initNotificationHandler() {
     holder.notificationsHandler.initialize()
-  }
-
-  protected open fun initStetho() {
-    StethoInitializer.initialize(this)
   }
 
   protected open fun initThreeTen() {
@@ -90,6 +84,8 @@ open class StocksApp : MultiDexApplication() {
   }
 
   protected open fun initCommitCache() {
-    holder.commitsProvider.initCache()
+    if (holder.appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+      holder.commitsProvider.initCache()
+    }
   }
 }

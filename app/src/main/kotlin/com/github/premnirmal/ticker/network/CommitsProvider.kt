@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.network
 
+import android.annotation.SuppressLint
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.FetchResult.Companion
 import com.github.premnirmal.ticker.network.data.RepoCommit
@@ -32,11 +33,12 @@ class CommitsProvider @Inject constructor(private val githubApi: GithubApi) {
     }
   }
 
+  @SuppressLint("DefaultLocale")
   suspend fun fetchWhatsNew(): List<String>? {
     with(fetchRepoCommits()) {
       return if (wasSuccessful) {
         data.take(10)
-            .map { it.commit.message.replace("\n", "") }
+            .map { it.commit.message.replace("\n", "").capitalize() }
       } else null
     }
   }

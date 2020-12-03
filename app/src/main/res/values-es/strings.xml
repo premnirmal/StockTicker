@@ -174,4 +174,6 @@
   <string name="notification_summary_title">¿Cómo estuvo su cartera hoy?</string>
   <string name="dividend">Dividendo</string>
   <string name="error">Error</string>
+  <string name="error_fetching_whats_new">Error al obtener las novedades</string>
+  <string name="loading">Cargando</string>
 </resources>

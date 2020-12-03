@@ -187,4 +187,6 @@
   <string name="notification_summary_title">How did your watch list do today?</string>
   <string name="dividend">Dividend</string>
   <string name="error">Error</string>
+  <string name="error_fetching_whats_new">Error fetching what\'s new</string>
+  <string name="loading">Loading</string>
 </resources>

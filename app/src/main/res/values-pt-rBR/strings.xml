@@ -166,4 +166,6 @@
   <string name="notification_summary_title">Voce olhou as cotações hoje?</string>
   <string name="dividend">Dividendos</string>
   <string name="error">Erro</string>
+  <string name="error_fetching_whats_new">Erro ao buscar novidades</string>
+  <string name="loading">Carregando</string>
 </resources>
