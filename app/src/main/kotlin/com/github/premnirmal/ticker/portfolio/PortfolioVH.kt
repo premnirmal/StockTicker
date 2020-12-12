@@ -46,7 +46,7 @@ abstract class PortfolioVH(itemView: View) :
     nameView.text = quote.name
 
     val totalValueText = itemView.findViewById<TextView>(R.id.totalValue)
-    totalValueText.text = quote.priceString()
+    totalValueText.text = quote.priceString() + " " + quote.currency
 
     val change: Float = quote.change
     val changePercent: Float = quote.changeInPercent
