@@ -98,6 +98,7 @@ abstract class BaseGraphActivity : BaseActivity() {
    */
   fun updateRange(v: View) {
     when (v.id) {
+      R.id.one_day -> range = Range.ONE_DAY
       R.id.two_weeks -> range = Range.TWO_WEEKS
       R.id.one_month -> range = Range.ONE_MONTH
       R.id.three_month -> range = Range.THREE_MONTH

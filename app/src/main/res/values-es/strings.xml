@@ -136,10 +136,12 @@
   <string name="recent_news">Noticias recientes</string>
   <string name="no_data">No datos</string>
   <string name="expand">Expande</string>
+  <string name="one_day">1 día</string>
   <string name="two_weeks">2 semanas</string>
   <string name="one_month">1 mes</string>
   <string name="three_month">3 meses</string>
   <string name="one_year">1 año</string>
+  <string name="one_day_short">1D</string>
   <string name="two_weeks_short">2W</string>
   <string name="one_month_short">1M</string>
   <string name="three_month_short">3M</string>
