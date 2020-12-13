@@ -97,7 +97,7 @@ abstract class PortfolioVH(itemView: View) :
       val holdingsView = itemView.findViewById<StockFieldView>(R.id.holdings)
       val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
 
-      val holdings = quote.holdingsString()
+      val holdings = quote.holdingsString() + " " + quote.currency
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())

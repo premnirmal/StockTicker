@@ -17,6 +17,7 @@
     <item>Animé</item>
     <item>Tableau</item>
     <item>Fixe</item>
+    <item>Mon portefeuille</item>
   </string-array>
 
   <string-array name="widget_width_types">

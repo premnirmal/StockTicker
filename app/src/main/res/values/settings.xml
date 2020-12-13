@@ -27,6 +27,7 @@
     <item>Animated</item>
     <item>Tabs</item>
     <item>Fixed</item>
+    <item>My portfolio</item>
   </string-array>
 
   <string-array name="layout_types_values" translatable="false">

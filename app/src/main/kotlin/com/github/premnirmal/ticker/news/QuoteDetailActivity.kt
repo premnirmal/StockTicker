@@ -326,7 +326,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       notes_header.visibility = View.VISIBLE
       alert_header.visibility = View.VISIBLE
       numShares.text = quote.numSharesString()
-      equityValue.text = quote.holdingsString()
+      equityValue.text = quote.holdingsString() + " " + quote.currency
 
       val notesText = quote.properties?.notes
       if (notesText.isNullOrEmpty()) {

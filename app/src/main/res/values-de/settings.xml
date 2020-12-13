@@ -17,6 +17,7 @@
     <item>Animiert</item>
     <item>Tabs</item>
     <item>Fest</item>
+    <item>Mein Portfolio</item>
   </string-array>
 
   <string-array name="widget_width_types">
