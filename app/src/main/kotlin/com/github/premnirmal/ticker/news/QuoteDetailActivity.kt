@@ -80,7 +80,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private lateinit var ticker: String
   private lateinit var quote: Quote
   private lateinit var viewModel: QuoteDetailViewModel
-  override var range: Range = Range.TWO_WEEKS
+  override var range: Range = Range.ONE_DAY
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
