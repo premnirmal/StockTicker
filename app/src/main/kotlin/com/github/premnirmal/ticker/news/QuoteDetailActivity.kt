@@ -206,7 +206,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     toolbar.title = ticker
     tickerName.text = quote.name
-    lastTradePrice.text = quote.priceString() + " " + quote.currency
+    lastTradePrice.text = quote.priceString()
     val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
     change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
