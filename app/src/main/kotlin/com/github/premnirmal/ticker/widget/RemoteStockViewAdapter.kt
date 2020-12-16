@@ -66,7 +66,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       val changeValueFormatted = stock.changeString()
       val changePercentFormatted = stock.changePercentString()
-      val priceFormatted = stock.priceString() + " " + stock.currency
+      val priceFormatted = stock.priceString()
       val change = stock.change
       val changeInPercent = stock.changeInPercent
 
