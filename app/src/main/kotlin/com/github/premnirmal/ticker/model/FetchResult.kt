@@ -1,11 +1,11 @@
 package com.github.premnirmal.ticker.model
 
-data class FetchResult<T> private constructor(private val _data: T? = null,
+data class FetchResult<T>(private val _data: T? = null,
                                               private var _error: Throwable? = null) {
 
   companion object {
-    fun <T> success(data: T) = FetchResult(_data = data)
-    fun <T> failure(error: Throwable) = FetchResult<T>(_error = error)
+    inline fun <reified T> success(data: T) = FetchResult<T>(_data = data)
+    inline fun <reified T> failure(error: Throwable) = FetchResult<T>(_error = error)
   }
 
   val wasSuccessful: Boolean

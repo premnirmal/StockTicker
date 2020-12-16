@@ -158,7 +158,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         withContext(Dispatchers.Main) {
           InAppMessage.showToast(context, R.string.error_fetching_stock)
         }
-        return@run FetchResult.failure<Quote>(FetchException("Failed to fetch", ex))
+        return@run FetchResult.failure(FetchException("Failed to fetch", ex))
       }
     }
   }
@@ -176,7 +176,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   override suspend fun fetch(): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickers.isEmpty()) {
       bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
-      return@withContext FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
+      return@withContext FetchResult.failure(FetchException("No symbols in portfolio"))
     } else {
       try {
         appPreferences.setRefreshing(true)
@@ -188,7 +188,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         val fetchedStocks = fr.data
         if (fetchedStocks.isEmpty()) {
           bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
-          return@withContext FetchResult.failure<List<Quote>>(FetchException("Refresh failed"))
+          return@withContext FetchResult.failure(FetchException("Refresh failed"))
         } else {
           synchronized(tickers) {
             tickers.addAll(fetchedStocks.map { it.symbol })
@@ -211,7 +211,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
         val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
         scheduleUpdateWithMs(backOffTimeMs)
-        return@withContext FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
+        return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))
       } finally {
         appPreferences.setRefreshing(false)
       }

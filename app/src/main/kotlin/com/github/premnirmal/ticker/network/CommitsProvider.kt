@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.network
 
 import android.annotation.SuppressLint
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.model.FetchResult.Companion
 import com.github.premnirmal.ticker.network.data.RepoCommit
 import com.github.premnirmal.tickerwidget.BuildConfig
 import kotlinx.coroutines.Dispatchers
@@ -33,10 +32,10 @@ class CommitsProvider @Inject constructor(private val githubApi: GithubApi) {
         )
         val commits = comparison.commits.asReversed()
         cachedChanges = commits
-        return@withContext Companion.success(commits)
+        return@withContext FetchResult.success(commits)
       } catch (ex: Exception) {
         Timber.w(ex)
-        return@withContext FetchResult.failure<List<RepoCommit>>(ex)
+        return@withContext FetchResult.failure(ex)
       }
     }
   }

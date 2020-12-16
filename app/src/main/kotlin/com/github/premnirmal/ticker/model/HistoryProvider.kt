@@ -33,13 +33,13 @@ class HistoryProvider : IHistoryProvider {
           cachedData = WeakReference(Pair(symbol, fetchDataByRange.data))
           fetchDataByRange.data
         } else {
-          return@withContext FetchResult.failure<List<DataPoint>>(
+          return@withContext FetchResult.failure(
               FetchException("Error fetching datapoints", fetchDataByRange.error)
           )
         }
       }
     } catch (ex: Exception) {
-      return@withContext FetchResult.failure<List<DataPoint>>(
+      return@withContext FetchResult.failure(
           FetchException("Error fetching datapoints", ex)
       )
     }
@@ -66,7 +66,7 @@ class HistoryProvider : IHistoryProvider {
       }.toMutableList().sorted()
     } catch (ex: Exception) {
       Timber.w(ex)
-      return@withContext FetchResult.failure<List<DataPoint>>(
+      return@withContext FetchResult.failure(
           FetchException("Error fetching datapoints", ex)
       )
     }
