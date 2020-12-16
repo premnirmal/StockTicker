@@ -2,8 +2,6 @@ package com.github.premnirmal.ticker.home
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -57,10 +55,8 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_paranormal)
-    if (VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) {
-      window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-          or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
-    }
+    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
@@ -182,12 +178,14 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         getString(R.string.loading)
     )
     lifecycleScope.launch {
-      commitsProvider.fetchWhatsNew()?.let {
-        val whatsNew = it.joinToString("\n\u25CF ", "\u25CF ")
-        dialog.setMessage(whatsNew)
-        appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-      } ?: run {
-        dialog.setMessage(getString(R.string.error_fetching_whats_new) + " :(")
+      commitsProvider.fetchWhatsNew().apply {
+        if (wasSuccessful) {
+          val whatsNew = data.joinToString("\n\u25CF ", "\u25CF ")
+          dialog.setMessage(whatsNew)
+          appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
+        } else {
+          dialog.setMessage("${getString(R.string.error_fetching_whats_new)}\n\n :( ${error.message.orEmpty()}")
+        }
       }
     }
   }
