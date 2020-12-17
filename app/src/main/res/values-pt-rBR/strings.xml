@@ -134,6 +134,8 @@
   <string name="recent_news">Notícias Recentes</string>
   <string name="no_data">¯\\_(ツ)_/¯\nSem dados</string>
   <string name="expand">Expandir</string>
+  <string name="one_day">1 dia</string>
+  <string name="two_weeks">2 semanas</string>
   <string name="one_month">1 Mês</string>
   <string name="three_month">3 Meses</string>
   <string name="one_year">1 ano</string>

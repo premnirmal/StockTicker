@@ -30,6 +30,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import com.github.premnirmal.tickerwidget.R.dimen
+import kotlinx.android.synthetic.main.activity_graph.*
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_above
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_below
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_header
@@ -79,7 +80,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private lateinit var ticker: String
   private lateinit var quote: Quote
   private lateinit var viewModel: QuoteDetailViewModel
-  override var range: Range = Range.TWO_WEEKS
+  override var range: Range = Range.ONE_DAY
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -144,6 +145,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     viewModel.fetchQuote(ticker)
     var view: View? = null
     when (range) {
+      Range.ONE_DAY -> view = one_day
       Range.TWO_WEEKS -> view = two_weeks
       Range.ONE_MONTH -> view = one_month
       Range.THREE_MONTH -> view = three_month

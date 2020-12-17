@@ -69,25 +69,36 @@
       android:orientation="horizontal"
       >
 
-    <Button
+      <Button
+          android:id="@+id/one_day"
+          style="@style/ButtonStyle"
+          android:layout_width="100dp"
+          android:layout_height="match_parent"
+          android:layout_margin="5dp"
+          android:gravity="center"
+          android:onClick="updateRange"
+          android:text="@string/one_day" 
+        />
+
+      <Button
         android:id="@+id/two_weeks"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
         android:gravity="center"
         android:onClick="updateRange"
-        android:text="@string/two_weeks"
+        android:text="@string/two_weeks" 
         style="@style/ButtonStyle"
         />
 
-    <Button
+      <Button
         android:id="@+id/one_month"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
         android:gravity="center"
         android:onClick="updateRange"
-        android:text="@string/one_month"
+        android:text="@string/one_month" 
         style="@style/ButtonStyle"
         />
 
@@ -98,7 +109,7 @@
         android:layout_margin="5dp"
         android:gravity="center"
         android:onClick="updateRange"
-        android:text="@string/three_month"
+        android:text="@string/three_month" 
         style="@style/ButtonStyle"
         />
 
@@ -109,7 +120,7 @@
         android:layout_margin="5dp"
         android:gravity="center"
         android:onClick="updateRange"
-        android:text="@string/one_year"
+        android:text="@string/one_year" 
         style="@style/ButtonStyle"
         />
 
@@ -120,7 +131,7 @@
         android:layout_margin="5dp"
         android:gravity="center"
         android:onClick="updateRange"
-        android:text="@string/max"
+        android:text="@string/max" 
         style="@style/ButtonStyle"
         />
 
