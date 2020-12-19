@@ -91,6 +91,14 @@
       app:title="@string/round_two_dp"
       />
 
+  <CheckBoxPreference
+      app:key="SETTING_INVERT_COLORS"
+      app:selectable="true"
+      app:iconSpaceReserved="false"
+      app:summary="@string/invert_colors_desc"
+      app:title="@string/invert_colors"
+      />
+
   <Preference
       app:iconSpaceReserved="false"
       app:key="SETTING_SHARE"

@@ -407,6 +407,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     }
 
     run {
+      val invertColorsPref = findPreference<CheckBoxPreference>(AppPreferences.SETTING_INVERT_COLORS)
+      invertColorsPref.isChecked = appPreferences.invertColors()
+      invertColorsPref.onPreferenceChangeListener =
+              Preference.OnPreferenceChangeListener { _, newValue ->
+                appPreferences.setInvertColors(newValue as Boolean)
+                true
+              }
+    }
+
+    run {
       val notifPref = findPreference<CheckBoxPreference>(AppPreferences.SETTING_NOTIFICATION_ALERTS)
       notifPref.isChecked = appPreferences.notificationAlerts()
       notifPref.onPreferenceChangeListener =

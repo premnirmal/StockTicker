@@ -191,4 +191,6 @@
   <string name="error">Error</string>
   <string name="error_fetching_whats_new">Error fetching what\'s new</string>
   <string name="loading">Loading</string>
+  <string name="invert_colors">Invert font color</string>
+  <string name="invert_colors_desc">Invert gain/loss colors. Decrease in price will appear in green and a rise in price in red</string>
 </resources>

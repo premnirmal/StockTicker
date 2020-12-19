@@ -138,6 +138,14 @@ class AppPreferences {
         .apply()
   }
 
+  fun invertColors(): Boolean = sharedPreferences.getBoolean(SETTING_INVERT_COLORS, false)
+
+  fun setInvertColors(round: Boolean){
+    sharedPreferences.edit()
+            .putBoolean(SETTING_INVERT_COLORS, round)
+            .apply()
+  }
+
   fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
 
   fun setNotificationAlerts(set: Boolean) {
@@ -211,6 +219,7 @@ class AppPreferences {
     const val SETTING_PRIVACY_POLICY = "SETTING_PRIVACY_POLICY"
     const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
     const val SETTING_NOTIFICATION_ALERTS = "SETTING_NOTIFICATION_ALERTS"
+    const val SETTING_INVERT_COLORS = "SETTING_INVERT_COLORS"
     const val WIDGET_BG = "WIDGET_BG"
     const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
     const val TEXT_COLOR = "TEXT_COLOR"
