@@ -11,10 +11,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.DataPoint
-import com.github.premnirmal.ticker.ui.DateAxisFormatter
-import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
-import com.github.premnirmal.ticker.ui.TextMarkerView
-import com.github.premnirmal.ticker.ui.ValueAxisFormatter
+import com.github.premnirmal.ticker.ui.*
 import com.github.premnirmal.tickerwidget.R
 
 abstract class BaseGraphActivity : BaseActivity() {
@@ -74,7 +71,11 @@ abstract class BaseGraphActivity : BaseActivity() {
     graphView.data = lineData
     val xAxis: XAxis = graphView.xAxis
     val yAxis: YAxis = graphView.axisRight
-    xAxis.valueFormatter = DateAxisFormatter()
+    if (range == Range.ONE_DAY) {
+      xAxis.valueFormatter = HourAxisFormatter()
+    } else {
+      xAxis.valueFormatter = DateAxisFormatter()
+    }
     yAxis.valueFormatter = ValueAxisFormatter()
     xAxis.position = XAxis.XAxisPosition.BOTTOM
     xAxis.textSize = 10f
