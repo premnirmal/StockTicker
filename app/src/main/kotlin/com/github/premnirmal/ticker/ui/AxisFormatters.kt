@@ -25,6 +25,17 @@ class DateAxisFormatter : IAxisValueFormatter {
   }
 }
 
+class HourAxisFormatter : IAxisValueFormatter {
+
+  override fun getFormattedValue(
+          value: Float,
+          axis: AxisBase?
+  ): String {
+    val hour = LocalDateTime.ofInstant(Instant.ofEpochSecond(value.toLong()), ZoneId.systemDefault()).toLocalTime()
+    return hour.format(AppPreferences.TIME_FORMATTER)
+  }
+}
+
 class ValueAxisFormatter : IAxisValueFormatter {
 
   override fun getFormattedValue(
