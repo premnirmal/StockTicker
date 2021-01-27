@@ -148,7 +148,8 @@ class WidgetData {
     return when (layoutPref()) {
       0 -> R.layout.stockview
       1 -> R.layout.stockview2
-      else -> R.layout.stockview3
+      2 -> R.layout.stockview3
+      else -> R.layout.stockview4
     }
   }
 
