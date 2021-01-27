@@ -46,7 +46,7 @@ abstract class PortfolioVH(itemView: View) :
     nameView.text = quote.name
 
     val totalValueText = itemView.findViewById<TextView>(R.id.totalValue)
-    totalValueText.text = quote.priceString()
+    totalValueText.text = quote.priceString() + " " + quote.currency
 
     val change: Float = quote.change
     val changePercent: Float = quote.changeInPercent
@@ -97,7 +97,7 @@ abstract class PortfolioVH(itemView: View) :
       val holdingsView = itemView.findViewById<StockFieldView>(R.id.holdings)
       val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
 
-      val holdings = quote.holdingsString()
+      val holdings = quote.holdingsString() + " " + quote.currency
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())

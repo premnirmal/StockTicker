@@ -17,6 +17,7 @@
     <item>Animado</item>
     <item>Pestañas</item>
     <item>Fijo</item>
+    <item>Mi cartera</item>
   </string-array>
 
   <string-array name="widget_width_types">
