@@ -17,18 +17,18 @@
       android:maxLines="1"
       android:textColor="@color/widget_text"
       android:textSize="12sp"
-      android:textStyle="bold"
+      android:textStyle="bold" 
       />
 
   <TextView
       android:id="@+id/totalValue"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_weight="0.30"
+      android:layout_weight="0.40"
       android:ellipsize="none"
       android:gravity="end"
       android:textColor="@color/widget_text"
-      android:textSize="12sp"
+      android:textSize="12sp" 
       android:singleLine="true"
       />
 
@@ -41,7 +41,7 @@
       android:ellipsize="none"
       android:gravity="end"
       android:textColor="@color/text_widget_positive"
-      android:textSize="12sp"
+      android:textSize="12sp" 
       android:singleLine="true"
       />
 
@@ -53,7 +53,7 @@
       android:ellipsize="none"
       android:gravity="end"
       android:textColor="@color/text_widget_positive"
-      android:textSize="12sp"
+      android:textSize="12sp" 
       android:singleLine="true"
       />
 
