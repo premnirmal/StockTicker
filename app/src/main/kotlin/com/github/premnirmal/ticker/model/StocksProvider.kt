@@ -82,6 +82,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         fetch()
       }
     } else {
+      _fetchState = FetchState.Success(lastFetched)
       runBlocking { fetchLocal() }
     }
   }
