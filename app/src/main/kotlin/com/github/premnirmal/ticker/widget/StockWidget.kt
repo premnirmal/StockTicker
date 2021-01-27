@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.layout
 import javax.inject.Inject
@@ -158,8 +159,11 @@ class StockWidget : AppWidgetProvider() {
     val flipIntent =
       PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
-    val lastFetched: String = stocksProvider.lastFetched()
-    val lastUpdatedText = context.getString(R.string.last_fetch, lastFetched)
+    val lastUpdatedText = when (val fetchState = stocksProvider.fetchState) {
+      is FetchState.Success -> context.getString(R.string.last_fetch, fetchState.displayString)
+      is FetchState.Failure -> context.getString(R.string.refresh_failed)
+      else -> FetchState.NotFetched.displayString
+    }
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
     val nextUpdate: String = stocksProvider.nextFetch()
     val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)

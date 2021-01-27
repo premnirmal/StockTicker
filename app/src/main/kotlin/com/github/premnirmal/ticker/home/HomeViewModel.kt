@@ -76,7 +76,7 @@ class HomeViewModel : ViewModel() {
   }
 
   fun lastFetched(): String {
-    return stocksProvider.lastFetched()
+    return stocksProvider.fetchState.displayString
   }
 
   fun nextFetch(): String {

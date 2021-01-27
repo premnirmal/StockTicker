@@ -29,7 +29,7 @@ class AppModule(private val app: StocksApp) {
 
   @Provides fun provideApplicationContext(): Context = app
 
-  @Provides @Singleton fun provideClock(): AppClock = AppClockImpl()
+  @Provides @Singleton fun provideClock(): AppClock = AppClockImpl
 
   @Provides @Singleton fun provideEventBus(): AsyncBus = AsyncBus()
 

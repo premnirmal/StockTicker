@@ -10,7 +10,7 @@ interface AppClock {
   fun currentTimeMillis(): Long
   fun elapsedRealtime(): Long
 
-  class AppClockImpl : AppClock {
+  object AppClockImpl : AppClock {
 
     override fun todayZoned(): ZonedDateTime = ZonedDateTime.now()
 

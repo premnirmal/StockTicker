@@ -4,6 +4,7 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.tools.Parser
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.JsonElement
@@ -52,7 +53,7 @@ abstract class BaseUnitTest : TestCase() {
     whenever(iStocksProvider.fetch()).thenReturn(FetchResult.success(ArrayList()))
     whenever(iStocksProvider.getTickers()).thenReturn(emptyList())
     whenever(iStocksProvider.addStock(any())).thenReturn(emptyList())
-    whenever(iStocksProvider.lastFetched()).thenReturn("--")
+    whenever(iStocksProvider.fetchState).thenReturn(FetchState.NotFetched)
     whenever(iStocksProvider.nextFetch()).thenReturn("--")
   }
 

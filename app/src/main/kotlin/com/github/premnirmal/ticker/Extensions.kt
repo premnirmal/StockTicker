@@ -14,7 +14,12 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
+import org.threeten.bp.DayOfWeek
+import org.threeten.bp.ZonedDateTime
+import org.threeten.bp.format.TextStyle.SHORT
+import java.util.Locale
 
 fun Drawable.toBitmap(): Bitmap {
   if (this is BitmapDrawable) {
@@ -129,6 +134,17 @@ fun Context.isNetworkOnline(): Boolean {
   }
 }
 
-fun Long.minutesInMs(): Long {
-  return this * 60 * 1000
+fun ZonedDateTime.createTimeString(): String {
+  val fetched: String
+  val fetchedDayOfWeek = dayOfWeek.value
+  val today = AppClockImpl.todayZoned().dayOfWeek.value
+  fetched = if (today == fetchedDayOfWeek) {
+    AppPreferences.TIME_FORMATTER.format(this)
+  } else {
+    val day: String = DayOfWeek.from(this)
+        .getDisplayName(SHORT, Locale.getDefault())
+    val timeStr: String = AppPreferences.TIME_FORMATTER.format(this)
+    "$timeStr $day"
+  }
+  return fetched
 }

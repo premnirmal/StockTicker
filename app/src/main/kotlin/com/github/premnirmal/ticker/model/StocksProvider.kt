@@ -5,11 +5,12 @@ import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AsyncBus
-import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -22,13 +23,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.threeten.bp.DayOfWeek
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
-import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
@@ -64,6 +62,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   private var lastFetched: Long = 0L
   private var nextFetch: Long = 0L
+  private var _fetchState: FetchState = FetchState.NotFetched
 
   private val exponentialBackoff: ExponentialBackoff
 
@@ -132,22 +131,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
   }
 
-  private fun ZonedDateTime.createTimeString(): String {
-    val fetched: String
-    val fetchedDayOfWeek = dayOfWeek.value
-    val today = clock.todayZoned()
-        .dayOfWeek.value
-    fetched = if (today == fetchedDayOfWeek) {
-      AppPreferences.TIME_FORMATTER.format(this)
-    } else {
-      val day: String = DayOfWeek.from(this)
-          .getDisplayName(SHORT, Locale.getDefault())
-      val timeStr: String = AppPreferences.TIME_FORMATTER.format(this)
-      "$timeStr $day"
-    }
-    return fetched
-  }
-
   private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(Dispatchers.IO) {
     val quote = if (allowCache) quoteMap[ticker] else null
     return@withContext quote?.let { FetchResult.success(quote) } ?: run {
@@ -155,9 +138,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         return@run api.getStock(ticker)
       } catch (ex: Exception) {
         Timber.w(ex)
-        withContext(Dispatchers.Main) {
-          InAppMessage.showToast(context, R.string.error_fetching_stock)
-        }
         return@run FetchResult.failure(FetchException("Failed to fetch", ex))
       }
     }
@@ -196,6 +176,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
           lastFetched = api.lastFetched
+          _fetchState = FetchState.Success(lastFetched)
           saveLastFetched()
           exponentialBackoff.reset()
           scheduleUpdate(true)
@@ -204,11 +185,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
       } catch (ex: Throwable) {
         Timber.w(ex)
-        if (!bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))) {
-          withContext(Dispatchers.Main) {
-            InAppMessage.showToast(context, R.string.refresh_failed)
-          }
-        }
+        _fetchState = FetchState.Failure(ex)
+        !bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
         val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
         scheduleUpdateWithMs(backOffTimeMs)
         return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))
@@ -361,15 +339,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
   }
 
-  override fun lastFetched(): String {
-    return if (lastFetched > 0L) {
-      val instant = Instant.ofEpochMilli(lastFetched)
-      val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-      time.createTimeString()
-    } else {
-      "--"
-    }
-  }
+  override val fetchState: FetchState
+    get() = _fetchState
 
   override fun nextFetch(): String {
     return if (nextFetch > 0) {

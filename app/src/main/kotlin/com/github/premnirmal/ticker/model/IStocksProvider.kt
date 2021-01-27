@@ -1,15 +1,19 @@
 package com.github.premnirmal.ticker.model
 
+import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 
 /**
  * Created by premnirmal on 2/28/16.
  */
 interface IStocksProvider {
 
-  fun lastFetched(): String
+  val fetchState: FetchState
 
   fun nextFetch(): String
 
@@ -55,4 +59,26 @@ interface IStocksProvider {
     ticker: String,
     holding: Holding
   )
+
+  sealed class FetchState {
+    abstract val displayString: String
+
+    object NotFetched : FetchState() {
+      override val displayString: String = "--"
+    }
+
+    data class Success(val fetchTime: Long) : FetchState() {
+      override val displayString: String by lazy {
+        val instant = Instant.ofEpochMilli(fetchTime)
+        val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+        time.createTimeString()
+      }
+    }
+
+    data class Failure(val exception: Throwable) : FetchState() {
+      override val displayString: String by lazy {
+        exception.message.orEmpty()
+      }
+    }
+  }
 }
