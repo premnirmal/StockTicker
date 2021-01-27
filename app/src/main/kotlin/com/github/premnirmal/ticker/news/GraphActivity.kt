@@ -15,15 +15,7 @@ import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_graph.desc
-import kotlinx.android.synthetic.main.activity_graph.graph_holder
-import kotlinx.android.synthetic.main.activity_graph.max
-import kotlinx.android.synthetic.main.activity_graph.one_month
-import kotlinx.android.synthetic.main.activity_graph.one_year
-import kotlinx.android.synthetic.main.activity_graph.progress
-import kotlinx.android.synthetic.main.activity_graph.three_month
-import kotlinx.android.synthetic.main.activity_graph.tickerName
-import kotlinx.android.synthetic.main.activity_graph.two_weeks
+import kotlinx.android.synthetic.main.activity_graph.*
 
 class GraphActivity : BaseGraphActivity() {
 
@@ -71,6 +63,7 @@ class GraphActivity : BaseGraphActivity() {
     })
     viewModel.fetchStock(ticker)
     val view = when (range) {
+      Range.ONE_DAY -> one_day
       Range.TWO_WEEKS -> two_weeks
       Range.ONE_MONTH -> one_month
       Range.THREE_MONTH -> three_month

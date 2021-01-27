@@ -2,6 +2,16 @@ package com.github.premnirmal.ticker.network.data
 
 import com.google.gson.annotations.SerializedName
 
+data class TagComparison(
+  @SerializedName("url") val url: String,
+  @SerializedName("html_url") val html_url: String,
+  @SerializedName("commits") val commits: List<RepoCommit>,
+  @SerializedName("status") val status: String,
+  @SerializedName("ahead_by") val aheadBy: Int,
+  @SerializedName("behind_by") val behindBy: Int,
+  @SerializedName("total_commits") val totalCommits: Int
+)
+
 data class RepoCommit(
   @SerializedName("sha") val sha: String,
   @SerializedName("node_id") val node_id: String,

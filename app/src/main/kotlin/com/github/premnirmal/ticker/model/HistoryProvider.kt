@@ -25,21 +25,21 @@ class HistoryProvider : IHistoryProvider {
     val dataPoints =  try {
       if (symbol == cachedData?.get()?.first) {
         cachedData!!.get()!!.second.filter {
-          it.getDate().isAfter(Range.TWO_WEEKS.end)
+          it.getDate().isAfter(Range.ONE_DAY.end)
         }.toMutableList().sorted()
       } else {
-        val fetchDataByRange = fetchDataByRange(symbol, Range.TWO_WEEKS)
+        val fetchDataByRange = fetchDataByRange(symbol, Range.ONE_DAY)
         if (fetchDataByRange.wasSuccessful) {
           cachedData = WeakReference(Pair(symbol, fetchDataByRange.data))
           fetchDataByRange.data
         } else {
-          return@withContext FetchResult.failure<List<DataPoint>>(
+          return@withContext FetchResult.failure(
               FetchException("Error fetching datapoints", fetchDataByRange.error)
           )
         }
       }
     } catch (ex: Exception) {
-      return@withContext FetchResult.failure<List<DataPoint>>(
+      return@withContext FetchResult.failure(
           FetchException("Error fetching datapoints", ex)
       )
     }
@@ -66,7 +66,7 @@ class HistoryProvider : IHistoryProvider {
       }.toMutableList().sorted()
     } catch (ex: Exception) {
       Timber.w(ex)
-      return@withContext FetchResult.failure<List<DataPoint>>(
+      return@withContext FetchResult.failure(
           FetchException("Error fetching datapoints", ex)
       )
     }

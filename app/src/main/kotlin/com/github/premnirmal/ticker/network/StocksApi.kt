@@ -42,7 +42,7 @@ class StocksApi {
             .resultSet?.result
       } catch (e: Exception) {
         Timber.w(e)
-        return@withContext FetchResult.failure<List<SuggestionNet>>(FetchException("Error fetching", e))
+        return@withContext FetchResult.failure(FetchException("Error fetching", e))
       }
       val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
       return@withContext FetchResult.success<List<SuggestionNet>>(suggestionList)
@@ -59,7 +59,7 @@ class StocksApi {
         return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
         Timber.w(ex)
-        return@withContext FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
+        return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))
       }
     }
 
@@ -70,7 +70,7 @@ class StocksApi {
         return@withContext FetchResult.success(quoteNets.first().toQuote())
       } catch (ex: Exception) {
         Timber.w(ex)
-        return@withContext FetchResult.failure<Quote>(FetchException("Failed to fetch $ticker", ex))
+        return@withContext FetchResult.failure(FetchException("Failed to fetch $ticker", ex))
       }
     }
 
