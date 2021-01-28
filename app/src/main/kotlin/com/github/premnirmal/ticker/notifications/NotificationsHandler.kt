@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.home.ParanormalActivity
@@ -46,7 +47,8 @@ class NotificationsHandler @Inject constructor(
   private val stocksProvider: IStocksProvider,
   private val stocksStorage: StocksStorage,
   private val alarmScheduler: AlarmScheduler,
-  private val appPreferences: AppPreferences
+  private val appPreferences: AppPreferences,
+  private val clock: AppClock
 ) {
 
   companion object {
@@ -146,6 +148,7 @@ class NotificationsHandler @Inject constructor(
 
   private suspend fun checkAlerts() {
     if (!appPreferences.notificationAlerts()) return
+    if (appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
 
     val portfolio: List<Quote> = stocksProvider.getPortfolio()
     for (quote in portfolio) {
