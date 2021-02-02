@@ -68,7 +68,11 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
       val changePercentFormatted = stock.changePercentString()
       val gainLossFormatted = stock.gainLossString()
       val gainLossPercentFormatted = stock.gainLossPercentString()
-      val priceFormatted = stock.priceString() + " " + stock.currency
+      val priceFormatted = if (widgetData.isCurrencyEnabled()) {
+        stock.priceString() + " " + stock.currency
+      } else {
+        stock.priceString()
+      }
       val change = stock.change
       val changeInPercent = stock.changeInPercent
       val gainLoss = stock.gainLoss()
@@ -80,7 +84,11 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
       val priceString = SpannableString(priceFormatted)
 
       remoteViews.setTextViewText(R.id.ticker, stock.symbol)
-      remoteViews.setTextViewText(R.id.holdings, stock.holdingsString() + " " + stock.currency)
+      remoteViews.setTextViewText(R.id.holdings, if (widgetData.isCurrencyEnabled()) {
+        stock.holdingsString() + " " + stock.currency
+      } else {
+        stock.holdingsString()
+      })
 
       if (widgetData.isBoldEnabled()) {
         changePercentString.setSpan(

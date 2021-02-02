@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sfw="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/stockContainer"
     android:layout_width="match_parent"
@@ -45,7 +45,7 @@
         android:gravity="center_vertical|right"
         android:maxLines="1"
         android:textColor="@color/text_1"
-        android:textSize="@dimen/large_text"
+        android:textSize="@dimen/medium_text"
         tools:text="555.02"
         style="@style/BoldTextView"
         />
@@ -57,7 +57,7 @@
         android:layout_gravity="center_vertical|right"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_more"
-        android:tint="@color/icon_tint"
+        app:tint="@color/icon_tint"
         />
 
   </LinearLayout>
@@ -102,20 +102,20 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="4dp"
-          sfw:name="@string/holdings"
-          sfw:or="vertical"
-          sfw:size="@dimen/portfolio_position_vh_value_text_size"
-          sfw:text_gravity="left"
+          app:name="@string/holdings"
+          app:or="vertical"
+          app:size="@dimen/portfolio_position_vh_value_text_size"
+          app:text_gravity="left"
           />
 
       <com.github.premnirmal.ticker.ui.StockFieldView
           android:id="@+id/gain_loss"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          sfw:name="@string/gain_loss"
-          sfw:or="vertical"
-          sfw:size="@dimen/portfolio_position_vh_value_text_size"
-          sfw:text_gravity="left"
+          app:name="@string/gain_loss"
+          app:or="vertical"
+          app:size="@dimen/portfolio_position_vh_value_text_size"
+          app:text_gravity="left"
           />
 
     </LinearLayout>
@@ -134,10 +134,10 @@
           android:id="@+id/dayChange"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          sfw:name="@string/day_change_amount"
-          sfw:or="vertical"
-          sfw:size="@dimen/portfolio_position_vh_value_text_size"
-          sfw:text_gravity="center"
+          app:name="@string/day_change_amount"
+          app:or="vertical"
+          app:size="@dimen/portfolio_position_vh_value_text_size"
+          app:text_gravity="center"
           />
 
     </LinearLayout>
@@ -155,20 +155,20 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="4dp"
-          sfw:name="@string/change_percent"
-          sfw:or="vertical"
-          sfw:size="@dimen/portfolio_position_vh_value_text_size"
-          sfw:text_gravity="right"
+          app:name="@string/change_percent"
+          app:or="vertical"
+          app:size="@dimen/portfolio_position_vh_value_text_size"
+          app:text_gravity="right"
           />
 
       <com.github.premnirmal.ticker.ui.StockFieldView
           android:id="@+id/changeValue"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          sfw:name="@string/change_amount"
-          sfw:or="vertical"
-          sfw:size="@dimen/portfolio_position_vh_value_text_size"
-          sfw:text_gravity="right"
+          app:name="@string/change_amount"
+          app:or="vertical"
+          app:size="@dimen/portfolio_position_vh_value_text_size"
+          app:text_gravity="right"
           />
 
     </LinearLayout>

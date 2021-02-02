@@ -25,12 +25,14 @@ import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_background
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency_checkbox
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
 import javax.inject.Inject
 
 class WidgetSettingsFragment : BaseFragment(), OnClickListener {
@@ -91,10 +93,11 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setBoldSetting(widgetData)
     setAutoSortSetting(widgetData)
     setHideHeaderSetting(widgetData)
+    setCurrencySetting(widgetData)
 
     arrayOf(
         setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width, setting_background,
-        setting_text_color, setting_bold, setting_autosort, setting_hide_header
+        setting_text_color, setting_bold, setting_autosort, setting_hide_header, setting_currency
     ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
@@ -114,7 +117,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
           v.setIsEditable(false)
           v.setOnClickListener(this)
           bus.send(RefreshEvent())
-          InAppMessage.showMessage(activity!!, R.string.widget_name_updated)
+          InAppMessage.showMessage(requireActivity(), R.string.widget_name_updated)
         }
       }
       R.id.setting_layout_type -> {
@@ -127,7 +130,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
               if (which == 2) {
                 showDialog(getString(R.string.change_instructions))
               }
-              InAppMessage.showMessage(activity!!, R.string.layout_updated_message)
+              InAppMessage.showMessage(requireActivity(), R.string.layout_updated_message)
             })
       }
 
@@ -138,7 +141,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
                   setWidgetSizeSetting(widgetData)
                   dialog.dismiss()
                   broadcastUpdateWidget()
-                  InAppMessage.showMessage(activity!!, R.string.widget_width_updated_message)
+                  InAppMessage.showMessage(requireActivity(), R.string.widget_width_updated_message)
                 })
       }
 
@@ -149,7 +152,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
           setTextColorSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(activity!!, R.string.bg_updated_message)
+          InAppMessage.showMessage(requireActivity(), R.string.bg_updated_message)
         })
       }
       R.id.setting_text_color -> {
@@ -158,7 +161,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
           setTextColorSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(activity!!, R.string.text_color_updated_message)
+          InAppMessage.showMessage(requireActivity(), R.string.text_color_updated_message)
         })
       }
       R.id.setting_bold -> {
@@ -177,6 +180,12 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
         val isChecked = !setting_hide_header_checkbox.isChecked
         widgetData.setHideHeader(isChecked)
         setHideHeaderSetting(widgetData)
+        broadcastUpdateWidget()
+      }
+      R.id.setting_currency -> {
+        val isChecked = !setting_currency_checkbox.isChecked
+        widgetData.setCurrencyEnabled(isChecked)
+        setCurrencySetting(widgetData)
         broadcastUpdateWidget()
       }
     }
@@ -229,5 +238,9 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   private fun setHideHeaderSetting(widgetData: WidgetData) {
     setting_hide_header_checkbox.isChecked = widgetData.hideHeader()
+  }
+
+  private fun setCurrencySetting(widgetData: WidgetData) {
+    setting_currency_checkbox.isChecked = widgetData.isCurrencyEnabled()
   }
 }

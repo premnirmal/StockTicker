@@ -218,6 +218,7 @@ class AppPreferences {
     const val LAYOUT_TYPE = "LAYOUT_TYPE"
     const val WIDGET_SIZE = "WIDGET_SIZE"
     const val BOLD_CHANGE = "BOLD_CHANGE"
+    const val SHOW_CURRENCY = "SHOW_CURRENCY"
     const val PERCENT = "PERCENT"
     const val DID_RATE = "DID_RATE"
     const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"

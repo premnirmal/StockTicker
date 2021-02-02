@@ -24,6 +24,7 @@ class WidgetData {
     private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
     private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
     private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
+    private const val SHOW_CURRENCY = AppPreferences.SHOW_CURRENCY
     private const val WIDGET_BG = AppPreferences.WIDGET_BG
     private const val TEXT_COLOR = AppPreferences.TEXT_COLOR
     private const val PERCENT = AppPreferences.PERCENT
@@ -203,6 +204,14 @@ class WidgetData {
   fun setBoldEnabled(value: Boolean) {
     preferences.edit()
         .putBoolean(BOLD_CHANGE, value)
+        .apply()
+  }
+
+  fun isCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
+
+  fun setCurrencyEnabled(value: Boolean) {
+    preferences.edit()
+        .putBoolean(SHOW_CURRENCY, value)
         .apply()
   }
 

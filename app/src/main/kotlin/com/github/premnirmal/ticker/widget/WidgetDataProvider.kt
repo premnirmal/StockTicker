@@ -19,7 +19,7 @@ class WidgetDataProvider {
   @Inject internal lateinit var context: Context
 
   private val widgets: MutableMap<Int, WidgetData> by lazy {
-    HashMap<Int, WidgetData>()
+    HashMap()
   }
 
   init {
