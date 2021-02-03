@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
+import kotlin.random.Random
 
 @Singleton
 class NotificationsHandler @Inject constructor(
@@ -72,7 +73,6 @@ class NotificationsHandler @Inject constructor(
 
   fun initialize() {
     createChannels()
-    enqueueDailySummaryNotification()
     GlobalScope.launch(Dispatchers.Default) {
       val flow = bus.receive<FetchedEvent>()
       flow.collect {
@@ -148,6 +148,7 @@ class NotificationsHandler @Inject constructor(
 
   private suspend fun checkAlerts() {
     if (!appPreferences.notificationAlerts()) return
+    if (Random.nextBoolean()) enqueueDailySummaryNotification()
     if (appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
 
     val portfolio: List<Quote> = stocksProvider.getPortfolio()

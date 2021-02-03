@@ -44,6 +44,8 @@
   <string name="refresh_on_screen_unlock_desc">Aktualisieren, wenn der Bildschirm entsperrt wird (nur während der festgelegten Zeiten).</string>
   <string name="bold_change">Fettgedruckter Text</string>
   <string name="bold_change_desc">Zeigen Sie Änderungen und Marktwert in Fettdruck an.</string>
+  <string name="setting_currency">Währung anzeigen</string>
+  <string name="setting_currency_desc">Währung im Widget anzeigen</string>
   <string name="choose_text_size">Widget-Textgröße</string>
   <string name="app_theme">Farbdesign</string>
   <string name="text_size_updated_message">Textgröße aktualisiert</string>

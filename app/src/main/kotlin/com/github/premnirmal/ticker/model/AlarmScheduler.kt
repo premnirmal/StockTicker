@@ -171,7 +171,6 @@ class AlarmScheduler {
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
     val pendingIntent =
       PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_ONE_SHOT)
-    alarmManager.cancel(pendingIntent)
     alarmManager.setRepeating(
         AlarmManager.ELAPSED_REALTIME_WAKEUP,
         clock.elapsedRealtime() + initialDelay,

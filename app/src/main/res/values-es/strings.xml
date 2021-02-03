@@ -42,6 +42,8 @@
   <string name="refresh_on_screen_unlock_desc">Actualiza cuando la pantalla se desbloquea (sólo durante las horas programadas).</string>
   <string name="bold_change">Texto en negrita</string>
   <string name="bold_change_desc">Mostrar cambios y valor de mercado en negrita</string>
+  <string name="setting_currency">Mostrar moneda</string>
+  <string name="setting_currency_desc">Mostrar moneda en el widget</string>
   <string name="choose_text_size">Tamaño del texto de widget</string>
   <string name="app_theme">Tema de la aplicación</string>
   <string name="text_size_updated_message">Tamaño del texto actualizado</string>

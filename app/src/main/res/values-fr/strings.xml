@@ -42,6 +42,8 @@
   <string name="refresh_on_screen_unlock_desc">Actualisation lorsque l\'écran est déverrouillé (uniquement aux heures planifiées)</string>
   <string name="bold_change">Texte en gras</string>
   <string name="bold_change_desc">Montrer les évolutions et les valeurs du marché en gras</string>
+  <string name="setting_currency">Afficher la devise</string>
+  <string name="setting_currency_desc">Afficher la devise dans le widget</string>
   <string name="choose_text_size">Taille du texte du widget</string>
   <string name="app_theme">Thème de l\'application</string>
   <string name="text_size_updated_message">Taille du texte mise à jour</string>
