@@ -6,16 +6,16 @@
 <a href="https://f-droid.org/en/packages/com.github.premnirmal.tickerwidget/" target="_blank">
 <img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="90"/></a>
 
-![](https://lh3.googleusercontent.com/R9khJ5kNzXHUjO4BxNw1cNKTx62grZ7FtLRT_F2H0BhC99iuMWDxvuGTYvyydtqE3w=h400-rw)
-![](https://lh3.googleusercontent.com/5bJo7sEfgkI5KX2rhvOwugq42B5lPY3FcNWIHschi-ek5Rqo_p6_ajxxAiiJ6cXI2cU=h400-rw)
-![](https://lh3.googleusercontent.com/pKI7tibPnU4HS92l-ubpphJVS_7wCJdteg6td6gnAnbx8sqiVFJZEjTiQe4hBiPU5W0=h400-rw)
+![](https://play-lh.googleusercontent.com/R9khJ5kNzXHUjO4BxNw1cNKTx62grZ7FtLRT_F2H0BhC99iuMWDxvuGTYvyydtqE3w=h400-rw)
+![](https://play-lh.googleusercontent.com/uxQfuEmietfmyq4e-xNEAXfwtkWFE9iVbJYpMtc55yKqOYTv25ViSGS1dTf6qrncXIo=h400-rw)
+![](https://play-lh.googleusercontent.com/fQZFK93aeUVMr0BDNIuk8Ol9i-HC4d7GCtk01VtKr2-qcdtpmR8gO3-DJMCPbTwsCA=h400-rw)
 
 ## App features:
 
-- A homescreen widget that shows your stock portolio in a resizable grid.
+- A home screen widget that shows your stock portfolio in a resizable grid.
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours.
-- Displays price change and summary alerts
+- Displays price change and summary alerts.
 
 ### Importing and exporting
 - You can import a list of tickers by selecting **import tickers** from the settings menu. All you need is a textfile with your tickers in *comma-separated* format, or in *json format*.
@@ -23,7 +23,7 @@
 
 ## License
 
-MIT
+GPL
 
 ### Author
 [Prem Nirmal](http://premnirmal.me/)

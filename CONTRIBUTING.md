@@ -8,5 +8,5 @@ The code style used is the [Square Android Code Style](https://github.com/square
 
 ## License
 
-By contributing your code, you agree to license your contribution under the terms of the MIT license: https://github.com/premnirmal/StockTicker/blob/master/LICENSE.txt
-All files are released with the MIT license.
+By contributing your code, you agree to license your contribution under the terms of the GPL license: https://github.com/premnirmal/StockTicker/blob/master/LICENSE.txt
+All files are released with the GNU general public license (GPL).
