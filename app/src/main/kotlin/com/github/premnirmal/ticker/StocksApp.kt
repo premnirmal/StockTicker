@@ -39,6 +39,7 @@ open class StocksApp : MultiDexApplication() {
     super.onCreate()
     initLogger()
     initThreeTen()
+    Injector.init(createAppComponent())
     ViewPump.init(
         ViewPump.builder()
             .addInterceptor(
@@ -48,7 +49,6 @@ open class StocksApp : MultiDexApplication() {
                         .setFontAttrId(R.attr.fontPath)
                         .build()))
             .build())
-    Injector.init(createAppComponent())
     Injector.appComponent.inject(holder)
     AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
     initAnalytics()

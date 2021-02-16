@@ -187,7 +187,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       } catch (ex: Throwable) {
         Timber.w(ex)
         _fetchState = FetchState.Failure(ex)
-        !bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
+        bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
         val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
         scheduleUpdateWithMs(backOffTimeMs)
         return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))

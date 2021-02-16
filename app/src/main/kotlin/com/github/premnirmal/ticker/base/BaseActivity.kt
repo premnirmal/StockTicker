@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -27,6 +28,7 @@ abstract class BaseActivity : AppCompatActivity() {
   @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var analytics: Analytics
   open val subscribeToErrorEvents = true
+  private var isErrorDialogShowing = false
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
@@ -38,6 +40,7 @@ abstract class BaseActivity : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState, persistentState)
     analytics.trackScreenView(simpleName, this)
+    savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
   }
 
   override fun onResume() {
@@ -46,12 +49,19 @@ abstract class BaseActivity : AppCompatActivity() {
       lifecycleScope.launch {
         val errorFlow = bus.receive<ErrorEvent>()
         errorFlow.collect { event ->
-          if (this.isActive) {
-            showDialog(event.message)
+          if (this.isActive && !isErrorDialogShowing && !isFinishing) {
+            isErrorDialogShowing = true
+            showDialog(event.message).setOnDismissListener { isErrorDialogShowing = false }
+            delay(500L)
           }
         }
       }
     }
+  }
+
+  override fun onSaveInstanceState(outState: Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.putBoolean(IS_ERROR_DIALOG_SHOWING, isErrorDialogShowing)
   }
 
   override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -74,5 +84,9 @@ abstract class BaseActivity : AppCompatActivity() {
   protected fun showErrorAndFinish() {
     InAppMessage.showToast(this, R.string.error_symbol)
     finish()
+  }
+
+  companion object {
+    private const val IS_ERROR_DIALOG_SHOWING = "IS_ERROR_DIALOG_SHOWING"
   }
 }
