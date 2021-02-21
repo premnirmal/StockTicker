@@ -149,7 +149,7 @@ class NotificationsHandler @Inject constructor(
   private suspend fun checkAlerts() {
     if (!appPreferences.notificationAlerts()) return
     if (Random.nextBoolean()) enqueueDailySummaryNotification()
-    if (appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
+    if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
 
     val portfolio: List<Quote> = stocksProvider.getPortfolio()
     for (quote in portfolio) {
