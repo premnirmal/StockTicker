@@ -108,7 +108,7 @@ class StocksStorage {
   private fun Quote.toQuoteRow(): QuoteRow {
     return QuoteRow(
         this.symbol, this.name, this.lastTradePrice, this.changeInPercent,
-        this.change, this.stockExchange, this.currency,
+        this.change, this.stockExchange, this.currencyCode,
         this.isPostMarket, this.annualDividendRate, this.annualDividendYield
     )
   }
@@ -130,7 +130,7 @@ class StocksStorage {
     quote.changeInPercent = this.changeInPercent
     quote.change = this.change
     quote.stockExchange = this.stockExchange
-    quote.currency = this.currency
+    quote.currencyCode = this.currency
     quote.isPostMarket = this.isPostMarket
     quote.annualDividendRate = this.annualDividendRate
     quote.annualDividendYield = this.annualDividendYield

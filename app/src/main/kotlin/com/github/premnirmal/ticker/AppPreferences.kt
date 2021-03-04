@@ -130,7 +130,7 @@ class AppPreferences {
         .apply()
   }
 
-  fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, false)
+  fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
 
   fun setRoundToTwoDecimalPlaces(round: Boolean) {
     sharedPreferences.edit()

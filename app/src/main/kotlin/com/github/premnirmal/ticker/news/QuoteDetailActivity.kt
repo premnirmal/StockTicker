@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.news
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
@@ -155,6 +156,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     view?.isEnabled = false
   }
 
+  @SuppressLint("SetTextI18n")
   private fun setupUi() {
     toolbar.menu.clear()
     toolbar.inflateMenu(R.menu.menu_news_feed)
@@ -206,7 +208,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     toolbar.title = ticker
     tickerName.text = quote.name
-    lastTradePrice.text = quote.priceString() + " " + quote.currency
+    lastTradePrice.text = "${quote.currencySymbol}${quote.priceString()}"
     val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
     change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
@@ -318,6 +320,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
   }
 
+  @SuppressLint("SetTextI18n")
   private fun updatePositionsUi() {
     val isInPortfolio = viewModel.isInPortfolio(ticker)
     if (isInPortfolio) {
@@ -326,7 +329,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       notes_header.visibility = View.VISIBLE
       alert_header.visibility = View.VISIBLE
       numShares.text = quote.numSharesString()
-      equityValue.text = quote.holdingsString() + " " + quote.currency
+      equityValue.text = "${quote.currencySymbol}${quote.holdingsString()}"
 
       val notesText = quote.properties?.notes
       if (notesText.isNullOrEmpty()) {

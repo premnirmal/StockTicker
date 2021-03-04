@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.portfolio
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -22,6 +23,7 @@ abstract class PortfolioVH(itemView: View) :
 
   @Throws(Exception::class) protected abstract fun updateView(quote: Quote, color: Int)
 
+  @SuppressLint("SetTextI18n")
   @Throws(Exception::class) fun update(
     quote: Quote?,
     listener: StocksAdapter.QuoteClickListener
@@ -46,7 +48,7 @@ abstract class PortfolioVH(itemView: View) :
     nameView.text = quote.name
 
     val totalValueText = itemView.findViewById<TextView>(R.id.totalValue)
-    totalValueText.text = quote.priceString() + " " + quote.currency
+    totalValueText.text = "${quote.currencySymbol}${quote.priceString()}"
 
     val change: Float = quote.change
     val changePercent: Float = quote.changeInPercent
@@ -97,7 +99,7 @@ abstract class PortfolioVH(itemView: View) :
       val holdingsView = itemView.findViewById<StockFieldView>(R.id.holdings)
       val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
 
-      val holdings = quote.holdingsString() + " " + quote.currency
+      val holdings = "${quote.currencySymbol}${quote.holdingsString()}"
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
