@@ -10,12 +10,17 @@
 ![](https://play-lh.googleusercontent.com/uxQfuEmietfmyq4e-xNEAXfwtkWFE9iVbJYpMtc55yKqOYTv25ViSGS1dTf6qrncXIo=h400-rw)
 ![](https://play-lh.googleusercontent.com/fQZFK93aeUVMr0BDNIuk8Ol9i-HC4d7GCtk01VtKr2-qcdtpmR8gO3-DJMCPbTwsCA=h400-rw)
 
-## App features:
+## App features
 
 - A home screen widget that shows your stock portfolio in a resizable grid.
 - Stocks can be sorted by dragging and dropping the list.
 - Only performs automatic fetching of stocks during trading hours.
 - Displays price change and summary alerts.
+
+### Description
+
+- Search Stock you want to add (BlackBerry is `BB` in NYSE and `RI1` in XFRA, for example, EUR and USD will be shown accordingly)
+- Add the stocks you have to caculate the average. If various amounts of positions were bought at different times, add each buy individually so everything can be calculated correct.
 
 ### Importing and exporting
 - You can import a list of tickers by selecting **import tickers** from the settings menu. All you need is a textfile with your tickers in *comma-separated* format, or in *json format*.
