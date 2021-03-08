@@ -190,7 +190,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
         AppPreferences.DECIMAL_FORMAT
       }
 
-    private val currencyCodes = hashMapOf(
+    private val currencyCodes = mapOf(
         "USD" to "$",
         "CAD" to "$",
         "EUR" to "€",
@@ -239,7 +239,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
         "HUF" to "Ft",
         "IDR" to "Rp",
         "ILS" to "₪",
-        "INR" to "টকা",
+        "INR" to "₹",
         "IQD" to "د.ع.‏",
         "IRR" to "﷼",
         "ISK" to "kr",
