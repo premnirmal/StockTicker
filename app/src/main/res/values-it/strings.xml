@@ -17,10 +17,10 @@
   <string name="action_share">Condividi Portfolio</string>
   <string name="action_nuke">Ripulisci dati app</string>
   <string name="privacy_policy">Informativa Privacy</string>
-  <string name="nuke_desc">Resetta i settaggi predefiniti dell\'app. Fallo se si stanno verificando problemi con il tuo portfolio.</string>
+  <string name="nuke_desc">Resetta impostazioni predefinite dell\'app. Fallo se si verificano problemi con il tuo portfolio.</string>
   <string name="export_desc">Esporta il tuo portfolio in un file .json</string>
   <string name="action_import">Importa Quotazioni</string>
-  <string name="import_desc">Importa quotazioni da un file .txt (separate da virgola), o da un file .json</string>
+  <string name="import_desc">Importa quotazioni (separate da virgola) da un file .txt, o da un file .json</string>
   <string name="action_portfolio">Portfolio</string>
   <string name="action_widgets">Widget</string>
   <string name="action_search">Cerca</string>
@@ -49,7 +49,7 @@
   <string name="auto_sort">Auto-ordina </string>
   <string name="auto_sort_desc">Le azioni verranno ordinate in base al cambio percentuale.</string>
   <string name="hide_header">Nascondi testata del widget</string>
-  <string name="hide_header_desc">Testata con ultimo orario di aggiornamento.</string>
+  <string name="hide_header_desc">Testata con info sull\'ultimo orario di aggiornamento.</string>
   <string name="refresh_on_screen_unlock">Aggiorna allo sblocco</string>
   <string name="refresh_on_screen_unlock_desc">Aggiorna quando sblocchi lo schermo (solo nelle ore impostate).</string>
   <string name="bold_change">Testo grassetto</string>
@@ -100,10 +100,10 @@
   <string name="remove">Rimuovi</string>
   <string name="move_to_different_widget">Sposta in un altro widget</string>
   <string name="select_widget">Seleziona Widget</string>
-  <string name="change_instructions">Nel tuo widget, clicca sul cambio per invertire tra percentuale e valore</string>
+  <string name="change_instructions">Nel tuo widget, clicca sul cambio per invertire tra valore e percentuale</string>
   <string name="no_symbols_in_portfolio">Nessun simbolo nel portfolio.</string>
   <string name="like_our_app">Ti piace la nostra app?</string>
-  <string name="please_rate">Dacci un voto sul PlayStore, vogliamo sapere che ne pensi!</string>
+  <string name="please_rate">Dacci un voto sul PlayStore, vogliamo sapere cosa ne pensi!</string>
   <string name="yes">Sì</string>
   <string name="no">No</string>
   <string name="later">Dopo</string>
