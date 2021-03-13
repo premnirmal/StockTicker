@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+  <string-array name="font_sizes">
+    <item>Piccolo</item>
+    <item>Medio</item>
+    <item>Grande</item>
+  </string-array>
+  <string-array name="font_sizes_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
+  <string-array name="app_themes">
+    <item>Chiaro</item>
+    <item>Scuro</item>
+    <item>Come da sistema</item>
+  </string-array>
+  <string-array name="app_themes_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
+  <string-array name="layout_types">
+    <item>Animato</item>
+    <item>Etichette</item>
+    <item>Fisso</item>
+    <item>Il mio portfolio</item>
+  </string-array>
+
+  <string-array name="layout_types_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
+  <string-array name="widget_width_types">
+    <item>Default</item>
+    <item>Un\'azione per riga</item>
+  </string-array>
+  <string-array name="widget_width_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+  </string-array>
+
+  <string-array name="backgrounds">
+    <item>Trasparente</item>
+    <item>Lucido</item>
+    <item>Scuro</item>
+    <item>Chiaro</item>
+  </string-array>
+
+  <string-array name="backgrounds_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+  </string-array>
+
+  <string-array name="text_colors">
+    <item>Bianco</item>
+    <item>Nero</item>
+  </string-array>
+
+  <string-array name="sync_periods">
+    <item>5 minuti</item>
+    <item>15 minuti</item>
+    <item>30 minuti</item>
+    <item>45 minuti</item>
+    <item>1 ora</item>
+  </string-array>
+  <string-array name="sync_periods_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+  </string-array>
+
+  <string-array name="days">
+    <item>Lunedì</item>
+    <item>Martedì</item>
+    <item>Mercoledì</item>
+    <item>Giovedì</item>
+    <item>Venerdì</item>
+    <item>Sabato</item>
+    <item>Domenica</item>
+  </string-array>
+  <string-array name="days_values" translatable="false">
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+    <item>7</item>
+  </string-array>
+</resources>
