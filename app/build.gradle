@@ -4,28 +4,24 @@ apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
 apply plugin: "com.google.gms.google-services"
 apply plugin: "com.google.firebase.crashlytics"
-apply plugin: "com.getkeepsafe.dexcount"
 apply plugin: "kotlin-kapt"
 
 buildscript {
   repositories {
-    jcenter()
     mavenCentral()
     google()
     maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "com.google.gms:google-services:4.3.4"
-    classpath "com.google.firebase:firebase-crashlytics-gradle:2.4.1"
+    classpath "com.google.gms:google-services:4.3.5"
+    classpath "com.google.firebase:firebase-crashlytics-gradle:2.6.0"
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:2.0.0'
   }
 }
 
 repositories {
-  jcenter()
   mavenCentral()
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
@@ -33,23 +29,9 @@ repositories {
   maven { url "http://dl.bintray.com/lukaville/maven" }
 }
 
-dexcount {
-  format = "list"
-  includeClasses = false
-  includeFieldCount = true
-  includeTotalMethodCount = false
-  orderByMethodCount = true
-  verbose = false
-  maxTreeDepth = Integer.MAX_VALUE
-  teamCityIntegration = false
-  teamCitySlug = null
-  runOnEachAssemble = true
-  maxMethodCount = 64000
-}
-
 android {
   compileSdkVersion 30
-  buildToolsVersion "30.0.0"
+  buildToolsVersion "30.0.2"
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -181,16 +163,16 @@ kapt {
 }
 
 ext {
-  LIFECYCLE_VERSION = "2.2.0"
-  DAGGER_VERSION = "2.27"
+  LIFECYCLE_VERSION = "2.3.1"
+  DAGGER_VERSION = "2.35.1"
   MOCKITO_VERSION = "3.1.0"
   JUNIT_VERSION = "4.13.1"
   RETROFIT_VERSION = "2.7.1"
   OKHTTP_VERSION = "4.9.0"
   ROBOLECTRIC_VERSION = "4.4"
-  COROUTINES_VERSION = "1.3.9"
-  ROOM_VERSION = "2.2.5"
-  WORK_VERSION = "2.4.0"
+  COROUTINES_VERSION = "1.4.3"
+  ROOM_VERSION = "2.3.0"
+  WORK_VERSION = "2.6.0-alpha02"
 }
 
 dependencies {
@@ -201,9 +183,9 @@ dependencies {
 
   implementation "androidx.appcompat:appcompat:1.2.0"
   implementation "androidx.legacy:legacy-support-v4:1.0.0"
-  implementation "com.google.android.material:material:1.2.1"
+  implementation "com.google.android.material:material:1.3.0"
   implementation "androidx.preference:preference-ktx:1.1.1"
-  implementation "androidx.browser:browser:1.2.0"
+  implementation "androidx.browser:browser:1.3.0"
   implementation "androidx.constraintlayout:constraintlayout:2.0.4"
 
   implementation "javax.inject:javax.inject:1"
@@ -226,7 +208,7 @@ dependencies {
   implementation "androidx.work:work-runtime:$WORK_VERSION"
   implementation "androidx.work:work-runtime-ktx:$WORK_VERSION"
 
-  implementation "com.jakewharton.threetenabp:threetenabp:1.2.4"
+  implementation "com.jakewharton.threetenabp:threetenabp:1.3.0"
 
   implementation "io.github.inflationx:calligraphy3:3.1.1"
   implementation "io.github.inflationx:viewpump:2.0.3"
@@ -237,8 +219,8 @@ dependencies {
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
 
-  prodImplementation "com.google.firebase:firebase-crashlytics:17.3.0"
-  prodImplementation "com.google.firebase:firebase-analytics:18.0.0"
+  prodImplementation "com.google.firebase:firebase-crashlytics:18.0.0"
+  prodImplementation "com.google.firebase:firebase-analytics:19.0.0"
 
   debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
 
@@ -248,10 +230,10 @@ dependencies {
   testImplementation "org.robolectric:shadows-multidex:$ROBOLECTRIC_VERSION"
   testImplementation "androidx.test:runner:1.3.0"
   testImplementation "androidx.test:rules:1.3.0"
-  testImplementation "androidx.annotation:annotation:1.1.0"
+  testImplementation "androidx.annotation:annotation:1.2.0"
   testImplementation "androidx.test:rules:1.3.0"
   testImplementation "androidx.test:runner:1.3.0"
-  testImplementation "org.threeten:threetenbp:1.4.4"
+  testImplementation "org.threeten:threetenbp:1.5.0"
   testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
   testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$COROUTINES_VERSION"
@@ -274,7 +256,7 @@ android.applicationVariants.all { variant ->
     def googleTask = tasks.findByName("process${variant.name.capitalize()}GoogleServices")
     def crashlyticsMappingTask = tasks.
         findByName("uploadCrashlyticsMappingFile${variant.name.capitalize()}")
-    println("flavor: ${variant.name}")
+    println("flavour: ${variant.name}")
     println("disabling ${googleTask.name}")
     googleTask.enabled = false
     if (crashlyticsMappingTask != null) {

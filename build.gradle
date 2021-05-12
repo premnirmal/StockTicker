@@ -3,12 +3,11 @@
 buildscript {
   ext.kotlin_version = '1.4.10'
   repositories {
-    jcenter()
-    // for the new android gradle plugin
+    mavenCentral()
     google()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:4.1.1'
+    classpath 'com.android.tools.build:gradle:4.2.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
