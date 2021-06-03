@@ -20,7 +20,7 @@
 ### Description
 
 - Search Stock you want to add (BlackBerry is `BB` in NYSE and `RI1` in XFRA, for example, EUR and USD will be shown accordingly)
-- Add the stocks you have to caculate the average. If various amounts of positions were bought at different times, add each buy individually so everything can be calculated correct.
+- Add the stocks you have to calculate the average. If various amounts of positions were bought at different times, add each buy individually so everything can be calculated correcly.
 
 ### Importing and exporting
 - You can import a list of tickers by selecting **import tickers** from the settings menu. All you need is a textfile with your tickers in *comma-separated* format, or in *json format*.
