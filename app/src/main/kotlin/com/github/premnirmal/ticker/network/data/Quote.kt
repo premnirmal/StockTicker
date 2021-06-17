@@ -63,7 +63,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     return if (annualDividendRate <= 0f || annualDividendYield <= 0f) {
       "--"
     } else {
-      "${AppPreferences.DECIMAL_FORMAT_2DP.format(annualDividendRate)}%"
+      AppPreferences.DECIMAL_FORMAT_2DP.format(annualDividendRate)
     }
   }
 
