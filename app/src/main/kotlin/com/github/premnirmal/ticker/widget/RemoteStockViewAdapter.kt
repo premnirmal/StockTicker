@@ -143,9 +143,23 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       val color: Int
       color = if (change < 0f || changeInPercent < 0f) {
-        ContextCompat.getColor(context, widgetData.negativeTextColor)
+        ContextCompat.getColor(
+                context ,
+                if (!AppPreferences.INSTANCE.invertColors()) {
+                  widgetData.negativeTextColor
+                } else {
+                  widgetData.positiveTextColor
+                }
+        )
       } else {
-        ContextCompat.getColor(context, widgetData.positiveTextColor)
+        ContextCompat.getColor(
+                context ,
+                if (!AppPreferences.INSTANCE.invertColors()) {
+                  widgetData.positiveTextColor
+                } else {
+                  widgetData.negativeTextColor
+                }
+        )
       }
       if (stockViewLayout == R.layout.stockview3) {
         remoteViews.setTextColor(R.id.change, color)

@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
@@ -212,11 +213,39 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
     change.text = changeText
     if (quote.change > 0 || quote.changeInPercent >= 0) {
-      change.setTextColor(ContextCompat.getColor(this, color.positive_green))
-      lastTradePrice.setTextColor(ContextCompat.getColor(this, color.positive_green))
+      change.setTextColor(ContextCompat.getColor(
+              this ,
+              if (!AppPreferences.INSTANCE.invertColors()) {
+                color.positive_green
+              } else {
+                color.negative_red
+              }
+      ))
+      lastTradePrice.setTextColor(ContextCompat.getColor(
+              this ,
+              if (!AppPreferences.INSTANCE.invertColors()) {
+                color.positive_green
+              } else {
+                color.negative_red
+              }
+      ))
     } else {
-      change.setTextColor(ContextCompat.getColor(this, color.negative_red))
-      lastTradePrice.setTextColor(ContextCompat.getColor(this, color.negative_red))
+      change.setTextColor(ContextCompat.getColor(
+              this ,
+              if (!AppPreferences.INSTANCE.invertColors()) {
+                color.negative_red
+              } else {
+                color.positive_green
+              }
+      ))
+      lastTradePrice.setTextColor(ContextCompat.getColor(
+              this ,
+              if (!AppPreferences.INSTANCE.invertColors()) {
+                color.negative_red
+              } else {
+                color.positive_green
+              }
+      ))
     }
     dividend.text = quote.dividendInfo()
     exchange.text = quote.stockExchange
@@ -363,18 +392,46 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         total_gain_loss.visibility = View.VISIBLE
         total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
         if (quote.gainLoss() >= 0) {
-          total_gain_loss.setTextColor(ContextCompat.getColor(this, color.positive_green))
+          total_gain_loss.setTextColor(ContextCompat.getColor(
+                  this ,
+                  if (!AppPreferences.INSTANCE.invertColors()) {
+                    color.positive_green
+                  } else {
+                    color.negative_red
+                  }
+          ))
         } else {
-          total_gain_loss.setTextColor(ContextCompat.getColor(this, color.negative_red))
+          total_gain_loss.setTextColor(ContextCompat.getColor(
+                  this ,
+                  if (!AppPreferences.INSTANCE.invertColors()) {
+                    color.negative_red
+                  } else {
+                    color.positive_green
+                  }
+          ))
         }
         average_price.visibility = View.VISIBLE
         average_price.setText(quote.averagePositionPrice())
         day_change.visibility = View.VISIBLE
         day_change.setText(quote.dayChangeString())
         if (quote.change > 0 || quote.changeInPercent >= 0) {
-          day_change.setTextColor(ContextCompat.getColor(this, color.positive_green))
+          day_change.setTextColor(ContextCompat.getColor(
+                  this ,
+                  if (!AppPreferences.INSTANCE.invertColors()) {
+                    color.positive_green
+                  } else {
+                    color.negative_red
+                  }
+          ))
         } else {
-          day_change.setTextColor(ContextCompat.getColor(this, color.negative_red))
+          day_change.setTextColor(ContextCompat.getColor(
+                  this ,
+                  if (!AppPreferences.INSTANCE.invertColors()) {
+                    color.negative_red
+                  } else {
+                    color.positive_green
+                  }
+          ))
         }
       } else {
         total_gain_loss.visibility = View.GONE
