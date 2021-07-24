@@ -31,10 +31,7 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.showKeyboard
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
-import kotlinx.android.synthetic.main.fragment_search.recycler_view
-import kotlinx.android.synthetic.main.fragment_search.search_view
-import kotlinx.android.synthetic.main.fragment_search.toolbar
+import kotlinx.android.synthetic.main.fragment_search.*
 
 class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
 
@@ -110,6 +107,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       if (it.wasSuccessful) {
         adapter.setData(it.data)
       } else {
+        adapter.setData(listOf(Suggestion(search_view.text?.toString().orEmpty())))
         InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
       }
     })

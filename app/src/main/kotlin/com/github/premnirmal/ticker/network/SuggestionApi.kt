@@ -9,7 +9,7 @@ import retrofit2.http.Query
  */
 interface SuggestionApi {
 
-  @GET("autoc?callback=YAHOO.Finance.SymbolSuggest.ssCallback&region=US&lang=en-US")
+  @GET("autoc?lang=enUS")
   suspend fun getSuggestions(@Query("query") query: String): SuggestionsNet
 
 }
