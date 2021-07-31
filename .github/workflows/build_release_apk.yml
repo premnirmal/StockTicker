@@ -9,7 +9,7 @@ on:
       - '*'
 
 jobs:
-  build:
+  apk:
     name: Build apk
     runs-on: ubuntu-18.04
     steps:
@@ -27,7 +27,7 @@ jobs:
           path: app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk 
   release:
     name: Release APK
-    needs: build
+    needs: apk
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-18.04
     steps:
