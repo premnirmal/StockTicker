@@ -1,14 +1,33 @@
 name: Build & Publish Release APK
 
 on:
+  pull_request:
+    branches:
+      - 'master'
   push:
     tags:
       - '*'
 
 jobs:
+  apk:
+    name: Build apk
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build apk
+        run: bash ./gradlew assemblePurefossDebug -PdisablePreDex
+      - name: Upload APK
+        uses: actions/upload-artifact@v1
+        with:
+          name: apk
+          path: app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk 
   release:
     name: Release APK
-    needs: build
+    needs: apk
     if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-18.04
     steps:
