@@ -56,5 +56,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: app/apk/purefoss/debug/app-purefoss-debug.apk
-          asset_name: StocksWidget_${{ github.ref#refs/*/ }}.apk
+          asset_name: StocksWidget_${GITHUB_REF#refs/*/}.apk
           asset_content_type: application/zip
