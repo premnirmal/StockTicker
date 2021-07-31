@@ -21,10 +21,10 @@ jobs:
       - name: Build apk
         run: bash ./gradlew assemblePurefossDebug -PdisablePreDex
       - name: Upload APK
-          uses: actions/upload-artifact@v1
-          with:
-            name: apk
-            path: app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk 
+        uses: actions/upload-artifact@v1
+        with:
+          name: apk
+          path: app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk 
   release:
     name: Release APK
     needs: apk
