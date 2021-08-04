@@ -9,11 +9,14 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
@@ -31,6 +34,10 @@ import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_head
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
+import kotlinx.android.synthetic.main.widget_2x1.list
+import kotlinx.android.synthetic.main.widget_header.last_updated
+import kotlinx.android.synthetic.main.widget_header.next_update
+import kotlinx.android.synthetic.main.widget_header.widget_header
 import javax.inject.Inject
 
 class WidgetSettingsFragment : BaseFragment(), OnClickListener {
@@ -51,11 +58,12 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   interface Parent {
     fun openSearch(widgetId: Int)
-    fun refresh(widgetData: WidgetData) {}
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var bus: AsyncBus
+  @Inject internal lateinit var stocksProvider: IStocksProvider
+  private lateinit var adapter: WidgetPreviewAdapter
   private var showAddStocks = true
   private val parent: Parent
     get() = activity as Parent
@@ -91,6 +99,9 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setAutoSortSetting(widgetData)
     setHideHeaderSetting(widgetData)
     setCurrencySetting(widgetData)
+    adapter = WidgetPreviewAdapter(widgetData)
+    list.adapter = adapter
+    updatePreview(widgetData)
 
     arrayOf(
         setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width,
@@ -170,7 +181,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   private fun broadcastUpdateWidget() {
     widgetDataProvider.broadcastUpdateWidget(widgetId)
-    parent.refresh(widgetDataProvider.dataForWidgetId(widgetId))
+    updatePreview(widgetDataProvider.dataForWidgetId(widgetId))
   }
 
   private fun showDialogPreference(
@@ -210,5 +221,19 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   private fun setCurrencySetting(widgetData: WidgetData) {
     setting_currency_checkbox.isChecked = widgetData.isCurrencyEnabled()
+  }
+
+  private fun updatePreview(widgetData: WidgetData) {
+    val lastUpdatedText = when (val fetchState = stocksProvider.fetchState) {
+      is FetchState.Success -> getString(R.string.last_fetch, fetchState.displayString)
+      is FetchState.Failure -> getString(R.string.refresh_failed)
+      else -> FetchState.NotFetched.displayString
+    }
+    last_updated.text = lastUpdatedText
+    val nextUpdate: String = stocksProvider.nextFetch()
+    val nextUpdateText: String = getString(R.string.next_fetch, nextUpdate)
+    next_update.text = nextUpdateText
+    widget_header.isVisible = !widgetData.hideHeader()
+    adapter.refresh(widgetData)
   }
 }

@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg"
     android:orientation="vertical"
     android:paddingBottom="?attr/actionBarSize"
     >
@@ -27,24 +26,29 @@
         />
   </com.google.android.material.appbar.AppBarLayout>
 
-  <TextView
+  <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginStart="@dimen/activity_vertical_margin"
-      android:layout_marginEnd="@dimen/activity_vertical_margin"
-      android:layout_marginTop="@dimen/activity_vertical_margin"
-      android:gravity="center_vertical"
-      android:text="@string/select_widget"
-      android:textSize="@dimen/thin_title_text"
-      style="@style/ThinTitleTextView"
-      />
-
-  <Spinner
-      android:id="@+id/widget_selection_spinner"
-      android:layout_width="match_parent"
-      android:layout_height="?attr/actionBarSize"
-      />
-
+      android:background="@color/default_bg"
+      android:orientation="vertical"
+      >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center_vertical"
+        android:text="@string/select_widget"
+        android:textSize="@dimen/thin_title_text"
+        style="@style/ThinTitleTextView"
+        />
+    <Spinner
+        android:id="@+id/widget_selection_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        />
+  </LinearLayout>
   <FrameLayout
       android:id="@+id/child_fragment_container"
       android:layout_width="match_parent"

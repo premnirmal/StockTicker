@@ -11,13 +11,13 @@
   <color name="button_pressed">#d19391</color>
   <color name="button_disabled">#cdaca1</color>
   <color name="button_enabled">#be6663</color>
-  <color name="default_bg">#ffffff</color>
-  <color name="color_splash">#ffffff</color>
+  <color name="default_bg">#fdfdfd</color>
+  <color name="color_splash">#fdfdfd</color>
   <color name="color_statusbar">@color/color_primary</color>
   <color name="bg_toolbar">@color/color_primary</color>
-  <color name="graph_bg">#ffffff</color>
+  <color name="graph_bg">#fdfdfd</color>
   <color name="divider">#aaaa</color>
-  <color name="card_bg">#fdfdfd</color>
+  <color name="card_bg">#fbfcfa</color>
   <color name="card_shadow">#10000000</color>
   <color name="error_red">#ff3232</color>
   <color name="negative_red">#e55b5b</color>

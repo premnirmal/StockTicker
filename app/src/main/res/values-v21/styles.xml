@@ -40,10 +40,6 @@
     <item name="colorControlActivated">@color/color_accent</item>
   </style>
 
-  <style name="ParanormalActivityTheme" parent="AppTheme">
-    <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>
-  </style>
-
   <style name="WidgetSettingsTheme" parent="AppTheme">
     <item name="android:statusBarColor">@color/color_statusbar</item>
     <item name="android:windowBackground">@android:color/transparent</item>

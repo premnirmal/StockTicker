@@ -4,5 +4,5 @@
   <color name="widget_text">#1b1b1b</color>
   <color name="text_widget_positive">#009900</color>
   <color name="text_widget_negative">#ff6666</color>
-  <color name="widget_bg">#fdfdfd</color>
+  <color name="widget_bg">#faf9f6</color>
 </resources>
