@@ -46,6 +46,9 @@
 
   <style name="WidgetSettingsTheme" parent="AppTheme">
     <item name="android:statusBarColor">@color/color_statusbar</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowShowWallpaper">true</item>
   </style>
 
   <style name="SearchTheme" parent="AppTheme">

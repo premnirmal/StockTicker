@@ -137,7 +137,7 @@ class AlarmScheduler {
     }
     val refreshReceiverIntent = Intent(context, RefreshReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_ONE_SHOT)
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
     alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
     return nextAlarmDate
   }
@@ -170,7 +170,7 @@ class AlarmScheduler {
     val receiverIntent = Intent(context, DailySummaryNotificationReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
     val pendingIntent =
-      PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_ONE_SHOT)
+      PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
     alarmManager.setRepeating(
         AlarmManager.ELAPSED_REALTIME_WAKEUP,
         clock.elapsedRealtime() + initialDelay,

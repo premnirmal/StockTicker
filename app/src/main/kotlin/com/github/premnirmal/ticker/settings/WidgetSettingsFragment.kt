@@ -22,7 +22,6 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_add_stock
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_background
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency
@@ -30,7 +29,6 @@ import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency_
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
 import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
 import javax.inject.Inject
@@ -53,6 +51,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   interface Parent {
     fun openSearch(widgetId: Int)
+    fun refresh(widgetData: WidgetData) {}
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
@@ -88,16 +87,14 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setWidgetNameSetting(widgetData)
     setLayoutTypeSetting(widgetData)
     setWidgetSizeSetting(widgetData)
-    setBgSetting(widgetData)
-    setTextColorSetting(widgetData)
     setBoldSetting(widgetData)
     setAutoSortSetting(widgetData)
     setHideHeaderSetting(widgetData)
     setCurrencySetting(widgetData)
 
     arrayOf(
-        setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width, setting_background,
-        setting_text_color, setting_bold, setting_autosort, setting_hide_header, setting_currency
+        setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width,
+        setting_bold, setting_autosort, setting_hide_header, setting_currency
     ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
@@ -121,49 +118,29 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
         }
       }
       R.id.setting_layout_type -> {
-        showDialogPreference(R.array.layout_types,
-            DialogInterface.OnClickListener { dialog, which ->
-              widgetData.setLayoutPref(which)
-              setLayoutTypeSetting(widgetData)
-              dialog.dismiss()
-              broadcastUpdateWidget()
-              if (which == 2) {
-                showDialog(getString(R.string.change_instructions))
-              }
-              InAppMessage.showMessage(requireActivity(), R.string.layout_updated_message)
-            })
+        showDialogPreference(R.array.layout_types) { dialog, which ->
+          widgetData.setLayoutPref(which)
+          setLayoutTypeSetting(widgetData)
+          dialog.dismiss()
+          broadcastUpdateWidget()
+          if (which == 2) {
+            showDialog(getString(R.string.change_instructions))
+          }
+          InAppMessage.showMessage(requireActivity(), R.string.layout_updated_message)
+        }
       }
 
       R.id.setting_widget_width -> {
-        showDialogPreference(R.array.widget_width_types,
-                DialogInterface.OnClickListener { dialog, which ->
-                  widgetData.setWidgetSizePref(which)
-                  setWidgetSizeSetting(widgetData)
-                  dialog.dismiss()
-                  broadcastUpdateWidget()
-                  InAppMessage.showMessage(requireActivity(), R.string.widget_width_updated_message)
-                })
+        showDialogPreference(R.array.widget_width_types
+        ) { dialog, which ->
+          widgetData.setWidgetSizePref(which)
+          setWidgetSizeSetting(widgetData)
+          dialog.dismiss()
+          broadcastUpdateWidget()
+          InAppMessage.showMessage(requireActivity(), R.string.widget_width_updated_message)
+        }
       }
 
-      R.id.setting_background -> {
-        showDialogPreference(R.array.backgrounds, DialogInterface.OnClickListener { dialog, which ->
-          widgetData.setBgPref(which)
-          setBgSetting(widgetData)
-          setTextColorSetting(widgetData)
-          dialog.dismiss()
-          broadcastUpdateWidget()
-          InAppMessage.showMessage(requireActivity(), R.string.bg_updated_message)
-        })
-      }
-      R.id.setting_text_color -> {
-        showDialogPreference(R.array.text_colors, DialogInterface.OnClickListener { dialog, which ->
-          widgetData.setTextColorPref(which)
-          setTextColorSetting(widgetData)
-          dialog.dismiss()
-          broadcastUpdateWidget()
-          InAppMessage.showMessage(requireActivity(), R.string.text_color_updated_message)
-        })
-      }
       R.id.setting_bold -> {
         val isChecked = !setting_bold_checkbox.isChecked
         widgetData.setBoldEnabled(isChecked)
@@ -193,6 +170,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   private fun broadcastUpdateWidget() {
     widgetDataProvider.broadcastUpdateWidget(widgetId)
+    parent.refresh(widgetDataProvider.dataForWidgetId(widgetId))
   }
 
   private fun showDialogPreference(
@@ -216,16 +194,6 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   private fun setLayoutTypeSetting(widgetData: WidgetData) {
     val layoutTypeDesc = resources.getStringArray(R.array.layout_types)[widgetData.layoutPref()]
     setting_layout_type.setSubtitle(layoutTypeDesc)
-  }
-
-  private fun setBgSetting(widgetData: WidgetData) {
-    val bgDesc = resources.getStringArray(R.array.backgrounds)[widgetData.bgPref()]
-    setting_background.setSubtitle(bgDesc)
-  }
-
-  private fun setTextColorSetting(widgetData: WidgetData) {
-    val textColorDesc = resources.getStringArray(R.array.text_colors)[widgetData.textColorPref()]
-    setting_text_color.setSubtitle(textColorDesc)
   }
 
   private fun setBoldSetting(widgetData: WidgetData) {

@@ -3,8 +3,6 @@ package com.github.premnirmal.ticker.portfolio.search
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.PorterDuff
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -31,7 +29,10 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.showKeyboard
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_search.*
+import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
+import kotlinx.android.synthetic.main.fragment_search.recycler_view
+import kotlinx.android.synthetic.main.fragment_search.search_view
+import kotlinx.android.synthetic.main.fragment_search.toolbar
 
 class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
 
@@ -82,10 +83,8 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     super.onViewCreated(view, savedInstanceState)
     if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
       toolbar.setNavigationIcon(R.drawable.ic_back)
-      if (VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP) {
-        toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
-        toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
-      }
+      toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
+      toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
       toolbar.setNavigationOnClickListener { requireActivity().finish() }
       fake_status_bar.visibility = View.GONE
     } else {

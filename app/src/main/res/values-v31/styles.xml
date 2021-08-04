@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <style name="Widget.Container" parent="android:Widget">
+    <item name="android:padding">?attr/appWidgetPadding</item>
+    <item name="android:background">@drawable/app_widget_background</item>
+    <item name="android:clipToOutline">true</item>
+  </style>
+</resources>

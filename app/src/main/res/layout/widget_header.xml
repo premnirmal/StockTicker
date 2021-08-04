@@ -4,9 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
-    android:layout_marginLeft="@dimen/widget_margin"
-    android:layout_marginStart="@dimen/widget_margin"
     android:orientation="horizontal"
+    android:baselineAligned="false"
     >
 
   <LinearLayout
@@ -47,10 +46,6 @@
   <FrameLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:paddingBottom="@dimen/widget_refresh_icon_padding_top"
-      android:paddingEnd="@dimen/widget_refresh_icon_padding_side"
-      android:paddingStart="@dimen/widget_refresh_icon_padding_side"
-      android:paddingTop="@dimen/widget_refresh_icon_padding_top"
       >
 
     <ImageView

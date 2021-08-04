@@ -300,7 +300,7 @@ private class NotificationFactory(private val context: Context) {
           // Add the intent, which inflates the back stack
           addNextIntentWithParentStack(intent)
           // Get the PendingIntent containing the entire back stack
-          getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
+          getPendingIntent(notificationId, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
     val icon = when {
       topQuotes.map { it.changeInPercent }.average() >= 2f -> R.drawable.ic_trending_up
@@ -342,7 +342,7 @@ private class NotificationFactory(private val context: Context) {
           // Add the intent, which inflates the back stack
           addNextIntent(intent)
           // Get the PendingIntent containing the entire back stack
-          getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
+          getPendingIntent(notificationId, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
         }
     with(notificationManager) {
       // NotificationId is a unique int for each notification.

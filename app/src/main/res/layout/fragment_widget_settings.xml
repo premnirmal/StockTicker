@@ -114,24 +114,6 @@
 
     <include layout="@layout/divider"/>
 
-    <com.github.premnirmal.ticker.ui.SettingsTextView
-        android:id="@+id/setting_background"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title_text="@string/bg"
-        />
-
-    <include layout="@layout/divider"/>
-
-    <com.github.premnirmal.ticker.ui.SettingsTextView
-        android:id="@+id/setting_text_color"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:title_text="@string/text_color"
-        />
-
-    <include layout="@layout/divider"/>
-
     <LinearLayout
         android:id="@+id/setting_bold"
         android:layout_width="match_parent"

@@ -14,8 +14,8 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "com.google.gms:google-services:4.3.5"
-    classpath "com.google.firebase:firebase-crashlytics-gradle:2.6.0"
+    classpath "com.google.gms:google-services:4.3.8"
+    classpath "com.google.firebase:firebase-crashlytics-gradle:2.7.1"
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -26,12 +26,11 @@ repositories {
   maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
   maven { url "https://jitpack.io" }
   maven { url "https://maven.google.com" }
-  maven { url "http://dl.bintray.com/lukaville/maven" }
 }
 
 android {
-  compileSdkVersion 30
-  buildToolsVersion "30.0.2"
+  compileSdkVersion 31
+  buildToolsVersion "31.0.0"
 
   final File versionFile = file("file:version.properties")
   final Properties versionProps = new Properties()
@@ -43,7 +42,7 @@ android {
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 21
-    targetSdkVersion 30
+    targetSdkVersion 31
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code
@@ -142,11 +141,11 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
   }
   kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_1_8.toString()
+    jvmTarget = JavaVersion.VERSION_11.toString()
   }
 
   packagingOptions {
@@ -158,35 +157,31 @@ android {
   }
 }
 
-kapt {
-  useBuildCache = true
-}
-
 ext {
   LIFECYCLE_VERSION = "2.3.1"
-  DAGGER_VERSION = "2.35.1"
+  DAGGER_VERSION = "2.37"
   MOCKITO_VERSION = "3.1.0"
   JUNIT_VERSION = "4.13.1"
-  RETROFIT_VERSION = "2.7.1"
+  RETROFIT_VERSION = "2.9.0"
   OKHTTP_VERSION = "4.9.0"
   ROBOLECTRIC_VERSION = "4.4"
-  COROUTINES_VERSION = "1.4.3"
+  COROUTINES_VERSION = "1.5.0"
   ROOM_VERSION = "2.3.0"
-  WORK_VERSION = "2.6.0-alpha02"
+  WORK_VERSION = "2.7.0-alpha05"
 }
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation "androidx.core:core-ktx:1.5.0"
+  implementation "androidx.core:core-ktx:1.6.0"
   implementation "androidx.multidex:multidex:2.0.1"
 
-  implementation "androidx.appcompat:appcompat:1.3.0"
+  implementation "androidx.appcompat:appcompat:1.3.1"
   implementation "androidx.legacy:legacy-support-v4:1.0.0"
-  implementation "com.google.android.material:material:1.3.0"
+  implementation "com.google.android.material:material:1.4.0"
   implementation "androidx.preference:preference-ktx:1.1.1"
   implementation "androidx.browser:browser:1.3.0"
-  implementation "androidx.constraintlayout:constraintlayout:2.0.4"
+  implementation "androidx.constraintlayout:constraintlayout:2.1.0"
 
   implementation "javax.inject:javax.inject:1"
   implementation "javax.annotation:javax.annotation-api:1.3.2"
@@ -219,20 +214,20 @@ dependencies {
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
 
-  prodImplementation "com.google.firebase:firebase-crashlytics:18.0.1"
+  prodImplementation "com.google.firebase:firebase-crashlytics:18.2.0"
   prodImplementation "com.google.firebase:firebase-analytics:19.0.0"
 
-  debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
+//  debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
 
   testImplementation "junit:junit:$JUNIT_VERSION"
   testImplementation "org.assertj:assertj-core:3.8.0"
   testImplementation "org.robolectric:robolectric:$ROBOLECTRIC_VERSION"
   testImplementation "org.robolectric:shadows-multidex:$ROBOLECTRIC_VERSION"
-  testImplementation "androidx.test:runner:1.3.0"
-  testImplementation "androidx.test:rules:1.3.0"
+  testImplementation "androidx.test:runner:1.4.0"
+  testImplementation "androidx.test:rules:1.4.0"
   testImplementation "androidx.annotation:annotation:1.2.0"
-  testImplementation "androidx.test:rules:1.3.0"
-  testImplementation "androidx.test:runner:1.3.0"
+  testImplementation "androidx.test:rules:1.4.0"
+  testImplementation "androidx.test:runner:1.4.0"
   testImplementation "org.threeten:threetenbp:1.5.0"
   testImplementation "org.mockito:mockito-core:$MOCKITO_VERSION"
   testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"

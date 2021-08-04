@@ -1,13 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-  ext.kotlin_version = '1.4.10'
+  ext.kotlin_version = '1.5.20'
   repositories {
     mavenCentral()
     google()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:4.2.0'
+    classpath 'com.android.tools.build:gradle:7.0.0'
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
@@ -15,8 +15,8 @@ buildscript {
 project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 
 ext {
-  sourceCompatibilityVersion = JavaVersion.VERSION_1_8
-  targetCompatibilityVersion = JavaVersion.VERSION_1_8
+  sourceCompatibilityVersion = JavaVersion.VERSION_11
+  targetCompatibilityVersion = JavaVersion.VERSION_11
 }
 
 subprojects {

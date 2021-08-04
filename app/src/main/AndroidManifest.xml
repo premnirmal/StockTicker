@@ -20,6 +20,7 @@
         tools:replace="android:icon">
 
         <activity
+            android:exported="true"
             android:name="com.github.premnirmal.ticker.home.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
@@ -28,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity
+            android:exported="true"
             android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
@@ -53,6 +55,7 @@
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:exported="true"
             android:name="com.github.premnirmal.ticker.settings.WidgetSettingsActivity"
             android:label="@string/action_Settings"
             android:theme="@style/WidgetSettingsTheme"
@@ -89,8 +92,7 @@
         </receiver>
         <receiver
             android:name="com.github.premnirmal.ticker.widget.RefreshReceiver"
-            android:enabled="true"
-            android:exported="false" />
+            android:enabled="true" />
         <receiver
             android:name="com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver"
             android:enabled="true"
@@ -105,7 +107,8 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.github.premnirmal.ticker.widget.StockWidget"
+            android:exported="false"
+            android:name="com.github.premnirmal.ticker.widget.StocksWidgetProvider"
             android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

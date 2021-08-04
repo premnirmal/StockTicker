@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -17,6 +16,15 @@
         app:elevation="0dp"
         app:title="@string/action_Settings"
         app:titleTextAppearance="@style/ActionBarTitleText" />
+
+    <FrameLayout
+        android:id="@+id/preview_container"
+        android:layout_width="match_parent"
+        android:layout_height="225dp"
+        android:padding="44dp">
+        <include
+            layout="@layout/widget_2x1"/>
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/fragment_container"

@@ -107,6 +107,11 @@
     <item name="layout">@layout/fragment_settings</item>
   </style>
 
+  <style name="Widget.Container" parent="android:Widget">
+    <item name="android:background">@drawable/app_widget_background</item>
+    <item name="android:padding">?attr/appWidgetPadding</item>
+  </style>
+
   <style name="TranslucentTheme" parent="AppTheme">
     <item name="android:windowIsTranslucent">true</item>
     <item name="android:windowBackground">@color/transparent</item>
@@ -124,7 +129,11 @@
 
   <style name="AddPositionTheme" parent="AppTheme"/>
 
-  <style name="WidgetSettingsTheme" parent="AppTheme"/>
+  <style name="WidgetSettingsTheme" parent="AppTheme">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowShowWallpaper">true</item>
+  </style>
 
   <style name="SearchTheme" parent="AppTheme"/>
 

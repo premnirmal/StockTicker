@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
-import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.AppPreferences
@@ -25,13 +24,7 @@ class WidgetData {
     private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
     private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
     private const val SHOW_CURRENCY = AppPreferences.SHOW_CURRENCY
-    private const val WIDGET_BG = AppPreferences.WIDGET_BG
-    private const val TEXT_COLOR = AppPreferences.TEXT_COLOR
     private const val PERCENT = AppPreferences.PERCENT
-    private const val TRANSPARENT = AppPreferences.TRANSPARENT
-    private const val TRANSLUCENT = AppPreferences.TRANSLUCENT
-    private const val DARK = AppPreferences.DARK
-    private const val LIGHT = AppPreferences.LIGHT
     private const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
     private const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
 
@@ -83,14 +76,7 @@ class WidgetData {
   }
 
   val positiveTextColor: Int
-    @ColorRes get() {
-      return when (preferences.getInt(WIDGET_BG, TRANSPARENT)) {
-        TRANSLUCENT -> R.color.text_widget_positive
-        DARK -> R.color.text_widget_positive
-        LIGHT -> R.color.text_widget_positive_dark
-        else -> R.color.text_widget_positive
-      }
-    }
+    @ColorRes get() = R.color.text_widget_positive
 
   val negativeTextColor: Int
     @ColorRes get() = R.color.text_widget_negative
@@ -140,9 +126,7 @@ class WidgetData {
   }
 
   @ColorInt fun textColor(): Int {
-    val pref = textColorPref()
-    return if (pref == 0) ContextCompat.getColor(context, R.color.widget_text)
-    else ContextCompat.getColor(context, R.color.dark_widget_text)
+    return ContextCompat.getColor(context, R.color.widget_text)
   }
 
   @LayoutRes fun stockViewLayout(): Int {
@@ -152,35 +136,6 @@ class WidgetData {
       2 -> R.layout.stockview3
       else -> R.layout.stockview4
     }
-  }
-
-  fun bgPref(): Int = preferences.getInt(WIDGET_BG, TRANSLUCENT)
-
-  fun setBgPref(value: Int) {
-    preferences.edit()
-        .putInt(WIDGET_BG, value)
-        .apply()
-    when (value) {
-      LIGHT -> setTextColorPref(1)
-      else -> setTextColorPref(0)
-    }
-  }
-
-  @DrawableRes fun backgroundResource(): Int {
-    return when (bgPref()) {
-      TRANSLUCENT -> R.drawable.translucent_widget_bg
-      DARK -> R.drawable.dark_widget_bg
-      LIGHT -> R.drawable.light_widget_bg
-      else -> R.drawable.transparent_widget_bg
-    }
-  }
-
-  fun textColorPref(): Int = preferences.getInt(TEXT_COLOR, 0)
-
-  fun setTextColorPref(pref: Int) {
-    preferences.edit()
-        .putInt(TEXT_COLOR, pref)
-        .apply()
   }
 
   fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
