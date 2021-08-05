@@ -152,12 +152,12 @@
   <string name="no_data">¯\\_(ツ)_/¯\nNo data</string>
   <string name="expand">Expand</string>
   <string name="one_day">1 Day</string>
-  <string name="two_weeks">2 Weeks</string>
+  <string name="two_weeks">5 Days</string>
   <string name="one_month">1 Month</string>
   <string name="three_month">3 Months</string>
   <string name="one_year">1 Year</string>
   <string name="one_day_short">1D</string>
-  <string name="two_weeks_short">2W</string>
+  <string name="two_weeks_short">5D</string>
   <string name="one_month_short">1M</string>
   <string name="three_month_short">3M</string>
   <string name="one_year_short">1Y</string>

@@ -2,6 +2,12 @@ package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.MAX
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_DAY
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_MONTH
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_YEAR
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.THREE_MONTH
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.TWO_WEEKS
 import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.data.DataPoint
 import kotlinx.coroutines.Dispatchers
@@ -9,7 +15,6 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.lang.ref.WeakReference
 import javax.inject.Inject
-import kotlin.math.absoluteValue
 
 class HistoryProvider : IHistoryProvider {
 
@@ -75,12 +80,21 @@ class HistoryProvider : IHistoryProvider {
 
   private fun Range.intervalParam(): String {
     return when(this) {
-      Range.ONE_DAY -> "1h"
+      ONE_DAY -> "1h"
+      TWO_WEEKS -> "1h"
       else -> "1d"
     }
   }
 
   private fun Range.rangeParam(): String {
-    return "${duration.toDays().absoluteValue}d"
+    return when (this) {
+      ONE_DAY -> "1d"
+      TWO_WEEKS -> "5d"
+      ONE_MONTH -> "1mo"
+      THREE_MONTH -> "3mo"
+      ONE_YEAR -> "1y"
+      MAX -> "max"
+      else -> "max"
+    }
   }
 }
