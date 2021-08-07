@@ -27,7 +27,7 @@ class WidgetDataProvider {
   }
 
   fun getAppWidgetIds(): IntArray =
-    widgetManager.getAppWidgetIds(ComponentName(context, StocksWidgetProvider::class.java))
+    widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
 
   fun widgetDataList(): List<WidgetData> {
     val appWidgetIds = getAppWidgetIds().toMutableSet()
@@ -74,7 +74,7 @@ class WidgetDataProvider {
   }
 
   fun broadcastUpdateWidget(widgetId: Int) {
-    val intent = Intent(context, StocksWidgetProvider::class.java)
+    val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val ids = arrayOf(widgetId).toIntArray()
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
@@ -82,9 +82,9 @@ class WidgetDataProvider {
   }
 
   fun broadcastUpdateAllWidgets() {
-    val intent = Intent(context, StocksWidgetProvider::class.java)
+    val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StocksWidgetProvider::class.java))
+    val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     context.sendBroadcast(intent)
   }

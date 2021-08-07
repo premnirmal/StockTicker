@@ -42,7 +42,7 @@ import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
-import com.github.premnirmal.ticker.widget.StocksWidgetProvider
+import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -114,7 +114,7 @@ interface AppComponent {
 
   // Widget
 
-  fun inject(stocksWidgetProvider: StocksWidgetProvider)
+  fun inject(stockWidget: StockWidget)
 
   fun inject(widgetClickReceiver: WidgetClickReceiver)
 

@@ -20,7 +20,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
-class StocksWidgetProvider : AppWidgetProvider() {
+class StockWidget : AppWidgetProvider() {
 
   companion object {
     const val ACTION_NAME = "OPEN_APP"

@@ -107,8 +107,8 @@
             </intent-filter>
         </receiver>
         <receiver
-            android:exported="false"
-            android:name="com.github.premnirmal.ticker.widget.StocksWidgetProvider"
+            android:exported="true"
+            android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

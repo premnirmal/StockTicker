@@ -143,9 +143,6 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     }
     layout.findViewById<TextView>(id.gain_loss)?.setTextColor(colorGainLoss)
     layout.findViewById<TextView>(id.gain_loss_percent)?.setTextColor(colorGainLoss)
-    layout.findViewById<TextView>(id.ticker)?.setTextColor(widgetData.textColor())
-    layout.findViewById<TextView>(id.totalValue)?.setTextColor(widgetData.textColor())
-    layout.findViewById<TextView>(id.holdings)?.setTextColor(widgetData.textColor())
 
     return layout
   }
