@@ -22,22 +22,9 @@ import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_add_stock
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
+import kotlinx.android.synthetic.main.fragment_widget_settings.*
 import kotlinx.android.synthetic.main.widget_2x1.list
-import kotlinx.android.synthetic.main.widget_header.last_updated
-import kotlinx.android.synthetic.main.widget_header.next_update
-import kotlinx.android.synthetic.main.widget_header.widget_header
+import kotlinx.android.synthetic.main.widget_header.*
 import javax.inject.Inject
 
 class WidgetSettingsFragment : BaseFragment(), OnClickListener {
@@ -224,6 +211,7 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
   }
 
   private fun updatePreview(widgetData: WidgetData) {
+    widget_layout.setBackgroundResource(widgetData.backgroundResource())
     val lastUpdatedText = when (val fetchState = stocksProvider.fetchState) {
       is FetchState.Success -> getString(R.string.last_fetch, fetchState.displayString)
       is FetchState.Failure -> getString(R.string.refresh_failed)

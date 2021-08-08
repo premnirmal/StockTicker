@@ -57,7 +57,7 @@
   <string name="setting_currency">Show currency</string>
   <string name="setting_currency_desc">Show currency in the widget</string>
   <string name="choose_text_size">Widget Text Size</string>
-  <string name="app_theme">App Theme</string>
+  <string name="app_theme">App and Widget Theme</string>
   <string name="text_size_updated_message">Text size updated</string>
   <string name="bg_updated_message">Background updated</string>
   <string name="layout_updated_message">Layout type updated</string>

@@ -14,7 +14,6 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType.Percent
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.id
 
 class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
 
@@ -61,8 +60,8 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     val gainLossPercentString = SpannableString(gainLossPercentFormatted)
     val priceString = SpannableString(priceFormatted)
 
-    layout.findViewById<TextView>(id.ticker)?.text = stock.symbol
-    layout.findViewById<TextView>(id.holdings)?.text = if (widgetData.isCurrencyEnabled()) {
+    layout.findViewById<TextView>(R.id.ticker)?.text = stock.symbol
+    layout.findViewById<TextView>(R.id.holdings)?.text = if (widgetData.isCurrencyEnabled()) {
       "${stock.currencySymbol}${stock.holdingsString()}"
     } else {
       stock.holdingsString()
@@ -106,7 +105,7 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
 
     if (stockViewLayout == R.layout.stockview3) {
       val changeType = widgetData.changeType()
-      val changeText = layout.findViewById<TextView>(id.change)
+      val changeText = layout.findViewById<TextView>(R.id.change)
       if (changeType === Percent) {
         changeText?.text = changePercentString
       } else {
@@ -117,12 +116,12 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
         notifyDataSetChanged()
       }
     } else {
-      layout.findViewById<TextView>(id.changePercent)?.text = changePercentString
-      layout.findViewById<TextView>(id.changeValue)?.text = changeValueString
-      layout.findViewById<TextView>(id.gain_loss)?.text = gainLossString
-      layout.findViewById<TextView>(id.gain_loss_percent)?.text = gainLossPercentString
+      layout.findViewById<TextView>(R.id.changePercent)?.text = changePercentString
+      layout.findViewById<TextView>(R.id.changeValue)?.text = changeValueString
+      layout.findViewById<TextView>(R.id.gain_loss)?.text = gainLossString
+      layout.findViewById<TextView>(R.id.gain_loss_percent)?.text = gainLossPercentString
     }
-    layout.findViewById<TextView>(id.totalValue)?.text = priceString
+    layout.findViewById<TextView>(R.id.totalValue)?.text = priceString
 
     val color: Int = if (change < 0f || changeInPercent < 0f) {
       ContextCompat.getColor(layout.context, widgetData.negativeTextColor)
@@ -130,10 +129,10 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
       ContextCompat.getColor(layout.context, widgetData.positiveTextColor)
     }
     if (stockViewLayout == R.layout.stockview3) {
-      layout.findViewById<TextView>(id.change)?.setTextColor(color)
+      layout.findViewById<TextView>(R.id.change)?.setTextColor(color)
     } else {
-      layout.findViewById<TextView>(id.changePercent)?.setTextColor(color)
-      layout.findViewById<TextView>(id.changeValue)?.setTextColor(color)
+      layout.findViewById<TextView>(R.id.changePercent)?.setTextColor(color)
+      layout.findViewById<TextView>(R.id.changeValue)?.setTextColor(color)
     }
 
     val colorGainLoss: Int = if (gainLoss < 0f || gainLoss < 0f) {
@@ -141,8 +140,12 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     } else {
       ContextCompat.getColor(layout.context, widgetData.positiveTextColor)
     }
-    layout.findViewById<TextView>(id.gain_loss)?.setTextColor(colorGainLoss)
-    layout.findViewById<TextView>(id.gain_loss_percent)?.setTextColor(colorGainLoss)
+    layout.findViewById<TextView>(R.id.gain_loss)?.setTextColor(colorGainLoss)
+    layout.findViewById<TextView>(R.id.gain_loss_percent)?.setTextColor(colorGainLoss)
+
+    layout.findViewById<TextView>(R.id.ticker)?.setTextColor(widgetData.textColor())
+    layout.findViewById<TextView>(R.id.totalValue)?.setTextColor(widgetData.textColor())
+    layout.findViewById<TextView>(R.id.holdings)?.setTextColor(widgetData.textColor())
 
     return layout
   }

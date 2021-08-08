@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
@@ -37,6 +39,7 @@ class WidgetData {
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var context: Context
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+  @Inject internal lateinit var appPreferences: AppPreferences
 
   private val position: Int
   val widgetId: Int
@@ -75,8 +78,11 @@ class WidgetData {
     }
   }
 
+  val nightMode: Boolean
+    get() = appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
+
   val positiveTextColor: Int
-    @ColorRes get() = R.color.text_widget_positive
+    @ColorRes get() = if (nightMode) R.color.text_widget_positive_dark else R.color.text_widget_positive
 
   val negativeTextColor: Int
     @ColorRes get() = R.color.text_widget_negative
@@ -126,7 +132,11 @@ class WidgetData {
   }
 
   @ColorInt fun textColor(): Int {
-    return ContextCompat.getColor(context, R.color.widget_text)
+    return if (nightMode) {
+      ContextCompat.getColor(context, R.color.dark_widget_text)
+    } else {
+      ContextCompat.getColor(context, R.color.widget_text)
+    }
   }
 
   @LayoutRes fun stockViewLayout(): Int {
@@ -135,6 +145,15 @@ class WidgetData {
       1 -> R.layout.stockview2
       2 -> R.layout.stockview3
       else -> R.layout.stockview4
+    }
+  }
+
+  @DrawableRes
+  fun backgroundResource(): Int {
+    return if (nightMode) {
+      R.drawable.app_widget_background_dark
+    } else {
+      R.drawable.app_widget_background
     }
   }
 

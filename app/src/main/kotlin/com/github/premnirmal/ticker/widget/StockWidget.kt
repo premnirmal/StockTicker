@@ -154,6 +154,7 @@ class StockWidget : AppWidgetProvider() {
     val nextUpdate: String = stocksProvider.nextFetch()
     val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
     remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
+    remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())
     // Refresh icon and progress
     val refreshing = appPreferences.isRefreshing()
     if (refreshing) {

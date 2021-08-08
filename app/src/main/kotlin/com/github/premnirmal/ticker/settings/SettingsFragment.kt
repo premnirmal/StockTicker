@@ -30,7 +30,6 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -44,7 +43,7 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_settings.toolbar
+import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
@@ -118,8 +117,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   }
 
   override fun onDisplayPreferenceDialog(preference: Preference) {
-    when {
-      preference.key == AppPreferences.START_TIME || preference.key == AppPreferences.END_TIME-> {
+    when (preference.key) {
+      AppPreferences.START_TIME, AppPreferences.END_TIME -> {
         val pref = preference as TimePreference
         val dialog = createTimePickerDialog(pref)
         dialog.show()

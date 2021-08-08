@@ -17,7 +17,8 @@
         android:layout_height="250dp"
         android:padding="44dp">
       <include
-          layout="@layout/widget_2x1"/>
+          layout="@layout/widget_2x1"
+          android:id="@+id/widget_layout"/>
     </FrameLayout>
 
   <LinearLayout
