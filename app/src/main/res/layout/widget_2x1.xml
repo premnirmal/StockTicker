@@ -23,5 +23,6 @@
       android:numColumns="2"
       android:horizontalSpacing="4dp"
       tools:layout_height="200dp"
+      android:scrollbars="none"
       />
 </LinearLayout>

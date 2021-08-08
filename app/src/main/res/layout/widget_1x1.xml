@@ -21,5 +21,6 @@
       android:layout_height="match_parent"
       android:horizontalSpacing="4dp"
       android:numColumns="1"
+      android:scrollbars="none"
       />
 </LinearLayout>
