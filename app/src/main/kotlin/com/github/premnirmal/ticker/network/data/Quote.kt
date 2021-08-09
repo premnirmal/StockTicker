@@ -4,7 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.os.Parcelable.Creator
 import com.github.premnirmal.ticker.AppPreferences
-import java.text.Format
 
 /**
  * Created by premnirmal on 3/30/17.
@@ -39,10 +38,10 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
-  fun changeString(): String = selectedFormat.format(change)
+  fun changeString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
 
   fun changeStringWithSign(): String {
-    val changeString = selectedFormat.format(change)
+    val changeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
     if (change >= 0) {
       return "+$changeString"
     }
@@ -67,35 +66,29 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     }
   }
 
-  private fun positionPrice(): Float = position?.let { it ->
-    it.averagePrice()
-  } ?: 0f
+  private fun positionPrice(): Float = position?.averagePrice() ?: 0f
 
-  private fun totalPositionShares(): Float = position?.let { it ->
-    it.totalShares()
-  } ?: 0f
+  private fun totalPositionShares(): Float = position?.totalShares() ?: 0f
 
-  private fun totalPositionPrice(): Float = position?.let { it ->
-    it.totalPaidPrice()
-  } ?: 0f
+  private fun totalPositionPrice(): Float = position?.totalPaidPrice() ?: 0f
 
-  fun priceString(): String = selectedFormat.format(lastTradePrice)
+  fun priceString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(lastTradePrice)
 
-  fun averagePositionPrice(): String = selectedFormat.format(positionPrice())
+  fun averagePositionPrice(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(positionPrice())
 
-  fun numSharesString(): String = selectedFormat.format(totalPositionShares())
+  fun numSharesString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionShares())
 
-  fun totalSpentString(): String = selectedFormat.format(totalPositionPrice())
+  fun totalSpentString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionPrice())
 
   fun holdings(): Float = lastTradePrice * totalPositionShares()
 
-  fun holdingsString(): String = selectedFormat.format(holdings())
+  fun holdingsString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(holdings())
 
   fun gainLoss(): Float = holdings() - totalPositionShares() * positionPrice()
 
   fun gainLossString(): String {
     val gainLoss = gainLoss()
-    val gainLossString = selectedFormat.format(gainLoss)
+    val gainLossString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(gainLoss)
     if (gainLoss >= 0) {
       return "+$gainLossString"
     }
@@ -117,7 +110,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   fun dayChangeString(): String {
     val dayChange = dayChange()
-    val dayChangeString = selectedFormat.format(dayChange)
+    val dayChangeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(dayChange)
     if (dayChange > 0) {
       return "+$dayChangeString"
     }
@@ -180,15 +173,6 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
         return arrayOfNulls(size)
       }
     }
-
-    // TODO: this should be in a tools helper class.
-    // Made it accessible in this class for now.
-    val selectedFormat: Format
-      get() = if (AppPreferences.INSTANCE.roundToTwoDecimalPlaces()) {
-        AppPreferences.DECIMAL_FORMAT_2DP
-      } else {
-        AppPreferences.DECIMAL_FORMAT
-      }
 
     private val currencyCodes = mapOf(
         "USD" to "$",

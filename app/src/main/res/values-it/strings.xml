@@ -121,7 +121,7 @@
   <string name="next_fetch">Prossimo aggiornamento: %1$s</string>
   <string name="last_fetch">Ultimo aggiornamento: %1$s</string>
   <string name="last_and_next_fetch">Ultimo aggiornamento: %1$s\nProssimo aggiornamento: %2$s</string>
-  <string name="total_holdings">Totale Partecipazioni: %1$s (%2$d Azioni)</string>
+  <string name="total_holdings">Totale Partecipazioni: %1$s</string>
   <string name="cannot_export_msg">Impossibile esportare quotazioni senza il permesso scrittura sullo spazio di archiviazione esterno</string>
   <string name="cannot_import_msg">Impossibile importare quotazioni senza il permesso lettura dallo spazio di archiviazione esterno</string>
   <string name="cannot_share_msg">Impossibile condividere quotazioni senza il permesso scrittura sullo spazio di archiviazione esterno</string>

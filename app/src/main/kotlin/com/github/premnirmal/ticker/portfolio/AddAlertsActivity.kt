@@ -10,16 +10,8 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
-import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_alerts.addButton
-import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputEditText
-import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputLayout
-import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputEditText
-import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputLayout
-import kotlinx.android.synthetic.main.activity_alerts.alerts_disabled_message
-import kotlinx.android.synthetic.main.activity_alerts.tickerName
-import kotlinx.android.synthetic.main.activity_alerts.toolbar
+import kotlinx.android.synthetic.main.activity_alerts.*
 import java.text.NumberFormat
 import javax.inject.Inject
 
@@ -59,13 +51,13 @@ class AddAlertsActivity : BaseActivity() {
     val quote = viewModel.quote
     val alertAbove = quote?.getAlertAbove() ?: 0f
     if (alertAbove != 0.0f) {
-      alertAboveInputEditText.setText(Quote.selectedFormat.format(alertAbove))
+      alertAboveInputEditText.setText(appPreferences.selectedDecimalFormat.format(alertAbove))
     } else {
       alertAboveInputEditText.setText("")
     }
     val alertBelow = quote?.getAlertBelow() ?: 0f
     if (alertBelow != 0.0f) {
-      alertBelowInputEditText.setText(Quote.selectedFormat.format(alertBelow))
+      alertBelowInputEditText.setText(appPreferences.selectedDecimalFormat.format(alertBelow))
     } else {
       alertBelowInputEditText.setText("")
     }

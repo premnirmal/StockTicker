@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
@@ -62,6 +63,7 @@ import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
 import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
 import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
 import kotlinx.android.synthetic.main.activity_quote_detail.two_weeks
+import javax.inject.Inject
 
 class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListener {
 
@@ -76,6 +78,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     private const val INDEX_DATA = 3
   }
 
+  @Inject lateinit var appPreferences: AppPreferences
   override val simpleName: String = "NewsFeedActivity"
   private lateinit var adapter: NewsFeedAdapter
   private lateinit var ticker: String
@@ -348,13 +351,13 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       }
       if (alertAbove > 0.0f) {
         alert_above.visibility = View.VISIBLE
-        alert_above.setText(Quote.selectedFormat.format(alertAbove))
+        alert_above.setText(appPreferences.selectedDecimalFormat.format(alertAbove))
       } else {
         alert_above.visibility = View.GONE
       }
       if (alertBelow > 0.0f) {
         alert_below.visibility = View.VISIBLE
-        alert_below.setText(Quote.selectedFormat.format(alertBelow))
+        alert_below.setText(appPreferences.selectedDecimalFormat.format(alertBelow))
       } else {
         alert_below.visibility = View.GONE
       }

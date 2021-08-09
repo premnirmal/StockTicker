@@ -60,7 +60,7 @@ class NotificationsHandler @Inject constructor(
   }
 
   private val notificationFactory: NotificationFactory by lazy {
-    NotificationFactory(context)
+    NotificationFactory(context, appPreferences)
   }
 
   private val notificationManager: NotificationManagerCompat by lazy {
@@ -215,7 +215,9 @@ private object NotificationID {
     get() = atomicInteger.incrementAndGet()
 }
 
-private class NotificationFactory(private val context: Context) {
+private class NotificationFactory(
+    private val context: Context, private val appPreferences: AppPreferences
+) {
 
   private val notificationManager: NotificationManagerCompat by lazy {
     NotificationManagerCompat.from(context)
@@ -246,13 +248,13 @@ private class NotificationFactory(private val context: Context) {
   ) {
     val title = context.getString(
         R.string.alert_above_notification_title, quote.symbol,
-        Quote.selectedFormat.format(quote.properties!!.alertAbove),
-        Quote.selectedFormat.format(quote.lastTradePrice)
+        appPreferences.selectedDecimalFormat.format(quote.properties!!.alertAbove),
+        appPreferences.selectedDecimalFormat.format(quote.lastTradePrice)
     )
     val text = context.getString(
         R.string.alert_above_notification, quote.name,
-        Quote.selectedFormat.format(quote.properties!!.alertAbove),
-        Quote.selectedFormat.format(quote.lastTradePrice)
+        appPreferences.selectedDecimalFormat.format(quote.properties!!.alertAbove),
+        appPreferences.selectedDecimalFormat.format(quote.lastTradePrice)
     )
     sendNotification(quote, title, text)
   }
@@ -262,13 +264,13 @@ private class NotificationFactory(private val context: Context) {
   ) {
     val title = context.getString(
         R.string.alert_below_notification_title, quote.symbol,
-        Quote.selectedFormat.format(quote.properties!!.alertBelow),
-        Quote.selectedFormat.format(quote.lastTradePrice)
+        appPreferences.selectedDecimalFormat.format(quote.properties!!.alertBelow),
+        appPreferences.selectedDecimalFormat.format(quote.lastTradePrice)
     )
     val text = context.getString(
         R.string.alert_below_notification, quote.name,
-        Quote.selectedFormat.format(quote.properties!!.alertBelow),
-        Quote.selectedFormat.format(quote.lastTradePrice)
+        appPreferences.selectedDecimalFormat.format(quote.properties!!.alertBelow),
+        appPreferences.selectedDecimalFormat.format(quote.lastTradePrice)
     )
     sendNotification(quote, title, text)
   }

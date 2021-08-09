@@ -120,7 +120,7 @@
   <string name="next_fetch">Prochaine récupération : %1$s</string>
   <string name="last_fetch">Dernière récupération : %1$s</string>
   <string name="last_and_next_fetch">Dernière récupération : %1$s\nProchaine récupération : %2$s</string>
-  <string name="total_holdings">Total Parts : %1$s (%2$d Actions)</string>
+  <string name="total_holdings">Total Parts : %1$s</string>
   <string name="cannot_export_msg">Export des actions impossible sans la permission d\'écrire sur la mémoire de stockage externe</string>
   <string name="cannot_import_msg">Import des actions impossible sans la permission de lire la mémoire de stockage externe</string>
   <string name="cannot_share_msg">Partage des actions impossible sans la permission d\'écrire sur la mémoire de stockage externe</string>

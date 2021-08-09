@@ -121,7 +121,7 @@
   <string name="next_fetch">Nächster Abruf: %1$s</string>
   <string name="last_fetch">Letzter Abruf: %1$s</string>
   <string name="last_and_next_fetch">Letzter Abruf: %1$s\nNächster Abruf: %2$s</string>
-  <string name="total_holdings">Gesamtbestand: %1$s (%2$d Aktien)</string>
+  <string name="total_holdings">Gesamtbestand: %1$s</string>
   <string name="cannot_export_msg">Aktienlisten können nicht ohne Berechtigung zum Schreiben in einen externen Speicher exportiert werden.</string>
   <string name="cannot_import_msg">Aktienlisten können nicht ohne Berechtigung zum Lesen des externen Speichers importiert werden.</string>
   <string name="cannot_share_msg">Aktienlisten können nicht ohne Berechtigung zum Schreiben in einen externen Speicher freigegeben werden.</string>

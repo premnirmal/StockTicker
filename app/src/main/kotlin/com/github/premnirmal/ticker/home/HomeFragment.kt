@@ -22,11 +22,7 @@ import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.layout
-import kotlinx.android.synthetic.main.fragment_home.subtitle
-import kotlinx.android.synthetic.main.fragment_home.swipe_container
-import kotlinx.android.synthetic.main.fragment_home.tabs
-import kotlinx.android.synthetic.main.fragment_home.toolbar
-import kotlinx.android.synthetic.main.fragment_home.view_pager
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -59,8 +55,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private val totalHoldingsText: String
     get() {
       return if (viewModel.hasHoldings) {
-        val (totalHolding, totalQuotesWithPosition) = viewModel.getTotalHoldings()
-        getString(R.string.total_holdings, totalHolding, totalQuotesWithPosition)
+        val totalHoldings = viewModel.getTotalHoldings()
+        getString(R.string.total_holdings, totalHoldings)
       } else ""
     }
 

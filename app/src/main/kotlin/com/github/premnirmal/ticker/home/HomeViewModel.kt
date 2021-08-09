@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
@@ -10,6 +11,7 @@ import javax.inject.Inject
 class HomeViewModel : ViewModel() {
 
   @Inject lateinit var stocksProvider: IStocksProvider
+  @Inject lateinit var appPreferences: AppPreferences
 
   init {
     Injector.appComponent.inject(this)
@@ -18,21 +20,14 @@ class HomeViewModel : ViewModel() {
   val hasHoldings: Boolean
     get() = stocksProvider.hasPositions()
 
-  fun getTotalHoldings(): Pair<String, Int> {
-    var totalHolding = 0.0f
-    var totalQuotesWithPosition = 0
-
+  fun getTotalHoldings(): String {
+    var totalHoldings = 0.0
     if (stocksProvider.getTickers().isNotEmpty()) {
-      val portfolio: List<Quote> = stocksProvider.getPortfolio()
-
-      for (quote in portfolio) {
-        if (quote.hasPositions()) {
-          totalQuotesWithPosition++
-          totalHolding += quote.holdings()
-        }
+      totalHoldings = stocksProvider.getPortfolio().filter { it.hasPositions() }.sumOf { quote ->
+        quote.holdings().toDouble()
       }
     }
-    return Pair("%s".format(Quote.selectedFormat.format(totalHolding)), totalQuotesWithPosition)
+    return appPreferences.selectedDecimalFormat.format(totalHoldings)
   }
 
   fun getTotalGainLoss(): Pair<String, String> {
@@ -56,13 +51,13 @@ class HomeViewModel : ViewModel() {
       }
 
       totalGainStr = if (totalGain != 0.0f) {
-        "+" + Quote.selectedFormat.format(totalGain)
+        "+" + appPreferences.selectedDecimalFormat.format(totalGain)
       } else {
         ""
       }
 
       totalLossStr = if (totalLoss != 0.0f) {
-        Quote.selectedFormat.format(totalLoss)
+        appPreferences.selectedDecimalFormat.format(totalLoss)
       } else {
         ""
       }

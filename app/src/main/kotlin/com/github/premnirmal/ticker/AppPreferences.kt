@@ -53,6 +53,13 @@ class AppPreferences {
       }
     }
 
+  val selectedDecimalFormat: Format
+    get() = if (roundToTwoDecimalPlaces()) {
+      DECIMAL_FORMAT_2DP
+    } else {
+      DECIMAL_FORMAT
+    }
+
   fun parseTime(time: String): Time {
     val split = time.split(":".toRegex())
         .dropLastWhile { it.isEmpty() }
@@ -176,8 +183,7 @@ class AppPreferences {
 
   companion object {
 
-    // TODO remove, this is a hack
-    lateinit var INSTANCE: AppPreferences
+    private lateinit var INSTANCE: AppPreferences
 
     fun List<String>.toCommaSeparatedString(): String {
       val builder = StringBuilder()
@@ -236,6 +242,9 @@ class AppPreferences {
 
     val DECIMAL_FORMAT: Format = DecimalFormat("#,##0.00##")
     val DECIMAL_FORMAT_2DP: Format = DecimalFormat("#,##0.00")
+
+    val SELECTED_DECIMAL_FORMAT: Format
+      get() = INSTANCE.selectedDecimalFormat
 
     @Deprecated("Do not use after API 19")
     val tickersFile: File
