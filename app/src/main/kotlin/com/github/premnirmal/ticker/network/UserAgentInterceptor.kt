@@ -20,10 +20,16 @@ class UserAgentInterceptor : Interceptor {
   @Inject internal lateinit var context: Context
 
   private val userAgent by lazy {
-    String.format(
-        USER_AGENT_FORMAT, context.packageName, BuildConfig.VERSION_NAME,
-        BuildConfig.VERSION_CODE, Build.VERSION.SDK_INT, Build.MANUFACTURER, Build.MODEL
-    )
+      val regex = Regex("[^A-Za-z0-9 ]") // strip non alpha-numeric characters
+      String.format(
+          USER_AGENT_FORMAT,
+          context.packageName,
+          BuildConfig.VERSION_NAME,
+          BuildConfig.VERSION_CODE,
+          Build.VERSION.SDK_INT,
+          regex.replace(Build.MANUFACTURER, ""),
+          regex.replace(Build.MODEL, "")
+      )
   }
 
   init {
