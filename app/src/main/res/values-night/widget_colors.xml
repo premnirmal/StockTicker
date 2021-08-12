@@ -2,5 +2,5 @@
 <resources>
   <color name="text_widget_positive">#ccff66</color>
   <color name="widget_bg">#1d1d1d</color>
-  <color name="widget_text">#d9fcfe</color>
+  <color name="widget_text">#FFFAFF</color>
 </resources>
