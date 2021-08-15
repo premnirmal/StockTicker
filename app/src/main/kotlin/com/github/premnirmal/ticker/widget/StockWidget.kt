@@ -6,7 +6,6 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.RemoteViews
@@ -143,11 +142,8 @@ class StockWidget : AppWidgetProvider() {
     remoteViews.setEmptyView(R.id.list, R.layout.widget_empty_view)
     val intent = Intent(context, WidgetClickReceiver::class.java)
     intent.action = WidgetClickReceiver.CLICK_BCAST_INTENTFILTER
-    val flipIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val flipIntent =
       PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-    } else {
-      PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
     remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
     val lastUpdatedText = when (val fetchState = stocksProvider.fetchState) {
       is FetchState.Success -> context.getString(R.string.last_fetch, fetchState.displayString)
@@ -177,16 +173,11 @@ class StockWidget : AppWidgetProvider() {
     }
     val updateReceiverIntent = Intent(context, RefreshReceiver::class.java)
     updateReceiverIntent.action = AppPreferences.UPDATE_FILTER
-    val refreshPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val refreshPendingIntent =
       PendingIntent.getBroadcast(
           context.applicationContext, 0, updateReceiverIntent,
           PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
       )
-    } else {
-      PendingIntent.getBroadcast(
-        context.applicationContext, 0, updateReceiverIntent, PendingIntent.FLAG_UPDATE_CURRENT
-      )
-    }
     remoteViews.setOnClickPendingIntent(R.id.refresh_icon, refreshPendingIntent)
     appWidgetManager.updateAppWidget(appWidgetId, remoteViews)
   }

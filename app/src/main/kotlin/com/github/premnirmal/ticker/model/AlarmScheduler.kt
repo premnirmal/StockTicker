@@ -4,7 +4,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.core.content.getSystemService
 import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
@@ -138,12 +137,8 @@ class AlarmScheduler {
     }
     val refreshReceiverIntent = Intent(context, RefreshReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
-    val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
-    } else {
-        PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_ONE_SHOT)
-    }
-      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+    val pendingIntent = PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
+    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
     return nextAlarmDate
   }
 
@@ -174,12 +169,9 @@ class AlarmScheduler {
     Timber.d("enqueueDailySummaryNotification delay:${initialDelay}ms")
     val receiverIntent = Intent(context, DailySummaryNotificationReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
-    val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
-    } else {
-        PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_ONE_SHOT)
-    }
-      alarmManager.setRepeating(
+    val pendingIntent =
+      PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
+    alarmManager.setRepeating(
         AlarmManager.ELAPSED_REALTIME_WAKEUP,
         clock.elapsedRealtime() + initialDelay,
         interval,
