@@ -38,8 +38,7 @@ class StocksApi {
   suspend fun getSuggestions(query: String): FetchResult<List<SuggestionNet>> =
     withContext(Dispatchers.IO) {
       val suggestions = try {
-        suggestionApi.getSuggestions(query)
-            .resultSet?.result
+        suggestionApi.getSuggestions(query).result
       } catch (e: Exception) {
         Timber.w(e)
         return@withContext FetchResult.failure(FetchException("Error fetching", e))

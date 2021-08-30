@@ -9,7 +9,7 @@ import retrofit2.http.Query
  */
 interface SuggestionApi {
 
-  @GET("autoc?lang=enUS")
-  suspend fun getSuggestions(@Query("query") query: String): SuggestionsNet
+  @GET("search?quotesCount=20&newsCount=0&listsCount=0&enableFuzzyQuery=false")
+  suspend fun getSuggestions(@Query("q") query: String): SuggestionsNet
 
 }

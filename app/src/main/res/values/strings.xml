@@ -3,7 +3,7 @@
 
   <string name="widget_label" translatable="false">Stocks Tracker Widget</string>
   <string name="news_endpoint" translatable="false">https://news.google.com/</string>
-  <string name="suggestions_endpoint" translatable="false">https://autoc.finance.yahoo.com/</string>
+  <string name="suggestions_endpoint" translatable="false">https://query2.finance.yahoo.com/v1/finance/</string>
   <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
   <string name="historical_data_endpoint" translatable="false">https://query1.finance.yahoo.com/v8/finance/</string>
   <string name="github_endoint" translatable="false">https://api.github.com/</string>
