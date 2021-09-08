@@ -59,9 +59,9 @@ data class TradingPeriod(
 )
 
 data class DataQuote(
-  @SerializedName("close") val close: List<Double>,
-  @SerializedName("open") val open: List<Double>,
-  @SerializedName("low") val low: List<Double>,
-  @SerializedName("volume") val volume: List<Long>,
-  @SerializedName("high") val high: List<Double>
+  @SerializedName("close") val close: List<Double?>,
+  @SerializedName("open") val open: List<Double?>,
+  @SerializedName("low") val low: List<Double?>,
+  @SerializedName("volume") val volume: List<Long?>,
+  @SerializedName("high") val high: List<Double?>
 )
