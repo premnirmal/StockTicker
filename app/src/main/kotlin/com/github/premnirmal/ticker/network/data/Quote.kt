@@ -213,6 +213,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
         "ERN" to "Nfk",
         "ETB" to "Br",
         "GBP" to "£",
+        "GBp" to "GBp",
         "GEL" to "GEL",
         "GHS" to "GH₵",
         "GNF" to "FG",
