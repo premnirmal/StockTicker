@@ -63,11 +63,21 @@ class HistoryProvider : IHistoryProvider {
       with(historicalData.chart.result.first()) {
         timestamp.mapIndexed { i, stamp ->
           val dataQuote = indicators.quote.first()
-          DataPoint(
-              stamp.toFloat(), dataQuote.high[i].toFloat(), dataQuote.low[i].toFloat(),
-              dataQuote.open[i].toFloat(), dataQuote.close[i].toFloat()
-          )
-        }
+        if (dataQuote.high[i] === null
+            || dataQuote.low[i] === null
+            || dataQuote.open[i] === null
+            || dataQuote.close[i] === null) {
+            null
+          } else {
+            DataPoint(
+              stamp.toFloat(),
+              dataQuote.high[i]!!.toFloat(),
+              dataQuote.low[i]!!.toFloat(),
+              dataQuote.open[i]!!.toFloat(),
+              dataQuote.close[i]!!.toFloat()
+            )
+          }
+        }.filterNotNull()
       }.toMutableList().sorted()
     } catch (ex: Exception) {
       Timber.w(ex)
