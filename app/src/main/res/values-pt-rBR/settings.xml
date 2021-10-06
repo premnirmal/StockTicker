@@ -37,10 +37,8 @@
   </string-array>
 
   <string-array name="backgrounds">
+    <item>Como o sistema</item>
     <item>Transparente</item>
-    <item>Translúcida</item>
-    <item>Escuro</item>
-    <item>Claro</item>
   </string-array>
 
   <string-array name="backgrounds_values">
@@ -51,6 +49,7 @@
   </string-array>
 
   <string-array name="text_colors">
+    <item>Como o sistema</item>
     <item>Branco</item>
     <item>Preto</item>
   </string-array>

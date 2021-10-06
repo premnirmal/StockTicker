@@ -26,13 +26,12 @@
   </string-array>
 
   <string-array name="backgrounds">
+    <item>Systemstandardeinstellung</item>
     <item>Transparent</item>
-    <item>Translucent</item>
-    <item>Dunkel</item>
-    <item>Hell</item>
   </string-array>
 
   <string-array name="text_colors">
+    <item>Systemstandardeinstellung</item>
     <item>Weiß</item>
     <item>Schwarz</item>
   </string-array>

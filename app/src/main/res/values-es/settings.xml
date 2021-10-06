@@ -26,13 +26,12 @@
   </string-array>
 
   <string-array name="backgrounds">
+    <item>Seguir sistema</item>
     <item>Transparente</item>
-    <item>Translúcido</item>
-    <item>Oscuro</item>
-    <item>Claro</item>
   </string-array>
 
   <string-array name="text_colors">
+    <item>Seguir sistema</item>
     <item>Blanco</item>
     <item>Negro</item>
   </string-array>

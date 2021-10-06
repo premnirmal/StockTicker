@@ -231,10 +231,10 @@ class AppPreferences {
     const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"
     const val APP_VERSION_CODE = "APP_VERSION_CODE"
     const val APP_THEME = "APP_THEME"
-    const val TRANSPARENT = 0
-    const val TRANSLUCENT = 1
+    const val SYSTEM = 0
+    const val TRANSPARENT = 1
+    const val LIGHT = 1
     const val DARK = 2
-    const val LIGHT = 3
 
     val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)

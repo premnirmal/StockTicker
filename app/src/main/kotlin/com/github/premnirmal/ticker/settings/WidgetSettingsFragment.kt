@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -86,13 +87,15 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     setAutoSortSetting(widgetData)
     setHideHeaderSetting(widgetData)
     setCurrencySetting(widgetData)
+    setBgSetting(widgetData)
+    setTextColorSetting(widgetData)
     adapter = WidgetPreviewAdapter(widgetData)
     list.adapter = adapter
     updatePreview(widgetData)
 
     arrayOf(
         setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width,
-        setting_bold, setting_autosort, setting_hide_header, setting_currency
+        setting_bold, setting_autosort, setting_hide_header, setting_currency, setting_background, setting_text_color
     ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
@@ -128,8 +131,33 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
         }
       }
 
+      R.id.setting_background -> {
+        showDialogPreference(R.array.backgrounds) { dialog, which ->
+          widgetData.setBgPref(which)
+          if (which == AppPreferences.SYSTEM) {
+            widgetData.setTextColorPref(which)
+            setTextColorSetting(widgetData)
+          }
+          setBgSetting(widgetData)
+          dialog.dismiss()
+          broadcastUpdateWidget()
+          InAppMessage.showMessage(requireActivity(), R.string.bg_updated_message)
+        }
+      }
+
+      R.id.setting_text_color -> {
+        showDialogPreference(R.array.text_colors) { dialog, which ->
+          widgetData.setTextColorPref(which)
+          setTextColorSetting(widgetData)
+          dialog.dismiss()
+          broadcastUpdateWidget()
+          InAppMessage.showMessage(requireActivity(), R.string.text_color_updated_message)
+        }
+      }
+
       R.id.setting_widget_width -> {
-        showDialogPreference(R.array.widget_width_types
+        showDialogPreference(
+            R.array.widget_width_types
         ) { dialog, which ->
           widgetData.setWidgetSizePref(which)
           setWidgetSizeSetting(widgetData)
@@ -208,6 +236,16 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
 
   private fun setCurrencySetting(widgetData: WidgetData) {
     setting_currency_checkbox.isChecked = widgetData.isCurrencyEnabled()
+  }
+
+  private fun setBgSetting(widgetData: WidgetData) {
+    val bgDesc = resources.getStringArray(R.array.backgrounds)[widgetData.bgPref()]
+    setting_background.setSubtitle(bgDesc)
+  }
+
+  private fun setTextColorSetting(widgetData: WidgetData) {
+    val textColorDesc = resources.getStringArray(R.array.text_colors)[widgetData.textColorPref()]
+    setting_text_color.setSubtitle(textColorDesc)
   }
 
   private fun updatePreview(widgetData: WidgetData) {

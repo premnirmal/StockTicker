@@ -2,8 +2,11 @@
 <resources>
   <color name="text_widget_header">#aaa</color>
   <color name="widget_text">#1b1b1b</color>
+  <color name="widget_text_black">#1b1b1b</color>
+  <color name="widget_text_white">#FFFAFF</color>
   <color name="dark_widget_text">#FFFAFF</color>
   <color name="text_widget_positive">#009900</color>
+  <color name="text_widget_positive_light">#009900</color>
   <color name="text_widget_positive_dark">#ccff66</color>
   <color name="text_widget_negative">#ff6666</color>
   <color name="widget_bg">#faf9f6</color>

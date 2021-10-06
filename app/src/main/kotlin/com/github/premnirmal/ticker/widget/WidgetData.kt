@@ -29,6 +29,12 @@ class WidgetData {
     private const val PERCENT = AppPreferences.PERCENT
     private const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
     private const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
+    private const val WIDGET_BG = AppPreferences.WIDGET_BG
+    private const val TEXT_COLOR = AppPreferences.TEXT_COLOR
+    private const val TRANSPARENT = AppPreferences.TRANSPARENT
+    private const val SYSTEM = AppPreferences.SYSTEM
+    private const val DARK = AppPreferences.DARK
+    private const val LIGHT = AppPreferences.LIGHT
 
     enum class ChangeType {
       Value,
@@ -78,11 +84,17 @@ class WidgetData {
     }
   }
 
-  val nightMode: Boolean
+  private val nightMode: Boolean
     get() = appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
 
   val positiveTextColor: Int
-    @ColorRes get() = if (nightMode) R.color.text_widget_positive_dark else R.color.text_widget_positive
+    @ColorRes get() {
+      return when (preferences.getInt(WIDGET_BG, SYSTEM)) {
+        SYSTEM -> R.color.text_widget_positive
+        TRANSPARENT -> R.color.text_widget_positive_light
+        else -> R.color.text_widget_positive
+      }
+    }
 
   val negativeTextColor: Int
     @ColorRes get() = R.color.text_widget_negative
@@ -132,8 +144,17 @@ class WidgetData {
   }
 
   @ColorInt fun textColor(): Int {
-    return if (nightMode) {
-      ContextCompat.getColor(context, R.color.dark_widget_text)
+    val pref = textColorPref()
+    return if (pref == SYSTEM) {
+      if (nightMode) {
+        ContextCompat.getColor(context, R.color.dark_widget_text)
+      } else {
+        ContextCompat.getColor(context, R.color.widget_text)
+      }
+    } else if (pref == DARK) {
+      ContextCompat.getColor(context, R.color.widget_text_black)
+    } else if (pref == LIGHT) {
+      ContextCompat.getColor(context, R.color.widget_text_white)
     } else {
       ContextCompat.getColor(context, R.color.widget_text)
     }
@@ -150,11 +171,33 @@ class WidgetData {
 
   @DrawableRes
   fun backgroundResource(): Int {
-    return if (nightMode) {
-      R.drawable.app_widget_background_dark
-    } else {
-      R.drawable.app_widget_background
+    return when {
+      bgPref() == TRANSPARENT -> {
+        R.drawable.transparent_widget_bg
+      }
+      nightMode -> {
+        R.drawable.app_widget_background_dark
+      }
+      else -> {
+        R.drawable.app_widget_background
+      }
     }
+  }
+
+  fun textColorPref(): Int = preferences.getInt(TEXT_COLOR, SYSTEM)
+
+  fun setTextColorPref(pref: Int) {
+    preferences.edit()
+        .putInt(TEXT_COLOR, pref)
+        .apply()
+  }
+
+  fun bgPref(): Int = preferences.getInt(WIDGET_BG, SYSTEM)
+
+  fun setBgPref(value: Int) {
+    preferences.edit()
+        .putInt(WIDGET_BG, value)
+        .apply()
   }
 
   fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
