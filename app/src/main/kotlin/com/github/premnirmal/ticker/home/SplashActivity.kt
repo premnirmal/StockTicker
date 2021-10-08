@@ -8,18 +8,27 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager.LayoutParams
 import androidx.lifecycle.lifecycleScope
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.CommitsProvider
+import com.github.premnirmal.ticker.network.NewsProvider
+import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_splash.touch_interceptor
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class SplashActivity : BaseActivity() {
   override val simpleName: String = "SplashActivity"
   override val subscribeToErrorEvents = false
   private var openJob: Job? = null
+
+  @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var newsProvider: NewsProvider
+  @Inject internal lateinit var commitsProvider: CommitsProvider
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -39,6 +48,7 @@ class SplashActivity : BaseActivity() {
     } else {
       window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN
     }
+    initCaches()
     openJob = lifecycleScope.launch {
       delay(800)
       openApp()
@@ -63,6 +73,13 @@ class SplashActivity : BaseActivity() {
     if (!isFinishing) {
       startActivity(Intent(this, ParanormalActivity::class.java))
       finish()
+    }
+  }
+
+  protected fun initCaches() {
+    newsProvider.initCache()
+    if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+      commitsProvider.initCache()
     }
   }
 }

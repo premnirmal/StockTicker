@@ -21,8 +21,11 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.layout
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.subtitle
+import kotlinx.android.synthetic.main.fragment_home.swipe_container
+import kotlinx.android.synthetic.main.fragment_home.tabs
+import kotlinx.android.synthetic.main.fragment_home.toolbar
+import kotlinx.android.synthetic.main.fragment_home.view_pager
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -85,10 +88,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
-    swipe_container.setColorSchemeResources(
-        R.color.color_primary_dark, R.color.spicy_salmon,
-        R.color.sea
-    )
     swipe_container.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager)
     view_pager.adapter = adapter
@@ -107,7 +106,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private fun showTotalHoldingsPopup() {
     val popupWindow = PopupWindow(requireContext(), null)
     val popupView = LayoutInflater.from(requireContext())
-        .inflate(layout.layout_holdings_popup, null)
+        .inflate(R.layout.layout_holdings_popup, null)
     popupWindow.contentView = popupView
     popupWindow.isOutsideTouchable = true
     popupWindow.setBackgroundDrawable(resources.getDrawable(R.drawable.card_bg))
