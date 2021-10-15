@@ -46,4 +46,6 @@
   <dimen name="widget_refresh_icon_size">20dp</dimen>
   <dimen name="widget_refresh_icon_padding_side">4dp</dimen>
   <dimen name="widget_refresh_icon_padding_top">2dp</dimen>
+
+  <dimen name="tablet_width">600dp</dimen>
 </resources>

@@ -29,6 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
+        android:scrollbars="none"
         >
 
       <androidx.constraintlayout.widget.ConstraintLayout
@@ -268,6 +269,7 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:src="@drawable/ic_edit"
+              app:tint="@color/icon_tint"
               />
 
         </LinearLayout>
@@ -408,7 +410,7 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:src="@drawable/ic_edit"
-              android:tint="@color/icon_tint"
+              app:tint="@color/icon_tint"
               />
         </LinearLayout>
 
@@ -477,7 +479,7 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:src="@drawable/ic_edit"
-              android:tint="@color/icon_tint"
+              app:tint="@color/icon_tint"
               />
 
         </LinearLayout>
