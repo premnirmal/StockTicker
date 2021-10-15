@@ -192,7 +192,14 @@ class WidgetData {
         .apply()
   }
 
-  fun bgPref(): Int = preferences.getInt(WIDGET_BG, SYSTEM)
+  fun bgPref(): Int {
+    var pref = preferences.getInt(WIDGET_BG, SYSTEM)
+    if (pref > TRANSPARENT) {
+      pref = SYSTEM
+      setBgPref(pref)
+    }
+    return pref
+  }
 
   fun setBgPref(value: Int) {
     preferences.edit()
