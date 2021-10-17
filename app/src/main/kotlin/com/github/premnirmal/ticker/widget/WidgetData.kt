@@ -89,15 +89,26 @@ class WidgetData {
 
   val positiveTextColor: Int
     @ColorRes get() {
-      return when (preferences.getInt(WIDGET_BG, SYSTEM)) {
-        SYSTEM -> R.color.text_widget_positive
-        TRANSPARENT -> R.color.text_widget_positive_light
-        else -> R.color.text_widget_positive
+      return when (textColorPref()) {
+        SYSTEM -> {
+          R.color.text_widget_positive
+        }
+        DARK -> {
+          R.color.text_widget_positive_dark
+        }
+        LIGHT -> {
+          R.color.text_widget_positive_light
+        }
+        else -> {
+          R.color.text_widget_positive
+        }
       }
     }
 
   val negativeTextColor: Int
-    @ColorRes get() = R.color.text_widget_negative
+    @ColorRes get() {
+      return R.color.text_widget_negative
+    }
 
   fun widgetName(): String {
     var name = preferences.getString(WIDGET_NAME, "")!!

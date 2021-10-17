@@ -32,8 +32,8 @@
 
   <string-array name="text_colors">
     <item>Seguir sistema</item>
-    <item>Blanco</item>
-    <item>Negro</item>
+    <item>Clara</item>
+    <item>Oscura</item>
   </string-array>
 
   <string-array name="sync_periods">
