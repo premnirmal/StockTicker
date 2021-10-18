@@ -84,8 +84,8 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
 
   // ChildFragment
 
-  override fun setData(bundle: Bundle) {
-
+  override fun scrollToTop() {
+    listView.smoothScrollToPosition(0)
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {

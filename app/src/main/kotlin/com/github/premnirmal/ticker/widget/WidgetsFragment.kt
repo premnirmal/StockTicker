@@ -99,6 +99,10 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     }
   }
 
+  override fun scrollToTop() {
+    (childFragmentManager.findFragmentById(R.id.child_fragment_container) as? ChildFragment)?.scrollToTop()
+  }
+
   // OnItemSelectedListener
 
   override fun onNothingSelected(parent: AdapterView<*>?) {

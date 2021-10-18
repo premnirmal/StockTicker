@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
@@ -28,7 +29,7 @@ import kotlinx.android.synthetic.main.widget_2x1.list
 import kotlinx.android.synthetic.main.widget_header.*
 import javax.inject.Inject
 
-class WidgetSettingsFragment : BaseFragment(), OnClickListener {
+class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
 
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
@@ -261,5 +262,9 @@ class WidgetSettingsFragment : BaseFragment(), OnClickListener {
     next_update.text = nextUpdateText
     widget_header.isVisible = !widgetData.hideHeader()
     adapter.refresh(widgetData)
+  }
+
+  override fun scrollToTop() {
+    scroll_view.smoothScrollTo(0, 0)
   }
 }

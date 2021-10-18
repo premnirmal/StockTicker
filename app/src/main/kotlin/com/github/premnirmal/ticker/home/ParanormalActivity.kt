@@ -31,6 +31,7 @@ import javax.inject.Inject
  * Created by premnirmal on 2/25/16.
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
+    BottomNavigationView.OnNavigationItemReselectedListener,
     HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 
   companion object {
@@ -60,6 +61,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     bottom_navigation.setOnNavigationItemSelectedListener(this)
+    bottom_navigation.setOnNavigationItemReselectedListener(this)
 
     currentChild = if (savedInstanceState == null) {
       val fragment = HomeFragment()
@@ -163,6 +165,14 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
       return true
     }
     return false
+  }
+
+  // BottomNavigationView.OnNavigationItemReselectedListener
+
+  override fun onNavigationItemReselected(item: MenuItem) {
+    val itemId = item.itemId
+    val fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_MAP[itemId])
+    (fragment as? ChildFragment)?.scrollToTop()
   }
 
   // SettingsFragment.Parent

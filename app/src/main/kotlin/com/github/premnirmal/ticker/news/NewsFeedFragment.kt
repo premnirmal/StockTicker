@@ -104,6 +104,7 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
 
   // Child Fragment
 
-  override fun setData(bundle: Bundle) {
+  override fun scrollToTop() {
+    recycler_view.smoothScrollToPosition(0)
   }
 }

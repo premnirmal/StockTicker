@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.PopupWindow
 import android.widget.TextView
-import androidx.lifecycle.Observer
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -21,6 +21,8 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.android.synthetic.main.fragment_home.app_bar_layout
 import kotlinx.android.synthetic.main.fragment_home.subtitle
 import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
@@ -89,9 +91,11 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
     swipe_container.setOnRefreshListener { fetch() }
-    adapter = HomePagerAdapter(childFragmentManager)
+    adapter = HomePagerAdapter(childFragmentManager, lifecycle)
     view_pager.adapter = adapter
-    tabs.setupWithViewPager(view_pager)
+    TabLayoutMediator(tabs, view_pager) { tab, position ->
+      tab.text = widgetDataProvider.widgetDataList()[position].widgetName()
+    }.attach()
     subtitle.text = subtitleText
     toolbar.setOnMenuItemClickListener {
       showTotalHoldingsPopup()
@@ -109,7 +113,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         .inflate(R.layout.layout_holdings_popup, null)
     popupWindow.contentView = popupView
     popupWindow.isOutsideTouchable = true
-    popupWindow.setBackgroundDrawable(resources.getDrawable(R.drawable.card_bg))
+    popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.card_bg))
     popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
     val (totalGainStr, totalLossStr) = totalGainLossText
     popupView.findViewById<TextView>(R.id.totalGain).text = totalGainStr
@@ -152,7 +156,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
-          viewModel.fetch().observe(viewLifecycleOwner, Observer { success ->
+          viewModel.fetch().observe(viewLifecycleOwner, { success ->
             attemptingFetch = false
             swipe_container?.isRefreshing = false
             if (success) {
@@ -190,7 +194,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   // ChildFragment
 
-  override fun setData(bundle: Bundle) {
-
+  override fun scrollToTop() {
+    val fragment = childFragmentManager.findFragmentByTag("f${view_pager.currentItem}")
+    (fragment  as? ChildFragment)?.scrollToTop()
+    app_bar_layout.setExpanded(true, true)
   }
 }

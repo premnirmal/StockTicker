@@ -222,4 +222,8 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   override fun setData(bundle: Bundle) {
     selectedWidgetId = bundle.getInt(ARG_WIDGET_ID, -1)
   }
+
+  override fun scrollToTop() {
+    recycler_view.smoothScrollToPosition(0)
+  }
 }

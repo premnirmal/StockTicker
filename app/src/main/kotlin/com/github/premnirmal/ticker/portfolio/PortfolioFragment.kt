@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.RefreshEvent
+import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
@@ -35,7 +36,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListener {
+class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnStartDragListener {
 
   interface Parent {
     fun onDragStarted()
@@ -214,5 +215,12 @@ class PortfolioFragment : BaseFragment(), QuoteClickListener, OnStartDragListene
 
   override fun onStopDrag() {
     parent.onDragEnded()
+  }
+
+  override fun setData(bundle: Bundle) {
+  }
+
+  override fun scrollToTop() {
+    stockList.smoothScrollToPosition(0)
   }
 }
