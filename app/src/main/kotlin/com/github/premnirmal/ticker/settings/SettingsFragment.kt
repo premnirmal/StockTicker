@@ -13,10 +13,12 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.TimePicker
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
@@ -43,7 +45,7 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_settings.*
+import kotlinx.android.synthetic.main.fragment_settings.toolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
@@ -99,6 +101,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   ) {
     super.onViewCreated(view, savedInstanceState)
     (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
+    if (resources.getBoolean(R.bool.isTablet)) {
+      listView.layoutParams.width = resources.getDimensionPixelSize(R.dimen.tablet_width)
+      (listView.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+    }
     listView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
     listView.isVerticalScrollBarEnabled = false
     setupSimplePreferencesScreen()

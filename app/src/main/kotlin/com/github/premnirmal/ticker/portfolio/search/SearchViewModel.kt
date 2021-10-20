@@ -20,7 +20,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.Locale
 import javax.inject.Inject
 
 class SearchViewModel : ViewModel() {
@@ -47,7 +46,7 @@ class SearchViewModel : ViewModel() {
       val suggestions = stocksApi.getSuggestions(query)
       if (suggestions.wasSuccessful) {
         val suggestionList = suggestions.data.toMutableList()
-        val querySuggestion = SuggestionNet(query.toUpperCase(Locale.getDefault()))
+        val querySuggestion = SuggestionNet(query.uppercase())
         if (!suggestionList.contains(querySuggestion)) {
           suggestionList.add(querySuggestion)
         }

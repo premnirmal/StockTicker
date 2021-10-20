@@ -9,8 +9,8 @@
   <color name="default_bg">#191919</color>
   <color name="color_splash">#191919</color>
   <color name="graph_bg">#000000</color>
-  <color name="color_statusbar">@color/color_primary</color>
-  <color name="bg_toolbar">@color/color_primary</color>
+  <color name="color_statusbar">@color/bg_toolbar</color>
+  <color name="bg_toolbar">#2f2f2f</color>
   <color name="divider">#aaaa</color>
   <color name="card_bg">#1d1d1d</color>
   <color name="card_shadow">#95000000</color>
@@ -20,7 +20,7 @@
   <color name="positive_green_dark">#009900</color>
   <color name="disabled_grey">#98545454</color>
   <color name="unselected_grey">#ffbdbdbd</color>
-  <color name="nav_bar_bg">@color/default_bg</color>
+  <color name="nav_bar_bg">@color/bg_toolbar</color>
   <color name="nav_bar_bg_2">@color/card_bg</color>
   <color name="bottom_bar_bg">@color/card_bg</color>
   <color name="actionbar_title_text">#ffffff</color>

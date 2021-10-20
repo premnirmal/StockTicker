@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/default_bg"
+    >
+
+  <com.google.android.material.appbar.AppBarLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@color/bg_toolbar"
+      android:elevation="0dp"
+      app:elevation="0dp"
+      >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_toolbar"
+        android:elevation="0dp"
+        app:elevation="0dp"
+        app:title="@string/widgets"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        />
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <LinearLayout
+      android:layout_gravity="center_horizontal"
+      android:layout_width="@dimen/tablet_width"
+      android:layout_height="wrap_content"
+      android:background="@color/default_bg"
+      android:orientation="vertical"
+      >
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_vertical_margin"
+        android:layout_marginStart="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:gravity="center_vertical"
+        android:text="@string/select_widget"
+        android:textSize="@dimen/thin_title_text"
+        style="@style/ThinTitleTextView"
+        />
+    <Spinner
+        android:id="@+id/widget_selection_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        />
+  </LinearLayout>
+  <FrameLayout
+      android:id="@+id/child_fragment_container"
+      android:layout_gravity="center_horizontal"
+      android:layout_width="@dimen/tablet_width"
+      android:layout_height="match_parent"
+      android:scrollbars="none"
+      />
+
+</LinearLayout>
