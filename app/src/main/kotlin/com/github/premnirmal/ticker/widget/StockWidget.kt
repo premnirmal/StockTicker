@@ -110,9 +110,9 @@ class StockWidget : AppWidgetProvider() {
     appWidgetId: Int
   ): RemoteViews = when {
       widgetDataProvider.dataForWidgetId(appWidgetId).widgetSizePref() == 1 -> RemoteViews(context.packageName, R.layout.widget_1x1)
-      min_width > 750 -> RemoteViews(context.packageName, R.layout.widget_5x1)
-      min_width > 550 -> RemoteViews(context.packageName, R.layout.widget_4x1)
-      min_width > 425 -> RemoteViews(context.packageName, R.layout.widget_3x1)
+      min_width > 850 -> RemoteViews(context.packageName, R.layout.widget_5x1)
+      min_width > 750 -> RemoteViews(context.packageName, R.layout.widget_4x1)
+      min_width > 500 -> RemoteViews(context.packageName, R.layout.widget_3x1)
       min_width > 250 -> RemoteViews(context.packageName, R.layout.widget_2x1)
       else -> RemoteViews(context.packageName, R.layout.widget_1x1)
     }
