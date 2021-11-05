@@ -72,7 +72,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   private fun totalPositionPrice(): Float = position?.totalPaidPrice() ?: 0f
 
-  fun priceString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(lastTradePrice)
+  fun priceString(): String = if(lastTradePrice >= 1) AppPreferences.SELECTED_DECIMAL_FORMAT.format(lastTradePrice) else AppPreferences.DECIMAL_FORMAT_MORE.format(lastTradePrice)
 
   fun averagePositionPrice(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(positionPrice())
 

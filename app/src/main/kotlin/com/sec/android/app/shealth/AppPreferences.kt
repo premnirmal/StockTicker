@@ -241,6 +241,7 @@ class AppPreferences {
     val AXIS_DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("LLL dd-yyyy")
 
     val DECIMAL_FORMAT: Format = DecimalFormat("#,##0.00##")
+    val DECIMAL_FORMAT_MORE: Format = DecimalFormat("#,0.00#####")
     val DECIMAL_FORMAT_2DP: Format = DecimalFormat("#,##0.00")
 
     val SELECTED_DECIMAL_FORMAT: Format
