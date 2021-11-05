@@ -12,7 +12,7 @@ import com.sec.android.app.shealth.portfolio.search.SearchActivity
 import com.sec.android.app.shealth.R
 import kotlinx.android.synthetic.main.activity_widget_settings.*
 
-class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
+class CoverSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
 
   companion object {
     const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID

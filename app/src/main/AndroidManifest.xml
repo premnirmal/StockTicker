@@ -18,7 +18,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
         tools:replace="android:icon">
-
+        <meta-data
+            android:name="android.supports_size_changes" android:value="true" />
         <activity
             android:exported="true"
             android:name="com.sec.android.app.shealth.home.SplashActivity"
@@ -56,7 +57,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:exported="true"
-            android:name="com.sec.android.app.shealth.settings.WidgetSettingsActivity"
+            android:name="com.sec.android.app.shealth.settings.CoverSettingsActivity"
             android:label="@string/action_Settings"
             android:theme="@style/WidgetSettingsTheme"
             android:windowSoftInputMode="adjustResize">
@@ -82,6 +83,8 @@
             android:name="com.sec.android.app.shealth.debug.DbViewerActivity"
             android:theme="@style/DbViewerTheme" />
 
+
+
         <receiver
             android:name="com.sec.android.app.shealth.UpdateReceiver"
             android:enabled="true"
@@ -106,18 +109,29 @@
                 <action android:name="com.sec.android.app.shealth.WIDGET_CLICK" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:exported="true"
-            android:name="com.sec.android.app.shealth.widget.StockWidget"
-            android:label="@string/widget_label">
+
+        <receiver android:name="com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget.StepCoverAppWidget"
+            android:configChanges="density|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/widget" />
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/cover_screen_widget" />
         </receiver>
+
+<!--        <receiver-->
+<!--            android:exported="true"-->
+<!--            android:name="com.sec.android.app.shealth.com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget.StockWidget"-->
+<!--            android:label="@string/widget_label">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />-->
+<!--            </intent-filter>-->
+
+<!--            <meta-data-->
+<!--                android:name="android.appwidget.provider"-->
+<!--                android:resource="@xml/cover_screen_widget" />-->
+<!--        </receiver>-->
 
         <service
             android:name="com.sec.android.app.shealth.widget.RemoteStockProviderService"

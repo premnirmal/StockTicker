@@ -1,4 +1,4 @@
-package com.sec.android.app.shealth.widget
+package com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -15,12 +15,16 @@ import com.sec.android.app.shealth.home.ParanormalActivity
 import com.sec.android.app.shealth.model.IStocksProvider
 import com.sec.android.app.shealth.model.IStocksProvider.FetchState
 import com.sec.android.app.shealth.R
+import com.sec.android.app.shealth.widget.RefreshReceiver
+import com.sec.android.app.shealth.widget.RemoteStockProviderService
+import com.sec.android.app.shealth.widget.WidgetClickReceiver
+import com.sec.android.app.shealth.widget.WidgetDataProvider
 import javax.inject.Inject
 
 /**
  * Created by android on 2/27/16.
  */
-class StockWidget : AppWidgetProvider() {
+class StepCoverAppWidget : AppWidgetProvider() {
 
   companion object {
     const val ACTION_NAME = "OPEN_APP"

@@ -38,11 +38,11 @@ import com.sec.android.app.shealth.portfolio.search.SearchFragment
 import com.sec.android.app.shealth.portfolio.search.SearchViewModel
 import com.sec.android.app.shealth.repo.StocksStorage
 import com.sec.android.app.shealth.settings.SettingsFragment
-import com.sec.android.app.shealth.settings.WidgetSettingsActivity
+import com.sec.android.app.shealth.settings.CoverSettingsActivity
 import com.sec.android.app.shealth.settings.WidgetSettingsFragment
 import com.sec.android.app.shealth.widget.RefreshReceiver
 import com.sec.android.app.shealth.widget.RemoteStockViewAdapter
-import com.sec.android.app.shealth.widget.StockWidget
+import com.samsung.android.app.shealth.tracker.pedometer.service.coverwidget.StepCoverAppWidget
 import com.sec.android.app.shealth.widget.WidgetClickReceiver
 import com.sec.android.app.shealth.widget.WidgetData
 import com.sec.android.app.shealth.widget.WidgetDataProvider
@@ -74,7 +74,7 @@ interface AppComponent {
 
   fun inject(searchActivity: SearchActivity)
 
-  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
+  fun inject(coverSettingsActivity: CoverSettingsActivity)
 
   fun inject(dbViewerActivity: DbViewerActivity)
 
@@ -114,7 +114,7 @@ interface AppComponent {
 
   // Widget
 
-  fun inject(stockWidget: StockWidget)
+  fun inject(stepCoverAppWidget: StepCoverAppWidget)
 
   fun inject(widgetClickReceiver: WidgetClickReceiver)
 

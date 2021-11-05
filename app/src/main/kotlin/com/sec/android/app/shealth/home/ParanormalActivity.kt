@@ -151,7 +151,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
           .add(R.id.fragment_container, fragment, fragment::class.java.name)
           .hide(fragment)
           .show(currentChild as Fragment)
-          .commitNowAllowingStateLoss()
+          .commit()
     }
     if (fragment.isHidden) {
       supportFragmentManager.beginTransaction()
