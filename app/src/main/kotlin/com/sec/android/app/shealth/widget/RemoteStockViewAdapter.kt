@@ -164,7 +164,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
       remoteViews.setTextColor(R.id.holdings, widgetData.textColor())
 
 
-      val fontSize = getFontSize()
+      val fontSize = 28f
       if (stockViewLayout == R.layout.stockview3) {
         remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize)
       } else {

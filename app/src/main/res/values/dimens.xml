@@ -12,9 +12,9 @@
   <dimen name="button_text">13sp</dimen>
   <dimen name="graph_bottom_offset">8dp</dimen>
 
-  <integer name="text_size_small">12</integer>
-  <integer name="text_size_medium">14</integer>
-  <integer name="text_size_large">18</integer>
+  <integer name="text_size_small">20</integer>
+  <integer name="text_size_medium">22</integer>
+  <integer name="text_size_large">26</integer>
 
   <dimen name="list_spacing">2dp</dimen>
   <dimen name="list_spacing_double">4dp</dimen>
@@ -43,7 +43,7 @@
   <dimen name="second_fab_margin">130dp</dimen>
 
   <dimen name="widget_margin">6dp</dimen>
-  <dimen name="widget_refresh_icon_size">20dp</dimen>
+  <dimen name="widget_refresh_icon_size">40dp</dimen>
   <dimen name="widget_refresh_icon_padding_side">4dp</dimen>
   <dimen name="widget_refresh_icon_padding_top">2dp</dimen>
 

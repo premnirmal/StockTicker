@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="72dp"
+    android:minHeight="40dp"
+    android:updatePeriodMillis="5000"
+    android:resizeMode="horizontal|vertical"
+    android:configure="com.sec.android.app.shealth.settings.CoverSettingsActivity"
+    android:previewImage="@drawable/ic_widget_preview"
+    android:initialLayout="@layout/step_widget_view"
+    android:widgetCategory="home_screen"/>
