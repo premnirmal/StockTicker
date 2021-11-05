@@ -344,7 +344,7 @@
 
           </LinearLayout>
 
-          <com.github.premnirmal.ticker.ui.StockFieldView
+          <com.sec.android.app.shealth.ui.StockFieldView
               android:id="@+id/average_price"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -356,7 +356,7 @@
               app:size="@dimen/larger_text"
               />
 
-          <com.github.premnirmal.ticker.ui.StockFieldView
+          <com.sec.android.app.shealth.ui.StockFieldView
               android:id="@+id/total_gain_loss"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -368,7 +368,7 @@
               app:size="@dimen/larger_text"
               />
 
-          <com.github.premnirmal.ticker.ui.StockFieldView
+          <com.sec.android.app.shealth.ui.StockFieldView
               android:id="@+id/day_change"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -425,7 +425,7 @@
             app:layout_constraintTop_toBottomOf="@id/alert_header"
             >
 
-          <com.github.premnirmal.ticker.ui.StockFieldView
+          <com.sec.android.app.shealth.ui.StockFieldView
               android:id="@+id/alert_above"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -437,7 +437,7 @@
               app:size="@dimen/larger_text"
               />
 
-          <com.github.premnirmal.ticker.ui.StockFieldView
+          <com.sec.android.app.shealth.ui.StockFieldView
               android:id="@+id/alert_below"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"

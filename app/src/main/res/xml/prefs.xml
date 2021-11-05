@@ -20,7 +20,7 @@
       app:entries="@array/app_themes"
       app:entryValues="@array/app_themes_values"
       app:iconSpaceReserved="false"
-      app:key="com.github.premnirmal.ticker.theme"
+      app:key="com.sec.android.app.shealth.theme"
       app:negativeButtonText="@null"
       app:positiveButtonText="@null"
       app:title="@string/app_theme"/>
@@ -30,7 +30,7 @@
       app:entries="@array/font_sizes"
       app:entryValues="@array/font_sizes_values"
       app:iconSpaceReserved="false"
-      app:key="com.github.premnirmal.ticker.textsize"
+      app:key="com.sec.android.app.shealth.textsize"
       app:negativeButtonText="@null"
       app:positiveButtonText="@null"
       app:title="@string/choose_text_size"/>
@@ -45,13 +45,13 @@
       app:positiveButtonText="@null"
       app:title="@string/update_interval"/>
 
-  <com.github.premnirmal.ticker.settings.TimePreference
+  <com.sec.android.app.shealth.settings.TimePreference
       app:defaultValue="09:30"
       app:iconSpaceReserved="false"
       app:key="START_TIME"
       app:title="@string/start_time"/>
 
-  <com.github.premnirmal.ticker.settings.TimePreference
+  <com.sec.android.app.shealth.settings.TimePreference
       app:defaultValue="16:00"
       app:iconSpaceReserved="false"
       app:key="END_TIME"
@@ -123,7 +123,7 @@
       app:selectable="true"
       app:title="@string/privacy_policy"/>
 
-  <com.github.premnirmal.ticker.settings.FooterPreference
+  <com.sec.android.app.shealth.settings.FooterPreference
       app:iconSpaceReserved="false"
       app:key="SETTING_FOOTER"
       app:layout="@layout/preferences_footer"

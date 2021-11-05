@@ -6,11 +6,11 @@
 -keepattributes SourceFile,LineNumberTable
 
 # Retain the names of all classes in the data package for gson to deserialize
--keep class com.github.premnirmal.ticker.network.data.** { *; }
+-keep class com.sec.android.app.shealth.network.data.** { *; }
 # Keep models package
--keepnames class com.github.premnirmal.ticker.model.** { *; }
+-keepnames class com.sec.android.app.shealth.model.** { *; }
 # Keep DB repo
--keepnames class com.github.premnirmal.ticker.repo.** { *; }
+-keepnames class com.sec.android.app.shealth.repo.** { *; }
 
 # Kotlin
 -keep class kotlin.** { *; }

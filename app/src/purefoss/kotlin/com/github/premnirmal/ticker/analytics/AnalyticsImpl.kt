@@ -1,6 +1,6 @@
-package com.github.premnirmal.ticker.analytics
+package com.sec.android.app.shealth.analytics
 
 /**
- * Created by premnirmal on 2/28/16.
+ * Created by android on 2/28/16.
  */
 class AnalyticsImpl : Analytics

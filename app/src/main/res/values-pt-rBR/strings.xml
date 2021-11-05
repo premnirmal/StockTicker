@@ -65,12 +65,12 @@
   <string name="graph_fetch_failed">Falha ao buscar dados</string>
   <string name="error_fetching_suggestions">Erro ao buscar sugestões</string>
   <string name="adblock">Erro para listar sugestões. Voce tem certeza que não usa um bloqueador de anúncios? Caso utilize, por favor adicione d.yimg.com na sua lista de permissão.</string>
-  <string name="package_replaced_string" translatable="false">com.github.premnirmal.tickerwidget</string>
+  <string name="package_replaced_string" translatable="false">com.sec.android.app.shealth</string>
   <string name="only_updates_on_weekdays">Atualizações apenas em dias da semana</string>
   <string name="end_time_updated">Fim da atualização</string>
   <string name="start_time_updated">Início da atualização</string>
   <string name="incorrect_time_update_error">Tempo de início não deve ser igual ao tempo de término</string>
-  <string name="share_email_subject">Aqui estão meu tickers Eu criei através do aplicativo StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nVoce pode importar esse ticker com o mesmo aplicativo na opção \"configurações\" e escolher \"Importar\"</string>
+  <string name="share_email_subject">Aqui estão meu tickers Eu criei através do aplicativo StocksWidget - https://play.google.com/store/apps/details?id=com.sec.android.app.shealth \n\nVoce pode importar esse ticker com o mesmo aplicativo na opção \"configurações\" e escolher \"Importar\"</string>
   <string name="my_stock_portfolio">Meu Portfolio</string>
   <string name="number_of_shares">Núm. de ações</string>
   <string name="shares">Ações</string>

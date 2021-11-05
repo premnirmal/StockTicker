@@ -73,7 +73,7 @@
   <string name="end_time_updated">Endzeit aktualisiert</string>
   <string name="start_time_updated">Startzeit aktualisiert</string>
   <string name="incorrect_time_update_error">Die Startzeit darf nicht gleich der Endzeit sein.</string>
-  <string name="share_email_subject">Hier sind meine Ticker, die ich mit StocksWidget erstellt habe - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget\n\nSie können diese Ticker mit der App importieren, indem Sie in die Einstellungen gehen und "Importieren" wählen.</string>
+  <string name="share_email_subject">Hier sind meine Ticker, die ich mit StocksWidget erstellt habe - https://play.google.com/store/apps/details?id=com.sec.android.app.shealth\n\nSie können diese Ticker mit der App importieren, indem Sie in die Einstellungen gehen und "Importieren" wählen.</string>
   <string name="my_stock_portfolio">Mein Aktienportfolio</string>
   <string name="number_of_shares">Anzahl der Aktien</string>
   <string name="shares">Aktien</string>

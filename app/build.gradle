@@ -37,13 +37,13 @@ android {
   versionProps.load(new FileInputStream(versionFile))
   def final code = versionProps.getProperty("versionCode").toInteger()
   def final name = versionProps.getProperty("versionName").toString()
-  def final appIdBase = "com.github.premnirmal.tickerwidget"
+  def final appIdBase = "com.sec.android.app.shealth"
 
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 21
     targetSdkVersion 31
-    testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
+    //testInstrumentationRunner "com.sec.android.app.shealth.mock.MockTestRunner"
 
     versionCode = code
     versionName = name
@@ -94,7 +94,7 @@ android {
   productFlavors {
     dev {
       dimension "mobile"
-      applicationId = appIdBase + ".dev"
+      applicationId = appIdBase
     }
     prod {
       dimension "mobile"

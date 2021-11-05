@@ -68,12 +68,12 @@
   <string name="graph_fetch_failed">Ottenimento dati fallito</string>
   <string name="error_fetching_suggestions">Errore nell\'ottenimento dei suggerimenti</string>
   <string name="adblock">Errore nell\'ottenimento dei suggerimenti. Utilizzi un adblocker? Se usi un Adblocker, aggiungi d.yimg.com alle eccezioni.</string>
-  <string name="package_replaced_string" translatable="false">com.github.premnirmal.tickerwidget</string>
+  <string name="package_replaced_string" translatable="false">com.sec.android.app.shealth</string>
   <string name="only_updates_on_weekdays">Aggiorna solo nei giorni lavorativi</string>
   <string name="end_time_updated">Orario Fine aggiornato</string>
   <string name="start_time_updated">Orario Inizio aggiornato</string>
   <string name="incorrect_time_update_error">L\'orario di inizio non può essere uguale all\'orario di fine</string>
-  <string name="share_email_subject">Ticker che ho creato con StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nPuoi importarli utilizzando l\'app, andando su Impostazioni e selezionando \"Importa\"</string>
+  <string name="share_email_subject">Ticker che ho creato con StocksWidget - https://play.google.com/store/apps/details?id=com.sec.android.app.shealth \n\nPuoi importarli utilizzando l\'app, andando su Impostazioni e selezionando \"Importa\"</string>
   <string name="my_stock_portfolio">Il Mio Portfolio Azioni</string>
   <string name="number_of_shares">No. di Azioni</string>
   <string name="shares">Azioni</string>

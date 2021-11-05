@@ -79,12 +79,12 @@
   <string name="graph_fetch_failed">Failed to fetch data</string>
   <string name="error_fetching_suggestions">Error fetching suggestions</string>
   <string name="adblock">Error getting suggestions. Are you sure you\'re not using an adblocker? If you are using an Adblocker, please add d.yimg.com to your whitelist.</string>
-  <string name="package_replaced_string" translatable="false">com.github.premnirmal.tickerwidget</string>
+  <string name="package_replaced_string" translatable="false">com.sec.android.app.shealth</string>
   <string name="only_updates_on_weekdays">Only updates on weekdays</string>
   <string name="end_time_updated">End time updated</string>
   <string name="start_time_updated">Start time updated</string>
   <string name="incorrect_time_update_error">Start time must not equal end time</string>
-  <string name="share_email_subject">Here are my tickers I created using StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
+  <string name="share_email_subject">Here are my tickers I created using StocksWidget - https://play.google.com/store/apps/details?id=com.sec.android.app.shealth \n\nYou can import these tickers using the app by going into settings and choosing \"Import\"</string>
   <string name="my_stock_portfolio">My Stock Portfolio</string>
   <string name="number_of_shares">No. of Shares</string>
   <string name="shares">Shares</string>

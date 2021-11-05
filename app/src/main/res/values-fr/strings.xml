@@ -67,12 +67,12 @@
   <string name="graph_fetch_failed">Impossible de récupérer les données</string>
   <string name="error_fetching_suggestions">Erreur lors de la récupération des suggestions</string>  
   <string name="adblock">Impossible d\'obtenir les suggestions. Êtes-vous sûr de ne pas utiliser un bloqueur de publicités ? Si vous en utiliser un, merci d\'ajouter d.yimg.com à votre liste blanche.</string>
-  <string name="package_replaced_string" translatable="false">com.github.premnirmal.tickerwidget</string>
+  <string name="package_replaced_string" translatable="false">com.sec.android.app.shealth</string>
   <string name="only_updates_on_weekdays">Actualisation uniquement en semaine</string>
   <string name="end_time_updated">Heure de fin mise à jour</string>
   <string name="start_time_updated">Heure de début mise à jour</string>
   <string name="incorrect_time_update_error">L\'heure de début doit être différente de l\'heure de fin</string>
-  <string name="share_email_subject">Voici les actions que j\'ai créées en utilisant StocksWidget - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\n Vous pouvez les importer dans l\'application en allant dans les paramètres et en choisissant \"Importer\"</string>
+  <string name="share_email_subject">Voici les actions que j\'ai créées en utilisant StocksWidget - https://play.google.com/store/apps/details?id=com.sec.android.app.shealth \n\n Vous pouvez les importer dans l\'application en allant dans les paramètres et en choisissant \"Importer\"</string>
   <string name="my_stock_portfolio">Mon portefeuille d\'actions</string>
   <string name="number_of_shares">Nombre d\'actions</string>
   <string name="shares">Actions</string>

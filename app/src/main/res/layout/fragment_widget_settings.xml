@@ -43,7 +43,7 @@
 
     <include layout="@layout/divider"/>
 
-    <com.github.premnirmal.ticker.ui.SettingsTextView
+    <com.sec.android.app.shealth.ui.SettingsTextView
         android:id="@+id/setting_widget_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
         android:orientation="horizontal"
         >
 
-      <com.github.premnirmal.ticker.ui.SettingsTextView
+      <com.sec.android.app.shealth.ui.SettingsTextView
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
@@ -90,7 +90,7 @@
         android:orientation="horizontal"
         >
 
-      <com.github.premnirmal.ticker.ui.SettingsTextView
+      <com.sec.android.app.shealth.ui.SettingsTextView
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
@@ -114,7 +114,7 @@
 
     <include layout="@layout/divider"/>
 
-    <com.github.premnirmal.ticker.ui.SettingsTextView
+    <com.sec.android.app.shealth.ui.SettingsTextView
         android:id="@+id/setting_layout_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
 
     <include layout="@layout/divider"/>
 
-    <com.github.premnirmal.ticker.ui.SettingsTextView
+    <com.sec.android.app.shealth.ui.SettingsTextView
         android:id="@+id/setting_widget_width"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -132,7 +132,7 @@
 
     <include layout="@layout/divider"/>
 
-    <com.github.premnirmal.ticker.ui.SettingsTextView
+    <com.sec.android.app.shealth.ui.SettingsTextView
         android:id="@+id/setting_background"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -141,7 +141,7 @@
 
     <include layout="@layout/divider"/>
 
-    <com.github.premnirmal.ticker.ui.SettingsTextView
+    <com.sec.android.app.shealth.ui.SettingsTextView
         android:id="@+id/setting_text_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -157,7 +157,7 @@
         android:orientation="horizontal"
         >
 
-      <com.github.premnirmal.ticker.ui.SettingsTextView
+      <com.sec.android.app.shealth.ui.SettingsTextView
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"
@@ -188,7 +188,7 @@
         android:orientation="horizontal"
         >
 
-      <com.github.premnirmal.ticker.ui.SettingsTextView
+      <com.sec.android.app.shealth.ui.SettingsTextView
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_weight="1"

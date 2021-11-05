@@ -1,8 +1,8 @@
-package com.github.premnirmal.ticker.components
+package com.sec.android.app.shealth.components
 
 import timber.log.Timber
 
 /**
- * Created by premnirmal on 2/28/16.
+ * Created by android on 2/28/16.
  */
 internal class LoggingTree : Timber.DebugTree()

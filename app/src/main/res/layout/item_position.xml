@@ -97,7 +97,7 @@
         android:orientation="vertical"
         >
 
-      <com.github.premnirmal.ticker.ui.StockFieldView
+      <com.sec.android.app.shealth.ui.StockFieldView
           android:id="@+id/holdings"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
           app:text_gravity="left"
           />
 
-      <com.github.premnirmal.ticker.ui.StockFieldView
+      <com.sec.android.app.shealth.ui.StockFieldView
           android:id="@+id/gain_loss"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -130,7 +130,7 @@
         android:orientation="vertical"
         >
 
-      <com.github.premnirmal.ticker.ui.StockFieldView
+      <com.sec.android.app.shealth.ui.StockFieldView
           android:id="@+id/dayChange"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
         android:orientation="vertical"
         >
 
-      <com.github.premnirmal.ticker.ui.StockFieldView
+      <com.sec.android.app.shealth.ui.StockFieldView
           android:id="@+id/changePercent"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
           app:text_gravity="right"
           />
 
-      <com.github.premnirmal.ticker.ui.StockFieldView
+      <com.sec.android.app.shealth.ui.StockFieldView
           android:id="@+id/changeValue"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"

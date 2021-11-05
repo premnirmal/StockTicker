@@ -1,0 +1,135 @@
+package com.sec.android.app.shealth.network
+
+import android.content.Context
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.sec.android.app.shealth.BuildConfig
+import com.sec.android.app.shealth.R
+import com.sec.android.app.shealth.model.*
+import com.sec.android.app.shealth.widget.WidgetDataProvider
+import dagger.Module
+import dagger.Provides
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
+
+/**
+ * Created by android on 3/3/16.
+ */
+@Module
+class NetworkModule {
+
+  companion object {
+    internal const val CONNECTION_TIMEOUT: Long = 5000
+    internal const val READ_TIMEOUT: Long = 5000
+  }
+
+  @Provides @Singleton internal fun provideHttpClientForYahoo(): OkHttpClient {
+    val logger = HttpLoggingInterceptor()
+    logger.level =
+      if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+    val okHttpClient =
+      OkHttpClient.Builder()
+          .addInterceptor(UserAgentInterceptor())
+          .addInterceptor(logger)
+          .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+          .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+          .build()
+    return okHttpClient
+  }
+
+  @Provides @Singleton internal fun provideStocksApi(): StocksApi {
+    return StocksApi()
+  }
+
+  @Provides @Singleton internal fun provideGson(): Gson {
+    return GsonBuilder().setLenient().create()
+  }
+
+  @Provides @Singleton internal fun provideGsonFactory(gson: Gson): GsonConverterFactory {
+    return GsonConverterFactory.create(gson)
+  }
+
+  @Provides @Singleton internal fun provideSuggestionsApi(
+      context: Context, okHttpClient: OkHttpClient,
+      converterFactory: GsonConverterFactory
+  ): SuggestionApi {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.suggestions_endpoint))
+        .addConverterFactory(converterFactory)
+        .build()
+    return retrofit.create(SuggestionApi::class.java)
+  }
+
+  @Provides @Singleton internal fun provideYahooFinance(
+      context: Context,
+      okHttpClient: OkHttpClient,
+      converterFactory: GsonConverterFactory
+  ): YahooFinance {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.yahoo_endpoint))
+        .addConverterFactory(converterFactory)
+        .build()
+    val yahooFinance = retrofit.create(YahooFinance::class.java)
+    return yahooFinance
+  }
+
+  @Provides @Singleton internal fun provideNewsApi(
+      context: Context,
+      okHttpClient: OkHttpClient
+  ): NewsApi {
+    val retrofit =
+      Retrofit.Builder()
+          .client(okHttpClient)
+          .baseUrl(context.getString(R.string.news_endpoint))
+          .addConverterFactory(SimpleXmlConverterFactory.create())
+          .build()
+    val newsApi = retrofit.create(NewsApi::class.java)
+    return newsApi
+  }
+
+  @Provides @Singleton internal fun provideHistoricalDataApi(
+      context: Context, okHttpClient: OkHttpClient,
+      converterFactory: GsonConverterFactory
+  ): ChartApi {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.historical_data_endpoint))
+        .addConverterFactory(converterFactory)
+        .build()
+    val api = retrofit.create(ChartApi::class.java)
+    return api
+  }
+
+  @Provides @Singleton internal fun provideGithubApi(
+    context: Context,
+    okHttpClient: OkHttpClient,
+    converterFactory: GsonConverterFactory
+  ): GithubApi {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.github_endoint))
+        .addConverterFactory(converterFactory)
+        .build()
+    return retrofit.create(GithubApi::class.java)
+  }
+
+  @Provides @Singleton internal fun provideNewsProvider(): NewsProvider = NewsProvider()
+
+  @Provides @Singleton internal fun provideStocksProvider(): IStocksProvider = StocksProvider()
+
+  @Provides @Singleton internal fun provideHistoricalDataProvider(): IHistoryProvider =
+    HistoryProvider()
+
+  @Provides @Singleton internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()
+
+  @Provides @Singleton internal fun provideWidgetDataFactory(): WidgetDataProvider =
+    WidgetDataProvider()
+
+}
