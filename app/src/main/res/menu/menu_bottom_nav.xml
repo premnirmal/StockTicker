@@ -22,9 +22,4 @@
       android:title="@string/action_widgets"
       android:icon="@drawable/ic_widget"
       app:showAsAction="always"/>
-  <item
-      android:id="@+id/action_settings"
-      android:title="@string/action_settings"
-      android:icon="@drawable/ic_settings"
-      app:showAsAction="always"/>
 </menu>

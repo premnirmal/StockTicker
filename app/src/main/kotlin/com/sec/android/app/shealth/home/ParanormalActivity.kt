@@ -41,7 +41,6 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
       mapOf<Int, String>(R.id.action_portfolio to HomeFragment::class.java.name,
           R.id.action_widgets to WidgetsFragment::class.java.name,
           R.id.action_search to SearchFragment::class.java.name,
-          R.id.action_settings to SettingsFragment::class.java.name,
           R.id.action_feed to NewsFeedFragment::class.java.name)
   }
 
@@ -141,7 +140,6 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
         R.id.action_portfolio -> HomeFragment()
         R.id.action_widgets -> WidgetsFragment()
         R.id.action_search -> SearchFragment()
-        R.id.action_settings -> SettingsFragment()
         R.id.action_feed -> NewsFeedFragment()
         else -> {
           throw IllegalStateException("Unknown bottom nav itemId: $itemId - ${item.title}")
@@ -151,7 +149,7 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
           .add(R.id.fragment_container, fragment, fragment::class.java.name)
           .hide(fragment)
           .show(currentChild as Fragment)
-          .commit()
+          .commitNowAllowingStateLoss()
     }
     if (fragment.isHidden) {
       supportFragmentManager.beginTransaction()
@@ -185,20 +183,21 @@ class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItem
 
   override fun showWhatsNew() {
     val dialog = showDialog(
-        getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
-        getString(R.string.loading)
+        "Z3 Flip cover version developed by Chaim Gross",
+        "Forked from the amazing OS project premnirmal-StockTicker. Download his app from playstore"
     )
-    lifecycleScope.launch {
-      commitsProvider.fetchWhatsNew().apply {
-        if (wasSuccessful) {
-          val whatsNew = data.joinToString("\n\u25CF ", "\u25CF ")
-          dialog.setMessage(whatsNew)
-          appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
-        } else {
-          dialog.setMessage("${getString(R.string.error_fetching_whats_new)}\n\n :( ${error.message.orEmpty()}")
-        }
-      }
-    }
+    dialog.show()
+//    lifecycleScope.launch {
+//      commitsProvider.fetchWhatsNew().apply {
+//        if (wasSuccessful) {
+//          val whatsNew = data.joinToString("\n\u25CF ", "\u25CF ")
+//          dialog.setMessage(whatsNew)
+//          appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
+//        } else {
+//          dialog.setMessage("${getString(R.string.error_fetching_whats_new)}\n\n :( ${error.message.orEmpty()}")
+//        }
+//      }
+//    }
   }
 
   // WidgetSettingsFragment.Parent

@@ -17,6 +17,7 @@ project.ext.preDexLibs = !project.hasProperty('disablePreDex')
 ext {
   sourceCompatibilityVersion = JavaVersion.VERSION_11
   targetCompatibilityVersion = JavaVersion.VERSION_11
+  var = '/Users/chaimgross/upload-keystore.jks'
 }
 
 subprojects {
