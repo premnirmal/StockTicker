@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.RepoCommit
 import com.github.premnirmal.tickerwidget.BuildConfig
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -15,10 +15,11 @@ import javax.inject.Singleton
 @Singleton
 class CommitsProvider @Inject constructor(private val githubApi: GithubApi) {
 
+  private val coroutineScope = CoroutineScope(Dispatchers.IO)
   private var cachedChanges: List<RepoCommit>? = null
 
   fun initCache() {
-    GlobalScope.launch { fetchRepoCommits() }
+    coroutineScope.launch { fetchRepoCommits() }
   }
 
   private suspend fun fetchRepoCommits(): FetchResult<List<RepoCommit>> {

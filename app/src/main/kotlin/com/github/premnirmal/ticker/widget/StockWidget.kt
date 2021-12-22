@@ -162,7 +162,7 @@ class StockWidget : AppWidgetProvider() {
     remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())
     // Refresh icon and progress
-    val refreshing = appPreferences.isRefreshing()
+    val refreshing = appPreferences.isRefreshing.value
     if (refreshing) {
       remoteViews.setViewVisibility(R.id.refresh_progress, View.VISIBLE)
       remoteViews.setViewVisibility(R.id.refresh_icon, View.GONE)
