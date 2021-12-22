@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle.MEDIUM
@@ -99,9 +101,13 @@ class AppPreferences {
         .toSet()
   }
 
-  fun isRefreshing() = sharedPreferences.getBoolean(WIDGET_REFRESHING, false)
+  val isRefreshing: StateFlow<Boolean>
+    get() = _isRefreshing
+
+  private val _isRefreshing = MutableStateFlow(sharedPreferences.getBoolean(WIDGET_REFRESHING, false))
 
   fun setRefreshing(refreshing: Boolean) {
+    _isRefreshing.value = refreshing
     sharedPreferences.edit()
         .putBoolean(WIDGET_REFRESHING, refreshing)
         .apply()

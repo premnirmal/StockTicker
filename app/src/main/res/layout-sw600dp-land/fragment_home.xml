@@ -88,7 +88,6 @@
           app:layout_collapseMode="pin"
           app:title="@string/app_name"
           app:titleTextAppearance="@style/ActionBarTitleText"
-          app:menu="@menu/menu_home"
           />
     </com.google.android.material.appbar.CollapsingToolbarLayout>
 

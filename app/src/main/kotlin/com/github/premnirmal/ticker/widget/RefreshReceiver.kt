@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -26,8 +27,10 @@ class RefreshReceiver : BroadcastReceiver(), CoroutineScope {
       intent: Intent
   ) {
     Injector.appComponent.inject(this)
+    val pendingResult = goAsync()
     launch {
-      stocksProvider.fetch()
+      stocksProvider.fetch().first()
+      pendingResult.finish()
     }
   }
 }

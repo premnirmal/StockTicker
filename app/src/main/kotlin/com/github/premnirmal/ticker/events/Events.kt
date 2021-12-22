@@ -6,10 +6,4 @@ import kotlinx.android.parcel.Parcelize
 interface AsyncEvent : Parcelable
 
 @Parcelize
-class ErrorEvent(val message: String) : AsyncEvent
-
-@Parcelize
-class FetchedEvent : AsyncEvent
-
-@Parcelize
-class RefreshEvent : AsyncEvent
+class ErrorEvent constructor(val message: String) : AsyncEvent

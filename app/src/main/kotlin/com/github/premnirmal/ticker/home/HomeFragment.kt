@@ -1,21 +1,14 @@
 package com.github.premnirmal.ticker.home
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.PopupWindow
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
@@ -28,8 +21,6 @@ import kotlinx.android.synthetic.main.fragment_home.swipe_container
 import kotlinx.android.synthetic.main.fragment_home.tabs
 import kotlinx.android.synthetic.main.fragment_home.toolbar
 import kotlinx.android.synthetic.main.fragment_home.view_pager
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
@@ -44,7 +35,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var bus: AsyncBus
   override val simpleName: String = "HomeFragment"
 
   private var attemptingFetch = false
@@ -57,23 +47,12 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         R.string.last_and_next_fetch, viewModel.lastFetched(), viewModel.nextFetch()
     )
 
-  private val totalHoldingsText: String
-    get() {
-      return if (viewModel.hasHoldings) {
-        val totalHoldings = viewModel.getTotalHoldings()
-        getString(R.string.total_holdings, totalHoldings)
-      } else ""
-    }
-
-  private val totalGainLossText: Pair<String, String>
-    get() = viewModel.getTotalGainLoss()
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
 
     // Set up the ViewModel for the total holdings.
-    viewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+    viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
   }
 
   override fun onCreateView(
@@ -97,28 +76,9 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
       tab.text = widgetDataProvider.widgetDataList()[position].widgetName()
     }.attach()
     subtitle.text = subtitleText
-    toolbar.setOnMenuItemClickListener {
-      showTotalHoldingsPopup()
-      true
+    viewModel.fetchState.observe(viewLifecycleOwner) {
+      updateHeader()
     }
-    toolbar.menu.findItem(R.id.total_holdings).apply {
-      isVisible = viewModel.hasHoldings
-      isEnabled = viewModel.hasHoldings
-    }
-  }
-
-  private fun showTotalHoldingsPopup() {
-    val popupWindow = PopupWindow(requireContext(), null)
-    val popupView = LayoutInflater.from(requireContext())
-        .inflate(R.layout.layout_holdings_popup, null)
-    popupWindow.contentView = popupView
-    popupWindow.isOutsideTouchable = true
-    popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.card_bg))
-    popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
-    val (totalGainStr, totalLossStr) = totalGainLossText
-    popupView.findViewById<TextView>(R.id.totalGain).text = totalGainStr
-    popupView.findViewById<TextView>(R.id.totalLoss).text = totalLossStr
-    popupWindow.showAtLocation(toolbar, Gravity.TOP, toolbar.width / 2, toolbar.height)
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -126,27 +86,10 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     if (!hidden) updateHeader()
   }
 
-  override fun onResume() {
-    super.onResume()
-    update()
-    lifecycleScope.launch {
-      val flow = bus.receive<RefreshEvent>()
-      flow.collect {
-        if (isResumed) {
-          updateHeader()
-        }
-      }
-    }
-  }
-
   private fun updateHeader() {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.setData(widgetDataProvider.widgetDataList())
     subtitle.text = subtitleText
-    toolbar.menu.findItem(R.id.total_holdings).apply {
-      isVisible = viewModel.hasHoldings
-      isEnabled = viewModel.hasHoldings
-    }
   }
 
   private fun fetch() {

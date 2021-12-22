@@ -445,7 +445,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
 
   private fun exportAndShareTickers(uri: Uri) {
     lifecycleScope.launch {
-      val result = TickersExporter.exportTickers(requireContext(), uri, stocksProvider.getTickers())
+      val result = TickersExporter.exportTickers(requireContext(), uri, stocksProvider.tickers.value)
       if (result == null) {
         showDialog(getString(R.string.error_sharing))
         Timber.w(Throwable("Error sharing tickers"))
@@ -480,7 +480,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
 
   private fun exportPortfolio(uri: Uri) {
     lifecycleScope.launch {
-      val result = PortfolioExporter.exportQuotes(requireContext(), uri, stocksProvider.getPortfolio())
+      val result = PortfolioExporter.exportQuotes(requireContext(), uri, stocksProvider.portfolio.value)
       if (result == null) {
         showDialog(getString(R.string.error_exporting))
         Timber.w(Throwable("Error exporting tickers"))

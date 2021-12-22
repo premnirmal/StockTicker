@@ -4,8 +4,8 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.NewsArticle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -15,6 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class NewsProvider {
 
+  private val coroutineScope = CoroutineScope(Dispatchers.IO)
   @Inject internal lateinit var newsApi: NewsApi
 
   private var cachedBusinessArticles: List<NewsArticle> = emptyList()
@@ -24,7 +25,7 @@ class NewsProvider {
   }
 
   fun initCache() {
-    GlobalScope.launch { fetchMarketNews() }
+    coroutineScope.launch { fetchMarketNews() }
   }
 
   suspend fun fetchNewsForQuery(query: String): FetchResult<List<NewsArticle>> =
