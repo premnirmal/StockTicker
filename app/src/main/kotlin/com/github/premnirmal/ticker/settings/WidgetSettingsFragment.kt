@@ -10,13 +10,12 @@ import android.view.ViewGroup
 import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
-import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
@@ -28,6 +27,8 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_widget_settings.*
 import kotlinx.android.synthetic.main.widget_2x1.list
 import kotlinx.android.synthetic.main.widget_header.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -54,7 +55,6 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var bus: AsyncBus
   @Inject internal lateinit var stocksProvider: IStocksProvider
   private lateinit var adapter: WidgetPreviewAdapter
   private var showAddStocks = true
@@ -104,6 +104,12 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
     ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
+
+    lifecycleScope.launch {
+      stocksProvider.fetchState.collect {
+        updatePreview(widgetData)
+      }
+    }
   }
 
   override fun onClick(v: View) {
@@ -119,7 +125,6 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
-          bus.send(RefreshEvent())
           InAppMessage.showMessage(requireActivity(), R.string.widget_name_updated)
         }
       }

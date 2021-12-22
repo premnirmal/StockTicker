@@ -7,8 +7,6 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.events.ErrorEvent
-import com.github.premnirmal.ticker.events.FetchedEvent
-import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
@@ -112,13 +110,12 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     storage.saveTickers(tickerSet)
   }
 
-  private fun scheduleUpdate(refresh: Boolean = false) {
-    scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(_lastFetched.value), refresh)
+  private fun scheduleUpdate() {
+    scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(_lastFetched.value))
   }
 
   private fun scheduleUpdateWithMs(
-    msToNextAlarm: Long,
-    refresh: Boolean = false
+    msToNextAlarm: Long
   ) {
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     _nextFetch.value = updateTime.toInstant().toEpochMilli()
@@ -127,9 +124,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         .apply()
     appPreferences.setRefreshing(false)
     widgetDataProvider.broadcastUpdateAllWidgets()
-    if (refresh) {
-      bus.send(RefreshEvent())
-    }
   }
 
   private fun fetchStockInternal(ticker: String, allowCache: Boolean): Flow<FetchResult<Quote>> =
@@ -181,8 +175,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
           _fetchState.emit(FetchState.Success(api.lastFetched))
           saveLastFetched()
           exponentialBackoff.reset()
-          scheduleUpdate(true)
-          bus.send(FetchedEvent())
+          scheduleUpdate()
           emit(FetchResult.success(fetchedStocks))
         }
       } catch (ex: Throwable) {
@@ -213,14 +206,12 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         saveTickers()
         _tickers.value = tickerSet.toList()
         _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
-        bus.send(RefreshEvent())
         launch {
           fetchStockInternal(ticker, false).collect { result ->
             if (result.wasSuccessful) {
               val data = result.data
               quoteMap[ticker] = data
               storage.saveQuote(result.data)
-              bus.send(RefreshEvent())
             }
           }
         }
@@ -306,7 +297,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
     launch {
       storage.removeQuoteBySymbol(ticker)
-      bus.send(RefreshEvent())
     }
     return tickerSet
   }
@@ -324,7 +314,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     launch {
       storage.removeQuotesBySymbol(symbols.toList())
     }
-    bus.send(RefreshEvent())
   }
 
   override fun fetchStock(ticker: String): Flow<FetchResult<Quote>> {

@@ -15,8 +15,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.AsyncBus
-import com.github.premnirmal.ticker.events.FetchedEvent
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -26,8 +24,8 @@ import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
@@ -44,7 +42,6 @@ import kotlin.random.Random
 @Singleton
 class NotificationsHandler @Inject constructor(
   private val context: Context,
-  private val bus: AsyncBus,
   private val stocksProvider: IStocksProvider,
   private val stocksStorage: StocksStorage,
   private val alarmScheduler: AlarmScheduler,
@@ -58,6 +55,8 @@ class NotificationsHandler @Inject constructor(
 
     private const val PREFS_NOTIFICATIONS = "${BuildConfig.APPLICATION_ID}.notifications.PREFS"
   }
+
+  private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   private val notificationFactory: NotificationFactory by lazy {
     NotificationFactory(context, appPreferences)
@@ -73,8 +72,8 @@ class NotificationsHandler @Inject constructor(
 
   fun initialize() {
     createChannels()
-    GlobalScope.launch(Dispatchers.Default) {
-      val flow = bus.receive<FetchedEvent>()
+    coroutineScope.launch {
+      val flow = stocksProvider.fetchState
       flow.collect {
         checkAlerts()
       }

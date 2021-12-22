@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
@@ -27,7 +25,6 @@ class SearchViewModel : ViewModel() {
   @Inject internal lateinit var stocksApi: StocksApi
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var bus: AsyncBus
 
   val searchResult: LiveData<FetchResult<List<Suggestion>>>
     get() = _searchResult
@@ -74,7 +71,6 @@ class SearchViewModel : ViewModel() {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     return if (!widgetData.hasTicker(ticker)) {
       widgetData.addTicker(ticker)
-      bus.send(RefreshEvent())
       widgetDataProvider.broadcastUpdateWidget(widgetId)
       true
     } else {
@@ -93,7 +89,6 @@ class SearchViewModel : ViewModel() {
       val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
       widgetData.forEach { it.removeStock(ticker) }
     }
-    bus.send(RefreshEvent())
   }
 
   fun getWidgetDatas(): List<WidgetData> {
