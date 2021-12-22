@@ -4,6 +4,8 @@ import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -13,25 +15,23 @@ import org.threeten.bp.ZonedDateTime
  */
 interface IStocksProvider {
 
-  val fetchState: FetchState
+  val fetchState: StateFlow<FetchState>
 
-  fun nextFetch(): String
+  val nextFetchMs: StateFlow<Long>
 
-  fun nextFetchMs(): Long
-
-  suspend fun fetch(): FetchResult<List<Quote>>
+  fun fetch(): Flow<FetchResult<List<Quote>>>
 
   fun schedule()
 
-  fun getTickers(): List<String>
+  val tickers: StateFlow<List<String>>
 
-  fun getPortfolio(): List<Quote>
+  val portfolio: StateFlow<List<Quote>>
 
   fun addPortfolio(portfolio: List<Quote>)
 
   fun getStock(ticker: String): Quote?
 
-  suspend fun fetchStock(ticker: String): FetchResult<Quote>
+  fun fetchStock(ticker: String): Flow<FetchResult<Quote>>
 
   fun removeStock(ticker: String): Collection<String>
 
@@ -67,7 +67,7 @@ interface IStocksProvider {
       override val displayString: String = "--"
     }
 
-    data class Success(val fetchTime: Long) : FetchState() {
+    class Success(val fetchTime: Long) : FetchState() {
       override val displayString: String by lazy {
         val instant = Instant.ofEpochMilli(fetchTime)
         val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
@@ -75,7 +75,7 @@ interface IStocksProvider {
       }
     }
 
-    data class Failure(val exception: Throwable) : FetchState() {
+    class Failure(val exception: Throwable) : FetchState() {
       override val displayString: String by lazy {
         exception.message.orEmpty()
       }

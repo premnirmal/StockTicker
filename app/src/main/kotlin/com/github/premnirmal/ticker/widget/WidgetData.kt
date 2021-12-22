@@ -318,7 +318,7 @@ class WidgetData {
   }
 
   fun addAllFromStocksProvider() {
-    addTickers(stocksProvider.getTickers())
+    addTickers(stocksProvider.tickers.value)
   }
 
   fun onWidgetRemoved() {

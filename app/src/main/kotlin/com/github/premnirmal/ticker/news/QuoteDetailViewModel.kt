@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -51,8 +52,9 @@ class QuoteDetailViewModel : ViewModel() {
         _quote.postValue(_quote.value)
         return@launch
       }
-      val fetchStock = stocksProvider.fetchStock(ticker)
-      _quote.value = fetchStock
+      stocksProvider.fetchStock(ticker).collect { fetchStock ->
+        _quote.value = fetchStock
+      }
     }
   }
 

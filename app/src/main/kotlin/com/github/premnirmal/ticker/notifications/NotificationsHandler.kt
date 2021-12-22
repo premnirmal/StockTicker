@@ -83,7 +83,7 @@ class NotificationsHandler @Inject constructor(
 
   fun notifyDailySummary() {
     if (appPreferences.notificationAlerts()) {
-      val topQuotes = stocksProvider.getPortfolio()
+      val topQuotes = stocksProvider.portfolio.value
           .sortedByDescending { it.changeInPercent.absoluteValue }
           .take(4)
       if (topQuotes.isNotEmpty()) {
@@ -151,7 +151,7 @@ class NotificationsHandler @Inject constructor(
     if (Random.nextBoolean()) enqueueDailySummaryNotification()
     if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
 
-    val portfolio: List<Quote> = stocksProvider.getPortfolio()
+    val portfolio: List<Quote> = stocksProvider.portfolio.value
     for (quote in portfolio) {
       when {
         quote.hasAlertAbove() -> {

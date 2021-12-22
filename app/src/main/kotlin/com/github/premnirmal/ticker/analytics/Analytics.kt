@@ -49,6 +49,6 @@ class GeneralProperties {
   val widgetCount: Int
     get() = widgetDataProvider.getAppWidgetIds().size
   val tickerCount: Int
-    get() = stocksProvider.getTickers().size
+    get() = stocksProvider.tickers.value.size
 
 }

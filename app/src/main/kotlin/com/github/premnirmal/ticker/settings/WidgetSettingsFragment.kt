@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.events.RefreshEvent
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -27,6 +28,9 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_widget_settings.*
 import kotlinx.android.synthetic.main.widget_2x1.list
 import kotlinx.android.synthetic.main.widget_header.*
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
 class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
@@ -251,13 +255,16 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
 
   private fun updatePreview(widgetData: WidgetData) {
     widget_layout.setBackgroundResource(widgetData.backgroundResource())
-    val lastUpdatedText = when (val fetchState = stocksProvider.fetchState) {
+    val lastUpdatedText = when (val fetchState = stocksProvider.fetchState.value) {
       is FetchState.Success -> getString(R.string.last_fetch, fetchState.displayString)
       is FetchState.Failure -> getString(R.string.refresh_failed)
       else -> FetchState.NotFetched.displayString
     }
     last_updated.text = lastUpdatedText
-    val nextUpdate: String = stocksProvider.nextFetch()
+    val nextUpdateMs = stocksProvider.nextFetchMs.value
+    val instant = Instant.ofEpochMilli(nextUpdateMs)
+    val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val nextUpdate = time.createTimeString()
     val nextUpdateText: String = getString(R.string.next_fetch, nextUpdate)
     next_update.text = nextUpdateText
     widget_header.isVisible = !widgetData.hideHeader()

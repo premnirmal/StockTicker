@@ -11,10 +11,14 @@ import android.view.View
 import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.tickerwidget.R
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
 /**
@@ -79,7 +83,7 @@ class StockWidget : AppWidgetProvider() {
       Injector.appComponent.inject(this)
       injected = true
     }
-    if (stocksProvider.nextFetchMs() <= 0) {
+    if (stocksProvider.nextFetchMs.value <= 0) {
       stocksProvider.schedule()
     }
   }
@@ -144,13 +148,16 @@ class StockWidget : AppWidgetProvider() {
     val flipIntent =
       PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
     remoteViews.setPendingIntentTemplate(R.id.list, flipIntent)
-    val lastUpdatedText = when (val fetchState = stocksProvider.fetchState) {
+    val lastUpdatedText = when (val fetchState = stocksProvider.fetchState.value) {
       is FetchState.Success -> context.getString(R.string.last_fetch, fetchState.displayString)
       is FetchState.Failure -> context.getString(R.string.refresh_failed)
       else -> FetchState.NotFetched.displayString
     }
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
-    val nextUpdate: String = stocksProvider.nextFetch()
+    val nextUpdateMs = stocksProvider.nextFetchMs.value
+    val instant = Instant.ofEpochMilli(nextUpdateMs)
+    val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+    val nextUpdate = time.createTimeString()
     val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
     remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())

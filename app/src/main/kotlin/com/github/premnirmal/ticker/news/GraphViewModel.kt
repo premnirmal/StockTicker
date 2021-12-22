@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,11 +34,12 @@ class GraphViewModel: ViewModel() {
 
   fun fetchStock(ticker: String) {
     viewModelScope.launch {
-      val fetchResult = stocksProvider.fetchStock(ticker)
-      if (!fetchResult.wasSuccessful) {
-        _error.value = Exception("Quote not found")
-      } else {
-        _quote.value = fetchResult.data
+      stocksProvider.fetchStock(ticker).collect { fetchResult ->
+        if (!fetchResult.wasSuccessful) {
+          _error.value = Exception("Quote not found")
+        } else {
+          _quote.value = fetchResult.data
+        }
       }
     }
   }
