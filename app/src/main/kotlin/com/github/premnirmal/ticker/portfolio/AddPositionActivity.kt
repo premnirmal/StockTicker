@@ -10,7 +10,6 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_positions.addButton
@@ -26,7 +25,6 @@ import kotlinx.android.synthetic.main.activity_positions.totalShares
 import kotlinx.android.synthetic.main.activity_positions.totalValue
 import kotlinx.android.synthetic.main.layout_position_holding.view.remove_position
 import java.text.NumberFormat
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -38,7 +36,6 @@ class AddPositionActivity : BaseActivity() {
     const val TICKER = "TICKER"
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
   internal lateinit var ticker: String
   override val simpleName: String = "AddPositionActivity"
 

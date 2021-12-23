@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.events.ErrorEvent
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
@@ -14,7 +12,6 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -48,7 +45,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   @Inject lateinit var context: Context
   @Inject lateinit var preferences: SharedPreferences
   @Inject lateinit var appPreferences: AppPreferences
-  @Inject lateinit var bus: AsyncBus
   @Inject lateinit var widgetDataProvider: WidgetDataProvider
   @Inject lateinit var alarmScheduler: AlarmScheduler
   @Inject lateinit var clock: AppClock
@@ -151,7 +147,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun fetch(): Flow<FetchResult<List<Quote>>> = flow {
     if (tickerSet.isEmpty()) {
-      bus.send(ErrorEvent(context.getString(R.string.no_symbols_in_portfolio)))
+      _fetchState.emit(FetchState.Failure(FetchException("No symbols in portfolio")))
       emit(FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio")))
     } else {
       try {
@@ -163,7 +159,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
         val fetchedStocks = fr.data
         if (fetchedStocks.isEmpty()) {
-          bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
           emit(FetchResult.failure<List<Quote>>(FetchException("Refresh failed")))
         } else {
           synchronized(tickers) {
@@ -181,7 +176,6 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       } catch (ex: Throwable) {
         Timber.w(ex)
         _fetchState.emit(FetchState.Failure(ex))
-        bus.send(ErrorEvent(context.getString(R.string.refresh_failed)))
         val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
         scheduleUpdateWithMs(backOffTimeMs)
         emit(FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex)))

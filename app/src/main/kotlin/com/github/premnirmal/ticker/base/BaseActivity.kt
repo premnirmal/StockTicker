@@ -6,9 +6,9 @@ import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.components.AsyncBus
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.events.ErrorEvent
+import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
@@ -25,7 +25,7 @@ import javax.inject.Inject
 abstract class BaseActivity : AppCompatActivity() {
 
   abstract val simpleName: String
-  @Inject internal lateinit var bus: AsyncBus
+  @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var analytics: Analytics
   open val subscribeToErrorEvents = true
   private var isErrorDialogShowing = false
@@ -47,12 +47,13 @@ abstract class BaseActivity : AppCompatActivity() {
     super.onResume()
     if (subscribeToErrorEvents) {
       lifecycleScope.launch {
-        val errorFlow = bus.receive<ErrorEvent>()
-        errorFlow.collect { event ->
-          if (this.isActive && !isErrorDialogShowing && !isFinishing) {
-            isErrorDialogShowing = true
-            showDialog(event.message).setOnDismissListener { isErrorDialogShowing = false }
-            delay(500L)
+        stocksProvider.fetchState.collect { state ->
+          if (state is FetchState.Failure) {
+            if (this.isActive && !isErrorDialogShowing && !isFinishing) {
+              isErrorDialogShowing = true
+              showDialog(state.displayString).setOnDismissListener { isErrorDialogShowing = false }
+              delay(500L)
+            }
           }
         }
       }

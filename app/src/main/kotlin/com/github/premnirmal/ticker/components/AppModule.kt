@@ -31,8 +31,6 @@ class AppModule(private val app: StocksApp) {
 
   @Provides @Singleton fun provideClock(): AppClock = AppClockImpl
 
-  @Provides @Singleton fun provideEventBus(): AsyncBus = AsyncBus()
-
   @Provides @Singleton fun provideMainThreadHandler(): Handler =
     Handler(Looper.getMainLooper())
 
