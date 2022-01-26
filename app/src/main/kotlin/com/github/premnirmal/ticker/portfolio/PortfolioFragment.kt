@@ -9,12 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ChildFragment
+import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
@@ -25,6 +27,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_portfolio.stockList
 import kotlinx.android.synthetic.main.fragment_portfolio.view_flipper
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -65,6 +68,7 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
   class InjectionHolder {
 
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+    @Inject internal lateinit var stocksProvider: IStocksProvider
 
     init {
       Injector.appComponent.inject(this)
@@ -117,11 +121,6 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
     widgetId = requireArguments().getInt(KEY_WIDGET_ID)
   }
 
-  override fun onResume() {
-    super.onResume()
-    update()
-  }
-
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
@@ -154,6 +153,11 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
       view_flipper.displayedChild = 0
     } else {
       view_flipper.displayedChild = 1
+    }
+    lifecycleScope.launch {
+      holder.stocksProvider.portfolio.collect {
+        update()
+      }
     }
   }
 

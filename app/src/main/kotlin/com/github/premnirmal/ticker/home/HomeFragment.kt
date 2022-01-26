@@ -14,6 +14,7 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_home.app_bar_layout
 import kotlinx.android.synthetic.main.fragment_home.subtitle
@@ -75,10 +76,16 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     TabLayoutMediator(tabs, view_pager) { tab, position ->
       tab.text = widgetDataProvider.widgetDataList()[position].widgetName()
     }.attach()
+    app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
     subtitle.text = subtitleText
     viewModel.fetchState.observe(viewLifecycleOwner) {
       updateHeader()
     }
+  }
+
+  override fun onDestroyView() {
+    app_bar_layout.removeOnOffsetChangedListener(offsetChangedListener)
+    super.onDestroyView()
   }
 
   override fun onHiddenChanged(hidden: Boolean) {
@@ -99,13 +106,13 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         // Don't attempt to make many requests in a row if the stocks don't fetch.
         if (fetchCount <= MAX_FETCH_COUNT) {
           attemptingFetch = true
-          viewModel.fetch().observe(viewLifecycleOwner, { success ->
+          viewModel.fetch().observe(viewLifecycleOwner) { success ->
             attemptingFetch = false
             swipe_container?.isRefreshing = false
             if (success) {
               update()
             }
-          })
+          }
         } else {
           attemptingFetch = false
           InAppMessage.showMessage(requireActivity(), R.string.refresh_failed, error = true)
@@ -133,6 +140,23 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
 
   override fun onDragEnded() {
     swipe_container.isEnabled = true
+  }
+
+  private val offsetChangedListener = object : AppBarLayout.OnOffsetChangedListener {
+    private var isTitleShowing = true
+
+    override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
+      val show = verticalOffset > -20
+      if (show && !isTitleShowing) {
+        subtitle.animate().alpha(1f).start()
+        tabs.animate().alpha(1f).start()
+        isTitleShowing = true
+      } else if (!show && isTitleShowing) {
+        subtitle.animate().alpha(0f).start()
+        tabs.animate().alpha(0f).start()
+        isTitleShowing = false
+      }
+    }
   }
 
   // ChildFragment

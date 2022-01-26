@@ -71,16 +71,16 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       this.tickerSet.addAll(DEFAULT_STOCKS)
     }
     val lastFetched = preferences.getLong(LAST_FETCHED, 0L)
-    _lastFetched.value = lastFetched
+    _lastFetched.tryEmit(lastFetched)
     val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
-    _nextFetch.value = nextFetch
+    _nextFetch.tryEmit(nextFetch)
     alarmScheduler.enqueuePeriodicRefresh(context)
     if (lastFetched == 0L) {
       launch {
-        fetch()
+        fetch().collect()
       }
     } else {
-      _fetchState.value = FetchState.Success(lastFetched)
+      _fetchState.tryEmit(FetchState.Success(lastFetched))
       runBlocking { fetchLocal() }
     }
   }
@@ -114,7 +114,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     msToNextAlarm: Long
   ) {
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
-    _nextFetch.value = updateTime.toInstant().toEpochMilli()
+    _nextFetch.tryEmit(updateTime.toInstant().toEpochMilli())
     preferences.edit()
         .putLong(NEXT_FETCH, _nextFetch.value)
         .apply()
@@ -125,7 +125,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   private fun fetchStockInternal(ticker: String, allowCache: Boolean): Flow<FetchResult<Quote>> =
     flow {
       val quote = if (allowCache) quoteMap[ticker] else null
-      quote?.let { FetchResult.success(quote) } ?: run {
+      quote?.let { emit(FetchResult.success(quote)) } ?: run {
         try {
           emit(api.getStock(ticker))
         } catch (ex: Exception) {
@@ -198,14 +198,15 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         quote.symbol = ticker
         quoteMap[ticker] = quote
         saveTickers()
-        _tickers.value = tickerSet.toList()
-        _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
+        _tickers.tryEmit(tickerSet.toList())
+        _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
         launch {
           fetchStockInternal(ticker, false).collect { result ->
             if (result.wasSuccessful) {
               val data = result.data
               quoteMap[ticker] = data
               storage.saveQuote(result.data)
+              _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
             }
           }
         }
@@ -233,7 +234,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       }
       if (!tickerSet.contains(ticker)) {
         tickerSet.add(ticker)
-        _tickers.value = tickerSet.toList()
+        _tickers.tryEmit(tickerSet.toList())
         saveTickers()
       }
       val holding = Holding(ticker, shares, price)
@@ -243,7 +244,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         val id = storage.addHolding(holding)
         holding.id = id
       }
-      _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
+      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
       return holding
     }
   }
@@ -260,8 +261,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       launch {
         storage.removeHolding(ticker, holding)
       }
-      _tickers.value = tickerSet.toList()
-      _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
+      _tickers.tryEmit(tickerSet.toList())
+      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
     }
   }
 
@@ -272,11 +273,11 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       saveTickers()
       if (filterNot.isNotEmpty()) {
         launch {
-          fetch()
+          fetch().collect()
         }
       }
-      _tickers.value = tickerSet.toList()
-      _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
+      _tickers.tryEmit(tickerSet.toList())
+      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
     }
     return this.tickerSet
   }
@@ -286,8 +287,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       tickerSet.remove(ticker)
       saveTickers()
       quoteMap.remove(ticker)
-      _tickers.value = tickerSet.toList()
-      _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
+      _tickers.tryEmit(tickerSet.toList())
+      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
     }
     launch {
       storage.removeQuoteBySymbol(ticker)
@@ -301,8 +302,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         tickerSet.remove(it)
         quoteMap.remove(it)
       }
-      _tickers.value = tickerSet.toList()
-      _portfolio.value = quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
+      _tickers.tryEmit(tickerSet.toList())
+      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
     }
     saveTickers()
     launch {
@@ -335,7 +336,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     launch {
       storage.saveQuotes(portfolio)
       fetchLocal()
-      fetch()
+      fetch().collect()
     }
   }
 

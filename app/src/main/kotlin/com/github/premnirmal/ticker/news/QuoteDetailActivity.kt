@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
@@ -32,7 +31,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import com.github.premnirmal.tickerwidget.R.dimen
-import kotlinx.android.synthetic.main.activity_graph.*
+import kotlinx.android.synthetic.main.activity_graph.one_day
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_above
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_below
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_header
@@ -108,7 +107,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     ticker = checkNotNull(intent.getStringExtra(TICKER))
 
     viewModel = ViewModelProvider(this).get(QuoteDetailViewModel::class.java)
-    viewModel.quote.observe(this, Observer { result ->
+    viewModel.quote.observe(this) { result ->
       if (result.wasSuccessful) {
         quote = result.data
         fetch()
@@ -121,40 +120,40 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         graphView.setNoDataText(getString(R.string.error_fetching_stock))
         news_container.displayedChild = INDEX_ERROR
       }
-    })
-    viewModel.data.observe(this, Observer { data ->
+    }
+    viewModel.data.observe(this) { data ->
       dataPoints = data
       loadGraph(ticker)
-    })
-    viewModel.dataFetchError.observe(this, Observer {
+    }
+    viewModel.dataFetchError.observe(this) {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.graph_fetch_failed))
       InAppMessage.showMessage(this@QuoteDetailActivity, R.string.graph_fetch_failed, error = true)
-    })
-    viewModel.newsData.observe(this, Observer { data ->
+    }
+    viewModel.newsData.observe(this) { data ->
       analytics.trackGeneralEvent(
           GeneralEvent("FetchNews")
               .addProperty("Success", "True")
       )
       setUpArticles(data)
-    })
-    viewModel.newsError.observe(this, Observer {
+    }
+    viewModel.newsError.observe(this) {
       news_container.displayedChild = INDEX_ERROR
       InAppMessage.showMessage(this@QuoteDetailActivity, R.string.news_fetch_failed, error = true)
       analytics.trackGeneralEvent(
           GeneralEvent("FetchNews")
               .addProperty("Success", "False")
       )
-    })
+    }
     viewModel.fetchQuote(ticker)
-    var view: View? = null
-    when (range) {
-      Range.ONE_DAY -> view = one_day
-      Range.TWO_WEEKS -> view = two_weeks
-      Range.ONE_MONTH -> view = one_month
-      Range.THREE_MONTH -> view = three_month
-      Range.ONE_YEAR -> view = one_year
-      Range.MAX -> view = max
+    val view = when (range) {
+      Range.ONE_DAY -> one_day
+      Range.TWO_WEEKS -> two_weeks
+      Range.ONE_MONTH -> one_month
+      Range.THREE_MONTH -> three_month
+      Range.ONE_YEAR -> one_year
+      Range.MAX -> max
+      else -> null
     }
     view?.isEnabled = false
   }

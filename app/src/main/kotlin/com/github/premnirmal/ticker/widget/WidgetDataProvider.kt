@@ -68,7 +68,13 @@ class WidgetDataProvider {
   fun removeWidget(widgetId: Int): WidgetData? {
     return synchronized(widgets) {
       val removed = widgets.remove(widgetId)
-      removed?.onWidgetRemoved()
+      removed?.let {
+        if (widgetCount == 0) {
+          val widget = dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
+          widget.addTickers(it.getTickers())
+        }
+        it.onWidgetRemoved()
+      }
       return@synchronized removed
     }
   }
