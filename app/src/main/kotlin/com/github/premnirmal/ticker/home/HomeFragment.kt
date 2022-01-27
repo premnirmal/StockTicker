@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,12 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.internal.ViewUtils
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.android.synthetic.main.fragment_home.app_bar_layout
 import kotlinx.android.synthetic.main.fragment_home.subtitle
@@ -64,12 +65,18 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     return inflater.inflate(R.layout.fragment_home, container, false)
   }
 
+  @SuppressLint("RestrictedApi")
   override fun onViewCreated(
     view: View,
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
+    ViewUtils.doOnApplyWindowInsets(view) { _, insets, _ ->
+      val statusBarSize = insets.systemWindowInsetTop
+      (toolbar.layoutParams as MarginLayoutParams).topMargin = statusBarSize
+      (subtitle.layoutParams as MarginLayoutParams).topMargin = statusBarSize
+      insets
+    }
     swipe_container.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager, lifecycle)
     view_pager.adapter = adapter

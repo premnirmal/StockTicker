@@ -74,7 +74,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     _lastFetched.tryEmit(lastFetched)
     val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     _nextFetch.tryEmit(nextFetch)
-    alarmScheduler.enqueuePeriodicRefresh(context)
+    launch {
+      alarmScheduler.enqueuePeriodicRefresh(context)
+    }
     if (lastFetched == 0L) {
       launch {
         fetch().collect()
@@ -187,7 +189,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun schedule() {
     scheduleUpdate()
-    alarmScheduler.enqueuePeriodicRefresh(context, force = true)
+    launch {
+      alarmScheduler.enqueuePeriodicRefresh(context, force = true)
+    }
   }
 
   override fun addStock(ticker: String): Collection<String> {

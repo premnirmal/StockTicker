@@ -14,6 +14,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkInfo.State.RUNNING
 import androidx.work.WorkManager
+import androidx.work.await
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
@@ -142,13 +143,17 @@ class AlarmScheduler {
     return nextAlarmDate
   }
 
-  fun enqueuePeriodicRefresh(context: Context, force: Boolean = true) {
+  suspend fun enqueuePeriodicRefresh(context: Context, force: Boolean = true) {
     with(WorkManager.getInstance(context)) {
-      val enqueuedAlready = getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
-          .get()
-          .any {
-            it.state == ENQUEUED || it.state == RUNNING
-          }
+      val enqueuedAlready = try {
+        getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
+            .await()
+            .any {
+              it.state == ENQUEUED || it.state == RUNNING
+            }
+      } catch (e: Exception) {
+        false
+      }
       if (!enqueuedAlready || force) {
         val delayMs = appPreferences.updateIntervalMs
         val constraints = Constraints.Builder()
