@@ -35,7 +35,7 @@
   </com.google.android.material.appbar.AppBarLayout>
 
   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-      android:layout_width="@dimen/tablet_width"
+      android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_gravity="center_horizontal|top"
       android:id="@+id/swipe_container"
@@ -83,6 +83,8 @@
           android:id="@+id/recycler_view"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
+          android:paddingStart="@dimen/tablet_margin_horizontal"
+          android:paddingEnd="@dimen/tablet_margin_horizontal"
           android:paddingBottom="?actionBarSize"
           android:clipToPadding="false"
           android:scrollbars="none"

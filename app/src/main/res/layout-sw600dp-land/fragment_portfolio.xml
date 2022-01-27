@@ -1,0 +1,35 @@
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/view_flipper"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:autoStart="false"
+    android:inAnimation="@android:anim/fade_in"
+    android:outAnimation="@android:anim/fade_out"
+    >
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="?attr/actionBarSize"
+      android:layout_gravity="center_horizontal"
+      android:gravity="center"
+      android:text="@string/no_symbols"
+      android:textColor="@color/color_accent"
+      android:textSize="@dimen/large_text"
+      style="@style/BoldTextView"
+      />
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/stockList"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:paddingBottom="?attr/actionBarSize"
+      android:paddingStart="@dimen/tablet_margin_horizontal"
+      android:paddingEnd="@dimen/tablet_margin_horizontal"
+      android:clipToPadding="false"
+      android:scrollbars="none"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      />
+
+</ViewFlipper>

@@ -32,6 +32,7 @@ class WidgetData {
     private const val WIDGET_BG = AppPreferences.WIDGET_BG
     private const val TEXT_COLOR = AppPreferences.TEXT_COLOR
     private const val TRANSPARENT = AppPreferences.TRANSPARENT
+    private const val TRANSLUCENT = AppPreferences.TRANSLUCENT
     private const val SYSTEM = AppPreferences.SYSTEM
     private const val DARK = AppPreferences.DARK
     private const val LIGHT = AppPreferences.LIGHT
@@ -186,6 +187,9 @@ class WidgetData {
       bgPref() == TRANSPARENT -> {
         R.drawable.transparent_widget_bg
       }
+      bgPref() == TRANSLUCENT -> {
+        R.drawable.translucent_widget_bg
+      }
       nightMode -> {
         R.drawable.app_widget_background_dark
       }
@@ -205,7 +209,7 @@ class WidgetData {
 
   fun bgPref(): Int {
     var pref = preferences.getInt(WIDGET_BG, SYSTEM)
-    if (pref > TRANSPARENT) {
+    if (pref > TRANSLUCENT) {
       pref = SYSTEM
       setBgPref(pref)
     }

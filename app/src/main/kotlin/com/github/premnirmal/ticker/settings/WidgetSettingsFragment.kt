@@ -24,10 +24,27 @@ import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_widget_settings.*
+import kotlinx.android.synthetic.main.fragment_widget_settings.preview_container
+import kotlinx.android.synthetic.main.fragment_widget_settings.scroll_view
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_add_stock
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_background
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
+import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
+import kotlinx.android.synthetic.main.fragment_widget_settings.widget_layout
 import kotlinx.android.synthetic.main.widget_2x1.list
-import kotlinx.android.synthetic.main.widget_header.*
-import kotlinx.coroutines.flow.collect
+import kotlinx.android.synthetic.main.widget_header.last_updated
+import kotlinx.android.synthetic.main.widget_header.next_update
+import kotlinx.android.synthetic.main.widget_header.widget_header
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -39,12 +56,14 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     private const val ARG_SHOW_ADD_STOCKS = "show_add_stocks"
+    private const val TRANSPARENT_BG = "transparent_bg"
 
-    fun newInstance(widgetId: Int, showAddStocks: Boolean): WidgetSettingsFragment {
+    fun newInstance(widgetId: Int, showAddStocks: Boolean, transparentBg: Boolean = false): WidgetSettingsFragment {
       val fragment = WidgetSettingsFragment()
       val args = Bundle()
       args.putInt(ARG_WIDGET_ID, widgetId)
       args.putBoolean(ARG_SHOW_ADD_STOCKS, showAddStocks)
+      args.putBoolean(TRANSPARENT_BG, transparentBg)
       fragment.arguments = args
       return fragment
     }
@@ -58,6 +77,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
   @Inject internal lateinit var stocksProvider: IStocksProvider
   private lateinit var adapter: WidgetPreviewAdapter
   private var showAddStocks = true
+  private var transparentBg = true
   private val parent: Parent
     get() = activity as Parent
   internal var widgetId = 0
@@ -68,6 +88,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
     Injector.appComponent.inject(this)
     widgetId = requireArguments().getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     showAddStocks = requireArguments().getBoolean(ARG_SHOW_ADD_STOCKS, true)
+    transparentBg = requireArguments().getBoolean(TRANSPARENT_BG, false)
   }
 
   override fun onCreateView(
@@ -84,6 +105,9 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
   ) {
     super.onViewCreated(view, savedInstanceState)
     setting_add_stock.visibility = if (showAddStocks) View.VISIBLE else View.GONE
+    if (!transparentBg) {
+      preview_container.setBackgroundResource(R.drawable.bg_header)
+    }
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     setWidgetNameSetting(widgetData)
     setLayoutTypeSetting(widgetData)
@@ -125,7 +149,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
           setWidgetNameSetting(widgetData)
           v.setIsEditable(false)
           v.setOnClickListener(this)
-          InAppMessage.showMessage(requireActivity(), R.string.widget_name_updated)
+          InAppMessage.showMessage(view as ViewGroup, R.string.widget_name_updated)
         }
       }
       R.id.setting_layout_type -> {
@@ -137,7 +161,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
           if (which == 2) {
             showDialog(getString(R.string.change_instructions))
           }
-          InAppMessage.showMessage(requireActivity(), R.string.layout_updated_message)
+          InAppMessage.showMessage(view as ViewGroup, R.string.layout_updated_message)
         }
       }
 
@@ -147,11 +171,14 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
           if (which == AppPreferences.SYSTEM) {
             widgetData.setTextColorPref(which)
             setTextColorSetting(widgetData)
+          } else if (which == AppPreferences.TRANSLUCENT) {
+            widgetData.setTextColorPref(AppPreferences.LIGHT)
+            setTextColorSetting(widgetData)
           }
           setBgSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(requireActivity(), R.string.bg_updated_message)
+          InAppMessage.showMessage(view as ViewGroup, R.string.bg_updated_message)
         }
       }
 
@@ -161,7 +188,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
           setTextColorSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(requireActivity(), R.string.text_color_updated_message)
+          InAppMessage.showMessage(view as ViewGroup, R.string.text_color_updated_message)
         }
       }
 
@@ -173,7 +200,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
           setWidgetSizeSetting(widgetData)
           dialog.dismiss()
           broadcastUpdateWidget()
-          InAppMessage.showMessage(requireActivity(), R.string.widget_width_updated_message)
+          InAppMessage.showMessage(view as ViewGroup, R.string.widget_width_updated_message)
         }
       }
 

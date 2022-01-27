@@ -39,13 +39,7 @@
   <string-array name="backgrounds">
     <item>Como o sistema</item>
     <item>Transparente</item>
-  </string-array>
-
-  <string-array name="backgrounds_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
+    <item>Translucente</item>
   </string-array>
 
   <string-array name="text_colors">
@@ -55,6 +49,7 @@
   </string-array>
 
   <string-array name="sync_periods">
+    <item>5 minutos</item>
     <item>15 minutos</item>
     <item>30 minutos</item>
     <item>45 minutos</item>
@@ -65,6 +60,7 @@
     <item>1</item>
     <item>2</item>
     <item>3</item>
+    <item>4</item>
   </string-array>
 
   <string-array name="days">

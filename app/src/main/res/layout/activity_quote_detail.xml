@@ -1,34 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:id="@+id/parentView"
     >
 
-  <androidx.appcompat.widget.Toolbar
-      android:id="@+id/toolbar"
+  <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/bg_toolbar"
-      app:layout_collapseMode="pin"
-      app:navigationIcon="?attr/homeAsUpIndicator"
-      app:titleTextAppearance="@style/ActionBarTitleText"
-      tools:title="AAPL"
-      />
-
+      >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_toolbar"
+        app:layout_collapseMode="pin"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        tools:title="AAPL"
+        />
+  </com.google.android.material.appbar.AppBarLayout>
   <androidx.core.widget.NestedScrollView
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:scrollbars="vertical"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
       >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed"
         >
 
       <TextView
@@ -51,7 +55,7 @@
           android:onClick="openGraph"
           android:padding="8dp"
           android:src="@drawable/ic_enlarge"
-          android:tint="@color/icon_tint"
+          app:tint="@color/icon_tint"
           />
 
       <FrameLayout
@@ -262,7 +266,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_edit"
-            android:tint="@color/icon_tint"
+            app:tint="@color/icon_tint"
             />
 
       </LinearLayout>
@@ -401,7 +405,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_edit"
-            android:tint="@color/icon_tint"
+            app:tint="@color/icon_tint"
             />
       </LinearLayout>
 
@@ -468,7 +472,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_edit"
-            android:tint="@color/icon_tint"
+            app:tint="@color/icon_tint"
             />
 
       </LinearLayout>
@@ -551,4 +555,4 @@
 
     </LinearLayout>
   </androidx.core.widget.NestedScrollView>
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

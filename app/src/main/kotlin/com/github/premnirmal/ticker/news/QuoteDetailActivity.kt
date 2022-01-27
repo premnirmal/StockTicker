@@ -53,6 +53,7 @@ import kotlinx.android.synthetic.main.activity_quote_detail.notes_header
 import kotlinx.android.synthetic.main.activity_quote_detail.numShares
 import kotlinx.android.synthetic.main.activity_quote_detail.one_month
 import kotlinx.android.synthetic.main.activity_quote_detail.one_year
+import kotlinx.android.synthetic.main.activity_quote_detail.parentView
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_container
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_header
 import kotlinx.android.synthetic.main.activity_quote_detail.progress
@@ -113,8 +114,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         fetch()
         setupUi()
       } else {
-        InAppMessage.showMessage(
-            this@QuoteDetailActivity, R.string.error_fetching_stock, error = true
+        InAppMessage.showMessage(parentView, R.string.error_fetching_stock, error = true
         )
         progress.visibility = View.GONE
         graphView.setNoDataText(getString(R.string.error_fetching_stock))
@@ -128,7 +128,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     viewModel.dataFetchError.observe(this) {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-      InAppMessage.showMessage(this@QuoteDetailActivity, R.string.graph_fetch_failed, error = true)
+      InAppMessage.showMessage(parentView, R.string.graph_fetch_failed, error = true)
     }
     viewModel.newsData.observe(this) { data ->
       analytics.trackGeneralEvent(
@@ -139,7 +139,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     viewModel.newsError.observe(this) {
       news_container.displayedChild = INDEX_ERROR
-      InAppMessage.showMessage(this@QuoteDetailActivity, R.string.news_fetch_failed, error = true)
+      InAppMessage.showMessage(parentView, R.string.news_fetch_failed, error = true)
       analytics.trackGeneralEvent(
           GeneralEvent("FetchNews")
               .addProperty("Success", "False")
@@ -395,7 +395,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
 
   private fun fetch() {
     if (!isNetworkOnline()) {
-      InAppMessage.showMessage(this, R.string.no_network_message, error = true)
+      InAppMessage.showMessage(parentView, R.string.no_network_message, error = true)
     }
     if (adapter.itemCount == 0) {
       news_container.displayedChild = INDEX_PROGRESS

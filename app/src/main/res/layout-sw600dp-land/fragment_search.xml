@@ -37,11 +37,11 @@
     <EditText
         android:id="@+id/search_view"
         android:layout_gravity="center_horizontal|top"
-        android:layout_width="@dimen/tablet_width"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="@dimen/tablet_margin_horizontal"
+        android:layout_marginEnd="@dimen/tablet_margin_horizontal"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_marginRight="5dp"
         android:elevation="0dp"
         android:hint="@string/enter_a_symbol"
         android:imeOptions="actionDone"
@@ -60,8 +60,10 @@
   <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/recycler_view"
       android:layout_gravity="center_horizontal|top"
-      android:layout_width="@dimen/tablet_width"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:paddingStart="@dimen/tablet_margin_horizontal"
+      android:paddingEnd="@dimen/tablet_margin_horizontal"
       android:scrollbars="none"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />

@@ -26,8 +26,10 @@
   </com.google.android.material.appbar.AppBarLayout>
 
   <ScrollView
-      android:layout_width="@dimen/tablet_width"
+      android:layout_width="match_parent"
       android:layout_height="match_parent"
+      android:paddingStart="@dimen/tablet_margin_horizontal"
+      android:paddingEnd="@dimen/tablet_margin_horizontal"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       android:scrollbars="none"
       android:layout_gravity="top|center_horizontal"

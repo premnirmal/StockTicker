@@ -48,4 +48,5 @@
   <dimen name="widget_refresh_icon_padding_top">2dp</dimen>
 
   <dimen name="tablet_width">600dp</dimen>
+  <dimen name="tablet_margin_horizontal">125dp</dimen>
 </resources>

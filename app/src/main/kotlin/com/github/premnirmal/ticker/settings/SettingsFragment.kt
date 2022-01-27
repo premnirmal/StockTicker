@@ -181,7 +181,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           appPreferences.themePref = index
           themePref.summary = listPreference.entries[index]
           AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
-          InAppMessage.showMessage(requireActivity(), R.string.theme_updated_message)
+          InAppMessage.showMessage(requireView(), R.string.theme_updated_message)
           return true
         }
       }
@@ -276,7 +276,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
               .apply()
           broadcastUpdateWidget()
           fontSizePreference.summary = fontSizePreference.entries[index]
-          InAppMessage.showMessage(requireActivity(), R.string.text_size_updated_message)
+          InAppMessage.showMessage(requireView(), R.string.text_size_updated_message)
           return true
         }
       }
@@ -300,7 +300,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
               .apply()
           broadcastUpdateWidget()
           refreshPreference.summary = refreshPreference.entries[index]
-          InAppMessage.showMessage(requireActivity(), R.string.refresh_updated_message)
+          InAppMessage.showMessage(requireView(), R.string.refresh_updated_message)
           return true
         }
       }
@@ -326,7 +326,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
             startTimePref.summary = newValue.toString()
             stocksProvider.schedule()
             notificationsHandler.enqueueDailySummaryNotification()
-            InAppMessage.showMessage(requireActivity(), R.string.start_time_updated)
+            InAppMessage.showMessage(requireView(), R.string.start_time_updated)
             return true
           }
         }
@@ -360,7 +360,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
             endTimePref.summary = newValue.toString()
             stocksProvider.schedule()
             notificationsHandler.enqueueDailySummaryNotification()
-            InAppMessage.showMessage(requireActivity(), R.string.end_time_updated)
+            InAppMessage.showMessage(requireView(), R.string.end_time_updated)
             return true
           }
         }
@@ -383,7 +383,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           val selectedValues = newValue as Set<String>
           if (selectedValues.isEmpty()) {
             InAppMessage.showMessage(
-                requireActivity(), R.string.days_updated_error_message, error = true
+                requireView(), R.string.days_updated_error_message, error = true
             )
             return false
           }
@@ -394,7 +394,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
               }
           stocksProvider.schedule()
           notificationsHandler.enqueueDailySummaryNotification()
-          InAppMessage.showMessage(requireActivity(), R.string.days_updated_message)
+          InAppMessage.showMessage(requireView(), R.string.days_updated_message)
           broadcastUpdateWidget()
           return true
         }
@@ -656,7 +656,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     messageRes: Int
   ) {
     if (lastHour > 23 || lastHour < 0 || lastMinute > 59 || lastMinute < 0) {
-      InAppMessage.showMessage(requireActivity(), R.string.invalid_time, true)
+      InAppMessage.showMessage(requireView(), R.string.invalid_time, true)
       return
     }
     val hourString = if (lastHour < 10) "0$lastHour" else lastHour.toString()
@@ -673,7 +673,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       preference.summary = time
       stocksProvider.schedule()
       notificationsHandler.enqueueDailySummaryNotification()
-      InAppMessage.showMessage(requireActivity(), messageRes)
+      InAppMessage.showMessage(requireView(), messageRes)
     }
   }
 

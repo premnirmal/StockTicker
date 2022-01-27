@@ -127,6 +127,7 @@
       app:iconSpaceReserved="false"
       app:key="SETTING_FOOTER"
       app:layout="@layout/preferences_footer"
+      app:allowDividerBelow="false"
       app:selectable="false"/>
 
 </androidx.preference.PreferenceScreen>

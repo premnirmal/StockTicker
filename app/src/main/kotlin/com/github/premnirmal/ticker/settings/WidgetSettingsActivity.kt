@@ -45,7 +45,9 @@ class WidgetSettingsActivity : BaseActivity(), WidgetSettingsFragment.Parent {
     }
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()
-          .add(R.id.fragment_container, WidgetSettingsFragment.newInstance(widgetId, true))
+          .add(R.id.fragment_container, WidgetSettingsFragment.newInstance(widgetId,
+              showAddStocks = true, transparentBg = true
+          ))
           .commit()
     }
   }

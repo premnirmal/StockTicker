@@ -197,7 +197,7 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
       widgetData.setAutoSort(false)
       update()
       holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
-      InAppMessage.showMessage(requireActivity(), R.string.autosort_disabled)
+      InAppMessage.showMessage(requireView(), R.string.autosort_disabled)
     } else {
       itemTouchHelper?.startDrag(viewHolder)
     }

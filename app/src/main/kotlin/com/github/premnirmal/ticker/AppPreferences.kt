@@ -239,6 +239,7 @@ class AppPreferences {
     const val APP_THEME = "APP_THEME"
     const val SYSTEM = 0
     const val TRANSPARENT = 1
+    const val TRANSLUCENT = 2
     const val LIGHT = 1
     const val DARK = 2
 

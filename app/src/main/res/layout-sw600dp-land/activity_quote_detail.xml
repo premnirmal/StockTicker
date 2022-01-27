@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:id="@+id/parentView"
     >
-
-  <androidx.appcompat.widget.Toolbar
-      android:id="@+id/toolbar"
+  <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/bg_toolbar"
-      app:layout_collapseMode="pin"
-      app:navigationIcon="?attr/homeAsUpIndicator"
-      app:titleTextAppearance="@style/ActionBarTitleText"
-      tools:title="AAPL"
-      />
-
+      >
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_toolbar"
+        app:layout_collapseMode="pin"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:titleTextAppearance="@style/ActionBarTitleText"
+        tools:title="AAPL"
+        />
+  </com.google.android.material.appbar.AppBarLayout>
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:orientation="horizontal"
       android:baselineAligned="false"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
       >
 
     <ScrollView
@@ -30,6 +34,7 @@
         android:layout_height="match_parent"
         android:layout_weight="0.5"
         android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
       <androidx.constraintlayout.widget.ConstraintLayout
@@ -65,7 +70,7 @@
             android:onClick="openGraph"
             android:padding="8dp"
             android:src="@drawable/ic_enlarge"
-            android:tint="@color/icon_tint"
+            app:tint="@color/icon_tint"
             />
 
         <FrameLayout
@@ -535,6 +540,7 @@
           android:layout_marginLeft="4dp"
           android:layout_marginStart="4dp"
           android:layout_gravity="center"
+          app:layout_behavior="@string/appbar_scrolling_view_behavior"
           >
         <ProgressBar
             android:layout_width="wrap_content"
@@ -569,10 +575,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/recycler_view"
             android:scrollbars="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             />
       </ViewFlipper>
     </LinearLayout>
 
   </LinearLayout>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
