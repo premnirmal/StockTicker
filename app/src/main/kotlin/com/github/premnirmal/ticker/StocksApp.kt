@@ -11,6 +11,7 @@ import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.jakewharton.threetenabp.AndroidThreeTen
 import io.github.inflationx.calligraphy3.CalligraphyConfig
@@ -30,6 +31,7 @@ open class StocksApp : MultiDexApplication() {
     @Inject lateinit var newsProvider: NewsProvider
     @Inject lateinit var commitsProvider: CommitsProvider
     @Inject lateinit var notificationsHandler: NotificationsHandler
+    @Inject lateinit var widgetDataProvider: WidgetDataProvider
   }
 
   private val holder = InjectionHolder()
@@ -52,6 +54,7 @@ open class StocksApp : MultiDexApplication() {
     AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
     initAnalytics()
     initNotificationHandler()
+    holder.widgetDataProvider.widgetDataList()
   }
 
   protected open fun initNotificationHandler() {
