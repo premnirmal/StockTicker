@@ -1,14 +1,18 @@
 package com.github.premnirmal.ticker.home
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -27,55 +31,52 @@ class HomeViewModel : ViewModel() {
   val hasHoldings: Boolean
     get() = stocksProvider.hasPositions()
 
-  fun getTotalHoldings(): String {
-    var totalHoldings = 0.0
-    if (stocksProvider.tickers.value.isNotEmpty()) {
-      totalHoldings = stocksProvider.portfolio.value.filter { it.hasPositions() }.sumOf { quote ->
-        quote.holdings().toDouble()
-      }
-    }
-    return appPreferences.selectedDecimalFormat.format(totalHoldings)
-  }
-
-  fun getTotalGainLoss(): Pair<String, String> {
-    var totalGainStr = ""
-    var totalLossStr = ""
-
-    if (stocksProvider.tickers.value.isNotEmpty()) {
-      var totalGain = 0.0f
-      var totalLoss = 0.0f
-      val portfolio: List<Quote> = stocksProvider.portfolio.value
-
-      for (quote in portfolio) {
-        if (quote.hasPositions()) {
-          val gainLoss = quote.gainLoss()
-          if (gainLoss > 0.0f) {
-            totalGain += gainLoss
-          } else {
-            totalLoss += gainLoss
+  fun getTotalGainLoss(): LiveData<TotalGainLoss> {
+    val data = MutableLiveData<TotalGainLoss>()
+    viewModelScope.launch {
+      if (stocksProvider.tickers.value.isNotEmpty()) {
+        stocksProvider.portfolio.collect {
+          val totalHoldings = it.filter { it.hasPositions() }
+              .sumOf { quote ->
+                quote.holdings()
+                    .toDouble()
+              }
+          val totalHoldingsStr = appPreferences.selectedDecimalFormat.format(totalHoldings)
+          var totalGain = 0.0f
+          var totalLoss = 0.0f
+          for (quote in it) {
+            if (quote.hasPositions()) {
+              val gainLoss = quote.gainLoss()
+              if (gainLoss > 0.0f) {
+                totalGain += gainLoss
+              } else {
+                totalLoss += gainLoss
+              }
+            }
           }
+          val totalGainStr = if (totalGain != 0.0f) {
+            "+" + appPreferences.selectedDecimalFormat.format(totalGain)
+          } else {
+            ""
+          }
+          val totalLossStr = if (totalLoss != 0.0f) {
+            appPreferences.selectedDecimalFormat.format(totalLoss)
+          } else {
+            ""
+          }
+          data.value = TotalGainLoss(totalHoldingsStr, totalGainStr, totalLossStr)
+          cancel()
         }
-      }
-
-      totalGainStr = if (totalGain != 0.0f) {
-        "+" + appPreferences.selectedDecimalFormat.format(totalGain)
-      } else {
-        ""
-      }
-
-      totalLossStr = if (totalLoss != 0.0f) {
-        appPreferences.selectedDecimalFormat.format(totalLoss)
-      } else {
-        ""
-      }
+      } else data.value = TotalGainLoss("", "", "")
     }
-    return Pair(totalGainStr, totalLossStr)
+    return data
   }
 
   fun fetch() = liveData {
-    stocksProvider.fetch().collect { fetch ->
-      emit(fetch.wasSuccessful)
-    }
+    stocksProvider.fetch()
+        .collect { fetch ->
+          emit(fetch.wasSuccessful)
+        }
   }
 
   fun lastFetched(): String {
@@ -88,4 +89,10 @@ class HomeViewModel : ViewModel() {
     val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
     return time.createTimeString()
   }
+
+  data class TotalGainLoss(
+    val holdings: String,
+    val gain: String,
+    val loss: String
+  )
 }

@@ -228,35 +228,32 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-  override fun addHolding(
+  override suspend fun addHolding(
     ticker: String,
     shares: Float,
     price: Float
   ): Holding {
+    val quote: Quote?
+    var position: Position
     synchronized(quoteMap) {
-      val quote = quoteMap[ticker]
-      var position = getPosition(ticker)
-      if (position == null) {
-        position = Position(ticker)
-      }
+      quote = quoteMap[ticker]
+      position = getPosition(ticker) ?: Position(ticker)
       if (!tickerSet.contains(ticker)) {
         tickerSet.add(ticker)
         _tickers.tryEmit(tickerSet.toList())
         saveTickers()
       }
-      val holding = Holding(ticker, shares, price)
-      position.add(holding)
-      quote?.position = position
-      launch {
-        val id = storage.addHolding(holding)
-        holding.id = id
-      }
-      _portfolio.tryEmit(quoteMap.values.toList())
-      return holding
     }
+    val holding = Holding(ticker, shares, price)
+    position.add(holding)
+    quote?.position = position
+    val id = storage.addHolding(holding)
+    holding.id = id
+    _portfolio.tryEmit(quoteMap.values.toList())
+    return holding
   }
 
-  override fun removePosition(
+  override suspend fun removePosition(
     ticker: String,
     holding: Holding
   ) {
@@ -265,12 +262,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       val quote = quoteMap[ticker]
       position?.remove(holding)
       quote?.position = position
-      launch {
-        storage.removeHolding(ticker, holding)
-      }
-      _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.values.toList())
     }
+    storage.removeHolding(ticker, holding)
+    _portfolio.emit(quoteMap.values.toList())
   }
 
   override fun addStocks(symbols: Collection<String>): Collection<String> {

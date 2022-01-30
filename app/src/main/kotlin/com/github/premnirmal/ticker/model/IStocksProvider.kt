@@ -49,13 +49,13 @@ interface IStocksProvider {
 
   fun getPosition(ticker: String): Position?
 
-  fun addHolding(
+  suspend fun addHolding(
     ticker: String,
     shares: Float,
     price: Float
   ): Holding
 
-  fun removePosition(
+  suspend fun removePosition(
     ticker: String,
     holding: Holding
   )

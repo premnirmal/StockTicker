@@ -53,17 +53,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         R.string.last_and_next_fetch, viewModel.lastFetched(), viewModel.nextFetch()
     )
 
-  private val totalHoldingsText: String
-    get() {
-      return if (viewModel.hasHoldings) {
-        val totalHoldings = viewModel.getTotalHoldings()
-        getString(R.string.total_holdings, totalHoldings)
-      } else ""
-    }
-
-  private val totalGainLossText: Pair<String, String>
-    get() = viewModel.getTotalGainLoss()
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
@@ -136,11 +125,13 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     popupWindow.contentView = popupView
     popupWindow.isOutsideTouchable = true
     popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.card_bg))
-    popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
-    val (totalGainStr, totalLossStr) = totalGainLossText
-    popupView.findViewById<TextView>(R.id.totalGain).text = totalGainStr
-    popupView.findViewById<TextView>(R.id.totalLoss).text = totalLossStr
-    popupWindow.showAtLocation(toolbar, Gravity.TOP, toolbar.width / 2, toolbar.height)
+    viewModel.getTotalGainLoss().observe(viewLifecycleOwner) {
+      val totalHoldingsText = getString(R.string.total_holdings, it.holdings)
+      popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
+      popupView.findViewById<TextView>(R.id.totalGain).text = it.gain
+      popupView.findViewById<TextView>(R.id.totalLoss).text = it.loss
+      popupWindow.showAtLocation(toolbar, Gravity.TOP, toolbar.width / 2, toolbar.height)
+    }
   }
 
   private fun fetch() {
