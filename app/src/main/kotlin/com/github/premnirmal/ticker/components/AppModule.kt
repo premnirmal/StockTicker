@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_1_2
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -41,6 +42,9 @@ class AppModule(private val app: StocksApp) {
 
   @Provides @Singleton fun provideAppWidgetManager(): AppWidgetManager =
     AppWidgetManager.getInstance(app)
+
+  @Provides @Singleton internal fun provideWidgetDataProvider(): WidgetDataProvider =
+    WidgetDataProvider()
 
   @Provides @Singleton fun provideAppPreferences(): AppPreferences = AppPreferences()
 

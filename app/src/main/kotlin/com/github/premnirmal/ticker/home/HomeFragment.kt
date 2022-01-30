@@ -2,11 +2,15 @@ package com.github.premnirmal.ticker.home
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
-import androidx.lifecycle.ViewModelProvider
+import android.widget.PopupWindow
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -42,7 +46,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter
-  private lateinit var viewModel: HomeViewModel
+  private val viewModel: HomeViewModel by viewModels()
 
   private val subtitleText: String
     get() = getString(
@@ -52,9 +56,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
-
-    // Set up the ViewModel for the total holdings.
-    viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
   }
 
   override fun onCreateView(
@@ -88,6 +89,14 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     viewModel.fetchState.observe(viewLifecycleOwner) {
       updateHeader()
     }
+    toolbar.setOnMenuItemClickListener {
+      showTotalHoldingsPopup()
+      true
+    }
+    toolbar.menu.findItem(R.id.total_holdings).apply {
+      isVisible = viewModel.hasHoldings
+      isEnabled = viewModel.hasHoldings
+    }
   }
 
   override fun onDestroyView() {
@@ -104,6 +113,25 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.setData(widgetDataProvider.widgetDataList())
     subtitle.text = subtitleText
+    toolbar.menu.findItem(R.id.total_holdings).apply {
+      isVisible = viewModel.hasHoldings
+      isEnabled = viewModel.hasHoldings
+    }
+  }
+
+  private fun showTotalHoldingsPopup() {
+    val popupWindow = PopupWindow(requireContext(), null)
+    val popupView = LayoutInflater.from(requireContext()).inflate(R.layout.layout_holdings_popup, null)
+    popupWindow.contentView = popupView
+    popupWindow.isOutsideTouchable = true
+    popupWindow.setBackgroundDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.card_bg))
+    viewModel.getTotalGainLoss().observe(viewLifecycleOwner) {
+      val totalHoldingsText = getString(R.string.total_holdings, it.holdings)
+      popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
+      popupView.findViewById<TextView>(R.id.totalGain).text = it.gain
+      popupView.findViewById<TextView>(R.id.totalLoss).text = it.loss
+      popupWindow.showAtLocation(toolbar, Gravity.TOP, toolbar.width / 2, toolbar.height)
+    }
   }
 
   private fun fetch() {

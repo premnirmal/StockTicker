@@ -6,7 +6,6 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.Gson
@@ -132,8 +131,5 @@ class NetworkModule {
     HistoryProvider()
 
   @Provides @Singleton internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()
-
-  @Provides @Singleton internal fun provideWidgetDataFactory(): WidgetDataProvider =
-    WidgetDataProvider()
 
 }

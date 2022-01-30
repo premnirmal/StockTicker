@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
@@ -24,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_positions.toolbar
 import kotlinx.android.synthetic.main.activity_positions.totalShares
 import kotlinx.android.synthetic.main.activity_positions.totalValue
 import kotlinx.android.synthetic.main.layout_position_holding.view.remove_position
+import kotlinx.coroutines.launch
 import java.text.NumberFormat
 
 /**
@@ -103,12 +105,14 @@ class AddPositionActivity : BaseActivity() {
       if (success) {
         priceInputLayout.error = null
         sharesInputLayout.error = null
-        val holding = stocksProvider.addHolding(ticker, shares, price)
-        priceView.setText("")
-        sharesView.setText("")
-        addPositionView(holding)
-        updateTotal()
-        updateActivityResult()
+        lifecycleScope.launch {
+          val holding = stocksProvider.addHolding(ticker, shares, price)
+          priceView.setText("")
+          sharesView.setText("")
+          addPositionView(holding)
+          updateTotal()
+          updateActivityResult()
+        }
       }
     }
     dismissKeyboard()
@@ -137,9 +141,11 @@ class AddPositionActivity : BaseActivity() {
           .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_holding, "${holding.shares}@${holding.price}"))
           .setPositiveButton(R.string.remove) { dialog, _ ->
-            stocksProvider.removePosition(ticker, holding)
-            positionsHolder.removeView(view)
-            updateTotal()
+            lifecycleScope.launch {
+              stocksProvider.removePosition(ticker, holding)
+              positionsHolder.removeView(view)
+              updateTotal()
+            }
             dialog.dismiss()
           }
           .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }

@@ -70,6 +70,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     if (this.tickerSet.isEmpty()) {
       this.tickerSet.addAll(DEFAULT_STOCKS)
     }
+    _tickers.tryEmit(tickerSet.toList())
     val lastFetched = preferences.getLong(LAST_FETCHED, 0L)
     _lastFetched.tryEmit(lastFetched)
     val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
@@ -77,13 +78,13 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     launch {
       alarmScheduler.enqueuePeriodicRefresh(context)
     }
+    runBlocking { fetchLocal() }
     if (lastFetched == 0L) {
       launch {
         fetch().collect()
       }
     } else {
       _fetchState.tryEmit(FetchState.Success(lastFetched))
-      runBlocking { fetchLocal() }
     }
   }
 
@@ -93,6 +94,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         synchronized(quoteMap) {
           quotes.forEach { quoteMap[it.symbol] = it }
         }
+        _portfolio.emit(quoteMap.values.toList())
       } catch (e: Exception) {
         Timber.w(e)
       }
@@ -163,9 +165,10 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         if (fetchedStocks.isEmpty()) {
           emit(FetchResult.failure<List<Quote>>(FetchException("Refresh failed")))
         } else {
-          synchronized(tickers) {
+          synchronized(tickerSet) {
             tickerSet.addAll(fetchedStocks.map { it.symbol })
           }
+          _tickers.emit(tickerSet.toList())
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
           _lastFetched.emit(api.lastFetched)
@@ -203,14 +206,14 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         quoteMap[ticker] = quote
         saveTickers()
         _tickers.tryEmit(tickerSet.toList())
-        _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
+        _portfolio.tryEmit(quoteMap.values.toList())
         launch {
           fetchStockInternal(ticker, false).collect { result ->
             if (result.wasSuccessful) {
               val data = result.data
               quoteMap[ticker] = data
               storage.saveQuote(result.data)
-              _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
+              _portfolio.tryEmit(quoteMap.values.toList())
             }
           }
         }
@@ -225,35 +228,32 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-  override fun addHolding(
+  override suspend fun addHolding(
     ticker: String,
     shares: Float,
     price: Float
   ): Holding {
+    val quote: Quote?
+    var position: Position
     synchronized(quoteMap) {
-      val quote = quoteMap[ticker]
-      var position = getPosition(ticker)
-      if (position == null) {
-        position = Position(ticker)
-      }
+      quote = quoteMap[ticker]
+      position = getPosition(ticker) ?: Position(ticker)
       if (!tickerSet.contains(ticker)) {
         tickerSet.add(ticker)
         _tickers.tryEmit(tickerSet.toList())
         saveTickers()
       }
-      val holding = Holding(ticker, shares, price)
-      position.add(holding)
-      quote?.position = position
-      launch {
-        val id = storage.addHolding(holding)
-        holding.id = id
-      }
-      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
-      return holding
     }
+    val holding = Holding(ticker, shares, price)
+    position.add(holding)
+    quote?.position = position
+    val id = storage.addHolding(holding)
+    holding.id = id
+    _portfolio.tryEmit(quoteMap.values.toList())
+    return holding
   }
 
-  override fun removePosition(
+  override suspend fun removePosition(
     ticker: String,
     holding: Holding
   ) {
@@ -262,12 +262,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       val quote = quoteMap[ticker]
       position?.remove(holding)
       quote?.position = position
-      launch {
-        storage.removeHolding(ticker, holding)
-      }
-      _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
     }
+    storage.removeHolding(ticker, holding)
+    _portfolio.emit(quoteMap.values.toList())
   }
 
   override fun addStocks(symbols: Collection<String>): Collection<String> {
@@ -281,7 +278,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         }
       }
       _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
+      _portfolio.tryEmit(quoteMap.values.toList())
     }
     return this.tickerSet
   }
@@ -292,7 +289,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       saveTickers()
       quoteMap.remove(ticker)
       _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
+      _portfolio.tryEmit(quoteMap.values.toList())
     }
     launch {
       storage.removeQuoteBySymbol(ticker)
@@ -307,7 +304,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         quoteMap.remove(it)
       }
       _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value })
+      _portfolio.tryEmit(quoteMap.values.toList())
     }
     saveTickers()
     launch {
@@ -334,9 +331,9 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         if (!tickerSet.contains(symbol)) tickerSet.add(symbol)
         quoteMap[symbol] = it
       }
-      saveTickers()
-      widgetDataProvider.updateWidgets(tickerSet.toList())
     }
+    saveTickers()
+    widgetDataProvider.updateWidgets(tickerSet.toList())
     launch {
       storage.saveQuotes(portfolio)
       fetchLocal()

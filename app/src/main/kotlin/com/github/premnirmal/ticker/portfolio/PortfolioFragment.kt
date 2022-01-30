@@ -161,6 +161,11 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
     }
   }
 
+  override fun onResume() {
+    super.onResume()
+    update()
+  }
+
   private fun update() {
     stocksAdapter.refresh()
   }
