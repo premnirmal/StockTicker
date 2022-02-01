@@ -13,9 +13,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class CommitsProvider @Inject constructor(private val githubApi: GithubApi) {
-
-  private val coroutineScope = CoroutineScope(Dispatchers.IO)
+class CommitsProvider @Inject constructor(
+  private val githubApi: GithubApi,
+  private val coroutineScope: CoroutineScope
+) {
   private var cachedChanges: List<RepoCommit>? = null
 
   fun initCache() {

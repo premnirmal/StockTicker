@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Singleton
 class NewsProvider {
 
-  private val coroutineScope = CoroutineScope(Dispatchers.IO)
+  @Inject lateinit var coroutineScope: CoroutineScope
   @Inject internal lateinit var newsApi: NewsApi
 
   private var cachedBusinessArticles: List<NewsArticle> = emptyList()

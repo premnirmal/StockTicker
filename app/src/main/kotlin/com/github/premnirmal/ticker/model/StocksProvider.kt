@@ -26,13 +26,12 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider : IStocksProvider, CoroutineScope {
+class StocksProvider : IStocksProvider {
 
   companion object {
 
@@ -49,9 +48,8 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   @Inject lateinit var alarmScheduler: AlarmScheduler
   @Inject lateinit var clock: AppClock
   @Inject lateinit var storage: StocksStorage
+  @Inject lateinit var coroutineScope: CoroutineScope
 
-  override val coroutineContext: CoroutineContext
-    get() = Dispatchers.Main
   private val exponentialBackoff: ExponentialBackoff
 
   private val tickerSet: MutableSet<String> = HashSet()
@@ -75,12 +73,12 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     _lastFetched.tryEmit(lastFetched)
     val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     _nextFetch.tryEmit(nextFetch)
-    launch {
+    coroutineScope.launch {
       alarmScheduler.enqueuePeriodicRefresh(context)
     }
     runBlocking { fetchLocal() }
     if (lastFetched == 0L) {
-      launch {
+      coroutineScope.launch {
         fetch().collect()
       }
     } else {
@@ -144,9 +142,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
   /////////////////////
 
   override fun hasTicker(ticker: String): Boolean {
-    synchronized(tickerSet) {
-      return tickerSet.contains(ticker)
-    }
+    return tickerSet.contains(ticker)
   }
 
   override fun fetch(): Flow<FetchResult<List<Quote>>> = flow {
@@ -169,6 +165,12 @@ class StocksProvider : IStocksProvider, CoroutineScope {
             tickerSet.addAll(fetchedStocks.map { it.symbol })
           }
           _tickers.emit(tickerSet.toList())
+          // clean up existing tickers
+          ArrayList(tickerSet).forEach { ticker ->
+            if (!widgetDataProvider.containsTicker(ticker)) {
+              removeStock(ticker)
+            }
+          }
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
           _lastFetched.emit(api.lastFetched)
@@ -192,7 +194,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
 
   override fun schedule() {
     scheduleUpdate()
-    launch {
+    coroutineScope.launch {
       alarmScheduler.enqueuePeriodicRefresh(context, force = true)
     }
   }
@@ -205,17 +207,17 @@ class StocksProvider : IStocksProvider, CoroutineScope {
         quote.symbol = ticker
         quoteMap[ticker] = quote
         saveTickers()
-        _tickers.tryEmit(tickerSet.toList())
-        _portfolio.tryEmit(quoteMap.values.toList())
-        launch {
-          fetchStockInternal(ticker, false).collect { result ->
-            if (result.wasSuccessful) {
-              val data = result.data
-              quoteMap[ticker] = data
-              storage.saveQuote(result.data)
-              _portfolio.tryEmit(quoteMap.values.toList())
-            }
-          }
+      }
+    }
+    _tickers.tryEmit(tickerSet.toList())
+    _portfolio.tryEmit(quoteMap.values.toList())
+    coroutineScope.launch {
+      fetchStockInternal(ticker, false).collect { result ->
+        if (result.wasSuccessful) {
+          val data = result.data
+          quoteMap[ticker] = data
+          storage.saveQuote(result.data)
+          _portfolio.tryEmit(quoteMap.values.toList())
         }
       }
     }
@@ -240,16 +242,16 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       position = getPosition(ticker) ?: Position(ticker)
       if (!tickerSet.contains(ticker)) {
         tickerSet.add(ticker)
-        _tickers.tryEmit(tickerSet.toList())
-        saveTickers()
       }
     }
+    _tickers.emit(tickerSet.toList())
+    saveTickers()
     val holding = Holding(ticker, shares, price)
     position.add(holding)
     quote?.position = position
     val id = storage.addHolding(holding)
     holding.id = id
-    _portfolio.tryEmit(quoteMap.values.toList())
+    _portfolio.emit(quoteMap.values.toList())
     return holding
   }
 
@@ -273,43 +275,39 @@ class StocksProvider : IStocksProvider, CoroutineScope {
       filterNot.forEach { this.tickerSet.add(it) }
       saveTickers()
       if (filterNot.isNotEmpty()) {
-        launch {
+        coroutineScope.launch {
           fetch().collect()
         }
       }
-      _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.values.toList())
     }
+    _tickers.tryEmit(tickerSet.toList())
+    _portfolio.tryEmit(quoteMap.values.toList())
     return this.tickerSet
   }
 
-  override fun removeStock(ticker: String): Collection<String> {
+  override suspend fun removeStock(ticker: String): Collection<String> {
     synchronized(quoteMap) {
       tickerSet.remove(ticker)
       saveTickers()
       quoteMap.remove(ticker)
-      _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.values.toList())
     }
-    launch {
-      storage.removeQuoteBySymbol(ticker)
-    }
+    storage.removeQuoteBySymbol(ticker)
+    _tickers.emit(tickerSet.toList())
+    _portfolio.emit(quoteMap.values.toList())
     return tickerSet
   }
 
-  override fun removeStocks(symbols: Collection<String>) {
+  override suspend fun removeStocks(symbols: Collection<String>) {
     synchronized(quoteMap) {
       symbols.forEach {
         tickerSet.remove(it)
         quoteMap.remove(it)
       }
-      _tickers.tryEmit(tickerSet.toList())
-      _portfolio.tryEmit(quoteMap.values.toList())
     }
+    storage.removeQuotesBySymbol(symbols.toList())
+    _tickers.emit(tickerSet.toList())
+    _portfolio.emit(quoteMap.values.toList())
     saveTickers()
-    launch {
-      storage.removeQuotesBySymbol(symbols.toList())
-    }
   }
 
   override fun fetchStock(ticker: String): Flow<FetchResult<Quote>> {
@@ -334,7 +332,7 @@ class StocksProvider : IStocksProvider, CoroutineScope {
     }
     saveTickers()
     widgetDataProvider.updateWidgets(tickerSet.toList())
-    launch {
+    coroutineScope.launch {
       storage.saveQuotes(portfolio)
       fetchLocal()
       fetch().collect()

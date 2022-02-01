@@ -16,6 +16,8 @@ import com.github.premnirmal.ticker.home.ParanormalActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -33,6 +35,7 @@ class StockWidget : AppWidgetProvider() {
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var appPreferences: AppPreferences
+  @Inject internal lateinit var coroutineScope: CoroutineScope
 
   var injected = false
 
@@ -97,12 +100,14 @@ class StockWidget : AppWidgetProvider() {
       id.forEach { widgetId ->
         val removed = widgetDataProvider.removeWidget(widgetId)
         if (widgetDataProvider.getAppWidgetIds().isNotEmpty()) {
-          removed?.getTickers()
-              ?.forEach { ticker ->
-                if (!widgetDataProvider.containsTicker(ticker)) {
-                  stocksProvider.removeStock(ticker)
-                }
-              }
+//          removed?.getTickers()
+//              ?.forEach { ticker ->
+//                coroutineScope.launch {
+//                  if (!widgetDataProvider.containsTicker(ticker)) {
+//                    stocksProvider.removeStock(ticker)
+//                  }
+//                }
+//              }
         }
       }
     }

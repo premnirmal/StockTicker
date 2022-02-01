@@ -181,7 +181,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     private var isTitleShowing = true
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
-      val show = verticalOffset > -20
+      val show = verticalOffset > -tabs.height / 2
       if (show && !isTitleShowing) {
         subtitle.animate().alpha(1f).start()
         tabs.animate().alpha(1f).start()

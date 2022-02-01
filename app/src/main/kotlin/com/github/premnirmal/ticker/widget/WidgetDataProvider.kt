@@ -71,7 +71,7 @@ class WidgetDataProvider {
       removed?.let {
         if (widgetCount == 0) {
           val widget = dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
-          widget.addTickers(it.getTickers())
+          widget.addAllFromStocksProvider()
         }
         it.onWidgetRemoved()
       }

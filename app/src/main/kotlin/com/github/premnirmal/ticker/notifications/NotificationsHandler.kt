@@ -25,8 +25,6 @@ import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
@@ -46,7 +44,8 @@ class NotificationsHandler @Inject constructor(
   private val stocksStorage: StocksStorage,
   private val alarmScheduler: AlarmScheduler,
   private val appPreferences: AppPreferences,
-  private val clock: AppClock
+  private val clock: AppClock,
+  private val coroutineScope: CoroutineScope
 ) {
 
   companion object {
@@ -55,8 +54,6 @@ class NotificationsHandler @Inject constructor(
 
     private const val PREFS_NOTIFICATIONS = "${BuildConfig.APPLICATION_ID}.notifications.PREFS"
   }
-
-  private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   private val notificationFactory: NotificationFactory by lazy {
     NotificationFactory(context, appPreferences)

@@ -4,8 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import android.os.Handler
-import android.os.Looper
 import androidx.room.Room
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
@@ -20,6 +18,8 @@ import com.github.premnirmal.ticker.repo.migrations.MIGRATION_1_2
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 /**
@@ -30,10 +30,11 @@ class AppModule(private val app: StocksApp) {
 
   @Provides fun provideApplicationContext(): Context = app
 
-  @Provides @Singleton fun provideClock(): AppClock = AppClockImpl
+  @Singleton @Provides fun provideApplicationScope(): CoroutineScope {
+    return CoroutineScope(Dispatchers.Unconfined)
+  }
 
-  @Provides @Singleton fun provideMainThreadHandler(): Handler =
-    Handler(Looper.getMainLooper())
+  @Provides @Singleton fun provideClock(): AppClock = AppClockImpl
 
   @Provides @Singleton fun provideDefaultSharedPreferences(
     context: Context

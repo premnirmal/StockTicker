@@ -28,8 +28,6 @@ open class StocksApp : MultiDexApplication() {
   class InjectionHolder {
     @Inject lateinit var analytics: Analytics
     @Inject lateinit var appPreferences: AppPreferences
-    @Inject lateinit var newsProvider: NewsProvider
-    @Inject lateinit var commitsProvider: CommitsProvider
     @Inject lateinit var notificationsHandler: NotificationsHandler
     @Inject lateinit var widgetDataProvider: WidgetDataProvider
   }

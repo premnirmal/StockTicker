@@ -33,9 +33,9 @@ interface IStocksProvider {
 
   fun fetchStock(ticker: String): Flow<FetchResult<Quote>>
 
-  fun removeStock(ticker: String): Collection<String>
+  suspend fun removeStock(ticker: String): Collection<String>
 
-  fun removeStocks(symbols: Collection<String>)
+  suspend fun removeStocks(symbols: Collection<String>)
 
   fun hasTicker(ticker: String): Boolean
 

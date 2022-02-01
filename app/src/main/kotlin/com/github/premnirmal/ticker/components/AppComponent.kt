@@ -31,7 +31,7 @@ import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.portfolio.AlertsViewModel
 import com.github.premnirmal.ticker.portfolio.NotesViewModel
-import com.github.premnirmal.ticker.portfolio.PortfolioFragment
+import com.github.premnirmal.ticker.portfolio.PortfolioViewModel
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
@@ -53,7 +53,7 @@ import com.google.gson.Gson
  * Created by premnirmal on 3/3/16.
  */
 @javax.inject.Singleton
-@dagger.Component(modules = arrayOf(AppModule::class))
+@dagger.Component(modules = [AppModule::class])
 interface AppComponent {
 
   // Activities
@@ -128,8 +128,6 @@ interface AppComponent {
 
   fun inject(holder: BaseFragment.InjectionHolder)
 
-  fun inject(holder: PortfolioFragment.InjectionHolder)
-
   fun inject(homeFragment: HomeFragment)
 
   fun inject(fragment: SearchFragment)
@@ -163,4 +161,6 @@ interface AppComponent {
   fun inject(alertsViewModel: AlertsViewModel)
 
   fun inject(searchViewModel: SearchViewModel)
+
+  fun inject(viewModel: PortfolioViewModel)
 }

@@ -9,26 +9,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ChildFragment
-import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.ui.SpacingDecoration
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_portfolio.stockList
 import kotlinx.android.synthetic.main.fragment_portfolio.view_flipper
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -61,27 +56,13 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
     }
   }
 
-  /**
-   * Using this injection holder because in unit tests, we use a mockito subclass of this fragment.
-   * Without this holder, dagger is unable to inject dependencies into this class.
-   */
-  class InjectionHolder {
-
-    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-    @Inject internal lateinit var stocksProvider: IStocksProvider
-
-    init {
-      Injector.appComponent.inject(this)
-    }
-  }
-
   override val simpleName: String = "PortfolioFragment"
-  private lateinit var holder: InjectionHolder
+  private val viewModel: PortfolioViewModel by viewModels()
   private val parent: Parent
     get() = parentFragment as Parent
   private var widgetId = AppWidgetManager.INVALID_APPWIDGET_ID
   private val stocksAdapter by lazy {
-    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    val widgetData = viewModel.dataForWidgetId(widgetId)
     StocksAdapter(widgetData, this as QuoteClickListener, this as OnStartDragListener)
   }
   private var itemTouchHelper: ItemTouchHelper? = null
@@ -117,7 +98,6 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    holder = InjectionHolder()
     widgetId = requireArguments().getInt(KEY_WIDGET_ID)
   }
 
@@ -148,16 +128,14 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
       val listViewState = state.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
       listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
     }
-    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    val widgetData = viewModel.dataForWidgetId(widgetId)
     if (widgetData.getTickers().isEmpty()) {
       view_flipper.displayedChild = 0
     } else {
       view_flipper.displayedChild = 1
     }
-    lifecycleScope.launch {
-      holder.stocksProvider.portfolio.collect {
-        update()
-      }
+    viewModel.portfolio.observe(viewLifecycleOwner) {
+      update()
     }
   }
 
@@ -172,14 +150,13 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
 
   private fun promptRemove(quote: Quote?) {
     quote?.let {
-      val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+      val widgetData = viewModel.dataForWidgetId(widgetId)
       AlertDialog.Builder(requireContext())
           .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove) { dialog, _ ->
-            widgetData.removeStock(it.symbol)
+            viewModel.removeStock(widgetId, it.symbol)
             stocksAdapter.remove(it)
-            holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
             dialog.dismiss()
           }
           .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
@@ -197,11 +174,11 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
 
   override fun onStartDrag(viewHolder: androidx.recyclerview.widget.RecyclerView.ViewHolder) {
     parent.onDragStarted()
-    val widgetData = holder.widgetDataProvider.dataForWidgetId(widgetId)
+    val widgetData = viewModel.dataForWidgetId(widgetId)
     if (widgetData.autoSortEnabled()) {
       widgetData.setAutoSort(false)
       update()
-      holder.widgetDataProvider.broadcastUpdateWidget(widgetId)
+      viewModel.broadcastUpdateWidget(widgetId)
       InAppMessage.showMessage(requireView(), R.string.autosort_disabled)
     } else {
       itemTouchHelper?.startDrag(viewHolder)

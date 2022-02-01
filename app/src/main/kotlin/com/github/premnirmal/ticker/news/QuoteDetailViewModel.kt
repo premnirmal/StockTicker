@@ -15,7 +15,6 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -77,7 +76,9 @@ class QuoteDetailViewModel : ViewModel() {
   fun removeStock(ticker: String) {
     val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
     widgetData.forEach { it.removeStock(ticker) }
-    stocksProvider.removeStock(ticker)
+    viewModelScope.launch {
+      stocksProvider.removeStock(ticker)
+    }
   }
 
   fun fetchChartData(symbol: String, range: Range) {

@@ -315,9 +315,6 @@ class WidgetData {
     synchronized(tickerList) {
       tickerList.remove(ticker)
     }
-    if (!widgetDataProvider.containsTicker(ticker)) {
-      stocksProvider.removeStock(ticker)
-    }
     save()
   }
 
