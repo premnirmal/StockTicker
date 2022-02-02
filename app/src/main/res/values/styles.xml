@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
     <item name="colorPrimary">@color/color_primary</item>
     <item name="colorPrimaryDark">@color/color_primary_dark</item>
     <item name="colorAccent">@color/color_accent</item>
@@ -13,17 +13,20 @@
     <item name="android:dialogTheme">@style/AlertDialog</item>
     <item name="android:actionBarStyle">@style/ActionBarStyle</item>
     <item name="alertDialogTheme">@style/AlertDialog</item>
-    <!-- For AppCompat -->
     <item name="editTextStyle">@style/EditTextStyle</item>
     <item name="buttonStyle">@style/ButtonStyle</item>
+    <item name="buttonCompat">@style/ButtonStyle</item>
     <item name="preferenceTheme">@style/AppPreferenceTheme</item>
+    <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
   </style>
 
-  <style name="ActionBarStyle" parent="Widget.AppCompat.ActionBar.Solid">
+  <style name="StocksWidget.App.Theme" parent="AppTheme"/>
+
+  <style name="ActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
     <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
   </style>
 
-  <style name="TextViewStyle" parent="android:Widget.TextView">
+  <style name="TextViewStyle" parent="Widget.MaterialComponents.TextView">
     <item name="android:textSize">@dimen/text_size</item>
     <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
   </style>
@@ -50,6 +53,12 @@
     <item name="android:textColor">@color/text_3</item>
   </style>
 
+  <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+    <item name="elevation">0dp</item>
+    <item name="itemIconTint">@color/icon_tint</item>
+    <item name="itemTextColor">@color/button_text</item>
+  </style>
+
   <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
@@ -59,7 +68,7 @@
     <item name="android:textSize">22sp</item>
   </style>
 
-  <style name="ButtonStyle" parent="android:Widget.Button">
+  <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
     <item name="android:textSize">@dimen/button_text</item>
     <item name="android:textColor">@color/button_text</item>
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
@@ -71,19 +80,19 @@
     <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
   </style>
 
-  <style name="ActionBarTitleText" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+  <style name="ActionBarTitleText" parent="@style/TextAppearance.Material3.ActionBar.Title">
     <item name="android:textColor">@color/actionbar_title_text</item>
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
-  <style name="AlertDialog" parent="@style/Theme.AppCompat.DayNight.Dialog.Alert">
+  <style name="AlertDialog" parent="@style/Theme.Material3.DayNight.Dialog.Alert">
     <item name="android:textColor">@color/color_accent</item>
     <item name="android:colorBackground">@color/default_bg</item>
     <item name="android:colorBackgroundCacheHint">@color/default_bg</item>
     <item name="android:windowBackground">@color/default_bg</item>
     <item name="android:textAppearanceSmall">@style/TextAppearance.Dialog</item>
-    <item name="android:button">@style/Widget.AppCompat.Button.Borderless.Colored</item>
-    <item name="android:buttonBarButtonStyle">@style/Widget.AppCompat.Button.Borderless.Colored</item>
+    <item name="android:button">@style/Widget.MaterialComponents.Button</item>
+    <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button</item>
     <item name="colorPrimary">@color/color_accent</item>
     <item name="colorPrimaryDark">@color/color_primary</item>
     <item name="colorControlNormal">@color/color_accent</item>
@@ -91,7 +100,7 @@
     <item name="colorControlActivated">@color/color_accent</item>
   </style>
 
-  <style name="TextAppearance.Dialog" parent="@style/TextAppearance.AppCompat.Small">
+  <style name="TextAppearance.Dialog" parent="@style/TextAppearance.Material3.BodySmall">
     <item name="android:textColor">@color/text_4</item>
   </style>
 
@@ -112,7 +121,7 @@
     <item name="android:padding">?attr/appWidgetPadding</item>
   </style>
 
-  <style name="TranslucentTheme" parent="AppTheme">
+  <style name="TranslucentTheme" parent="StocksWidget.App.Theme">
     <item name="android:windowIsTranslucent">true</item>
     <item name="android:windowBackground">@color/transparent</item>
   </style>
@@ -126,24 +135,24 @@
     <item name="postSplashScreenTheme">@style/ParanormalActivityTheme</item>
   </style>
 
-  <style name="ParanormalActivityTheme" parent="AppTheme">
+  <style name="ParanormalActivityTheme" parent="StocksWidget.App.Theme">
     <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>
   </style>
 
-  <style name="NewsFeedActivityTheme" parent="AppTheme"/>
+  <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme"/>
 
-  <style name="GraphActivityTheme" parent="AppTheme"/>
+  <style name="GraphActivityTheme" parent="StocksWidget.App.Theme"/>
 
-  <style name="AddPositionTheme" parent="AppTheme"/>
+  <style name="AddPositionTheme" parent="StocksWidget.App.Theme"/>
 
-  <style name="WidgetSettingsTheme" parent="AppTheme">
+  <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
     <item name="android:windowBackground">@android:color/transparent</item>
     <item name="android:colorBackgroundCacheHint">@null</item>
     <item name="android:windowShowWallpaper">true</item>
   </style>
 
-  <style name="SearchTheme" parent="AppTheme"/>
+  <style name="SearchTheme" parent="StocksWidget.App.Theme"/>
 
-  <style name="DbViewerTheme" parent="AppTheme"/>
+  <style name="DbViewerTheme" parent="StocksWidget.App.Theme"/>
 
 </resources>

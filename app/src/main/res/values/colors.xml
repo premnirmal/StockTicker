@@ -36,12 +36,12 @@
   <color name="text_3">#4d4d4d</color>
   <color name="text_4">#373737</color>
   <color name="text_inverse">#f2f2f2</color>
-  <color name="button_text">#f1f1f1</color>
+  <color name="button_text">#5e5e5e</color>
   <color name="icon_tint">#1b1b1b</color>
-  <color name="home_toolbar_scrim">@color/bg_toolbar</color>
   <color name="tab_text">@color/text_1</color>
   <color name="tab_text_selected">@color/text_4</color>
   <color name="tab_background">@color/transparent</color>
   <color name="snackbar_bg">@color/color_accent</color>
   <color name="snackbar_text">@color/white</color>
+  <color name="home_toolbar_scrim">@color/transparent</color>
 </resources>

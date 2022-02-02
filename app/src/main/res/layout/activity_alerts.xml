@@ -151,6 +151,7 @@
 
       <Button
           android:id="@+id/addButton"
+          style="@style/ButtonStyle"
           android:layout_width="match_parent"
           android:layout_height="45dp"
           android:layout_gravity="center_horizontal"

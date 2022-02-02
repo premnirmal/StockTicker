@@ -166,6 +166,7 @@
           android:layout_marginRight="16dp"
           android:layout_marginBottom="20dp"
           android:text="@string/add"
+          style="@style/ButtonStyle"
           />
 
     </LinearLayout>

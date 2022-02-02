@@ -9,7 +9,7 @@
   <dimen name="suggestions_padding">5dp</dimen>
 
   <dimen name="text_size">15sp</dimen>
-  <dimen name="button_text">13sp</dimen>
+  <dimen name="button_text">11sp</dimen>
   <dimen name="graph_bottom_offset">8dp</dimen>
 
   <integer name="text_size_small">12</integer>

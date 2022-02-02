@@ -23,7 +23,7 @@
       android:id="@+id/app_bar_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+      android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
       >
 
     <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -32,6 +32,7 @@
         android:layout_height="match_parent"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:titleEnabled="false"
+        app:contentScrim="@color/home_toolbar_scrim"
         >
 
       <ImageView
@@ -71,6 +72,7 @@
           android:layout_gravity="bottom"
           android:gravity="bottom"
           app:layout_collapseMode="none"
+          android:background="@null"
           />
 
       <androidx.appcompat.widget.Toolbar
