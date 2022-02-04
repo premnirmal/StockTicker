@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -130,6 +131,8 @@ class StocksProvider : IStocksProvider {
       quote?.let { emit(FetchResult.success(quote)) } ?: run {
         try {
           emit(api.getStock(ticker))
+        } catch (ex: CancellationException) {
+          // ignore
         } catch (ex: Exception) {
           Timber.w(ex)
           emit(FetchResult.failure<Quote>(FetchException("Failed to fetch", ex)))
@@ -180,6 +183,9 @@ class StocksProvider : IStocksProvider {
           scheduleUpdate()
           emit(FetchResult.success(fetchedStocks))
         }
+      } catch(ex: CancellationException) {
+        val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
+        scheduleUpdateWithMs(backOffTimeMs)
       } catch (ex: Throwable) {
         Timber.w(ex)
         _fetchState.emit(FetchState.Failure(ex))
