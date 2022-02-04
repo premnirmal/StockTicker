@@ -35,11 +35,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     private const val MAX_FETCH_COUNT = 3
   }
 
-  interface Parent {
-    fun showWhatsNew()
-    fun showTutorial()
-  }
-
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   override val simpleName: String = "HomeFragment"
 

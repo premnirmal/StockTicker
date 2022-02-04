@@ -18,9 +18,27 @@
     <item name="buttonCompat">@style/ButtonStyle</item>
     <item name="preferenceTheme">@style/AppPreferenceTheme</item>
     <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
+    <item name="snackbarStyle">@style/Snackbar</item>
+    <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
   </style>
 
   <style name="StocksWidget.App.Theme" parent="AppTheme"/>
+
+  <style name="Snackbar" parent="Widget.MaterialComponents.Snackbar">
+    <item name="materialThemeOverlay">@style/ThemeOverlay.App.Snackbar</item>
+    <item name="actionTextColorAlpha">1</item>
+    <item name="animationMode">slide</item>
+    <item name="android:background">@drawable/snackbar_bg</item>
+  </style>
+
+  <style name="ThemeOverlay.App.Snackbar" parent="">
+    <item name="colorOnSurface">@color/snackbar_bg</item>
+    <item name="android:textColor">@color/snackbar_text</item>
+  </style>
+
+  <style name="Snackbar.TextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+    <item name="android:textColor">@color/snackbar_text</item>
+  </style>
 
   <style name="ActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
     <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
@@ -73,6 +91,14 @@
     <item name="android:textColor">@color/button_text</item>
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
     <item name="android:background">@drawable/button_bg</item>
+  </style>
+
+  <style name="QuoteDetail.Graph.ButtonStyle" parent="ButtonStyle">
+    <item name="android:paddingStart">4dp</item>
+    <item name="android:paddingEnd">4dp</item>
+    <item name="android:paddingTop">4dp</item>
+    <item name="android:paddingBottom">4dp</item>
+    <item name="android:padding">4dp</item>
   </style>
 
   <style name="EditTextStyle" parent="android:Widget.EditText">

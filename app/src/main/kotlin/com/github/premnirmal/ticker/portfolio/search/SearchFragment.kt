@@ -11,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -53,7 +53,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  private lateinit var viewModel: SearchViewModel
+  private val viewModel: SearchViewModel by viewModels()
   private lateinit var adapter: SuggestionsAdapter
   override val simpleName: String = "SearchFragment"
 
@@ -62,7 +62,6 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     Injector.appComponent.inject(this)
-    viewModel = ViewModelProvider(this).get(SearchViewModel::class.java)
     arguments?.let {
       setData(it)
     }

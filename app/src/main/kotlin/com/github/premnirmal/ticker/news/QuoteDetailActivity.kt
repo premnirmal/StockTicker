@@ -6,9 +6,9 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.AppPreferences
@@ -83,7 +83,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private lateinit var adapter: NewsFeedAdapter
   private lateinit var ticker: String
   private lateinit var quote: Quote
-  private lateinit var viewModel: QuoteDetailViewModel
+  private val viewModel: QuoteDetailViewModel by viewModels()
   override var range: Range = Range.ONE_DAY
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,8 +106,6 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     recycler_view.isNestedScrollingEnabled = false
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
-
-    viewModel = ViewModelProvider(this).get(QuoteDetailViewModel::class.java)
     viewModel.quote.observe(this) { result ->
       if (result.wasSuccessful) {
         quote = result.data

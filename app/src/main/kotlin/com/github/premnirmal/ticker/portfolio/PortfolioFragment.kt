@@ -150,7 +150,6 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
 
   private fun promptRemove(quote: Quote?) {
     quote?.let {
-      val widgetData = viewModel.dataForWidgetId(widgetId)
       AlertDialog.Builder(requireContext())
           .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_prompt, it.symbol))
@@ -179,7 +178,7 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
       widgetData.setAutoSort(false)
       update()
       viewModel.broadcastUpdateWidget(widgetId)
-      InAppMessage.showMessage(requireView(), R.string.autosort_disabled)
+      InAppMessage.showMessage(requireActivity(), R.string.autosort_disabled)
     } else {
       itemTouchHelper?.startDrag(viewHolder)
     }

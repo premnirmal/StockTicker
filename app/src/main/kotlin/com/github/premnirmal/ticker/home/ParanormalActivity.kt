@@ -32,7 +32,7 @@ import javax.inject.Inject
  */
 class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
     BottomNavigationView.OnNavigationItemReselectedListener,
-    HomeFragment.Parent, SettingsFragment.Parent, WidgetSettingsFragment.Parent {
+    SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"

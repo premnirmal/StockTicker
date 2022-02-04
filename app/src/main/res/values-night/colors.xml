@@ -33,6 +33,6 @@
   <color name="icon_tint">#ffffff</color>
   <color name="tab_text">@color/text_3</color>
   <color name="tab_text_selected">@color/text_1</color>
-  <color name="snackbar_bg">@color/color_primary</color>
+  <color name="snackbar_bg">@color/color_primary_dark</color>
   <color name="snackbar_text">@color/text_1</color>
 </resources>

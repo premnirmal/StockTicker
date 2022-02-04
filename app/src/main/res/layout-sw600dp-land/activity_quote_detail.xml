@@ -115,7 +115,7 @@
               android:gravity="center"
               android:onClick="updateRange"
               android:text="@string/two_weeks_short"
-              style="@style/ButtonStyle"
+              style="@style/QuoteDetail.Graph.ButtonStyle"
               />
 
           <Button
@@ -127,7 +127,7 @@
               android:gravity="center"
               android:onClick="updateRange"
               android:text="@string/one_month_short"
-              style="@style/ButtonStyle"
+              style="@style/QuoteDetail.Graph.ButtonStyle"
               />
 
           <Button
@@ -139,7 +139,7 @@
               android:gravity="center"
               android:onClick="updateRange"
               android:text="@string/three_month_short"
-              style="@style/ButtonStyle"
+              style="@style/QuoteDetail.Graph.ButtonStyle"
               />
 
           <Button
@@ -151,7 +151,7 @@
               android:gravity="center"
               android:onClick="updateRange"
               android:text="@string/one_year_short"
-              style="@style/ButtonStyle"
+              style="@style/QuoteDetail.Graph.ButtonStyle"
               />
 
           <Button
@@ -163,7 +163,7 @@
               android:gravity="center"
               android:onClick="updateRange"
               android:text="@string/max"
-              style="@style/ButtonStyle"
+              style="@style/QuoteDetail.Graph.ButtonStyle"
               />
 
         </LinearLayout>

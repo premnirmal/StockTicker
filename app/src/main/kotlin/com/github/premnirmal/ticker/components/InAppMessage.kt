@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.snackbar.Snackbar
-
-
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -56,10 +55,12 @@ object InAppMessage {
     val margin = snackBarView.context.resources.getDimensionPixelSize(R.dimen.snackbar_margin)
     params.setMargins(margin, margin, margin, margin)
     snackBarView.layoutParams = params
-    val bg = if (error) R.drawable.snackbar_bg_error else R.drawable.snackbar_bg
-    snackBarView.background = view.context.resources.getDrawable(bg, null)
-    val text = snackBarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
-    text.setTextColor(ContextCompat.getColor(view.context, if (error) R.color.white else R.color.snackbar_text))
+    if (error) {
+      val bg = R.drawable.snackbar_bg_error
+      snackBarView.background = ResourcesCompat.getDrawable(view.context.resources, bg, null)
+      val text = snackBarView.findViewById<TextView>(com.google.android.material.R.id.snackbar_text)
+      text.setTextColor(ContextCompat.getColor(view.context, R.color.white))
+    }
     return snackbar
   }
 }

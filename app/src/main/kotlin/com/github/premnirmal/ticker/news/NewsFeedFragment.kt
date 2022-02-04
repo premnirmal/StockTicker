@@ -4,8 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -31,15 +30,9 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
   }
 
   private lateinit var adapter: NewsFeedAdapter
-  private lateinit var viewModel: NewsFeedViewModel
+  private val viewModel: NewsFeedViewModel by viewModels()
   override val simpleName: String
     get() = "NewsFeedFragment"
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    viewModel =
-      ViewModelProvider(this).get(NewsFeedViewModel::class.java)
-  }
 
   override fun onCreateView(
       inflater: LayoutInflater,
@@ -66,7 +59,7 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
     swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
     swipe_container.setOnRefreshListener { refreshNews() }
-    viewModel.newsFeed.observe(viewLifecycleOwner, Observer {
+    viewModel.newsFeed.observe(viewLifecycleOwner) {
       if (it.wasSuccessful) {
         if (it.data.isEmpty()) {
           view_flipper.displayedChild = INDEX_EMPTY
@@ -83,7 +76,7 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
         }
       }
       swipe_container.isRefreshing = false
-    })
+    }
   }
 
   override fun onStart() {

@@ -8,9 +8,8 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.stock_field_view.view.fieldname
-import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 
 /**
  * Created by premnirmal on 2/27/16.
@@ -18,8 +17,7 @@ import kotlinx.android.synthetic.main.stock_field_view.view.fieldvalue
 class StockFieldView @JvmOverloads constructor(
   context: Context,
   attrs: AttributeSet? = null
-) :
-    LinearLayout(context, attrs) {
+) : LinearLayout(context, attrs) {
 
   companion object {
     const val ORIENTATION_HORIZONTAL = 0
@@ -30,22 +28,27 @@ class StockFieldView @JvmOverloads constructor(
     const val GRAVITY_CENTER = 2
   }
 
+  private val fieldname: TextView
+  private val fieldvalue: TextView
+
   init {
     LayoutInflater.from(context)
         .inflate(R.layout.stock_field_view, this, true)
+    fieldname = findViewById(R.id.fieldname)
+    fieldvalue = findViewById(R.id.fieldvalue)
     attrs?.let {
       val array = context.obtainStyledAttributes(it, R.styleable.StockFieldView)
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
       if (orientation == ORIENTATION_HORIZONTAL) {
-        setOrientation(LinearLayout.HORIZONTAL)
+        setOrientation(HORIZONTAL)
         fieldname.layoutParams =
-          LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
+          LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
         fieldvalue.layoutParams =
-          LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
+          LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.5f)
         fieldvalue.gravity = Gravity.END
       } else {
-        setOrientation(LinearLayout.VERTICAL)
-        fieldname.layoutParams = LinearLayout.LayoutParams(
+        setOrientation(VERTICAL)
+        fieldname.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )

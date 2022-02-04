@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
@@ -22,7 +22,7 @@ class AddNotesActivity : BaseActivity() {
 
   override val simpleName: String = "AddNotesActivity"
   internal lateinit var ticker: String
-  private lateinit var viewModel: NotesViewModel
+  private val viewModel: NotesViewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
@@ -43,7 +43,6 @@ class AddNotesActivity : BaseActivity() {
       finish()
       return
     }
-    viewModel = ViewModelProvider(this).get(NotesViewModel::class.java)
     tickerName.text = ticker
     viewModel.symbol = ticker
     val quote = viewModel.quote

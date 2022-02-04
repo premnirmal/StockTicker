@@ -82,11 +82,6 @@ abstract class BaseActivity : AppCompatActivity() {
     return super.onOptionsItemSelected(item)
   }
 
-  protected fun showErrorAndFinish() {
-    InAppMessage.showToast(this, R.string.error_symbol)
-    finish()
-  }
-
   companion object {
     private const val IS_ERROR_DIALOG_SHOWING = "IS_ERROR_DIALOG_SHOWING"
   }

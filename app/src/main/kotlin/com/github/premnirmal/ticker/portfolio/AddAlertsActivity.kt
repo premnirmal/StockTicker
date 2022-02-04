@@ -4,14 +4,21 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_alerts.*
+import kotlinx.android.synthetic.main.activity_alerts.addButton
+import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputEditText
+import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputLayout
+import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputEditText
+import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputLayout
+import kotlinx.android.synthetic.main.activity_alerts.alerts_disabled_message
+import kotlinx.android.synthetic.main.activity_alerts.tickerName
+import kotlinx.android.synthetic.main.activity_alerts.toolbar
 import java.text.NumberFormat
 import javax.inject.Inject
 
@@ -23,7 +30,7 @@ class AddAlertsActivity : BaseActivity() {
   }
 
   internal lateinit var ticker: String
-  private lateinit var viewModel: AlertsViewModel
+  private val viewModel: AlertsViewModel by viewModels()
   override val simpleName: String = "AddAlertsActivity"
   @Inject internal lateinit var appPreferences: AppPreferences
 
@@ -44,7 +51,6 @@ class AddAlertsActivity : BaseActivity() {
       finish()
       return
     }
-    viewModel = ViewModelProvider(this).get(AlertsViewModel::class.java)
     viewModel.symbol = ticker
     tickerName.text = ticker
 
