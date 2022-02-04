@@ -198,6 +198,11 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           widgetData.setAutoSort(newValue as Boolean)
           true
         }
+      lifecycleScope.launch {
+        widgetData.autoSortEnabled.collect {
+          autoSortPref.isChecked = it
+        }
+      }
     }
 
     run {

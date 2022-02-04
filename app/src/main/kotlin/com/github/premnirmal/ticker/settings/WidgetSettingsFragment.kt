@@ -134,6 +134,11 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
         updatePreview(widgetData)
       }
     }
+    lifecycleScope.launch {
+      widgetData.autoSortEnabled.collect {
+        setting_autosort_checkbox.isChecked = it
+      }
+    }
   }
 
   override fun onClick(v: View) {

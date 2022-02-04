@@ -14,6 +14,8 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 class WidgetData {
@@ -52,6 +54,9 @@ class WidgetData {
   val widgetId: Int
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
+  private val _autoSortEnabled = MutableStateFlow<Boolean>(false)
+  val autoSortEnabled: StateFlow<Boolean>
+    get() = _autoSortEnabled
 
   constructor(
     position: Int,
@@ -73,6 +78,7 @@ class WidgetData {
       )
     }
     save()
+    _autoSortEnabled.value = autoSortEnabled()
   }
 
   constructor(
@@ -228,6 +234,7 @@ class WidgetData {
     preferences.edit()
         .putBoolean(AUTOSORT, autoSort)
         .apply()
+    _autoSortEnabled.value = autoSort
   }
 
   fun hideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)

@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -24,6 +25,7 @@ import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.fragment_portfolio.stockList
 import kotlinx.android.synthetic.main.fragment_portfolio.view_flipper
+import kotlinx.coroutines.launch
 
 /**
  * Created by premnirmal on 2/25/16.
@@ -137,6 +139,11 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
     viewModel.portfolio.observe(viewLifecycleOwner) {
       update()
     }
+    lifecycleScope.launch {
+      widgetData.autoSortEnabled.collect {
+        update()
+      }
+    }
   }
 
   override fun onResume() {
@@ -175,17 +182,16 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
     parent.onDragStarted()
     val widgetData = viewModel.dataForWidgetId(widgetId)
     if (widgetData.autoSortEnabled()) {
-      widgetData.setAutoSort(false)
-      update()
-      viewModel.broadcastUpdateWidget(widgetId)
       InAppMessage.showMessage(requireActivity(), R.string.autosort_disabled)
-    } else {
-      itemTouchHelper?.startDrag(viewHolder)
     }
+    itemTouchHelper?.startDrag(viewHolder)
   }
 
   override fun onStopDrag() {
     parent.onDragEnded()
+    val widgetData = viewModel.dataForWidgetId(widgetId)
+    widgetData.setAutoSort(false)
+    viewModel.broadcastUpdateWidget(widgetId)
   }
 
   override fun setData(bundle: Bundle) {

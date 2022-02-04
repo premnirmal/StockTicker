@@ -20,7 +20,7 @@
   <color name="positive_green_dark">#009900</color>
   <color name="disabled_grey">#98545454</color>
   <color name="unselected_grey">#ffbdbdbd</color>
-  <color name="nav_bar_bg">#2f2f2f</color>
+  <color name="nav_bar_bg">@color/default_bg</color>
   <color name="nav_bar_bg_2">@color/card_bg</color>
   <color name="bottom_bar_bg">@color/card_bg</color>
   <color name="actionbar_title_text">#ffffff</color>
