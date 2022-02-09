@@ -20,6 +20,7 @@ import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
 /**
@@ -31,7 +32,7 @@ class AppModule(private val app: StocksApp) {
   @Provides fun provideApplicationContext(): Context = app
 
   @Singleton @Provides fun provideApplicationScope(): CoroutineScope {
-    return CoroutineScope(Dispatchers.Unconfined)
+    return CoroutineScope(Dispatchers.Unconfined + SupervisorJob())
   }
 
   @Provides @Singleton fun provideClock(): AppClock = AppClockImpl
