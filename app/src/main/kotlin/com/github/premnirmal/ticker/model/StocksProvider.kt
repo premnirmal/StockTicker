@@ -223,7 +223,7 @@ class StocksProvider : IStocksProvider {
           val data = result.data
           quoteMap[ticker] = data
           storage.saveQuote(result.data)
-          _portfolio.tryEmit(quoteMap.values.toList())
+          _portfolio.emit(quoteMap.values.toList())
         }
       }
     }
