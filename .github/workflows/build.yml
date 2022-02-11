@@ -22,6 +22,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: Get latest version
+        run: echo "VERSION=$(git ls-remote --tags --refs --sort="v:refname" origin | tail -n1 | sed 's/.*\///')" >> $GITHUB_ENV
       - name: Build bundle
         uses: eskatos/gradle-command-action@v1
         with:
@@ -42,7 +44,7 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           automatic_release_tag: null
-          title: "${{ github.ref }}"
+          title: "${{ env.VERSION }}"
           files: |
             app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk
             app/build/outputs/bundle/purefoss/debug/app-purefoss-debug.aab
