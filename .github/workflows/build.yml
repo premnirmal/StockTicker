@@ -26,7 +26,6 @@ jobs:
         run: |
           echo $(git describe --tags --abbrev=0)
           echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-          echo $env.VERSION
       - name: Build bundle
         uses: eskatos/gradle-command-action@v1
         with:
