@@ -23,7 +23,9 @@ jobs:
         with:
           java-version: 11
       - name: Get latest version
-        run: echo "VERSION=$(git ls-remote --tags --refs --sort="v:refname" origin | tail -n1 | sed 's/.*\///')" >> $GITHUB_ENV
+        run: |
+          echo "VERSION=$(git ls-remote --tags --refs --sort="v:refname" origin | tail -n1 | sed 's/.*\///')" >> $GITHUB_ENV
+          echo $VERSION
       - name: Build bundle
         uses: eskatos/gradle-command-action@v1
         with:
