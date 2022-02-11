@@ -11,50 +11,40 @@ on:
       - '*'
 
 jobs:
-  build:
-    name: Build apk and bundle
-    runs-on: ubuntu-18.04
-
+  build-and-release:
+    name: Build and release
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
       - name: set up JDK 11
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Build apk
-        run: bash ./gradlew assemblePurefossDebug -PdisablePreDex
+      - name: Get latest version
+        run: echo "VERSION=$(git ls-remote --tags --refs --sort="v:refname" origin | tail -n1 | sed 's/.*\///')" >> $GITHUB_ENV
       - name: Build bundle
-        run: bash ./gradlew app:bundlePurefossDebug -PdisablePreDex
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: ':app:bundlePurefossDebug'
+      - name: Build apk
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: ':app:assemblePurefossDebug'
       - name: Upload apk and bundle
         uses: actions/upload-artifact@v1
         with:
           name: app
           path: app/build/outputs/
-  release:
-    name: Release APK
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Download APK from build
-        uses: actions/download-artifact@v1
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          name: app  
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }} 
-      - name: Upload Release APK
-        id: upload_release_asset
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: app/apk/purefoss/debug/app-purefoss-debug.apk
-          asset_name: StocksWidget_${{ github.ref }}.apk
-          asset_content_type: application/zip
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          automatic_release_tag: null
+          title: "${{ env.VERSION }}"
+          files: |
+            app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk
+            app/build/outputs/bundle/purefoss/debug/app-purefoss-debug.aab
