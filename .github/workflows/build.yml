@@ -47,4 +47,4 @@ jobs:
           title: "${{ env.VERSION }}"
           files: |
             app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk
-            app/build/outputs/bundle/purefoss/debug/app-purefoss-debug.aab
+            app/build/outputs/bundle/purefossDebug/app-purefoss-debug.aab
