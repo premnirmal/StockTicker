@@ -28,15 +28,29 @@ repositories {
   maven { url "https://maven.google.com" }
 }
 
+def getVersionName = { ->
+  try {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+      commandLine 'git', 'describe', '--tags', '--abbrev=0'
+      standardOutput = stdout
+    }
+    return stdout.toString().trim()
+  }
+  catch (ignored) {
+    return null;
+  }
+}
+
 android {
   compileSdkVersion 31
   buildToolsVersion "31.0.0"
 
-  final File versionFile = file("file:version.properties")
-  final Properties versionProps = new Properties()
-  versionProps.load(new FileInputStream(versionFile))
-  def final code = versionProps.getProperty("versionCode").toInteger()
-  def final name = versionProps.getProperty("versionName").toString()
+  def final name = getVersionName()
+  def final major = name.split("\\.")[0].toInteger()
+  def final minor = name.split("\\.")[1].toInteger()
+  def final patch = name.split("\\.")[2].toInteger()
+  def final code = (major * 100000000) + (minor * 100000) + patch
   def final appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
