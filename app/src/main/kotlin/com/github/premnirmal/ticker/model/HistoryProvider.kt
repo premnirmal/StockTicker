@@ -99,7 +99,7 @@ class HistoryProvider : IHistoryProvider {
   private fun Range.rangeParam(): String {
     return when (this) {
       ONE_DAY -> "1d"
-      TWO_WEEKS -> "5d"
+      TWO_WEEKS -> "14d"
       ONE_MONTH -> "1mo"
       THREE_MONTH -> "3mo"
       ONE_YEAR -> "1y"

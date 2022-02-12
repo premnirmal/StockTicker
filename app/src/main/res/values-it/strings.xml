@@ -141,12 +141,12 @@
   <string name="no_data">¯\\_(ツ)_/¯\nNessun dato</string>
   <string name="expand">Espandi</string>
   <string name="one_day">1 Giorno</string>
-  <string name="two_weeks">5 Giornos</string>
+  <string name="two_weeks">14 Giornos</string>
   <string name="one_month">1 Mese</string>
   <string name="three_month">3 Mesi</string>
   <string name="one_year">1 Anno</string>
   <string name="one_day_short">1G</string>
-  <string name="two_weeks_short">5G</string>
+  <string name="two_weeks_short">14D</string>
   <string name="one_month_short">1M</string>
   <string name="three_month_short">3M</string>
   <string name="one_year_short">1A</string>
