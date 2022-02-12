@@ -27,10 +27,13 @@ class CommitsProvider @Inject constructor(
     cachedChanges?.let { return FetchResult.success(it) }
     return withContext(Dispatchers.IO) {
       try {
-        val currentVersion = BuildConfig.VERSION_CODE
+        val currentVersion = BuildConfig.VERSION_NAME
+        val major = currentVersion.split("\\.")[0].toInt()
+        val minor = currentVersion.split("\\.")[1].toInt()
+        val patch = currentVersion.split("\\.")[2].toInt()
+        val previousVersion = "$major.$minor.${patch - 2}"
         val comparison = githubApi.compareTags(
-            "${currentVersion - 6}",
-            "$currentVersion"
+            previousVersion, currentVersion
         )
         val commits = comparison.commits.asReversed()
         cachedChanges = commits
