@@ -28,10 +28,7 @@ class CommitsProvider @Inject constructor(
     return withContext(Dispatchers.IO) {
       try {
         val currentVersion = BuildConfig.VERSION_NAME
-        val major = currentVersion.split("\\.")[0].toInt()
-        val minor = currentVersion.split("\\.")[1].toInt()
-        val patch = currentVersion.split("\\.")[2].toInt()
-        val previousVersion = "$major.$minor.${patch - 2}"
+        val previousVersion = BuildConfig.PREVIOUS_VERSION
         val comparison = githubApi.compareTags(
             previousVersion, currentVersion
         )
