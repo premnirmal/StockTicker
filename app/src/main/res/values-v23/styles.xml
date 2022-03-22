@@ -17,8 +17,10 @@
     <item name="android:colorBackgroundCacheHint">@color/default_bg</item>
     <item name="android:windowBackground">@color/default_bg</item>
     <item name="android:textAppearanceSmall">@style/TextAppearance.Dialog</item>
+    <item name="android:button">@style/Widget.MaterialComponents.Button</item>
+    <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
     <item name="colorPrimary">@color/color_accent</item>
-    <item name="colorPrimaryDark">@color/color_primary</item>
+    <item name="colorPrimaryDark">@color/color_accent</item>
     <item name="colorControlNormal">@color/color_accent</item>
     <item name="colorControlHighlight">@color/color_accent</item>
     <item name="colorControlActivated">@color/color_accent</item>

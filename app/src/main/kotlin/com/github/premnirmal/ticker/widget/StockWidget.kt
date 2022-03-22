@@ -12,12 +12,11 @@ import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
-import com.github.premnirmal.ticker.home.ParanormalActivity
+import com.github.premnirmal.ticker.home.MainActivity
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -49,7 +48,7 @@ class StockWidget : AppWidgetProvider() {
     }
     super.onReceive(context, intent)
     if (intent.action == ACTION_NAME) {
-      context.startActivity(Intent(context, ParanormalActivity::class.java))
+      context.startActivity(Intent(context, MainActivity::class.java))
     }
   }
 

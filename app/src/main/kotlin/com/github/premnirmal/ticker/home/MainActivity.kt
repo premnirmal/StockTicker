@@ -30,7 +30,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-class ParanormalActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
+class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
     BottomNavigationView.OnNavigationItemReselectedListener,
     SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 

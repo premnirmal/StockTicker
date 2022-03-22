@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager.LayoutParams
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
@@ -34,7 +33,6 @@ class SplashActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    installSplashScreen()
     setContentView(R.layout.activity_splash)
     if (Build.VERSION.SDK_INT >= 28) {
       window.attributes.layoutInDisplayCutoutMode =
@@ -73,7 +71,7 @@ class SplashActivity : BaseActivity() {
 
   private fun openApp() {
     if (!isFinishing) {
-      startActivity(Intent(this, ParanormalActivity::class.java))
+      startActivity(Intent(this, MainActivity::class.java))
       finish()
     }
   }

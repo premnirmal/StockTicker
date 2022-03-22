@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:exported="true"
-            android:name="com.github.premnirmal.ticker.home.ParanormalActivity"
+            android:name="com.github.premnirmal.ticker.home.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan"
@@ -73,7 +73,7 @@
             android:name="com.github.premnirmal.ticker.news.QuoteDetailActivity"
             android:label="@string/news_feed"
             android:theme="@style/NewsFeedActivityTheme"
-            android:parentActivityName="com.github.premnirmal.ticker.home.ParanormalActivity" />
+            android:parentActivityName="com.github.premnirmal.ticker.home.MainActivity" />
         <activity
             android:name="com.github.premnirmal.ticker.news.GraphActivity"
             android:screenOrientation="landscape"

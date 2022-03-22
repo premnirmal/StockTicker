@@ -113,14 +113,15 @@
 
   <style name="AlertDialog" parent="@style/Theme.Material3.DayNight.Dialog.Alert">
     <item name="android:textColor">@color/color_accent</item>
+    <item name="android:colorPrimary">@color/color_accent</item>
     <item name="android:colorBackground">@color/default_bg</item>
     <item name="android:colorBackgroundCacheHint">@color/default_bg</item>
     <item name="android:windowBackground">@color/default_bg</item>
     <item name="android:textAppearanceSmall">@style/TextAppearance.Dialog</item>
     <item name="android:button">@style/Widget.MaterialComponents.Button</item>
-    <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button</item>
+    <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
     <item name="colorPrimary">@color/color_accent</item>
-    <item name="colorPrimaryDark">@color/color_primary</item>
+    <item name="colorPrimaryDark">@color/color_accent</item>
     <item name="colorControlNormal">@color/color_accent</item>
     <item name="colorControlHighlight">@color/color_accent</item>
     <item name="colorControlActivated">@color/color_accent</item>
@@ -152,14 +153,7 @@
     <item name="android:windowBackground">@color/transparent</item>
   </style>
 
-  <style name="SplashTheme" parent="Theme.SplashScreen">
-    <item name="windowSplashScreenBackground">@drawable/bg_splash</item>
-    <!--    // Use windowSplashScreenAnimatedIcon to add either a drawable or an-->
-    <!--    // animated drawable. One of these is required.-->
-    <!--    <item name="windowSplashScreenAnimatedIcon">@drawable/...</item>-->
-    <!--    <item name="windowSplashScreenAnimationDuration">200</item>-->
-    <item name="postSplashScreenTheme">@style/ParanormalActivityTheme</item>
-  </style>
+  <style name="SplashTheme" parent="TranslucentTheme"/>
 
   <style name="ParanormalActivityTheme" parent="StocksWidget.App.Theme">
     <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>

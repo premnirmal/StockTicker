@@ -10,7 +10,7 @@ import com.github.premnirmal.ticker.debug.DbViewerActivity
 import com.github.premnirmal.ticker.debug.DbViewerViewModel
 import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomeViewModel
-import com.github.premnirmal.ticker.home.ParanormalActivity
+import com.github.premnirmal.ticker.home.MainActivity
 import com.github.premnirmal.ticker.home.SplashActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.ExponentialBackoff
@@ -58,7 +58,7 @@ interface AppComponent {
 
   // Activities
 
-  fun inject(paranormalActivity: ParanormalActivity)
+  fun inject(mainActivity: MainActivity)
 
   fun inject(addPositionActivity: AddPositionActivity)
 

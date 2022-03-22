@@ -15,7 +15,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.home.ParanormalActivity
+import com.github.premnirmal.ticker.home.MainActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Properties
@@ -292,7 +292,7 @@ private class NotificationFactory(
       }
     }
     val notificationId = NotificationID.nextID
-    val intent = Intent(context, ParanormalActivity::class.java)
+    val intent = Intent(context, MainActivity::class.java)
     val pendingIntent: PendingIntent? = TaskStackBuilder.create(context)
         .run {
           // Add the intent, which inflates the back stack
