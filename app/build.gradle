@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 apply from: "../build.gradle"
 apply plugin: "com.android.application"
 apply plugin: "kotlin-android"
@@ -46,13 +48,18 @@ def getOldGitVersion = { ->
   try {
     def stdout = new ByteArrayOutputStream()
     exec {
-      commandLine 'sh', '-c', 'git tag --sort=-committerdate | head -5 | tail -1'
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'Powershell', "git tag --sort=-committerdate | Select-Object -first 5 | Select-Object -last 1"
+      } else {
+        commandLine 'sh', '-c', "git tag --sort=-committerdate | head -5 | tail -1"
+      }
       standardOutput = stdout
     }
     return stdout.toString().trim()
   }
   catch (ignored) {
-    return null;
+    println "Error"
+    return null
   }
 }
 
@@ -66,6 +73,7 @@ android {
   def final patch = name.split("\\.")[2].toInteger()
   def final code = (major * 100000000) + (minor * 100000) + patch
   def final oldGitVersion = getOldGitVersion()
+  println "Old git version $oldGitVersion"
   def final appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
@@ -159,7 +167,6 @@ android {
     }
     debug {
       debuggable true
-      versionNameSuffix "-DEBUG"
       ext.enableCrashlytics = false
       minifyEnabled false
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
