@@ -31,36 +31,25 @@ repositories {
 }
 
 def getVersionName = { ->
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      commandLine 'git', 'describe', '--tags', '--abbrev=0'
-      standardOutput = stdout
-    }
-    return stdout.toString().trim()
+  def stdout = new ByteArrayOutputStream()
+  exec {
+    commandLine 'git', 'describe', '--tags', '--abbrev=0'
+    standardOutput = stdout
   }
-  catch (ignored) {
-    return null;
-  }
+  return stdout.toString().trim()
 }
 
 def getOldGitVersion = { ->
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd', '/c', 'Powershell', "git tag --sort=-committerdate | Select-Object -first 5 | Select-Object -last 1"
-      } else {
-        commandLine 'sh', '-c', "git tag --sort=-committerdate | head -5 | tail -1"
-      }
-      standardOutput = stdout
+  def stdout = new ByteArrayOutputStream()
+  exec {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+      commandLine 'cmd', '/c', 'Powershell', "git tag --sort=-committerdate | Select-Object -first 5 | Select-Object -last 1"
+    } else {
+      commandLine 'sh', '-c', "git tag --sort=-committerdate | head -5 | tail -1"
     }
-    return stdout.toString().trim()
+    standardOutput = stdout
   }
-  catch (ignored) {
-    println "Error"
-    return null
-  }
+  return stdout.toString().trim()
 }
 
 android {
