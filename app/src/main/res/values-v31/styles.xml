@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+  <style name="StocksWidget.App.Theme" parent="AppTheme">
+    <!-- v21 specific -->
+    <item name="android:statusBarColor">@color/transparent</item>
+    <item name="android:navigationBarColor">@color/nav_bar_bg</item>
+    <!-- v23 specific -->
+    <item name="android:windowLightStatusBar">true</item>
+    <!-- v27 specific -->
+    <item name="android:navigationBarDividerColor">@color/transparent</item>
+    <item name="android:windowLightNavigationBar">true</item>
+  </style>
   <style name="Widget.Container" parent="android:Widget">
     <item name="android:padding">?attr/appWidgetPadding</item>
     <item name="android:background">@drawable/app_widget_background</item>

@@ -155,7 +155,7 @@
 
   <style name="SplashTheme" parent="TranslucentTheme"/>
 
-  <style name="ParanormalActivityTheme" parent="StocksWidget.App.Theme">
+  <style name="MainActivityTheme" parent="StocksWidget.App.Theme">
     <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>
   </style>
 

@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.portfolio.search
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.PorterDuff
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +12,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -85,11 +89,19 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
       toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
       toolbar.setNavigationOnClickListener { requireActivity().finish() }
-      fake_status_bar.visibility = View.GONE
     } else {
-      fake_status_bar.visibility = View.VISIBLE
-      fake_status_bar.layoutParams.height = requireContext().getStatusBarHeight()
-      fake_status_bar.requestLayout()
+      // Inset toolbar from window top inset
+      ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+        toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+          this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+        }
+        insets
+      }
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+        height = requireContext().getStatusBarHeight()
+      }
     }
     adapter = SuggestionsAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)

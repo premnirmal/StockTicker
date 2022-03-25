@@ -1,9 +1,13 @@
 package com.github.premnirmal.ticker.news
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.CustomTabs
@@ -18,6 +22,7 @@ import com.github.premnirmal.tickerwidget.R.dimen
 import kotlinx.android.synthetic.main.fragment_news_feed.fake_status_bar
 import kotlinx.android.synthetic.main.fragment_news_feed.recycler_view
 import kotlinx.android.synthetic.main.fragment_news_feed.swipe_container
+import kotlinx.android.synthetic.main.fragment_news_feed.toolbar
 import kotlinx.android.synthetic.main.fragment_news_feed.view_flipper
 
 class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClickListener {
@@ -47,9 +52,17 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    fake_status_bar.visibility = View.VISIBLE
-    fake_status_bar.layoutParams.height = requireContext().getStatusBarHeight()
-    fake_status_bar.requestLayout()
+    ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+      }
+      insets
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+        height = requireContext().getStatusBarHeight()
+      }
+    }
     adapter = NewsFeedAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(activity)
     recycler_view.addItemDecoration(

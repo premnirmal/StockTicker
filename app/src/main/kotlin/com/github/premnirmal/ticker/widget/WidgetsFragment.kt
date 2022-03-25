@@ -1,21 +1,25 @@
 package com.github.premnirmal.ticker.widget
 
 import android.appwidget.AppWidgetManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.MarginLayoutParams
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemSelectedListener
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.android.synthetic.main.fragment_widgets.fake_status_bar
 import kotlinx.android.synthetic.main.fragment_widgets.toolbar
 import kotlinx.android.synthetic.main.fragment_widgets.widget_selection_spinner
 import javax.inject.Inject
@@ -49,7 +53,18 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    (toolbar.layoutParams as MarginLayoutParams).topMargin = requireContext().getStatusBarHeight()
+    // Inset toolbar from window top inset
+    ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+      }
+      insets
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+        height = requireContext().getStatusBarHeight()
+      }
+    }
     widgetDataList = widgetDataProvider.getAppWidgetIds()
         .map {
           widgetDataProvider.dataForWidgetId(it)

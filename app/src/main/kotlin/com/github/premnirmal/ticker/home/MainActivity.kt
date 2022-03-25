@@ -23,7 +23,7 @@ import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_paranormal.bottom_navigation
+import kotlinx.android.synthetic.main.activity_main.bottom_navigation
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,12 +50,12 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelect
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
-  override val simpleName: String = "ParanormalActivity"
+  override val simpleName: String = "MainActivity"
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_paranormal)
+    setContentView(R.layout.activity_main)
     window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
