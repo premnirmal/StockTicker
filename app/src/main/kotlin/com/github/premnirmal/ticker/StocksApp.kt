@@ -45,7 +45,7 @@ open class StocksApp : MultiDexApplication() {
                 CalligraphyInterceptor(
                     CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
-                        .setFontAttrId(R.attr.fontPath)
+                        .setFontAttrId(io.github.inflationx.calligraphy3.R.attr.fontPath)
                         .build()))
             .build())
     Injector.appComponent.inject(holder)
