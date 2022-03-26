@@ -110,19 +110,19 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
         gainLossAmount > 0 -> {
           gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
           gainLossView.setTextColor(positiveColor)
-          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.gain) + "%")
+          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.gain) + " %")
           gainLossPercentView.setTextColor(positiveColor)
         }
         gainLossAmount == 0f -> {
           gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
           gainLossView.setTextColor(neutralColor)
-          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.gain) + "%")
+          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.gain) + " %")
           gainLossPercentView.setTextColor(neutralColor)
         }
         else -> {
           gainLossView.setLabel(gainLossView.context.getString(R.string.loss))
           gainLossView.setTextColor(negativeColor)
-          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.loss) + "%")
+          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.loss) + " %")
           gainLossPercentView.setTextColor(negativeColor)
         }
       }
