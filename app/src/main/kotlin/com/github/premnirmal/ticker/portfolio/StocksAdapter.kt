@@ -11,8 +11,6 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperAdapter
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
-import timber.log.Timber
-import java.util.ArrayList
 
 /**
  * Created by premnirmal on 2/29/16.
@@ -77,8 +75,7 @@ class StocksAdapter constructor(
     viewType: Int
   ): PortfolioVH {
     val context = parent.context
-    val portfolioVH: PortfolioVH
-    portfolioVH = if (viewType == TYPE_POSITION) {
+    val portfolioVH: PortfolioVH = if (viewType == TYPE_POSITION) {
       val itemView = LayoutInflater.from(context)
           .inflate(R.layout.item_position, parent, false)
       PositionVH(itemView)

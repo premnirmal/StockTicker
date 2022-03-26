@@ -14,8 +14,7 @@ import com.github.premnirmal.tickerwidget.R.color
 /**
  * Created by premnirmal on 2/29/16.
  */
-abstract class PortfolioVH(itemView: View) :
-    RecyclerView.ViewHolder(itemView), ItemTouchHelperViewHolder {
+abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), ItemTouchHelperViewHolder {
 
   protected val positiveColor: Int = ContextCompat.getColor(itemView.context, color.positive_green)
   protected val negativeColor: Int = ContextCompat.getColor(itemView.context, color.negative_red)
@@ -98,25 +97,33 @@ abstract class PortfolioVH(itemView: View) :
 
       val holdingsView = itemView.findViewById<StockFieldView>(R.id.holdings)
       val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
+      val gainLossPercentView = itemView.findViewById<StockFieldView>(R.id.gain_loss_percent)
 
       val holdings = "${quote.currencySymbol}${quote.holdingsString()}"
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
+      gainLossPercentView.setText(quote.gainLossPercentString())
       val dayChangeView = itemView.findViewById<StockFieldView>(R.id.dayChange)
       dayChangeView.setText(quote.dayChangeString())
       when {
         gainLossAmount > 0 -> {
           gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
           gainLossView.setTextColor(positiveColor)
+          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.gain) + "%")
+          gainLossPercentView.setTextColor(positiveColor)
         }
         gainLossAmount == 0f -> {
           gainLossView.setLabel(gainLossView.context.getString(R.string.gain))
           gainLossView.setTextColor(neutralColor)
+          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.gain) + "%")
+          gainLossPercentView.setTextColor(neutralColor)
         }
         else -> {
           gainLossView.setLabel(gainLossView.context.getString(R.string.loss))
           gainLossView.setTextColor(negativeColor)
+          gainLossPercentView.setLabel(gainLossView.context.getString(R.string.loss) + "%")
+          gainLossPercentView.setTextColor(negativeColor)
         }
       }
       dayChangeView.setTextColor(color)
