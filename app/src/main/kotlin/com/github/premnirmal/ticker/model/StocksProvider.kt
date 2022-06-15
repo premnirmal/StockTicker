@@ -132,9 +132,17 @@ class StocksProvider : IStocksProvider {
         try {
           val res = api.getStock(ticker)
           if (res.wasSuccessful) {
-            quoteMap[ticker] = res.data
+            val data = res.data
+            val quoteFromStorage = storage.readQuote(ticker)
+            val quote = quoteFromStorage?.let {
+              it.copyValues(data)
+              quoteFromStorage
+            } ?: data
+            quoteMap[ticker] = quote
+            emit(FetchResult.success(quote))
+          } else {
+            emit(FetchResult.failure<Quote>(FetchException("Failed to fetch", res.error)))
           }
-          emit(res)
         } catch (ex: CancellationException) {
           // ignore
         } catch (ex: Exception) {
@@ -321,7 +329,7 @@ class StocksProvider : IStocksProvider {
   }
 
   override fun fetchStock(ticker: String): Flow<FetchResult<Quote>> {
-    return fetchStockInternal(ticker, false) // todo resume caching after migration between quote and quoteRow
+    return fetchStockInternal(ticker, true)
   }
 
   override fun getStock(ticker: String): Quote? = quoteMap[ticker]

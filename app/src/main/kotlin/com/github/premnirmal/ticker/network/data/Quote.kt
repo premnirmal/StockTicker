@@ -25,7 +25,6 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   var region: String = ""
   var quoteType: String = ""
-  var exchange: String? = null
   var longName: String? = null
   var gmtOffSetMilliseconds: Long = 0
   var dayHigh: Float? = null
@@ -193,6 +192,44 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   override fun describeContents(): Int {
     return 0
+  }
+  
+  fun copyValues(data: Quote) {
+    this.name = data.name
+    this.lastTradePrice = data.lastTradePrice
+    this.changeInPercent = data.changeInPercent
+    this.change = data.change
+    this.stockExchange = data.stockExchange
+    this.currencyCode = data.currencyCode
+    this.annualDividendRate = data.annualDividendRate
+    this.annualDividendYield = data.annualDividendYield
+    this.region = data.region
+    this.quoteType = data.quoteType
+    this.longName = data.longName
+    this.gmtOffSetMilliseconds = data.gmtOffSetMilliseconds
+    this.dayHigh = data.dayHigh
+    this.dayLow = data.dayLow
+    this.previousClose = data.previousClose
+    this.open = data.open
+    this.regularMarketVolume = data.regularMarketVolume
+    this.trailingPE = data.trailingPE
+    this.marketState = data.marketState
+    this.tradeable = data.tradeable
+    this.fiftyTwoWeekLowChange = data.fiftyTwoWeekLowChange
+    this.fiftyTwoWeekLowChangePercent = data.fiftyTwoWeekLowChangePercent
+    this.fiftyTwoWeekHighChange = data.fiftyTwoWeekHighChange
+    this.fiftyTwoWeekHighChangePercent = data.fiftyTwoWeekHighChangePercent
+    this.fiftyTwoWeekLow = data.fiftyTwoWeekLow
+    this.fiftyTwoWeekHigh = data.fiftyTwoWeekHigh
+    this.dividendDate = data.dividendDate
+    this.earningsTimestamp = data.earningsTimestamp
+    this.fiftyDayAverage = data.fiftyDayAverage
+    this.fiftyDayAverageChange = data.fiftyDayAverageChange
+    this.fiftyDayAverageChangePercent = data.fiftyDayAverageChangePercent
+    this.twoHundredDayAverage = data.twoHundredDayAverage
+    this.twoHundredDayAverageChange = data.twoHundredDayAverageChange
+    this.twoHundredDayAverageChangePercent = data.twoHundredDayAverageChangePercent
+    this.marketCap = data.marketCap
   }
 
   companion object {

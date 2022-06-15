@@ -18,6 +18,10 @@ interface QuoteDao {
   @Query("SELECT * FROM QuoteRow")
   suspend fun getQuotesWithHoldings(): List<QuoteWithHoldings>
 
+  @Transaction
+  @Query("SELECT * FROM QuoteRow where symbol = :symbol")
+  suspend fun getQuoteWithHoldings(symbol: String): QuoteWithHoldings?
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   @JvmSuppressWildcards
   suspend fun upsertQuotes(quotes: List<QuoteRow>): LongArray
