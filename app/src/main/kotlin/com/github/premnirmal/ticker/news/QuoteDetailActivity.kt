@@ -3,13 +3,16 @@ package com.github.premnirmal.ticker.news
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
@@ -18,6 +21,9 @@ import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.formatChange
+import com.github.premnirmal.ticker.formatChangePercent
+import com.github.premnirmal.ticker.formatNumber
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.NewsArticle
@@ -31,31 +37,36 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import com.github.premnirmal.tickerwidget.R.dimen
-import kotlinx.android.synthetic.main.activity_graph.one_day
+import com.google.android.material.appbar.AppBarLayout
+import com.robinhood.ticker.TickerUtils
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_above
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_below
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_header
 import kotlinx.android.synthetic.main.activity_quote_detail.alerts_container
+import kotlinx.android.synthetic.main.activity_quote_detail.app_bar_layout
 import kotlinx.android.synthetic.main.activity_quote_detail.average_price
 import kotlinx.android.synthetic.main.activity_quote_detail.change
+import kotlinx.android.synthetic.main.activity_quote_detail.change_percent
 import kotlinx.android.synthetic.main.activity_quote_detail.day_change
-import kotlinx.android.synthetic.main.activity_quote_detail.dividend
 import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
-import kotlinx.android.synthetic.main.activity_quote_detail.exchange
+import kotlinx.android.synthetic.main.activity_quote_detail.gradient
 import kotlinx.android.synthetic.main.activity_quote_detail.graphView
 import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
-import kotlinx.android.synthetic.main.activity_quote_detail.lastTradePrice
+import kotlinx.android.synthetic.main.activity_quote_detail.group_period
+import kotlinx.android.synthetic.main.activity_quote_detail.list_details
 import kotlinx.android.synthetic.main.activity_quote_detail.max
 import kotlinx.android.synthetic.main.activity_quote_detail.news_container
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_container
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_display
 import kotlinx.android.synthetic.main.activity_quote_detail.notes_header
 import kotlinx.android.synthetic.main.activity_quote_detail.numShares
+import kotlinx.android.synthetic.main.activity_quote_detail.one_day
 import kotlinx.android.synthetic.main.activity_quote_detail.one_month
 import kotlinx.android.synthetic.main.activity_quote_detail.one_year
 import kotlinx.android.synthetic.main.activity_quote_detail.parentView
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_container
 import kotlinx.android.synthetic.main.activity_quote_detail.positions_header
+import kotlinx.android.synthetic.main.activity_quote_detail.price
 import kotlinx.android.synthetic.main.activity_quote_detail.progress
 import kotlinx.android.synthetic.main.activity_quote_detail.recycler_view
 import kotlinx.android.synthetic.main.activity_quote_detail.three_month
@@ -64,6 +75,7 @@ import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
 import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
 import kotlinx.android.synthetic.main.activity_quote_detail.two_weeks
 import javax.inject.Inject
+import kotlin.math.abs
 
 class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListener {
 
@@ -81,6 +93,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   @Inject lateinit var appPreferences: AppPreferences
   override val simpleName: String = "NewsFeedActivity"
   private lateinit var adapter: NewsFeedAdapter
+  private lateinit var quoteDetailsAdapter: QuoteDetailsAdapter
   private lateinit var ticker: String
   private lateinit var quote: Quote
   private val viewModel: QuoteDetailViewModel by viewModels()
@@ -93,6 +106,9 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     toolbar.setNavigationOnClickListener {
       finish()
     }
+    if (!resources.getBoolean(R.bool.isTablet)) {
+      requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
       graph_container.requestLayout()
@@ -102,22 +118,33 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     recycler_view.addItemDecoration(
         SpacingDecoration(resources.getDimensionPixelSize(dimen.list_spacing_double))
     )
+    quoteDetailsAdapter = QuoteDetailsAdapter()
+    list_details.apply {
+      layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+      adapter = quoteDetailsAdapter
+    }
     recycler_view.adapter = adapter
     recycler_view.isNestedScrollingEnabled = false
+    change.setCharacterLists(TickerUtils.provideNumberList())
+    change_percent.setCharacterLists(TickerUtils.provideNumberList())
+    app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     viewModel.quote.observe(this) { result ->
-      if (result.wasSuccessful) {
+      if (result?.wasSuccessful == true) {
         quote = result.data
         fetch()
         setupUi()
-      } else {
+      } else if (result?.wasSuccessful == false) {
         InAppMessage.showMessage(parentView, R.string.error_fetching_stock, error = true
         )
         progress.visibility = View.GONE
         graphView.setNoDataText(getString(R.string.error_fetching_stock))
         news_container.displayedChild = INDEX_ERROR
       }
+    }
+    viewModel.details.asLiveData().observe(this) {
+      quoteDetailsAdapter.submitList(it)
     }
     viewModel.data.observe(this) { data ->
       dataPoints = data
@@ -144,6 +171,10 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       )
     }
     viewModel.fetchQuote(ticker)
+    group_period.setOnCheckedChangeListener { _, checkedId ->
+      val view = findViewById<View>(checkedId)
+      updateRange(view)
+    }
     val view = when (range) {
       Range.ONE_DAY -> one_day
       Range.TWO_WEEKS -> two_weeks
@@ -151,9 +182,17 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       Range.THREE_MONTH -> three_month
       Range.ONE_YEAR -> one_year
       Range.MAX -> max
-      else -> null
+      else -> throw UnsupportedOperationException("Range not supported")
     }
-    view?.isEnabled = false
+    group_period.check(view.id)
+  }
+
+  private val offsetChangedListener = AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
+    if (verticalOffset < -20) {
+      gradient.alpha = abs(verticalOffset / appBarLayout.height.toFloat())
+    } else {
+      gradient.alpha = 0f
+    }
   }
 
   @SuppressLint("SetTextI18n")
@@ -208,21 +247,11 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     toolbar.title = ticker
     tickerName.text = quote.name
-    lastTradePrice.text = "${quote.currencySymbol}${quote.priceString()}"
-    val changeText = "${quote.changeStringWithSign()} ( ${quote.changePercentStringWithSign()})"
-    change.text = changeText
-    if (quote.change > 0 || quote.changeInPercent >= 0) {
-      change.setTextColor(ContextCompat.getColor(this, color.positive_green))
-      lastTradePrice.setTextColor(ContextCompat.getColor(this, color.positive_green))
-    } else {
-      change.setTextColor(ContextCompat.getColor(this, color.negative_red))
-      lastTradePrice.setTextColor(ContextCompat.getColor(this, color.negative_red))
-    }
-    dividend.text = quote.dividendInfo()
-    exchange.text = quote.stockExchange
+    price.text = formatNumber(quote.lastTradePrice, quote.currencyCode)
+    change.formatChange(quote.change)
+    change_percent.formatChangePercent(quote.changeInPercent)
     updatePositionsUi()
 
-    // Register the callback also for the header and content for easier usage.
     positions_header.setOnClickListener {
       positionOnClickListener()
     }

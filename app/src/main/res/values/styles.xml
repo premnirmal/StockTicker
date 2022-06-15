@@ -96,9 +96,9 @@
   <style name="QuoteDetail.Graph.ButtonStyle" parent="ButtonStyle">
     <item name="android:paddingStart">4dp</item>
     <item name="android:paddingEnd">4dp</item>
-    <item name="android:paddingTop">4dp</item>
-    <item name="android:paddingBottom">4dp</item>
-    <item name="android:padding">4dp</item>
+    <item name="android:paddingTop">2dp</item>
+    <item name="android:paddingBottom">2dp</item>
+    <item name="android:textSize">8dp</item>
   </style>
 
   <style name="EditTextStyle" parent="android:Widget.EditText">
@@ -174,5 +174,27 @@
   <style name="SearchTheme" parent="StocksWidget.App.Theme"/>
 
   <style name="DbViewerTheme" parent="StocksWidget.App.Theme"/>
+
+  <style name="Widget.Quote.Details.Title" parent="Widget.MaterialComponents.TextView">
+    <item name="android:textColor">@color/text_color_secondary</item>
+  </style>
+
+  <style name="Widget.Quote.Details.Data" parent="Widget.MaterialComponents.TextView">
+    <item name="android:textSize">@dimen/large_text</item>
+  </style>
+
+  <style name="Widget.Chip.Chart" parent="Widget.MaterialComponents.Chip.Choice">
+    <item name="chipBackgroundColor">@color/chip_background_color</item>
+    <item name="chipSurfaceColor">@color/chip_surface_color</item>
+    <item name="android:textColor">@color/chip_text_color</item>
+    <item name="android:textAllCaps">true</item>
+    <item name="android:stateListAnimator">@null</item>
+    <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Chip</item>
+  </style>
+
+  <style name="ShapeAppearance.Chip" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+    <item name="cornerFamily">rounded</item>
+    <item name="cornerSize">8dp</item>
+  </style>
 
 </resources>

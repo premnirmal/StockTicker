@@ -242,6 +242,8 @@ dependencies {
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
 
+  implementation "com.robinhood.ticker:ticker:2.0.2"
+
   prodImplementation "com.google.firebase:firebase-crashlytics:18.2.7"
   prodImplementation "com.google.firebase:firebase-analytics:20.0.2"
 

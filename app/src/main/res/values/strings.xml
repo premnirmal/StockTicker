@@ -193,4 +193,23 @@
   <string name="error">Error</string>
   <string name="error_fetching_whats_new">Error fetching what\'s new</string>
   <string name="loading">Loading</string>
+
+  <string name="quote_details_open">Open</string>
+  <string name="quote_details_day_range">Day\'s Range</string>
+  <string name="quote_details_ftw_range">52 Week Range</string>
+  <string name="quote_details_volume">Volume</string>
+  <string name="quote_details_market_cap">Market Cap</string>
+  <string name="quote_details_pe_ratio">PE Ratio</string>
+  <string name="quote_details_earnings_date">Earnings Date</string>
+  <string name="quote_details_dividend_rate">Dividend Rate</string>
+  <string name="quote_details_dividend_date">Dividend Date</string>
+  <string name="date_format_long">MMM dd, yyyy</string>
+  <string name="number_format_thousands">%1$.2fK</string>
+  <string name="number_format_millions">%1$.2fM</string>
+  <string name="number_format_billions">%1$.2fB</string>
+  <string name="number_format_trillions">%1$.2fT</string>
+  <string name="quote_change_pos">+%1$.2f</string>
+  <string name="quote_change_neg">%1$.2f</string>
+  <string name="quote_change_percent_pos">+%1$.2f%%</string>
+  <string name="quote_change_percent_neg">%1$.2f%%</string>
 </resources>

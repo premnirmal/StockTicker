@@ -35,7 +35,7 @@
   </style>
 
   <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme">
-    <item name="android:statusBarColor">@color/color_statusbar</item>
+    <item name="android:statusBarColor">@color/default_bg</item>
   </style>
 
   <style name="GraphActivityTheme" parent="StocksWidget.App.Theme">

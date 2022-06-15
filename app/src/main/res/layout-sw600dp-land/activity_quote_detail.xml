@@ -9,17 +9,25 @@
   <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="@color/default_bg"
+      android:id="@+id/app_bar_layout"
       >
+    <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:id="@+id/collapsing_toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/default_bg"
+        app:layout_scrollFlags="noScroll">
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_toolbar"
-        app:layout_collapseMode="pin"
+        android:background="@color/default_bg"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:titleTextAppearance="@style/ActionBarTitleText"
         tools:title="AAPL"
         />
+    </com.google.android.material.appbar.CollapsingToolbarLayout>
   </com.google.android.material.appbar.AppBarLayout>
   <LinearLayout
       android:layout_width="match_parent"
@@ -29,7 +37,7 @@
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       >
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="0.5"
@@ -40,32 +48,90 @@
       <androidx.constraintlayout.widget.ConstraintLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginRight="4dp"
           android:layout_marginEnd="4dp"
           android:orientation="vertical"
           app:layout_scrollFlags="scroll|exitUntilCollapsed"
           android:paddingBottom="?actionBarSize"
           >
+        <View
+            android:id="@+id/gradient"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/default_bg"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:alpha="0.0" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_app_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_begin="?actionBarSize"
+            android:orientation="horizontal"/>
 
         <TextView
-            app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/tickerName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_marginTop="@dimen/quote_details_margin"
             android:textSize="@dimen/xlarge_text"
+            android:gravity="center"
             app:layout_scrollFlags="scroll"
             tools:text="Apple Inc."
             style="@style/BoldTextView"
             />
 
-        <ImageView
+        <TextView
             app:layout_constraintTop_toBottomOf="@id/tickerName"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/quote_details_margin"
+            style="@style/BoldTextView"
+            android:textSize="@dimen/large_text"
+            android:gravity="center"
+            tools:text="$132.99"/>
+
+        <com.robinhood.ticker.TickerView
+            android:id="@+id/change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/change_percent"
+            app:layout_constraintTop_toBottomOf="@id/price"
+            app:layout_constraintBottom_toTopOf="@id/expand_graph"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            android:layout_margin="@dimen/quote_details_margin"
+            android:gravity="center"
+            android:padding="@dimen/quote_details_padding"
+            tools:text="+2.63"
+            />
+
+        <com.robinhood.ticker.TickerView
+            android:id="@+id/change_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/change"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/change"
+            app:layout_constraintBottom_toBottomOf="@id/change"
+            android:gravity="center"
+            android:padding="@dimen/quote_details_padding"
+            tools:text="+2.02%"
+            />
+
+        <ImageView
             android:id="@+id/expand_graph"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/change_percent"
             android:contentDescription="@string/expand"
             android:onClick="openGraph"
             android:padding="8dp"
@@ -74,11 +140,13 @@
             />
 
         <FrameLayout
-            app:layout_constraintTop_toBottomOf="@id/expand_graph"
             android:id="@+id/graph_container"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
+            android:layout_height="200dp"
             android:padding="8dp"
+            app:layout_constraintTop_toBottomOf="@id/expand_graph"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             >
           <com.github.mikephil.charting.charts.LineChart
               android:id="@+id/graphView"
@@ -96,158 +164,75 @@
 
         </FrameLayout>
 
-        <LinearLayout
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/group_period"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/graph_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:id="@+id/button_container"
-            android:layout_margin="@dimen/activity_vertical_margin"
-            >
+            android:layout_marginTop="@dimen/quote_details_margin"
+            android:layout_marginBottom="@dimen/quote_details_margin"
+            app:singleLine="true"
+            app:singleSelection="true"
+            app:selectionRequired="true">
 
-          <Button
+          <com.google.android.material.chip.Chip
+              android:id="@+id/one_day"
+              style="@style/Widget.Chip.Chart"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:checked="true"
+              android:text="@string/one_day_short"/>
+
+          <com.google.android.material.chip.Chip
               android:id="@+id/two_weeks"
-              android:layout_width="0dp"
-              android:layout_weight="1"
+              style="@style/Widget.Chip.Chart"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_margin="5dp"
-              android:gravity="center"
-              android:onClick="updateRange"
-              android:text="@string/two_weeks_short"
-              style="@style/QuoteDetail.Graph.ButtonStyle"
-              />
+              android:text="@string/two_weeks_short"/>
 
-          <Button
+          <com.google.android.material.chip.Chip
               android:id="@+id/one_month"
-              android:layout_width="0dp"
-              android:layout_weight="1"
+              style="@style/Widget.Chip.Chart"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_margin="5dp"
-              android:gravity="center"
-              android:onClick="updateRange"
-              android:text="@string/one_month_short"
-              style="@style/QuoteDetail.Graph.ButtonStyle"
-              />
+              android:text="@string/one_month_short"/>
 
-          <Button
+          <com.google.android.material.chip.Chip
               android:id="@+id/three_month"
-              android:layout_width="0dp"
-              android:layout_weight="1"
+              style="@style/Widget.Chip.Chart"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_margin="5dp"
-              android:gravity="center"
-              android:onClick="updateRange"
-              android:text="@string/three_month_short"
-              style="@style/QuoteDetail.Graph.ButtonStyle"
-              />
+              android:text="@string/three_month_short"/>
 
-          <Button
+          <com.google.android.material.chip.Chip
               android:id="@+id/one_year"
-              android:layout_width="0dp"
-              android:layout_weight="1"
+              style="@style/Widget.Chip.Chart"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:layout_margin="5dp"
-              android:gravity="center"
-              android:onClick="updateRange"
-              android:text="@string/one_year_short"
-              style="@style/QuoteDetail.Graph.ButtonStyle"
-              />
+              android:text="@string/one_year_short"/>
 
-          <Button
+          <com.google.android.material.chip.Chip
               android:id="@+id/max"
-              android:layout_width="0dp"
-              android:layout_weight="1"
-              android:layout_height="match_parent"
-              android:layout_margin="5dp"
-              android:gravity="center"
-              android:onClick="updateRange"
-              android:text="@string/max"
-              style="@style/QuoteDetail.Graph.ButtonStyle"
-              />
+              style="@style/Widget.Chip.Chart"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:text="@string/max"/>
 
-        </LinearLayout>
+        </com.google.android.material.chip.ChipGroup>
 
-        <LinearLayout
-            app:layout_constraintTop_toBottomOf="@id/button_container"
-            android:id="@+id/price_container"
+        <androidx.recyclerview.widget.RecyclerView
+            app:layout_constraintTop_toBottomOf="@id/group_period"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/list_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/card_bg"
-            android:orientation="vertical"
-            android:padding="16dp"
-            >
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              >
-            <TextView
-                android:id="@+id/lastTradePrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp"
-                android:textSize="@dimen/xlarge_text"
-                tools:text="$1200"
-                />
-            <TextView
-                android:id="@+id/change"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:layout_marginStart="2dp"
-                android:layout_weight="1"
-                android:gravity="end|center_vertical"
-                android:lines="1"
-                android:textSize="@dimen/xlarge_text"
-                tools:text="+4.50 (2.00%)"
-                />
-          </LinearLayout>
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="horizontal"
-              android:layout_marginTop="@dimen/activity_vertical_margin"
-              android:layout_marginBottom="@dimen/activity_vertical_margin"
-              >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp"
-                android:textSize="@dimen/xlarge_text"
-                android:text="@string/dividend"
-                />
-            <TextView
-                android:id="@+id/dividend"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="2dp"
-                android:layout_marginStart="2dp"
-                android:layout_weight="1"
-                android:gravity="end|center_vertical"
-                android:lines="1"
-                android:textSize="@dimen/xlarge_text"
-                tools:text="+4.50 (2.00%)"
-                />
-          </LinearLayout>
-          <TextView
-              android:id="@+id/exchange"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginTop="8dp"
-              android:gravity="start"
-              android:textColor="@color/text_3"
-              android:textSize="@dimen/medium_text"
-              tools:text="NYSE"
-              />
-
-        </LinearLayout>
+            android:overScrollMode="never"/>
 
         <LinearLayout
-            app:layout_constraintTop_toBottomOf="@id/price_container"
+            app:layout_constraintTop_toBottomOf="@id/list_details"
+            app:layout_constraintStart_toStartOf="parent"
             android:id="@+id/positions_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -512,7 +497,7 @@
         </LinearLayout>
 
       </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="0dp"
@@ -524,7 +509,7 @@
       <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="16dp"
+          android:layout_marginTop="4dp"
           android:layout_marginLeft="16dp"
           android:layout_marginStart="16dp"
           android:gravity="center_vertical"

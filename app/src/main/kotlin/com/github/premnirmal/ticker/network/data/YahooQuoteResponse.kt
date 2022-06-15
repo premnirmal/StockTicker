@@ -2,29 +2,86 @@ package com.github.premnirmal.ticker.network.data
 
 import com.google.gson.annotations.SerializedName
 
-class YahooResponse {
-  @SerializedName("quoteResponse") var quoteResponse: QuoteResponse? = null
-}
+data class YahooResponse(
+  @SerializedName("quoteResponse") val quoteResponse: QuoteResponse
+)
 
-class QuoteResponse {
-  @SerializedName("result") var result: List<YahooQuoteNet> = emptyList()
-}
+
+data class QuoteResponse(
+  @SerializedName("result") val result: List<YahooQuoteNet>
+)
 
 data class YahooQuoteNet(
-  @SerializedName("symbol") override var symbol: String? = ""
-): IQuoteNet {
-  @SerializedName("shortName") override var name: String? = ""
-  @SerializedName("regularMarketPrice") override var lastTradePrice: Float = 0.toFloat()
-  @SerializedName("regularMarketChangePercent") override var changePercent: Float = 0.toFloat()
-  @SerializedName("regularMarketChange") override var change: Float = 0.toFloat()
-  @SerializedName("regularMarketTime") override var marketTime: Int = 0
-  @SerializedName("postMarketPrice") override var postTradePrice: Float = 0.toFloat()
-  @SerializedName("postMarketChangePercent") override var postChangePercent: Float = 0.toFloat()
-  @SerializedName("postMarketChange") override var postChange: Float = 0.toFloat()
-  @SerializedName("postMarketTime") override var postMarketTime: Int = 0
-  @SerializedName("exchange") override var exchange: String? = ""
-  @SerializedName("currency") override var currency: String? = ""
-  @SerializedName("trailingAnnualDividendRate") override var annualDividendRate: Float = 0.toFloat()
-  @SerializedName("trailingAnnualDividendYield") override var annualDividendYield: Float = 0.toFloat()
-  override var isPostMarket: Boolean = false
-}
+  @SerializedName("region")
+  val region: String,
+  @SerializedName("quoteType")
+  val quoteType: String,
+  @SerializedName("currency")
+  val currency: String,
+  @SerializedName("exchange")
+  val exchange: String?,
+  @SerializedName("shortName")
+  val name: String,
+  @SerializedName("longName")
+  val longName: String?,
+  @SerializedName("gmtOffSetMilliseconds")
+  val gmtOffSetMilliseconds: Long,
+  @SerializedName("regularMarketChange")
+  val change: Float,
+  @SerializedName("regularMarketChangePercent")
+  val changePercent: Float,
+  @SerializedName("regularMarketPrice")
+  val lastTradePrice: Float,
+  @SerializedName("regularMarketDayHigh")
+  val regularMarketDayHigh: Float,
+  @SerializedName("regularMarketDayLow")
+  val regularMarketDayLow: Float,
+  @SerializedName("regularMarketPreviousClose")
+  val regularMarketPreviousClose: Float,
+  @SerializedName("regularMarketOpen")
+  val regularMarketOpen: Float,
+  @SerializedName("regularMarketVolume")
+  val regularMarketVolume: Long,
+  @SerializedName("trailingPE")
+  val trailingPE: Float?,
+  @SerializedName("marketState")
+  val marketState: String,
+  @SerializedName("tradeable")
+  val tradeable: Boolean,
+  @SerializedName("fiftyTwoWeekLowChange")
+  val fiftyTwoWeekLowChange: Float?,
+  @SerializedName("fiftyTwoWeekLowChangePercent")
+  val fiftyTwoWeekLowChangePercent: Float?,
+  @SerializedName("fiftyTwoWeekHighChange")
+  val fiftyTwoWeekHighChange: Float?,
+  @SerializedName("fiftyTwoWeekHighChangePercent")
+  val fiftyTwoWeekHighChangePercent: Float?,
+  @SerializedName("fiftyTwoWeekLow")
+  val fiftyTwoWeekLow: Float?,
+  @SerializedName("fiftyTwoWeekHigh")
+  val fiftyTwoWeekHigh: Float?,
+  @SerializedName("dividendDate")
+  val dividendDate: Long?,
+  @SerializedName("earningsTimestamp")
+  val earningsTimestamp: Long?,
+  @SerializedName("fiftyDayAverage")
+  val fiftyDayAverage: Float?,
+  @SerializedName("fiftyDayAverageChange")
+  val fiftyDayAverageChange: Float?,
+  @SerializedName("fiftyDayAverageChangePercent")
+  val fiftyDayAverageChangePercent: Float?,
+  @SerializedName("twoHundredDayAverage")
+  val twoHundredDayAverage: Float?,
+  @SerializedName("twoHundredDayAverageChange")
+  val twoHundredDayAverageChange: Float?,
+  @SerializedName("twoHundredDayAverageChangePercent")
+  val twoHundredDayAverageChangePercent: Float?,
+  @SerializedName("marketCap")
+  val marketCap: Long?,
+  @SerializedName("symbol")
+  val symbol: String,
+  @SerializedName("trailingAnnualDividendRate")
+  val annualDividendRate: Float,
+  @SerializedName("trailingAnnualDividendYield")
+  val annualDividendYield: Float
+)

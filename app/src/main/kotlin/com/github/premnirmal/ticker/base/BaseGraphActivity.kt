@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.base
 
 import android.graphics.Color
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
@@ -11,7 +10,11 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.DataPoint
-import com.github.premnirmal.ticker.ui.*
+import com.github.premnirmal.ticker.ui.DateAxisFormatter
+import com.github.premnirmal.ticker.ui.HourAxisFormatter
+import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
+import com.github.premnirmal.ticker.ui.TextMarkerView
+import com.github.premnirmal.ticker.ui.ValueAxisFormatter
 import com.github.premnirmal.tickerwidget.R
 
 abstract class BaseGraphActivity : BaseActivity() {
@@ -106,9 +109,6 @@ abstract class BaseGraphActivity : BaseActivity() {
       R.id.one_year -> range = Range.ONE_YEAR
       R.id.max -> range = Range.MAX
     }
-    val parent = v.parent as ViewGroup
-    (0 until parent.childCount).map { parent.getChildAt(it) }
-        .forEach { it.isEnabled = it != v }
     fetchGraphData()
   }
 

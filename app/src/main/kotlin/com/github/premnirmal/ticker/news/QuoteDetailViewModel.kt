@@ -1,10 +1,17 @@
 package com.github.premnirmal.ticker.news
 
+import android.app.Application
+import androidx.annotation.StringRes
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.format
+import com.github.premnirmal.ticker.formatBigNumbers
+import com.github.premnirmal.ticker.formatDate
+import com.github.premnirmal.ticker.formatNumber
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
@@ -15,19 +22,25 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import com.github.premnirmal.tickerwidget.R
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class QuoteDetailViewModel : ViewModel() {
+class QuoteDetailViewModel(application: Application) : AndroidViewModel(application) {
 
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var newsProvider: NewsProvider
   @Inject internal lateinit var historyProvider: IHistoryProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-  private val _quote = MutableLiveData<FetchResult<Quote>>()
-  val quote: LiveData<FetchResult<Quote>>
-    get() = _quote
+  private val _quote = MutableStateFlow<FetchResult<Quote>?>(null)
+  val quote: LiveData<FetchResult<Quote>?>
+    get() = _quote.asLiveData()
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>
     get() = _data
@@ -41,6 +54,85 @@ class QuoteDetailViewModel : ViewModel() {
   val newsError: LiveData<Throwable>
     get() = _newsError
 
+  val details: Flow<List<QuoteDetail>> = _quote.transform { quote ->
+    if (quote?.wasSuccessful == true) {
+      quote.data.run {
+        val details = mutableListOf<QuoteDetail>()
+        open?.let {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_open,
+                  formatNumber(it, currencyCode)
+              )
+          )
+        }
+        if (dayLow != null && dayHigh != null) {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_day_range,
+                  "${dayLow!!.format()} - ${dayHigh!!.format()}"
+              )
+          )
+        }
+        if (fiftyTwoWeekLow != null && fiftyTwoWeekHigh != null) {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_ftw_range,
+                  "${fiftyTwoWeekLow!!.format()} - ${fiftyTwoWeekHigh!!.format()}"
+              )
+          )
+        }
+        regularMarketVolume?.let {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_volume,
+                  it.format()
+              )
+          )
+        }
+        marketCap?.let {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_market_cap,
+                  it.formatBigNumbers(application)
+              )
+          )
+        }
+        trailingPE?.let {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_pe_ratio,
+                  it.format()
+              )
+          )
+        }
+        earningsTimestamp?.let {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_earnings_date,
+                  it.formatDate(application.getString(R.string.date_format_long))
+              )
+          )
+        }
+        details.add(
+            QuoteDetail(
+                R.string.quote_details_dividend_rate,
+                dividendInfo()
+            )
+        )
+        dividendDate?.let {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_dividend_date,
+                  it.formatDate(application.getString(R.string.date_format_long))
+              )
+          )
+        }
+        emit(details)
+      }
+    }
+  }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), 1)
+
   init {
     Injector.appComponent.inject(this)
   }
@@ -48,7 +140,7 @@ class QuoteDetailViewModel : ViewModel() {
   fun fetchQuote(ticker: String) {
     viewModelScope.launch {
       if (_quote.value != null && _quote.value!!.wasSuccessful) {
-        _quote.postValue(_quote.value)
+        _quote.emit(_quote.value)
         return@launch
       }
       stocksProvider.fetchStock(ticker).collect { fetchStock ->
@@ -134,4 +226,11 @@ class QuoteDetailViewModel : ViewModel() {
       false
     }
   }
+
+  data class QuoteDetail(
+    @StringRes
+    val title: Int,
+
+    val data: String
+  )
 }

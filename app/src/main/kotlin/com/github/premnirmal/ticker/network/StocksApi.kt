@@ -4,9 +4,9 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.network.data.IQuoteNet
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
+import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -75,11 +75,11 @@ class StocksApi {
 
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
-    val quoteNets = yahooFinance.getStocks(query).quoteResponse!!.result
+    val quoteNets = yahooFinance.getStocks(query).quoteResponse.result
     quoteNets
   }
 
-  private fun List<IQuoteNet>.toQuoteMap(): MutableMap<String, Quote> {
+  private fun List<YahooQuoteNet>.toQuoteMap(): MutableMap<String, Quote> {
     val quotesMap = HashMap<String, Quote>()
     for (quoteNet in this) {
       val quote = quoteNet.toQuote()
@@ -95,9 +95,9 @@ class StocksApi {
     return quotes
   }
 
-  private fun IQuoteNet.toQuote(): Quote {
-    val quote = Quote(this.symbol ?: "")
-    quote.name = this.name ?: ""
+  private fun YahooQuoteNet.toQuote(): Quote {
+    val quote = Quote(this.symbol)
+    quote.name = this.name
     quote.lastTradePrice = this.lastTradePrice
     quote.changeInPercent = this.changePercent
     quote.change = this.change
@@ -105,6 +105,35 @@ class StocksApi {
     quote.currencyCode = this.currency ?: "USD"
     quote.annualDividendRate = this.annualDividendRate
     quote.annualDividendYield = this.annualDividendYield
+    quote.region = this.region
+    quote.quoteType = this.quoteType
+    quote.currencyCode = this.currency
+    quote.exchange = this.exchange
+    quote.longName = this.longName
+    quote.gmtOffSetMilliseconds = this.gmtOffSetMilliseconds
+    quote.dayHigh = this.regularMarketDayHigh
+    quote.dayLow = this.regularMarketDayLow
+    quote.previousClose = this.regularMarketPreviousClose
+    quote.open = this.regularMarketOpen
+    quote.regularMarketVolume = this.regularMarketVolume
+    quote.trailingPE = this.trailingPE
+    quote.marketState = this.marketState
+    quote.tradeable = this.tradeable
+    quote.fiftyTwoWeekLowChange = this.fiftyTwoWeekLowChange
+    quote.fiftyTwoWeekLowChangePercent = this.fiftyTwoWeekLowChangePercent
+    quote.fiftyTwoWeekHighChange = this.fiftyTwoWeekHighChange
+    quote.fiftyTwoWeekHighChangePercent = this.fiftyTwoWeekHighChangePercent
+    quote.fiftyTwoWeekLow = this.fiftyTwoWeekLow
+    quote.fiftyTwoWeekHigh = this.fiftyTwoWeekHigh
+    quote.dividendDate = this.dividendDate?.times(1000)
+    quote.earningsTimestamp = this.earningsTimestamp?.times(1000)
+    quote.fiftyDayAverage = this.fiftyDayAverage
+    quote.fiftyDayAverageChange = this.fiftyDayAverageChange
+    quote.fiftyDayAverageChangePercent = this.fiftyDayAverageChangePercent
+    quote.twoHundredDayAverage = this.twoHundredDayAverage
+    quote.twoHundredDayAverageChange = this.twoHundredDayAverageChange
+    quote.twoHundredDayAverageChangePercent = this.twoHundredDayAverageChangePercent
+    quote.marketCap = this.marketCap
     return quote
   }
 }

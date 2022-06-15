@@ -130,7 +130,11 @@ class StocksProvider : IStocksProvider {
       val quote = if (allowCache) quoteMap[ticker] else null
       quote?.let { emit(FetchResult.success(quote)) } ?: run {
         try {
-          emit(api.getStock(ticker))
+          val res = api.getStock(ticker)
+          if (res.wasSuccessful) {
+            quoteMap[ticker] = res.data
+          }
+          emit(res)
         } catch (ex: CancellationException) {
           // ignore
         } catch (ex: Exception) {
@@ -317,7 +321,7 @@ class StocksProvider : IStocksProvider {
   }
 
   override fun fetchStock(ticker: String): Flow<FetchResult<Quote>> {
-    return fetchStockInternal(ticker, true)
+    return fetchStockInternal(ticker, false) // todo resume caching after migration between quote and quoteRow
   }
 
   override fun getStock(ticker: String): Quote? = quoteMap[ticker]

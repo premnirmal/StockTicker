@@ -18,6 +18,7 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
 import kotlinx.android.synthetic.main.activity_graph.graph_holder
+import kotlinx.android.synthetic.main.activity_graph.group_period
 import kotlinx.android.synthetic.main.activity_graph.max
 import kotlinx.android.synthetic.main.activity_graph.one_day
 import kotlinx.android.synthetic.main.activity_graph.one_month
@@ -71,6 +72,10 @@ class GraphActivity : BaseGraphActivity() {
       showErrorAndFinish()
     }
     viewModel.fetchStock(ticker)
+    group_period.setOnCheckedChangeListener { _, checkedId ->
+      val view = findViewById<View>(checkedId)
+      updateRange(view)
+    }
     val view = when (range) {
       Range.ONE_DAY -> one_day
       Range.TWO_WEEKS -> two_weeks
@@ -80,7 +85,7 @@ class GraphActivity : BaseGraphActivity() {
       Range.MAX -> max
       else -> throw UnsupportedOperationException("Range not supported")
     }
-    view?.isEnabled = false
+    group_period.check(view.id)
   }
 
   override fun onStart() {

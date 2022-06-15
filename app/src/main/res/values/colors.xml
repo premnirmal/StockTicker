@@ -4,6 +4,7 @@
   <color name="spicy_salmon">#ff5655</color>
   <color name="black">#000000</color>
   <color name="white">#ffffff</color>
+  <color name="pink_300">#F06292</color>
 
   <color name="color_accent">#be6663</color>
   <color name="color_primary">#c5f5f0</color>
@@ -15,6 +16,7 @@
   <color name="color_splash">#fdfdfd</color>
   <color name="color_statusbar">@color/color_primary</color>
   <color name="bg_toolbar">@color/color_primary</color>
+  <color name="bg_chip">@color/color_primary</color>
   <color name="graph_bg">#fdfdfd</color>
   <color name="divider">#aaaa</color>
   <color name="card_bg">#fbfcfa</color>
@@ -32,6 +34,7 @@
   <color name="bottom_bar_bg">@color/color_primary</color>
   <color name="actionbar_title_text">#1b1b1b</color>
   <color name="text_1">#5e5e5e</color>
+  <color name="text_color_secondary">#80212121</color>
   <color name="text_2">#6e6e6e</color>
   <color name="text_3">#4d4d4d</color>
   <color name="text_4">#373737</color>
@@ -44,4 +47,9 @@
   <color name="snackbar_bg">@color/color_accent</color>
   <color name="snackbar_text">@color/white</color>
   <color name="home_toolbar_scrim">@color/transparent</color>
+  <color name="change_positive">#66BB6A</color>
+  <color name="change_negative">#EF5350</color>
+  <color name="white_65">#A6FFFFFF</color>
+  <color name="white_10">#40FFFFFF</color>
+  <color name="quote_details_accent">@color/pink_300</color>
 </resources>

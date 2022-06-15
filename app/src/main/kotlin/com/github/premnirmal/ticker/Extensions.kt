@@ -13,12 +13,19 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
+import com.robinhood.ticker.TickerView
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
+import java.math.RoundingMode
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Currency
+import java.util.Date
 import java.util.Locale
 
 fun Drawable.toBitmap(): Bitmap {
@@ -147,4 +154,78 @@ fun ZonedDateTime.createTimeString(): String {
     "$timeStr $day"
   }
   return fetched
+}
+
+fun Float.format(fractionDigits: Int = 2): String {
+  return NumberFormat.getInstance(Locale.getDefault()).run {
+    minimumFractionDigits = fractionDigits
+    maximumFractionDigits = fractionDigits
+    format(this@format)
+  }
+}
+
+fun Long.format(): String {
+  return NumberFormat.getInstance(Locale.getDefault()).format(this)
+}
+
+fun Long.formatDate(format: String): String {
+  return SimpleDateFormat(format, Locale.getDefault()).format(Date(this))
+}
+
+fun Long.formatBigNumbers(context: Context): String {
+  return when {
+    this < 100_000 -> NumberFormat.getInstance(Locale.getDefault()).format(this)
+    this < 1_000_000 -> context.getString(R.string.number_format_thousands, this.div(1000.0))
+    this < 1_000_000_000 -> {
+      context.getString(R.string.number_format_millions, this.div(1000000.0))
+    }
+    this < 1_000_000_000_000 -> {
+      context.getString(R.string.number_format_billions, this.div(1000000000.0))
+    }
+    else -> {
+      context.getString(R.string.number_format_trillions, this.div(1000000000000.0))
+    }
+  }
+}
+
+fun formatNumber(price: Float, currencyCode: String): String {
+  val currencyFormatter = NumberFormat.getCurrencyInstance().apply {
+    currency = Currency.getInstance(currencyCode)
+    maximumFractionDigits = 2
+    roundingMode = RoundingMode.FLOOR
+  }
+  return currencyFormatter.format(price)
+}
+fun TickerView.formatChange(change: Float) {
+  when {
+    change > 0 -> {
+      text = context.getString(R.string.quote_change_pos, change)
+      textColor = ContextCompat.getColor(context, R.color.change_positive)
+    }
+    change < 0 -> {
+      text = context.getString(R.string.quote_change_neg, change)
+      textColor = ContextCompat.getColor(context, R.color.change_negative)
+    }
+    else -> {
+      text = context.getString(R.string.quote_change_neg, change)
+      textColor = ContextCompat.getColor(context, R.color.white)
+    }
+  }
+}
+
+fun TickerView.formatChangePercent(changePercent: Float) {
+  when {
+    changePercent > 0 -> {
+      text = context.getString(R.string.quote_change_percent_pos, changePercent)
+      textColor = ContextCompat.getColor(context, R.color.change_positive)
+    }
+    changePercent < 0 -> {
+      text = context.getString(R.string.quote_change_percent_neg, changePercent)
+      textColor = ContextCompat.getColor(context, R.color.change_negative)
+    }
+    else -> {
+      text = context.getString(R.string.quote_change_percent_neg, changePercent)
+      textColor = ContextCompat.getColor(context, R.color.white)
+    }
+  }
 }

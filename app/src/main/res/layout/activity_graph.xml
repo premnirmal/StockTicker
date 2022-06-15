@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/graphActivityRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -62,79 +63,60 @@
     </RelativeLayout>
   </FrameLayout>
 
-  <LinearLayout
+  <com.google.android.material.chip.ChipGroup
+      android:id="@+id/group_period"
       android:layout_width="wrap_content"
-      android:layout_height="50dp"
-      android:layout_gravity="center_horizontal"
-      android:orientation="horizontal"
-      >
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_marginTop="@dimen/quote_details_margin"
+      android:layout_marginBottom="?attr/actionBarSize"
+      app:singleLine="true"
+      app:singleSelection="true"
+      app:selectionRequired="true">
 
-      <Button
-          android:id="@+id/one_day"
-          style="@style/ButtonStyle"
-          android:layout_width="100dp"
-          android:layout_height="match_parent"
-          android:layout_margin="5dp"
-          android:gravity="center"
-          android:onClick="updateRange"
-          android:text="@string/one_day" 
-        />
+    <com.google.android.material.chip.Chip
+        android:id="@+id/one_day"
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/one_day_short"/>
 
-      <Button
+    <com.google.android.material.chip.Chip
         android:id="@+id/two_weeks"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:onClick="updateRange"
-        android:text="@string/two_weeks" 
-        style="@style/ButtonStyle"
-        />
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/two_weeks_short"/>
 
-      <Button
+    <com.google.android.material.chip.Chip
         android:id="@+id/one_month"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:onClick="updateRange"
-        android:text="@string/one_month" 
-        style="@style/ButtonStyle"
-        />
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/one_month_short"/>
 
-    <Button
+    <com.google.android.material.chip.Chip
         android:id="@+id/three_month"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:onClick="updateRange"
-        android:text="@string/three_month" 
-        style="@style/ButtonStyle"
-        />
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/three_month_short"/>
 
-    <Button
+    <com.google.android.material.chip.Chip
         android:id="@+id/one_year"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:onClick="updateRange"
-        android:text="@string/one_year" 
-        style="@style/ButtonStyle"
-        />
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/one_year_short"/>
 
-    <Button
+    <com.google.android.material.chip.Chip
         android:id="@+id/max"
-        android:layout_width="100dp"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:gravity="center"
-        android:onClick="updateRange"
-        android:text="@string/max" 
-        style="@style/ButtonStyle"
-        />
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/max"/>
 
-  </LinearLayout>
+  </com.google.android.material.chip.ChipGroup>
 
 </LinearLayout>

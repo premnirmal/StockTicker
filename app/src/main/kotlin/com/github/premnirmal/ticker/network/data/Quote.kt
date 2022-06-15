@@ -23,6 +23,35 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
   var position: Position? = null
   var properties: Properties? = null
 
+  var region: String = ""
+  var quoteType: String = ""
+  var exchange: String? = null
+  var longName: String? = null
+  var gmtOffSetMilliseconds: Long = 0
+  var dayHigh: Float? = null
+  var dayLow: Float? = null
+  var previousClose: Float = 0.0f
+  var open: Float? = null
+  var regularMarketVolume: Long? = null
+  var trailingPE: Float? = 0.0f
+  var marketState: String = ""
+  var tradeable: Boolean = false
+  var fiftyTwoWeekLowChange: Float? = 0.0f
+  var fiftyTwoWeekLowChangePercent: Float? = 0.0f
+  var fiftyTwoWeekHighChange: Float? = 0.0f
+  var fiftyTwoWeekHighChangePercent: Float? = 0.0f
+  var fiftyTwoWeekLow: Float? = 0.0f
+  var fiftyTwoWeekHigh: Float? = 0.0f
+  var dividendDate: Long? = null
+  var earningsTimestamp: Long? = null
+  var fiftyDayAverage: Float? = 0.0f
+  var fiftyDayAverageChange: Float? = 0.0f
+  var fiftyDayAverageChangePercent: Float? = 0.0f
+  var twoHundredDayAverage: Float? = 0.0f
+  var twoHundredDayAverageChange: Float? = 0.0f
+  var twoHundredDayAverageChangePercent: Float? = 0.0f
+  var marketCap: Long? = null
+
   val currencySymbol: String
     get() = currencyCodes[currencyCode].orEmpty()
 
@@ -58,6 +87,7 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     }
     return changeString
   }
+
   fun dividendInfo(): String {
     return if (annualDividendRate <= 0f || annualDividendYield <= 0f) {
       "--"
@@ -74,11 +104,14 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
 
   fun priceString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(lastTradePrice)
 
-  fun averagePositionPrice(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(positionPrice())
+  fun averagePositionPrice(): String =
+    AppPreferences.SELECTED_DECIMAL_FORMAT.format(positionPrice())
 
-  fun numSharesString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionShares())
+  fun numSharesString(): String =
+    AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionShares())
 
-  fun totalSpentString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionPrice())
+  fun totalSpentString(): String =
+    AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionPrice())
 
   fun holdings(): Float = lastTradePrice * totalPositionShares()
 
@@ -136,7 +169,8 @@ data class Quote(var symbol: String = "") : Parcelable, Comparable<Quote> {
     annualDividendYield = parcel.readFloat()
     position = parcel.readParcelable(Position::class.java.classLoader)
     properties = parcel.readParcelable(
-        Properties::class.java.classLoader)
+        Properties::class.java.classLoader
+    )
   }
 
   override fun writeToParcel(

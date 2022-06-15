@@ -35,6 +35,13 @@
   <dimen name="scroll_threshold">2dp</dimen>
   <dimen name="portfolio_top_margin">20dp</dimen>
 
+  <dimen name="quote_details_card_margin">16dp</dimen>
+  <dimen name="quote_details_card_padding">16dp</dimen>
+  <dimen name="quote_details_peek_height">275dp</dimen>
+  <dimen name="quote_details_chart_height">200dp</dimen>
+  <dimen name="quote_details_margin">8dp</dimen>
+  <dimen name="quote_details_padding">8dp</dimen>
+
   <dimen name="setting_padding">16dp</dimen>
   <dimen name="fab_margin">12dp</dimen>
   <dimen name="fab_margin_bottom">12dp</dimen>

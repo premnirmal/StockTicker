@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker.network
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.mock.Mocker
-import com.github.premnirmal.ticker.network.data.QuoteNet
+import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.github.premnirmal.ticker.network.data.YahooResponse
 import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockitokotlin2.any
@@ -31,8 +31,8 @@ class StocksApiTest : BaseUnitTest() {
       StocksApi.DEBUG = false
       yahooFinance = Mocker.provide(YahooFinance::class)
       mockPrefs = Mocker.provide(SharedPreferences::class)
-      val listType = object : TypeToken<List<QuoteNet>>() {}.type
-      val stockList = parseJsonFile<List<QuoteNet>>(listType, "Quotes.json")
+      val listType = object : TypeToken<List<YahooQuoteNet>>() {}.type
+      val stockList = parseJsonFile<List<YahooQuoteNet>>(listType, "Quotes.json")
       val yahooStockList =
         parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
       whenever(yahooFinance.getStocks(any())).thenReturn(yahooStockList)
