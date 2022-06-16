@@ -29,6 +29,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.formatChange
 import com.github.premnirmal.ticker.formatChangePercent
 import com.github.premnirmal.ticker.formatNumber
+import com.github.premnirmal.ticker.getActionBarHeight
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
@@ -60,6 +61,7 @@ import kotlinx.android.synthetic.main.activity_quote_detail.gradient
 import kotlinx.android.synthetic.main.activity_quote_detail.graphView
 import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
 import kotlinx.android.synthetic.main.activity_quote_detail.group_period
+import kotlinx.android.synthetic.main.activity_quote_detail.header_container
 import kotlinx.android.synthetic.main.activity_quote_detail.list_details
 import kotlinx.android.synthetic.main.activity_quote_detail.max
 import kotlinx.android.synthetic.main.activity_quote_detail.news_container
@@ -123,6 +125,9 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     ViewCompat.setOnApplyWindowInsetsListener(parentView) { _, insets ->
       toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+      }
+      header_container.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        this.topMargin = getActionBarHeight() + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
       insets
     }

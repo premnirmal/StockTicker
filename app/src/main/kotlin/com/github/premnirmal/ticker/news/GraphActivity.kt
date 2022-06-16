@@ -14,7 +14,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.android.synthetic.main.activity_graph.desc
-import kotlinx.android.synthetic.main.activity_graph.graph_holder
+import kotlinx.android.synthetic.main.activity_graph.graphView
 import kotlinx.android.synthetic.main.activity_graph.group_period
 import kotlinx.android.synthetic.main.activity_graph.max
 import kotlinx.android.synthetic.main.activity_graph.one_day
@@ -89,7 +89,7 @@ class GraphActivity : BaseGraphActivity() {
 
   override fun fetchGraphData() {
     if (isNetworkOnline()) {
-      graph_holder.visibility = View.GONE
+      graphView.visibility = View.INVISIBLE
       progress.visibility = View.VISIBLE
       viewModel.fetchHistoricalDataByRange(ticker, range)
     } else {
@@ -100,12 +100,12 @@ class GraphActivity : BaseGraphActivity() {
 
   override fun onGraphDataAdded(graphView: LineChart) {
     progress.visibility = View.GONE
-    graph_holder.visibility = View.VISIBLE
+    graphView.visibility = View.VISIBLE
     graphView.animateX(DURATION, Easing.EasingOption.EaseInOutCubic)
   }
 
   override fun onNoGraphData(graphView: LineChart) {
     progress.visibility = View.GONE
-    graph_holder.visibility = View.VISIBLE
+    graphView.visibility = View.VISIBLE
   }
 }

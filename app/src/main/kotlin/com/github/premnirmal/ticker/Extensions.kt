@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker
 
+import android.R.attr
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -9,6 +10,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
+import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
@@ -54,6 +56,14 @@ fun Context.getStatusBarHeight(): Int {
   } else {
     0
   }
+  return result
+}
+
+fun Context.getActionBarHeight(): Int {
+  val tv = TypedValue()
+  val result = if (theme.resolveAttribute(attr.actionBarSize, tv, true)) {
+    TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+  } else 0
   return result
 }
 
