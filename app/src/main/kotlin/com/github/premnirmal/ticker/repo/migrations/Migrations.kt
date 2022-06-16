@@ -3,10 +3,12 @@ package com.github.premnirmal.ticker.repo.migrations
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-// Migration from version 1 of the database to version 2:
-// Delete field 'description' in table QuoteRow.
-// Add fields 'is_post_market,annual_dividend_rate,annual_dividend_yield' in table QuoteRow.
-// Add table PropertiesRow.
+/**
+ * Migration from version 1 of the database to version 2:
+ * Delete field 'description' in table QuoteRow.
+ * Add fields 'is_post_market,annual_dividend_rate,annual_dividend_yield' in table QuoteRow.
+ * Add table PropertiesRow.
+ */
 val MIGRATION_1_2 = object : Migration(1, 2) {
   override fun migrate(database: SupportSQLiteDatabase) {
     val TABLE_NAME = "QuoteRow"
@@ -50,5 +52,26 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     database.execSQL(
         "CREATE TABLE IF NOT EXISTS `PropertiesRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `properties_quote_symbol` TEXT NOT NULL, `notes` TEXT NOT NULL, `alert_above` REAL NOT NULL, `alert_below` REAL NOT NULL)"
     )
+  }
+}
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+  override fun migrate(database: SupportSQLiteDatabase) {
+    val tableName = "QuoteRow"
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `dayHigh` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `dayLow` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `previousClose` REAL NOT NULL DEFAULT 0.0;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `open` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `regularMarketVolume` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `peRatio` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyTwoWeekLowChange` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyTwoWeekLowChangePercent` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyTwoWeekHighChange` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyTwoWeekHighChangePercent` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyTwoWeekLow` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyTwoWeekHigh` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `dividendDate` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `earningsDate` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `marketCap` REAL;")
   }
 }

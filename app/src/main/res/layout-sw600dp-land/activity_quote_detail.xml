@@ -69,6 +69,7 @@
             android:orientation="horizontal"/>
 
         <TextView
+            style="@style/MediumTextView"
             android:id="@+id/tickerName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -77,11 +78,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/quote_details_margin"
+            android:textColor="@color/text_3"
             android:textSize="@dimen/xlarge_text"
             android:gravity="center"
             app:layout_scrollFlags="scroll"
             tools:text="Apple Inc."
-            style="@style/BoldTextView"
             />
 
         <TextView
@@ -93,7 +94,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/quote_details_margin"
             style="@style/BoldTextView"
-            android:textSize="@dimen/large_text"
+            android:textColor="@color/text_2"
+            android:textSize="@dimen/xlarge_text"
             android:gravity="center"
             tools:text="$132.99"/>
 
@@ -106,7 +108,8 @@
             app:layout_constraintTop_toBottomOf="@id/price"
             app:layout_constraintBottom_toTopOf="@id/expand_graph"
             app:layout_constraintHorizontal_chainStyle="packed"
-            android:layout_margin="@dimen/quote_details_margin"
+            android:layout_margin="4dp"
+            android:layout_marginTop="@dimen/quote_details_margin"
             android:gravity="center"
             android:padding="@dimen/quote_details_padding"
             tools:text="+2.63"

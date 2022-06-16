@@ -82,6 +82,12 @@ android {
         arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
       }
     }
+
+    kapt {
+      arguments {
+        arg("room.schemaLocation", "$projectDir/schemas")
+      }
+    }
   }
 
   sourceSets {
@@ -193,7 +199,7 @@ ext {
   OKHTTP_VERSION = "4.9.0"
   ROBOLECTRIC_VERSION = "4.3.1"
   COROUTINES_VERSION = "1.6.0"
-  ROOM_VERSION = "2.4.1"
+  ROOM_VERSION = "2.4.2"
   WORK_VERSION = "2.7.1"
 }
 

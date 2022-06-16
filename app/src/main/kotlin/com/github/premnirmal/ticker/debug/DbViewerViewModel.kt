@@ -52,6 +52,23 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             <th>Symbol</th><th>Name</th><th>Last&nbsp;trade&nbsp;price</th>
             <th>Change</th><th>Change %</th><th>Exchange</th>
             <th>Currency</th><th>Dividend</th>
+            <th>annualDividendRate</th>
+            <th>annualDividendYield</th>
+            <th>dayHigh</th>
+            <th>dayLow</th>
+            <th>previousClose</th>
+            <th>open</th>
+            <th>regularMarketVolume</th>
+            <th>peRatio</th>
+            <th>fiftyTwoWeekLowChange</th>
+            <th>fiftyTwoWeekLowChangePercent</th>
+            <th>fiftyTwoWeekHighChange</th>
+            <th>fiftyTwoWeekHighChangePercent</th>
+            <th>fiftyTwoWeekLow</th>
+            <th>fiftyTwoWeekHigh</th>
+            <th>dividendDate</th>
+            <th>earningsDate</th>
+            <th>marketCap</th>
             </tr>
             """
           )
@@ -112,6 +129,23 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
                         "<td></td>"
                       }
                   )
+                  .append("<td>${quote.annualDividendRate}</td>")
+                  .append("<td>${quote.annualDividendYield}</td>")
+                  .append("<td>${quote.dayHigh}</td>")
+                  .append("<td>${quote.dayLow}</td>")
+                  .append("<td>${quote.previousClose}</td>")
+                  .append("<td>${quote.open}</td>")
+                  .append("<td>${quote.regularMarketVolume}</td>")
+                  .append("<td>${quote.peRatio}</td>")
+                  .append("<td>${quote.fiftyTwoWeekLowChange}</td>")
+                  .append("<td>${quote.fiftyTwoWeekLowChangePercent}</td>")
+                  .append("<td>${quote.fiftyTwoWeekHighChange}</td>")
+                  .append("<td>${quote.fiftyTwoWeekHighChangePercent}</td>")
+                  .append("<td>${quote.fiftyTwoWeekLow}</td>")
+                  .append("<td>${quote.fiftyTwoWeekHigh}</td>")
+                  .append("<td>${quote.dividendDate}</td>")
+                  .append("<td>${quote.earningsDate}</td>")
+                  .append("<td>${quote.marketCap}</td>")
                   .append("</tr>")
 
               val holdings = it.holdings

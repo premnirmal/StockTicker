@@ -126,7 +126,15 @@ class StocksStorage {
     return QuoteRow(
         this.symbol, this.name, this.lastTradePrice, this.changeInPercent,
         this.change, this.stockExchange, this.currencyCode,
-        this.isPostMarket, this.annualDividendRate, this.annualDividendYield
+        this.isPostMarket, this.annualDividendRate, this.annualDividendYield,
+        this.dayHigh, this.dayLow, this.previousClose, this.open,
+        this.regularMarketVolume?.toFloat(), this.trailingPE,
+        this.fiftyTwoWeekLowChange, this.fiftyTwoWeekLowChangePercent,
+        this.fiftyTwoWeekHighChange, this.fiftyTwoWeekHighChangePercent,
+        this.fiftyTwoWeekLow, this.fiftyTwoWeekHigh,
+        this.dividendDate?.toFloat(),
+        this.earningsTimestamp?.toFloat(),
+        this.marketCap?.toFloat()
     )
   }
 
@@ -151,7 +159,21 @@ class StocksStorage {
     quote.isPostMarket = this.isPostMarket
     quote.annualDividendRate = this.annualDividendRate
     quote.annualDividendYield = this.annualDividendYield
-
+    quote.dayHigh = this.dayHigh
+    quote.dayLow = this.dayLow
+    quote.previousClose = this.previousClose
+    quote.open = this.open
+    quote.regularMarketVolume = this.regularMarketVolume?.toLong()
+    quote.trailingPE = this.peRatio
+    quote.fiftyTwoWeekLowChange = this.fiftyTwoWeekLowChange
+    quote.fiftyTwoWeekLowChangePercent = this.fiftyTwoWeekLowChangePercent
+    quote.fiftyTwoWeekHighChange = this.fiftyTwoWeekHighChange
+    quote.fiftyTwoWeekHighChangePercent = this.fiftyTwoWeekHighChangePercent
+    quote.fiftyTwoWeekLow = this.fiftyTwoWeekLow
+    quote.fiftyTwoWeekHigh = this.fiftyTwoWeekHigh
+    quote.dividendDate = this.dividendDate?.toLong()
+    quote.earningsTimestamp = this.earningsDate?.toLong()
+    quote.marketCap = this.marketCap?.toLong()
     return quote
   }
 

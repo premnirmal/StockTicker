@@ -7,7 +7,8 @@ import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 
 @Database(
-    entities = [QuoteRow::class, HoldingRow::class, PropertiesRow::class], version = 2,
+    entities = [QuoteRow::class, HoldingRow::class, PropertiesRow::class],
+    version = 3,
     exportSchema = true
 )
 abstract class QuotesDB : RoomDatabase() {
