@@ -17,6 +17,7 @@ import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_1_2
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_2_3
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_3_4
+import com.github.premnirmal.ticker.repo.migrations.MIGRATION_4_5
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
@@ -65,6 +66,7 @@ class AppModule(private val app: StocksApp) {
         .addMigrations(MIGRATION_1_2)
         .addMigrations(MIGRATION_2_3)
         .addMigrations(MIGRATION_3_4)
+        .addMigrations(MIGRATION_4_5)
         .build()
   }
 

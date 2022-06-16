@@ -135,7 +135,8 @@ class StocksStorage {
         this.dividendDate?.toFloat(),
         this.earningsTimestamp?.toFloat(),
         this.marketCap?.toFloat(),
-        this.tradeable
+        this.tradeable,
+        this.triggerable
     )
   }
 
@@ -182,6 +183,7 @@ class StocksStorage {
     quote.earningsTimestamp = this.earningsDate?.toLong()
     quote.marketCap = this.marketCap?.toLong()
     quote.tradeable = this.isTradeable ?: false
+    quote.triggerable = this.isTriggerable ?: false
     return quote
   }
 

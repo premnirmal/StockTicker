@@ -48,13 +48,13 @@ class PortfolioViewModel : ViewModel() {
 
   fun fetchPortfolioInRealTime() = flow<List<Quote>> {
       do {
-        var tradeable = false
+        var triggerable = false
         val result = stocksProvider.fetch(false)
         if (result.wasSuccessful) {
-          tradeable = result.data.any { it.tradeable }
+          triggerable = result.data.any { it.triggerable }
           emit(result.data)
         }
         delay(IStocksProvider.DEFAULT_INTERVAL_MS)
-      } while (result.wasSuccessful && tradeable)
+      } while (result.wasSuccessful && triggerable)
     }.flowOn(Dispatchers.Default)
 }

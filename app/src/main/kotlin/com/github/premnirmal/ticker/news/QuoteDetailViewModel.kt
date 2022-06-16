@@ -116,12 +116,14 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
               )
           )
         }
-        details.add(
-            QuoteDetail(
-                R.string.quote_details_dividend_rate,
-                dividendInfo()
-            )
-        )
+        if (annualDividendRate > 0f && annualDividendYield > 0f) {
+          details.add(
+              QuoteDetail(
+                  R.string.quote_details_dividend_rate,
+                  dividendInfo()
+              )
+          )
+        }
         dividendDate?.let {
           details.add(
               QuoteDetail(
@@ -154,14 +156,14 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
   ) {
     viewModelScope.launch {
       do {
-        var tradeable = false
+        var triggerable = false
         val result = stocksProvider.fetchStock(symbol, allowCache = false)
         if (result.wasSuccessful) {
-          tradeable = result.data.tradeable
+          triggerable = result.data.triggerable
           _quote.emit(result)
         }
         delay(IStocksProvider.DEFAULT_INTERVAL_MS)
-      } while (isActive && result.wasSuccessful && tradeable)
+      } while (isActive && result.wasSuccessful && triggerable)
     }
   }
 

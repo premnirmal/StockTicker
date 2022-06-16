@@ -48,6 +48,8 @@ data class YahooQuoteNet(
   val marketState: String,
   @SerializedName("tradeable")
   val tradeable: Boolean,
+  @SerializedName("triggerable")
+  val triggerable: Boolean,
   @SerializedName("fiftyTwoWeekLowChange")
   val fiftyTwoWeekLowChange: Float?,
   @SerializedName("fiftyTwoWeekLowChangePercent")

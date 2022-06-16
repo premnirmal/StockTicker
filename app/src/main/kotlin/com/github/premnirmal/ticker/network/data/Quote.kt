@@ -37,6 +37,7 @@ data class Quote constructor(
   var trailingPE: Float? = 0.0f
   var marketState: String = ""
   var tradeable: Boolean = false
+  var triggerable: Boolean = false
   var fiftyTwoWeekLowChange: Float? = 0.0f
   var fiftyTwoWeekLowChangePercent: Float? = 0.0f
   var fiftyTwoWeekHighChange: Float? = 0.0f

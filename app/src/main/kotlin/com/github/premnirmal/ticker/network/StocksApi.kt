@@ -111,6 +111,7 @@ class StocksApi {
     quote.trailingPE = this.trailingPE
     quote.marketState = this.marketState
     quote.tradeable = this.tradeable
+    quote.triggerable = this.triggerable
     quote.fiftyTwoWeekLowChange = this.fiftyTwoWeekLowChange
     quote.fiftyTwoWeekLowChangePercent = this.fiftyTwoWeekLowChangePercent
     quote.fiftyTwoWeekHighChange = this.fiftyTwoWeekHighChange

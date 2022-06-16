@@ -31,5 +31,6 @@ data class QuoteRow(
   @ColumnInfo(name = "dividendDate") val dividendDate: Float?,
   @ColumnInfo(name = "earningsDate") val earningsDate: Float?,
   @ColumnInfo(name = "marketCap") val marketCap: Float?,
-  @ColumnInfo(name = "isTradeable") val isTradeable: Boolean?
+  @ColumnInfo(name = "isTradeable") val isTradeable: Boolean?,
+  @ColumnInfo(name = "isTriggerable") val isTriggerable: Boolean?
 )

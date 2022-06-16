@@ -306,6 +306,7 @@
                   android:gravity="center"
                   android:textSize="@dimen/xlarge_text"
                   tools:text="3"
+                  android:textColor="@color/text_1"
                   style="@style/BoldTextView"
                   />
               <TextView
@@ -332,6 +333,7 @@
                   android:gravity="center"
                   android:textSize="@dimen/xlarge_text"
                   tools:text="$2,400.00"
+                  android:textColor="@color/text_1"
                   android:textAppearance="@style/TickerTextAppearanceBold"
                   />
               <TextView
