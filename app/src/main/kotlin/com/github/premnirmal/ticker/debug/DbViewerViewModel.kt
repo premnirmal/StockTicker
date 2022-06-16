@@ -69,6 +69,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
             <th>dividendDate</th>
             <th>earningsDate</th>
             <th>marketCap</th>
+            <th>isTradeable</th>
             </tr>
             """
           )
@@ -146,6 +147,7 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
                   .append("<td>${quote.dividendDate}</td>")
                   .append("<td>${quote.earningsDate}</td>")
                   .append("<td>${quote.marketCap}</td>")
+                  .append("<td>${quote.isTradeable}</td>")
                   .append("</tr>")
 
               val holdings = it.holdings

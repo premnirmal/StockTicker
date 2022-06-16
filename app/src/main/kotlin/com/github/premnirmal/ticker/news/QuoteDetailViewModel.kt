@@ -23,11 +23,13 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -143,9 +145,23 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
         _quote.emit(_quote.value)
         return@launch
       }
-      stocksProvider.fetchStock(ticker).collect { fetchStock ->
-        _quote.value = fetchStock
-      }
+      _quote.value = stocksProvider.fetchStock(ticker)
+    }
+  }
+
+  fun fetchQuoteInRealTime(
+    symbol: String
+  ) {
+    viewModelScope.launch {
+      do {
+        var tradeable = false
+        val result = stocksProvider.fetchStock(symbol, allowCache = false)
+        if (result.wasSuccessful) {
+          tradeable = result.data.tradeable
+          _quote.emit(result)
+        }
+        delay(IStocksProvider.DEFAULT_INTERVAL_MS)
+      } while (isActive && result.wasSuccessful && tradeable)
     }
   }
 

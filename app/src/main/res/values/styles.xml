@@ -207,4 +207,8 @@
     <item name="cornerSize">8dp</item>
   </style>
 
+  <style name="TickerTextAppearanceBold">
+    <item name="android:textStyle">bold</item>
+  </style>
+
 </resources>

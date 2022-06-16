@@ -7,7 +7,6 @@ import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
-import com.github.premnirmal.tickerwidget.BuildConfig
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,10 +19,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class StocksApi {
-
-  companion object {
-    var DEBUG = BuildConfig.DEBUG
-  }
 
   @Inject internal lateinit var gson: Gson
   @Inject internal lateinit var yahooFinance: YahooFinance
@@ -47,9 +42,6 @@ class StocksApi {
       return@withContext FetchResult.success<List<SuggestionNet>>(suggestionList)
     }
 
-  /**
-   * Prefer robindahood, fallback to yahoo finance.
-   */
   suspend fun getStocks(tickerList: List<String>): FetchResult<List<Quote>> =
     withContext(Dispatchers.IO) {
       try {
@@ -96,11 +88,13 @@ class StocksApi {
   }
 
   private fun YahooQuoteNet.toQuote(): Quote {
-    val quote = Quote(this.symbol)
-    quote.name = this.name
-    quote.lastTradePrice = this.lastTradePrice
-    quote.changeInPercent = this.changePercent
-    quote.change = this.change
+    val quote = Quote(
+        symbol = this.symbol,
+        name = this.name,
+        lastTradePrice = this.lastTradePrice,
+        changeInPercent = this.changePercent,
+        change = this.change
+    )
     quote.stockExchange = this.exchange ?: ""
     quote.currencyCode = this.currency
     quote.annualDividendRate = this.annualDividendRate

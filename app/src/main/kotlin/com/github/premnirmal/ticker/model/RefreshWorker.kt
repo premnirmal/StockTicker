@@ -5,7 +5,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -23,7 +22,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
 
   override suspend fun doWork(): Result {
     return if (applicationContext.isNetworkOnline()) {
-      val result = stocksProvider.fetch().first()
+      val result = stocksProvider.fetch()
       if (result.hasError) {
         Result.failure()
       } else {

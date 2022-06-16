@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.github.premnirmal.tickerwidget.R
+import com.robinhood.ticker.TickerUtils
+import com.robinhood.ticker.TickerView
 
 /**
  * Created by premnirmal on 2/27/16.
@@ -29,13 +31,14 @@ class StockFieldView @JvmOverloads constructor(
   }
 
   private val fieldname: TextView
-  private val fieldvalue: TextView
+  private val fieldvalue: TickerView
 
   init {
     LayoutInflater.from(context)
         .inflate(R.layout.stock_field_view, this, true)
     fieldname = findViewById(R.id.fieldname)
     fieldvalue = findViewById(R.id.fieldvalue)
+    fieldvalue.setCharacterLists(TickerUtils.provideNumberList())
     attrs?.let {
       val array = context.obtainStyledAttributes(it, R.styleable.StockFieldView)
       val orientation = array.getInt(R.styleable.StockFieldView_or, 0)
@@ -52,7 +55,7 @@ class StockFieldView @JvmOverloads constructor(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        fieldvalue.layoutParams = LinearLayout.LayoutParams(
+        fieldvalue.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
@@ -64,7 +67,7 @@ class StockFieldView @JvmOverloads constructor(
       val textSize = array.getDimensionPixelSize(R.styleable.StockFieldView_size, 20)
           .toFloat()
       fieldname.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize)
-      fieldvalue.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize * 0.9f)
+      fieldvalue.setTextSize(textSize * 0.9f)
       val centerText = array.getBoolean(R.styleable.StockFieldView_center_text, false)
       when {
         centerText -> {
@@ -72,19 +75,19 @@ class StockFieldView @JvmOverloads constructor(
           fieldvalue.gravity = Gravity.CENTER
         }
         orientation == ORIENTATION_HORIZONTAL -> {
-          fieldname.gravity = Gravity.LEFT
-          fieldvalue.gravity = Gravity.RIGHT
+          fieldname.gravity = Gravity.START
+          fieldvalue.gravity = Gravity.END
         }
         orientation == ORIENTATION_VERTICAL -> {
           val textGravity = array.getInt(R.styleable.StockFieldView_text_gravity, 0)
           when (textGravity) {
             GRAVITY_LEFT -> {
-              fieldname.gravity = Gravity.LEFT
-              fieldvalue.gravity = Gravity.LEFT
+              fieldname.gravity = Gravity.START
+              fieldvalue.gravity = Gravity.START
             }
             GRAVITY_RIGHT -> {
-              fieldname.gravity = Gravity.RIGHT
-              fieldvalue.gravity = Gravity.RIGHT
+              fieldname.gravity = Gravity.END
+              fieldvalue.gravity = Gravity.END
             }
             GRAVITY_CENTER -> {
               fieldname.gravity = Gravity.CENTER
@@ -117,11 +120,11 @@ class StockFieldView @JvmOverloads constructor(
   }
 
   fun setText(text: CharSequence?) {
-    fieldvalue.text = text
+    fieldvalue.text = text.toString()
   }
 
   fun setTextColor(color: Int) {
-    fieldvalue.setTextColor(color)
+    fieldvalue.textColor = color
   }
 
   private fun getStringValue(

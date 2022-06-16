@@ -11,7 +11,6 @@ import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -30,7 +29,7 @@ abstract class BaseUnitTest : TestCase() {
     super.setUp()
     val iStocksProvider = Mocker.provide(IStocksProvider::class)
     doNothing().whenever(iStocksProvider).schedule()
-    whenever(iStocksProvider.fetch()).thenReturn(flowOf(FetchResult.success(ArrayList())))
+    whenever(iStocksProvider.fetch()).thenReturn(FetchResult.success(ArrayList()))
     whenever(iStocksProvider.tickers).thenReturn(MutableStateFlow((emptyList())))
     whenever(iStocksProvider.addStock(any())).thenReturn(emptyList())
     whenever(iStocksProvider.fetchState).thenReturn(MutableStateFlow(FetchState.NotFetched))

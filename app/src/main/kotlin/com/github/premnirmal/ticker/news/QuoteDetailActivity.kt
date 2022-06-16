@@ -10,7 +10,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -44,6 +44,9 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
 import com.github.premnirmal.tickerwidget.R.dimen
+import com.github.premnirmal.tickerwidget.R.id
+import com.github.premnirmal.tickerwidget.R.menu
+import com.github.premnirmal.tickerwidget.R.string
 import com.google.android.material.appbar.AppBarLayout
 import com.robinhood.ticker.TickerUtils
 import kotlinx.android.synthetic.main.activity_quote_detail.alert_above
@@ -111,6 +114,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
+    ticker = checkNotNull(intent.getStringExtra(TICKER))
     setContentView(R.layout.activity_quote_detail)
     toolbar.setNavigationOnClickListener {
       finish()
@@ -122,6 +126,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
       graph_container.requestLayout()
     }
+    equityValue.setCharacterLists(TickerUtils.provideNumberList())
     ViewCompat.setOnApplyWindowInsetsListener(parentView) { _, insets ->
       toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
@@ -148,19 +153,19 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     recycler_view.adapter = adapter
     recycler_view.isNestedScrollingEnabled = false
+    price.setCharacterLists(TickerUtils.provideNumberList())
     change.setCharacterLists(TickerUtils.provideNumberList())
     change_percent.setCharacterLists(TickerUtils.provideNumberList())
     app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
     setupGraphView()
-    ticker = checkNotNull(intent.getStringExtra(TICKER))
+    updateToolbar()
     viewModel.quote.observe(this) { result ->
       if (result?.wasSuccessful == true) {
         quote = result.data
-        fetch()
-        setupUi()
+        fetchNewsAndChartData()
+        setupQuoteUi()
       } else if (result?.wasSuccessful == false) {
-        InAppMessage.showMessage(parentView, R.string.error_fetching_stock, error = true
-        )
+        InAppMessage.showMessage(parentView, R.string.error_fetching_stock, error = true)
         progress.visibility = View.GONE
         graphView.setNoDataText(getString(R.string.error_fetching_stock))
         news_container.displayedChild = INDEX_ERROR
@@ -173,6 +178,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       dataPoints = data
       loadGraph(ticker)
     }
+    viewModel.fetchQuoteInRealTime(ticker)
     viewModel.dataFetchError.observe(this) {
       progress.visibility = View.GONE
       graphView.setNoDataText(getString(R.string.graph_fetch_failed))
@@ -219,55 +225,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   }
 
   @SuppressLint("SetTextI18n")
-  private fun setupUi() {
-    toolbar.menu.clear()
-    toolbar.inflateMenu(R.menu.menu_news_feed)
-    val showRemove = viewModel.showAddOrRemove(ticker)
-    val addMenuItem = toolbar.menu.findItem(R.id.action_add)
-    val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
-    if (showRemove) {
-      addMenuItem.isVisible = false
-      removeMenuItem.isVisible = true
-    } else {
-      removeMenuItem.isVisible = false
-      addMenuItem.isVisible = true
-    }
-    toolbar.setOnMenuItemClickListener { menuItem ->
-      when (menuItem.itemId) {
-        R.id.action_add -> {
-          if (viewModel.hasWidget()) {
-            val widgetDatas = viewModel.getWidgetDatas()
-            if (widgetDatas.size > 1) {
-              val widgetNames = widgetDatas.map { it.widgetName() }
-                  .toTypedArray()
-              AlertDialog.Builder(this)
-                  .setTitle(R.string.select_widget)
-                  .setItems(widgetNames) { dialog, which ->
-                    val id = widgetDatas[which].widgetId
-                    addTickerToWidget(ticker, id)
-                    dialog.dismiss()
-                  }
-                  .create()
-                  .show()
-            } else {
-              addTickerToWidget(ticker, widgetDatas.first().widgetId)
-            }
-          } else {
-            addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
-          }
-          updatePositionsUi()
-          return@setOnMenuItemClickListener true
-        }
-        R.id.action_remove -> {
-          removeMenuItem.isVisible = false
-          addMenuItem.isVisible = true
-          viewModel.removeStock(ticker)
-          updatePositionsUi()
-          return@setOnMenuItemClickListener true
-        }
-      }
-      return@setOnMenuItemClickListener false
-    }
+  private fun setupQuoteUi() {
     toolbar.title = ticker
     tickerName.text = quote.name
     price.text = formatNumber(quote.lastTradePrice, quote.currencyCode)
@@ -291,6 +249,57 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     alerts_container.setOnClickListener {
       alertsOnClickListener()
+    }
+  }
+
+  private fun updateToolbar() {
+    toolbar.menu.clear()
+    toolbar.inflateMenu(menu.menu_news_feed)
+    val showRemove = viewModel.showAddOrRemove(ticker)
+    val addMenuItem = toolbar.menu.findItem(id.action_add)
+    val removeMenuItem = toolbar.menu.findItem(id.action_remove)
+    if (showRemove) {
+      addMenuItem.isVisible = false
+      removeMenuItem.isVisible = true
+    } else {
+      removeMenuItem.isVisible = false
+      addMenuItem.isVisible = true
+    }
+    toolbar.setOnMenuItemClickListener { menuItem ->
+      when (menuItem.itemId) {
+        id.action_add -> {
+          if (viewModel.hasWidget()) {
+            val widgetDatas = viewModel.getWidgetDatas()
+            if (widgetDatas.size > 1) {
+              val widgetNames = widgetDatas.map { it.widgetName() }
+                  .toTypedArray()
+              Builder(this)
+                  .setTitle(string.select_widget)
+                  .setItems(widgetNames) { dialog, which ->
+                    val id = widgetDatas[which].widgetId
+                    addTickerToWidget(ticker, id)
+                    dialog.dismiss()
+                  }
+                  .create()
+                  .show()
+            } else {
+              addTickerToWidget(ticker, widgetDatas.first().widgetId)
+            }
+          } else {
+            addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
+          }
+          updatePositionsUi()
+          return@setOnMenuItemClickListener true
+        }
+        id.action_remove -> {
+          removeMenuItem.isVisible = false
+          addMenuItem.isVisible = true
+          viewModel.removeStock(ticker)
+          updatePositionsUi()
+          return@setOnMenuItemClickListener true
+        }
+      }
+      return@setOnMenuItemClickListener false
     }
   }
 
@@ -374,6 +383,9 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
 
   @SuppressLint("SetTextI18n")
   private fun updatePositionsUi() {
+    if (!this::quote.isInitialized) {
+      return
+    }
     val isInPortfolio = viewModel.isInPortfolio(ticker)
     if (isInPortfolio) {
       positions_container.visibility = View.VISIBLE
@@ -443,7 +455,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
   }
 
-  private fun fetch() {
+  private fun fetchNewsAndChartData() {
     if (!isNetworkOnline()) {
       InAppMessage.showMessage(parentView, R.string.no_network_message, error = true)
     }

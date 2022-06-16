@@ -28,7 +28,6 @@ class StocksApiTest : BaseUnitTest() {
 
   @Before fun initMocks() {
     runBlocking {
-      StocksApi.DEBUG = false
       yahooFinance = Mocker.provide(YahooFinance::class)
       mockPrefs = Mocker.provide(SharedPreferences::class)
       val listType = object : TypeToken<List<YahooQuoteNet>>() {}.type

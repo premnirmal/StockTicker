@@ -11,7 +11,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.IStocksProvider
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -65,7 +64,6 @@ class HomeViewModel : ViewModel() {
             ""
           }
           data.value = TotalGainLoss(totalHoldingsStr, totalGainStr, totalLossStr)
-          cancel()
         }
       } else data.value = TotalGainLoss("", "", "")
     }
@@ -73,10 +71,8 @@ class HomeViewModel : ViewModel() {
   }
 
   fun fetch() = liveData {
-    stocksProvider.fetch()
-        .collect { fetch ->
-          emit(fetch.wasSuccessful)
-        }
+    val fetch = stocksProvider.fetch()
+    emit(fetch.wasSuccessful)
   }
 
   fun lastFetched(): String {

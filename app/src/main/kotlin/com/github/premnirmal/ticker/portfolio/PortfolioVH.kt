@@ -10,6 +10,8 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperViewHolde
 import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
+import com.robinhood.ticker.TickerUtils
+import com.robinhood.ticker.TickerView
 
 /**
  * Created by premnirmal on 2/29/16.
@@ -46,7 +48,7 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
     tickerView.text = quote.symbol
     nameView.text = quote.name
 
-    val totalValueText = itemView.findViewById<TextView>(R.id.totalValue)
+    val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
     totalValueText.text = "${quote.currencySymbol}${quote.priceString()}"
 
     val change: Float = quote.change
@@ -75,10 +77,19 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
 
   internal class StockVH(itemView: View) : PortfolioVH(itemView) {
 
+    init {
+      val changeInPercentView = itemView.findViewById<TickerView>(R.id.changePercent)
+      changeInPercentView.setCharacterLists(TickerUtils.provideNumberList())
+      val changeValueView = itemView.findViewById<TickerView>(R.id.changeValue)
+      changeValueView.setCharacterLists(TickerUtils.provideNumberList())
+      val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
+      totalValueText.setCharacterLists(TickerUtils.provideNumberList())
+    }
+
     override fun updateView(quote: Quote, color: Int) {
-      val changeInPercentView = itemView.findViewById<TextView>(R.id.changePercent)
+      val changeInPercentView = itemView.findViewById<TickerView>(R.id.changePercent)
       changeInPercentView.text = quote.changePercentStringWithSign()
-      val changeValueView = itemView.findViewById<TextView>(R.id.changeValue)
+      val changeValueView = itemView.findViewById<TickerView>(R.id.changeValue)
       changeValueView.text = quote.changeStringWithSign()
       changeInPercentView.setTextColor(color)
       changeValueView.setTextColor(color)
@@ -86,6 +97,11 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
   }
 
   internal class PositionVH(itemView: View) : PortfolioVH(itemView) {
+
+    init {
+      val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
+      totalValueText.setCharacterLists(TickerUtils.provideNumberList())
+    }
 
     override fun updateView(quote: Quote, color: Int) {
       val changeInPercentView = itemView.findViewById<StockFieldView>(R.id.changePercent)

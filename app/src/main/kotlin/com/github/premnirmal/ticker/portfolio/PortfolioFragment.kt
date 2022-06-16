@@ -137,18 +137,18 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
       view_flipper.displayedChild = 1
     }
     viewModel.portfolio.observe(viewLifecycleOwner) {
-      update()
+      stocksAdapter.refresh(it)
+    }
+    lifecycleScope.launch {
+      viewModel.fetchPortfolioInRealTime().collect {
+        stocksAdapter.refresh(it)
+      }
     }
     lifecycleScope.launch {
       widgetData.autoSortEnabled.collect {
         update()
       }
     }
-  }
-
-  override fun onResume() {
-    super.onResume()
-    update()
   }
 
   private fun update() {

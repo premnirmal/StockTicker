@@ -9,6 +9,10 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,4 +45,16 @@ class PortfolioViewModel : ViewModel() {
   fun broadcastUpdateWidget(widgetId: Int) {
     widgetDataProvider.broadcastUpdateWidget(widgetId)
   }
+
+  fun fetchPortfolioInRealTime() = flow<List<Quote>> {
+      do {
+        var tradeable = false
+        val result = stocksProvider.fetch(false)
+        if (result.wasSuccessful) {
+          tradeable = result.data.any { it.tradeable }
+          emit(result.data)
+        }
+        delay(IStocksProvider.DEFAULT_INTERVAL_MS)
+      } while (result.wasSuccessful && tradeable)
+    }.flowOn(Dispatchers.Default)
 }

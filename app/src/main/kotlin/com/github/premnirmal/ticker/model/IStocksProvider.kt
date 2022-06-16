@@ -4,7 +4,6 @@ import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -19,7 +18,7 @@ interface IStocksProvider {
 
   val nextFetchMs: StateFlow<Long>
 
-  fun fetch(): Flow<FetchResult<List<Quote>>>
+  suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>>
 
   fun schedule()
 
@@ -31,7 +30,7 @@ interface IStocksProvider {
 
   fun getStock(ticker: String): Quote?
 
-  fun fetchStock(ticker: String): Flow<FetchResult<Quote>>
+  suspend fun fetchStock(ticker: String, allowCache: Boolean = true): FetchResult<Quote>
 
   suspend fun removeStock(ticker: String): Collection<String>
 
@@ -80,5 +79,9 @@ interface IStocksProvider {
         exception.message.orEmpty()
       }
     }
+  }
+
+  companion object {
+    const val DEFAULT_INTERVAL_MS: Long = 15_000L
   }
 }

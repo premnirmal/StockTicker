@@ -15,12 +15,8 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -35,7 +31,6 @@ import javax.inject.Singleton
 class StocksProvider : IStocksProvider {
 
   companion object {
-
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
     private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
@@ -80,7 +75,7 @@ class StocksProvider : IStocksProvider {
     runBlocking { fetchLocal() }
     if (lastFetched == 0L) {
       coroutineScope.launch {
-        fetch().collect()
+        fetch()
       }
     } else {
       _fetchState.tryEmit(FetchState.Success(lastFetched))
@@ -125,10 +120,9 @@ class StocksProvider : IStocksProvider {
     widgetDataProvider.broadcastUpdateAllWidgets()
   }
 
-  private fun fetchStockInternal(ticker: String, allowCache: Boolean): Flow<FetchResult<Quote>> =
-    flow {
+  private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(Dispatchers.IO){
       val quote = if (allowCache) quoteMap[ticker] else null
-      quote?.let { emit(FetchResult.success(quote)) } ?: run {
+      return@withContext quote?.let { FetchResult.success(quote) } ?: run {
         try {
           val res = api.getStock(ticker)
           if (res.wasSuccessful) {
@@ -139,18 +133,19 @@ class StocksProvider : IStocksProvider {
               quoteFromStorage
             } ?: data
             quoteMap[ticker] = quote
-            emit(FetchResult.success(quote))
+            FetchResult.success(quote)
           } else {
-            emit(FetchResult.failure<Quote>(FetchException("Failed to fetch", res.error)))
+            FetchResult.failure<Quote>(FetchException("Failed to fetch", res.error))
           }
         } catch (ex: CancellationException) {
           // ignore
+          FetchResult.failure<Quote>(FetchException("Failed to fetch", ex))
         } catch (ex: Exception) {
           Timber.w(ex)
-          emit(FetchResult.failure<Quote>(FetchException("Failed to fetch", ex)))
+          FetchResult.failure<Quote>(FetchException("Failed to fetch", ex))
         }
       }
-    }.flowOn(Dispatchers.IO)
+    }
 
   /////////////////////
   // public api
@@ -160,13 +155,17 @@ class StocksProvider : IStocksProvider {
     return tickerSet.contains(ticker)
   }
 
-  override fun fetch(): Flow<FetchResult<List<Quote>>> = flow {
+  override suspend fun fetch(allowScheduling: Boolean): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerSet.isEmpty()) {
-      _fetchState.emit(FetchState.Failure(FetchException("No symbols in portfolio")))
-      emit(FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio")))
+      if (allowScheduling) {
+        _fetchState.emit(FetchState.Failure(FetchException("No symbols in portfolio")))
+      }
+      FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
     } else {
-      try {
-        appPreferences.setRefreshing(true)
+      return@withContext try {
+        if (allowScheduling) {
+          appPreferences.setRefreshing(true)
+        }
         widgetDataProvider.broadcastUpdateAllWidgets()
         val fr = api.getStocks(tickerSet.toList())
         if (fr.hasError) {
@@ -174,7 +173,7 @@ class StocksProvider : IStocksProvider {
         }
         val fetchedStocks = fr.data
         if (fetchedStocks.isEmpty()) {
-          emit(FetchResult.failure<List<Quote>>(FetchException("Refresh failed")))
+          return@withContext FetchResult.failure<List<Quote>>(FetchException("Refresh failed"))
         } else {
           synchronized(tickerSet) {
             tickerSet.addAll(fetchedStocks.map { it.symbol })
@@ -188,27 +187,36 @@ class StocksProvider : IStocksProvider {
           }
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
-          _lastFetched.emit(api.lastFetched)
-          _fetchState.emit(FetchState.Success(api.lastFetched))
-          saveLastFetched()
-          exponentialBackoff.reset()
-          scheduleUpdate()
-          emit(FetchResult.success(fetchedStocks))
+          if (allowScheduling) {
+            _lastFetched.emit(api.lastFetched)
+            _fetchState.emit(FetchState.Success(api.lastFetched))
+            saveLastFetched()
+            exponentialBackoff.reset()
+            scheduleUpdate()
+          }
+          FetchResult.success(quoteMap.values.toList())
         }
       } catch(ex: CancellationException) {
-        val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
-        scheduleUpdateWithMs(backOffTimeMs)
+        if (allowScheduling) {
+          val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
+          scheduleUpdateWithMs(backOffTimeMs)
+        }
+        FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } catch (ex: Throwable) {
         Timber.w(ex)
-        _fetchState.emit(FetchState.Failure(ex))
-        val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
-        scheduleUpdateWithMs(backOffTimeMs)
-        emit(FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex)))
+        if (allowScheduling) {
+          _fetchState.emit(FetchState.Failure(ex))
+          val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
+          scheduleUpdateWithMs(backOffTimeMs)
+        }
+        FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } finally {
-        appPreferences.setRefreshing(false)
+        if (allowScheduling) {
+          appPreferences.setRefreshing(false)
+        }
       }
     }
-  }.flowOn(Dispatchers.IO)
+  }
 
   override fun schedule() {
     scheduleUpdate()
@@ -221,8 +229,7 @@ class StocksProvider : IStocksProvider {
     synchronized(quoteMap) {
       if (!tickerSet.contains(ticker)) {
         tickerSet.add(ticker)
-        val quote = Quote()
-        quote.symbol = ticker
+        val quote = Quote(symbol = ticker)
         quoteMap[ticker] = quote
         saveTickers()
       }
@@ -230,13 +237,12 @@ class StocksProvider : IStocksProvider {
     _tickers.tryEmit(tickerSet.toList())
     _portfolio.tryEmit(quoteMap.values.toList())
     coroutineScope.launch {
-      fetchStockInternal(ticker, false).collect { result ->
-        if (result.wasSuccessful) {
-          val data = result.data
-          quoteMap[ticker] = data
-          storage.saveQuote(result.data)
-          _portfolio.emit(quoteMap.values.toList())
-        }
+      val result = fetchStockInternal(ticker, false)
+      if (result.wasSuccessful) {
+        val data = result.data
+        quoteMap[ticker] = data
+        storage.saveQuote(result.data)
+        _portfolio.emit(quoteMap.values.toList())
       }
     }
     return tickerSet
@@ -294,7 +300,7 @@ class StocksProvider : IStocksProvider {
       saveTickers()
       if (filterNot.isNotEmpty()) {
         coroutineScope.launch {
-          fetch().collect()
+          fetch()
         }
       }
     }
@@ -328,8 +334,8 @@ class StocksProvider : IStocksProvider {
     saveTickers()
   }
 
-  override fun fetchStock(ticker: String): Flow<FetchResult<Quote>> {
-    return fetchStockInternal(ticker, true)
+  override suspend fun fetchStock(ticker: String, allowCache: Boolean): FetchResult<Quote> {
+    return fetchStockInternal(ticker, allowCache)
   }
 
   override fun getStock(ticker: String): Quote? = quoteMap[ticker]
@@ -353,7 +359,7 @@ class StocksProvider : IStocksProvider {
     coroutineScope.launch {
       storage.saveQuotes(portfolio)
       fetchLocal()
-      fetch().collect()
+      fetch()
     }
   }
 

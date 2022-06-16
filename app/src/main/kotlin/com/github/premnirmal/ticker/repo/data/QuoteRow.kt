@@ -30,5 +30,6 @@ data class QuoteRow(
   @ColumnInfo(name = "fiftyTwoWeekHigh") val fiftyTwoWeekHigh: Float?,
   @ColumnInfo(name = "dividendDate") val dividendDate: Float?,
   @ColumnInfo(name = "earningsDate") val earningsDate: Float?,
-  @ColumnInfo(name = "marketCap") val marketCap: Float?
+  @ColumnInfo(name = "marketCap") val marketCap: Float?,
+  @ColumnInfo(name = "isTradeable") val isTradeable: Boolean?
 )

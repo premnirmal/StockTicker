@@ -8,7 +8,6 @@
     android:background="@drawable/card_bg"
     android:orientation="vertical"
     android:paddingBottom="8dp"
-    android:paddingLeft="4dp"
     android:paddingStart="4dp"
     android:paddingTop="4dp"
     tools:layout_height="150dp"
@@ -27,11 +26,10 @@
         android:id="@+id/ticker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp"
         android:layout_weight="0.4"
         android:ellipsize="end"
-        android:gravity="center_vertical|left"
+        android:gravity="center_vertical|start"
         android:maxLines="1"
         android:textColor="@color/text_1"
         android:textSize="@dimen/large_text"
@@ -55,7 +53,6 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginBottom="4dp"
-      android:layout_marginRight="4dp"
       android:layout_marginEnd="4dp"
       android:ellipsize="end"
       android:maxLines="2"
@@ -72,21 +69,19 @@
       android:gravity="center_vertical"
       android:orientation="horizontal"
       android:paddingEnd="4dp"
-      android:paddingRight="4dp"
       >
 
-    <TextView
+    <com.robinhood.ticker.TickerView
         android:id="@+id/totalValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="4dp"
         android:layout_marginEnd="4dp"
-        android:gravity="center_vertical|left"
+        android:gravity="center_vertical|start"
         android:maxLines="1"
         android:textColor="@color/text_1"
         android:textSize="@dimen/medium_text"
         tools:text="555.02"
-        style="@style/BoldTextView"
+        android:textAppearance="@style/TickerTextAppearanceBold"
         />
 
     <LinearLayout
@@ -97,31 +92,29 @@
         android:orientation="vertical"
         >
 
-      <TextView
+      <com.robinhood.ticker.TickerView
           android:id="@+id/changePercent"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="bottom"
           android:layout_marginBottom="4dp"
-          android:gravity="center_vertical|right"
+          android:gravity="center_vertical|end"
           android:maxLines="1"
           android:textColor="@color/text_1"
           android:textSize="@dimen/large_text"
           tools:text="5.02%"
-          style="@style/TextViewStyle"
           />
 
-      <TextView
+      <com.robinhood.ticker.TickerView
           android:id="@+id/changeValue"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="bottom"
-          android:gravity="center_vertical|right"
+          android:gravity="center_vertical|end"
           android:maxLines="1"
           android:textColor="@color/text_1"
           android:textSize="@dimen/large_text"
           tools:text="15.02345"
-          style="@style/TextViewStyle"
           />
     </LinearLayout>
   </LinearLayout>

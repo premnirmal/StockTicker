@@ -62,6 +62,12 @@ class StocksAdapter constructor(
     notifyDataSetChanged()
   }
 
+  fun refresh(portfolio: List<Quote>) {
+    quoteList.clear()
+    quoteList.addAll(portfolio.filter { widgetData.hasTicker(it.symbol) })
+    notifyDataSetChanged()
+  }
+
   override fun getItemViewType(position: Int): Int {
     val stock = quoteList[position]
     return when {

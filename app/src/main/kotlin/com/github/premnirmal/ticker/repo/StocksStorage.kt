@@ -134,7 +134,8 @@ class StocksStorage {
         this.fiftyTwoWeekLow, this.fiftyTwoWeekHigh,
         this.dividendDate?.toFloat(),
         this.earningsTimestamp?.toFloat(),
-        this.marketCap?.toFloat()
+        this.marketCap?.toFloat(),
+        this.tradeable
     )
   }
 
@@ -149,7 +150,13 @@ class StocksStorage {
   }
 
   private fun QuoteRow.toQuote(): Quote {
-    val quote = Quote(this.symbol)
+    val quote = Quote(
+        symbol = this.symbol,
+        name = this.name,
+        lastTradePrice = this.lastTradePrice,
+        changeInPercent = this.changeInPercent,
+        change = this.change
+    )
     quote.name = this.name
     quote.lastTradePrice = this.lastTradePrice
     quote.changeInPercent = this.changeInPercent
@@ -174,6 +181,7 @@ class StocksStorage {
     quote.dividendDate = this.dividendDate?.toLong()
     quote.earningsTimestamp = this.earningsDate?.toLong()
     quote.marketCap = this.marketCap?.toLong()
+    quote.tradeable = this.isTradeable ?: false
     return quote
   }
 

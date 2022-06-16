@@ -114,7 +114,7 @@
 
       </FrameLayout>
 
-      <TextView
+      <com.robinhood.ticker.TickerView
           app:layout_constraintTop_toBottomOf="@id/tickerName"
           app:layout_constraintStart_toStartOf="parent"
           app:layout_constraintEnd_toEndOf="parent"
@@ -122,7 +122,7 @@
           android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:layout_marginTop="@dimen/quote_details_margin"
-          style="@style/BoldTextView"
+          android:textAppearance="@style/TickerTextAppearanceBold"
           android:textColor="@color/text_2"
           android:textSize="@dimen/xlarge_text"
           android:gravity="center"
@@ -324,7 +324,7 @@
               android:orientation="vertical"
               android:padding="8dp"
               >
-            <TextView
+            <com.robinhood.ticker.TickerView
                 android:id="@+id/equityValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -332,7 +332,7 @@
                 android:gravity="center"
                 android:textSize="@dimen/xlarge_text"
                 tools:text="$2,400.00"
-                style="@style/BoldTextView"
+                android:textAppearance="@style/TickerTextAppearanceBold"
                 />
             <TextView
                 android:layout_width="wrap_content"
