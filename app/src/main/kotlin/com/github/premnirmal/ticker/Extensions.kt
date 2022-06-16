@@ -57,6 +57,14 @@ fun Context.getStatusBarHeight(): Int {
   return result
 }
 
+fun Context.getNavigationBarHeight(): Int {
+  val resourceId: Int = resources.getIdentifier(
+      "navigation_bar_height",
+      "dimen", "android"
+  )
+  return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
+}
+
 fun Activity.dismissKeyboard() {
   val view = currentFocus
   if (view is TextView) {

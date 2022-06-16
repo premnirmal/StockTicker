@@ -20,7 +20,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/default_bg"
+        app:titleEnabled="false"
         app:layout_scrollFlags="scroll">
+      <View
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:id="@+id/fake_status_bar"
+          android:background="@color/bg_toolbar"
+          app:layout_collapseMode="parallax"
+          app:layout_collapseParallaxMultiplier="1"
+          />
 
       <androidx.appcompat.widget.Toolbar
           android:id="@+id/toolbar"
@@ -57,7 +66,7 @@
           app:layout_constraintBottom_toTopOf="@id/price"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/quote_details_margin"
+          android:layout_marginTop="@dimen/activity_vertical_margin"
           android:textColor="@color/text_3"
           android:textSize="@dimen/xlarge_text"
           android:gravity="center"
@@ -65,56 +74,13 @@
           tools:text="Apple Inc."
           />
 
-      <TextView
-          app:layout_constraintTop_toBottomOf="@id/tickerName"
-          app:layout_constraintStart_toStartOf="parent"
-          app:layout_constraintEnd_toEndOf="parent"
-          android:id="@+id/price"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:layout_marginTop="@dimen/quote_details_margin"
-          style="@style/BoldTextView"
-          android:textColor="@color/text_2"
-          android:textSize="@dimen/xlarge_text"
-          android:gravity="center"
-          tools:text="$132.99"/>
-
-        <com.robinhood.ticker.TickerView
-            android:id="@+id/change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/change_percent"
-            app:layout_constraintTop_toBottomOf="@id/price"
-            app:layout_constraintBottom_toTopOf="@id/expand_graph"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            android:layout_margin="4dp"
-            android:layout_marginTop="@dimen/quote_details_margin"
-            android:gravity="center"
-            android:padding="@dimen/quote_details_padding"
-            tools:text="+2.63"
-            />
-
-        <com.robinhood.ticker.TickerView
-            android:id="@+id/change_percent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/change"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/change"
-            app:layout_constraintBottom_toBottomOf="@id/change"
-            android:gravity="center"
-            android:padding="@dimen/quote_details_padding"
-            tools:text="+2.02%"
-            />
-
       <ImageView
           android:id="@+id/expand_graph"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="top|end"
           app:layout_constraintEnd_toEndOf="parent"
-          app:layout_constraintTop_toBottomOf="@id/change_percent"
+          app:layout_constraintTop_toTopOf="@id/price"
           android:contentDescription="@string/expand"
           android:onClick="openGraph"
           android:padding="8dp"
@@ -146,6 +112,47 @@
             />
 
       </FrameLayout>
+
+      <TextView
+          app:layout_constraintTop_toBottomOf="@id/tickerName"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          android:id="@+id/price"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="@dimen/quote_details_margin"
+          style="@style/BoldTextView"
+          android:textColor="@color/text_2"
+          android:textSize="@dimen/xlarge_text"
+          android:gravity="center"
+          tools:text="$132.99"/>
+
+        <com.robinhood.ticker.TickerView
+            android:id="@+id/change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/change_percent"
+            app:layout_constraintTop_toBottomOf="@id/price"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            android:layout_marginTop="@dimen/quote_details_margin"
+            android:gravity="center"
+            android:padding="@dimen/quote_details_padding"
+            tools:text="+2.63"
+            />
+
+        <com.robinhood.ticker.TickerView
+            android:id="@+id/change_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/change"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/change"
+            app:layout_constraintBottom_toBottomOf="@id/change"
+            android:gravity="center"
+            android:padding="@dimen/quote_details_padding"
+            tools:text="+2.02%"
+            />
 
       <com.google.android.material.chip.ChipGroup
           android:id="@+id/group_period"
@@ -211,7 +218,6 @@
           android:layout_width="match_parent"
           android:layout_height="match_parent"
           android:background="@color/default_bg"
-          android:layout_marginTop="?attr/actionBarSize"
           app:layout_collapseMode="parallax"
           app:layout_collapseParallaxMultiplier="1"
           android:alpha="0.0" />

@@ -5,11 +5,16 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -24,6 +29,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.formatChange
 import com.github.premnirmal.ticker.formatChangePercent
 import com.github.premnirmal.ticker.formatNumber
+import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.NewsArticle
@@ -49,6 +55,7 @@ import kotlinx.android.synthetic.main.activity_quote_detail.change
 import kotlinx.android.synthetic.main.activity_quote_detail.change_percent
 import kotlinx.android.synthetic.main.activity_quote_detail.day_change
 import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
+import kotlinx.android.synthetic.main.activity_quote_detail.fake_status_bar
 import kotlinx.android.synthetic.main.activity_quote_detail.gradient
 import kotlinx.android.synthetic.main.activity_quote_detail.graphView
 import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
@@ -112,6 +119,17 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
       graph_container.requestLayout()
+    }
+    ViewCompat.setOnApplyWindowInsetsListener(parentView) { _, insets ->
+      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+      }
+      insets
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+        height = getStatusBarHeight()
+      }
     }
     adapter = NewsFeedAdapter(this)
     recycler_view.layoutManager = LinearLayoutManager(this)

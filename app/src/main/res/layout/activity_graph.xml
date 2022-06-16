@@ -69,7 +69,6 @@
       android:layout_height="wrap_content"
       android:layout_gravity="center"
       android:layout_marginTop="@dimen/quote_details_margin"
-      android:layout_marginBottom="?attr/actionBarSize"
       app:singleLine="true"
       app:singleSelection="true"
       app:selectionRequired="true">

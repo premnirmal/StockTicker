@@ -111,6 +111,14 @@
     <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
   </style>
 
+  <style name="QuoteDetail.ActionBarStyle" parent="ActionBarStyle">
+    <item name="android:titleTextStyle">@style/QuoteDetail.ActionBarTitleText</item>
+  </style>
+
+  <style name="QuoteDetail.ActionBarTitleText" parent="@style/ActionBarTitleText">
+    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+  </style>
+
   <style name="AlertDialog" parent="@style/Theme.Material3.DayNight.Dialog.Alert">
     <item name="android:textColor">@color/color_accent</item>
     <item name="android:colorPrimary">@color/color_accent</item>
@@ -159,7 +167,9 @@
     <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>
   </style>
 
-  <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme"/>
+  <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme">
+    <item name="android:actionBarStyle">@style/QuoteDetail.ActionBarStyle</item>
+  </style>
 
   <style name="GraphActivityTheme" parent="StocksWidget.App.Theme"/>
 
