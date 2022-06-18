@@ -56,7 +56,7 @@ data class Quote constructor(
 
   val priceFormat: PriceFormat
     get() = currencyCodes[currencyCode]?.let {
-      PriceFormat(currencyCode = currencyCode, symbol = it, prefix = suffixCurrencies[it] ?: true)
+      PriceFormat(currencyCode = currencyCode, symbol = it, prefix = prefixCurrencies[it] ?: true)
     } ?: PriceFormat(currencyCode, currencyCode)
 
   fun hasAlertAbove(): Boolean =
@@ -326,8 +326,8 @@ data class Quote constructor(
       )
     }
 
-    private val suffixCurrencies: Map<String, Boolean> by lazy {
-      mapOf("GBp" to true)
+    private val prefixCurrencies: Map<String, Boolean> by lazy {
+      mapOf("GBp" to false)
     }
   }
 }
