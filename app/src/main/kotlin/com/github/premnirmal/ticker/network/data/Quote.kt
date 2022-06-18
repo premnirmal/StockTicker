@@ -56,7 +56,7 @@ data class Quote constructor(
 
   val priceFormat: PriceFormat
     get() = currencyCodes[currencyCode]?.let {
-      PriceFormat(currencyCode = currencyCode, symbol = it, prefix = prefixCurrencies[it] ?: true)
+      PriceFormat(currencyCode = currencyCode, symbol = it, prefix = prefixCurrencies[currencyCode] ?: true)
     } ?: PriceFormat(currencyCode, currencyCode)
 
   fun hasAlertAbove(): Boolean =
@@ -157,6 +157,9 @@ data class Quote constructor(
   fun newsQuery(): String {
     return "$symbol $name"
   }
+
+  val isMarketOpen: Boolean
+    get() = "CLOSED" != marketState.uppercase()
 
   override operator fun compareTo(other: Quote): Int =
     other.changeInPercent.compareTo(changeInPercent)

@@ -11,9 +11,8 @@ import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class PortfolioViewModel : ViewModel() {
@@ -46,15 +45,16 @@ class PortfolioViewModel : ViewModel() {
     widgetDataProvider.broadcastUpdateWidget(widgetId)
   }
 
-  fun fetchPortfolioInRealTime() = flow<List<Quote>> {
+  fun fetchPortfolioInRealTime() {
+    viewModelScope.launch(Dispatchers.Default) {
       do {
-        var triggerable = false
+        var isMarketOpen = false
         val result = stocksProvider.fetch(false)
         if (result.wasSuccessful) {
-          triggerable = result.data.any { it.triggerable }
-          emit(result.data)
+          isMarketOpen = result.data.any { it.isMarketOpen }
         }
         delay(IStocksProvider.DEFAULT_INTERVAL_MS)
-      } while (result.wasSuccessful && triggerable)
-    }.flowOn(Dispatchers.Default)
+      } while (result.wasSuccessful && isMarketOpen)
+    }
+  }
 }

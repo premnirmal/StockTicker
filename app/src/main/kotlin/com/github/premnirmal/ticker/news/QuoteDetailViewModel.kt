@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 class QuoteDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -155,14 +156,14 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
   ) {
     viewModelScope.launch {
       do {
-        var triggerable = false
+        var isMarketOpen = false
         val result = stocksProvider.fetchStock(symbol, allowCache = false)
         if (result.wasSuccessful) {
-          triggerable = result.data.triggerable
+          isMarketOpen = result.data.isMarketOpen
           _quote.emit(result)
         }
         delay(IStocksProvider.DEFAULT_INTERVAL_MS)
-      } while (isActive && result.wasSuccessful && triggerable)
+      } while (isActive && result.wasSuccessful && isMarketOpen)
     }
   }
 

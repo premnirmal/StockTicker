@@ -15,9 +15,9 @@ import org.threeten.bp.format.FormatStyle.MEDIUM
 import java.io.File
 import java.text.DecimalFormat
 import java.text.Format
-import java.util.Random
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -27,9 +27,6 @@ class AppPreferences {
 
   @Inject internal lateinit var sharedPreferences: SharedPreferences
   @Inject internal lateinit var clock: AppClock
-
-  // Not using clock here because this doesn't need a specific time.
-  private val random = Random(System.currentTimeMillis())
 
   init {
     Injector.appComponent.inject(this)
@@ -132,7 +129,7 @@ class AppPreferences {
   fun hasUserAlreadyRated() = sharedPreferences.getBoolean(DID_RATE, false)
 
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-    !hasUserAlreadyRated() && (random.nextInt() % 10 == 0)
+    !hasUserAlreadyRated() && (Random.nextInt() % 10 == 0)
 
   fun clock(): AppClock = clock
 

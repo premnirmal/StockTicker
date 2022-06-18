@@ -136,7 +136,8 @@ class StocksStorage {
         this.earningsTimestamp?.toFloat(),
         this.marketCap?.toFloat(),
         this.tradeable,
-        this.triggerable
+        this.triggerable,
+        this.marketState
     )
   }
 
@@ -184,6 +185,7 @@ class StocksStorage {
     quote.marketCap = this.marketCap?.toLong()
     quote.tradeable = this.isTradeable ?: false
     quote.triggerable = this.isTriggerable ?: false
+    quote.marketState = this.marketState ?: ""
     return quote
   }
 
