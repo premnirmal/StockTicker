@@ -11,7 +11,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.format
 import com.github.premnirmal.ticker.formatBigNumbers
 import com.github.premnirmal.ticker.formatDate
-import com.github.premnirmal.ticker.formatNumber
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IHistoryProvider
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
@@ -64,7 +63,7 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
           details.add(
               QuoteDetail(
                   R.string.quote_details_open,
-                  formatNumber(it, currencyCode)
+                  priceFormat.format(it)
               )
           )
         }

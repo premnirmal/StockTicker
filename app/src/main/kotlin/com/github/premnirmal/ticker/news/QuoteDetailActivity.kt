@@ -28,7 +28,6 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.formatChange
 import com.github.premnirmal.ticker.formatChangePercent
-import com.github.premnirmal.ticker.formatNumber
 import com.github.premnirmal.ticker.getActionBarHeight
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -228,7 +227,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   private fun setupQuoteUi() {
     toolbar.title = ticker
     tickerName.text = quote.name
-    price.text = formatNumber(quote.lastTradePrice, quote.currencyCode)
+    price.text = quote.priceFormat.format(quote.lastTradePrice)
     change.formatChange(quote.change)
     change_percent.formatChangePercent(quote.changeInPercent)
     updatePositionsUi()
@@ -393,7 +392,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       notes_header.visibility = View.VISIBLE
       alert_header.visibility = View.VISIBLE
       numShares.text = quote.numSharesString()
-      equityValue.text = "${quote.currencySymbol}${quote.holdingsString()}"
+      equityValue.text = quote.priceFormat.format(quote.holdings())
 
       val notesText = quote.properties?.notes
       if (notesText.isNullOrEmpty()) {

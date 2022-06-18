@@ -49,7 +49,7 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
     nameView.text = quote.name
 
     val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
-    totalValueText.text = "${quote.currencySymbol}${quote.priceString()}"
+    totalValueText.text = quote.priceFormat.format(quote.lastTradePrice)
 
     val change: Float = quote.change
     val changePercent: Float = quote.changeInPercent
@@ -115,7 +115,7 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
       val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
       val gainLossPercentView = itemView.findViewById<StockFieldView>(R.id.gain_loss_percent)
 
-      val holdings = "${quote.currencySymbol}${quote.holdingsString()}"
+      val holdings = quote.priceFormat.format(quote.holdings())
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())

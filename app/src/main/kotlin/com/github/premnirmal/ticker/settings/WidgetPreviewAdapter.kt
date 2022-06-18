@@ -46,7 +46,7 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     val gainLossFormatted = stock.gainLossString()
     val gainLossPercentFormatted = stock.gainLossPercentString()
     val priceFormatted = if (widgetData.isCurrencyEnabled()) {
-      "${stock.currencySymbol}${stock.priceString()}"
+      stock.priceFormat.format(stock.lastTradePrice)
     } else {
       stock.priceString()
     }
@@ -62,7 +62,7 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
 
     layout.findViewById<TextView>(R.id.ticker)?.text = stock.symbol
     layout.findViewById<TextView>(R.id.holdings)?.text = if (widgetData.isCurrencyEnabled()) {
-      "${stock.currencySymbol}${stock.holdingsString()}"
+      "${stock.priceFormat}${stock.holdingsString()}"
     } else {
       stock.holdingsString()
     }

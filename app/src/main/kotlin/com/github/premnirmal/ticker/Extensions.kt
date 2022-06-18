@@ -214,6 +214,7 @@ fun formatNumber(price: Float, currencyCode: String): String {
   }
   return currencyFormatter.format(price)
 }
+
 fun TickerView.formatChange(change: Float) {
   when {
     change > 0 -> {

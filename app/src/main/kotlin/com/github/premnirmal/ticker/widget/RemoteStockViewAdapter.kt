@@ -68,7 +68,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
       val gainLossFormatted = stock.gainLossString()
       val gainLossPercentFormatted = stock.gainLossPercentString()
       val priceFormatted = if (widgetData.isCurrencyEnabled()) {
-        "${stock.currencySymbol}${stock.priceString()}"
+        stock.priceFormat.format(stock.lastTradePrice)
       } else {
         stock.priceString()
       }
@@ -84,7 +84,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       remoteViews.setTextViewText(R.id.ticker, stock.symbol)
       remoteViews.setTextViewText(R.id.holdings, if (widgetData.isCurrencyEnabled()) {
-        "${stock.currencySymbol}${stock.holdingsString()}"
+        "${stock.priceFormat}${stock.holdingsString()}"
       } else {
         stock.holdingsString()
       })

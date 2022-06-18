@@ -17,6 +17,7 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
+import kotlin.math.absoluteValue
 
 class WidgetData {
 
@@ -266,7 +267,7 @@ class WidgetData {
     tickerList.map { stocksProvider.getStock(it) }
         .forEach { quote -> quote?.let { quoteList.add(it) } }
     if (autoSortEnabled()) {
-      quoteList.sort()
+      quoteList.sortedByDescending { it.changeInPercent }
     }
     return quoteList
   }
