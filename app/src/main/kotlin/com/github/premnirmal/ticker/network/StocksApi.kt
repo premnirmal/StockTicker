@@ -90,13 +90,13 @@ class StocksApi {
   private fun YahooQuoteNet.toQuote(): Quote {
     val quote = Quote(
         symbol = this.symbol,
-        name = this.name,
+        name = (this.name ?: this.longName).orEmpty(),
         lastTradePrice = this.lastTradePrice,
         changeInPercent = this.changePercent,
         change = this.change
     )
     quote.stockExchange = this.exchange ?: ""
-    quote.currencyCode = this.currency
+    quote.currencyCode = this.currency ?: "USD"
     quote.annualDividendRate = this.annualDividendRate
     quote.annualDividendYield = this.annualDividendYield
     quote.region = this.region

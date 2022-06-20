@@ -3,12 +3,12 @@ package com.github.premnirmal.ticker.news
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.content.ContextCompat
@@ -29,6 +29,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.formatChange
 import com.github.premnirmal.ticker.formatChangePercent
 import com.github.premnirmal.ticker.getActionBarHeight
+import com.github.premnirmal.ticker.getNavigationBarHeight
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
@@ -118,19 +119,16 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     toolbar.setNavigationOnClickListener {
       finish()
     }
-    if (!resources.getBoolean(R.bool.isTablet)) {
-      requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
       graph_container.requestLayout()
     }
     equityValue.setCharacterLists(TickerUtils.provideNumberList())
     ViewCompat.setOnApplyWindowInsetsListener(parentView) { _, insets ->
-      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+      toolbar.updateLayoutParams<MarginLayoutParams> {
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
-      header_container.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+      header_container.updateLayoutParams<MarginLayoutParams> {
         this.topMargin = getActionBarHeight() + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
       insets
@@ -155,7 +153,13 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     price.setCharacterLists(TickerUtils.provideNumberList())
     change.setCharacterLists(TickerUtils.provideNumberList())
     change_percent.setCharacterLists(TickerUtils.provideNumberList())
-    app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
+    if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+      app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
+    } else if (!resources.getBoolean(R.bool.isTablet)){
+      parentView.updateLayoutParams<MarginLayoutParams> {
+        getNavigationBarHeight()
+      }
+    }
     setupGraphView()
     updateToolbar()
     viewModel.quote.observe(this) { result ->

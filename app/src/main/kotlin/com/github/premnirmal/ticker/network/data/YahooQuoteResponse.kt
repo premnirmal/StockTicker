@@ -17,11 +17,11 @@ data class YahooQuoteNet(
   @SerializedName("quoteType")
   val quoteType: String,
   @SerializedName("currency")
-  val currency: String,
+  val currency: String?,
   @SerializedName("exchange")
   val exchange: String?,
   @SerializedName("shortName")
-  val name: String,
+  val name: String?,
   @SerializedName("longName")
   val longName: String?,
   @SerializedName("gmtOffSetMilliseconds")
