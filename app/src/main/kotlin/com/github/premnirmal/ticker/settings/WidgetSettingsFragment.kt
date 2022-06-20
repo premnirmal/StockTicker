@@ -3,10 +3,10 @@ package com.github.premnirmal.ticker.settings
 import android.appwidget.AppWidgetManager
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
@@ -24,34 +24,14 @@ import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_widget_settings.preview_container
-import kotlinx.android.synthetic.main.fragment_widget_settings.scroll_view
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_add_stock
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_autosort_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_background
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_bold_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_currency_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_hide_header_checkbox
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_layout_type
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_text_color
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_name
-import kotlinx.android.synthetic.main.fragment_widget_settings.setting_widget_width
-import kotlinx.android.synthetic.main.fragment_widget_settings.widget_layout
-import kotlinx.android.synthetic.main.widget_2x1.list
-import kotlinx.android.synthetic.main.widget_header.last_updated
-import kotlinx.android.synthetic.main.widget_header.next_update
-import kotlinx.android.synthetic.main.widget_header.widget_header
+import com.github.premnirmal.tickerwidget.databinding.FragmentWidgetSettingsBinding
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
-class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
+class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), ChildFragment, OnClickListener {
 
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
@@ -91,22 +71,14 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
     transparentBg = requireArguments().getBoolean(TRANSPARENT_BG, false)
   }
 
-  override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.fragment_widget_settings, container, false)
-  }
-
   override fun onViewCreated(
       view: View,
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    setting_add_stock.visibility = if (showAddStocks) View.VISIBLE else View.GONE
+    binding.settingAddStock.visibility = if (showAddStocks) View.VISIBLE else View.GONE
     if (!transparentBg) {
-      preview_container.setBackgroundResource(R.drawable.bg_header)
+      binding.previewContainer.setBackgroundResource(R.drawable.bg_header)
     }
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     setWidgetNameSetting(widgetData)
@@ -119,12 +91,12 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
     setBgSetting(widgetData)
     setTextColorSetting(widgetData)
     adapter = WidgetPreviewAdapter(widgetData)
-    list.adapter = adapter
+    binding.widgetLayout.list.adapter = adapter
     updatePreview(widgetData)
 
     arrayOf(
-        setting_add_stock, setting_widget_name, setting_layout_type , setting_widget_width,
-        setting_bold, setting_autosort, setting_hide_header, setting_currency, setting_background, setting_text_color
+        binding.settingAddStock, binding.settingWidgetName, binding.settingLayoutType , binding.settingWidgetWidth,
+        binding.settingBold, binding.settingAutosort, binding.settingHideHeader, binding.settingCurrency, binding.settingBackground, binding.settingTextColor
     ).forEach {
       it.setOnClickListener(this@WidgetSettingsFragment)
     }
@@ -136,7 +108,7 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
     }
     lifecycleScope.launch {
       widgetData.autoSortEnabled.collect {
-        setting_autosort_checkbox.isChecked = it
+        binding.settingAutosortCheckbox.isChecked = it
       }
     }
   }
@@ -210,25 +182,25 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
       }
 
       R.id.setting_bold -> {
-        val isChecked = !setting_bold_checkbox.isChecked
+        val isChecked = !binding.settingBoldCheckbox.isChecked
         widgetData.setBoldEnabled(isChecked)
         setBoldSetting(widgetData)
         broadcastUpdateWidget()
       }
       R.id.setting_autosort -> {
-        val isChecked = !setting_autosort_checkbox.isChecked
+        val isChecked = !binding.settingAutosortCheckbox.isChecked
         widgetData.setAutoSort(isChecked)
         setAutoSortSetting(widgetData)
         broadcastUpdateWidget()
       }
       R.id.setting_hide_header -> {
-        val isChecked = !setting_hide_header_checkbox.isChecked
+        val isChecked = !binding.settingHideHeaderCheckbox.isChecked
         widgetData.setHideHeader(isChecked)
         setHideHeaderSetting(widgetData)
         broadcastUpdateWidget()
       }
       R.id.setting_currency -> {
-        val isChecked = !setting_currency_checkbox.isChecked
+        val isChecked = !binding.settingCurrencyCheckbox.isChecked
         widgetData.setCurrencyEnabled(isChecked)
         setCurrencySetting(widgetData)
         broadcastUpdateWidget()
@@ -252,63 +224,63 @@ class WidgetSettingsFragment : BaseFragment(), ChildFragment, OnClickListener {
   }
 
   private fun setWidgetNameSetting(widgetData: WidgetData) {
-    setting_widget_name.setSubtitle(widgetData.widgetName())
+    binding.settingWidgetName.setSubtitle(widgetData.widgetName())
   }
 
   private fun setWidgetSizeSetting(widgetData: WidgetData) {
     val widgetSizeTypeDesc = resources.getStringArray(R.array.widget_width_types)[widgetData.widgetSizePref()]
-    setting_widget_width.setSubtitle(widgetSizeTypeDesc)
+    binding.settingWidgetWidth.setSubtitle(widgetSizeTypeDesc)
   }
   private fun setLayoutTypeSetting(widgetData: WidgetData) {
     val layoutTypeDesc = resources.getStringArray(R.array.layout_types)[widgetData.layoutPref()]
-    setting_layout_type.setSubtitle(layoutTypeDesc)
+    binding.settingLayoutType.setSubtitle(layoutTypeDesc)
   }
 
   private fun setBoldSetting(widgetData: WidgetData) {
-    setting_bold_checkbox.isChecked = widgetData.isBoldEnabled()
+    binding.settingBoldCheckbox.isChecked = widgetData.isBoldEnabled()
   }
 
   private fun setAutoSortSetting(widgetData: WidgetData) {
-    setting_autosort_checkbox.isChecked = widgetData.autoSortEnabled()
+    binding.settingAutosortCheckbox.isChecked = widgetData.autoSortEnabled()
   }
 
   private fun setHideHeaderSetting(widgetData: WidgetData) {
-    setting_hide_header_checkbox.isChecked = widgetData.hideHeader()
+    binding.settingHideHeaderCheckbox.isChecked = widgetData.hideHeader()
   }
 
   private fun setCurrencySetting(widgetData: WidgetData) {
-    setting_currency_checkbox.isChecked = widgetData.isCurrencyEnabled()
+    binding.settingCurrencyCheckbox.isChecked = widgetData.isCurrencyEnabled()
   }
 
   private fun setBgSetting(widgetData: WidgetData) {
     val bgDesc = resources.getStringArray(R.array.backgrounds)[widgetData.bgPref()]
-    setting_background.setSubtitle(bgDesc)
+    binding.settingBackground.setSubtitle(bgDesc)
   }
 
   private fun setTextColorSetting(widgetData: WidgetData) {
     val textColorDesc = resources.getStringArray(R.array.text_colors)[widgetData.textColorPref()]
-    setting_text_color.setSubtitle(textColorDesc)
+    binding.settingTextColor.setSubtitle(textColorDesc)
   }
 
   private fun updatePreview(widgetData: WidgetData) {
-    widget_layout.setBackgroundResource(widgetData.backgroundResource())
+    binding.widgetLayout.root.setBackgroundResource(widgetData.backgroundResource())
     val lastUpdatedText = when (val fetchState = stocksProvider.fetchState.value) {
       is FetchState.Success -> getString(R.string.last_fetch, fetchState.displayString)
       is FetchState.Failure -> getString(R.string.refresh_failed)
       else -> FetchState.NotFetched.displayString
     }
-    last_updated.text = lastUpdatedText
+    binding.widgetLayout.root.findViewById<TextView>(R.id.last_updated).text = lastUpdatedText
     val nextUpdateMs = stocksProvider.nextFetchMs.value
     val instant = Instant.ofEpochMilli(nextUpdateMs)
     val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
     val nextUpdate = time.createTimeString()
     val nextUpdateText: String = getString(R.string.next_fetch, nextUpdate)
-    next_update.text = nextUpdateText
-    widget_header.isVisible = !widgetData.hideHeader()
+    binding.widgetLayout.root.findViewById<TextView>(R.id.next_update).text = nextUpdateText
+    binding.widgetLayout.root.findViewById<View>(R.id.widget_header).isVisible = !widgetData.hideHeader()
     adapter.refresh(widgetData)
   }
 
   override fun scrollToTop() {
-    scroll_view.smoothScrollTo(0, 0)
+    binding.scrollView.smoothScrollTo(0, 0)
   }
 }

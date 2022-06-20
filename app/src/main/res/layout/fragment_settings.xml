@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/default_bg"
@@ -37,11 +38,10 @@
 
   </com.google.android.material.appbar.AppBarLayout>
 
-  <!-- Required ViewGroup for PreferenceFragmentCompat -->
   <FrameLayout
-      android:id="@android:id/list_container"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:id="@+id/child_fragment_container"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />
 

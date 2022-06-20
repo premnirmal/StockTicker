@@ -2,18 +2,16 @@ package com.github.premnirmal.ticker.base
 
 import android.content.Context
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.components.InAppMessage
+import com.github.premnirmal.ticker.inflateBinding
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.tickerwidget.R
 import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,9 +20,12 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/26/16.
  */
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
 
   abstract val simpleName: String
+  private var _binding: T? = null
+  val binding: T
+    get() = _binding!!
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var analytics: Analytics
   open val subscribeToErrorEvents = true
@@ -35,10 +36,11 @@ abstract class BaseActivity : AppCompatActivity() {
   }
 
   override fun onCreate(
-      savedInstanceState: Bundle?,
-      persistentState: PersistableBundle?
+      savedInstanceState: Bundle?
   ) {
-    super.onCreate(savedInstanceState, persistentState)
+    super.onCreate(savedInstanceState)
+    _binding = inflateBinding(layoutInflater) as T
+    setContentView(binding.root)
     analytics.trackScreenView(simpleName, this)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
   }

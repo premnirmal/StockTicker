@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.news
 
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.ViewCompat
@@ -19,13 +18,9 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.dimen
-import kotlinx.android.synthetic.main.fragment_news_feed.fake_status_bar
-import kotlinx.android.synthetic.main.fragment_news_feed.recycler_view
-import kotlinx.android.synthetic.main.fragment_news_feed.swipe_container
-import kotlinx.android.synthetic.main.fragment_news_feed.toolbar
-import kotlinx.android.synthetic.main.fragment_news_feed.view_flipper
+import com.github.premnirmal.tickerwidget.databinding.FragmentNewsFeedBinding
 
-class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClickListener {
+class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment, NewsFeedAdapter.NewsClickListener {
 
   companion object {
     private const val INDEX_PROGRESS = 0
@@ -39,62 +34,54 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
   override val simpleName: String
     get() = "NewsFeedFragment"
 
-  override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.fragment_news_feed, container, false)
-  }
-
   override fun onViewCreated(
       view: View,
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+      binding.toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
       insets
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
         height = requireContext().getStatusBarHeight()
       }
     }
     adapter = NewsFeedAdapter(this)
-    recycler_view.layoutManager = LinearLayoutManager(activity)
-    recycler_view.addItemDecoration(
+    binding.recyclerView.layoutManager = LinearLayoutManager(activity)
+    binding.recyclerView.addItemDecoration(
         SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing_double))
     )
-    recycler_view.adapter = adapter
-    swipe_container.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
+    binding.recyclerView.adapter = adapter
+    binding.swipeContainer.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
         R.color.sea)
-    swipe_container.setOnRefreshListener { refreshNews() }
+    binding.swipeContainer.setOnRefreshListener { refreshNews() }
     viewModel.newsFeed.observe(viewLifecycleOwner) {
       if (it.wasSuccessful) {
         if (it.data.isEmpty()) {
-          view_flipper.displayedChild = INDEX_EMPTY
+          binding.viewFlipper.displayedChild = INDEX_EMPTY
         } else {
           adapter.setData(it.data)
-          view_flipper.displayedChild = INDEX_DATA
+          binding.viewFlipper.displayedChild = INDEX_DATA
         }
       } else {
         InAppMessage.showMessage(requireActivity(), R.string.news_fetch_failed, error = true)
         if (adapter.itemCount == 0) {
-          view_flipper.displayedChild = INDEX_ERROR
+          binding.viewFlipper.displayedChild = INDEX_ERROR
         } else {
-          view_flipper.displayedChild = INDEX_DATA
+          binding.viewFlipper.displayedChild = INDEX_DATA
         }
       }
-      swipe_container.isRefreshing = false
+      binding.swipeContainer.isRefreshing = false
     }
   }
 
   override fun onStart() {
     super.onStart()
-    view_flipper.displayedChild = INDEX_PROGRESS
+    binding.viewFlipper.displayedChild = INDEX_PROGRESS
     viewModel.fetchNews()
   }
 
@@ -111,6 +98,6 @@ class NewsFeedFragment : BaseFragment(), ChildFragment, NewsFeedAdapter.NewsClic
   // Child Fragment
 
   override fun scrollToTop() {
-    recycler_view.smoothScrollToPosition(0)
+    binding.recyclerView.smoothScrollToPosition(0)
   }
 }

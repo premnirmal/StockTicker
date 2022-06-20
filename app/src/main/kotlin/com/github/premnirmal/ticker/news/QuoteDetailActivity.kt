@@ -5,7 +5,10 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Build.VERSION
+import android.os.Build.VERSION_CODES
 import android.os.Bundle
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -42,54 +45,13 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.color
-import com.github.premnirmal.tickerwidget.R.dimen
-import com.github.premnirmal.tickerwidget.R.id
-import com.github.premnirmal.tickerwidget.R.menu
-import com.github.premnirmal.tickerwidget.R.string
+import com.github.premnirmal.tickerwidget.databinding.ActivityQuoteDetailBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.robinhood.ticker.TickerUtils
-import kotlinx.android.synthetic.main.activity_quote_detail.alert_above
-import kotlinx.android.synthetic.main.activity_quote_detail.alert_below
-import kotlinx.android.synthetic.main.activity_quote_detail.alert_header
-import kotlinx.android.synthetic.main.activity_quote_detail.alerts_container
-import kotlinx.android.synthetic.main.activity_quote_detail.app_bar_layout
-import kotlinx.android.synthetic.main.activity_quote_detail.average_price
-import kotlinx.android.synthetic.main.activity_quote_detail.change
-import kotlinx.android.synthetic.main.activity_quote_detail.change_percent
-import kotlinx.android.synthetic.main.activity_quote_detail.day_change
-import kotlinx.android.synthetic.main.activity_quote_detail.equityValue
-import kotlinx.android.synthetic.main.activity_quote_detail.fake_status_bar
-import kotlinx.android.synthetic.main.activity_quote_detail.gradient
-import kotlinx.android.synthetic.main.activity_quote_detail.graphView
-import kotlinx.android.synthetic.main.activity_quote_detail.graph_container
-import kotlinx.android.synthetic.main.activity_quote_detail.group_period
-import kotlinx.android.synthetic.main.activity_quote_detail.header_container
-import kotlinx.android.synthetic.main.activity_quote_detail.list_details
-import kotlinx.android.synthetic.main.activity_quote_detail.max
-import kotlinx.android.synthetic.main.activity_quote_detail.news_container
-import kotlinx.android.synthetic.main.activity_quote_detail.notes_container
-import kotlinx.android.synthetic.main.activity_quote_detail.notes_display
-import kotlinx.android.synthetic.main.activity_quote_detail.notes_header
-import kotlinx.android.synthetic.main.activity_quote_detail.numShares
-import kotlinx.android.synthetic.main.activity_quote_detail.one_day
-import kotlinx.android.synthetic.main.activity_quote_detail.one_month
-import kotlinx.android.synthetic.main.activity_quote_detail.one_year
-import kotlinx.android.synthetic.main.activity_quote_detail.parentView
-import kotlinx.android.synthetic.main.activity_quote_detail.positions_container
-import kotlinx.android.synthetic.main.activity_quote_detail.positions_header
-import kotlinx.android.synthetic.main.activity_quote_detail.price
-import kotlinx.android.synthetic.main.activity_quote_detail.progress
-import kotlinx.android.synthetic.main.activity_quote_detail.recycler_view
-import kotlinx.android.synthetic.main.activity_quote_detail.three_month
-import kotlinx.android.synthetic.main.activity_quote_detail.tickerName
-import kotlinx.android.synthetic.main.activity_quote_detail.toolbar
-import kotlinx.android.synthetic.main.activity_quote_detail.total_gain_loss
-import kotlinx.android.synthetic.main.activity_quote_detail.two_weeks
 import javax.inject.Inject
 import kotlin.math.abs
 
-class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListener {
+class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), NewsFeedAdapter.NewsClickListener {
 
   companion object {
     const val TICKER = "TICKER"
@@ -115,49 +77,57 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     ticker = checkNotNull(intent.getStringExtra(TICKER))
-    setContentView(R.layout.activity_quote_detail)
-    toolbar.setNavigationOnClickListener {
+    binding.toolbar.setNavigationOnClickListener {
       finish()
     }
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      graph_container.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
-      graph_container.requestLayout()
+      binding.graphContainer.layoutParams.height = (resources.displayMetrics.widthPixels * 0.5625f).toInt()
+      binding.graphContainer.requestLayout()
     }
-    equityValue.setCharacterLists(TickerUtils.provideNumberList())
-    ViewCompat.setOnApplyWindowInsetsListener(parentView) { _, insets ->
-      toolbar.updateLayoutParams<MarginLayoutParams> {
+    ViewCompat.setOnApplyWindowInsetsListener(binding.parentView) { _, insets ->
+      binding.toolbar.updateLayoutParams<MarginLayoutParams> {
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
-      header_container.updateLayoutParams<MarginLayoutParams> {
+      binding.headerContainer.updateLayoutParams<MarginLayoutParams> {
         this.topMargin = getActionBarHeight() + insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
       insets
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
         height = getStatusBarHeight()
       }
     }
-    adapter = NewsFeedAdapter(this)
-    recycler_view.layoutManager = LinearLayoutManager(this)
-    recycler_view.addItemDecoration(
-        SpacingDecoration(resources.getDimensionPixelSize(dimen.list_spacing_double))
-    )
     quoteDetailsAdapter = QuoteDetailsAdapter()
-    list_details.apply {
+    binding.listDetails.apply {
       layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
       adapter = quoteDetailsAdapter
     }
-    recycler_view.adapter = adapter
-    recycler_view.isNestedScrollingEnabled = false
-    price.setCharacterLists(TickerUtils.provideNumberList())
-    change.setCharacterLists(TickerUtils.provideNumberList())
-    change_percent.setCharacterLists(TickerUtils.provideNumberList())
+    adapter = NewsFeedAdapter(this)
+    binding.recyclerView.layoutManager = LinearLayoutManager(this)
+    binding.recyclerView.addItemDecoration(
+        SpacingDecoration(resources.getDimensionPixelSize(R.dimen.list_spacing_double))
+    )
+    binding.recyclerView.adapter = adapter
+    binding.recyclerView.isNestedScrollingEnabled = false
+    binding.equityValue.setCharacterLists(TickerUtils.provideNumberList())
+    binding.price.setCharacterLists(TickerUtils.provideNumberList())
+    binding.change.setCharacterLists(TickerUtils.provideNumberList())
+    binding.changePercent.setCharacterLists(TickerUtils.provideNumberList())
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-      app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
-    } else if (!resources.getBoolean(R.bool.isTablet)){
-      parentView.updateLayoutParams<MarginLayoutParams> {
-        getNavigationBarHeight()
+      binding.appBarLayout.addOnOffsetChangedListener(offsetChangedListener)
+    } else if (!resources.getBoolean(R.bool.isTablet) && resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+      binding.parentView.updateLayoutParams<MarginLayoutParams> {
+        val rotation = if (VERSION.SDK_INT >= VERSION_CODES.R) {
+          display?.rotation ?: Surface.ROTATION_90
+        } else {
+          windowManager.defaultDisplay.rotation
+        }
+        if (rotation == Surface.ROTATION_90) {
+          marginEnd = getNavigationBarHeight()
+        } else {
+          marginStart = getNavigationBarHeight()
+        }
       }
     }
     setupGraphView()
@@ -168,10 +138,10 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
         fetchNewsAndChartData()
         setupQuoteUi()
       } else if (result?.wasSuccessful == false) {
-        InAppMessage.showMessage(parentView, R.string.error_fetching_stock, error = true)
-        progress.visibility = View.GONE
-        graphView.setNoDataText(getString(R.string.error_fetching_stock))
-        news_container.displayedChild = INDEX_ERROR
+        InAppMessage.showMessage(binding.parentView, R.string.error_fetching_stock, error = true)
+        binding.progress.visibility = View.GONE
+        binding.graphView.setNoDataText(getString(R.string.error_fetching_stock))
+        binding.newsContainer.displayedChild = INDEX_ERROR
       }
     }
     viewModel.details.asLiveData().observe(this) {
@@ -183,9 +153,9 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     viewModel.fetchQuoteInRealTime(ticker)
     viewModel.dataFetchError.observe(this) {
-      progress.visibility = View.GONE
-      graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-      InAppMessage.showMessage(parentView, R.string.graph_fetch_failed, error = true)
+      binding.progress.visibility = View.GONE
+      binding.graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+      InAppMessage.showMessage(binding.parentView, R.string.graph_fetch_failed, error = true)
     }
     viewModel.newsData.observe(this) { data ->
       analytics.trackGeneralEvent(
@@ -195,72 +165,72 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       setUpArticles(data)
     }
     viewModel.newsError.observe(this) {
-      news_container.displayedChild = INDEX_ERROR
-      InAppMessage.showMessage(parentView, R.string.news_fetch_failed, error = true)
+      binding.newsContainer.displayedChild = INDEX_ERROR
+      InAppMessage.showMessage(binding.parentView, R.string.news_fetch_failed, error = true)
       analytics.trackGeneralEvent(
           GeneralEvent("FetchNews")
               .addProperty("Success", "False")
       )
     }
     viewModel.fetchQuote(ticker)
-    group_period.setOnCheckedChangeListener { _, checkedId ->
+    binding.groupPeriod.setOnCheckedChangeListener { _, checkedId ->
       val view = findViewById<View>(checkedId)
       updateRange(view)
     }
     val view = when (range) {
-      Range.ONE_DAY -> one_day
-      Range.TWO_WEEKS -> two_weeks
-      Range.ONE_MONTH -> one_month
-      Range.THREE_MONTH -> three_month
-      Range.ONE_YEAR -> one_year
-      Range.MAX -> max
+      Range.ONE_DAY -> binding.oneDay
+      Range.TWO_WEEKS -> binding.twoWeeks
+      Range.ONE_MONTH -> binding.oneMonth
+      Range.THREE_MONTH -> binding.threeMonth
+      Range.ONE_YEAR -> binding.oneYear
+      Range.MAX -> binding.max
       else -> throw UnsupportedOperationException("Range not supported")
     }
-    group_period.check(view.id)
+    binding.groupPeriod.check(view.id)
   }
 
   private val offsetChangedListener = AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
     if (verticalOffset < -20) {
-      gradient.alpha = abs(verticalOffset / appBarLayout.height.toFloat())
+      binding.gradient.alpha = abs(verticalOffset / appBarLayout.height.toFloat())
     } else {
-      gradient.alpha = 0f
+      binding.gradient.alpha = 0f
     }
   }
 
   @SuppressLint("SetTextI18n")
   private fun setupQuoteUi() {
-    toolbar.title = ticker
-    tickerName.text = quote.name
-    price.text = quote.priceFormat.format(quote.lastTradePrice)
-    change.formatChange(quote.change)
-    change_percent.formatChangePercent(quote.changeInPercent)
+    binding.toolbar.title = ticker
+    binding.tickerName.text = quote.name
+    binding.price.text = quote.priceFormat.format(quote.lastTradePrice)
+    binding.change.formatChange(quote.change)
+    binding.changePercent.formatChangePercent(quote.changeInPercent)
     updatePositionsUi()
 
-    positions_header.setOnClickListener {
+    binding.positionsHeader.setOnClickListener {
       positionOnClickListener()
     }
 
-    notes_header.setOnClickListener {
+    binding.notesHeader.setOnClickListener {
       notesOnClickListener()
     }
-    notes_container.setOnClickListener {
+    binding.notesContainer.setOnClickListener {
       notesOnClickListener()
     }
 
-    alert_header.setOnClickListener {
+    binding.alertHeader.setOnClickListener {
       alertsOnClickListener()
     }
-    alerts_container.setOnClickListener {
+    binding.alertsContainer.setOnClickListener {
       alertsOnClickListener()
     }
   }
 
   private fun updateToolbar() {
-    toolbar.menu.clear()
-    toolbar.inflateMenu(menu.menu_news_feed)
+    binding.toolbar.menu.clear()
+    binding.toolbar.inflateMenu(R.menu.menu_news_feed)
     val showRemove = viewModel.showAddOrRemove(ticker)
-    val addMenuItem = toolbar.menu.findItem(id.action_add)
-    val removeMenuItem = toolbar.menu.findItem(id.action_remove)
+    val addMenuItem = binding.toolbar.menu.findItem(R.id.action_add)
+    val removeMenuItem = binding.toolbar.menu.findItem(R.id.action_remove)
     if (showRemove) {
       addMenuItem.isVisible = false
       removeMenuItem.isVisible = true
@@ -268,16 +238,16 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
       removeMenuItem.isVisible = false
       addMenuItem.isVisible = true
     }
-    toolbar.setOnMenuItemClickListener { menuItem ->
+    binding.toolbar.setOnMenuItemClickListener { menuItem ->
       when (menuItem.itemId) {
-        id.action_add -> {
+        R.id.action_add -> {
           if (viewModel.hasWidget()) {
             val widgetDatas = viewModel.getWidgetDatas()
             if (widgetDatas.size > 1) {
               val widgetNames = widgetDatas.map { it.widgetName() }
                   .toTypedArray()
               Builder(this)
-                  .setTitle(string.select_widget)
+                  .setTitle(R.string.select_widget)
                   .setItems(widgetNames) { dialog, which ->
                     val id = widgetDatas[which].widgetId
                     addTickerToWidget(ticker, id)
@@ -294,7 +264,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
           updatePositionsUi()
           return@setOnMenuItemClickListener true
         }
-        id.action_remove -> {
+        R.id.action_remove -> {
           removeMenuItem.isVisible = false
           addMenuItem.isVisible = true
           viewModel.removeStock(ticker)
@@ -337,11 +307,11 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     if (!::quote.isInitialized) return
 
     if (isNetworkOnline()) {
-      progress.visibility = View.VISIBLE
+      binding.progress.visibility = View.VISIBLE
       viewModel.fetchChartData(quote.symbol, range)
     } else {
-      progress.visibility = View.GONE
-      graphView.setNoDataText(getString(R.string.no_network_message))
+      binding.progress.visibility = View.GONE
+      binding.graphView.setNoDataText(getString(R.string.no_network_message))
     }
   }
 
@@ -370,10 +340,10 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
 
   private fun setUpArticles(articles: List<NewsArticle>) {
     if (articles.isEmpty()) {
-      news_container.displayedChild = INDEX_EMPTY
+      binding.newsContainer.displayedChild = INDEX_EMPTY
     } else {
       adapter.setData(articles)
-      news_container.displayedChild = INDEX_DATA
+      binding.newsContainer.displayedChild = INDEX_DATA
     }
   }
 
@@ -391,79 +361,78 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     }
     val isInPortfolio = viewModel.isInPortfolio(ticker)
     if (isInPortfolio) {
-      positions_container.visibility = View.VISIBLE
-      positions_header.visibility = View.VISIBLE
-      notes_header.visibility = View.VISIBLE
-      alert_header.visibility = View.VISIBLE
-      numShares.text = quote.numSharesString()
-      equityValue.text = quote.priceFormat.format(quote.holdings())
-
+      binding.positionsContainer.visibility = View.VISIBLE
+      binding.positionsHeader.visibility = View.VISIBLE
+      binding.notesHeader.visibility = View.VISIBLE
+      binding.alertHeader.visibility = View.VISIBLE
+      binding.numShares.text = quote.numSharesString()
+      binding.equityValue.text = quote.priceFormat.format(quote.holdings())
       val notesText = quote.properties?.notes
       if (notesText.isNullOrEmpty()) {
-        notes_container.visibility = View.GONE
+        binding.notesContainer.visibility = View.GONE
       } else {
-        notes_container.visibility = View.VISIBLE
-        notes_display.text = notesText
+        binding.notesContainer.visibility = View.VISIBLE
+        binding.notesDisplay.text = notesText
       }
 
       val alertAbove = quote.getAlertAbove()
       val alertBelow = quote.getAlertBelow()
       if (alertAbove > 0.0f || alertBelow > 0.0f) {
-        alerts_container.visibility = View.VISIBLE
+        binding.alertsContainer.visibility = View.VISIBLE
       } else {
-        alerts_container.visibility = View.GONE
+        binding.alertsContainer.visibility = View.GONE
       }
       if (alertAbove > 0.0f) {
-        alert_above.visibility = View.VISIBLE
-        alert_above.setText(appPreferences.selectedDecimalFormat.format(alertAbove))
+        binding.alertAbove.visibility = View.VISIBLE
+        binding.alertAbove.setText(appPreferences.selectedDecimalFormat.format(alertAbove))
       } else {
-        alert_above.visibility = View.GONE
+        binding.alertAbove.visibility = View.GONE
       }
       if (alertBelow > 0.0f) {
-        alert_below.visibility = View.VISIBLE
-        alert_below.setText(appPreferences.selectedDecimalFormat.format(alertBelow))
+        binding.alertBelow.visibility = View.VISIBLE
+        binding.alertBelow.setText(appPreferences.selectedDecimalFormat.format(alertBelow))
       } else {
-        alert_below.visibility = View.GONE
+        binding.alertBelow.visibility = View.GONE
       }
 
       if (quote.hasPositions()) {
-        total_gain_loss.visibility = View.VISIBLE
-        total_gain_loss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
+        binding.totalGainLoss.visibility = View.VISIBLE
+        binding.totalGainLoss.setText("${quote.gainLossString()} (${quote.gainLossPercentString()})")
         if (quote.gainLoss() >= 0) {
-          total_gain_loss.setTextColor(ContextCompat.getColor(this, color.positive_green))
+          binding.totalGainLoss.setTextColor(ContextCompat.getColor(this, R.color.positive_green))
         } else {
-          total_gain_loss.setTextColor(ContextCompat.getColor(this, color.negative_red))
+          binding.totalGainLoss.setTextColor(ContextCompat.getColor(this, R.color.negative_red))
         }
-        average_price.visibility = View.VISIBLE
-        average_price.setText(quote.averagePositionPrice())
-        day_change.visibility = View.VISIBLE
-        day_change.setText(quote.dayChangeString())
+        binding.averagePrice.visibility = View.VISIBLE
+        binding.averagePrice.setText(quote.averagePositionPrice())
+        binding.dayChange.visibility = View.VISIBLE
+        binding.dayChange.setText(quote.dayChangeString())
         if (quote.change > 0 || quote.changeInPercent >= 0) {
-          day_change.setTextColor(ContextCompat.getColor(this, color.positive_green))
+          binding.dayChange.setTextColor(ContextCompat.getColor(this, R.color.positive_green))
         } else {
-          day_change.setTextColor(ContextCompat.getColor(this, color.negative_red))
+          binding.dayChange.setTextColor(ContextCompat.getColor(this, R.color.negative_red))
         }
       } else {
-        total_gain_loss.visibility = View.GONE
-        day_change.visibility = View.GONE
-        average_price.visibility = View.GONE
+        binding.totalGainLoss.visibility = View.GONE
+        binding.dayChange.visibility = View.GONE
+        binding.averagePrice.visibility = View.GONE
       }
     } else {
-      positions_header.visibility = View.GONE
-      positions_container.visibility = View.GONE
-      notes_header.visibility = View.GONE
-      notes_container.visibility = View.GONE
-      alert_header.visibility = View.GONE
-      alerts_container.visibility = View.GONE
+      binding.positionsHeader.visibility = View.GONE
+      binding.positionsContainer.visibility = View.GONE
+      binding.notesHeader.visibility = View.GONE
+      binding.notesContainer.visibility = View.GONE
+      binding.alertHeader.visibility = View.GONE
+      binding.alertsContainer.visibility = View.GONE
     }
   }
 
   private fun fetchNewsAndChartData() {
     if (!isNetworkOnline()) {
-      InAppMessage.showMessage(parentView, R.string.no_network_message, error = true)
+      InAppMessage.showMessage(binding.parentView, R.string.no_network_message, error = true)
     }
     if (adapter.itemCount == 0) {
-      news_container.displayedChild = INDEX_PROGRESS
+      binding.newsContainer.displayedChild = INDEX_PROGRESS
       fetchNews()
     }
     if (dataPoints == null) {
@@ -477,7 +446,7 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     if (isNetworkOnline()) {
       viewModel.fetchNews(quote)
     } else {
-      news_container.displayedChild = INDEX_ERROR
+      binding.newsContainer.displayedChild = INDEX_ERROR
     }
   }
 
@@ -486,12 +455,12 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
   }
 
   override fun onGraphDataAdded(graphView: LineChart) {
-    progress.visibility = View.GONE
+    binding.progress.visibility = View.GONE
     analytics.trackGeneralEvent(GeneralEvent("GraphLoaded"))
   }
 
   override fun onNoGraphData(graphView: LineChart) {
-    progress.visibility = View.GONE
+    binding.progress.visibility = View.GONE
     analytics.trackGeneralEvent(GeneralEvent("NoGraphData"))
   }
 
@@ -514,8 +483,8 @@ class QuoteDetailActivity : BaseGraphActivity(), NewsFeedAdapter.NewsClickListen
     if (viewModel.addTickerToWidget(ticker, widgetId)) {
       InAppMessage.showToast(this, getString(R.string.added_to_list, ticker))
       val showRemove = viewModel.showAddOrRemove(ticker)
-      val addMenuItem = toolbar.menu.findItem(R.id.action_add)
-      val removeMenuItem = toolbar.menu.findItem(R.id.action_remove)
+      val addMenuItem = binding.toolbar.menu.findItem(R.id.action_add)
+      val removeMenuItem = binding.toolbar.menu.findItem(R.id.action_remove)
       if (showRemove) {
         addMenuItem.isVisible = false
         removeMenuItem.isVisible = true

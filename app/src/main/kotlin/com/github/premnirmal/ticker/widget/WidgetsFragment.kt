@@ -19,12 +19,10 @@ import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_widgets.fake_status_bar
-import kotlinx.android.synthetic.main.fragment_widgets.toolbar
-import kotlinx.android.synthetic.main.fragment_widgets.widget_selection_spinner
+import com.github.premnirmal.tickerwidget.databinding.FragmentWidgetsBinding
 import javax.inject.Inject
 
-class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
+class WidgetsFragment : BaseFragment<FragmentWidgetsBinding>(), ChildFragment, OnItemSelectedListener {
 
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
@@ -40,14 +38,6 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     Injector.appComponent.inject(this)
   }
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.fragment_widgets, container, false)
-  }
-
   override fun onViewCreated(
     view: View,
     savedInstanceState: Bundle?
@@ -55,13 +45,13 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     super.onViewCreated(view, savedInstanceState)
     // Inset toolbar from window top inset
     ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+      binding.toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
       insets
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
         height = requireContext().getStatusBarHeight()
       }
     }
@@ -70,8 +60,8 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
           widgetDataProvider.dataForWidgetId(it)
         }
         .sortedBy { it.widgetName() }
-    widget_selection_spinner.adapter = WidgetSpinnerAdapter(widgetDataList)
-    widget_selection_spinner.onItemSelectedListener = this
+    binding.widgetSelectionSpinner.adapter = WidgetSpinnerAdapter(widgetDataList)
+    binding.widgetSelectionSpinner.onItemSelectedListener = this
 
     arguments?.let {
       selectWidgetFromBundle(it)
@@ -86,7 +76,7 @@ class WidgetsFragment : BaseFragment(), ChildFragment, OnItemSelectedListener {
     val widgetId = bundle.getInt(ARG_WIDGET_ID)
     if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
       val position = widgetDataList.indexOfFirst { it.widgetId == widgetId }
-      widget_selection_spinner.setSelection(position)
+      binding.widgetSelectionSpinner.setSelection(position)
     }
   }
 

@@ -7,14 +7,12 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.layout_widget_setting.view.setting_edit_text
-import kotlinx.android.synthetic.main.layout_widget_setting.view.setting_subtitle
-import kotlinx.android.synthetic.main.layout_widget_setting.view.setting_title
-import kotlinx.android.synthetic.main.layout_widget_setting.view.text_flipper
+import com.github.premnirmal.tickerwidget.databinding.LayoutWidgetSettingBinding
 
 class SettingsTextView : LinearLayout {
 
-  var editable: Boolean = false
+  private val binding: LayoutWidgetSettingBinding
+  private var editable: Boolean = false
 
   constructor(context: Context) : this(context, null)
 
@@ -34,6 +32,7 @@ class SettingsTextView : LinearLayout {
     orientation = VERTICAL
     val inflater = LayoutInflater.from(context)
     inflater.inflate(R.layout.layout_widget_setting, this, true)
+    binding = LayoutWidgetSettingBinding.bind(this)
     val pad = resources.getDimensionPixelSize(R.dimen.setting_padding)
     setPadding(pad, pad, pad, pad)
     attrs?.let {
@@ -56,11 +55,11 @@ class SettingsTextView : LinearLayout {
   )
 
   fun setTitle(text: CharSequence?) {
-    setting_title.text = text
+    binding.settingTitle.text = text
   }
 
   fun setSubtitle(text: CharSequence?) {
-    setting_subtitle.text = text
+    binding.settingSubtitle.text = text
   }
 
   fun setIsEditable(
@@ -71,10 +70,10 @@ class SettingsTextView : LinearLayout {
     if (isEditable != editable) {
       editable = isEditable
       if (editable) {
-        text_flipper.displayedChild = 1
-        setting_edit_text.setText(setting_subtitle.text)
-        setting_edit_text.setSelection(setting_edit_text.text.length)
-        setting_edit_text.setOnEditorActionListener { v, actionId, _ ->
+        binding.textFlipper.displayedChild = 1
+        binding.settingEditText.setText(binding.settingSubtitle.text)
+        binding.settingEditText.setSelection(binding.settingEditText.text.length)
+        binding.settingEditText.setOnEditorActionListener { v, actionId, _ ->
           if (actionId == EditorInfo.IME_ACTION_DONE) {
             callback.invoke(v.text.toString())
             true
@@ -82,20 +81,20 @@ class SettingsTextView : LinearLayout {
             false
           }
         }
-        setting_edit_text.requestFocus()
-        imm.showSoftInput(setting_edit_text, 0)
+        binding.settingEditText.requestFocus()
+        imm.showSoftInput(binding.settingEditText, 0)
       } else {
-        setting_edit_text.setOnEditorActionListener(null)
-        imm.hideSoftInputFromWindow(setting_edit_text.windowToken, 0)
-        setting_edit_text.clearFocus()
-        text_flipper.displayedChild = 2
+        binding.settingEditText.setOnEditorActionListener(null)
+        imm.hideSoftInputFromWindow(binding.settingEditText.windowToken, 0)
+        binding.settingEditText.clearFocus()
+        binding.textFlipper.displayedChild = 2
       }
     }
   }
 
   fun setTextColor(color: Int) {
-    setting_title.setTextColor(color)
-    setting_subtitle.setTextColor(color)
-    setting_edit_text.setTextColor(color)
+    binding.settingTitle.setTextColor(color)
+    binding.settingSubtitle.setTextColor(color)
+    binding.settingEditText.setTextColor(color)
   }
 }

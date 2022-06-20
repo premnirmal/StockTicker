@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.news
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
 import com.github.mikephil.charting.animation.Easing
@@ -13,19 +14,9 @@ import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_graph.desc
-import kotlinx.android.synthetic.main.activity_graph.graphView
-import kotlinx.android.synthetic.main.activity_graph.group_period
-import kotlinx.android.synthetic.main.activity_graph.max
-import kotlinx.android.synthetic.main.activity_graph.one_day
-import kotlinx.android.synthetic.main.activity_graph.one_month
-import kotlinx.android.synthetic.main.activity_graph.one_year
-import kotlinx.android.synthetic.main.activity_graph.progress
-import kotlinx.android.synthetic.main.activity_graph.three_month
-import kotlinx.android.synthetic.main.activity_graph.tickerName
-import kotlinx.android.synthetic.main.activity_graph.two_weeks
+import com.github.premnirmal.tickerwidget.databinding.ActivityGraphBinding
 
-class GraphActivity : BaseGraphActivity() {
+class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
 
   companion object {
     const val TICKER = "TICKER"
@@ -38,16 +29,16 @@ class GraphActivity : BaseGraphActivity() {
   private val viewModel: GraphViewModel by viewModels()
   override var range: Range = Range.THREE_MONTH
 
+
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_graph)
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     viewModel.quote.observe(this) { quote ->
       this.quote = quote
-      tickerName.text = ticker
-      desc.text = quote.name
+      binding.tickerName.text = ticker
+      binding.desc.text = quote.name
     }
     viewModel.data.observe(this) { data ->
       dataPoints = data
@@ -57,20 +48,20 @@ class GraphActivity : BaseGraphActivity() {
       showErrorAndFinish()
     }
     viewModel.fetchStock(ticker)
-    group_period.setOnCheckedChangeListener { _, checkedId ->
+    binding.groupPeriod.setOnCheckedChangeListener { _, checkedId ->
       val view = findViewById<View>(checkedId)
       updateRange(view)
     }
     val view = when (range) {
-      Range.ONE_DAY -> one_day
-      Range.TWO_WEEKS -> two_weeks
-      Range.ONE_MONTH -> one_month
-      Range.THREE_MONTH -> three_month
-      Range.ONE_YEAR -> one_year
-      Range.MAX -> max
+      Range.ONE_DAY -> binding.oneDay
+      Range.TWO_WEEKS -> binding.twoWeeks
+      Range.ONE_MONTH -> binding.oneMonth
+      Range.THREE_MONTH -> binding.threeMonth
+      Range.ONE_YEAR -> binding.oneYear
+      Range.MAX -> binding.max
       else -> throw UnsupportedOperationException("Range not supported")
     }
-    group_period.check(view.id)
+    binding.groupPeriod.check(view.id)
   }
 
   override fun onStart() {
@@ -89,8 +80,8 @@ class GraphActivity : BaseGraphActivity() {
 
   override fun fetchGraphData() {
     if (isNetworkOnline()) {
-      graphView.visibility = View.INVISIBLE
-      progress.visibility = View.VISIBLE
+      binding.graphView.visibility = View.INVISIBLE
+      binding.progress.visibility = View.VISIBLE
       viewModel.fetchHistoricalDataByRange(ticker, range)
     } else {
       showDialog(getString(R.string.no_network_message),
@@ -99,13 +90,13 @@ class GraphActivity : BaseGraphActivity() {
   }
 
   override fun onGraphDataAdded(graphView: LineChart) {
-    progress.visibility = View.GONE
-    graphView.visibility = View.VISIBLE
+    binding.progress.visibility = View.GONE
+    binding.graphView.visibility = View.VISIBLE
     graphView.animateX(DURATION, Easing.EasingOption.EaseInOutCubic)
   }
 
   override fun onNoGraphData(graphView: LineChart) {
-    progress.visibility = View.GONE
-    graphView.visibility = View.VISIBLE
+    binding.progress.visibility = View.GONE
+    binding.graphView.visibility = View.VISIBLE
   }
 }

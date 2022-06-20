@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
@@ -33,12 +32,9 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.showKeyboard
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_search.fake_status_bar
-import kotlinx.android.synthetic.main.fragment_search.recycler_view
-import kotlinx.android.synthetic.main.fragment_search.search_view
-import kotlinx.android.synthetic.main.fragment_search.toolbar
+import com.github.premnirmal.tickerwidget.databinding.FragmentSearchBinding
 
-class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, TextWatcher {
+class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, SuggestionClickListener, TextWatcher {
 
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
@@ -71,43 +67,35 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
     }
   }
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.fragment_search, container, false)
-  }
-
   override fun onViewCreated(
     view: View,
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
     if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
-      toolbar.setNavigationIcon(R.drawable.ic_back)
-      toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
-      toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
-      toolbar.setNavigationOnClickListener { requireActivity().finish() }
+      binding.toolbar.setNavigationIcon(R.drawable.ic_back)
+      binding.toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
+      binding.toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
+      binding.toolbar.setNavigationOnClickListener { requireActivity().finish() }
     } else {
       // Inset toolbar from window top inset
       ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-        toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        binding.toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
           this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
         }
         insets
       }
     }
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
+      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
         height = requireContext().getStatusBarHeight()
       }
     }
     adapter = SuggestionsAdapter(this)
-    recycler_view.layoutManager = LinearLayoutManager(activity)
-    recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
-    recycler_view.adapter = adapter
-    search_view.addTextChangedListener(this)
+    binding.recyclerView.layoutManager = LinearLayoutManager(activity)
+    binding.recyclerView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+    binding.recyclerView.adapter = adapter
+    binding.searchView.addTextChangedListener(this)
 
     savedInstanceState?.let { selectedWidgetId = it.getInt(ARG_WIDGET_ID, -1) }
     if (viewModel.searchResult.value?.wasSuccessful == true) {
@@ -117,7 +105,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
       if (it.wasSuccessful) {
         adapter.setData(it.data)
       } else {
-        adapter.setData(listOf(Suggestion(search_view.text?.toString().orEmpty())))
+        adapter.setData(listOf(Suggestion(binding.searchView.text?.toString().orEmpty())))
         InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
       }
     })
@@ -126,7 +114,7 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   override fun onHiddenChanged(hidden: Boolean) {
     super.onHiddenChanged(hidden)
     if (hidden) dismissKeyboard() else {
-      search_view.showKeyboard()
+      binding.searchView.showKeyboard()
     }
   }
 
@@ -235,6 +223,6 @@ class SearchFragment : BaseFragment(), ChildFragment, SuggestionClickListener, T
   }
 
   override fun scrollToTop() {
-    recycler_view.smoothScrollToPosition(0)
+    binding.recyclerView.smoothScrollToPosition(0)
   }
 }

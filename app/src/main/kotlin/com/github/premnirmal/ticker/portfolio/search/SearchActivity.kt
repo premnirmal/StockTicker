@@ -4,11 +4,13 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.databinding.ActivitySearchBinding
 
-class SearchActivity : BaseActivity() {
+class SearchActivity : BaseActivity<ActivitySearchBinding>() {
   override val simpleName: String = "SearchActivity"
 
   companion object {
@@ -26,10 +28,10 @@ class SearchActivity : BaseActivity() {
 
   var widgetId: Int = -1
 
+
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_search)
     widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     if (savedInstanceState == null) {
       supportFragmentManager.beginTransaction()

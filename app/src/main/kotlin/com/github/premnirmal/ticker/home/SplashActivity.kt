@@ -14,14 +14,13 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
-import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_splash.touch_interceptor
+import com.github.premnirmal.tickerwidget.databinding.ActivitySplashBinding
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class SplashActivity : BaseActivity() {
+class SplashActivity : BaseActivity<ActivitySplashBinding>() {
   override val simpleName: String = "SplashActivity"
   override val subscribeToErrorEvents = false
   private var openJob: Job? = null
@@ -30,15 +29,15 @@ class SplashActivity : BaseActivity() {
   @Inject internal lateinit var newsProvider: NewsProvider
   @Inject internal lateinit var commitsProvider: CommitsProvider
 
+
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_splash)
     if (Build.VERSION.SDK_INT >= 28) {
       window.attributes.layoutInDisplayCutoutMode =
         LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
     }
-    touch_interceptor.setOnTouchListener(onTouchListener)
+    binding.touchInterceptor.setOnTouchListener(onTouchListener)
     // Hide the status bar.
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       window.insetsController?.apply {

@@ -147,8 +147,8 @@
   </style>
   <!-- Custom Style for PreferenceFragmentCompat -->
   <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material">
-    <item name="android:layout">@layout/fragment_settings</item>
-    <item name="layout">@layout/fragment_settings</item>
+<!--    <item name="android:layout">@layout/fragment_settings</item>-->
+<!--    <item name="layout">@layout/fragment_settings</item>-->
   </style>
 
   <style name="Widget.Container" parent="android:Widget">

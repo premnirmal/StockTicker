@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -18,18 +17,13 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.databinding.FragmentHomeBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.internal.ViewUtils
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.android.synthetic.main.fragment_home.app_bar_layout
-import kotlinx.android.synthetic.main.fragment_home.subtitle
-import kotlinx.android.synthetic.main.fragment_home.swipe_container
-import kotlinx.android.synthetic.main.fragment_home.tabs
-import kotlinx.android.synthetic.main.fragment_home.toolbar
-import kotlinx.android.synthetic.main.fragment_home.view_pager
 import javax.inject.Inject
 
-class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
+class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, PortfolioFragment.Parent {
 
   companion object {
     private const val MAX_FETCH_COUNT = 3
@@ -53,14 +47,6 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     Injector.appComponent.inject(this)
   }
 
-  override fun onCreateView(
-    inflater: LayoutInflater,
-    container: ViewGroup?,
-    savedInstanceState: Bundle?
-  ): View {
-    return inflater.inflate(R.layout.fragment_home, container, false)
-  }
-
   @SuppressLint("RestrictedApi")
   override fun onViewCreated(
     view: View,
@@ -69,33 +55,33 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
     super.onViewCreated(view, savedInstanceState)
     ViewUtils.doOnApplyWindowInsets(view) { _, insets, _ ->
       val statusBarSize = insets.systemWindowInsetTop
-      (toolbar.layoutParams as MarginLayoutParams).topMargin = statusBarSize
-      (subtitle.layoutParams as MarginLayoutParams).topMargin = statusBarSize
+      (binding.toolbar.layoutParams as MarginLayoutParams).topMargin = statusBarSize
+      (binding.subtitle.layoutParams as MarginLayoutParams).topMargin = statusBarSize
       insets
     }
-    swipe_container.setOnRefreshListener { fetch() }
+    binding.swipeContainer.setOnRefreshListener { fetch() }
     adapter = HomePagerAdapter(childFragmentManager, lifecycle)
-    view_pager.adapter = adapter
-    TabLayoutMediator(tabs, view_pager) { tab, position ->
+    binding.viewPager.adapter = adapter
+    TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
       tab.text = widgetDataProvider.widgetDataList()[position].widgetName()
     }.attach()
-    app_bar_layout.addOnOffsetChangedListener(offsetChangedListener)
-    subtitle.text = subtitleText
+    binding.appBarLayout.addOnOffsetChangedListener(offsetChangedListener)
+    binding.subtitle.text = subtitleText
     viewModel.fetchState.observe(viewLifecycleOwner) {
       updateHeader()
     }
-    toolbar.setOnMenuItemClickListener {
+    binding.toolbar.setOnMenuItemClickListener {
       showTotalHoldingsPopup()
       true
     }
-    toolbar.menu.findItem(R.id.total_holdings).apply {
+    binding.toolbar.menu.findItem(R.id.total_holdings).apply {
       isVisible = viewModel.hasHoldings
       isEnabled = viewModel.hasHoldings
     }
   }
 
   override fun onDestroyView() {
-    app_bar_layout.removeOnOffsetChangedListener(offsetChangedListener)
+    binding.appBarLayout.removeOnOffsetChangedListener(offsetChangedListener)
     super.onDestroyView()
   }
 
@@ -105,10 +91,10 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   }
 
   private fun updateHeader() {
-    tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
+    binding.tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
     adapter.setData(widgetDataProvider.widgetDataList())
-    subtitle.text = subtitleText
-    toolbar.menu.findItem(R.id.total_holdings).apply {
+    binding.subtitle.text = subtitleText
+    binding.toolbar.menu.findItem(R.id.total_holdings).apply {
       isVisible = viewModel.hasHoldings
       isEnabled = viewModel.hasHoldings
     }
@@ -125,7 +111,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
       popupView.findViewById<TextView>(R.id.totalHoldings).text = totalHoldingsText
       popupView.findViewById<TextView>(R.id.totalGain).text = it.gain
       popupView.findViewById<TextView>(R.id.totalLoss).text = it.loss
-      popupWindow.showAtLocation(toolbar, Gravity.TOP, toolbar.width / 2, toolbar.height)
+      popupWindow.showAtLocation(binding.toolbar, Gravity.TOP, binding.toolbar.width / 2, binding.toolbar.height)
     }
   }
 
@@ -138,7 +124,7 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
           attemptingFetch = true
           viewModel.fetch().observe(viewLifecycleOwner) { success ->
             attemptingFetch = false
-            swipe_container?.isRefreshing = false
+            binding.swipeContainer?.isRefreshing = false
             if (success) {
               update()
             }
@@ -146,12 +132,12 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
         } else {
           attemptingFetch = false
           InAppMessage.showMessage(requireActivity(), R.string.refresh_failed, error = true)
-          swipe_container?.isRefreshing = false
+          binding.swipeContainer?.isRefreshing = false
         }
       } else {
         attemptingFetch = false
         InAppMessage.showMessage(requireActivity(), R.string.no_network_message, error = true)
-        swipe_container?.isRefreshing = false
+        binding.swipeContainer?.isRefreshing = false
       }
     }
   }
@@ -165,25 +151,25 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   // PortfolioFragment.Parent
 
   override fun onDragStarted() {
-    swipe_container.isEnabled = false
+    binding.swipeContainer.isEnabled = false
   }
 
   override fun onDragEnded() {
-    swipe_container.isEnabled = true
+    binding.swipeContainer.isEnabled = true
   }
 
   private val offsetChangedListener = object : AppBarLayout.OnOffsetChangedListener {
     private var isTitleShowing = true
 
     override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
-      val show = verticalOffset > -tabs.height / 2
+      val show = verticalOffset > -binding.tabs.height / 2
       if (show && !isTitleShowing) {
-        subtitle.animate().alpha(1f).start()
-        tabs.animate().alpha(1f).start()
+        binding.subtitle.animate().alpha(1f).start()
+        binding.tabs.animate().alpha(1f).start()
         isTitleShowing = true
       } else if (!show && isTitleShowing) {
-        subtitle.animate().alpha(0f).start()
-        tabs.animate().alpha(0f).start()
+        binding.subtitle.animate().alpha(0f).start()
+        binding.tabs.animate().alpha(0f).start()
         isTitleShowing = false
       }
     }
@@ -192,8 +178,8 @@ class HomeFragment : BaseFragment(), ChildFragment, PortfolioFragment.Parent {
   // ChildFragment
 
   override fun scrollToTop() {
-    val fragment = childFragmentManager.findFragmentByTag("f${view_pager.currentItem}")
+    val fragment = childFragmentManager.findFragmentByTag("f${binding.viewPager.currentItem}")
     (fragment  as? ChildFragment)?.scrollToTop()
-    app_bar_layout.setExpanded(true, true)
+    binding.appBarLayout.setExpanded(true, true)
   }
 }

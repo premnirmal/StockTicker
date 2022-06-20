@@ -16,21 +16,22 @@ import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
+import com.github.premnirmal.ticker.settings.SettingsParentFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.bottom_navigation
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
  */
-class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
+class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.OnNavigationItemSelectedListener,
     BottomNavigationView.OnNavigationItemReselectedListener,
     SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 
@@ -40,7 +41,7 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelect
       mapOf<Int, String>(R.id.action_portfolio to HomeFragment::class.java.name,
           R.id.action_widgets to WidgetsFragment::class.java.name,
           R.id.action_search to SearchFragment::class.java.name,
-          R.id.action_settings to SettingsFragment::class.java.name,
+          R.id.action_settings to SettingsParentFragment::class.java.name,
           R.id.action_feed to NewsFeedFragment::class.java.name)
   }
 
@@ -52,16 +53,16 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelect
   private var rateDialogShown = false
   override val simpleName: String = "MainActivity"
 
+
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_main)
     window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
-    bottom_navigation.setOnNavigationItemSelectedListener(this)
-    bottom_navigation.setOnNavigationItemReselectedListener(this)
+    binding.bottomNavigation.setOnNavigationItemSelectedListener(this)
+    binding.bottomNavigation.setOnNavigationItemReselectedListener(this)
 
     currentChild = if (savedInstanceState == null) {
       val fragment = HomeFragment()
@@ -86,13 +87,13 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelect
 
   override fun onResume() {
     super.onResume()
-    bottom_navigation.menu.findItem(R.id.action_widgets).isEnabled = widgetDataProvider.hasWidget()
+    binding.bottomNavigation.menu.findItem(R.id.action_widgets).isEnabled = widgetDataProvider.hasWidget()
   }
 
   override fun onBackPressed() {
-    val eaten = onNavigationItemSelected(bottom_navigation.menu.findItem(R.id.action_portfolio))
+    val eaten = onNavigationItemSelected(binding.bottomNavigation.menu.findItem(R.id.action_portfolio))
     if (eaten) {
-      bottom_navigation.selectedItemId = R.id.action_portfolio
+      binding.bottomNavigation.selectedItemId = R.id.action_portfolio
     }
     if (!eaten && !maybeAskToRate()) {
       super.onBackPressed()
@@ -140,7 +141,7 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelect
         R.id.action_portfolio -> HomeFragment()
         R.id.action_widgets -> WidgetsFragment()
         R.id.action_search -> SearchFragment()
-        R.id.action_settings -> SettingsFragment()
+        R.id.action_settings -> SettingsParentFragment()
         R.id.action_feed -> NewsFeedFragment()
         else -> {
           throw IllegalStateException("Unknown bottom nav itemId: $itemId - ${item.title}")
@@ -203,6 +204,6 @@ class MainActivity : BaseActivity(), BottomNavigationView.OnNavigationItemSelect
   // WidgetSettingsFragment.Parent
 
   override fun openSearch(widgetId: Int) {
-    bottom_navigation.selectedItemId = R.id.action_search
+    binding.bottomNavigation.selectedItemId = R.id.action_search
   }
 }

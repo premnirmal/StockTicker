@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.TimePicker
@@ -25,9 +24,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
@@ -39,7 +35,6 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
@@ -48,8 +43,6 @@ import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_settings.fake_status_bar
-import kotlinx.android.synthetic.main.fragment_settings.toolbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
@@ -104,17 +97,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-      toolbar.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-        this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-      }
-      insets
-    }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      fake_status_bar.updateLayoutParams<ViewGroup.LayoutParams> {
-        height = requireContext().getStatusBarHeight()
-      }
-    }
+
     if (resources.getBoolean(R.bool.isTablet)) {
       listView.layoutParams.width = resources.getDimensionPixelSize(R.dimen.tablet_width)
       (listView.layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP

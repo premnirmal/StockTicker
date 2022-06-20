@@ -9,11 +9,9 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_notes.notesInputEditText
-import kotlinx.android.synthetic.main.activity_notes.tickerName
-import kotlinx.android.synthetic.main.activity_notes.toolbar
+import com.github.premnirmal.tickerwidget.databinding.ActivityNotesBinding
 
-class AddNotesActivity : BaseActivity() {
+class AddNotesActivity : BaseActivity<ActivityNotesBinding>() {
 
   companion object {
     const val QUOTE = "QUOTE"
@@ -27,11 +25,10 @@ class AddNotesActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_notes)
-    toolbar.setNavigationOnClickListener {
+    binding.toolbar.setNavigationOnClickListener {
       finish()
     }
-    toolbar.setOnMenuItemClickListener {
+    binding.toolbar.setOnMenuItemClickListener {
       onSaveClick()
       true
     }
@@ -43,21 +40,21 @@ class AddNotesActivity : BaseActivity() {
       finish()
       return
     }
-    tickerName.text = ticker
+    binding.tickerName.text = ticker
     viewModel.symbol = ticker
     val quote = viewModel.quote
     quote?.properties?.let {
-      notesInputEditText.setText(it.notes)
+      binding.notesInputEditText.setText(it.notes)
     }
   }
 
   override fun onResume() {
     super.onResume()
-    notesInputEditText.requestFocus()
+    binding.notesInputEditText.requestFocus()
   }
 
   private fun onSaveClick() {
-    val notesText = notesInputEditText.text.toString()
+    val notesText = binding.notesInputEditText.text.toString()
     viewModel.setNotes(notesText)
     updateActivityResult()
     dismissKeyboard()

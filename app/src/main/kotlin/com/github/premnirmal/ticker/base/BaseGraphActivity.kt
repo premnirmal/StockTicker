@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.base
 import android.graphics.Color
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.viewbinding.ViewBinding
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
@@ -17,7 +18,7 @@ import com.github.premnirmal.ticker.ui.TextMarkerView
 import com.github.premnirmal.ticker.ui.ValueAxisFormatter
 import com.github.premnirmal.tickerwidget.R
 
-abstract class BaseGraphActivity : BaseActivity() {
+abstract class BaseGraphActivity<T : ViewBinding> : BaseActivity<T>() {
 
   protected var dataPoints: List<DataPoint>? = null
   protected abstract var range: Range

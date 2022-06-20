@@ -11,18 +11,22 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
 import com.robinhood.ticker.TickerView
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
+import java.lang.reflect.ParameterizedType
 import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -247,4 +251,12 @@ fun TickerView.formatChangePercent(changePercent: Float) {
       textColor = ContextCompat.getColor(context, R.color.white)
     }
   }
+}
+
+fun <T : ViewBinding> LifecycleOwner.inflateBinding(inflater: LayoutInflater): T {
+  return (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments
+      .filterIsInstance<Class<T>>()
+      .first()
+      .getDeclaredMethod("inflate", LayoutInflater::class.java)
+      .invoke(null, inflater) as T
 }

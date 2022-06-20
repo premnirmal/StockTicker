@@ -10,7 +10,8 @@ import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
 import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperAdapter
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.widget.WidgetData
-import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.databinding.ItemPositionBinding
+import com.github.premnirmal.tickerwidget.databinding.ItemStockBinding
 
 /**
  * Created by premnirmal on 2/29/16.
@@ -76,13 +77,11 @@ class StocksAdapter constructor(
   ): PortfolioVH {
     val context = parent.context
     val portfolioVH: PortfolioVH = if (viewType == TYPE_POSITION) {
-      val itemView = LayoutInflater.from(context)
-          .inflate(R.layout.item_position, parent, false)
-      PositionVH(itemView)
+      val binding = ItemPositionBinding.inflate(LayoutInflater.from(context), parent, false)
+      PositionVH(binding)
     } else {
-      val itemView = LayoutInflater.from(context)
-          .inflate(R.layout.item_stock, parent, false)
-      StockVH(itemView)
+      val binding = ItemStockBinding.inflate(LayoutInflater.from(context), parent, false)
+      StockVH(binding)
     }
     return portfolioVH
   }

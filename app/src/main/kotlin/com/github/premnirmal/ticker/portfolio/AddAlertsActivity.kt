@@ -11,18 +11,11 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.activity_alerts.addButton
-import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputEditText
-import kotlinx.android.synthetic.main.activity_alerts.alertAboveInputLayout
-import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputEditText
-import kotlinx.android.synthetic.main.activity_alerts.alertBelowInputLayout
-import kotlinx.android.synthetic.main.activity_alerts.alerts_disabled_message
-import kotlinx.android.synthetic.main.activity_alerts.tickerName
-import kotlinx.android.synthetic.main.activity_alerts.toolbar
+import com.github.premnirmal.tickerwidget.databinding.ActivityAlertsBinding
 import java.text.NumberFormat
 import javax.inject.Inject
 
-class AddAlertsActivity : BaseActivity() {
+class AddAlertsActivity : BaseActivity<ActivityAlertsBinding>() {
 
   companion object {
     const val QUOTE = "QUOTE"
@@ -37,12 +30,11 @@ class AddAlertsActivity : BaseActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.activity_alerts)
-    toolbar.setNavigationOnClickListener {
+    binding.toolbar.setNavigationOnClickListener {
       finish()
     }
 
-    alerts_disabled_message.visibility = if (appPreferences.notificationAlerts()) View.GONE else View.VISIBLE
+    binding.alertsDisabledMessage.visibility = if (appPreferences.notificationAlerts()) View.GONE else View.VISIBLE
     if (intent.hasExtra(TICKER) && intent.getStringExtra(TICKER) != null) {
       ticker = intent.getStringExtra(TICKER)!!
     } else {
@@ -52,28 +44,28 @@ class AddAlertsActivity : BaseActivity() {
       return
     }
     viewModel.symbol = ticker
-    tickerName.text = ticker
+    binding.tickerName.text = ticker
 
     val quote = viewModel.quote
     val alertAbove = quote?.getAlertAbove() ?: 0f
     if (alertAbove != 0.0f) {
-      alertAboveInputEditText.setText(appPreferences.selectedDecimalFormat.format(alertAbove))
+      binding.alertAboveInputEditText.setText(appPreferences.selectedDecimalFormat.format(alertAbove))
     } else {
-      alertAboveInputEditText.setText("")
+      binding.alertAboveInputEditText.setText("")
     }
     val alertBelow = quote?.getAlertBelow() ?: 0f
     if (alertBelow != 0.0f) {
-      alertBelowInputEditText.setText(appPreferences.selectedDecimalFormat.format(alertBelow))
+      binding.alertBelowInputEditText.setText(appPreferences.selectedDecimalFormat.format(alertBelow))
     } else {
-      alertBelowInputEditText.setText("")
+      binding.alertBelowInputEditText.setText("")
     }
 
-    addButton.setOnClickListener { onAddClicked() }
+    binding.addButton.setOnClickListener { onAddClicked() }
   }
 
   private fun onAddClicked() {
-    val alertAboveText = alertAboveInputEditText.text.toString()
-    val alertBelowText = alertBelowInputEditText.text.toString()
+    val alertAboveText = binding.alertAboveInputEditText.text.toString()
+    val alertBelowText = binding.alertBelowInputEditText.text.toString()
     var alertAbove = 0f
     var alertBelow = 0f
     var success = true
@@ -84,7 +76,7 @@ class AddAlertsActivity : BaseActivity() {
         alertAbove = numberFormat.parse(alertAboveText)!!
             .toFloat()
       } catch (e: NumberFormatException) {
-        alertAboveInputLayout.error = getString(R.string.invalid_number)
+        binding.alertAboveInputLayout.error = getString(R.string.invalid_number)
         success = false
       }
     }
@@ -95,20 +87,20 @@ class AddAlertsActivity : BaseActivity() {
         alertBelow = numberFormat.parse(alertBelowText)!!
             .toFloat()
       } catch (e: NumberFormatException) {
-        alertBelowInputLayout.error = getString(R.string.invalid_number)
+        binding.alertBelowInputLayout.error = getString(R.string.invalid_number)
         success = false
       }
     }
 
     if (alertAbove > 0.0f && alertBelow > 0.0f) {
-      if (alertAboveInputEditText.isFocused) {
+      if (binding.alertAboveInputEditText.isFocused) {
         if (success && alertBelow >= alertAbove) {
-          alertAboveInputLayout.error = getString(R.string.alert_below_error)
+          binding.alertAboveInputLayout.error = getString(R.string.alert_below_error)
           success = false
         }
       } else {
         if (success && alertBelow >= alertAbove) {
-          alertBelowInputLayout.error = getString(R.string.alert_above_error)
+          binding.alertBelowInputLayout.error = getString(R.string.alert_above_error)
           success = false
         }
       }

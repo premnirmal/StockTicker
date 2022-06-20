@@ -4,9 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
@@ -23,14 +21,13 @@ import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.android.synthetic.main.fragment_portfolio.stockList
-import kotlinx.android.synthetic.main.fragment_portfolio.view_flipper
+import com.github.premnirmal.tickerwidget.databinding.FragmentPortfolioBinding
 import kotlinx.coroutines.launch
 
 /**
  * Created by premnirmal on 2/25/16.
  */
-class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnStartDragListener {
+class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragment, QuoteClickListener, OnStartDragListener {
 
   interface Parent {
     fun onDragStarted()
@@ -103,38 +100,30 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
     widgetId = requireArguments().getInt(KEY_WIDGET_ID)
   }
 
-  override fun onCreateView(
-      inflater: LayoutInflater,
-      container: ViewGroup?,
-      savedInstanceState: Bundle?
-  ): View? {
-    return inflater.inflate(R.layout.fragment_portfolio, container, false)
-  }
-
   override fun onViewCreated(
       view: View,
       savedInstanceState: Bundle?
   ) {
     super.onViewCreated(view, savedInstanceState)
-    stockList.addItemDecoration(
+    binding.stockList.addItemDecoration(
         SpacingDecoration(requireContext().resources.getDimensionPixelSize(R.dimen.list_spacing))
     )
     val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
-    stockList.layoutManager = gridLayoutManager
-    stockList.adapter = stocksAdapter
+    binding.stockList.layoutManager = gridLayoutManager
+    binding.stockList.adapter = stocksAdapter
     val callback: ItemTouchHelper.Callback = SimpleItemTouchHelperCallback(stocksAdapter)
     itemTouchHelper = ItemTouchHelper(callback)
-    itemTouchHelper?.attachToRecyclerView(stockList)
+    itemTouchHelper?.attachToRecyclerView(binding.stockList)
 
     savedInstanceState?.let { state ->
       val listViewState = state.getParcelable<Parcelable>(LIST_INSTANCE_STATE)
-      listViewState?.let { stockList?.layoutManager?.onRestoreInstanceState(it) }
+      listViewState?.let { binding.stockList?.layoutManager?.onRestoreInstanceState(it) }
     }
     val widgetData = viewModel.dataForWidgetId(widgetId)
     if (widgetData.getTickers().isEmpty()) {
-      view_flipper.displayedChild = 0
+      binding.viewFlipper.displayedChild = 0
     } else {
-      view_flipper.displayedChild = 1
+      binding.viewFlipper.displayedChild = 1
     }
     viewModel.portfolio.observe(viewLifecycleOwner) {
       stocksAdapter.refresh()
@@ -168,7 +157,7 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
-    val listViewState = stockList?.layoutManager?.onSaveInstanceState()
+    val listViewState = binding.stockList?.layoutManager?.onSaveInstanceState()
     listViewState?.let {
       outState.putParcelable(LIST_INSTANCE_STATE, it)
     }
@@ -194,6 +183,6 @@ class PortfolioFragment : BaseFragment(), ChildFragment, QuoteClickListener, OnS
   }
 
   override fun scrollToTop() {
-    stockList.smoothScrollToPosition(0)
+    binding.stockList.smoothScrollToPosition(0)
   }
 }

@@ -7,9 +7,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.drag_drop.ItemTouchHelperViewHolder
-import com.github.premnirmal.ticker.ui.StockFieldView
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.color
+import com.github.premnirmal.tickerwidget.databinding.ItemPositionBinding
+import com.github.premnirmal.tickerwidget.databinding.ItemStockBinding
 import com.robinhood.ticker.TickerUtils
 import com.robinhood.ticker.TickerView
 
@@ -75,7 +76,7 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
     itemView.alpha = 1f
   }
 
-  internal class StockVH(itemView: View) : PortfolioVH(itemView) {
+  internal class StockVH(private val binding: ItemStockBinding) : PortfolioVH(binding.root) {
 
     init {
       val changeInPercentView = itemView.findViewById<TickerView>(R.id.changePercent)
@@ -87,16 +88,16 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
     }
 
     override fun updateView(quote: Quote, color: Int) {
-      val changeInPercentView = itemView.findViewById<TickerView>(R.id.changePercent)
+      val changeInPercentView = binding.changePercent
       changeInPercentView.text = quote.changePercentStringWithSign()
-      val changeValueView = itemView.findViewById<TickerView>(R.id.changeValue)
+      val changeValueView = binding.changeValue
       changeValueView.text = quote.changeStringWithSign()
       changeInPercentView.setTextColor(color)
       changeValueView.setTextColor(color)
     }
   }
 
-  internal class PositionVH(itemView: View) : PortfolioVH(itemView) {
+  internal class PositionVH(private val binding: ItemPositionBinding) : PortfolioVH(binding.root) {
 
     init {
       val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
@@ -104,23 +105,23 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
     }
 
     override fun updateView(quote: Quote, color: Int) {
-      val changeInPercentView = itemView.findViewById<StockFieldView>(R.id.changePercent)
+      val changeInPercentView = binding.changePercent
       changeInPercentView.setText(quote.changePercentStringWithSign())
-      val changeValueView = itemView.findViewById<StockFieldView>(R.id.changeValue)
+      val changeValueView = binding.changeValue
       changeValueView.setText(quote.changeStringWithSign())
       changeInPercentView.setTextColor(color)
       changeValueView.setTextColor(color)
 
-      val holdingsView = itemView.findViewById<StockFieldView>(R.id.holdings)
-      val gainLossView = itemView.findViewById<StockFieldView>(R.id.gain_loss)
-      val gainLossPercentView = itemView.findViewById<StockFieldView>(R.id.gain_loss_percent)
+      val holdingsView = binding.holdings
+      val gainLossView = binding.gainLoss
+      val gainLossPercentView = binding.gainLossPercent
 
       val holdings = quote.priceFormat.format(quote.holdings())
       holdingsView.setText(holdings)
       val gainLossAmount = quote.gainLoss()
       gainLossView.setText(quote.gainLossString())
       gainLossPercentView.setText(quote.gainLossPercentString())
-      val dayChangeView = itemView.findViewById<StockFieldView>(R.id.dayChange)
+      val dayChangeView = binding.dayChange
       dayChangeView.setText(quote.dayChangeString())
       when {
         gainLossAmount > 0 -> {
