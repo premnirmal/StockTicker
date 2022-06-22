@@ -8,10 +8,12 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityNotesBinding
 
 class AddNotesActivity : BaseActivity<ActivityNotesBinding>() {
+	override val binding: (ActivityNotesBinding) by viewBinding(ActivityNotesBinding::inflate)
 
   companion object {
     const val QUOTE = "QUOTE"

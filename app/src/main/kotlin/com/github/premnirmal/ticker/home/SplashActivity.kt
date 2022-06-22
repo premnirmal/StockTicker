@@ -13,6 +13,7 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.databinding.ActivitySplashBinding
 import kotlinx.coroutines.Job
@@ -21,6 +22,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>() {
+	override val binding: (ActivitySplashBinding) by viewBinding(ActivitySplashBinding::inflate)
   override val simpleName: String = "SplashActivity"
   override val subscribeToErrorEvents = false
   private var openJob: Job? = null

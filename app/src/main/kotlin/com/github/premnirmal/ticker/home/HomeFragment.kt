@@ -15,6 +15,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentHomeBinding
@@ -24,14 +25,13 @@ import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, PortfolioFragment.Parent {
-
+	override val binding: (FragmentHomeBinding) by viewBinding(FragmentHomeBinding::inflate)
   companion object {
     private const val MAX_FETCH_COUNT = 3
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   override val simpleName: String = "HomeFragment"
-
   private var attemptingFetch = false
   private var fetchCount = 0
   private lateinit var adapter: HomePagerAdapter

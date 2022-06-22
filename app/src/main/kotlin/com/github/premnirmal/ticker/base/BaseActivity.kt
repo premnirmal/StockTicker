@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.inflateBinding
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
@@ -23,9 +22,7 @@ import javax.inject.Inject
 abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
 
   abstract val simpleName: String
-  private var _binding: T? = null
-  val binding: T
-    get() = _binding!!
+  abstract val binding: T
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var analytics: Analytics
   open val subscribeToErrorEvents = true
@@ -39,7 +36,6 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
       savedInstanceState: Bundle?
   ) {
     super.onCreate(savedInstanceState)
-    _binding = inflateBinding(layoutInflater) as T
     setContentView(binding.root)
     analytics.trackScreenView(simpleName, this)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }

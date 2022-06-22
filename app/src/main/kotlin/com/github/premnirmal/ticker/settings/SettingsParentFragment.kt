@@ -11,11 +11,13 @@ import androidx.core.view.updateLayoutParams
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentSettingsBinding
 
 class SettingsParentFragment : BaseFragment<FragmentSettingsBinding>(), ChildFragment {
-  override val simpleName = "SettingsParentFragment"
+  override val simpleName: String = "SettingsParentFragment"
+  override val binding: (FragmentSettingsBinding) by viewBinding(FragmentSettingsBinding::inflate)
 
   override fun onViewCreated(
     view: View,

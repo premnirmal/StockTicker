@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.inflateBinding
 import javax.inject.Inject
 
 /**
@@ -21,16 +20,13 @@ abstract class BaseFragment<T: ViewBinding> : Fragment() {
   private val holder: InjectionHolder by lazy { InjectionHolder() }
 
   abstract val simpleName: String
-  private var _binding: T? = null
-  val binding: T
-    get() = _binding!!
+  abstract val binding: T
 
   final override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
-    _binding = inflateBinding(layoutInflater) as T
     return binding.root
   }
 

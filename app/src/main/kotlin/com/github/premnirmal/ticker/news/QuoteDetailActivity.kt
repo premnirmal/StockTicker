@@ -43,6 +43,7 @@ import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SpacingDecoration
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityQuoteDetailBinding
@@ -66,6 +67,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
 
   @Inject lateinit var appPreferences: AppPreferences
   override val simpleName: String = "NewsFeedActivity"
+  override val binding: (ActivityQuoteDetailBinding) by viewBinding(ActivityQuoteDetailBinding::inflate)
   private lateinit var adapter: NewsFeedAdapter
   private lateinit var quoteDetailsAdapter: QuoteDetailsAdapter
   private lateinit var ticker: String

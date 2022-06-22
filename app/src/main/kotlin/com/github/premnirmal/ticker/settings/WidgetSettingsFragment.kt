@@ -21,6 +21,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -32,7 +33,7 @@ import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
 class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), ChildFragment, OnClickListener {
-
+	override val binding: (FragmentWidgetSettingsBinding) by viewBinding(FragmentWidgetSettingsBinding::inflate)
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     private const val ARG_SHOW_ADD_STOCKS = "show_add_stocks"

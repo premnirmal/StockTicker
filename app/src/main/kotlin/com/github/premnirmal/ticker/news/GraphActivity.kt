@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.news
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
 import com.github.mikephil.charting.animation.Easing
@@ -13,6 +12,7 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityGraphBinding
 
@@ -24,6 +24,7 @@ class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
   }
 
   override val simpleName: String = "GraphActivity"
+  override val binding: (ActivityGraphBinding) by viewBinding(ActivityGraphBinding::inflate)
   private lateinit var ticker: String
   protected lateinit var quote: Quote
   private val viewModel: GraphViewModel by viewModels()

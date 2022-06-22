@@ -1,14 +1,15 @@
 package com.github.premnirmal.ticker.debug
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import androidx.activity.viewModels
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.databinding.ActivityDbViewerBinding
 
 class DbViewerActivity : BaseActivity<ActivityDbViewerBinding>() {
+	override val binding: (ActivityDbViewerBinding) by viewBinding(ActivityDbViewerBinding::inflate)
 
   override val simpleName: String
     get() = "DebugViewerActivity"

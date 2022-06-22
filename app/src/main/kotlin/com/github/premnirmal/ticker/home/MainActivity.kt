@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.SettingsParentFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
@@ -52,7 +53,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
   override val simpleName: String = "MainActivity"
-
+  override val binding: (ActivityMainBinding) by viewBinding(ActivityMainBinding::inflate)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)

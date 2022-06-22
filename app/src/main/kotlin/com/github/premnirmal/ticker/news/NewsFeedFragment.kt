@@ -16,12 +16,13 @@ import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.ui.SpacingDecoration
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.FragmentNewsFeedBinding
 
 class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment, NewsFeedAdapter.NewsClickListener {
-
+	override val binding: (FragmentNewsFeedBinding) by viewBinding(FragmentNewsFeedBinding::inflate)
   companion object {
     private const val INDEX_PROGRESS = 0
     private const val INDEX_ERROR = 1

@@ -4,13 +4,14 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivitySearchBinding
 
 class SearchActivity : BaseActivity<ActivitySearchBinding>() {
+	override val binding: (ActivitySearchBinding) by viewBinding(ActivitySearchBinding::inflate)
   override val simpleName: String = "SearchActivity"
 
   companion object {

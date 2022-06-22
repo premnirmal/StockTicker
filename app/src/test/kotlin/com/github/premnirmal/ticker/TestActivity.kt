@@ -8,8 +8,8 @@ import com.github.premnirmal.ticker.mock.MockAppComponent
 import com.github.premnirmal.tickerwidget.databinding.ActivityTestBinding
 
 class TestActivity : BaseActivity<ActivityTestBinding>() {
+	override val binding: (ActivityTestBinding) by viewBinding(ActivityTestBinding::inflate)
   override val simpleName: String = "TestActivity"
-
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

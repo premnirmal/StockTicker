@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
@@ -20,6 +21,7 @@ import com.github.premnirmal.ticker.portfolio.StocksAdapter.QuoteClickListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.OnStartDragListener
 import com.github.premnirmal.ticker.portfolio.drag_drop.SimpleItemTouchHelperCallback
 import com.github.premnirmal.ticker.ui.SpacingDecoration
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentPortfolioBinding
 import kotlinx.coroutines.launch
@@ -28,7 +30,7 @@ import kotlinx.coroutines.launch
  * Created by premnirmal on 2/25/16.
  */
 class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragment, QuoteClickListener, OnStartDragListener {
-
+	override val binding: (FragmentPortfolioBinding) by viewBinding(FragmentPortfolioBinding::inflate)
   interface Parent {
     fun onDragStarted()
     fun onDragEnded()

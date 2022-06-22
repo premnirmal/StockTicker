@@ -5,15 +5,16 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityWidgetSettingsBinding
 
 class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), WidgetSettingsFragment.Parent {
+	override val binding: (ActivityWidgetSettingsBinding) by viewBinding(ActivityWidgetSettingsBinding::inflate)
 
   companion object {
     const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID

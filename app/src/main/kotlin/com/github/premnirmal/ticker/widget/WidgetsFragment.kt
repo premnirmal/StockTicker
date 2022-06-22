@@ -18,12 +18,13 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentWidgetsBinding
 import javax.inject.Inject
 
 class WidgetsFragment : BaseFragment<FragmentWidgetsBinding>(), ChildFragment, OnItemSelectedListener {
-
+	override val binding: (FragmentWidgetsBinding) by viewBinding(FragmentWidgetsBinding::inflate)
   companion object {
     private const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
   }

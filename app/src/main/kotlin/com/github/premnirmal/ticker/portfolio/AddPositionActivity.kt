@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityPositionsBinding
 import com.github.premnirmal.tickerwidget.databinding.LayoutPositionHoldingBinding
@@ -22,6 +23,7 @@ import java.text.NumberFormat
  * Created by premnirmal on 2/25/16.
  */
 class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
+	override val binding: (ActivityPositionsBinding) by viewBinding(ActivityPositionsBinding::inflate)
 
   companion object {
     const val QUOTE = "QUOTE"
