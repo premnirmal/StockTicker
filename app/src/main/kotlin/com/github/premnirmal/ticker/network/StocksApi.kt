@@ -67,7 +67,7 @@ class StocksApi {
 
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
-    val quoteNets = yahooFinance.getStocks(query).quoteResponse.result
+    val quoteNets = yahooFinance.getStocks(query).quoteResponse.result ?: emptyList()
     quoteNets
   }
 
@@ -109,7 +109,7 @@ class StocksApi {
     quote.open = this.regularMarketOpen
     quote.regularMarketVolume = this.regularMarketVolume
     quote.trailingPE = this.trailingPE
-    quote.marketState = this.marketState
+    quote.marketState = this.marketState ?: ""
     quote.tradeable = this.tradeable
     quote.triggerable = this.triggerable
     quote.fiftyTwoWeekLowChange = this.fiftyTwoWeekLowChange

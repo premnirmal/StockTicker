@@ -8,7 +8,7 @@ data class YahooResponse(
 
 
 data class QuoteResponse(
-  @SerializedName("result") val result: List<YahooQuoteNet>
+  @SerializedName("result") val result: List<YahooQuoteNet>?
 )
 
 data class YahooQuoteNet(
@@ -45,7 +45,7 @@ data class YahooQuoteNet(
   @SerializedName("trailingPE")
   val trailingPE: Float?,
   @SerializedName("marketState")
-  val marketState: String,
+  val marketState: String?,
   @SerializedName("tradeable")
   val tradeable: Boolean,
   @SerializedName("triggerable")
