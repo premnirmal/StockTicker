@@ -62,7 +62,7 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
 
     layout.findViewById<TextView>(R.id.ticker)?.text = stock.symbol
     layout.findViewById<TextView>(R.id.holdings)?.text = if (widgetData.isCurrencyEnabled()) {
-      "${stock.priceFormat}${stock.holdingsString()}"
+      stock.priceFormat.format(stock.holdings())
     } else {
       stock.holdingsString()
     }

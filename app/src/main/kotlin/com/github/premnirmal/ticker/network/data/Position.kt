@@ -17,18 +17,18 @@ data class Position(
     holdings.remove(holding)
   }
 
-  fun averagePrice(): Float =
-    holdings.sumByDouble {
-      it.totalValue()
-          .toDouble()
-    }.div(totalShares()).toFloat()
+  fun averagePrice(): Float {
+    val totalShares = totalShares()
+    if (totalShares == 0f) return 0f
+    val sum = holdings.sumOf {
+      it.totalValue().toDouble()
+    }
+    return sum.div(totalShares).toFloat()
+  }
 
-  fun totalShares(): Float = holdings.sumByDouble { it.shares.toDouble() }.toFloat()
+  fun totalShares(): Float = holdings.sumOf { it.shares.toDouble() }.toFloat()
 
-  fun totalPaidPrice(): Float = holdings.sumByDouble {
-    it.totalValue()
-        .toDouble()
-  }.toFloat()
+  fun totalPaidPrice(): Float = holdings.sumOf { it.totalValue().toDouble() }.toFloat()
 }
 
 @Parcelize

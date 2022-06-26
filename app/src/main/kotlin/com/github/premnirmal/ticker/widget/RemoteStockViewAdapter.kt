@@ -17,7 +17,6 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType
 import com.github.premnirmal.tickerwidget.R
 import timber.log.Timber
-import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -84,7 +83,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       remoteViews.setTextViewText(R.id.ticker, stock.symbol)
       remoteViews.setTextViewText(R.id.holdings, if (widgetData.isCurrencyEnabled()) {
-        "${stock.priceFormat}${stock.holdingsString()}"
+        stock.priceFormat.format(stock.holdings())
       } else {
         stock.holdingsString()
       })

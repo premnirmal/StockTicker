@@ -132,7 +132,10 @@ data class Quote constructor(
     return gainLossString
   }
 
-  private fun gainLossPercent(): Float = (gainLoss() / totalPositionPrice()) * 100f
+  private fun gainLossPercent(): Float {
+    if (totalPositionPrice() == 0f) return 0f
+    return (gainLoss() / totalPositionPrice()) * 100f
+  }
 
   fun gainLossPercentString(): String {
     val gainLossPercent = gainLossPercent()
@@ -163,7 +166,7 @@ data class Quote constructor(
 
   override operator fun compareTo(other: Quote): Int =
     other.changeInPercent.compareTo(changeInPercent)
-  
+
   fun copyValues(data: Quote) {
     this.name = data.name
     this.lastTradePrice = data.lastTradePrice
