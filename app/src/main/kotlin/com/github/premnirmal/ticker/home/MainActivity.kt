@@ -9,6 +9,7 @@ import androidx.appcompat.app.AlertDialog.Builder
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
@@ -49,6 +50,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var commitsProvider: CommitsProvider
+  @Inject internal lateinit var analytics: Analytics
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false

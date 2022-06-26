@@ -4,22 +4,19 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.databinding.ActivityDbViewerBinding
 
 class DbViewerActivity : BaseActivity<ActivityDbViewerBinding>() {
 	override val binding: (ActivityDbViewerBinding) by viewBinding(ActivityDbViewerBinding::inflate)
 
-  override val simpleName: String
-    get() = "DebugViewerActivity"
+  override val simpleName = "DebugViewerActivity"
+  override val subscribeToErrorEvents = false
 
   private val viewModel: DbViewerViewModel by viewModels()
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
     binding.toolbar.setNavigationOnClickListener {
       finish()
     }

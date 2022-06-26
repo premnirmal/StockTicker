@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import android.view.Surface
 import android.view.View
@@ -24,6 +22,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
+import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
@@ -66,6 +65,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
   }
 
   @Inject lateinit var appPreferences: AppPreferences
+  @Inject lateinit var analytics: Analytics
   override val simpleName: String = "NewsFeedActivity"
   override val binding: (ActivityQuoteDetailBinding) by viewBinding(ActivityQuoteDetailBinding::inflate)
   private lateinit var adapter: NewsFeedAdapter
@@ -120,7 +120,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
       binding.appBarLayout.addOnOffsetChangedListener(offsetChangedListener)
     } else if (!resources.getBoolean(R.bool.isTablet) && resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
       binding.parentView.updateLayoutParams<MarginLayoutParams> {
-        val rotation = if (VERSION.SDK_INT >= VERSION_CODES.R) {
+        val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           display?.rotation ?: Surface.ROTATION_90
         } else {
           windowManager.defaultDisplay.rotation
@@ -135,11 +135,11 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     setupGraphView()
     updateToolbar()
     viewModel.quote.observe(this) { result ->
-      if (result?.wasSuccessful == true) {
+      if (result.wasSuccessful) {
         quote = result.data
         fetchNewsAndChartData()
         setupQuoteUi()
-      } else if (result?.wasSuccessful == false) {
+      } else {
         InAppMessage.showMessage(binding.parentView, R.string.error_fetching_stock, error = true)
         binding.progress.visibility = View.GONE
         binding.graphView.setNoDataText(getString(R.string.error_fetching_stock))
@@ -206,7 +206,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     binding.price.text = quote.priceFormat.format(quote.lastTradePrice)
     binding.change.formatChange(quote.change)
     binding.changePercent.formatChangePercent(quote.changeInPercent)
-    updatePositionsUi()
+    updatePositionsNotesAlertsUi()
 
     binding.positionsHeader.setOnClickListener {
       positionOnClickListener()
@@ -263,14 +263,14 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
           } else {
             addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
           }
-          updatePositionsUi()
+          updatePositionsNotesAlertsUi()
           return@setOnMenuItemClickListener true
         }
         R.id.action_remove -> {
           removeMenuItem.isVisible = false
           addMenuItem.isVisible = true
           viewModel.removeStock(ticker)
-          updatePositionsUi()
+          updatePositionsNotesAlertsUi()
           return@setOnMenuItemClickListener true
         }
       }
@@ -324,17 +324,17 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
   ) {
     if (requestCode == REQ_EDIT_POSITIONS) {
       if (resultCode == Activity.RESULT_OK) {
-        quote = checkNotNull(data?.getParcelableExtra(AddPositionActivity.QUOTE))
+        viewModel.loadQuote(ticker)
       }
     }
     if (requestCode == REQ_EDIT_NOTES) {
       if (resultCode == Activity.RESULT_OK) {
-        quote = checkNotNull(data?.getParcelableExtra(AddNotesActivity.QUOTE))
+        viewModel.loadQuote(ticker)
       }
     }
     if (requestCode == REQ_EDIT_ALERTS) {
       if (resultCode == Activity.RESULT_OK) {
-        quote = checkNotNull(data?.getParcelableExtra(AddAlertsActivity.QUOTE))
+        viewModel.loadQuote(ticker)
       }
     }
     super.onActivityResult(requestCode, resultCode, data)
@@ -352,12 +352,12 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
   override fun onResume() {
     super.onResume()
     if (this::quote.isInitialized) {
-      updatePositionsUi()
+      updatePositionsNotesAlertsUi()
     }
   }
 
   @SuppressLint("SetTextI18n")
-  private fun updatePositionsUi() {
+  private fun updatePositionsNotesAlertsUi() {
     if (!this::quote.isInitialized) {
       return
     }
@@ -366,17 +366,17 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
       binding.positionsContainer.visibility = View.VISIBLE
       binding.positionsHeader.visibility = View.VISIBLE
       binding.notesHeader.visibility = View.VISIBLE
+      binding.notesContainer.visibility = View.VISIBLE
       binding.alertHeader.visibility = View.VISIBLE
       binding.numShares.text = quote.numSharesString()
       binding.equityValue.text = quote.priceFormat.format(quote.holdings())
       val notesText = quote.properties?.notes
+      binding.notesContainer.visibility = View.VISIBLE
       if (notesText.isNullOrEmpty()) {
-        binding.notesContainer.visibility = View.GONE
+        binding.notesDisplay.text = "--"
       } else {
-        binding.notesContainer.visibility = View.VISIBLE
         binding.notesDisplay.text = notesText
       }
-
       val alertAbove = quote.getAlertAbove()
       val alertBelow = quote.getAlertBelow()
       if (alertAbove > 0.0f || alertBelow > 0.0f) {

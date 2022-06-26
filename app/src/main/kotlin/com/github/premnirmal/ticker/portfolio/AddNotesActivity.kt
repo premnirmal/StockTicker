@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
@@ -16,7 +15,6 @@ class AddNotesActivity : BaseActivity<ActivityNotesBinding>() {
 	override val binding: (ActivityNotesBinding) by viewBinding(ActivityNotesBinding::inflate)
 
   companion object {
-    const val QUOTE = "QUOTE"
     const val TICKER = "TICKER"
   }
 
@@ -25,7 +23,6 @@ class AddNotesActivity : BaseActivity<ActivityNotesBinding>() {
   private val viewModel: NotesViewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     binding.toolbar.setNavigationOnClickListener {
       finish()
@@ -64,9 +61,7 @@ class AddNotesActivity : BaseActivity<ActivityNotesBinding>() {
   }
 
   private fun updateActivityResult() {
-    val quote = checkNotNull(viewModel.quote)
     val data = Intent()
-    data.putExtra(QUOTE, quote)
     setResult(Activity.RESULT_OK, data)
   }
 }

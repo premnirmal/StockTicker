@@ -5,8 +5,8 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.analytics.GeneralProperties
+import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.debug.DbViewerActivity
 import com.github.premnirmal.ticker.debug.DbViewerViewModel
 import com.github.premnirmal.ticker.home.HomeFragment
 import com.github.premnirmal.ticker.home.HomeViewModel
@@ -20,25 +20,21 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.UserAgentInterceptor
-import com.github.premnirmal.ticker.news.GraphActivity
 import com.github.premnirmal.ticker.news.GraphViewModel
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
-import com.github.premnirmal.ticker.portfolio.AddNotesActivity
-import com.github.premnirmal.ticker.portfolio.AddPositionActivity
+import com.github.premnirmal.ticker.portfolio.AddPositionViewModel
 import com.github.premnirmal.ticker.portfolio.AlertsViewModel
 import com.github.premnirmal.ticker.portfolio.NotesViewModel
 import com.github.premnirmal.ticker.portfolio.PortfolioViewModel
 import com.github.premnirmal.ticker.portfolio.StocksAdapter
-import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchViewModel
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.settings.SettingsFragment
-import com.github.premnirmal.ticker.settings.WidgetSettingsActivity
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
@@ -58,25 +54,15 @@ interface AppComponent {
 
   // Activities
 
+  fun inject(stocksApp: BaseActivity.InjectionHolder)
+
   fun inject(mainActivity: MainActivity)
-
-  fun inject(addPositionActivity: AddPositionActivity)
-
-  fun inject(addNotesActivity: AddNotesActivity)
 
   fun inject(addAlertsActivity: AddAlertsActivity)
 
   fun inject(splashActivity: SplashActivity)
 
   fun inject(newsFeedActivity: QuoteDetailActivity)
-
-  fun inject(graphActivity: GraphActivity)
-
-  fun inject(searchActivity: SearchActivity)
-
-  fun inject(widgetSettingsActivity: WidgetSettingsActivity)
-
-  fun inject(dbViewerActivity: DbViewerActivity)
 
   // Components
 
@@ -163,4 +149,6 @@ interface AppComponent {
   fun inject(searchViewModel: SearchViewModel)
 
   fun inject(viewModel: PortfolioViewModel)
+
+  fun inject(viewModel: AddPositionViewModel)
 }

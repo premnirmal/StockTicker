@@ -3,20 +3,18 @@ package com.github.premnirmal.ticker.portfolio
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityPositionsBinding
 import com.github.premnirmal.tickerwidget.databinding.LayoutPositionHoldingBinding
-import kotlinx.coroutines.launch
 import java.text.NumberFormat
 
 /**
@@ -26,16 +24,14 @@ class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
 	override val binding: (ActivityPositionsBinding) by viewBinding(ActivityPositionsBinding::inflate)
 
   companion object {
-    const val QUOTE = "QUOTE"
     const val TICKER = "TICKER"
   }
 
   internal lateinit var ticker: String
-  override val simpleName: String = "AddPositionActivity"
-
+  override val simpleName = "AddPositionActivity"
+  private val viewModel: AddPositionViewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     binding.toolbar.setNavigationOnClickListener {
       finish()
@@ -48,18 +44,21 @@ class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
       finish()
       return
     }
+    viewModel.loadQuote(ticker)
+    viewModel.quote.observe(this) {
+      updateTotal(it)
+    }
     binding.tickerName.text = ticker
 
     binding.addButton.setOnClickListener { onAddClicked() }
 
     binding.positionsHolder.removeAllViews()
-    val position = stocksProvider.getPosition(ticker)
+    val position = viewModel.getPosition(ticker)
     position?.let {
       for (holding in position.holdings) {
         addPositionView(holding)
       }
     }
-    updateTotal()
   }
 
   private fun onAddClicked() {
@@ -97,12 +96,10 @@ class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
       if (success) {
         binding.priceInputLayout.error = null
         binding.sharesInputLayout.error = null
-        lifecycleScope.launch {
-          val holding = stocksProvider.addHolding(ticker, shares, price)
+        viewModel.addHolding(ticker, shares, price).observe(this) { holding ->
           priceView.setText("")
           sharesView.setText("")
           addPositionView(holding)
-          updateTotal()
           updateActivityResult()
         }
       }
@@ -111,9 +108,7 @@ class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
   }
 
   private fun updateActivityResult() {
-    val quote = checkNotNull(stocksProvider.getStock(ticker))
     val data = Intent()
-    data.putExtra(QUOTE, quote)
     setResult(Activity.RESULT_OK, data)
   }
 
@@ -133,11 +128,9 @@ class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
           .setTitle(R.string.remove)
           .setMessage(getString(R.string.remove_holding, "${holding.shares}@${holding.price}"))
           .setPositiveButton(R.string.remove) { dialog, _ ->
-            lifecycleScope.launch {
-              stocksProvider.removePosition(ticker, holding)
-              binding.positionsHolder.removeView(positionBinding.root)
-              updateTotal()
-            }
+            viewModel.removePosition(ticker, holding)
+            binding.positionsHolder.removeView(positionBinding.root)
+            updateActivityResult()
             dialog.dismiss()
           }
           .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
@@ -145,8 +138,7 @@ class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
     }
   }
 
-  private fun updateTotal() {
-    val quote = checkNotNull(stocksProvider.getStock(ticker))
+  private fun updateTotal(quote: Quote) {
     binding.totalShares.text = quote.numSharesString()
     binding.averagePrice.text = quote.averagePositionPrice()
     binding.totalValue.text = quote.totalSpentString()

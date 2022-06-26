@@ -7,7 +7,6 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
@@ -23,9 +22,7 @@ class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), Wi
   internal var widgetId = 0
   override val simpleName: String = "WidgetSettingsActivity"
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     binding.toolbar.setNavigationOnClickListener {
       setOkResult()

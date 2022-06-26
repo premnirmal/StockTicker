@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.analytics.Analytics
+import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
@@ -23,10 +24,9 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
 
   abstract val simpleName: String
   abstract val binding: T
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var analytics: Analytics
   open val subscribeToErrorEvents = true
   private var isErrorDialogShowing = false
+  private val holder: InjectionHolder by lazy { InjectionHolder() }
 
   override fun attachBaseContext(newBase: Context) {
     super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
@@ -37,15 +37,19 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState)
     setContentView(binding.root)
-    analytics.trackScreenView(simpleName, this)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
+  }
+
+  override fun onPostCreate(savedInstanceState: Bundle?) {
+    super.onPostCreate(savedInstanceState)
+    holder.analytics.trackScreenView(simpleName, this)
   }
 
   override fun onResume() {
     super.onResume()
     if (subscribeToErrorEvents) {
       lifecycleScope.launch {
-        stocksProvider.fetchState.collect { state ->
+        holder.stocksProvider.fetchState.collect { state ->
           if (state is FetchState.Failure) {
             if (this.isActive && !isErrorDialogShowing && !isFinishing) {
               isErrorDialogShowing = true
@@ -82,5 +86,14 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
 
   companion object {
     private const val IS_ERROR_DIALOG_SHOWING = "IS_ERROR_DIALOG_SHOWING"
+  }
+
+  class InjectionHolder {
+    @Inject internal lateinit var analytics: Analytics
+    @Inject internal lateinit var stocksProvider: IStocksProvider
+
+    init {
+      Injector.appComponent.inject(this)
+    }
   }
 }

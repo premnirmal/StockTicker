@@ -24,13 +24,12 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class QuoteDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -40,8 +39,8 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
   @Inject internal lateinit var historyProvider: IHistoryProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
-  private val _quote = MutableStateFlow<FetchResult<Quote>?>(null)
-  val quote: LiveData<FetchResult<Quote>?>
+  private val _quote = MutableSharedFlow<FetchResult<Quote>>()
+  val quote: LiveData<FetchResult<Quote>>
     get() = _quote.asLiveData()
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>
@@ -57,7 +56,7 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
     get() = _newsError
 
   val details: Flow<List<QuoteDetail>> = _quote.transform { quote ->
-    if (quote?.wasSuccessful == true) {
+    if (quote.wasSuccessful) {
       quote.data.run {
         val details = mutableListOf<QuoteDetail>()
         open?.let {
@@ -141,13 +140,13 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
     Injector.appComponent.inject(this)
   }
 
+  fun loadQuote(ticker: String) = viewModelScope.launch {
+    _quote.emit(FetchResult.success(checkNotNull(stocksProvider.getStock(ticker))))
+  }
+
   fun fetchQuote(ticker: String) {
     viewModelScope.launch {
-      if (_quote.value != null && _quote.value!!.wasSuccessful) {
-        _quote.emit(_quote.value)
-        return@launch
-      }
-      _quote.value = stocksProvider.fetchStock(ticker)
+      _quote.emit(stocksProvider.fetchStock(ticker))
     }
   }
 

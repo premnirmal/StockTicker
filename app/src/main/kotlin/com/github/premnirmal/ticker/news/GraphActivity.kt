@@ -7,7 +7,6 @@ import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.Quote
@@ -30,9 +29,7 @@ class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
   private val viewModel: GraphViewModel by viewModels()
   override var range: Range = Range.THREE_MONTH
 
-
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
     setupGraphView()
     ticker = checkNotNull(intent.getStringExtra(TICKER))

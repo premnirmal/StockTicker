@@ -20,7 +20,6 @@ class AddAlertsActivity : BaseActivity<ActivityAlertsBinding>() {
 	override val binding: (ActivityAlertsBinding) by viewBinding(ActivityAlertsBinding::inflate)
 
   companion object {
-    const val QUOTE = "QUOTE"
     const val TICKER = "TICKER"
   }
 
@@ -116,9 +115,7 @@ class AddAlertsActivity : BaseActivity<ActivityAlertsBinding>() {
   }
 
   private fun updateActivityResult() {
-    val quote = checkNotNull(viewModel.quote)
     val data = Intent()
-    data.putExtra(QUOTE, quote)
     setResult(Activity.RESULT_OK, data)
   }
 }
