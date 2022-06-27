@@ -3,7 +3,8 @@ package com.github.premnirmal.ticker.portfolio
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.PositionVH
 import com.github.premnirmal.ticker.portfolio.PortfolioVH.StockVH
@@ -20,8 +21,7 @@ class StocksAdapter constructor(
   private val widgetData: WidgetData,
   private val listener: QuoteClickListener,
   private val dragStartListener: OnStartDragListener
-) :
-    RecyclerView.Adapter<PortfolioVH>(), ItemTouchHelperAdapter {
+) : ListAdapter<Quote, PortfolioVH>(DiffCallback()), ItemTouchHelperAdapter {
 
   interface QuoteClickListener {
     fun onClickQuoteOptions(
@@ -42,14 +42,8 @@ class StocksAdapter constructor(
     const val TYPE_POSITION = 2
   }
 
-  private val quoteList: MutableList<Quote>
-
-  init {
-    quoteList = ArrayList()
-    quoteList.addAll(widgetData.getStocks())
-  }
-
   fun remove(quote: Quote) {
+    val quoteList = currentList
     val index = quoteList.indexOf(quote)
     val removed = quoteList.remove(quote)
     if (index >= 0 && removed) {
@@ -58,13 +52,11 @@ class StocksAdapter constructor(
   }
 
   fun refresh() {
-    quoteList.clear()
-    quoteList.addAll(widgetData.getStocks())
-    notifyDataSetChanged()
+    submitList(widgetData.getStocks())
   }
 
   override fun getItemViewType(position: Int): Int {
-    val stock = quoteList[position]
+    val stock = currentList[position]
     return when {
       stock.hasPositions() -> TYPE_POSITION
       else -> TYPE_STOCK
@@ -90,7 +82,7 @@ class StocksAdapter constructor(
     holder: PortfolioVH,
     position: Int
   ) {
-    holder.update(quoteList[position], listener)
+    holder.update(currentList[position], listener)
     holder.itemView.setOnLongClickListener {
       dragStartListener.onStartDrag(holder)
       true
@@ -99,14 +91,13 @@ class StocksAdapter constructor(
 
   override fun getItemId(position: Int): Long = position.toLong()
 
-  override fun getItemCount(): Int = quoteList.size
-
   override fun onItemMove(
     fromPosition: Int,
     toPosition: Int
   ): Boolean {
-    quoteList.add(toPosition, quoteList.removeAt(fromPosition))
-    val newTickerList = quoteList.mapTo(ArrayList()) { it.symbol }
+    val data = ArrayList(widgetData.getStocks())
+    data.add(toPosition, data.removeAt(fromPosition))
+    val newTickerList = data.mapTo(ArrayList()) { it.symbol }
     widgetData.rearrange(newTickerList)
     notifyItemMoved(fromPosition, toPosition)
     return true
@@ -114,5 +105,21 @@ class StocksAdapter constructor(
 
   override fun onItemDismiss(position: Int) {
     dragStartListener.onStopDrag()
+  }
+
+  class DiffCallback : DiffUtil.ItemCallback<Quote>() {
+    override fun areItemsTheSame(
+      oldItem: Quote,
+      newItem: Quote
+    ): Boolean {
+      return oldItem.symbol == newItem.symbol
+    }
+
+    override fun areContentsTheSame(
+      oldItem: Quote,
+      newItem: Quote
+    ): Boolean {
+      return oldItem == newItem
+    }
   }
 }

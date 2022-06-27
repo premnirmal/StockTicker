@@ -124,7 +124,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, Portfol
           attemptingFetch = true
           viewModel.fetch().observe(viewLifecycleOwner) { success ->
             attemptingFetch = false
-            binding.swipeContainer?.isRefreshing = false
+            binding.swipeContainer.isRefreshing = false
             if (success) {
               update()
             }
@@ -132,12 +132,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, Portfol
         } else {
           attemptingFetch = false
           InAppMessage.showMessage(requireActivity(), R.string.refresh_failed, error = true)
-          binding.swipeContainer?.isRefreshing = false
+          binding.swipeContainer.isRefreshing = false
         }
       } else {
         attemptingFetch = false
         InAppMessage.showMessage(requireActivity(), R.string.no_network_message, error = true)
-        binding.swipeContainer?.isRefreshing = false
+        binding.swipeContainer.isRefreshing = false
       }
     }
   }
