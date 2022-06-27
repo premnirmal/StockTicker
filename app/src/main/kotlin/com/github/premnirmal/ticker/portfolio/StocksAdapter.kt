@@ -42,15 +42,6 @@ class StocksAdapter constructor(
     const val TYPE_POSITION = 2
   }
 
-  fun remove(quote: Quote) {
-    val quoteList = currentList
-    val index = quoteList.indexOf(quote)
-    val removed = quoteList.remove(quote)
-    if (index >= 0 && removed) {
-      notifyItemRemoved(index)
-    }
-  }
-
   fun refresh() {
     submitList(widgetData.getStocks())
   }

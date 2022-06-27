@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupMenu
 import androidx.appcompat.app.AlertDialog
@@ -149,7 +148,7 @@ class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragmen
           .setMessage(getString(R.string.remove_prompt, it.symbol))
           .setPositiveButton(R.string.remove) { dialog, _ ->
             viewModel.removeStock(widgetId, it.symbol)
-            stocksAdapter.remove(it)
+            stocksAdapter.refresh()
             dialog.dismiss()
           }
           .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
