@@ -9,21 +9,18 @@
   <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/default_bg"
       android:id="@+id/app_bar_layout"
       >
     <com.google.android.material.appbar.CollapsingToolbarLayout
         android:id="@+id/collapsing_toolbar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_bg"
         app:titleEnabled="false"
         app:layout_scrollFlags="noScroll">
       <View
           android:layout_width="match_parent"
           android:layout_height="0dp"
           android:id="@+id/fake_status_bar"
-          android:background="@color/bg_toolbar"
           app:layout_collapseMode="parallax"
           app:layout_collapseParallaxMultiplier="1"
           />
@@ -31,7 +28,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/default_bg"
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:titleTextAppearance="@style/ActionBarTitleText"
         tools:title="AAPL"
@@ -66,7 +62,6 @@
             android:id="@+id/gradient"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/default_bg"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:alpha="0.0" />
@@ -87,7 +82,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:textColor="@color/text_3"
             android:textSize="@dimen/xlarge_text"
             android:gravity="center"
             app:layout_scrollFlags="scroll"
@@ -142,7 +136,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/quote_details_margin"
             style="@style/BoldTextView"
-            android:textColor="@color/text_2"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="@dimen/xlarge_text"
             android:gravity="center"
             tools:text="$132.99"/>
@@ -270,7 +264,6 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:src="@drawable/ic_edit"
-              app:tint="@color/icon_tint"
               />
 
         </LinearLayout>
@@ -306,14 +299,12 @@
                   android:gravity="center"
                   android:textSize="@dimen/xlarge_text"
                   tools:text="3"
-                  android:textColor="@color/text_1"
                   style="@style/BoldTextView"
                   />
               <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/shares"
-                  android:textColor="@color/text_3"
                   />
 
             </LinearLayout>
@@ -333,14 +324,13 @@
                   android:gravity="center"
                   android:textSize="@dimen/xlarge_text"
                   tools:text="$2,400.00"
-                  android:textColor="@color/text_1"
+                  android:textColor="?attr/colorOnSurface"
                   android:textAppearance="@style/TickerTextAppearanceBold"
                   />
               <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/equity_value"
-                  android:textColor="@color/text_3"
                   />
 
             </LinearLayout>
@@ -413,7 +403,6 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:src="@drawable/ic_edit"
-              app:tint="@color/icon_tint"
               />
         </LinearLayout>
 
@@ -482,7 +471,6 @@
               android:layout_width="20dp"
               android:layout_height="20dp"
               android:src="@drawable/ic_edit"
-              app:tint="@color/icon_tint"
               />
 
         </LinearLayout>

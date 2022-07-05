@@ -1,0 +1,21 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+  <style name="StocksWidget.App.Theme" parent="AppTheme">
+    <!-- v21 specific -->
+    <item name="android:statusBarColor">?attr/colorSurface</item>
+    <item name="android:navigationBarColor">?attr/colorSurface</item>
+  </style>
+
+  <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowShowWallpaper">true</item>
+  </style>
+
+  <style name="SplashTheme" parent="TranslucentTheme">
+    <item name="android:windowBackground">@drawable/bg_splash</item>
+    <item name="android:navigationBarColor">@color/transparent</item>
+    <item name="android:windowTranslucentNavigation">true</item>
+  </style>
+
+</resources>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
   <style name="Theme.AppWidget.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault.Light">
     <!-- Radius of the outer bound of widgets to make the rounded corners -->
     <item name="appWidgetRadius">4dp</item>
@@ -9,4 +8,56 @@
     <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
     <item name="appWidgetPadding">2dp</item>
   </style>
+
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
+    <item name="colorPrimary">@color/color_primary</item>
+    <item name="colorPrimaryDark">@color/color_primary_dark</item>
+    <item name="colorAccent">@color/color_accent</item>
+    <item name="android:windowBackground">@color/default_bg</item>
+    <item name="android:textViewStyle">@style/TextViewStyle</item>
+    <item name="android:editTextStyle">@style/EditTextStyle</item>
+    <item name="android:buttonStyle">@style/ButtonStyle</item>
+    <item name="android:alertDialogTheme">@style/AlertDialog</item>
+    <item name="android:dialogTheme">@style/AlertDialog</item>
+    <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    <item name="dialogTheme">@style/AlertDialog</item>
+    <item name="alertDialogTheme">@style/AlertDialog</item>
+    <item name="editTextStyle">@style/EditTextStyle</item>
+    <item name="buttonStyle">@style/ButtonStyle</item>
+    <item name="buttonCompat">@style/ButtonStyle</item>
+    <item name="preferenceTheme">@style/AppPreferenceTheme</item>
+    <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
+    <item name="snackbarStyle">@style/Snackbar</item>
+    <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
+  </style>
+
+  <style name="StocksWidget.App.Theme" parent="AppTheme" />
+
+  <style name="TranslucentTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@color/transparent</item>
+  </style>
+
+  <style name="SplashTheme" parent="TranslucentTheme" />
+
+  <style name="MainActivityTheme" parent="StocksWidget.App.Theme">
+    <item name="android:statusBarColor">@color/transparent</item>
+  </style>
+
+  <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme" />
+
+  <style name="GraphActivityTheme" parent="StocksWidget.App.Theme" />
+
+  <style name="AddPositionTheme" parent="StocksWidget.App.Theme" />
+
+  <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorBackgroundCacheHint">@null</item>
+    <item name="android:windowShowWallpaper">true</item>
+  </style>
+
+  <style name="SearchTheme" parent="StocksWidget.App.Theme" />
+
+  <style name="DbViewerTheme" parent="StocksWidget.App.Theme" />
 </resources>

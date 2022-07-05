@@ -12,7 +12,7 @@
       android:maxLines="2"
       tools:text="Price"
       android:id="@+id/fieldname"
-      android:textColor="@color/text_2"
+
       android:layout_centerVertical="true"
       android:layout_alignParentLeft="true"
       android:gravity="left"
@@ -24,7 +24,7 @@
       android:textSize="24sp"
       android:maxLines="2"
       android:id="@+id/fieldvalue"
-      android:textColor="@color/text_1"
+
       tools:text="GOOG"
       android:layout_centerVertical="true"
       android:ellipsize="none"

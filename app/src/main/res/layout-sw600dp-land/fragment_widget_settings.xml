@@ -28,7 +28,6 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/default_bg"
       android:orientation="vertical"
       >
 
@@ -39,7 +38,6 @@
         android:layout_marginBottom="5dp"
         android:padding="@dimen/setting_padding"
         android:text="@string/add_stock"
-        android:textColor="@color/text_1"
         android:textSize="@dimen/large_text"
         />
 

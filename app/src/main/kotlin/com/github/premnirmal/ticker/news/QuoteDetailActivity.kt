@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
@@ -31,7 +30,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.formatChange
 import com.github.premnirmal.ticker.formatChangePercent
 import com.github.premnirmal.ticker.getActionBarHeight
-import com.github.premnirmal.ticker.getNavigationBarHeight
 import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
@@ -118,19 +116,6 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     binding.changePercent.setCharacterLists(TickerUtils.provideNumberList())
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
       binding.appBarLayout.addOnOffsetChangedListener(offsetChangedListener)
-    } else if (!resources.getBoolean(R.bool.isTablet) && resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-      binding.parentView.updateLayoutParams<MarginLayoutParams> {
-        val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-          display?.rotation ?: Surface.ROTATION_90
-        } else {
-          windowManager.defaultDisplay.rotation
-        }
-        if (rotation == Surface.ROTATION_90) {
-          marginEnd = getNavigationBarHeight()
-        } else {
-          marginStart = getNavigationBarHeight()
-        }
-      }
     }
     setupGraphView()
     updateToolbar()

@@ -4,13 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/default_bg"
     >
 
   <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/bg_toolbar"
       android:elevation="0dp"
       app:elevation="0dp"
       >
@@ -18,13 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:id="@+id/fake_status_bar"
-        android:background="@color/bg_toolbar"
         />
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_toolbar"
         android:elevation="0dp"
         app:elevation="0dp"
         app:title="@string/widgets"
@@ -38,7 +34,6 @@
       android:layout_height="wrap_content"
       android:layout_marginStart="@dimen/tablet_margin_horizontal"
       android:layout_marginEnd="@dimen/tablet_margin_horizontal"
-      android:background="@color/default_bg"
       android:orientation="vertical"
       >
     <TextView

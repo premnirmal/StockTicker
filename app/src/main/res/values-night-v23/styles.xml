@@ -1,8 +1,0 @@
-<resources>
-
-  <style name="StocksWidget.App.Theme" parent="AppTheme">
-    <!-- v21 specific -->
-    <item name="android:navigationBarColor">@color/nav_bar_bg</item>
-  </style>
-
-</resources>

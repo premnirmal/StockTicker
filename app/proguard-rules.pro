@@ -30,10 +30,6 @@
 # If you are using custom exceptions, add this line so that custom exception types are skipped during obfuscation:
 -keep public class * extends java.lang.Exception
 
-# Calligraphy
--keep class io.github.inflationx.calligraphy3.* { *; }
--keep class io.github.inflationx.calligraphy3.*$* { *; }
-
 # Retrofit
 # Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
 # EnclosingMethod is required to use InnerClasses.

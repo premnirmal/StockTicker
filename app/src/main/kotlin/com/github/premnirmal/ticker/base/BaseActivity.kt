@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.base
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -10,7 +9,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
-import io.github.inflationx.viewpump.ViewPumpContextWrapper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -27,10 +25,6 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
   open val subscribeToErrorEvents = true
   private var isErrorDialogShowing = false
   private val holder: InjectionHolder by lazy { InjectionHolder() }
-
-  override fun attachBaseContext(newBase: Context) {
-    super.attachBaseContext(ViewPumpContextWrapper.wrap(newBase))
-  }
 
   override fun onCreate(
       savedInstanceState: Bundle?

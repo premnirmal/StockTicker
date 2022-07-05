@@ -26,7 +26,7 @@
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@color/default_bg"
+      android:background="?attr/colorSurface"
       android:orientation="vertical"
       >
 
@@ -37,7 +37,7 @@
         android:layout_marginBottom="5dp"
         android:padding="@dimen/setting_padding"
         android:text="@string/add_stock"
-        android:textColor="@color/text_1"
+
         android:textSize="@dimen/large_text"
         />
 
@@ -212,7 +212,8 @@
   </LinearLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/m3_bottom_nav_min_height"
+        android:background="?attr/colorSurface"
         />
   </LinearLayout>
 </ScrollView>

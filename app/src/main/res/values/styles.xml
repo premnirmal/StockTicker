@@ -1,29 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-  <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-    <item name="colorPrimary">@color/color_primary</item>
-    <item name="colorPrimaryDark">@color/color_primary_dark</item>
-    <item name="colorAccent">@color/color_accent</item>
-    <item name="android:windowBackground">@color/default_bg</item>
-    <item name="android:textViewStyle">@style/TextViewStyle</item>
-    <item name="android:editTextStyle">@style/EditTextStyle</item>
-    <item name="android:buttonStyle">@style/ButtonStyle</item>
-    <item name="android:alertDialogTheme">@style/AlertDialog</item>
-    <item name="android:dialogTheme">@style/AlertDialog</item>
-    <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-    <item name="alertDialogTheme">@style/AlertDialog</item>
-    <item name="editTextStyle">@style/EditTextStyle</item>
-    <item name="buttonStyle">@style/ButtonStyle</item>
-    <item name="buttonCompat">@style/ButtonStyle</item>
-    <item name="preferenceTheme">@style/AppPreferenceTheme</item>
-    <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
-    <item name="snackbarStyle">@style/Snackbar</item>
-    <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
-  </style>
-
-  <style name="StocksWidget.App.Theme" parent="AppTheme"/>
-
   <style name="Snackbar" parent="Widget.MaterialComponents.Snackbar">
     <item name="materialThemeOverlay">@style/ThemeOverlay.App.Snackbar</item>
     <item name="actionTextColorAlpha">1</item>
@@ -42,81 +18,77 @@
 
   <style name="ActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
     <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
+    <item name="android:background">?attr/colorPrimaryDark</item>
   </style>
 
   <style name="TextViewStyle" parent="Widget.MaterialComponents.TextView">
     <item name="android:textSize">@dimen/text_size</item>
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
   </style>
 
   <style name="BoldTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
   </style>
 
   <style name="MediumTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-Medium.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
   </style>
 
   <style name="LightTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-Light.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
   </style>
 
   <style name="ItalicTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Ubuntu-Italic.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+    <item name="fontFamily">@font/ubuntu_italic</item>
   </style>
 
   <style name="ThinTitleTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Raleway-Light.ttf</item>
+    <item name="android:fontFamily">@font/raleway_light</item>
+    <item name="fontFamily">@font/raleway_light</item>
     <item name="android:textSize">@dimen/thin_title_text</item>
-    <item name="android:textColor">@color/text_3</item>
   </style>
 
-  <style name="BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+  <style name="BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
     <item name="elevation">0dp</item>
-    <item name="itemIconTint">@color/icon_tint</item>
-    <item name="itemTextColor">@color/button_text</item>
+    <item name="itemActiveIndicatorStyle">@style/BottomNavigationView.ActiveIndicator</item>
+  </style>
+  <style name="BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+    <item name="android:color">@color/transparent</item>
   </style>
 
   <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:textColor">@color/text_2</item>
+    <item name="android:textAllCaps">false</item>
   </style>
 
   <style name="FooterTextView" parent="TextViewStyle">
-    <item name="fontPath">fonts/Alegreya-Black-Italic.ttf</item>
+    <item name="android:fontFamily">@font/alegreya_black_italic</item>
+    <item name="fontFamily">@font/alegreya_black_italic</item>
     <item name="android:textSize">22sp</item>
   </style>
 
-  <style name="ButtonStyle" parent="Widget.MaterialComponents.Button">
+  <style name="ButtonStyle" parent="Widget.Material3.Button">
     <item name="android:textSize">@dimen/button_text</item>
-    <item name="android:textColor">@color/button_text</item>
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-    <item name="android:background">@drawable/button_bg</item>
-  </style>
-
-  <style name="QuoteDetail.Graph.ButtonStyle" parent="ButtonStyle">
-    <item name="android:paddingStart">4dp</item>
-    <item name="android:paddingEnd">4dp</item>
-    <item name="android:paddingTop">2dp</item>
-    <item name="android:paddingBottom">2dp</item>
-    <item name="android:textSize">8dp</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
   </style>
 
   <style name="EditTextStyle" parent="android:Widget.EditText">
     <item name="android:textSize">@dimen/text_size</item>
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
   </style>
 
   <style name="ActionBarTitleText" parent="@style/TextAppearance.Material3.ActionBar.Title">
-    <item name="android:textColor">@color/actionbar_title_text</item>
-    <item name="fontPath">fonts/Ubuntu-Bold.ttf</item>
-  </style>
-
-  <style name="QuoteDetail.ActionBarStyle" parent="ActionBarStyle">
-    <item name="android:titleTextStyle">@style/QuoteDetail.ActionBarTitleText</item>
-  </style>
-
-  <style name="QuoteDetail.ActionBarTitleText" parent="@style/ActionBarTitleText">
-    <item name="fontPath">fonts/Ubuntu-Regular.ttf</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
   </style>
 
   <style name="AlertDialog" parent="@style/Theme.Material3.DayNight.Dialog.Alert">
@@ -125,9 +97,13 @@
     <item name="android:colorBackground">@color/default_bg</item>
     <item name="android:colorBackgroundCacheHint">@color/default_bg</item>
     <item name="android:windowBackground">@color/default_bg</item>
-    <item name="android:textAppearanceSmall">@style/TextAppearance.Dialog</item>
-    <item name="android:button">@style/Widget.MaterialComponents.Button</item>
-    <item name="android:buttonBarButtonStyle">@style/Widget.MaterialComponents.Button.TextButton</item>
+    <item name="android:textAppearanceSmall">@style/TextAppearance.Material3.BodySmall</item>
+    <item name="android:button">@style/Widget.Material3.Button</item>
+    <item name="android:buttonBarButtonStyle">@style/Widget.Material3.Button.TextButton
+    </item>
+    <item name="android:titleTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item>
+    <item name="titleTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item>
+    <item name="titleTextColor">@color/color_accent</item>
     <item name="colorPrimary">@color/color_accent</item>
     <item name="colorPrimaryDark">@color/color_accent</item>
     <item name="colorControlNormal">@color/color_accent</item>
@@ -139,54 +115,21 @@
     <item name="android:textColor">@color/text_4</item>
   </style>
 
-  <!-- Custom Preference Theme -->
-  <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
-    <item name="preferenceFragmentCompatStyle">@style/AppPreferenceFragmentCompatStyle</item>
-    <item name="preferenceFragmentStyle">@style/AppPreferenceFragmentCompatStyle</item>
-    <item name="dialogPreferenceStyle">@style/AlertDialog</item>
-  </style>
-  <!-- Custom Style for PreferenceFragmentCompat -->
-  <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material">
-<!--    <item name="android:layout">@layout/fragment_settings</item>-->
-<!--    <item name="layout">@layout/fragment_settings</item>-->
-  </style>
+   <!-- Custom Preference Theme -->
+   <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
+     <item name="preferenceFragmentCompatStyle">@style/AppPreferenceFragmentCompatStyle</item>
+     <item name="preferenceFragmentStyle">@style/AppPreferenceFragmentCompatStyle</item>
+     <item name="dialogPreferenceStyle">@style/AlertDialog</item>
+   </style>
+   <!-- Custom Style for PreferenceFragmentCompat -->
+   <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material"/>
 
   <style name="Widget.Container" parent="android:Widget">
     <item name="android:background">@drawable/app_widget_background</item>
     <item name="android:padding">?attr/appWidgetPadding</item>
   </style>
 
-  <style name="TranslucentTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowIsTranslucent">true</item>
-    <item name="android:windowBackground">@color/transparent</item>
-  </style>
-
-  <style name="SplashTheme" parent="TranslucentTheme"/>
-
-  <style name="MainActivityTheme" parent="StocksWidget.App.Theme">
-    <item name="android:navigationBarColor">@color/nav_bar_bg_2</item>
-  </style>
-
-  <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme">
-    <item name="android:actionBarStyle">@style/QuoteDetail.ActionBarStyle</item>
-  </style>
-
-  <style name="GraphActivityTheme" parent="StocksWidget.App.Theme"/>
-
-  <style name="AddPositionTheme" parent="StocksWidget.App.Theme"/>
-
-  <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowBackground">@android:color/transparent</item>
-    <item name="android:colorBackgroundCacheHint">@null</item>
-    <item name="android:windowShowWallpaper">true</item>
-  </style>
-
-  <style name="SearchTheme" parent="StocksWidget.App.Theme"/>
-
-  <style name="DbViewerTheme" parent="StocksWidget.App.Theme"/>
-
   <style name="Widget.Quote.Details.Title" parent="Widget.MaterialComponents.TextView">
-    <item name="android:textColor">@color/text_color_secondary</item>
   </style>
 
   <style name="Widget.Quote.Details.Data" parent="Widget.MaterialComponents.TextView">
@@ -194,9 +137,6 @@
   </style>
 
   <style name="Widget.Chip.Chart" parent="Widget.MaterialComponents.Chip.Choice">
-    <item name="chipBackgroundColor">@color/chip_background_color</item>
-    <item name="chipSurfaceColor">@color/chip_surface_color</item>
-    <item name="android:textColor">@color/chip_text_color</item>
     <item name="android:textAllCaps">true</item>
     <item name="android:stateListAnimator">@null</item>
     <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Chip</item>

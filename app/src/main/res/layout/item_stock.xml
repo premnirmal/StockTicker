@@ -31,7 +31,7 @@
         android:ellipsize="end"
         android:gravity="center_vertical|start"
         android:maxLines="1"
-        android:textColor="@color/text_1"
+
         android:textSize="@dimen/large_text"
         tools:text="GOOG"
         style="@style/BoldTextView"
@@ -56,7 +56,6 @@
       android:layout_marginEnd="4dp"
       android:ellipsize="end"
       android:maxLines="2"
-      android:textColor="@color/text_1"
       android:textSize="@dimen/portfolio_position_vh_text_size"
       tools:text="Google Inc"
       />

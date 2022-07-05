@@ -57,8 +57,6 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
         SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing_double))
     )
     binding.recyclerView.adapter = adapter
-    binding.swipeContainer.setColorSchemeResources(R.color.color_primary_dark, R.color.spicy_salmon,
-        R.color.sea)
     binding.swipeContainer.setOnRefreshListener { refreshNews() }
     viewModel.newsFeed.observe(viewLifecycleOwner) {
       if (it.wasSuccessful) {

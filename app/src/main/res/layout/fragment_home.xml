@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg"
+
     >
 
   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -40,6 +40,7 @@
           android:layout_height="180dp"
           android:scaleType="centerCrop"
           android:src="@drawable/bg_header"
+          android:alpha="0.75"
           app:layout_collapseMode="parallax"
           app:layout_collapseParallaxMultiplier="1.0"
           />
@@ -61,13 +62,11 @@
           android:id="@+id/tabs"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          app:tabBackground="@color/tab_background"
           app:tabGravity="fill"
-          app:tabIndicatorColor="@color/color_accent"
           app:tabIndicatorHeight="2dp"
           app:tabMode="fixed"
-          app:tabSelectedTextColor="@color/tab_text_selected"
           app:tabTextAppearance="@style/TabTextAppearence"
+          app:tabSelectedTextColor="@color/tab_text_selected"
           app:tabTextColor="@color/tab_text"
           android:layout_gravity="bottom"
           android:gravity="bottom"

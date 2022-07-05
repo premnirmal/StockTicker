@@ -27,6 +27,7 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityMainBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.elevation.SurfaceColors
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -60,8 +61,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
     super.onCreate(savedInstanceState)
-    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
+        (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
+    window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
     binding.bottomNavigation.setOnNavigationItemSelectedListener(this)

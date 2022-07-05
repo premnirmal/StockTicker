@@ -8,15 +8,10 @@ import com.github.premnirmal.ticker.components.AppModule
 import com.github.premnirmal.ticker.components.DaggerAppComponent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
-import com.github.premnirmal.ticker.network.CommitsProvider
-import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.github.premnirmal.tickerwidget.R
+import com.google.android.material.color.DynamicColors
 import com.jakewharton.threetenabp.AndroidThreeTen
-import io.github.inflationx.calligraphy3.CalligraphyConfig
-import io.github.inflationx.calligraphy3.CalligraphyInterceptor
-import io.github.inflationx.viewpump.ViewPump
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -39,16 +34,8 @@ open class StocksApp : MultiDexApplication() {
     initLogger()
     initThreeTen()
     Injector.init(createAppComponent())
-    ViewPump.init(
-        ViewPump.builder()
-            .addInterceptor(
-                CalligraphyInterceptor(
-                    CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/Ubuntu-Regular.ttf")
-                        .setFontAttrId(io.github.inflationx.calligraphy3.R.attr.fontPath)
-                        .build()))
-            .build())
     Injector.appComponent.inject(holder)
+    DynamicColors.applyToActivitiesIfAvailable(this)
     AppCompatDelegate.setDefaultNightMode(holder.appPreferences.nightMode)
     initAnalytics()
     initNotificationHandler()
