@@ -54,7 +54,6 @@
   </style>
 
   <style name="BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
-    <item name="elevation">0dp</item>
     <item name="itemActiveIndicatorStyle">@style/BottomNavigationView.ActiveIndicator</item>
   </style>
   <style name="BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">

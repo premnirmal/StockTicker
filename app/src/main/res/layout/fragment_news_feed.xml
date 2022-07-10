@@ -51,7 +51,6 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center"
-          android:layout_marginBottom="?actionBarSize"
           />
 
       <TextView
@@ -59,7 +58,6 @@
           android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:gravity="center"
-          android:layout_marginBottom="?actionBarSize"
           android:text="@string/error_fetching_news"
 
           android:textSize="@dimen/large_text"
@@ -71,7 +69,6 @@
           android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:gravity="center"
-          android:layout_marginBottom="?actionBarSize"
           android:text="@string/no_data"
 
           android:textSize="@dimen/large_text"
@@ -82,7 +79,6 @@
           android:id="@+id/recycler_view"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-          android:paddingBottom="?actionBarSize"
           android:clipToPadding="false"
           android:scrollbars="none"
           />

@@ -210,10 +210,5 @@
 
     </LinearLayout>
   </LinearLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/m3_bottom_nav_min_height"
-        android:background="?attr/colorSurface"
-        />
   </LinearLayout>
 </ScrollView>

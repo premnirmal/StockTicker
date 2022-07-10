@@ -20,6 +20,5 @@ open class SpacingDecoration(private val spacing: Int) : RecyclerView.ItemDecora
     outRect.top = spacing
     outRect.left = spacing
     outRect.right = spacing
-    outRect.bottom = spacing
   }
 }

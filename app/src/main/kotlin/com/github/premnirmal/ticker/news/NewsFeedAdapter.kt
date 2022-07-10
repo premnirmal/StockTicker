@@ -4,9 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import com.github.premnirmal.ticker.getNavigationBarHeight
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.news.NewsFeedAdapter.NewsClickListener
 import com.github.premnirmal.tickerwidget.R
@@ -35,13 +33,6 @@ class NewsFeedAdapter(
 
   override fun onBindViewHolder(holder: NewsFeedVH, position: Int) {
     holder.update(newsList[position], listener)
-    holder.itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-      bottomMargin = if (position == itemCount - 1) {
-        holder.itemView.context.getNavigationBarHeight()
-      } else {
-        0
-      }
-    }
   }
 }
 
