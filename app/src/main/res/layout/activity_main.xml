@@ -10,17 +10,15 @@
       android:id="@+id/fragment_container"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:layout_marginBottom="@dimen/m3_bottom_nav_min_height"
+      android:layout_marginBottom="?actionBarSize"
       />
 
   <com.google.android.material.bottomnavigation.BottomNavigationView
       android:id="@+id/bottom_navigation"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
+      android:layout_height="?attr/actionBarSize"
       android:layout_gravity="bottom"
       app:elevation="4dp"
-      app:itemIconTint="@drawable/bottom_nav_icon_tint"
-      app:itemTextColor="@drawable/bottom_nav_icon_tint"
       app:layout_behavior="com.github.premnirmal.ticker.ui.BottomNavigationBehavior"
       app:menu="@menu/menu_bottom_nav"
       />

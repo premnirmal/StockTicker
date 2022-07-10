@@ -55,6 +55,12 @@
 
   <style name="BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
     <item name="itemActiveIndicatorStyle">@style/BottomNavigationView.ActiveIndicator</item>
+    <item name="android:height">?attr/actionBarSize</item>
+    <item name="android:minHeight">?attr/actionBarSize</item>
+    <item name="itemIconTint">@drawable/bottom_nav_icon_tint</item>
+    <item name="itemTextColor">@drawable/bottom_nav_icon_tint</item>
+    <item name="itemPaddingTop">8dp</item>
+    <item name="itemPaddingBottom">8dp</item>
   </style>
   <style name="BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
     <item name="android:color">@color/transparent</item>
