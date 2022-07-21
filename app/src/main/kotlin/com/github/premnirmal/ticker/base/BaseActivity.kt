@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
+import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
       savedInstanceState: Bundle?
   ) {
     super.onCreate(savedInstanceState)
+    DynamicColors.applyToActivityIfAvailable(this)
     setContentView(binding.root)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
   }
