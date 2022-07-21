@@ -23,7 +23,7 @@
         android:gravity="start"
         android:lines="1"
         android:maxLines="1"
-        android:textColor="@color/text_2"
+        android:textColor="@color/text_widget_header"
         android:textSize="@dimen/small_text"
         tools:text="Next fetch: 10:00"
         />
@@ -36,7 +36,7 @@
         android:gravity="start"
         android:lines="1"
         android:maxLines="1"
-        android:textColor="@color/text_2"
+        android:textColor="@color/text_widget_header"
         android:textSize="@dimen/small_text"
         tools:text="Last fetch: 10:00"
         />
@@ -62,6 +62,8 @@
         android:layout_height="@dimen/widget_refresh_icon_size"
         android:layout_gravity="center"
         android:indeterminateTintMode="src_in"
+        android:indeterminateTint="@color/text_widget_header"
+        android:progressTint="@color/text_widget_header"
         android:visibility="gone"
         />
   </FrameLayout>

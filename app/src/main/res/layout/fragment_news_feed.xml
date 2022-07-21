@@ -59,9 +59,8 @@
           android:layout_gravity="center"
           android:gravity="center"
           android:text="@string/error_fetching_news"
-
-          android:textSize="@dimen/large_text"
-          style="@style/MediumTextView"
+          style="@style/Widget.StocksWidget.TextView.FetchError"
+	android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
           />
 
       <TextView
@@ -70,9 +69,8 @@
           android:layout_gravity="center"
           android:gravity="center"
           android:text="@string/no_data"
-
-          android:textSize="@dimen/large_text"
-          style="@style/MediumTextView"
+          style="@style/Widget.StocksWidget.TextView.FetchError"
+	android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
           />
 
       <androidx.recyclerview.widget.RecyclerView

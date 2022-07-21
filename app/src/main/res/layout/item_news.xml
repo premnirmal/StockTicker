@@ -22,23 +22,21 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="2dp"
-        android:layout_marginRight="2dp"
         android:layout_weight="0.5"
-        android:textSize="@dimen/small_text"
-        android:textStyle="italic"
-        tools:text="Stock market rises!"
-        style="@style/ItalicTextView"
+        tools:text="yahoo"
+        style="@style/Widget.StocksWidget.TextView.NewsSource"
+	android:textAppearance="@style/TextAppearance.StocksWidget.NewsSource"
         />
 
     <TextView
         android:id="@+id/published_at"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="2dp"
         android:layout_marginStart="2dp"
         android:layout_weight="0.5"
-        android:gravity="right|end"
-        android:textSize="@dimen/small_text"
+        android:gravity="end"
+        style="@style/Widget.StocksWidget.TextView.NewsPublished"
+	android:textAppearance="@style/TextAppearance.StocksWidget.NewsPublished"
         tools:text="January 5th"
         />
   </LinearLayout>
@@ -48,12 +46,12 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="4dp"
-      android:textSize="@dimen/large_text"
       android:maxLines="2"
       android:ellipsize="end"
-      android:textColor="?attr/colorOnSurface"
+      android:textColor="@color/text_4"
       tools:text="Stock market rises!"
-      style="@style/MediumTextView"
+      style="@style/Widget.StocksWidget.TextView.BodyMedium"
+	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
       />
 
   <TextView
@@ -62,9 +60,10 @@
       android:layout_height="wrap_content"
       android:ellipsize="end"
       android:maxLines="2"
-      android:textSize="@dimen/medium_text"
       tools:text="Lorem ipsum"
-      style="@style/LightTextView"
+      android:textColor="@color/text_2"
+      style="@style/Widget.StocksWidget.TextView.BodyLightMedium"
+	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightMedium"
       />
 
 

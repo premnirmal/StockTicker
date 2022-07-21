@@ -26,12 +26,4 @@
     <item name="colorControlHighlight">?attr/colorTertiary</item>
     <item name="colorControlActivated">?attr/colorTertiary</item>
   </style>
-  <!-- Custom Preference Theme -->
-  <style name="AppPreferenceTheme" parent="@style/PreferenceThemeOverlay">
-    <item name="preferenceFragmentCompatStyle">@style/AppPreferenceFragmentCompatStyle</item>
-    <item name="preferenceFragmentStyle">@style/AppPreferenceFragmentCompatStyle</item>
-    <item name="dialogPreferenceStyle">@style/AlertDialog</item>
-  </style>
-  <!-- Custom Style for PreferenceFragmentCompat -->
-  <style name="AppPreferenceFragmentCompatStyle" parent="@style/PreferenceFragment.Material"/>
 </resources>

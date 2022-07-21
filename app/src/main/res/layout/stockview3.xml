@@ -10,7 +10,7 @@
       android:layout_width="0dp"
       android:layout_weight="0.4"
       android:layout_height="wrap_content"
-
+      android:textColor="@color/widget_text"
       android:textSize="12sp"
       android:maxLines="1"
       android:ellipsize="end"
@@ -22,7 +22,7 @@
       android:layout_width="0dp"
       android:layout_weight="0.5"
       android:layout_height="wrap_content"
-
+      android:textColor="@color/widget_text"
       android:textSize="12sp"
       android:ellipsize="none"
       android:id="@+id/totalValue"
@@ -34,7 +34,7 @@
       android:layout_width="0dp"
       android:layout_weight="0.5"
       android:layout_height="wrap_content"
-
+      android:textColor="@color/text_widget_positive"
       android:textSize="12sp"
       android:ellipsize="none"
       android:id="@+id/change"

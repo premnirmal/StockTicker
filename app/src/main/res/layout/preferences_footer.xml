@@ -16,8 +16,8 @@
       android:layout_marginTop="8dp"
       android:gravity="center"
       android:text="@string/checkout_open_source"
-      android:textSize="16sp"
-      style="@style/BoldTextView"
+      style="@style/Widget.StocksWidget.TextView.TitleMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
       android:textColor="?attr/colorAccent"
       />
 
@@ -34,8 +34,8 @@
       android:background="?selectableItemBackground"
       android:gravity="center"
       tools:text="v3.0.0"
-      style="@style/FooterTextView"
-      android:textColor="?attr/colorAccent"
+      style="@style/Widget.StocksWidget.TextView.Footer"
+	android:textAppearance="@style/TextAppearance.StocksWidget.Footer"
       />
 
 </LinearLayout>

@@ -5,15 +5,15 @@
       android:id="@+id/action_add"
       android:icon="@drawable/ic_add_circle"
       android:title="@string/add"
-      android:iconTint="@color/actionbar_title_text"
-      app:iconTint="@color/actionbar_title_text"
+      android:iconTint="@color/icon_tint"
+      app:iconTint="@color/icon_tint"
       app:showAsAction="always" />
 
   <item
       android:id="@+id/action_remove"
       android:icon="@drawable/ic_remove_circle"
-      android:iconTint="@color/actionbar_title_text"
-      app:iconTint="@color/actionbar_title_text"
+      android:iconTint="@color/icon_tint"
+      app:iconTint="@color/icon_tint"
       android:title="@string/remove"
       app:showAsAction="always" />
 </menu>

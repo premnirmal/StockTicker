@@ -1,10 +1,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-  <style name="StocksWidget.App.Theme" parent="AppTheme">
-    <!-- v21 specific -->
+  <style name="AppThemeV21" parent="BaseAppTheme">
     <item name="android:statusBarColor">?attr/colorSurface</item>
     <item name="android:navigationBarColor">?attr/colorSurface</item>
   </style>
+
+  <style name="StocksWidget.App.Theme" parent="AppThemeV21"/>
 
   <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
     <item name="android:windowBackground">@android:color/transparent</item>

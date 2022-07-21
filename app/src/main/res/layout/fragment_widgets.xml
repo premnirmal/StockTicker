@@ -45,8 +45,8 @@
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:gravity="center_vertical"
         android:text="@string/select_widget"
-        android:textSize="@dimen/thin_title_text"
-        style="@style/ThinTitleTextView"
+        style="@style/Widget.StocksWidget.TextView.LabelLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelLarge"
         />
     <Spinner
         android:id="@+id/widget_selection_spinner"

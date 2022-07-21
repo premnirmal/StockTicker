@@ -38,14 +38,14 @@
 
       <TextView
           android:id="@+id/tickerName"
-          style="@style/BoldTextView"
+          style="@style/Widget.StocksWidget.TextView.TitleLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginLeft="16dp"
           android:layout_marginTop="20dp"
           android:layout_marginRight="16dp"
           android:gravity="center"
-          android:textSize="@dimen/xlarge_text"
           tools:text="GOOG"
           />
 
@@ -147,7 +147,8 @@
           />
 
       <TextView
-          style="@style/ThinTitleTextView"
+          style="@style/Widget.StocksWidget.TextView.LabelLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelLarge"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center_vertical"
@@ -177,7 +178,8 @@
             >
 
           <TextView
-              style="@style/ThinTitleTextView"
+              style="@style/Widget.StocksWidget.TextView.LabelLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelLarge"
               android:layout_width="0dp"
               android:layout_height="wrap_content"
               android:layout_weight="1"
@@ -186,7 +188,8 @@
               />
 
           <TextView
-              style="@style/ThinTitleTextView"
+              style="@style/Widget.StocksWidget.TextView.LabelLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelLarge"
               android:layout_width="0dp"
               android:layout_height="wrap_content"
               android:layout_weight="1"
@@ -195,7 +198,8 @@
               />
 
           <TextView
-              style="@style/ThinTitleTextView"
+              style="@style/Widget.StocksWidget.TextView.LabelLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelLarge"
               android:layout_width="0dp"
               android:layout_height="wrap_content"
               android:layout_weight="1"
@@ -223,7 +227,7 @@
             android:layout_height="0.75dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"
-
+            android:background="@color/divider"
             />
 
         <LinearLayout

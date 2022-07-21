@@ -47,11 +47,14 @@
           android:visibility="gone"
           tools:visibility="visible"
           android:id="@+id/alerts_disabled_message"
+          style="@style/Widget.StocksWidget.TextView.BodyMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
           />
 
       <TextView
           android:id="@+id/tickerName"
-          style="@style/BoldTextView"
+          style="@style/Widget.StocksWidget.TextView.TitleLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginLeft="16dp"
@@ -78,6 +81,8 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="0.4"
             android:text="@string/alert_above"
+            style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -122,6 +127,8 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="0.4"
             android:text="@string/alert_below"
+            style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
             />
 
         <com.google.android.material.textfield.TextInputLayout

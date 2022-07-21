@@ -1,38 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="Theme.AppWidget.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault.Light">
-    <!-- Radius of the outer bound of widgets to make the rounded corners -->
-    <item name="appWidgetRadius">4dp</item>
-    <!-- Radius of the inner view's bound of widgets to make the rounded corners. It needs to be 8dp or less than the value of appWidgetRadius -->
-    <item name="appWidgetInnerRadius">8dp</item>
-    <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
-    <item name="appWidgetPadding">2dp</item>
-  </style>
-
   <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
-    <item name="colorPrimary">@color/color_primary</item>
-    <item name="colorPrimaryDark">@color/color_primary_dark</item>
-    <item name="colorAccent">@color/color_accent</item>
-    <item name="android:windowBackground">@color/default_bg</item>
-    <item name="android:textViewStyle">@style/TextViewStyle</item>
+    <item name="colorPrimary">@color/md_theme_light_primary</item>
+    <item name="colorOnPrimary">@color/md_theme_light_onPrimary</item>
+    <item name="colorPrimaryContainer">@color/md_theme_light_primaryContainer</item>
+    <item name="colorOnPrimaryContainer">@color/md_theme_light_onPrimaryContainer</item>
+    <item name="colorSecondary">@color/md_theme_light_secondary</item>
+    <item name="colorOnSecondary">@color/md_theme_light_onSecondary</item>
+    <item name="colorSecondaryContainer">@color/md_theme_light_secondaryContainer</item>
+    <item name="colorOnSecondaryContainer">@color/md_theme_light_onSecondaryContainer</item>
+    <item name="colorTertiary">@color/md_theme_light_tertiary</item>
+    <item name="colorOnTertiary">@color/md_theme_light_onTertiary</item>
+    <item name="colorTertiaryContainer">@color/md_theme_light_tertiaryContainer</item>
+    <item name="colorOnTertiaryContainer">@color/md_theme_light_onTertiaryContainer</item>
+    <item name="colorError">@color/md_theme_light_error</item>
+    <item name="colorErrorContainer">@color/md_theme_light_errorContainer</item>
+    <item name="colorOnError">@color/md_theme_light_onError</item>
+    <item name="colorOnErrorContainer">@color/md_theme_light_onErrorContainer</item>
+    <item name="android:colorBackground">@color/md_theme_light_background</item>
+    <item name="colorOnBackground">@color/md_theme_light_onBackground</item>
+    <item name="colorSurface">@color/md_theme_light_surface</item>
+    <item name="colorOnSurface">@color/md_theme_light_onSurface</item>
+    <item name="colorSurfaceVariant">@color/md_theme_light_surfaceVariant</item>
+    <item name="colorOnSurfaceVariant">@color/md_theme_light_onSurfaceVariant</item>
+    <item name="colorOutline">@color/md_theme_light_outline</item>
+    <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
+    <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
+    <item name="elevationOverlayColor">@color/md_theme_light_surfaceTint</item>
+    <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+  </style>
+
+  <style name="BaseAppTheme" parent="AppTheme">
+    <item name="android:windowBackground">?android:attr/colorBackground</item>
+    <item name="android:textViewStyle">@style/Widget.StocksWidget.TextView</item>
     <item name="android:editTextStyle">@style/EditTextStyle</item>
     <item name="android:buttonStyle">@style/ButtonStyle</item>
+    <item name="buttonStyle">@style/ButtonStyle</item>
+    <item name="buttonCompat">@style/ButtonStyle</item>
+    <item name="textAppearanceButton">@style/TextAppearance.StocksWidget.Button</item>
+    <item name="textAppearanceBodyLarge">@style/TextAppearance.StocksWidget.BodyLarge</item>
+    <item name="textAppearanceBodyMedium">@style/TextAppearance.StocksWidget.BodyMedium</item>
+    <item name="textAppearanceBodySmall">@style/TextAppearance.StocksWidget.BodySmall</item>
+    <item name="textAppearanceHeadlineLarge">@style/TextAppearance.StocksWidget.HeadlineLarge</item>
+    <item name="textAppearanceHeadlineMedium">@style/TextAppearance.StocksWidget.HeadlineMedium</item>
+    <item name="textAppearanceHeadlineSmall">@style/TextAppearance.StocksWidget.HeadlineSmall</item>
+    <item name="textAppearanceTitleLarge">@style/TextAppearance.StocksWidget.TitleLarge</item>
+    <item name="textAppearanceTitleMedium">@style/TextAppearance.StocksWidget.TitleMedium</item>
+    <item name="textAppearanceTitleSmall">@style/TextAppearance.StocksWidget.TitleSmall</item>
+    <item name="textAppearanceLabelLarge">@style/TextAppearance.StocksWidget.LabelLarge</item>
+    <item name="textAppearanceLabelMedium">@style/TextAppearance.StocksWidget.LabelMedium</item>
+    <item name="textAppearanceLabelSmall">@style/TextAppearance.StocksWidget.LabelSmall</item>
     <item name="android:alertDialogTheme">@style/AlertDialog</item>
     <item name="android:dialogTheme">@style/AlertDialog</item>
     <item name="android:actionBarStyle">@style/ActionBarStyle</item>
+    <item name="tabTextAppearance">@style/TabTextAppearence</item>
     <item name="dialogTheme">@style/AlertDialog</item>
     <item name="alertDialogTheme">@style/AlertDialog</item>
     <item name="editTextStyle">@style/EditTextStyle</item>
-    <item name="buttonStyle">@style/ButtonStyle</item>
-    <item name="buttonCompat">@style/ButtonStyle</item>
-    <item name="preferenceTheme">@style/AppPreferenceTheme</item>
-    <item name="bottomNavigationStyle">@style/BottomNavigationView</item>
+    <item name="bottomNavigationStyle">@style/Widget.StocksWidget.BottomNavigationView</item>
     <item name="snackbarStyle">@style/Snackbar</item>
     <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
   </style>
 
-  <style name="StocksWidget.App.Theme" parent="AppTheme" />
+  <style name="StocksWidget.App.Theme" parent="BaseAppTheme"/>
 
   <style name="TranslucentTheme" parent="StocksWidget.App.Theme">
     <item name="android:windowIsTranslucent">true</item>

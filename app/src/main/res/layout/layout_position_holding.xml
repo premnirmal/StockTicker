@@ -40,7 +40,7 @@
       android:id="@+id/remove_position"
       android:layout_gravity="center_vertical"
       android:src="@drawable/ic_close"
-
+      android:tint="@color/icon_tint"
       />
 
 </LinearLayout>

@@ -12,10 +12,12 @@
       android:maxLines="2"
       tools:text="Price"
       android:id="@+id/fieldname"
-
+      android:textColor="@color/text_2"
       android:layout_centerVertical="true"
-      android:layout_alignParentLeft="true"
-      android:gravity="left"
+      android:layout_alignParentStart="true"
+      android:gravity="start"
+      style="@style/Widget.StocksWidget.TextView.LabelLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelLarge"
       />
 
   <com.robinhood.ticker.TickerView
@@ -24,10 +26,12 @@
       android:textSize="24sp"
       android:maxLines="2"
       android:id="@+id/fieldvalue"
-
+      android:textColor="@color/text_1"
       tools:text="GOOG"
       android:layout_centerVertical="true"
       android:ellipsize="none"
-      android:gravity="right"
+      android:gravity="end"
+      style="@style/Widget.StocksWidget.TextView.BodyMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
       />
 </merge>

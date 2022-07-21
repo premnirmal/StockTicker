@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
   <style name="AppThemeV23" parent="AppThemeV21">
-    <item name="android:windowLightStatusBar">true</item>
+    <item name="android:windowLightStatusBar">false</item>
   </style>
 
   <style name="StocksWidget.App.Theme" parent="AppThemeV23"/>

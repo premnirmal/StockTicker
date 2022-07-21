@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <!-- TextView styles -->
+  <!-- Adding these custom textview styles because text appearance doesn't override the font :(  -->
+  <style name="Widget.StocksWidget.TextView.HeadlineLarge" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.HeadlineLarge</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.HeadlineMedium" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.HeadlineMedium</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.HeadlineSmall" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.HeadlineSmall</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.TitleLarge" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.TitleLarge</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.TitleMedium" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.TitleMedium</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.TitleSmall" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.TitleSmall</item>
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.BodyLarge" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodyLarge</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.BodyMedium" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodyMedium</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.BodySmall" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodySmall</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.BodyLightLarge" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodyLightLarge</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.BodyLightMedium" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodyLightMedium</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.BodyLightSmall" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodyLightSmall</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.LabelLarge" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelLarge</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.LabelMedium" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelMedium</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.LabelSmall" parent="Widget.StocksWidget.TextView">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelSmall</item>
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.ItalicLabelLarge" parent="Widget.StocksWidget.TextView.LabelLarge">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelLarge</item>
+    <item name="fontFamily">@font/ubuntu_italic</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.ItalicLabelMedium" parent="Widget.StocksWidget.TextView.LabelMedium">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelMedium</item>
+    <item name="fontFamily">@font/ubuntu_italic</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.ItalicLabelSmall" parent="Widget.StocksWidget.TextView.LabelSmall">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelSmall</item>
+    <item name="fontFamily">@font/ubuntu_italic</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.FetchError" parent="Widget.StocksWidget.TextView.BodyLarge">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.BodyLarge</item>
+    <item name="android:textColor">?attr/colorAccent</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.NewsSource" parent="Widget.StocksWidget.TextView.ItalicLabelSmall">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.ItalicLabelSmall</item>
+    <item name="android:textColor">@color/text_3</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.NewsPublished" parent="Widget.StocksWidget.TextView.LabelSmall">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelSmall</item>
+    <item name="android:textColor">@color/text_3</item>
+  </style>
+
+  <style name="Widget.StocksWidget.TextView.Footer" parent="Widget.StocksWidget.TextView.TitleLarge">
+    <item name="android:textAppearance">@style/TextAppearance.StocksWidget.TitleLarge</item>
+    <item name="fontFamily">@font/alegreya_black_italic</item>
+    <item name="android:fontFamily">@font/alegreya_black_italic</item>
+    <item name="android:textColor">?attr/colorSecondaryVariant</item>
+  </style>
+
+  <!-- Text apperances -->
+
+  <style name="TextAppearance.StocksWidget.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.HeadlineMedium" parent="TextAppearance.Material3.HeadlineMedium">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+    <item name="fontFamily">@font/ubuntu_regular</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+    <item name="fontFamily">@font/ubuntu_regular</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.BodySmall" parent="TextAppearance.Material3.BodySmall">
+    <item name="fontFamily">@font/ubuntu_regular</item>
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.BodyLightLarge" parent="TextAppearance.Material3.BodyLarge">
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.BodyLightMedium" parent="TextAppearance.Material3.BodyMedium">
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.BodyLightSmall" parent="TextAppearance.Material3.BodySmall">
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+    <item name="fontFamily">@font/ubuntu_light</item>
+    <item name="android:fontFamily">@font/ubuntu_light</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.ItalicLabelLarge" parent="TextAppearance.StocksWidget.LabelLarge">
+    <item name="fontFamily">@font/ubuntu_italic</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.ItalicLabelMedium" parent="TextAppearance.StocksWidget.LabelMedium">
+    <item name="fontFamily">@font/ubuntu_italic</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.ItalicLabelSmall" parent="TextAppearance.StocksWidget.LabelSmall">
+    <item name="fontFamily">@font/ubuntu_italic</item>
+    <item name="android:fontFamily">@font/ubuntu_italic</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.Button" parent="TextAppearance.MaterialComponents.Button">
+    <item name="fontFamily">@font/ubuntu_bold</item>
+    <item name="android:fontFamily">@font/ubuntu_bold</item>
+    <item name="android:textAllCaps">false</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.TickerBold" parent="TextAppearance.StocksWidget.BodyMedium">
+    <item name="android:textStyle">bold</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.FetchError" parent="TextAppearance.StocksWidget.BodyLarge">
+    <item name="android:textColor">?attr/colorAccent</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.NewsSource" parent="TextAppearance.StocksWidget.ItalicLabelSmall">
+    <item name="android:textColor">@color/text_3</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.NewsPublished" parent="TextAppearance.StocksWidget.LabelSmall">
+    <item name="android:textColor">@color/text_3</item>
+  </style>
+
+  <style name="TextAppearance.StocksWidget.Footer" parent="TextAppearance.StocksWidget.TitleLarge">
+    <item name="fontFamily">@font/alegreya_black_italic</item>
+    <item name="android:fontFamily">@font/alegreya_black_italic</item>
+    <item name="android:textColor">?attr/colorSecondaryVariant</item>
+  </style>
+</resources>

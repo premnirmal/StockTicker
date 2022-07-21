@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker
 
+import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.multidex.MultiDexApplication
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppComponent
 import com.github.premnirmal.ticker.components.AppModule
@@ -18,7 +18,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/26/16.
  */
-open class StocksApp : MultiDexApplication() {
+open class StocksApp : Application() {
 
   class InjectionHolder {
     @Inject lateinit var analytics: Analytics

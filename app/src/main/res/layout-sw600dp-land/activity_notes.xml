@@ -36,7 +36,8 @@
         android:gravity="center"
         android:textSize="@dimen/xlarge_text"
         tools:text="GOOG"
-        style="@style/BoldTextView"
+        style="@style/Widget.StocksWidget.TextView.TitleLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
         />
 
     <EditText

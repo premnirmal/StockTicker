@@ -54,8 +54,9 @@
         android:orientation="horizontal"/>
 
     <TextView
-        style="@style/MediumTextView"
         android:id="@+id/tickerName"
+        style="@style/Widget.StocksWidget.TextView.BodyLightMedium"
+	      android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightMedium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintWidth_percent="0.5"
         app:layout_constraintTop_toTopOf="parent"
@@ -63,9 +64,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:textSize="@dimen/xlarge_text"
         android:gravity="center"
         app:layout_scrollFlags="scroll"
+        android:textColor="@color/text_3"
         tools:text="Apple Inc."
         />
 
@@ -116,9 +117,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/quote_details_margin"
-        android:textAppearance="@style/TickerTextAppearanceBold"
-        android:textColor="?attr/colorOnSurface"
-        android:textSize="@dimen/xlarge_text"
+        android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
+        android:textColor="@color/text_2"
         android:gravity="center"
         tools:text="$132.99"/>
 
@@ -254,8 +254,8 @@
               android:layout_weight="1"
               android:gravity="center_vertical"
               android:text="@string/positions"
-              android:textSize="@dimen/thin_title_text"
-              style="@style/ThinTitleTextView"
+              style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
               />
 
           <ImageView
@@ -296,14 +296,16 @@
                   android:layout_height="wrap_content"
                   android:layout_marginBottom="2dp"
                   android:gravity="center"
-                  android:textSize="@dimen/xlarge_text"
                   tools:text="3"
-                  style="@style/BoldTextView"
+                  android:textColor="@color/text_1"
+                  style="@style/Widget.StocksWidget.TextView.TitleMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
                   />
               <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content"
                   android:text="@string/shares"
+                  android:textColor="@color/text_3"
                   />
 
             </LinearLayout>
@@ -323,8 +325,8 @@
                   android:gravity="center"
                   android:textSize="@dimen/xlarge_text"
                   tools:text="$2,400.00"
-                  android:textAppearance="@style/TickerTextAppearanceBold"
-                  android:textColor="?attr/colorOnSurface"
+                  android:textColor="@color/text_1"
+                  android:textAppearance="@style/TextAppearance.StocksWidget.TickerBold"
                   />
               <TextView
                   android:layout_width="wrap_content"
@@ -392,8 +394,8 @@
               android:layout_weight="1"
               android:gravity="center_vertical"
               android:text="@string/alerts"
-              android:textSize="@dimen/thin_title_text"
-              style="@style/ThinTitleTextView"
+              style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
               />
 
           <ImageView
@@ -458,8 +460,8 @@
               android:layout_weight="1"
               android:gravity="center_vertical"
               android:text="@string/notes"
-              android:textSize="@dimen/thin_title_text"
-              style="@style/ThinTitleTextView"
+              style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
               />
 
           <ImageView
@@ -500,8 +502,8 @@
             android:layout_marginStart="16dp"
             android:gravity="center_vertical"
             android:text="@string/recent_news"
-            android:textSize="@dimen/thin_title_text"
-            style="@style/ThinTitleTextView"
+            style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
             />
 
         <ViewFlipper
@@ -523,9 +525,8 @@
               android:layout_gravity="center"
               android:gravity="center"
               android:text="@string/error_fetching_news"
-              android:textColor="@color/color_accent"
-              android:textSize="@dimen/large_text"
-              style="@style/MediumTextView"
+              style="@style/Widget.StocksWidget.TextView.FetchError"
+	android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
               />
 
           <TextView
@@ -534,9 +535,8 @@
               android:layout_gravity="center"
               android:gravity="center"
               android:text="@string/no_data"
-              android:textColor="@color/color_accent"
-              android:textSize="@dimen/large_text"
-              style="@style/MediumTextView"
+              style="@style/Widget.StocksWidget.TextView.FetchError"
+	android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
               />
 
           <androidx.recyclerview.widget.RecyclerView

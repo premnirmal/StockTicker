@@ -24,13 +24,12 @@
         android:ellipsize="end"
         android:gravity="center_vertical"
         android:maxLines="1"
-        android:textColor="@color/text_1"
-        android:textSize="@dimen/large_text"
         android:layout_marginBottom="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="GOOG"
-        style="@style/BoldTextView"
+        style="@style/Widget.StocksWidget.TextView.TitleMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
         />
 
     <com.robinhood.ticker.TickerView
@@ -39,14 +38,12 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical|end"
         android:maxLines="1"
-        android:textColor="@color/text_1"
-        android:textSize="@dimen/medium_text"
         tools:text="555.02"
         app:layout_constraintStart_toEndOf="@id/ticker"
         app:layout_constraintEnd_toStartOf="@id/more_menu"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginBottom="4dp"
-        android:textAppearance="@style/TickerTextAppearanceBold"
+        android:textAppearance="@style/TextAppearance.StocksWidget.TickerBold"
         />
 
     <ImageView
@@ -69,8 +66,8 @@
       android:layout_marginEnd="4dp"
       android:ellipsize="end"
       android:maxLines="1"
-      android:textColor="@color/text_1"
-      android:textSize="@dimen/portfolio_position_vh_text_size"
+      style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
       tools:text="Google Inc"
       app:layout_constraintTop_toBottomOf="@id/more_menu"
       app:layout_constraintStart_toStartOf="parent"

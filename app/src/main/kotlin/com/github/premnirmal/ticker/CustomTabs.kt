@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.PorterDuff.Mode.SRC_IN
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON
 import androidx.core.content.ContextCompat
 import com.github.premnirmal.tickerwidget.R
 
@@ -17,8 +18,7 @@ object CustomTabs {
     closeButton.setTint(ContextCompat.getColor(context, R.color.icon_tint))
     closeButton.setTintMode(SRC_IN)
     val customTabsIntent = CustomTabsIntent.Builder()
-        .addDefaultShareMenuItem()
-        .setToolbarColor(ContextCompat.getColor(context, R.color.color_primary))
+      .setShareState(SHARE_STATE_ON)
         .setShowTitle(true)
         .setCloseButtonIcon(closeButton.toBitmap())
         .setExitAnimations(context, android.R.anim.fade_in, android.R.anim.fade_out)

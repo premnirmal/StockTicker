@@ -35,9 +35,9 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="20dp"
         android:gravity="center"
-        android:textSize="@dimen/xlarge_text"
         tools:text="GOOG"
-        style="@style/BoldTextView"
+        style="@style/Widget.StocksWidget.TextView.TitleLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
         />
 
     <EditText
@@ -52,7 +52,7 @@
         android:padding="8dp"
         android:scrollbarSize="4dp"
         android:scrollbars="vertical"
-
+        android:textColor="@color/text_1"
         android:textSize="@dimen/large_text"
         android:cursorVisible="true"
         />

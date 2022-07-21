@@ -54,7 +54,8 @@
 
       <TextView
           android:id="@+id/tickerName"
-          style="@style/BoldTextView"
+          style="@style/Widget.StocksWidget.TextView.TitleLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginLeft="16dp"

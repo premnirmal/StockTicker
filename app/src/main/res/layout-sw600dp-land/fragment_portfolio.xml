@@ -15,9 +15,8 @@
       android:layout_gravity="center_horizontal"
       android:gravity="center"
       android:text="@string/no_symbols"
-      android:textColor="@color/color_accent"
-      android:textSize="@dimen/large_text"
-      style="@style/BoldTextView"
+      style="@style/Widget.StocksWidget.TextView.FetchError"
+	android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
       />
 
   <androidx.recyclerview.widget.RecyclerView

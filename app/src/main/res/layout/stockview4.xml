@@ -19,7 +19,7 @@
             android:layout_weight="0.30"
             android:ellipsize="end"
             android:maxLines="1"
-
+            android:textColor="@color/widget_text"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -31,7 +31,7 @@
             android:ellipsize="none"
             android:gravity="end"
             android:singleLine="true"
-
+            android:textColor="@color/widget_text"
             android:textSize="12sp" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:ellipsize="none"
             android:gravity="end"
             android:singleLine="true"
-
+            android:textColor="@color/text_widget_positive"
             android:textSize="12sp" />
 
         <TextView
@@ -53,7 +53,7 @@
             android:ellipsize="none"
             android:gravity="end"
             android:singleLine="true"
-
+            android:textColor="@color/text_widget_positive"
             android:textSize="12sp" />
 
     </LinearLayout>
@@ -73,7 +73,7 @@
             android:ellipsize="none"
             android:gravity="start"
             android:singleLine="true"
-
+            android:textColor="@color/widget_text"
             android:textSize="12sp"
             android:textStyle="italic" />
 

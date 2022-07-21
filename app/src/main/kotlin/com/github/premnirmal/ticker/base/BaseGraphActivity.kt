@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.base
 
 import android.graphics.Color
+import android.os.Build
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
@@ -42,8 +43,13 @@ abstract class BaseGraphActivity<T : ViewBinding> : BaseActivity<T>() {
     graphView.extraBottomOffset = resources.getDimension(R.dimen.graph_bottom_offset)
     graphView.legend.isEnabled = false
     graphView.description = null
-    graphView.setNoDataTextColor(ContextCompat.getColor(this, R.color.color_accent))
+    val colorAccent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      ContextCompat.getColor(this, android.R.color.system_accent1_600)
+    } else {
+      ContextCompat.getColor(this, R.color.accent_fallback)
+    }
     graphView.setNoDataText("")
+    graphView.setNoDataTextColor(colorAccent)
     graphView.marker = TextMarkerView(this)
   }
 
@@ -60,7 +66,11 @@ abstract class BaseGraphActivity<T : ViewBinding> : BaseActivity<T>() {
     val series = LineDataSet(dataPoints, ticker)
     series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)
-    val colorAccent = ContextCompat.getColor(this, R.color.color_accent)
+    val colorAccent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      ContextCompat.getColor(this, android.R.color.system_accent1_600)
+    } else {
+      ContextCompat.getColor(this, R.color.accent_fallback)
+    }
     series.setDrawFilled(true)
     series.color = colorAccent
     series.fillColor = colorAccent

@@ -32,7 +32,7 @@
         android:layout_height="match_parent"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:titleEnabled="false"
-        app:contentScrim="@color/home_toolbar_scrim"
+        app:contentScrim="@color/transparent"
         >
 
       <ImageView

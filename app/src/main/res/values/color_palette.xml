@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+  <color name="disabled_grey">#ffbdbdbd</color>
+  <color name="unselected_grey">#98545454</color>
+  <color name="accent_fallback">#be6663</color>
+  <color name="card_bg">#fbfcfa</color>
+  <color name="card_shadow">#10000000</color>
+  <color name="snackbar_text">@color/white</color>
+  <color name="icon_tint">#1b1b1b</color>
+  <color name="tab_text">@color/text_1</color>
+  <color name="tab_text_selected">@color/text_4</color>
+  <color name="tab_background">@color/transparent</color>
+  <color name="divider">#aaaa</color>
+  <color name="toolbar_scrim">@color/transparent</color>
+  <color name="ic_launcher_background">#2A2A2A</color>
+
+  <color name="black">#000000</color>
+  <color name="white">#ffffff</color>
+  <color name="white_65">#A6FFFFFF</color>
+  <color name="transparent">#00000000</color>
+  <color name="translucent">#98000000</color>
+  <color name="change_positive">#66BB6A</color>
+  <color name="change_negative">#EF5350</color>
+  <color name="error_red">#ff3232</color>
+  <color name="negative_red">#e55b5b</color>
+  <color name="positive_green">#009900</color>
+  <color name="positive_green_dark">#006b00</color>
+
+  <color name="text_1">#5e5e5e</color>
+  <color name="text_2">#6e6e6e</color>
+  <color name="text_3">#4d4d4d</color>
+  <color name="text_4">#373737</color>
+
+</resources>

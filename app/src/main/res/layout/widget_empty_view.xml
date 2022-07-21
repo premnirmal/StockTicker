@@ -5,6 +5,6 @@
     android:layout_gravity="center"
     android:gravity="center"
     android:textSize="@dimen/xlarge_text"
-
+    android:textColor="@color/widget_text"
     android:text="@string/dotdotdot"
     />

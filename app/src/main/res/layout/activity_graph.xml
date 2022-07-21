@@ -28,7 +28,8 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       tools:text="GOOG"
-      style="@style/BoldTextView"
+      style="@style/Widget.StocksWidget.TextView.TitleLarge"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
       />
 
   <TextView
@@ -41,7 +42,8 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toBottomOf="@id/tickerName"
       tools:text="GOOG"
-      style="@style/BoldTextView"
+      style="@style/Widget.StocksWidget.TextView.TitleMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
       />
 
   <com.github.mikephil.charting.charts.LineChart
