@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- WIP colour harmonization attributes  -->
+    <attr name="colorChangeTint" format="color" />
+    <attr name="harmonizeColorChangeTint" format="boolean" />
 
   <declare-styleable name="StockFieldView">
     <attr format="string|reference" name="name"/>

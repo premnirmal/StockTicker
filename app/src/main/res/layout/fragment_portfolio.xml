@@ -6,6 +6,7 @@
     android:autoStart="false"
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
+    android:background="?attr/colorSurface"
     >
 
   <TextView
@@ -16,7 +17,7 @@
       android:gravity="center"
       android:text="@string/no_symbols"
       style="@style/Widget.StocksWidget.TextView.FetchError"
-	android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
+	    android:textAppearance="@style/TextAppearance.StocksWidget.FetchError"
       />
 
   <androidx.recyclerview.widget.RecyclerView

@@ -69,7 +69,7 @@
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="@dimen/activity_vertical_margin"
-          android:textColor="@color/text_2"
+          android:textColor="?attr/colorOnSurfaceVariant"
           android:gravity="center"
           app:layout_scrollFlags="scroll"
           tools:text="Apple Inc."
@@ -123,7 +123,7 @@
           android:layout_height="wrap_content"
           android:layout_marginTop="@dimen/quote_details_margin"
           android:textAppearance="@style/TextAppearance.StocksWidget.TitleLarge"
-          android:textColor="@color/text_2"
+          android:textColor="?attr/colorOnSurfaceVariant"
           android:gravity="center"
           tools:text="$132.99"/>
 
@@ -304,7 +304,7 @@
                 android:layout_marginBottom="2dp"
                 android:gravity="center"
                                 tools:text="3"
-                android:textColor="@color/text_1"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 style="@style/Widget.StocksWidget.TextView.TitleMedium"
 	android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
                 />
@@ -312,7 +312,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/shares"
-                android:textColor="@color/text_3"
+                android:textColor="?attr/colorOnSurface"
                 />
 
           </LinearLayout>
@@ -331,14 +331,14 @@
                 android:layout_marginBottom="2dp"
                 android:gravity="center"
                                 tools:text="$2,400.00"
-                android:textColor="@color/text_1"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textAppearance="@style/TextAppearance.StocksWidget.TickerBold"
                 />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/equity_value"
-                android:textColor="@color/text_3"
+                android:textColor="?attr/colorOnSurface"
                 />
 
           </LinearLayout>

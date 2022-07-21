@@ -6,10 +6,7 @@
   <color name="accent_fallback">#be6663</color>
   <color name="card_bg">#fbfcfa</color>
   <color name="card_shadow">#10000000</color>
-  <color name="snackbar_text">@color/white</color>
   <color name="icon_tint">#1b1b1b</color>
-  <color name="tab_text">@color/text_1</color>
-  <color name="tab_text_selected">@color/text_4</color>
   <color name="tab_background">@color/transparent</color>
   <color name="divider">#aaaa</color>
   <color name="toolbar_scrim">@color/transparent</color>
@@ -26,10 +23,5 @@
   <color name="negative_red">#e55b5b</color>
   <color name="positive_green">#009900</color>
   <color name="positive_green_dark">#006b00</color>
-
-  <color name="text_1">#5e5e5e</color>
-  <color name="text_2">#6e6e6e</color>
-  <color name="text_3">#4d4d4d</color>
-  <color name="text_4">#373737</color>
 
 </resources>

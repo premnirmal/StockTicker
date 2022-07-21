@@ -52,7 +52,7 @@
         android:padding="8dp"
         android:scrollbarSize="4dp"
         android:scrollbars="vertical"
-        android:textColor="@color/text_1"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="@dimen/large_text"
         android:cursorVisible="true"
         />

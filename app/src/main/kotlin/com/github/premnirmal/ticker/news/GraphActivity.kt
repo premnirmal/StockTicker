@@ -37,10 +37,10 @@ class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
       this.quote = quote
       binding.tickerName.text = ticker
       binding.desc.text = quote.name
-    }
-    viewModel.data.observe(this) { data ->
-      dataPoints = data
-      loadGraph(ticker)
+      viewModel.data.observe(this) { data ->
+        dataPoints = data
+        loadGraph(ticker, quote)
+      }
     }
     viewModel.error.observe(this) {
       showErrorAndFinish()
@@ -66,8 +66,6 @@ class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
     super.onStart()
     if (dataPoints == null) {
       fetchGraphData()
-    } else {
-      loadGraph(ticker)
     }
   }
 

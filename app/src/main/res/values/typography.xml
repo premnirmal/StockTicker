@@ -118,12 +118,12 @@
 
   <style name="Widget.StocksWidget.TextView.NewsSource" parent="Widget.StocksWidget.TextView.ItalicLabelSmall">
     <item name="android:textAppearance">@style/TextAppearance.StocksWidget.ItalicLabelSmall</item>
-    <item name="android:textColor">@color/text_3</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="Widget.StocksWidget.TextView.NewsPublished" parent="Widget.StocksWidget.TextView.LabelSmall">
     <item name="android:textAppearance">@style/TextAppearance.StocksWidget.LabelSmall</item>
-    <item name="android:textColor">@color/text_3</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="Widget.StocksWidget.TextView.Footer" parent="Widget.StocksWidget.TextView.TitleLarge">
@@ -240,11 +240,11 @@
   </style>
 
   <style name="TextAppearance.StocksWidget.NewsSource" parent="TextAppearance.StocksWidget.ItalicLabelSmall">
-    <item name="android:textColor">@color/text_3</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="TextAppearance.StocksWidget.NewsPublished" parent="TextAppearance.StocksWidget.LabelSmall">
-    <item name="android:textColor">@color/text_3</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="TextAppearance.StocksWidget.Footer" parent="TextAppearance.StocksWidget.TitleLarge">

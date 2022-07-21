@@ -9,11 +9,11 @@
 
   <style name="ThemeOverlay.App.Snackbar" parent="">
     <item name="colorOnSurface">?attr/colorPrimary</item>
-    <item name="android:textColor">@color/snackbar_text</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="Snackbar.TextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
-    <item name="android:textColor">@color/snackbar_text</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="ActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
@@ -40,7 +40,7 @@
   <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
     <item name="android:fontFamily">@font/ubuntu_bold</item>
     <item name="fontFamily">@font/ubuntu_bold</item>
-    <item name="android:textColor">@color/text_2</item>
+    <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
     <item name="android:textAllCaps">false</item>
   </style>
 
@@ -84,12 +84,12 @@
   </style>
 
   <style name="Widget.Quote.Details.Title" parent="Widget.StocksWidget.TextView">
-    <item name="android:textColor">@color/text_3</item>
+    <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
   <style name="Widget.Quote.Details.Data" parent="Widget.StocksWidget.TextView">
     <item name="android:textSize">@dimen/large_text</item>
-    <item name="android:textColor">@color/text_1</item>
+    <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
   </style>
 
   <style name="Widget.Chip.Chart" parent="Widget.MaterialComponents.Chip.Choice">

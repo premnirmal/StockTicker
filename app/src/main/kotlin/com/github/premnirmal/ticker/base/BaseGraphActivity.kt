@@ -12,6 +12,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.DataPoint
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.HourAxisFormatter
 import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
@@ -53,7 +54,7 @@ abstract class BaseGraphActivity<T : ViewBinding> : BaseActivity<T>() {
     graphView.marker = TextMarkerView(this)
   }
 
-  protected fun loadGraph(ticker: String) {
+  protected fun loadGraph(ticker: String, quote: Quote) {
     val graphView: LineChart = findViewById(R.id.graphView)
     if (dataPoints == null || dataPoints!!.isEmpty()) {
       onNoGraphData(graphView)
@@ -66,10 +67,10 @@ abstract class BaseGraphActivity<T : ViewBinding> : BaseActivity<T>() {
     val series = LineDataSet(dataPoints, ticker)
     series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)
-    val colorAccent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      ContextCompat.getColor(this, android.R.color.system_accent1_600)
+    val colorAccent = if (quote.changeInPercent >= 0) {
+      ContextCompat.getColor(this, R.color.positive_green_dark)
     } else {
-      ContextCompat.getColor(this, R.color.accent_fallback)
+      ContextCompat.getColor(this, R.color.negative_red)
     }
     series.setDrawFilled(true)
     series.color = colorAccent

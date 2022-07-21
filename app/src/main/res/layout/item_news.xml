@@ -48,7 +48,7 @@
       android:layout_marginBottom="4dp"
       android:maxLines="2"
       android:ellipsize="end"
-      android:textColor="@color/text_4"
+      android:textColor="?attr/colorOnSurface"
       tools:text="Stock market rises!"
       style="@style/Widget.StocksWidget.TextView.BodyMedium"
 	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
@@ -61,7 +61,7 @@
       android:ellipsize="end"
       android:maxLines="2"
       tools:text="Lorem ipsum"
-      android:textColor="@color/text_3"
+      android:textColor="?attr/colorOnSurface"
       style="@style/Widget.StocksWidget.TextView.BodyLightSmall"
 	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightSmall"
       />

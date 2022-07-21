@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:scrollbars="none"
     android:id="@+id/scroll_view"
+    android:background="?attr/colorSurface"
     >
 
   <LinearLayout

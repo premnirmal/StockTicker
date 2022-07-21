@@ -12,7 +12,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="start"
-      android:textColor="@color/text_1"
+      android:textColor="?attr/colorOnSurfaceVariant"
       android:textSize="@dimen/medium_text"
       app:layout_constraintTop_toTopOf="parent"
       tools:text="$100"

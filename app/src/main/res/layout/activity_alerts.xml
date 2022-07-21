@@ -42,7 +42,7 @@
           android:background="@color/error_red"
           android:gravity="center"
           android:padding="@dimen/activity_horizontal_margin"
-          android:textColor="@color/snackbar_text"
+          android:textColor="?attr/colorOnSurface"
           android:text="@string/alerts_disabled"
           android:visibility="gone"
           tools:visibility="visible"

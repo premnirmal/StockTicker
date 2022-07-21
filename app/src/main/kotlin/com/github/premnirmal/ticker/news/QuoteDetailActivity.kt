@@ -124,6 +124,10 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
         quote = result.data
         fetchNewsAndChartData()
         setupQuoteUi()
+        viewModel.data.observe(this) { data ->
+          dataPoints = data
+          loadGraph(ticker, quote)
+        }
       } else {
         InAppMessage.showMessage(binding.parentView, R.string.error_fetching_stock, error = true)
         binding.progress.visibility = View.GONE
@@ -133,10 +137,6 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     }
     viewModel.details.asLiveData().observe(this) {
       quoteDetailsAdapter.submitList(it)
-    }
-    viewModel.data.observe(this) { data ->
-      dataPoints = data
-      loadGraph(ticker)
     }
     viewModel.fetchQuoteInRealTime(ticker)
     viewModel.dataFetchError.observe(this) {
@@ -424,8 +424,6 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     }
     if (dataPoints == null) {
       fetchData()
-    } else {
-      loadGraph(ticker)
     }
   }
 
