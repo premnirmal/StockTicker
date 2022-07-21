@@ -7,7 +7,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
@@ -78,7 +77,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
       val fragment = HomeFragment()
       supportFragmentManager.beginTransaction()
           .add(R.id.fragment_container, fragment, fragment.javaClass.name)
-          .show(fragment)
           .commit()
       fragment
     } else {
@@ -101,12 +99,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   }
 
   override fun onBackPressed() {
-    val eaten = onNavigationItemSelected(binding.bottomNavigation.menu.findItem(R.id.action_portfolio))
-    if (eaten) {
+    if (binding.bottomNavigation.selectedItemId == R.id.action_portfolio) {
+      if (!maybeAskToRate()) {
+        super.onBackPressed()
+      }
+    } else {
       binding.bottomNavigation.selectedItemId = R.id.action_portfolio
-    }
-    if (!eaten && !maybeAskToRate()) {
-      super.onBackPressed()
     }
   }
 
@@ -165,25 +163,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
           throw IllegalStateException("Unknown bottom nav itemId: $itemId - ${item.title}")
         }
       }
-      supportFragmentManager.beginTransaction()
-          .add(R.id.fragment_container, fragment, fragment::class.java.name)
-          .hide(fragment)
-          .show(currentChild as Fragment)
-          .commitNowAllowingStateLoss()
-    }
-    if (fragment.isHidden) {
-      supportFragmentManager.beginTransaction()
-          .hide(currentChild as Fragment)
-          .show(fragment)
+      if (fragment != currentChild) {
+        supportFragmentManager.beginTransaction()
+          .replace(R.id.fragment_container, fragment, fragment::class.java.name)
           .commit()
-      currentChild = fragment as ChildFragment
-      analytics.trackClickEvent(
-          ClickEvent("BottomNavClick")
-              .addProperty("NavItem", item.title.toString())
-      )
-      return true
+      } else return false
     }
-    return false
+    currentChild = fragment as ChildFragment
+    analytics.trackClickEvent(
+      ClickEvent("BottomNavClick")
+        .addProperty("NavItem", item.title.toString())
+    )
+    return true
   }
 
   // BottomNavigationView.OnNavigationItemReselectedListener

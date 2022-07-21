@@ -162,7 +162,7 @@ data class Quote constructor(
   }
 
   val isMarketOpen: Boolean
-    get() = "CLOSED" != marketState.uppercase()
+    get() = "REGULAR" == marketState.uppercase()
 
   override operator fun compareTo(other: Quote): Int =
     other.changeInPercent.compareTo(changeInPercent)
