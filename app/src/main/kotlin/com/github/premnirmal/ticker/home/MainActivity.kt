@@ -62,10 +62,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   override val binding: (ActivityMainBinding) by viewBinding(ActivityMainBinding::inflate)
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
     installSplashScreen()
-    initCaches()
     super.onCreate(savedInstanceState)
+    Injector.appComponent.inject(this)
+    initCaches()
     window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
         (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
@@ -116,8 +116,9 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   }
 
   private fun initCaches() {
-    newsProvider.initCache()
-    if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+    // not sure why news provider is not getting initialised, so added this check
+    if (::newsProvider.isInitialized) newsProvider.initCache()
+    if (::appPreferences.isInitialized && appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
       commitsProvider.initCache()
     }
   }
