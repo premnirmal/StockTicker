@@ -61,9 +61,9 @@
       android:ellipsize="end"
       android:maxLines="2"
       tools:text="Lorem ipsum"
-      android:textColor="@color/text_2"
-      style="@style/Widget.StocksWidget.TextView.BodyLightMedium"
-	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightMedium"
+      android:textColor="@color/text_3"
+      style="@style/Widget.StocksWidget.TextView.BodyLightSmall"
+	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightSmall"
       />
 
 

@@ -3,8 +3,8 @@ package com.github.premnirmal.ticker.analytics
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import com.github.premnirmal.ticker.home.SplashActivity
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.github.premnirmal.ticker.home.MainActivity
 
 /**
  * Created by premnirmal on 2/26/16.
@@ -20,7 +20,7 @@ class AnalyticsImpl : Analytics {
   }
 
   override fun trackScreenView(screenName: String, activity: Activity) {
-    if (activity is SplashActivity) {
+    if (activity is MainActivity) {
       firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
     }
     firebaseAnalytics.setCurrentScreen(activity, screenName, null)

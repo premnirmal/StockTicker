@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AlertDialog.Builder
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
@@ -14,6 +15,7 @@ import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.CommitsProvider
+import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsFragment
@@ -52,6 +54,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var commitsProvider: CommitsProvider
   @Inject internal lateinit var analytics: Analytics
+  @Inject internal lateinit var newsProvider: NewsProvider
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
@@ -60,6 +63,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
 
   override fun onCreate(savedInstanceState: Bundle?) {
     Injector.appComponent.inject(this)
+    installSplashScreen()
+    initCaches()
     super.onCreate(savedInstanceState)
     window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
         (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
@@ -108,6 +113,13 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putBoolean(DIALOG_SHOWN, rateDialogShown)
     super.onSaveInstanceState(outState)
+  }
+
+  private fun initCaches() {
+    newsProvider.initCache()
+    if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+      commitsProvider.initCache()
+    }
   }
 
   private fun maybeAskToRate(): Boolean {
