@@ -23,10 +23,18 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
   protected val positiveColor: Int = ContextCompat.getColor(itemView.context, R.color.positive_green)
   protected val negativeColor: Int = ContextCompat.getColor(itemView.context, R.color.negative_red)
   protected val neutralColor: Int by lazy {
-    val typedValue = TypedValue()
-    val theme: Theme = itemView.context.theme
-    theme.resolveAttribute(com.google.android.material.R.attr.colorOnSurfaceVariant, typedValue, true)
-    ContextCompat.getColor(itemView.context, typedValue.data)
+    try {
+      val typedValue = TypedValue()
+      val theme: Theme = itemView.context.theme
+      theme.resolveAttribute(
+        com.google.android.material.R.attr.colorOnSurfaceVariant,
+        typedValue,
+        true
+      )
+      ContextCompat.getColor(itemView.context, typedValue.data)
+    } catch (e: Exception) {
+      ContextCompat.getColor(itemView.context, R.color.text_2)
+    }
   }
 
   @Throws(Exception::class) protected abstract fun updateView(quote: Quote, color: Int)
