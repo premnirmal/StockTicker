@@ -1,70 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/newsContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_bg"
-    android:orientation="vertical"
-    android:padding="@dimen/activity_vertical_margin"
     tools:layout_marginTop="100dp"
     >
-
   <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="4dp"
-      android:orientation="horizontal"
+      android:orientation="vertical"
+      android:padding="@dimen/activity_vertical_margin"
       >
 
-    <TextView
-        android:id="@+id/news_source"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="2dp"
-        android:layout_weight="0.5"
-        tools:text="yahoo"
-        style="@style/Widget.StocksWidget.TextView.NewsSource"
-	android:textAppearance="@style/TextAppearance.StocksWidget.NewsSource"
+        android:layout_marginBottom="4dp"
+        android:orientation="horizontal"
+        >
+
+      <TextView
+          android:id="@+id/news_source"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginEnd="2dp"
+          android:layout_weight="0.5"
+          android:textAppearance="@style/TextAppearance.StocksWidget.NewsSource"
+          tools:text="yahoo"
+          style="@style/Widget.StocksWidget.TextView.NewsSource"
+          />
+
+      <TextView
+          android:id="@+id/published_at"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="2dp"
+          android:layout_weight="0.5"
+          android:gravity="end"
+          android:textAppearance="@style/TextAppearance.StocksWidget.NewsPublished"
+          tools:text="January 5th"
+          style="@style/Widget.StocksWidget.TextView.NewsPublished"
+          />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/news_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Stock market rises!"
+        style="@style/Widget.StocksWidget.TextView.BodyMedium"
         />
 
     <TextView
-        android:id="@+id/published_at"
-        android:layout_width="0dp"
+        android:id="@+id/news_subtitle"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
-        android:layout_weight="0.5"
-        android:gravity="end"
-        style="@style/Widget.StocksWidget.TextView.NewsPublished"
-	android:textAppearance="@style/TextAppearance.StocksWidget.NewsPublished"
-        tools:text="January 5th"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightSmall"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Lorem ipsum"
+        style="@style/Widget.StocksWidget.TextView.BodyLightSmall"
         />
+
+
   </LinearLayout>
-
-  <TextView
-      android:id="@+id/news_title"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginBottom="4dp"
-      android:maxLines="2"
-      android:ellipsize="end"
-      android:textColor="?attr/colorOnSurface"
-      tools:text="Stock market rises!"
-      style="@style/Widget.StocksWidget.TextView.BodyMedium"
-	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
-      />
-
-  <TextView
-      android:id="@+id/news_subtitle"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:ellipsize="end"
-      android:maxLines="2"
-      tools:text="Lorem ipsum"
-      android:textColor="?attr/colorOnSurface"
-      style="@style/Widget.StocksWidget.TextView.BodyLightSmall"
-	    android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightSmall"
-      />
-
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

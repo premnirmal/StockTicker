@@ -22,7 +22,7 @@ import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.FragmentNewsFeedBinding
 
 class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment, NewsFeedAdapter.NewsClickListener {
-	override val binding: (FragmentNewsFeedBinding) by viewBinding(FragmentNewsFeedBinding::inflate)
+
   companion object {
     private const val INDEX_PROGRESS = 0
     private const val INDEX_ERROR = 1
@@ -30,6 +30,7 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
     private const val INDEX_DATA = 3
   }
 
+  override val binding: (FragmentNewsFeedBinding) by viewBinding(FragmentNewsFeedBinding::inflate)
   private lateinit var adapter: NewsFeedAdapter
   private val viewModel: NewsFeedViewModel by viewModels()
   override val simpleName: String

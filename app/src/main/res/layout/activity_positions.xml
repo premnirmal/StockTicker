@@ -162,11 +162,14 @@
           android:textSize="@dimen/thin_title_text"
           />
 
+
+      <com.google.android.material.card.MaterialCardView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp">
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:layout_margin="8dp"
-          android:background="@drawable/card_bg"
           android:orientation="vertical"
           android:padding="16dp"
           >
@@ -271,7 +274,7 @@
         </LinearLayout>
 
       </LinearLayout>
-
+      </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
   </ScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

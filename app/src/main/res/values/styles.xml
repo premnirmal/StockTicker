@@ -33,8 +33,13 @@
     <item name="itemPaddingTop">8dp</item>
     <item name="itemPaddingBottom">8dp</item>
   </style>
+
   <style name="BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
     <item name="android:color">@color/transparent</item>
+  </style>
+
+  <style name="StocksWidget.Widget.CardView" parent="Widget.Material3.CardView.Elevated">
+    <item name="cardCornerRadius">5dp</item>
   </style>
 
   <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">

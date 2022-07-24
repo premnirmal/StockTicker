@@ -31,6 +31,7 @@
     <item name="bottomNavigationStyle">@style/Widget.StocksWidget.BottomNavigationView</item>
     <item name="snackbarStyle">@style/Snackbar</item>
     <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
+    <item name="materialCardViewStyle">@style/StocksWidget.Widget.CardView</item>
   </style>
 
   <style name="StocksWidget.App.Theme" parent="BaseAppTheme"/>

@@ -43,6 +43,7 @@ import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.ActivityQuoteDetailBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.robinhood.ticker.TickerUtils

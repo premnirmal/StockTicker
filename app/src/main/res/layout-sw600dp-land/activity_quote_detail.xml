@@ -268,13 +268,17 @@
               />
 
         </LinearLayout>
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             app:layout_constraintTop_toBottomOf="@id/positions_header"
-            android:id="@+id/positions_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/card_bg"
+            android:id="@+id/positions_container"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_margin="8dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             >
 
@@ -378,7 +382,7 @@
               />
 
         </LinearLayout>
-
+        </com.google.android.material.card.MaterialCardView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -410,15 +414,18 @@
               />
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/alerts_container"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:background="@drawable/card_bg"
-            android:orientation="vertical"
+            android:id="@+id/alerts_container"
             android:visibility="gone"
+            tools:visibility="visible"
             app:layout_constraintTop_toBottomOf="@id/alert_header"
+            android:layout_margin="8dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             >
 
           <com.github.premnirmal.ticker.ui.StockFieldView
@@ -446,7 +453,7 @@
               />
 
         </LinearLayout>
-
+        </com.google.android.material.card.MaterialCardView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

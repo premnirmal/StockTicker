@@ -107,7 +107,7 @@ class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragmen
   ) {
     super.onViewCreated(view, savedInstanceState)
     binding.stockList.addItemDecoration(
-        SpacingDecoration(requireContext().resources.getDimensionPixelSize(R.dimen.list_spacing))
+        SpacingDecoration(requireContext().resources.getDimensionPixelSize(R.dimen.list_spacing_double))
     )
     val gridLayoutManager = androidx.recyclerview.widget.GridLayoutManager(context, 2)
     binding.stockList.layoutManager = gridLayoutManager

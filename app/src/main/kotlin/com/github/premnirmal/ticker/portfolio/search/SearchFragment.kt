@@ -112,11 +112,14 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
     })
   }
 
-  override fun onHiddenChanged(hidden: Boolean) {
-    super.onHiddenChanged(hidden)
-    if (hidden) dismissKeyboard() else {
-      binding.searchView.showKeyboard()
-    }
+  override fun onResume() {
+    super.onResume()
+    binding.searchView.showKeyboard()
+  }
+
+  override fun onPause() {
+    super.onPause()
+    dismissKeyboard()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {
