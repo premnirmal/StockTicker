@@ -91,11 +91,11 @@
   <string name="equity_value">Equity Value</string>
   <string name="value">Value</string>
   <string name="price">Price</string>
-  <string name="add_position">Add Position</string>
+  <string name="add_position">Positions</string>
   <string name="add">Add</string>
   <string name="done">Done</string>
   <string name="skip">Skip</string>
-  <string name="edit_position">Edit Position</string>
+  <string name="edit_position">Positions</string>
   <string name="no_such_stock_in_portfolio">No such stock in your portfolio.</string>
   <string name="remove">Remove</string>
   <string name="move_to_different_widget">Move to different widget</string>
@@ -183,7 +183,7 @@
   <string name="alert_dismiss">Dismiss</string>
   <string name="alerts_disabled">Alerts disabled, check settings</string>
   <string name="add_notes">Add Notes</string>
-  <string name="add_alerts">Add Alerts</string>
+  <string name="add_alerts">Alerts</string>
   <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
   <string name="save">Save</string>
   <string name="desc_channel_alerts">Stock alerts</string>

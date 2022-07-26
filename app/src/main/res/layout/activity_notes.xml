@@ -21,8 +21,7 @@
 
         app:navigationIcon="?attr/homeAsUpIndicator"
         app:title="@string/notes"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        app:menu="@menu/menu_notes"
+                app:menu="@menu/menu_notes"
         />
 
   </com.google.android.material.appbar.AppBarLayout>

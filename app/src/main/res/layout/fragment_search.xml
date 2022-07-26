@@ -30,8 +30,7 @@
         app:elevation="0dp"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:title="@string/action_search"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        />
+                />
 
     <EditText
         android:id="@+id/search_view"

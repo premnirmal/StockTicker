@@ -7,6 +7,7 @@
     android:inAnimation="@android:anim/fade_in"
     android:outAnimation="@android:anim/fade_out"
     android:background="?attr/colorSurface"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
   <TextView
@@ -24,7 +25,6 @@
       android:id="@+id/stockList"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:clipToPadding="false"
       android:scrollbars="none"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />

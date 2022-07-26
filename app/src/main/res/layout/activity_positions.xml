@@ -20,8 +20,7 @@
 
         app:title="@string/add_position"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        />
+                />
 
   </com.google.android.material.appbar.AppBarLayout>
 

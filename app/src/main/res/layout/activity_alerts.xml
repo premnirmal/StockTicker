@@ -20,8 +20,7 @@
 
         app:title="@string/add_alerts"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        />
+                />
 
   </com.google.android.material.appbar.AppBarLayout>
 
@@ -168,7 +167,7 @@
           android:layout_marginEnd="16dp"
           android:layout_marginRight="16dp"
           android:layout_marginBottom="20dp"
-          android:text="@string/add"
+          android:text="@string/save"
           />
 
     </LinearLayout>

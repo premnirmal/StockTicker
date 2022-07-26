@@ -16,6 +16,15 @@
     <item name="android:textColor">?attr/colorOnSurface</item>
   </style>
 
+  <style name="StocksWidget.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+    <item name="titleTextAppearance">@style/ActionBarTitleText</item>
+    <item name="titleTextColor">?attr/colorOnSurface</item>
+  </style>
+
+  <style name="StocksWidget.ToolbarStyle.MainActivity" parent="StocksWidget.ToolbarStyle">
+    <item name="titleTextAppearance">@style/ActionBarTitleText.Bold</item>
+  </style>
+
   <style name="ActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
     <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
     <item name="android:background">?attr/colorPrimaryDark</item>
@@ -67,6 +76,11 @@
   </style>
 
   <style name="ActionBarTitleText" parent="@style/TextAppearance.Material3.ActionBar.Title">
+    <item name="android:fontFamily">@font/ubuntu_regular</item>
+    <item name="fontFamily">@font/ubuntu_regular</item>
+  </style>
+
+  <style name="ActionBarTitleText.Bold" parent="@style/TextAppearance.Material3.ActionBar.Title">
     <item name="android:fontFamily">@font/ubuntu_bold</item>
     <item name="fontFamily">@font/ubuntu_bold</item>
   </style>

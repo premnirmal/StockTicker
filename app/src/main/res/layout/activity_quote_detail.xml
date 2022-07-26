@@ -39,10 +39,8 @@
           app:layout_collapseMode="parallax"
           app:layout_collapseParallaxMultiplier="1"
           app:navigationIcon="?attr/homeAsUpIndicator"
-          app:titleTextAppearance="@style/ActionBarTitleText"
-          tools:title="AAPL"
+                    tools:title="AAPL"
           />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -211,16 +209,16 @@
             android:text="@string/max"/>
 
       </com.google.android.material.chip.ChipGroup>
-
     </androidx.constraintlayout.widget.ConstraintLayout>
+
       <View
           android:id="@+id/gradient"
           android:layout_width="match_parent"
           android:layout_height="match_parent"
-
-          app:layout_collapseMode="parallax"
-          app:layout_collapseParallaxMultiplier="1"
-          android:alpha="0.0" />
+          android:alpha="0.0"
+          tools:background="?attr/colorAccent"
+          tools:alpha="0.5"
+          />
     </com.google.android.material.appbar.CollapsingToolbarLayout>
   </com.google.android.material.appbar.AppBarLayout>
   <androidx.core.widget.NestedScrollView

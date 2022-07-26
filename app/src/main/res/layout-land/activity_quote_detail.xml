@@ -33,8 +33,7 @@
           android:layout_height="wrap_content"
           app:layout_collapseMode="pin"
           app:navigationIcon="?attr/homeAsUpIndicator"
-          app:titleTextAppearance="@style/ActionBarTitleText"
-          tools:title="AAPL"
+                    tools:title="AAPL"
           />
     </com.google.android.material.appbar.CollapsingToolbarLayout>
   </com.google.android.material.appbar.AppBarLayout>

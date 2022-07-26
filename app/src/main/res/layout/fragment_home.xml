@@ -51,7 +51,7 @@
           android:gravity="center_vertical"
           android:layout_marginTop="@dimen/activity_vertical_margin"
           android:layout_marginStart="16dp"
-          android:textColor="?attr/colorOnSurfaceVariant"
+          android:textColor="?attr/colorOnSurface"
           android:textSize="@dimen/text_size"
           app:layout_collapseMode="parallax"
           app:layout_collapseParallaxMultiplier="1.0"
@@ -79,7 +79,7 @@
           android:layout_height="?attr/actionBarSize"
           app:layout_collapseMode="pin"
           app:title="@string/app_name"
-          app:titleTextAppearance="@style/ActionBarTitleText"
+          app:titleTextAppearance="@style/ActionBarTitleText.Bold"
           app:menu="@menu/menu_home"
           />
     </com.google.android.material.appbar.CollapsingToolbarLayout>

@@ -13,8 +13,7 @@
 
       app:layout_collapseMode="pin"
       app:navigationIcon="?attr/homeAsUpIndicator"
-      app:titleTextAppearance="@style/ActionBarTitleText"
-      app:title="@string/db_viewer"
+            app:title="@string/db_viewer"
       />
 
   <FrameLayout

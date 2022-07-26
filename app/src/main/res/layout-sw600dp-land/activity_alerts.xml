@@ -18,8 +18,7 @@
         android:layout_height="wrap_content"
         app:title="@string/add_alerts"
         app:navigationIcon="?attr/homeAsUpIndicator"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        />
+                />
 
   </com.google.android.material.appbar.AppBarLayout>
 

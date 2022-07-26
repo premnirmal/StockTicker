@@ -43,9 +43,9 @@ import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.ActivityQuoteDetailBinding
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.elevation.SurfaceColors
 import com.robinhood.ticker.TickerUtils
 import javax.inject.Inject
 import kotlin.math.abs
@@ -116,6 +116,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     binding.change.setCharacterLists(TickerUtils.provideNumberList())
     binding.changePercent.setCharacterLists(TickerUtils.provideNumberList())
     if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+      binding.gradient.setBackgroundColor(SurfaceColors.SURFACE_2.getColor(this))
       binding.appBarLayout.addOnOffsetChangedListener(offsetChangedListener)
     }
     setupGraphView()
@@ -179,7 +180,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
 
   private val offsetChangedListener = AppBarLayout.OnOffsetChangedListener { appBarLayout, verticalOffset ->
     if (verticalOffset < -20) {
-      binding.gradient.alpha = abs(verticalOffset / appBarLayout.height.toFloat())
+      binding.gradient.alpha = abs(verticalOffset/appBarLayout.height.toFloat())
     } else {
       binding.gradient.alpha = 0f
     }

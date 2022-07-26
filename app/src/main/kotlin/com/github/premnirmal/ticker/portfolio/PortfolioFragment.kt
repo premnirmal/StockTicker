@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import android.widget.PopupMenu
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -88,7 +87,7 @@ class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragmen
     popupWindow.setOnMenuItemClickListener { menuItem ->
       when (menuItem.itemId) {
         R.id.remove -> {
-          promptRemove(quote)
+          remove(quote)
         }
       }
       true
@@ -141,19 +140,9 @@ class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragmen
     stocksAdapter.refresh()
   }
 
-  private fun promptRemove(quote: Quote?) {
-    quote?.let {
-      AlertDialog.Builder(requireContext())
-          .setTitle(R.string.remove)
-          .setMessage(getString(R.string.remove_prompt, it.symbol))
-          .setPositiveButton(R.string.remove) { dialog, _ ->
-            viewModel.removeStock(widgetId, it.symbol)
-            stocksAdapter.refresh()
-            dialog.dismiss()
-          }
-          .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.dismiss() }
-          .show()
-    }
+  private fun remove(quote: Quote) {
+    viewModel.removeStock(widgetId, quote.symbol)
+    stocksAdapter.refresh()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {

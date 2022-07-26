@@ -2,13 +2,12 @@ package com.github.premnirmal.ticker
 
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.graphics.PorterDuff.Mode.SRC_IN
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON
-import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.settings.WebViewActivity
-import com.github.premnirmal.tickerwidget.R
+import com.google.android.material.elevation.SurfaceColors
 import timber.log.Timber
 
 object CustomTabs {
@@ -18,13 +17,13 @@ object CustomTabs {
     url: String
   ) {
     try {
-      val closeButton = ContextCompat.getDrawable(context, R.drawable.ic_close)!!
-      closeButton.setTint(ContextCompat.getColor(context, R.color.icon_tint))
-      closeButton.setTintMode(SRC_IN)
+      val color = SurfaceColors.SURFACE_2.getColor(context)
       val customTabsIntent = CustomTabsIntent.Builder()
         .setShareState(SHARE_STATE_ON)
         .setShowTitle(true)
-        .setCloseButtonIcon(closeButton.toBitmap())
+        .setDefaultColorSchemeParams(
+          CustomTabColorSchemeParams.Builder().setToolbarColor(color).build()
+        )
         .setExitAnimations(context, android.R.anim.fade_in, android.R.anim.fade_out)
         .build()
       customTabsIntent.launchUrl(context, Uri.parse(url))

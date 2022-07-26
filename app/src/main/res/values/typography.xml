@@ -130,7 +130,7 @@
     <item name="android:textAppearance">@style/TextAppearance.StocksWidget.TitleLarge</item>
     <item name="fontFamily">@font/alegreya_black_italic</item>
     <item name="android:fontFamily">@font/alegreya_black_italic</item>
-    <item name="android:textColor">?attr/colorSecondaryVariant</item>
+    <item name="android:textColor">?attr/colorPrimary</item>
   </style>
 
   <!-- Text apperances -->

@@ -32,6 +32,7 @@
     <item name="snackbarStyle">@style/Snackbar</item>
     <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
     <item name="materialCardViewStyle">@style/StocksWidget.Widget.CardView</item>
+    <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle</item>
   </style>
 
   <style name="StocksWidget.App.Theme" parent="BaseAppTheme"/>
@@ -43,6 +44,7 @@
 
   <style name="MainActivityTheme" parent="StocksWidget.App.Theme">
     <item name="android:statusBarColor">@color/transparent</item>
+    <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle.MainActivity</item>
   </style>
   <style name="Theme.App.Starting" parent="Theme.SplashScreen">
     <!-- Set the splash screen background, animated icon, and animation duration. -->

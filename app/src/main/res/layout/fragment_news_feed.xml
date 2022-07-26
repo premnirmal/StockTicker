@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
 
   <com.google.android.material.appbar.AppBarLayout
@@ -28,8 +29,7 @@
         app:elevation="0dp"
         app:layout_scrollFlags="scroll|exitUntilCollapsed"
         app:title="@string/news_feed"
-        app:titleTextAppearance="@style/ActionBarTitleText"
-        />
+                />
   </com.google.android.material.appbar.AppBarLayout>
 
   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
