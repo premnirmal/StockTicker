@@ -108,6 +108,13 @@
         android:text="@string/one_year_short"/>
 
     <com.google.android.material.chip.Chip
+        android:id="@+id/five_years"
+        style="@style/Widget.Chip.Chart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/five_years_short"/>
+
+    <com.google.android.material.chip.Chip
         android:id="@+id/max"
         style="@style/Widget.Chip.Chart"
         android:layout_width="wrap_content"

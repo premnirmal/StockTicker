@@ -119,6 +119,7 @@ abstract class BaseGraphActivity<T : ViewBinding> : BaseActivity<T>() {
       R.id.one_month -> range = Range.ONE_MONTH
       R.id.three_month -> range = Range.THREE_MONTH
       R.id.one_year -> range = Range.ONE_YEAR
+      R.id.five_years -> range = Range.FIVE_YEARS
       R.id.max -> range = Range.MAX
     }
     fetchGraphData()

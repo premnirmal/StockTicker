@@ -56,6 +56,7 @@ class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
       Range.ONE_MONTH -> binding.oneMonth
       Range.THREE_MONTH -> binding.threeMonth
       Range.ONE_YEAR -> binding.oneYear
+      Range.FIVE_YEARS -> binding.fiveYears
       Range.MAX -> binding.max
       else -> throw UnsupportedOperationException("Range not supported")
     }

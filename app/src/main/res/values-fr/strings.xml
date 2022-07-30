@@ -144,11 +144,13 @@
   <string name="one_month">1 mois</string>
   <string name="three_month">3 mois</string>
   <string name="one_year">1 an</string>
+  <string name="five_years">5 an</string>
   <string name="one_day_short">1D</string>
   <string name="two_weeks_short">14D</string>
   <string name="one_month_short">1M</string>
   <string name="three_month_short">3M</string>
   <string name="one_year_short">1Y</string>
+  <string name="five_years_short">5Y</string>
   <string name="max">Max</string>
   <string name="error_loading_graph">Erreur de chargement du graphique</string>
   <string name="widgets">Widgets</string>

@@ -23,6 +23,7 @@ interface IHistoryProvider {
       val ONE_MONTH = DateRange(Duration.ofDays(30))
       val THREE_MONTH = DateRange(Duration.ofDays(90))
       val ONE_YEAR = DateRange(Duration.ofDays(365))
+      val FIVE_YEARS = DateRange(Duration.ofDays(5 * 365))
       val MAX = DateRange(Duration.ofDays(20 * 365))
     }
   }

@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range
+import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.FIVE_YEARS
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.MAX
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_DAY
 import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_MONTH
@@ -103,6 +104,7 @@ class HistoryProvider : IHistoryProvider {
       ONE_MONTH -> "1mo"
       THREE_MONTH -> "3mo"
       ONE_YEAR -> "1y"
+      FIVE_YEARS -> "5y"
       MAX -> "max"
       else -> "max"
     }
