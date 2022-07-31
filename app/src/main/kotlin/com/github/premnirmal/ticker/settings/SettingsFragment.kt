@@ -177,6 +177,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           val index = listPreference.findIndexOfValue(stringValue)
           appPreferences.themePref = index
           themePref.summary = listPreference.entries[index]
+          if (index == AppPreferences.JUST_BLACK_THEME) {
+            requireActivity().recreate()
+          }
           AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
           InAppMessage.showMessage(requireView(), R.string.theme_updated_message)
           return true

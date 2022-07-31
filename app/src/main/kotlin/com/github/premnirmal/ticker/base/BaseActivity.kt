@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -32,6 +34,9 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
   ) {
     super.onCreate(savedInstanceState)
     DynamicColors.applyToActivityIfAvailable(this)
+    if (holder.appPreferences.themePref == AppPreferences.JUST_BLACK_THEME) {
+      theme.applyStyle(R.style.AppTheme_Overlay_JustBlack, true)
+    }
     setContentView(binding.root)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
   }
@@ -87,6 +92,7 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
   class InjectionHolder {
     @Inject internal lateinit var analytics: Analytics
     @Inject internal lateinit var stocksProvider: IStocksProvider
+    @Inject internal lateinit var appPreferences: AppPreferences
 
     init {
       Injector.appComponent.inject(this)

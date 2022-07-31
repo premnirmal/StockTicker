@@ -16,11 +16,7 @@
     <item>Chiaro</item>
     <item>Scuro</item>
     <item>Come da sistema</item>
-  </string-array>
-  <string-array name="app_themes_values" translatable="false">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
+    <item>Solo nero</item>
   </string-array>
 
   <string-array name="layout_types">

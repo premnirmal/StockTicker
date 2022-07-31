@@ -158,14 +158,14 @@ class AppPreferences {
   }
 
   var themePref: Int
-    get() = sharedPreferences.getInt(APP_THEME, 2)
+    get() = sharedPreferences.getInt(APP_THEME, FOLLOW_SYSTEM_THEME)
     set(value) = sharedPreferences.edit().putInt(APP_THEME, value).apply()
 
   @NightMode val nightMode: Int
     get() = when (themePref) {
-      0 -> AppCompatDelegate.MODE_NIGHT_NO
-      1 -> AppCompatDelegate.MODE_NIGHT_YES
-      2 -> {
+      LIGHT_THEME -> AppCompatDelegate.MODE_NIGHT_NO
+      DARK_THEME, JUST_BLACK_THEME -> AppCompatDelegate.MODE_NIGHT_YES
+      FOLLOW_SYSTEM_THEME -> {
         if (supportSystemNightMode) AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         else AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
       }
@@ -239,6 +239,10 @@ class AppPreferences {
     const val TRANSLUCENT = 2
     const val LIGHT = 1
     const val DARK = 2
+    const val LIGHT_THEME = 0
+    const val DARK_THEME = 1
+    const val FOLLOW_SYSTEM_THEME = 2
+    const val JUST_BLACK_THEME = 3
 
     val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)

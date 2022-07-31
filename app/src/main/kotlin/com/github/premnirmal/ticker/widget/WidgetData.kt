@@ -98,7 +98,11 @@ class WidgetData {
     @ColorRes get() {
       return when (textColorPref()) {
         SYSTEM -> {
-          R.color.text_widget_positive
+          if (appPreferences.themePref == AppPreferences.JUST_BLACK_THEME || nightMode) {
+            R.color.text_widget_positive_light
+          } else {
+            R.color.text_widget_positive
+          }
         }
         DARK -> {
           R.color.text_widget_positive_dark

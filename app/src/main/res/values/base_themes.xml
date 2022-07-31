@@ -39,4 +39,12 @@
         <item name="colorChangeTint">#62e04f</item>
         <item name="harmonizeColorChangeTint">true</item>
     </style>
+
+    <style name="AppTheme.Overlay.JustBlack" parent="ThemeOverlay.Material3">
+        <item name="colorSurface">@color/black</item>
+        <item name="colorSurfaceVariant">@color/black</item>
+        <item name="android:colorBackground">@color/black</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+    </style>
 </resources>
