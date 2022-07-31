@@ -29,8 +29,6 @@
     <item name="alertDialogTheme">@style/AlertDialog</item>
     <item name="editTextStyle">@style/EditTextStyle</item>
     <item name="bottomNavigationStyle">@style/Widget.StocksWidget.BottomNavigationView</item>
-    <item name="snackbarStyle">@style/Snackbar</item>
-    <item name="snackbarTextViewStyle">@style/Snackbar.TextView</item>
     <item name="materialCardViewStyle">@style/StocksWidget.Widget.CardView</item>
     <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle</item>
   </style>

@@ -1,21 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-  <style name="Snackbar" parent="Widget.MaterialComponents.Snackbar">
-    <item name="materialThemeOverlay">@style/ThemeOverlay.App.Snackbar</item>
-    <item name="actionTextColorAlpha">1</item>
-    <item name="animationMode">slide</item>
-    <item name="android:background">@drawable/snackbar_bg</item>
-  </style>
-
-  <style name="ThemeOverlay.App.Snackbar" parent="">
-    <item name="colorOnSurface">?attr/colorPrimary</item>
-    <item name="android:textColor">?attr/colorOnSurface</item>
-  </style>
-
-  <style name="Snackbar.TextView" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
-    <item name="android:textColor">?attr/colorOnSurface</item>
-  </style>
-
   <style name="StocksWidget.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
     <item name="titleTextAppearance">@style/ActionBarTitleText</item>
     <item name="titleTextColor">?attr/colorOnSurface</item>
