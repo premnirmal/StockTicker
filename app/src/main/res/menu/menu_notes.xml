@@ -5,7 +5,7 @@
       android:id="@+id/save"
       android:icon="@drawable/ic_done"
       android:title="@string/save"
-      android:iconTint="@color/icon_tint"
-      app:iconTint="@color/icon_tint"
+      android:iconTint="?attr/colorOnSurfaceVariant"
+      app:iconTint="?attr/colorOnSurfaceVariant"
       app:showAsAction="always"/>
 </menu>

@@ -4,7 +4,7 @@
   <item
       android:id="@+id/action_portfolio"
       android:title="@string/action_portfolio"
-      android:icon="@drawable/ic_portfolio"
+      android:icon="@drawable/ic_timeline"
       app:showAsAction="always"/>
   <item
       android:id="@+id/action_feed"

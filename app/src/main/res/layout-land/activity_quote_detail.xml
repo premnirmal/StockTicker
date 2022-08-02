@@ -80,7 +80,7 @@
         android:onClick="openGraph"
         android:padding="8dp"
         android:src="@drawable/ic_enlarge"
-        app:tint="@color/icon_tint"
+        app:tint="?attr/colorOnSurfaceVariant"
         />
 
     <FrameLayout
@@ -158,6 +158,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginTop="@dimen/quote_details_margin"
         android:layout_marginBottom="@dimen/activity_vertical_margin"
+        app:flow_horizontalAlign="center"
+        app:chipSpacingHorizontal="2dp"
         app:singleLine="true"
         app:singleSelection="true"
         app:selectionRequired="true">

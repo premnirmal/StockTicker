@@ -10,6 +10,8 @@ import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
+import com.github.premnirmal.ticker.home.AppReviewManager
+import com.github.premnirmal.ticker.home.IAppReviewManager
 import com.github.premnirmal.ticker.network.NetworkModule
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
@@ -74,5 +76,9 @@ class AppModule(private val app: StocksApp) {
 
   @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao {
     return db.quoteDao()
+  }
+
+  @Provides @Singleton fun provideAppReviewManager(context: Context, appPreferences: AppPreferences): IAppReviewManager {
+    return AppReviewManager(context, appPreferences)
   }
 }

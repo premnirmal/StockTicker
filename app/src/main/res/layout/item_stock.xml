@@ -47,7 +47,7 @@
         android:layout_gravity="center_vertical"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_more"
-        app:tint="@color/icon_tint"
+        app:tint="?attr/colorOnSurfaceVariant"
         />
   </LinearLayout>
 

@@ -6,7 +6,6 @@
   <color name="accent_fallback">#be6663</color>
   <color name="card_bg">#fbfcfa</color>
   <color name="card_shadow">#10000000</color>
-  <color name="icon_tint">#1b1b1b</color>
   <color name="tab_background">@color/transparent</color>
   <color name="divider">#aaaa</color>
   <color name="toolbar_scrim">@color/transparent</color>

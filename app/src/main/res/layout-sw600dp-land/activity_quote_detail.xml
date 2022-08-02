@@ -99,7 +99,7 @@
             android:onClick="openGraph"
             android:padding="8dp"
             android:src="@drawable/ic_enlarge"
-            app:tint="@color/icon_tint"
+            app:tint="?attr/colorOnSurfaceVariant"
             />
 
         <FrameLayout
@@ -177,6 +177,8 @@
             app:layout_constraintTop_toBottomOf="@id/graph_container"
             android:layout_marginTop="@dimen/quote_details_margin"
             android:layout_marginBottom="@dimen/quote_details_margin"
+            app:flow_horizontalAlign="center"
+            app:chipSpacingHorizontal="2dp"
             app:singleLine="true"
             app:singleSelection="true"
             app:selectionRequired="true">

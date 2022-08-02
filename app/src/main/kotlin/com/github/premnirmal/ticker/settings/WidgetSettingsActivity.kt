@@ -5,12 +5,12 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
-import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityWidgetSettingsBinding
+import com.google.android.material.color.MaterialColors
 
 class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), WidgetSettingsFragment.Parent {
 	override val binding: (ActivityWidgetSettingsBinding) by viewBinding(ActivityWidgetSettingsBinding::inflate)
@@ -28,7 +28,8 @@ class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), Wi
       setOkResult()
       finish()
     }
-    binding.toolbar.navigationIcon?.setTint(ContextCompat.getColor(this, R.color.icon_tint))
+    val tint = MaterialColors.getColor(binding.toolbar, com.google.android.material.R.attr.colorOnSurfaceVariant)
+    binding.toolbar.navigationIcon?.setTint(tint)
     binding.toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
     binding.toolbar.inflateMenu(R.menu.menu_widget_settings)
     binding.toolbar.setOnMenuItemClickListener {

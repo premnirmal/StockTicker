@@ -1,11 +1,8 @@
 package com.github.premnirmal.ticker.home
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
@@ -54,6 +51,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   @Inject internal lateinit var commitsProvider: CommitsProvider
   @Inject internal lateinit var analytics: Analytics
   @Inject internal lateinit var newsProvider: NewsProvider
+  @Inject internal lateinit var appReviewManager: IAppReviewManager
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
@@ -98,16 +96,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
     binding.bottomNavigation.menu.findItem(R.id.action_widgets).isEnabled = widgetDataProvider.hasWidget()
   }
 
-  override fun onBackPressed() {
-    if (binding.bottomNavigation.selectedItemId == R.id.action_portfolio) {
-      if (!maybeAskToRate()) {
-        super.onBackPressed()
-      }
-    } else {
-      binding.bottomNavigation.selectedItemId = R.id.action_portfolio
-    }
-  }
-
   override fun onSaveInstanceState(outState: Bundle) {
     outState.putBoolean(DIALOG_SHOWN, rateDialogShown)
     super.onSaveInstanceState(outState)
@@ -118,32 +106,6 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
     if (::newsProvider.isInitialized) newsProvider.initCache()
     if (::appPreferences.isInitialized && appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
       commitsProvider.initCache()
-    }
-  }
-
-  private fun maybeAskToRate(): Boolean {
-    if (!rateDialogShown && appPreferences.shouldPromptRate()) {
-      Builder(this)
-          .setTitle(R.string.like_our_app)
-          .setMessage(R.string.please_rate)
-          .setPositiveButton(R.string.yes) { dialog, _ ->
-            sendToPlayStore()
-            appPreferences.userDidRate()
-            dialog.dismiss()
-          }.setNegativeButton(R.string.later) { dialog, _ ->
-            dialog.dismiss()
-          }.create().show()
-      rateDialogShown = true
-      return true
-    }
-    return false
-  }
-
-  private fun sendToPlayStore() {
-    val marketUri: Uri = Uri.parse("market://details?id=$packageName")
-    val marketIntent = Intent(Intent.ACTION_VIEW, marketUri)
-    marketIntent.resolveActivity(packageManager)?.let {
-      startActivity(marketIntent)
     }
   }
 
@@ -174,6 +136,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
       ClickEvent("BottomNavClick")
         .addProperty("NavItem", item.title.toString())
     )
+
+    if (!rateDialogShown && !appPreferences.shouldPromptRate()) {
+      appReviewManager.launchReviewFlow(this)
+      rateDialogShown = true
+    }
+
     return true
   }
 

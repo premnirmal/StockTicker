@@ -10,7 +10,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
@@ -34,6 +33,7 @@ import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentSearchBinding
+import com.google.android.material.color.MaterialColors
 
 class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, SuggestionClickListener, TextWatcher {
 	override val binding: (FragmentSearchBinding) by viewBinding(FragmentSearchBinding::inflate)
@@ -75,7 +75,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
     super.onViewCreated(view, savedInstanceState)
     if (arguments?.getBoolean(ARG_SHOW_NAV_ICON) == true) {
       binding.toolbar.setNavigationIcon(R.drawable.ic_back)
-      binding.toolbar.navigationIcon?.setTint(ContextCompat.getColor(requireContext(), R.color.icon_tint))
+      val tint = MaterialColors.getColor(binding.toolbar, com.google.android.material.R.attr.colorOnSurfaceVariant)
+      binding.toolbar.navigationIcon?.setTint(tint)
       binding.toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
       binding.toolbar.setNavigationOnClickListener { requireActivity().finish() }
     } else {

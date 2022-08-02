@@ -40,7 +40,7 @@
       android:paddingTop="10dp"
       android:paddingBottom="10dp"
       android:layout_gravity="center"
-      app:tint="@color/icon_tint"
+      app:tint="?attr/colorOnSurfaceVariant"
       tools:src="@drawable/ic_add_circle"
       />
 </LinearLayout>

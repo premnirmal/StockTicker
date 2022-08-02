@@ -67,6 +67,9 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="center"
+      app:flow_horizontalStyle="spread_inside"
+      app:flow_horizontalAlign="center"
+      app:chipSpacingHorizontal="2dp"
       app:singleLine="true"
       app:singleSelection="true"
       app:selectionRequired="true">
