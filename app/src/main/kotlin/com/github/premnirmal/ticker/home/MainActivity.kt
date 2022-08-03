@@ -24,7 +24,6 @@ import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityMainBinding
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.elevation.SurfaceColors
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,8 +31,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.OnNavigationItemSelectedListener,
-    BottomNavigationView.OnNavigationItemReselectedListener,
+class MainActivity : BaseActivity<ActivityMainBinding>(),
     SettingsFragment.Parent, WidgetSettingsFragment.Parent {
 
   companion object {
@@ -56,7 +54,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
   override val simpleName: String = "MainActivity"
-  override val binding: (ActivityMainBinding) by viewBinding(ActivityMainBinding::inflate)
+  override val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::inflate)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen()
@@ -68,8 +66,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
     window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
     savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
 
-    binding.bottomNavigation.setOnNavigationItemSelectedListener(this)
-    binding.bottomNavigation.setOnNavigationItemReselectedListener(this)
+    binding.bottomNavigation.setOnItemSelectedListener { onNavigationItemSelected(it) }
+    binding.bottomNavigation.setOnItemReselectedListener { onNavigationItemReselected(it) }
 
     currentChild = if (savedInstanceState == null) {
       val fragment = HomeFragment()
@@ -109,9 +107,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
     }
   }
 
-  // BottomNavigationView.OnNavigationItemSelectedListener
-
-  override fun onNavigationItemSelected(item: MenuItem): Boolean {
+  private fun onNavigationItemSelected(item: MenuItem): Boolean {
     val itemId = item.itemId
     var fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_MAP[itemId])
     if (fragment == null) {
@@ -145,9 +141,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), BottomNavigationView.O
     return true
   }
 
-  // BottomNavigationView.OnNavigationItemReselectedListener
-
-  override fun onNavigationItemReselected(item: MenuItem) {
+  private fun onNavigationItemReselected(item: MenuItem) {
     val itemId = item.itemId
     val fragment = supportFragmentManager.findFragmentByTag(FRAGMENT_MAP[itemId])
     (fragment as? ChildFragment)?.scrollToTop()

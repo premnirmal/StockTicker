@@ -26,8 +26,10 @@ class UpdateReceiver : BroadcastReceiver(), CoroutineScope {
       intent: Intent
   ) {
     Injector.appComponent.inject(this)
+    val pendingResult = goAsync()
     launch {
       stocksProvider.fetch()
+      pendingResult.finish()
     }
   }
 }

@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.appwidget.AppWidgetManager
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -205,20 +204,16 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val nukePref = findPreference<Preference>(AppPreferences.SETTING_NUKE)
       nukePref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        showDialog(getString(R.string.are_you_sure), DialogInterface.OnClickListener { _, _ ->
-          val hasUserAlreadyRated = appPreferences.hasUserAlreadyRated()
+        showDialog(getString(R.string.are_you_sure)) { _, _ ->
           Timber.w(RuntimeException("Nuked from settings!"))
           preferences.edit()
               .clear()
-              .apply()
-          preferences.edit()
-              .putBoolean(AppPreferences.DID_RATE, hasUserAlreadyRated)
               .apply()
           lifecycleScope.launch(Dispatchers.IO) {
             db.clearAllTables()
             exitProcess(0)
           }
-        })
+        }
         true
       }
     }

@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker
 
 import android.content.SharedPreferences
 import android.os.Build
-import android.os.Environment
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
@@ -12,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle.MEDIUM
-import java.io.File
 import java.text.DecimalFormat
 import java.text.Format
 import javax.inject.Inject
@@ -126,10 +124,8 @@ class AppPreferences {
         .apply()
   }
 
-  fun hasUserAlreadyRated() = sharedPreferences.getBoolean(DID_RATE, false)
-
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-    !hasUserAlreadyRated() && (Random.nextInt() % 10 == 0)
+    !sharedPreferences.getBoolean(DID_RATE, false) && (Random.nextInt() % 5 == 0)
 
   fun clock(): AppClock = clock
 
@@ -230,7 +226,7 @@ class AppPreferences {
     const val BOLD_CHANGE = "BOLD_CHANGE"
     const val SHOW_CURRENCY = "SHOW_CURRENCY"
     const val PERCENT = "PERCENT"
-    const val DID_RATE = "DID_RATE"
+    const val DID_RATE = "USER_DID_RATE"
     const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"
     const val APP_VERSION_CODE = "APP_VERSION_CODE"
     const val APP_THEME = "APP_THEME"
@@ -253,27 +249,5 @@ class AppPreferences {
 
     val SELECTED_DECIMAL_FORMAT: Format
       get() = INSTANCE.selectedDecimalFormat
-
-    @Deprecated("Do not use after API 19")
-    val tickersFile: File
-      get() {
-        val dir = Environment.getExternalStoragePublicDirectory("StockTickers")
-        if (!dir.exists()) {
-          dir.mkdir()
-        }
-        val fileName = "Tickers.txt"
-        return File(dir, fileName)
-      }
-
-    @Deprecated("Do not use after API 19")
-    val portfolioFile: File
-      get() {
-        val dir = Environment.getExternalStoragePublicDirectory("StockTickers")
-        if (!dir.exists()) {
-          dir.mkdir()
-        }
-        val fileName = "Portfolio.json"
-        return File(dir, fileName)
-      }
   }
 }
