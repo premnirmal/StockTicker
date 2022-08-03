@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.home.IAppReviewManager
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.StocksStorage
@@ -45,11 +46,15 @@ class MockAppModule(private val app: StocksApp) {
 
   @Provides @Singleton internal fun provideAnalytics(): Analytics = Mocker.provide(Analytics::class)
 
-  @Provides @Singleton fun provideQuotesDB(context: Context): QuotesDB {
+  @Provides @Singleton fun provideQuotesDB(): QuotesDB {
     return Mocker.provide(QuotesDB::class)
   }
 
-  @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao {
+  @Provides @Singleton fun provideQuoteDao(): QuoteDao {
     return Mocker.provide(QuoteDao::class)
+  }
+
+  @Provides @Singleton fun provideAppReviewManager(): IAppReviewManager {
+    return Mocker.provide(IAppReviewManager::class)
   }
 }
