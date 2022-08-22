@@ -1,10 +1,12 @@
 package com.github.premnirmal.ticker
 
+import android.Manifest
 import android.R.attr
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -15,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -75,6 +78,14 @@ fun Context.getNavigationBarHeight(): Int {
       "dimen", "android"
   )
   return if (resourceId > 0) resources.getDimensionPixelSize(resourceId) else 0
+}
+
+
+
+@RequiresApi(33) fun Context.hasNotificationPermission(): Boolean {
+  return checkCallingOrSelfPermission(
+          Manifest.permission.POST_NOTIFICATIONS
+      ) == PackageManager.PERMISSION_GRANTED
 }
 
 fun Activity.dismissKeyboard() {

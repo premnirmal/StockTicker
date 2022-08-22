@@ -46,6 +46,7 @@
   <string name="round_two_dp_desc">Round the change and value to 2 decimal places</string>
   <string name="notification_alerts">Notification alerts</string>
   <string name="notification_alerts_desc">Receive notification alerts</string>
+  <string name="notification_alerts_required_message">The app requires the notifications permission to receive notification alerts.</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
   <string name="hide_header">Hide widget header</string>

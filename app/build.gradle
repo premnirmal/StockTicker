@@ -53,7 +53,7 @@ def getOldGitVersion = { ->
 }
 
 android {
-  compileSdkVersion 32
+  compileSdkVersion 33
   buildToolsVersion "31.0.0"
 
   def final name = getVersionName()
@@ -68,7 +68,7 @@ android {
   defaultConfig {
     applicationId appIdBase
     minSdkVersion 21
-    targetSdkVersion 32
+    targetSdkVersion 33
     testInstrumentationRunner "com.github.premnirmal.ticker.mock.MockTestRunner"
 
     versionCode = code

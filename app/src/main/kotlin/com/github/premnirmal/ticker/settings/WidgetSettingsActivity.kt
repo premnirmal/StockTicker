@@ -5,14 +5,16 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
+import androidx.activity.viewModels
 import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.home.MainViewModel
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityWidgetSettingsBinding
 import com.google.android.material.color.MaterialColors
 
-class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), WidgetSettingsFragment.Parent {
+class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>() {
 	override val binding: (ActivityWidgetSettingsBinding) by viewBinding(ActivityWidgetSettingsBinding::inflate)
 
   companion object {
@@ -21,6 +23,7 @@ class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), Wi
 
   internal var widgetId = 0
   override val simpleName: String = "WidgetSettingsActivity"
+  private val viewModel: MainViewModel by viewModels()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -50,6 +53,12 @@ class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), Wi
           ))
           .commit()
     }
+    viewModel.openSearchWidgetId.observe(this) {
+      it?.let {
+        openSearch(it)
+        viewModel.resetOpenSearch()
+      }
+    }
   }
 
   private fun setOkResult() {
@@ -58,7 +67,7 @@ class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>(), Wi
     setResult(Activity.RESULT_OK, result)
   }
 
-  override fun openSearch(widgetId: Int) {
+  private fun openSearch(widgetId: Int) {
     val intent = SearchActivity.launchIntent(this, widgetId)
     startActivity(intent)
   }

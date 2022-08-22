@@ -9,12 +9,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.home.MainActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -49,7 +51,7 @@ class NotificationsHandler @Inject constructor(
 ) {
 
   companion object {
-    const val CHANNEL_ID_ALERTS = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
+    const val CHANNEL_GROUP_ID_ALERTS = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
     const val CHANNEL_ID_SUMMARY = "${BuildConfig.APPLICATION_ID}.notifications.SUMMARY"
 
     private const val PREFS_NOTIFICATIONS = "${BuildConfig.APPLICATION_ID}.notifications.PREFS"
@@ -107,23 +109,20 @@ class NotificationsHandler @Inject constructor(
     )
   }
 
-  private fun createChannels() {
-    // Create the NotificationChannel, but only on API 26+ because
-    // the NotificationChannel class is new and not in the support library
+  private fun createChannels(): Boolean {
+    val hasPermission = VERSION.SDK_INT >= 33 && context.hasNotificationPermission()
+    if (!hasPermission) {
+      return false
+    }
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
       with("Alerts") {
         val name = this
         val descriptionText = context.getString(R.string.desc_channel_alerts)
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(
-            CHANNEL_ID_ALERTS, name, importance
-        ).apply {
-          description = descriptionText
-          setShowBadge(true)
-          lockscreenVisibility = Notification.VISIBILITY_PUBLIC
-        }
-        // Register the channel with the system
-        notificationManager.createNotificationChannel(channel)
+        val channelGroup = NotificationChannelGroupCompat.Builder(
+            CHANNEL_GROUP_ID_ALERTS
+        ).setName(name).setDescription(descriptionText).build()
+        // Register the channel group with the system
+        notificationManager.createNotificationChannelGroup(channelGroup)
       }
       with("Summary") {
         val name = this
@@ -140,10 +139,13 @@ class NotificationsHandler @Inject constructor(
         notificationManager.createNotificationChannel(channel)
       }
     }
+    return true
   }
 
   private suspend fun checkAlerts() {
     if (!appPreferences.notificationAlerts()) return
+    if (VERSION.SDK_INT >= 33 && !context.hasNotificationPermission()) return
+    if (!notificationManager.areNotificationsEnabled()) return
     if (Random.nextBoolean()) enqueueDailySummaryNotification()
     if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
 
@@ -219,17 +221,35 @@ private class NotificationFactory(
     NotificationManagerCompat.from(context)
   }
 
-  private fun createNotificationBuilder(
+  private fun createNotificationBuilderForQuoteAlert(
     title: String,
     body: String,
     quote: Quote
   ): Builder {
+    if (VERSION.SDK_INT >= VERSION_CODES.O) {
+      with(quote.symbol) {
+        val name = this
+        val descriptionText = context.getString(R.string.desc_channel_alerts)
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(
+            NotificationsHandler.CHANNEL_GROUP_ID_ALERTS + "." + quote.symbol, name, importance
+        ).apply {
+          description = descriptionText
+          setShowBadge(true)
+          lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+          group = NotificationsHandler.CHANNEL_GROUP_ID_ALERTS
+        }
+        // Register the channel with the system
+        notificationManager.createNotificationChannel(channel)
+      }
+    }
+
     val icon =
       if (quote.changeInPercent >= 0f) R.drawable.ic_trending_up else R.drawable.ic_trending_down
     return Builder(
         context,
-        NotificationsHandler.CHANNEL_ID_ALERTS
-    )
+        NotificationsHandler.CHANNEL_GROUP_ID_ALERTS + "." + quote.symbol
+    ).setGroup(NotificationsHandler.CHANNEL_GROUP_ID_ALERTS)
         .setSmallIcon(icon)
         .setContentTitle(title)
         .setContentText(body)
@@ -312,8 +332,7 @@ private class NotificationFactory(
       val notification = Builder(
           context,
           NotificationsHandler.CHANNEL_ID_SUMMARY
-      )
-          .setSmallIcon(icon)
+      ).setSmallIcon(icon)
           .setContentTitle(title)
           .setContentText(text)
           .setStyle(NotificationCompat.BigTextStyle().bigText(text))
@@ -340,11 +359,15 @@ private class NotificationFactory(
           // Add the intent, which inflates the back stack
           addNextIntent(intent)
           // Get the PendingIntent containing the entire back stack
-          getPendingIntent(notificationId, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+          if (VERSION.SDK_INT >= VERSION_CODES.S) {
+            getPendingIntent(notificationId, PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+          } else {
+            getPendingIntent(notificationId, PendingIntent.FLAG_UPDATE_CURRENT)
+          }
         }
     with(notificationManager) {
       // NotificationId is a unique int for each notification.
-      val notification = createNotificationBuilder(title, text, quote)
+      val notification = createNotificationBuilderForQuoteAlert(title, text, quote)
           .setContentIntent(pendingIntent)
           .build()
       notify(notificationId, notification)

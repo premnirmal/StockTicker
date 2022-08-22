@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.widget
 
 import android.appwidget.AppWidgetManager
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.viewBinding
@@ -50,11 +48,6 @@ class WidgetsFragment : BaseFragment<FragmentWidgetsBinding>(), ChildFragment, O
         this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
       }
       insets
-    }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
-        height = requireContext().getStatusBarHeight()
-      }
     }
     widgetDataList = widgetDataProvider.getAppWidgetIds()
         .map {

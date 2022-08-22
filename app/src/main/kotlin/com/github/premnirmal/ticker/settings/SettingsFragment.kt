@@ -11,6 +11,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Build.VERSION
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -23,6 +24,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
@@ -34,7 +36,9 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.home.ChildFragment
+import com.github.premnirmal.ticker.home.MainViewModel
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.repo.QuotesDB
@@ -66,19 +70,14 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     private const val REQCODE_FILE_WRITE_SHARE = 855
   }
 
-  interface Parent {
-    fun showWhatsNew()
-    fun showTutorial()
-  }
-
-  private val parent: Parent
-    get() = context as Parent
   @Inject internal lateinit var stocksProvider: IStocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var db: QuotesDB
   @Inject internal lateinit var notificationsHandler: NotificationsHandler
+
+  private val mainViewModel: MainViewModel by activityViewModels()
 
   // ChildFragment
 
@@ -138,7 +137,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val pref = findPreference<Preference>(AppPreferences.SETTING_WHATS_NEW)
       pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        parent.showWhatsNew()
+        mainViewModel.showWhatsNew()
         true
       }
     }
@@ -146,7 +145,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     run {
       val pref = findPreference<Preference>(AppPreferences.SETTING_TUTORIAL)
       pref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-        parent.showTutorial()
+        mainViewModel.showTutorial()
         true
       }
     }
@@ -414,6 +413,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
       notifPref.onPreferenceChangeListener =
         Preference.OnPreferenceChangeListener { _, newValue ->
           appPreferences.setNotificationAlerts(newValue as Boolean)
+          if (newValue == true && VERSION.SDK_INT >= 33 && !requireContext().hasNotificationPermission()) {
+            mainViewModel.requestNotificationPermission()
+          }
           true
         }
     }

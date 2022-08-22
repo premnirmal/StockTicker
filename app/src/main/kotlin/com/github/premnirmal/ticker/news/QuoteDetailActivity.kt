@@ -94,11 +94,6 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
       }
       insets
     }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
-        height = getStatusBarHeight()
-      }
-    }
     quoteDetailsAdapter = QuoteDetailsAdapter()
     binding.listDetails.apply {
       layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)

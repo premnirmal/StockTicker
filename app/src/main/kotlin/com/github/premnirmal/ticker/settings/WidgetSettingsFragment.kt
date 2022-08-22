@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.ArrayRes
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
@@ -17,6 +18,7 @@ import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.home.ChildFragment
+import com.github.premnirmal.ticker.home.MainViewModel
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
@@ -50,18 +52,13 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
     }
   }
 
-  interface Parent {
-    fun openSearch(widgetId: Int)
-  }
-
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var stocksProvider: IStocksProvider
   private lateinit var adapter: WidgetPreviewAdapter
   private var showAddStocks = true
   private var transparentBg = true
-  private val parent: Parent
-    get() = activity as Parent
   internal var widgetId = 0
+  private val mainViewModel: MainViewModel by activityViewModels()
   override val simpleName: String = "WidgetSettingsFragment"
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -118,7 +115,7 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     when (v.id) {
       R.id.setting_add_stock -> {
-        parent.openSearch(widgetId)
+        mainViewModel.openSearch(widgetId)
       }
       R.id.setting_widget_name -> {
         v.setOnClickListener(null)

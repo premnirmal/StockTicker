@@ -1,22 +1,28 @@
 package com.github.premnirmal.ticker.home
 
+import android.Manifest
+import android.os.Build.VERSION
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.news.NewsFeedFragment
+import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
-import com.github.premnirmal.ticker.settings.SettingsFragment
 import com.github.premnirmal.ticker.settings.SettingsParentFragment
-import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -31,8 +37,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/25/16.
  */
-class MainActivity : BaseActivity<ActivityMainBinding>(),
-    SettingsFragment.Parent, WidgetSettingsFragment.Parent {
+class MainActivity : BaseActivity<ActivityMainBinding>() {
 
   companion object {
     private const val DIALOG_SHOWN: String = "DIALOG_SHOWN"
@@ -50,11 +55,14 @@ class MainActivity : BaseActivity<ActivityMainBinding>(),
   @Inject internal lateinit var analytics: Analytics
   @Inject internal lateinit var newsProvider: NewsProvider
   @Inject internal lateinit var appReviewManager: IAppReviewManager
+  @Inject internal lateinit var notificationsHandler: NotificationsHandler
 
   private var currentChild: ChildFragment? = null
   private var rateDialogShown = false
   override val simpleName: String = "MainActivity"
   override val binding: ActivityMainBinding by viewBinding(ActivityMainBinding::inflate)
+  private val viewModel: MainViewModel by viewModels()
+  private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen()
@@ -86,6 +94,42 @@ class MainActivity : BaseActivity<ActivityMainBinding>(),
 
     if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
       showWhatsNew()
+    }
+    if (VERSION.SDK_INT >= 33) {
+      requestPermissionLauncher = registerForActivityResult(RequestPermission()) { granted ->
+        if (granted) {
+          notificationsHandler.initialize()
+        } else {
+          InAppMessage.showMessage(this, R.string.notification_alerts_required_message)
+        }
+      }
+      viewModel.requestNotificationPermission.observe(this) {
+        if (it == true) {
+          requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+          viewModel.resetRequestNotificationPermission()
+        }
+      }
+    }
+    if (VERSION.SDK_INT >= 33 && appPreferences.notificationAlerts() && !hasNotificationPermission()) {
+      requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+    viewModel.showTutorial.observe(this) {
+      if (it == true) {
+        showTutorial()
+        viewModel.resetShowTutorial()
+      }
+    }
+    viewModel.showWhatsNew.observe(this) {
+      if (it == true) {
+        showWhatsNew()
+        viewModel.resetShowWhatsNew()
+      }
+    }
+    viewModel.openSearchWidgetId.observe(this) {
+      it?.let {
+        openSearch(it)
+        viewModel.resetOpenSearch()
+      }
     }
   }
 
@@ -147,14 +191,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(),
     (fragment as? ChildFragment)?.scrollToTop()
   }
 
-  // SettingsFragment.Parent
-
-  override fun showTutorial() {
+  private fun showTutorial() {
     showDialog(getString(R.string.how_to_title), getString(R.string.how_to))
     appPreferences.setTutorialShown(true)
   }
 
-  override fun showWhatsNew() {
+  private fun showWhatsNew() {
     val dialog = showDialog(
         getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
         getString(R.string.loading)
@@ -172,9 +214,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(),
     }
   }
 
-  // WidgetSettingsFragment.Parent
-
-  override fun openSearch(widgetId: Int) {
+  private fun openSearch(widgetId: Int) {
     binding.bottomNavigation.selectedItemId = R.id.action_search
   }
 }

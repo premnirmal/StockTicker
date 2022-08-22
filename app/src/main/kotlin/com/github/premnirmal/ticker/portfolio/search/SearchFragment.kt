@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.portfolio.search
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.graphics.PorterDuff
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -21,7 +20,6 @@ import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.network.data.Suggestion
@@ -86,11 +84,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
           this.topMargin = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
         }
         insets
-      }
-    }
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-      binding.fakeStatusBar.updateLayoutParams<ViewGroup.LayoutParams> {
-        height = requireContext().getStatusBarHeight()
       }
     }
     adapter = SuggestionsAdapter(this)
