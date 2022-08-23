@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+  <string-array name="font_sizes">
+    <item>Küçük</item>
+    <item>Orta</item>
+    <item>Büyük</item>
+  </string-array>
+  <string-array name="font_sizes_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
+  <string-array name="app_themes">
+    <item>Açık</item>
+    <item>Koyu</item>
+    <item>Sistem ayarı</item>
+    <item>Siyah</item>
+  </string-array>
+  <string-array name="app_themes_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+  </string-array>
+
+  <string-array name="layout_types">
+    <item>Animasyonlu</item>
+    <item>Sekmeler</item>
+    <item>Sabit</item>
+    <item>Portföyüm</item>
+  </string-array>
+
+  <string-array name="layout_types_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+  </string-array>
+
+  <string-array name="widget_width_types">
+    <item>Varsayılan</item>
+    <item>Her satırda tek hisse</item>
+  </string-array>
+  <string-array name="widget_width_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+  </string-array>
+
+  <string-array name="backgrounds">
+    <item>System</item>
+    <item>Saydam</item>
+    <item>Yarı Saydam</item>
+  </string-array>
+
+  <string-array name="text_colors">
+    <item>Sistem</item>
+    <item>Açık</item>
+    <item>Koyu</item>
+  </string-array>
+
+  <string-array name="sync_periods">
+    <item>5 dakika</item>
+    <item>15 dakika</item>
+    <item>30 dakika</item>
+    <item>45 dakika</item>
+    <item>1 saat</item>
+  </string-array>
+  <string-array name="sync_periods_values" translatable="false">
+    <item>0</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+  </string-array>
+
+  <string-array name="days">
+    <item>Pazartesi</item>
+    <item>Salı</item>
+    <item>Çarşamba</item>
+    <item>Perşembe</item>
+    <item>Cuma</item>
+    <item>Cumartesi</item>
+    <item>Pazar</item>
+  </string-array>
+  <string-array name="days_values" translatable="false">
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+    <item>6</item>
+    <item>7</item>
+  </string-array>
+</resources>
