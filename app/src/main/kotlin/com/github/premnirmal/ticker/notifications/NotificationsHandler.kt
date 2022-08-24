@@ -110,7 +110,7 @@ class NotificationsHandler @Inject constructor(
   }
 
   private fun createChannels(): Boolean {
-    val hasPermission = VERSION.SDK_INT >= 33 && context.hasNotificationPermission()
+    val hasPermission = if (VERSION.SDK_INT >= 33) context.hasNotificationPermission() else true
     if (!hasPermission) {
       return false
     }
