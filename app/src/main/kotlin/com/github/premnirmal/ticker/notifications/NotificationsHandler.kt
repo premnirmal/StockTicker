@@ -51,6 +51,8 @@ class NotificationsHandler @Inject constructor(
 ) {
 
   companion object {
+    @Deprecated("Use the group channel for alerts")
+    const val CHANNEL_ID_ALERTS = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
     const val CHANNEL_GROUP_ID_ALERTS = "${BuildConfig.APPLICATION_ID}.notifications.ALERTS"
     const val CHANNEL_ID_SUMMARY = "${BuildConfig.APPLICATION_ID}.notifications.SUMMARY"
 
@@ -115,6 +117,7 @@ class NotificationsHandler @Inject constructor(
       return false
     }
     if (VERSION.SDK_INT >= VERSION_CODES.O) {
+      notificationManager.deleteNotificationChannel(CHANNEL_ID_ALERTS)
       with("Alerts") {
         val name = this
         val descriptionText = context.getString(R.string.desc_channel_alerts)
