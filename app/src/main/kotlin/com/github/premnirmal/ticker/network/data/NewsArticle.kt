@@ -47,6 +47,18 @@ class NewsArticle : Comparable<NewsArticle> {
     return Html.fromHtml(title).toString()
   }
 
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+    other as NewsArticle
+    if (url != other.url) return false
+    return true
+  }
+
+  override fun hashCode(): Int {
+    return url.hashCode()
+  }
+
   // Comparable<NewsArticle>
 
   override fun compareTo(other: NewsArticle): Int {

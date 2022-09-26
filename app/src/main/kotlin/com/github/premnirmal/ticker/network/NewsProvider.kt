@@ -49,13 +49,13 @@ class NewsProvider {
         }
         val marketNewsArticles = newsApi.getNewsFeed(query = "stock market").articleList.orEmpty()
         val businessNewsArticles = newsApi.getBusinessNews().articleList.orEmpty()
-        val articles: List<NewsArticle> = ArrayList<NewsArticle>().apply {
+        val articles: Set<NewsArticle> = HashSet<NewsArticle>().apply {
           addAll(marketNewsArticles)
           addAll(businessNewsArticles)
-          sort()
         }
-        cachedBusinessArticles = articles
-        return@withContext FetchResult.success(articles)
+        val newsArticleList = articles.toList().sorted()
+        cachedBusinessArticles = newsArticleList
+        return@withContext FetchResult.success(newsArticleList)
       } catch (ex: Exception) {
         Timber.w(ex)
         return@withContext FetchResult.failure<List<NewsArticle>>(

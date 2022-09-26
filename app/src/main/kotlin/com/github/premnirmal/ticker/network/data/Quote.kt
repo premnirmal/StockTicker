@@ -158,7 +158,7 @@ data class Quote constructor(
   }
 
   fun newsQuery(): String {
-    return "$symbol $name"
+    return "${if (symbol.contains(".")) symbol.substring(0, symbol.indexOf('.')) else symbol} ${name.split(" ").toMutableList().apply { removeAll(arrayOf("Inc.", "Corporation", "PLC", "ORD")) }.take(3).joinToString(" ")} stock"
   }
 
   val isMarketOpen: Boolean
