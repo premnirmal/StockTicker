@@ -13,9 +13,11 @@ import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityAlertsBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AddAlertsActivity : BaseActivity<ActivityAlertsBinding>() {
 	override val binding: (ActivityAlertsBinding) by viewBinding(ActivityAlertsBinding::inflate)
 
@@ -26,11 +28,9 @@ class AddAlertsActivity : BaseActivity<ActivityAlertsBinding>() {
   internal lateinit var ticker: String
   private val viewModel: AlertsViewModel by viewModels()
   override val simpleName: String = "AddAlertsActivity"
-  @Inject internal lateinit var appPreferences: AppPreferences
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
-    super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
     binding.toolbar.setNavigationOnClickListener {
       finish()
     }

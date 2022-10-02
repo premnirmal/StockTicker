@@ -2,8 +2,8 @@ package com.github.premnirmal.ticker.mock
 
 import android.content.Context
 import com.github.premnirmal.ticker.model.AlarmScheduler
-import com.github.premnirmal.ticker.model.IHistoryProvider
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.HistoryProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.GithubApi
 import com.github.premnirmal.ticker.network.NewsApi
@@ -54,8 +54,8 @@ class MockNetworkModule {
   ): SuggestionApi =
     Mocker.provide(SuggestionApi::class)
 
-  @Provides @Singleton internal fun provideStocksProvider(): IStocksProvider =
-    Mocker.provide(IStocksProvider::class)
+  @Provides @Singleton internal fun provideStocksProvider(): StocksProvider =
+    Mocker.provide(StocksProvider::class)
 
   @Provides @Singleton internal fun provideWidgetDataFactory(): WidgetDataProvider =
     Mocker.provide(WidgetDataProvider::class)
@@ -84,8 +84,8 @@ class MockNetworkModule {
   ): ChartApi =
     Mocker.provide(ChartApi::class)
 
-  @Provides @Singleton internal fun provideHistoricalDataProvider(): IHistoryProvider =
-    Mocker.provide(IHistoryProvider::class)
+  @Provides @Singleton internal fun provideHistoricalDataProvider(): HistoryProvider =
+    Mocker.provide(HistoryProvider::class)
 
   @Provides @Singleton internal fun provideAlarmScheduler(): AlarmScheduler = AlarmScheduler()
 }

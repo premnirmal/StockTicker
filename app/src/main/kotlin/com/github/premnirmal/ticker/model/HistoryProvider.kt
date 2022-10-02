@@ -1,33 +1,32 @@
 package com.github.premnirmal.ticker.model
 
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.FIVE_YEARS
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.MAX
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_DAY
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_MONTH
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.ONE_YEAR
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.THREE_MONTH
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range.Companion.TWO_WEEKS
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.FIVE_YEARS
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.MAX
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_DAY
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_MONTH
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_YEAR
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.THREE_MONTH
+import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.TWO_WEEKS
 import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.data.DataPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.threeten.bp.Duration
+import org.threeten.bp.LocalDate
 import timber.log.Timber
+import java.io.Serializable
 import java.lang.ref.WeakReference
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class HistoryProvider : IHistoryProvider {
-
-  @Inject internal lateinit var chartApi: ChartApi
+@Singleton
+class HistoryProvider @Inject constructor(
+  private val chartApi: ChartApi
+) {
 
   private var cachedData: WeakReference<Pair<String, List<DataPoint>>>? = null
 
-  init {
-    Injector.appComponent.inject(this)
-  }
-
-  override suspend fun fetchDataShort(symbol: String): FetchResult<List<DataPoint>> = withContext(Dispatchers.IO) {
+  suspend fun fetchDataShort(symbol: String): FetchResult<List<DataPoint>> = withContext(Dispatchers.IO) {
     val dataPoints =  try {
       if (symbol == cachedData?.get()?.first) {
         cachedData!!.get()!!.second.filter {
@@ -52,7 +51,7 @@ class HistoryProvider : IHistoryProvider {
     return@withContext FetchResult.success(dataPoints)
   }
 
-  override suspend fun fetchDataByRange(
+  suspend fun fetchDataByRange(
     symbol: String,
     range: Range
   ): FetchResult<List<DataPoint>> = withContext(Dispatchers.IO) {
@@ -107,6 +106,20 @@ class HistoryProvider : IHistoryProvider {
       FIVE_YEARS -> "5y"
       MAX -> "max"
       else -> "max"
+    }
+  }
+
+  sealed class Range(val duration: Duration) : Serializable {
+    val end = LocalDate.now().minusDays(duration.toDays())
+    class DateRange(duration: Duration) : Range(duration)
+    companion object {
+      val ONE_DAY = DateRange(Duration.ofDays(1))
+      val TWO_WEEKS = DateRange(Duration.ofDays(14))
+      val ONE_MONTH = DateRange(Duration.ofDays(30))
+      val THREE_MONTH = DateRange(Duration.ofDays(90))
+      val ONE_YEAR = DateRange(Duration.ofDays(365))
+      val FIVE_YEARS = DateRange(Duration.ofDays(5 * 365))
+      val MAX = DateRange(Duration.ofDays(20 * 365))
     }
   }
 }

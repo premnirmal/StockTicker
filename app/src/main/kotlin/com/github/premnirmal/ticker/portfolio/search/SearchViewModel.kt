@@ -4,14 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,20 +20,17 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
-class SearchViewModel : ViewModel() {
-
-  @Inject internal lateinit var stocksApi: StocksApi
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+  private val stocksApi: StocksApi,
+  private val widgetDataProvider: WidgetDataProvider,
+  private val stocksProvider: StocksProvider
+) : ViewModel() {
 
   val searchResult: LiveData<FetchResult<List<Suggestion>>>
     get() = _searchResult
   private val _searchResult: MutableLiveData<FetchResult<List<Suggestion>>> = MutableLiveData()
   private var searchJob: Job? = null
-
-  init {
-    Injector.appComponent.inject(this)
-  }
 
   fun fetchResults(query: String) {
     if (query.isEmpty()) return

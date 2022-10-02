@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.network
 
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.NewsArticle
@@ -13,16 +12,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NewsProvider {
-
-  @Inject lateinit var coroutineScope: CoroutineScope
-  @Inject internal lateinit var newsApi: NewsApi
+class NewsProvider @Inject constructor(
+  private val coroutineScope: CoroutineScope,
+  private val newsApi: NewsApi
+) {
 
   private var cachedBusinessArticles: List<NewsArticle> = emptyList()
-
-  init {
-    Injector.appComponent.inject(this)
-  }
 
   fun initCache() {
     coroutineScope.launch { fetchMarketNews() }

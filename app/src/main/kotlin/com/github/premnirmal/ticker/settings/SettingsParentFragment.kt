@@ -12,7 +12,9 @@ import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentSettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SettingsParentFragment : BaseFragment<FragmentSettingsBinding>(), ChildFragment {
   override val simpleName: String = "SettingsParentFragment"
   override val binding: (FragmentSettingsBinding) by viewBinding(FragmentSettingsBinding::inflate)

@@ -4,20 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.NewsArticle
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class NewsFeedViewModel : ViewModel() {
-
-  @Inject lateinit var newsProvider: NewsProvider
-
-  init {
-    Injector.appComponent.inject(this)
-  }
+@HiltViewModel
+class NewsFeedViewModel @Inject constructor(
+  private val newsProvider: NewsProvider
+): ViewModel() {
 
   val newsFeed: LiveData<FetchResult<List<NewsArticle>>>
     get() = _newsFeed

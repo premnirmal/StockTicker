@@ -17,7 +17,6 @@ import androidx.work.WorkManager
 import androidx.work.await
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import org.threeten.bp.Duration
@@ -34,14 +33,10 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class AlarmScheduler {
-
-  @Inject internal lateinit var appPreferences: AppPreferences
-  @Inject internal lateinit var clock: AppClock
-
-  init {
-    Injector.appComponent.inject(this)
-  }
+class AlarmScheduler @Inject constructor(
+  private val appPreferences: AppPreferences,
+  private val clock: AppClock
+) {
 
   /**
    * Takes care of weekends and after hours
@@ -74,7 +69,8 @@ class AlarmScheduler {
         )) && selectedDaysOfWeek.contains(dayOfWeek)
     ) {
       nextAlarmDate = if (lastFetchedMs > 0
-          && Duration.between(lastFetchedTime,now).toMillis() >= appPreferences.updateIntervalMs
+          && Duration.between(lastFetchedTime, now)
+              .toMillis() >= appPreferences.updateIntervalMs
       ) {
         nextAlarmDate.plusMinutes(1)
       } else {
@@ -88,7 +84,10 @@ class AlarmScheduler {
             .withMinute(startTimez.minute)
       }
     } else {
-      if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime)) {
+      if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(
+              endTime
+          )
+      ) {
         nextAlarmDate = nextAlarmDate.plusMinutes(1)
       } else {
         nextAlarmDate = nextAlarmDate.withHour(startTimez.hour)
@@ -108,12 +107,18 @@ class AlarmScheduler {
         }
 
         if (count >= 7) {
-          Timber.w(Exception("Possible infinite loop in calculating date. Now: ${now.toInstant()}, nextUpdate: ${nextAlarmDate.toInstant()}"))
+          Timber.w(
+              Exception(
+                  "Possible infinite loop in calculating date. Now: ${now.toInstant()}, nextUpdate: ${nextAlarmDate.toInstant()}"
+              )
+          )
         }
       }
     }
 
-    return nextAlarmDate.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
+    return nextAlarmDate.toInstant()
+        .toEpochMilli() - now.toInstant()
+        .toEpochMilli()
   }
 
   fun scheduleUpdate(
@@ -138,12 +143,20 @@ class AlarmScheduler {
     }
     val refreshReceiverIntent = Intent(context, RefreshReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
-    val pendingIntent = PendingIntent.getBroadcast(context, 0, refreshReceiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
-    alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent)
+    val pendingIntent = PendingIntent.getBroadcast(
+        context, 0, refreshReceiverIntent,
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+    )
+    alarmManager.set(
+        AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent
+    )
     return nextAlarmDate
   }
 
-  suspend fun enqueuePeriodicRefresh(context: Context, force: Boolean = true) {
+  suspend fun enqueuePeriodicRefresh(
+    context: Context,
+    force: Boolean = true
+  ) {
     with(WorkManager.getInstance(context)) {
       val enqueuedAlready = try {
         getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
@@ -170,12 +183,19 @@ class AlarmScheduler {
     }
   }
 
-  fun scheduleDailySummaryNotification(context: Context, initialDelay: Long, interval: Long) {
+  fun scheduleDailySummaryNotification(
+    context: Context,
+    initialDelay: Long,
+    interval: Long
+  ) {
     Timber.d("enqueueDailySummaryNotification delay:${initialDelay}ms")
     val receiverIntent = Intent(context, DailySummaryNotificationReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
     val pendingIntent =
-      PendingIntent.getBroadcast(context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT)
+      PendingIntent.getBroadcast(
+          context, REQUEST_CODE_SUMMARY_NOTIFICATION, receiverIntent,
+          PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+      )
     alarmManager.setRepeating(
         AlarmManager.ELAPSED_REALTIME_WAKEUP,
         clock.elapsedRealtime() + initialDelay,

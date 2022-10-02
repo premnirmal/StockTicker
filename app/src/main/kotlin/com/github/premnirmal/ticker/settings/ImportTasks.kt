@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.net.Uri
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.google.gson.reflect.TypeToken
@@ -112,10 +112,10 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
   }
 }
 
-internal open class PortfolioImportTask(private val stocksProvider: IStocksProvider) :
+internal open class PortfolioImportTask(private val stocksProvider: StocksProvider) :
     ImportTask {
 
-  private val gson = Injector.appComponent.gson()
+  private val gson = Injector.appComponent().gson()
 
   override suspend fun import(context: Context, uri: Uri): Boolean {
     val contentResolver = context.applicationContext.contentResolver

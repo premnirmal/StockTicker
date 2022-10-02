@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType
 import com.github.premnirmal.tickerwidget.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -27,16 +28,16 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
   private val quotes: MutableList<Quote>
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var context: Context
+  @Inject @ApplicationContext internal lateinit var context: Context
   @Inject internal lateinit var sharedPreferences: SharedPreferences
 
   init {
+    Injector.appComponent().inject(this)
     this.quotes = ArrayList()
   }
 
   override fun onCreate() {
-    Injector.appComponent.inject(this)
-    val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
+        val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
     val stocks = widgetData.getStocks()
     quotes.clear()
     quotes.addAll(stocks)

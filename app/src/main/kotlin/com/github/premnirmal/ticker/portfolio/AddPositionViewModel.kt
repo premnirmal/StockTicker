@@ -5,21 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class AddPositionViewModel : ViewModel() {
-
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-
-  init {
-    Injector.appComponent.inject(this)
-  }
+@HiltViewModel
+class AddPositionViewModel @Inject constructor(private val stocksProvider: StocksProvider) : ViewModel() {
 
   val quote: LiveData<Quote>
     get() = _quote

@@ -15,12 +15,11 @@ import androidx.lifecycle.lifecycleScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.home.MainViewModel
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
+import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SettingsTextView
 import com.github.premnirmal.ticker.viewBinding
@@ -28,12 +27,14 @@ import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentWidgetSettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), ChildFragment, OnClickListener {
 	override val binding: (FragmentWidgetSettingsBinding) by viewBinding(FragmentWidgetSettingsBinding::inflate)
   companion object {
@@ -53,7 +54,7 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
   }
 
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: StocksProvider
   private lateinit var adapter: WidgetPreviewAdapter
   private var showAddStocks = true
   private var transparentBg = true
@@ -63,8 +64,7 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
-    widgetId = requireArguments().getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        widgetId = requireArguments().getInt(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
     showAddStocks = requireArguments().getBoolean(ARG_SHOW_ADD_STOCKS, true)
     transparentBg = requireArguments().getBoolean(TRANSPARENT_BG, false)
   }

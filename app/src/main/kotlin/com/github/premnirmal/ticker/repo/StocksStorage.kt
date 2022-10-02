@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.repo
 
 import android.content.SharedPreferences
 import androidx.room.withTransaction
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Properties
@@ -14,23 +13,21 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-class StocksStorage {
+@Singleton
+class StocksStorage @Inject constructor(
+  private val preferences: SharedPreferences,
+  private val gson: Gson,
+  private val db: QuotesDB,
+  private val quoteDao: QuoteDao
+) {
 
   companion object {
     private const val KEY_TICKERS = "TICKERS"
-  }
-
-  @Inject lateinit var preferences: SharedPreferences
-  @Inject lateinit var gson: Gson
-  @Inject lateinit var db: QuotesDB
-  @Inject lateinit var quoteDao: QuoteDao
-
-  init {
-    Injector.appComponent.inject(this)
   }
 
   fun saveTickers(tickers: Set<String>) {

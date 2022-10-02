@@ -8,13 +8,15 @@ import com.github.mikephil.charting.charts.LineChart
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range
+import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityGraphBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class GraphActivity : BaseGraphActivity<ActivityGraphBinding>() {
 
   companion object {

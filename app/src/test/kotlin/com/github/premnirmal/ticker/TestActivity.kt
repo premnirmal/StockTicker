@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.mock.MockAppComponent
 import com.github.premnirmal.tickerwidget.databinding.ActivityTestBinding
 
+@AndroidEntryPoint
 class TestActivity : BaseActivity<ActivityTestBinding>() {
 	override val binding: (ActivityTestBinding) by viewBinding(ActivityTestBinding::inflate)
   override val simpleName: String = "TestActivity"

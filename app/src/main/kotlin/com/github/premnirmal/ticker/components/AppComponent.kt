@@ -1,151 +1,36 @@
 package com.github.premnirmal.ticker.components
 
-import android.content.Context
-import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.UpdateReceiver
-import com.github.premnirmal.ticker.analytics.GeneralProperties
-import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.debug.DbViewerViewModel
-import com.github.premnirmal.ticker.home.HomeFragment
-import com.github.premnirmal.ticker.home.HomeViewModel
-import com.github.premnirmal.ticker.home.MainActivity
-import com.github.premnirmal.ticker.model.AlarmScheduler
-import com.github.premnirmal.ticker.model.ExponentialBackoff
-import com.github.premnirmal.ticker.model.HistoryProvider
-import com.github.premnirmal.ticker.model.RefreshWorker
-import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.UserAgentInterceptor
-import com.github.premnirmal.ticker.news.GraphViewModel
-import com.github.premnirmal.ticker.news.NewsFeedViewModel
-import com.github.premnirmal.ticker.news.QuoteDetailActivity
-import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
-import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
-import com.github.premnirmal.ticker.portfolio.AddPositionViewModel
-import com.github.premnirmal.ticker.portfolio.AlertsViewModel
-import com.github.premnirmal.ticker.portfolio.NotesViewModel
-import com.github.premnirmal.ticker.portfolio.PortfolioViewModel
-import com.github.premnirmal.ticker.portfolio.StocksAdapter
-import com.github.premnirmal.ticker.portfolio.search.SearchFragment
-import com.github.premnirmal.ticker.portfolio.search.SearchViewModel
-import com.github.premnirmal.ticker.repo.StocksStorage
-import com.github.premnirmal.ticker.settings.SettingsFragment
-import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.google.gson.Gson
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 /**
  * Created by premnirmal on 3/3/16.
  */
-@javax.inject.Singleton
-@dagger.Component(modules = [AppModule::class])
-interface AppComponent {
 
-  // Activities
-
-  fun inject(stocksApp: BaseActivity.InjectionHolder)
-
-  fun inject(mainActivity: MainActivity)
-
-  fun inject(addAlertsActivity: AddAlertsActivity)
-
-  fun inject(newsFeedActivity: QuoteDetailActivity)
-
-  // Components
-
-  fun inject(stocksApp: StocksApp.InjectionHolder)
-
-  fun inject(stocksStorage: StocksStorage)
-
-  fun inject(appPreferences: AppPreferences)
-
-  fun inject(stocksProvider: StocksProvider)
-
-  fun inject(historicalDataProvider: HistoryProvider)
-
-  fun inject(alarmScheduler: AlarmScheduler)
-
-  fun inject(updateReceiver: UpdateReceiver)
-
-  fun inject(refreshReceiver: RefreshReceiver)
-
-  fun inject(refreshWorker: RefreshWorker)
-
-  fun inject(exponentialBackoff: ExponentialBackoff)
-
-  fun inject(generalProperties: GeneralProperties)
-
-  fun inject(dailySummaryNotificationReceiver: DailySummaryNotificationReceiver)
-
-  // Network
-
-  fun inject(stocksApi: StocksApi)
-
-  fun inject(newsProvider: NewsProvider)
-
-  fun inject(interceptor: UserAgentInterceptor)
-
-  // Widget
-
-  fun inject(stockWidget: StockWidget)
-
-  fun inject(widgetClickReceiver: WidgetClickReceiver)
-
-  fun inject(widgetDataProvider: WidgetDataProvider)
-
-  fun inject(widgetData: WidgetData)
-
-  fun inject(remoteStockViewAdapter: RemoteStockViewAdapter)
-
-  // UI
-
-  fun inject(holder: BaseFragment.InjectionHolder)
-
-  fun inject(homeFragment: HomeFragment)
-
-  fun inject(fragment: SearchFragment)
-
-  fun inject(settingsFragment: SettingsFragment)
-
-  fun inject(stocksAdapter: StocksAdapter)
-
-  fun inject(fragment: WidgetsFragment)
-
-  fun inject(widgetSettingsFragment: WidgetSettingsFragment)
-
-  fun appContext(): Context
-
+interface LegacyComponent {
   fun gson(): Gson
 
-  // ViewModels
+  fun inject(widget: StockWidget)
 
-  fun inject(dbViewerViewModel: DbViewerViewModel)
+  fun inject(data: WidgetData)
 
-  fun inject(quoteDetailViewModel: QuoteDetailViewModel)
+  fun inject(adapter: RemoteStockViewAdapter)
 
-  fun inject(graphViewModel: GraphViewModel)
-
-  fun inject(newsFeedViewModel: NewsFeedViewModel)
-
-  fun inject(totalHoldingsViewModel: HomeViewModel)
-
-  fun inject(notesViewModel: NotesViewModel)
-
-  fun inject(alertsViewModel: AlertsViewModel)
-
-  fun inject(searchViewModel: SearchViewModel)
-
-  fun inject(viewModel: PortfolioViewModel)
-
-  fun inject(viewModel: AddPositionViewModel)
+  fun inject(receiver: WidgetClickReceiver)
+  fun inject(receiver: RefreshReceiver)
+  fun inject(receiver: UpdateReceiver)
+  fun inject(receiver: DailySummaryNotificationReceiver)
 }
+
+@InstallIn(SingletonComponent::class)
+@EntryPoint
+interface AppEntryPoint : LegacyComponent

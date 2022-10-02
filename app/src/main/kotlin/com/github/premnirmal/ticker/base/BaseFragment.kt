@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.components.Injector
 import javax.inject.Inject
 
 /**
@@ -15,9 +14,7 @@ import javax.inject.Inject
  */
 abstract class BaseFragment<T: ViewBinding> : Fragment() {
 
-  protected val analytics: Analytics
-    get() = holder.analytics
-  private val holder: InjectionHolder by lazy { InjectionHolder() }
+  @Inject internal lateinit var analytics: Analytics
 
   abstract val simpleName: String
   abstract val binding: T
@@ -28,13 +25,5 @@ abstract class BaseFragment<T: ViewBinding> : Fragment() {
     savedInstanceState: Bundle?
   ): View {
     return binding.root
-  }
-
-  class InjectionHolder {
-    @Inject internal lateinit var analytics: Analytics
-
-    init {
-      Injector.appComponent.inject(this)
-    }
   }
 }

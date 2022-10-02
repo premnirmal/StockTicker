@@ -7,14 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.format
 import com.github.premnirmal.ticker.formatBigNumbers
 import com.github.premnirmal.ticker.formatDate
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.model.IHistoryProvider
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.HistoryProvider
+import com.github.premnirmal.ticker.model.HistoryProvider.Range
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.NewsArticle
@@ -22,6 +21,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,12 +32,14 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class QuoteDetailViewModel(application: Application) : AndroidViewModel(application) {
-
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var newsProvider: NewsProvider
-  @Inject internal lateinit var historyProvider: IHistoryProvider
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+@HiltViewModel
+class QuoteDetailViewModel @Inject constructor(
+  application: Application,
+  private val stocksProvider: StocksProvider,
+  private val newsProvider: NewsProvider,
+  private val historyProvider: HistoryProvider,
+  private val widgetDataProvider: WidgetDataProvider
+) : AndroidViewModel(application) {
 
   private val _quote = MutableSharedFlow<FetchResult<Quote>>()
   val quote: LiveData<FetchResult<Quote>>
@@ -136,9 +138,7 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
     }
   }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), 1)
 
-  init {
-    Injector.appComponent.inject(this)
-  }
+  
 
   fun loadQuote(ticker: String) = viewModelScope.launch {
     _quote.emit(FetchResult.success(checkNotNull(stocksProvider.getStock(ticker))))
@@ -161,7 +161,7 @@ class QuoteDetailViewModel(application: Application) : AndroidViewModel(applicat
           isMarketOpen = result.data.isMarketOpen
           _quote.emit(result)
         }
-        delay(IStocksProvider.DEFAULT_INTERVAL_MS)
+        delay(StocksProvider.DEFAULT_INTERVAL_MS)
       } while (isActive && result.wasSuccessful && isMarketOpen)
     }
   }

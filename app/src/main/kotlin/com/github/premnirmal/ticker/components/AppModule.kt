@@ -6,62 +6,51 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
+import com.github.premnirmal.ticker.analytics.GeneralProperties
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.home.AppReviewManager
 import com.github.premnirmal.ticker.home.IAppReviewManager
-import com.github.premnirmal.ticker.network.NetworkModule
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
-import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_1_2
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_2_3
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_3_4
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_4_5
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_5_6
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
-/**
- * Created by premnirmal on 3/3/16.
- */
-@Module(includes = [NetworkModule::class])
-class AppModule(private val app: StocksApp) {
+@Module
+@InstallIn(SingletonComponent::class)
+class AppModule {
 
-  @Provides fun provideApplicationContext(): Context = app
-
-  @Singleton @Provides fun provideApplicationScope(): CoroutineScope {
-    return CoroutineScope(Dispatchers.Unconfined + SupervisorJob())
-  }
+  @Singleton @Provides fun provideApplicationScope(): CoroutineScope = CoroutineScope(Dispatchers.Unconfined + SupervisorJob())
 
   @Provides @Singleton fun provideClock(): AppClock = AppClockImpl
 
   @Provides @Singleton fun provideDefaultSharedPreferences(
-    context: Context
+    @ApplicationContext context: Context
   ): SharedPreferences =
     context.getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
 
-  @Provides @Singleton fun provideAppWidgetManager(): AppWidgetManager =
-    AppWidgetManager.getInstance(app)
+  @Provides @Singleton fun provideAppWidgetManager(@ApplicationContext context: Context): AppWidgetManager =
+    AppWidgetManager.getInstance(context)
 
-  @Provides @Singleton internal fun provideWidgetDataProvider(): WidgetDataProvider =
-    WidgetDataProvider()
+  @Provides @Singleton fun provideAnalytics(
+    @ApplicationContext context: Context,
+    properties: dagger.Lazy<GeneralProperties>
+  ): Analytics = AnalyticsImpl(context, properties)
 
-  @Provides @Singleton fun provideAppPreferences(): AppPreferences = AppPreferences()
-
-  @Provides @Singleton fun provideAnalytics(): Analytics = AnalyticsImpl()
-
-  @Provides @Singleton fun provideStorage(): StocksStorage =
-    StocksStorage()
-
-  @Provides @Singleton fun provideQuotesDB(context: Context): QuotesDB {
+  @Provides @Singleton fun provideQuotesDB(@ApplicationContext context: Context): QuotesDB {
     return Room.databaseBuilder(
         context.applicationContext,
         QuotesDB::class.java, "quotes-db"
@@ -74,11 +63,9 @@ class AppModule(private val app: StocksApp) {
         .build()
   }
 
-  @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao {
-    return db.quoteDao()
-  }
+  @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao = db.quoteDao()
 
-  @Provides @Singleton fun provideAppReviewManager(context: Context, appPreferences: AppPreferences): IAppReviewManager {
+  @Provides @Singleton fun provideAppReviewManager(@ApplicationContext context: Context, appPreferences: AppPreferences): IAppReviewManager {
     return AppReviewManager(context, appPreferences)
   }
 }

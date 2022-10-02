@@ -17,7 +17,7 @@ class DailySummaryNotificationReceiver: BroadcastReceiver() {
 
   override fun onReceive(context: Context, intent: Intent?) {
     Timber.d("DailySummaryNotificationReceiver onReceive")
-    Injector.appComponent.inject(this)
+    Injector.appComponent().inject(this)
     val today = clock.todayLocal().toLocalDate()
     if (appPreferences.updateDays().contains(today.dayOfWeek)) {
       notificationsHandler.notifyDailySummary()

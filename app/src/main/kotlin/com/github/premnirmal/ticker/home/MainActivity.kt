@@ -10,12 +10,9 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestPermissi
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -31,12 +28,14 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityMainBinding
 import com.google.android.material.elevation.SurfaceColors
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/25/16.
  */
+@AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>() {
 
   companion object {
@@ -49,10 +48,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
           R.id.action_feed to NewsFeedFragment::class.java.name)
   }
 
-  @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var commitsProvider: CommitsProvider
-  @Inject internal lateinit var analytics: Analytics
   @Inject internal lateinit var newsProvider: NewsProvider
   @Inject internal lateinit var appReviewManager: IAppReviewManager
   @Inject internal lateinit var notificationsHandler: NotificationsHandler
@@ -67,8 +64,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
   override fun onCreate(savedInstanceState: Bundle?) {
     installSplashScreen()
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
-    initCaches()
+        initCaches()
     window.decorView.systemUiVisibility = window.decorView.systemUiVisibility or
         (View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
     window.navigationBarColor = SurfaceColors.SURFACE_2.getColor(this)
@@ -146,7 +142,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
   private fun initCaches() {
     // not sure why news provider is not getting initialised, so added this check
     if (::newsProvider.isInitialized) newsProvider.initCache()
-    if (::appPreferences.isInitialized && appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
+    if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
       commitsProvider.initCache()
     }
   }

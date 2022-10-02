@@ -6,7 +6,9 @@ import androidx.activity.viewModels
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.databinding.ActivityDbViewerBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DbViewerActivity : BaseActivity<ActivityDbViewerBinding>() {
 	override val binding: (ActivityDbViewerBinding) by viewBinding(ActivityDbViewerBinding::inflate)
 

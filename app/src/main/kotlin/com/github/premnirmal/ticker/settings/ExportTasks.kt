@@ -10,7 +10,6 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.ArrayList
 
 internal object TickersExporter {
 
@@ -51,7 +50,7 @@ internal object TickersExporter {
 
 internal object PortfolioExporter {
 
-  private val gson = Injector.appComponent.gson()
+  private val gson = Injector.appComponent().gson()
 
   suspend fun exportQuotes(file: File, vararg quoteLists: List<Quote>): String? = withContext(Dispatchers.IO) {
     val quoteList: List<Quote> = quoteLists[0]

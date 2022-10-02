@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.Quote
@@ -18,17 +17,14 @@ import javax.inject.Singleton
  * Created by premnirmal on 3/3/16.
  */
 @Singleton
-class StocksApi {
+class StocksApi @Inject constructor(
+  private val gson: Gson,
+  private val yahooFinance: YahooFinance,
+  private val suggestionApi: SuggestionApi,
+  private val clock: AppClock
+) {
 
-  @Inject internal lateinit var gson: Gson
-  @Inject internal lateinit var yahooFinance: YahooFinance
-  @Inject internal lateinit var suggestionApi: SuggestionApi
-  @Inject internal lateinit var clock: AppClock
   var lastFetched: Long = 0
-
-  init {
-    Injector.appComponent.inject(this)
-  }
 
   suspend fun getSuggestions(query: String): FetchResult<List<SuggestionNet>> =
     withContext(Dispatchers.IO) {

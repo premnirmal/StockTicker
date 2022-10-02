@@ -7,9 +7,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
@@ -17,14 +17,11 @@ import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
 import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
-
-  @Inject lateinit var stocksProvider: IStocksProvider
-  @Inject lateinit var appPreferences: AppPreferences
-
-  init {
-    Injector.appComponent.inject(this)
-  }
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+  private val stocksProvider: StocksProvider,
+  private val appPreferences: AppPreferences
+) : ViewModel() {
 
   val fetchState = stocksProvider.fetchState.asLiveData(Dispatchers.Main)
   val hasHoldings: Boolean

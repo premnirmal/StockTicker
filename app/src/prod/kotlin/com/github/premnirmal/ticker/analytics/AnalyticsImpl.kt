@@ -3,20 +3,20 @@ package com.github.premnirmal.ticker.analytics
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.github.premnirmal.ticker.home.MainActivity
+import com.google.firebase.analytics.FirebaseAnalytics
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-class AnalyticsImpl : Analytics {
+class AnalyticsImpl(
+  @ApplicationContext private val context: Context,
+  private val generalProperties: dagger.Lazy<GeneralProperties>
+) : Analytics {
 
-  private lateinit var firebaseAnalytics: FirebaseAnalytics
-  private lateinit var generalProperties: GeneralProperties
-
-  override fun initialize(context: Context) {
-    firebaseAnalytics = FirebaseAnalytics.getInstance(context)
-    generalProperties = GeneralProperties()
+  private val firebaseAnalytics: FirebaseAnalytics by lazy {
+    FirebaseAnalytics.getInstance(context)
   }
 
   override fun trackScreenView(screenName: String, activity: Activity) {
@@ -26,8 +26,8 @@ class AnalyticsImpl : Analytics {
     firebaseAnalytics.setCurrentScreen(activity, screenName, null)
     val bundle = Bundle().apply {
       putString(FirebaseAnalytics.Param.ITEM_NAME, screenName)
-      putInt("WidgetCount", generalProperties.widgetCount)
-      putInt("TickerCount", generalProperties.tickerCount)
+      putInt("WidgetCount", generalProperties.get().widgetCount)
+      putInt("TickerCount", generalProperties.get().tickerCount)
     }
     firebaseAnalytics.logEvent("ScreenView", bundle)
   }
@@ -46,8 +46,8 @@ class AnalyticsImpl : Analytics {
       event.properties.forEach { entry ->
         putString(entry.key, entry.value)
       }
-      putInt("WidgetCount", generalProperties.widgetCount)
-      putInt("TickerCount", generalProperties.tickerCount)
+      putInt("WidgetCount", generalProperties.get().widgetCount)
+      putInt("TickerCount", generalProperties.get().tickerCount)
     }
   }
 }

@@ -8,7 +8,9 @@ import android.webkit.WebViewClient
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.databinding.ActivityWebviewBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class WebViewActivity : BaseActivity<ActivityWebviewBinding>() {
   override val binding by viewBinding(ActivityWebviewBinding::inflate)
   override var simpleName = "WebViewActivity"

@@ -22,7 +22,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
     context: Context,
     intent: Intent
   ) {
-    Injector.appComponent.inject(this)
+    Injector.appComponent().inject(this)
     if (intent.getBooleanExtra(FLIP, false)) {
       val widgetId = intent.getIntExtra(WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
       val widgetData = widgetDataProvider.dataForWidgetId(widgetId)

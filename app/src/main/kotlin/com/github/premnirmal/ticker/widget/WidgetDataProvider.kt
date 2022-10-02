@@ -4,26 +4,22 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.components.Injector
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WidgetDataProvider {
+class WidgetDataProvider @Inject constructor(
+  @ApplicationContext private val context: Context,
+  private val widgetManager: AppWidgetManager
+) {
 
   companion object {
     const val INVALID_WIDGET_ID = AppWidgetManager.INVALID_APPWIDGET_ID
   }
 
-  @Inject internal lateinit var widgetManager: AppWidgetManager
-  @Inject internal lateinit var context: Context
-
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap()
-  }
-
-  init {
-    Injector.appComponent.inject(this)
   }
 
   fun getAppWidgetIds(): IntArray =

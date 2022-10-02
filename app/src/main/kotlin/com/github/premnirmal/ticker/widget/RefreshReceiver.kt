@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,7 +16,7 @@ import kotlin.coroutines.CoroutineContext
  */
 class RefreshReceiver : BroadcastReceiver(), CoroutineScope {
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: StocksProvider
 
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.Main
@@ -25,7 +25,7 @@ class RefreshReceiver : BroadcastReceiver(), CoroutineScope {
       context: Context,
       intent: Intent
   ) {
-    Injector.appComponent.inject(this)
+    Injector.appComponent().inject(this)
     val pendingResult = goAsync()
     launch {
       stocksProvider.fetch()

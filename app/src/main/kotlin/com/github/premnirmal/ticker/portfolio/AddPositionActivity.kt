@@ -15,11 +15,13 @@ import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityPositionsBinding
 import com.github.premnirmal.tickerwidget.databinding.LayoutPositionHoldingBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 
 /**
  * Created by premnirmal on 2/25/16.
  */
+@AndroidEntryPoint
 class AddPositionActivity : BaseActivity<ActivityPositionsBinding>() {
 	override val binding: (ActivityPositionsBinding) by viewBinding(ActivityPositionsBinding::inflate)
 

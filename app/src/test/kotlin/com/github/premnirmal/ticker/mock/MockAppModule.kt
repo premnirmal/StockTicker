@@ -13,6 +13,7 @@ import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.StocksStorage
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
@@ -32,7 +33,7 @@ class MockAppModule(private val app: StocksApp) {
   @Provides @Singleton internal fun provideClock(): AppClock = Mocker.provide(AppClock::class)
 
   @Provides @Singleton internal fun provideDefaultSharedPreferences(
-    context: Context): SharedPreferences {
+    @ApplicationContext context: Context): SharedPreferences {
     return context.getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
   }
 

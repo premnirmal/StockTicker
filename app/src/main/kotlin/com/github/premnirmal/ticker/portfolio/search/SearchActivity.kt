@@ -8,7 +8,9 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivitySearchBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchActivity : BaseActivity<ActivitySearchBinding>() {
 	override val binding: (ActivitySearchBinding) by viewBinding(ActivitySearchBinding::inflate)
   override val simpleName: String = "SearchActivity"

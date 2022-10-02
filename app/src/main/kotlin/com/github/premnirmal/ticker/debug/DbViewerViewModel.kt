@@ -9,9 +9,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.StocksApp
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
@@ -19,7 +19,11 @@ import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 
-class DbViewerViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class DbViewerViewModel @Inject constructor(
+  application: Application,
+  private val dao: QuoteDao
+) : AndroidViewModel(application) {
 
   companion object {
     private const val FILENAME = "db.html"
@@ -32,12 +36,6 @@ class DbViewerViewModel(application: Application) : AndroidViewModel(application
   private val _htmlFile = MutableLiveData<File>()
   val htmlFile: LiveData<File>
     get() = _htmlFile
-
-  @Inject lateinit var dao: QuoteDao
-
-  init {
-    Injector.appComponent.inject(this)
-  }
 
   fun generateDatabaseHtml() {
     viewModelScope.launch(Dispatchers.IO) {

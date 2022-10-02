@@ -6,9 +6,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
+import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import com.google.android.material.color.DynamicColors
@@ -27,14 +26,16 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
   abstract val binding: T
   open val subscribeToErrorEvents = true
   private var isErrorDialogShowing = false
-  private val holder: InjectionHolder by lazy { InjectionHolder() }
+  @Inject lateinit var analytics: Analytics
+  @Inject lateinit var stocksProvider: StocksProvider
+  @Inject lateinit var appPreferences: AppPreferences
 
   override fun onCreate(
       savedInstanceState: Bundle?
   ) {
     super.onCreate(savedInstanceState)
     DynamicColors.applyToActivityIfAvailable(this)
-    if (holder.appPreferences.themePref == AppPreferences.JUST_BLACK_THEME) {
+    if (appPreferences.themePref == AppPreferences.JUST_BLACK_THEME) {
       theme.applyStyle(R.style.AppTheme_Overlay_JustBlack, true)
     }
     setContentView(binding.root)
@@ -43,14 +44,14 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    holder.analytics.trackScreenView(simpleName, this)
+    analytics.trackScreenView(simpleName, this)
   }
 
   override fun onResume() {
     super.onResume()
     if (subscribeToErrorEvents) {
       lifecycleScope.launch {
-        holder.stocksProvider.fetchState.collect { state ->
+        stocksProvider.fetchState.collect { state ->
           if (state is FetchState.Failure) {
             if (this.isActive && !isErrorDialogShowing && !isFinishing) {
               isErrorDialogShowing = true
@@ -87,15 +88,5 @@ abstract class BaseActivity<T: ViewBinding> : AppCompatActivity() {
 
   companion object {
     private const val IS_ERROR_DIALOG_SHOWING = "IS_ERROR_DIALOG_SHOWING"
-  }
-
-  class InjectionHolder {
-    @Inject internal lateinit var analytics: Analytics
-    @Inject internal lateinit var stocksProvider: IStocksProvider
-    @Inject internal lateinit var appPreferences: AppPreferences
-
-    init {
-      Injector.appComponent.inject(this)
-    }
   }
 }

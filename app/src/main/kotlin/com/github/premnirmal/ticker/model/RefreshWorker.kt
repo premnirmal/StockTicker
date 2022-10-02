@@ -14,11 +14,9 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
     const val TAG_PERIODIC = "RefreshWorker_Periodic"
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: StocksProvider
 
-  init {
-    Injector.appComponent.inject(this)
-  }
+  
 
   override suspend fun doWork(): Result {
     return if (applicationContext.isNetworkOnline()) {

@@ -2,8 +2,8 @@ package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
+import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.tools.Parser
 import com.google.gson.JsonElement
 import com.nhaarman.mockitokotlin2.any
@@ -27,7 +27,7 @@ abstract class BaseUnitTest : TestCase() {
 
   @Before public override fun setUp() = runBlockingTest {
     super.setUp()
-    val iStocksProvider = Mocker.provide(IStocksProvider::class)
+    val iStocksProvider = Mocker.provide(StocksProvider::class)
     doNothing().whenever(iStocksProvider).schedule()
     whenever(iStocksProvider.fetch()).thenReturn(FetchResult.success(ArrayList()))
     whenever(iStocksProvider.tickers).thenReturn(MutableStateFlow((emptyList())))

@@ -13,9 +13,10 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.home.MainActivity
-import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
+import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.tickerwidget.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -31,7 +32,7 @@ class StockWidget : AppWidgetProvider() {
     const val ACTION_NAME = "OPEN_APP"
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: StocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var appPreferences: AppPreferences
   @Inject internal lateinit var coroutineScope: CoroutineScope
@@ -43,7 +44,7 @@ class StockWidget : AppWidgetProvider() {
     intent: Intent
   ) {
     if (!injected) {
-      Injector.appComponent.inject(this)
+      Injector.appComponent().inject(this)
       injected = true
     }
     super.onReceive(context, intent)
@@ -82,8 +83,7 @@ class StockWidget : AppWidgetProvider() {
   override fun onEnabled(context: Context?) {
     super.onEnabled(context)
     if (!injected) {
-      Injector.appComponent.inject(this)
-      injected = true
+            injected = true
     }
     if (stocksProvider.nextFetchMs.value <= 0) {
       stocksProvider.schedule()

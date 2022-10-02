@@ -4,14 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider.FetchState
+import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,25 +31,25 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider : IStocksProvider {
+class StocksProvider @Inject constructor(
+  @ApplicationContext private val context: Context,
+  private val api: StocksApi,
+  private val preferences: SharedPreferences,
+  private val appPreferences: AppPreferences,
+  private val widgetDataProvider: WidgetDataProvider,
+  private val alarmScheduler: AlarmScheduler,
+  private val clock: AppClock,
+  private val storage: StocksStorage,
+  private val coroutineScope: CoroutineScope,
+  private val exponentialBackoff: ExponentialBackoff
+) {
 
   companion object {
     private const val LAST_FETCHED = "LAST_FETCHED"
     private const val NEXT_FETCH = "NEXT_FETCH"
     private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
+    const val DEFAULT_INTERVAL_MS: Long = 15_000L
   }
-
-  @Inject lateinit var api: StocksApi
-  @Inject lateinit var context: Context
-  @Inject lateinit var preferences: SharedPreferences
-  @Inject lateinit var appPreferences: AppPreferences
-  @Inject lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject lateinit var alarmScheduler: AlarmScheduler
-  @Inject lateinit var clock: AppClock
-  @Inject lateinit var storage: StocksStorage
-  @Inject lateinit var coroutineScope: CoroutineScope
-
-  private val exponentialBackoff: ExponentialBackoff
 
   private val tickerSet: MutableSet<String> = HashSet()
   private val quoteMap: MutableMap<String, Quote> = HashMap()
@@ -57,8 +60,6 @@ class StocksProvider : IStocksProvider {
   private val _portfolio = MutableStateFlow<List<Quote>>(emptyList())
 
   init {
-    Injector.appComponent.inject(this)
-    exponentialBackoff = ExponentialBackoff()
     val tickers = storage.readTickers()
     this.tickerSet.addAll(tickers)
     if (this.tickerSet.isEmpty()) {
@@ -151,11 +152,11 @@ class StocksProvider : IStocksProvider {
   // public api
   /////////////////////
 
-  override fun hasTicker(ticker: String): Boolean {
+  fun hasTicker(ticker: String): Boolean {
     return tickerSet.contains(ticker)
   }
 
-  override suspend fun fetch(allowScheduling: Boolean): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
+  suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
     if (tickerSet.isEmpty()) {
       if (allowScheduling) {
         _fetchState.emit(FetchState.Failure(FetchException("No symbols in portfolio")))
@@ -218,14 +219,14 @@ class StocksProvider : IStocksProvider {
     }
   }
 
-  override fun schedule() {
+  fun schedule() {
     scheduleUpdate()
     coroutineScope.launch {
       alarmScheduler.enqueuePeriodicRefresh(context, force = true)
     }
   }
 
-  override fun addStock(ticker: String): Collection<String> {
+  fun addStock(ticker: String): Collection<String> {
     synchronized(quoteMap) {
       if (!tickerSet.contains(ticker)) {
         tickerSet.add(ticker)
@@ -248,13 +249,13 @@ class StocksProvider : IStocksProvider {
     return tickerSet
   }
 
-  override fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
+  fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
 
-  override fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
+  fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
 
-  override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
+  fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-  override suspend fun addHolding(
+  suspend fun addHolding(
     ticker: String,
     shares: Float,
     price: Float
@@ -279,7 +280,7 @@ class StocksProvider : IStocksProvider {
     return holding
   }
 
-  override suspend fun removePosition(
+  suspend fun removePosition(
     ticker: String,
     holding: Holding
   ) {
@@ -293,7 +294,7 @@ class StocksProvider : IStocksProvider {
     _portfolio.emit(quoteMap.values.toList())
   }
 
-  override fun addStocks(symbols: Collection<String>): Collection<String> {
+  fun addStocks(symbols: Collection<String>): Collection<String> {
     synchronized(this.tickerSet) {
       val filterNot = symbols.filterNot { this.tickerSet.contains(it) }
       filterNot.forEach { this.tickerSet.add(it) }
@@ -309,7 +310,7 @@ class StocksProvider : IStocksProvider {
     return this.tickerSet
   }
 
-  override suspend fun removeStock(ticker: String): Collection<String> {
+  suspend fun removeStock(ticker: String): Collection<String> {
     synchronized(quoteMap) {
       tickerSet.remove(ticker)
       saveTickers()
@@ -321,7 +322,7 @@ class StocksProvider : IStocksProvider {
     return tickerSet
   }
 
-  override suspend fun removeStocks(symbols: Collection<String>) {
+  suspend fun removeStocks(symbols: Collection<String>) {
     synchronized(quoteMap) {
       symbols.forEach {
         tickerSet.remove(it)
@@ -334,19 +335,19 @@ class StocksProvider : IStocksProvider {
     saveTickers()
   }
 
-  override suspend fun fetchStock(ticker: String, allowCache: Boolean): FetchResult<Quote> {
+  suspend fun fetchStock(ticker: String, allowCache: Boolean = true): FetchResult<Quote> {
     return fetchStockInternal(ticker, allowCache)
   }
 
-  override fun getStock(ticker: String): Quote? = quoteMap[ticker]
+  fun getStock(ticker: String): Quote? = quoteMap[ticker]
 
-  override val tickers: StateFlow<List<String>>
+  val tickers: StateFlow<List<String>>
     get() = _tickers
 
-  override val portfolio: StateFlow<List<Quote>>
+  val portfolio: StateFlow<List<Quote>>
     get() = _portfolio//quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
 
-  override fun addPortfolio(portfolio: List<Quote>) {
+  fun addPortfolio(portfolio: List<Quote>) {
     synchronized(quoteMap) {
       portfolio.forEach {
         val symbol = it.symbol
@@ -363,9 +364,31 @@ class StocksProvider : IStocksProvider {
     }
   }
 
-  override val fetchState: StateFlow<FetchState>
+  val fetchState: StateFlow<FetchState>
     get() = _fetchState
 
-  override val nextFetchMs: StateFlow<Long>
+  val nextFetchMs: StateFlow<Long>
     get() = _nextFetch
+
+  sealed class FetchState {
+    abstract val displayString: String
+
+    object NotFetched : FetchState() {
+      override val displayString: String = "--"
+    }
+
+    class Success(val fetchTime: Long) : FetchState() {
+      override val displayString: String by lazy {
+        val instant = Instant.ofEpochMilli(fetchTime)
+        val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
+        time.createTimeString()
+      }
+    }
+
+    class Failure(val exception: Throwable) : FetchState() {
+      override val displayString: String by lazy {
+        exception.message.orEmpty()
+      }
+    }
+  }
 }

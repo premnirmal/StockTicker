@@ -35,17 +35,17 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.home.MainViewModel
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
@@ -58,6 +58,7 @@ import kotlin.system.exitProcess
 /**
  * Created by premnirmal on 2/27/16.
  */
+@AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -70,7 +71,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     private const val REQCODE_FILE_WRITE_SHARE = 855
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
+  @Inject internal lateinit var stocksProvider: StocksProvider
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var preferences: SharedPreferences
   @Inject internal lateinit var appPreferences: AppPreferences
@@ -83,11 +84,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
 
   override fun scrollToTop() {
     listView.smoothScrollToPosition(0)
-  }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
   }
 
   override fun onViewCreated(

@@ -1,14 +1,11 @@
 package com.github.premnirmal.ticker.analytics
 
 import android.app.Activity
-import android.content.Context
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
 interface Analytics {
-  fun initialize(context: Context) {}
   fun trackScreenView(screenName: String, activity: Activity) {}
   fun trackClickEvent(event: ClickEvent) {}
   fun trackGeneralEvent(event: GeneralEvent) {}
@@ -37,14 +34,10 @@ class ClickEvent(name: String): AnalyticsEvent(name) {
   }
 }
 
-class GeneralProperties {
-
-  @Inject lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject lateinit var stocksProvider: IStocksProvider
-
-  init {
-    Injector.appComponent.inject(this)
-  }
+class GeneralProperties @Inject constructor(
+  private val widgetDataProvider: WidgetDataProvider,
+  private val stocksProvider: StocksProvider
+) {
 
   val widgetCount: Int
     get() = widgetDataProvider.getAppWidgetIds().size

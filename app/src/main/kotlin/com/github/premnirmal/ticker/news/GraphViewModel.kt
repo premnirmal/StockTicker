@@ -4,18 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IHistoryProvider
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.HistoryProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class GraphViewModel: ViewModel() {
-
-  @Inject lateinit var stocksProvider: IStocksProvider
-  @Inject lateinit var historyProvider: IHistoryProvider
+@HiltViewModel
+class GraphViewModel @Inject constructor(
+  private val stocksProvider: StocksProvider,
+  private val historyProvider: HistoryProvider
+): ViewModel() {
 
   private val _quote = MutableLiveData<Quote>()
   val quote: LiveData<Quote>
@@ -27,9 +28,7 @@ class GraphViewModel: ViewModel() {
   val data: LiveData<List<DataPoint>>
     get() = _data
 
-  init {
-    Injector.appComponent.inject(this)
-  }
+  
 
   fun fetchStock(ticker: String) {
     viewModelScope.launch {
@@ -42,7 +41,7 @@ class GraphViewModel: ViewModel() {
     }
   }
 
-  fun fetchHistoricalDataByRange(ticker: String, range: IHistoryProvider.Range) {
+  fun fetchHistoricalDataByRange(ticker: String, range: HistoryProvider.Range) {
     viewModelScope.launch {
       val result = historyProvider.fetchDataByRange(ticker, range)
       if (result.wasSuccessful) {

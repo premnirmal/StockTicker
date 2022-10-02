@@ -13,7 +13,9 @@ import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ActivityWidgetSettingsBinding
 import com.google.android.material.color.MaterialColors
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>() {
 	override val binding: (ActivityWidgetSettingsBinding) by viewBinding(ActivityWidgetSettingsBinding::inflate)
 

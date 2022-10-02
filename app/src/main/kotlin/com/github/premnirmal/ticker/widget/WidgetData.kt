@@ -11,9 +11,10 @@ import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -45,8 +46,8 @@ class WidgetData {
     }
   }
 
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-  @Inject internal lateinit var context: Context
+  @Inject internal lateinit var stocksProvider: StocksProvider
+  @Inject @ApplicationContext internal lateinit var context: Context
   @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
   @Inject internal lateinit var appPreferences: AppPreferences
 
@@ -54,7 +55,7 @@ class WidgetData {
   val widgetId: Int
   private val tickerList: MutableList<String>
   private val preferences: SharedPreferences
-  private val _autoSortEnabled = MutableStateFlow<Boolean>(false)
+  private val _autoSortEnabled = MutableStateFlow(false)
   val autoSortEnabled: StateFlow<Boolean>
     get() = _autoSortEnabled
 
@@ -64,7 +65,7 @@ class WidgetData {
   ) {
     this.position = position
     this.widgetId = widgetId
-    Injector.appComponent.inject(this)
+    Injector.appComponent().inject(this)
     val prefsName = "$PREFS_NAME_PREFIX$widgetId"
     preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
     val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")

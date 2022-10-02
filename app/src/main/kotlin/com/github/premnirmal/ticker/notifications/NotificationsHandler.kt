@@ -19,13 +19,14 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.home.MainActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.Duration
@@ -41,8 +42,8 @@ import kotlin.random.Random
 
 @Singleton
 class NotificationsHandler @Inject constructor(
-  private val context: Context,
-  private val stocksProvider: IStocksProvider,
+  @ApplicationContext private val context: Context,
+  private val stocksProvider: StocksProvider,
   private val stocksStorage: StocksStorage,
   private val alarmScheduler: AlarmScheduler,
   private val appPreferences: AppPreferences,

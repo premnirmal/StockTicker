@@ -10,7 +10,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.components.YAxis
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range
+import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.DateAxisFormatter

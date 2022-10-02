@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.isNetworkOnline
@@ -32,7 +31,9 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentSearchBinding
 import com.google.android.material.color.MaterialColors
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, SuggestionClickListener, TextWatcher {
 	override val binding: (FragmentSearchBinding) by viewBinding(FragmentSearchBinding::inflate)
   companion object {
@@ -60,8 +61,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
-    arguments?.let {
+        arguments?.let {
       setData(it)
     }
   }

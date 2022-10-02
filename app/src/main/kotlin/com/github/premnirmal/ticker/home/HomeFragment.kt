@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.portfolio.PortfolioFragment
 import com.github.premnirmal.ticker.viewBinding
@@ -22,8 +21,10 @@ import com.github.premnirmal.tickerwidget.databinding.FragmentHomeBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.internal.ViewUtils
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, PortfolioFragment.Parent {
 	override val binding: (FragmentHomeBinding) by viewBinding(FragmentHomeBinding::inflate)
   companion object {
@@ -44,8 +45,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, Portfol
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
-  }
+      }
 
   @SuppressLint("RestrictedApi")
   override fun onViewCreated(

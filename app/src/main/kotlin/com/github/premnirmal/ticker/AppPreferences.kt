@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.components.Injector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.DayOfWeek
@@ -21,13 +20,12 @@ import kotlin.random.Random
  * Created by premnirmal on 2/26/16.
  */
 @Singleton
-class AppPreferences {
-
-  @Inject internal lateinit var sharedPreferences: SharedPreferences
-  @Inject internal lateinit var clock: AppClock
+class AppPreferences @Inject constructor(
+  private val sharedPreferences: SharedPreferences,
+  private val clock: AppClock
+) {
 
   init {
-    Injector.appComponent.inject(this)
     INSTANCE = this
   }
 

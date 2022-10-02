@@ -22,11 +22,13 @@ import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentPortfolioBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 /**
  * Created by premnirmal on 2/25/16.
  */
+@AndroidEntryPoint
 class PortfolioFragment : BaseFragment<FragmentPortfolioBinding>(), ChildFragment, QuoteClickListener, OnStartDragListener {
 	override val binding: (FragmentPortfolioBinding) by viewBinding(FragmentPortfolioBinding::inflate)
   interface Parent {

@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog.Builder
@@ -19,20 +17,16 @@ import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.github.mikephil.charting.charts.LineChart
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.CustomTabs
-import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.analytics.GeneralEvent
 import com.github.premnirmal.ticker.base.BaseGraphActivity
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.formatChange
 import com.github.premnirmal.ticker.formatChangePercent
 import com.github.premnirmal.ticker.getActionBarHeight
-import com.github.premnirmal.ticker.getStatusBarHeight
 import com.github.premnirmal.ticker.isNetworkOnline
-import com.github.premnirmal.ticker.model.IHistoryProvider.Range
+import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
@@ -47,9 +41,10 @@ import com.github.premnirmal.tickerwidget.databinding.ActivityQuoteDetailBinding
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.SurfaceColors
 import com.robinhood.ticker.TickerUtils
-import javax.inject.Inject
+import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
+@AndroidEntryPoint
 class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), NewsFeedAdapter.NewsClickListener {
 
   companion object {
@@ -63,8 +58,6 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     private const val INDEX_DATA = 3
   }
 
-  @Inject lateinit var appPreferences: AppPreferences
-  @Inject lateinit var analytics: Analytics
   override val simpleName: String = "NewsFeedActivity"
   override val binding: (ActivityQuoteDetailBinding) by viewBinding(ActivityQuoteDetailBinding::inflate)
   private lateinit var adapter: NewsFeedAdapter
@@ -75,8 +68,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
   override var range: Range = Range.ONE_MONTH
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    Injector.appComponent.inject(this)
-    super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
     ticker = checkNotNull(intent.getStringExtra(TICKER))
     binding.toolbar.setNavigationOnClickListener {
       finish()

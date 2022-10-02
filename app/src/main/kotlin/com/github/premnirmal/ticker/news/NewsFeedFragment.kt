@@ -18,7 +18,9 @@ import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.FragmentNewsFeedBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment, NewsFeedAdapter.NewsClickListener {
 
   companion object {

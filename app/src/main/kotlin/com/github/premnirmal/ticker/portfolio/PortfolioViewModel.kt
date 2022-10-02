@@ -4,25 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
-class PortfolioViewModel : ViewModel() {
-
-  @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
-  @Inject internal lateinit var stocksProvider: IStocksProvider
-
-  init {
-    Injector.appComponent.inject(this)
-  }
+@HiltViewModel
+class PortfolioViewModel @Inject constructor(
+  private val widgetDataProvider: WidgetDataProvider,
+  private val stocksProvider: StocksProvider
+) : ViewModel() {
 
   val portfolio: LiveData<List<Quote>> by lazy {
     stocksProvider.portfolio.asLiveData()
@@ -53,7 +49,7 @@ class PortfolioViewModel : ViewModel() {
         if (result.wasSuccessful) {
           isMarketOpen = result.data.any { it.isMarketOpen }
         }
-        delay(IStocksProvider.DEFAULT_INTERVAL_MS)
+        delay(StocksProvider.DEFAULT_INTERVAL_MS)
       } while (result.wasSuccessful && isMarketOpen)
     }
   }

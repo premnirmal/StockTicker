@@ -13,14 +13,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import com.github.premnirmal.ticker.base.BaseFragment
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.settings.WidgetSettingsFragment
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.FragmentWidgetsBinding
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class WidgetsFragment : BaseFragment<FragmentWidgetsBinding>(), ChildFragment, OnItemSelectedListener {
 	override val binding: (FragmentWidgetsBinding) by viewBinding(FragmentWidgetsBinding::inflate)
   companion object {
@@ -34,8 +35,7 @@ class WidgetsFragment : BaseFragment<FragmentWidgetsBinding>(), ChildFragment, O
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    Injector.appComponent.inject(this)
-  }
+      }
 
   override fun onViewCreated(
     view: View,
