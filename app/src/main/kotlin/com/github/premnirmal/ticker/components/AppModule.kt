@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.room.Room
+import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
@@ -44,6 +45,9 @@ class AppModule {
 
   @Provides @Singleton fun provideAppWidgetManager(@ApplicationContext context: Context): AppWidgetManager =
     AppWidgetManager.getInstance(context)
+
+  @Provides @Singleton fun provideWorkManager(@ApplicationContext context: Context): WorkManager =
+    WorkManager.getInstance(context)
 
   @Provides @Singleton fun provideAnalytics(
     @ApplicationContext context: Context,

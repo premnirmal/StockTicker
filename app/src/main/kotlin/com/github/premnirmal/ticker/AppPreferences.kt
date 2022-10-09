@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker
 
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
@@ -21,7 +22,8 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
-  private val sharedPreferences: SharedPreferences,
+  @VisibleForTesting
+  internal val sharedPreferences: SharedPreferences,
   private val clock: AppClock
 ) {
 
@@ -124,8 +126,6 @@ class AppPreferences @Inject constructor(
 
   fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
     !sharedPreferences.getBoolean(DID_RATE, false) && (Random.nextInt() % 5 == 0)
-
-  fun clock(): AppClock = clock
 
   fun backOffAttemptCount(): Int = sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
 

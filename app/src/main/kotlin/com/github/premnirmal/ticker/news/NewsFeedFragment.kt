@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.news
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,12 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.CustomTabs
+import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.network.data.NewsArticle
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.tickerwidget.R
@@ -21,7 +24,7 @@ import com.github.premnirmal.tickerwidget.databinding.FragmentNewsFeedBinding
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment, NewsFeedAdapter.NewsClickListener {
+class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment, TrendingAdapter.TrendingListener {
 
   companion object {
     private const val INDEX_PROGRESS = 0
@@ -31,7 +34,7 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
   }
 
   override val binding: (FragmentNewsFeedBinding) by viewBinding(FragmentNewsFeedBinding::inflate)
-  private lateinit var adapter: NewsFeedAdapter
+  private lateinit var adapter: TrendingAdapter
   private val viewModel: NewsFeedViewModel by viewModels()
   override val simpleName: String
     get() = "NewsFeedFragment"
@@ -47,7 +50,7 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
       }
       insets
     }
-    adapter = NewsFeedAdapter(this)
+    adapter = TrendingAdapter(this)
     binding.recyclerView.layoutManager = LinearLayoutManager(activity)
     binding.recyclerView.addItemDecoration(
         SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing_double))
@@ -88,6 +91,13 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
 
   override fun onClickNewsArticle(article: NewsArticle) {
     CustomTabs.openTab(requireContext(), article.url)
+  }
+
+  override fun onClickQuote(quote: Quote) {
+    analytics.trackClickEvent(ClickEvent("InstrumentClick"))
+    val intent = Intent(requireContext(), QuoteDetailActivity::class.java)
+    intent.putExtra(QuoteDetailActivity.TICKER, quote.symbol)
+    startActivity(intent)
   }
 
   // Child Fragment

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.helper.widget.Flow
+      android:id="@+id/flow"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:constraint_referenced_ids="stock1,stock2,stock3,stock4,stock5,stock6"
+      app:flow_wrapMode="aligned"
+      app:flow_horizontalStyle="spread"
+      app:flow_maxElementsWrap="3"
+      app:flow_horizontalBias="0"
+      app:flow_verticalBias="0"
+      app:flow_verticalGap="8dp"
+      app:flow_horizontalGap="4dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  <include
+      layout="@layout/item_trending_stock"
+      android:id="@+id/stock1"
+      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      app:layout_constraintWidth_percent="0.3"
+      />
+
+  <include
+      layout="@layout/item_trending_stock"
+      android:id="@+id/stock2"
+      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      app:layout_constraintWidth_percent="0.3"
+      />
+
+  <include
+      layout="@layout/item_trending_stock"
+      android:id="@+id/stock3"
+      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      app:layout_constraintWidth_percent="0.3"
+      />
+
+  <include
+      layout="@layout/item_trending_stock"
+      android:id="@+id/stock4"
+      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      app:layout_constraintWidth_percent="0.3"
+      />
+
+  <include
+      layout="@layout/item_trending_stock"
+      android:id="@+id/stock5"
+      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      app:layout_constraintWidth_percent="0.3"
+      />
+
+  <include
+      layout="@layout/item_trending_stock"
+      android:id="@+id/stock6"
+      android:layout_height="match_parent"
+      android:layout_width="0dp"
+      app:layout_constraintWidth_percent="0.3"
+      />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

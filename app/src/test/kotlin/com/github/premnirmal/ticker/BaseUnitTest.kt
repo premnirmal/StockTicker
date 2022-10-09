@@ -9,19 +9,27 @@ import com.google.gson.JsonElement
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.whenever
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltTestApplication
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.lang.reflect.Type
 
 /**
  * Created by premnirmal on 3/22/17.
  */
 @RunWith(RobolectricTestRunner::class)
+@Config(application = HiltTestApplication::class)
 abstract class BaseUnitTest : TestCase() {
+
+  @get:Rule
+  var hiltRule = HiltAndroidRule(this)
 
   private val parser = Parser()
 

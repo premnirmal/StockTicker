@@ -16,8 +16,8 @@ import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.DataPoint
-import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -50,8 +50,8 @@ class QuoteDetailViewModel @Inject constructor(
   private val _dataFetchError = MutableLiveData<Throwable>()
   val dataFetchError: LiveData<Throwable>
     get() = _dataFetchError
-  private val _newsData = MutableLiveData<List<NewsArticle>>()
-  val newsData: LiveData<List<NewsArticle>>
+  private val _newsData = MutableLiveData<List<ArticleNewsFeed>>()
+  val newsData: LiveData<List<ArticleNewsFeed>>
     get() = _newsData
   private val _newsError = MutableLiveData<Throwable>()
   val newsError: LiveData<Throwable>
@@ -211,7 +211,7 @@ class QuoteDetailViewModel @Inject constructor(
       val result = newsProvider.fetchNewsForQuery(query)
       when {
         result.wasSuccessful -> {
-          _newsData.value = result.data
+          _newsData.value = result.data.map { ArticleNewsFeed(it) }
         }
         else -> {
           _newsError.value = result.error

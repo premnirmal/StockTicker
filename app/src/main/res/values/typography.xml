@@ -166,8 +166,8 @@
   </style>
 
   <style name="TextAppearance.StocksWidget.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
-    <item name="fontFamily">@font/ubuntu_regular</item>
-    <item name="android:fontFamily">@font/ubuntu_regular</item>
+    <item name="fontFamily">@font/ubuntu_medium</item>
+    <item name="android:fontFamily">@font/ubuntu_medium</item>
   </style>
 
   <style name="TextAppearance.StocksWidget.BodyMedium" parent="TextAppearance.Material3.BodyMedium">

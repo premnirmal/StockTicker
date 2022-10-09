@@ -35,7 +35,8 @@ import javax.inject.Singleton
 @Singleton
 class AlarmScheduler @Inject constructor(
   private val appPreferences: AppPreferences,
-  private val clock: AppClock
+  private val clock: AppClock,
+  private val workManager: WorkManager
 ) {
 
   /**
@@ -137,7 +138,7 @@ class AlarmScheduler @Inject constructor(
         .addTag(RefreshWorker.TAG)
         .setInitialDelay(msToNextAlarm, MILLISECONDS)
         .build()
-    with(WorkManager.getInstance(context)) {
+    with(workManager) {
       this.cancelAllWorkByTag(RefreshWorker.TAG)
       this.enqueue(workRequest)
     }
@@ -157,7 +158,7 @@ class AlarmScheduler @Inject constructor(
     context: Context,
     force: Boolean = true
   ) {
-    with(WorkManager.getInstance(context)) {
+    with(workManager) {
       val enqueuedAlready = try {
         getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
             .await()

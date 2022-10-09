@@ -80,18 +80,44 @@ class NetworkModule {
     return yahooFinance
   }
 
-  @Provides @Singleton internal fun provideNewsApi(
+  @Provides @Singleton internal fun provideApeWisdom(
+    @ApplicationContext context: Context,
+    okHttpClient: OkHttpClient,
+    converterFactory: GsonConverterFactory
+  ): ApeWisdom {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.apewisdom_endpoint))
+        .addConverterFactory(converterFactory)
+        .build()
+    val apewisdom = retrofit.create(ApeWisdom::class.java)
+    return apewisdom
+  }
+
+  @Provides @Singleton internal fun provideGoogleNewsApi(
     @ApplicationContext context: Context,
     okHttpClient: OkHttpClient
-  ): NewsApi {
+  ): GoogleNewsApi {
     val retrofit =
       Retrofit.Builder()
           .client(okHttpClient)
-          .baseUrl(context.getString(R.string.news_endpoint))
+          .baseUrl(context.getString(R.string.google_news_endpoint))
           .addConverterFactory(SimpleXmlConverterFactory.create())
           .build()
-    val newsApi = retrofit.create(NewsApi::class.java)
-    return newsApi
+    return retrofit.create(GoogleNewsApi::class.java)
+  }
+
+  @Provides @Singleton internal fun provideYahooFinanceNewsApi(
+    @ApplicationContext context: Context,
+    okHttpClient: OkHttpClient
+  ): YahooFinanceNewsApi {
+    val retrofit =
+      Retrofit.Builder()
+          .client(okHttpClient)
+          .baseUrl(context.getString(R.string.yahoo_news_endpoint))
+          .addConverterFactory(SimpleXmlConverterFactory.create())
+          .build()
+    return retrofit.create(YahooFinanceNewsApi::class.java)
   }
 
   @Provides @Singleton internal fun provideHistoricalDataApi(

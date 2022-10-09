@@ -2,11 +2,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="widget_label" translatable="false">Stocks Tracker Widget</string>
-  <string name="news_endpoint" translatable="false">https://news.google.com/</string>
+  <string name="google_news_endpoint" translatable="false">https://news.google.com/</string>
+  <string name="yahoo_news_endpoint" translatable="false">https://finance.yahoo.com/news/</string>
   <string name="suggestions_endpoint" translatable="false">https://query2.finance.yahoo.com/v1/finance/</string>
   <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
   <string name="historical_data_endpoint" translatable="false">https://query1.finance.yahoo.com/v8/finance/</string>
   <string name="github_endoint" translatable="false">https://api.github.com/</string>
+  <string name="apewisdom_endpoint" translatable="false">https://apewisdom.io/api/v1.0/</string>
   <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
   <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/StockTicker/blob/master/PRIVACY_POLICY.md</string>
   <string name="dotdotdot" translatable="false">…</string>
@@ -24,10 +26,10 @@
   <string name="action_portfolio">Watchlist</string>
   <string name="action_widgets">Widgets</string>
   <string name="action_search">Search</string>
-  <string name="action_feed">News</string>
+  <string name="action_feed">Trending</string>
   <string name="action_settings">Settings</string>
   <string name="app_settings">Settings</string>
-  <string name="news_feed">News</string>
+  <string name="news_feed">Trending</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange stocks</string>
   <string name="action_update">Refresh Now</string>

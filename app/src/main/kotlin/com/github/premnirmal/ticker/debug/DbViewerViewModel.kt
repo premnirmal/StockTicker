@@ -22,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DbViewerViewModel @Inject constructor(
   application: Application,
-  private val dao: QuoteDao
+  private val dao: QuoteDao,
+  private val workManager: WorkManager
 ) : AndroidViewModel(application) {
 
   companion object {
@@ -207,7 +208,7 @@ class DbViewerViewModel @Inject constructor(
             </tr>
             """
     )
-    with(WorkManager.getInstance(context)) {
+    with(workManager) {
       pruneWork()
       val workInfos = ArrayList<WorkInfo>().apply {
         addAll(getWorkInfosByTag(RefreshWorker.TAG).get())

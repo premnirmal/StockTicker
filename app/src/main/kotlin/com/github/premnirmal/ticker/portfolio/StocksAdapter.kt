@@ -28,7 +28,7 @@ class StocksAdapter constructor(
       view: View,
       quote: Quote,
       position: Int
-    )
+    ) {}
 
     fun onOpenQuote(
       view: View,

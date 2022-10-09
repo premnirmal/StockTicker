@@ -29,6 +29,7 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
@@ -45,7 +46,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), NewsFeedAdapter.NewsClickListener {
+class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), TrendingAdapter.TrendingListener {
 
   companion object {
     const val TICKER = "TICKER"
@@ -60,7 +61,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
 
   override val simpleName: String = "NewsFeedActivity"
   override val binding: (ActivityQuoteDetailBinding) by viewBinding(ActivityQuoteDetailBinding::inflate)
-  private lateinit var adapter: NewsFeedAdapter
+  private lateinit var adapter: TrendingAdapter
   private lateinit var quoteDetailsAdapter: QuoteDetailsAdapter
   private lateinit var ticker: String
   private lateinit var quote: Quote
@@ -91,7 +92,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
       layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
       adapter = quoteDetailsAdapter
     }
-    adapter = NewsFeedAdapter(this)
+    adapter = TrendingAdapter(this)
     binding.recyclerView.layoutManager = LinearLayoutManager(this)
     binding.recyclerView.addItemDecoration(
         SpacingDecoration(resources.getDimensionPixelSize(R.dimen.list_spacing_double))
@@ -315,7 +316,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), New
     super.onActivityResult(requestCode, resultCode, data)
   }
 
-  private fun setUpArticles(articles: List<NewsArticle>) {
+  private fun setUpArticles(articles: List<ArticleNewsFeed>) {
     if (articles.isEmpty()) {
       binding.newsContainer.displayedChild = INDEX_EMPTY
     } else {

@@ -4,7 +4,7 @@ import com.github.premnirmal.ticker.network.data.NewsRssFeed
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface NewsApi {
+interface GoogleNewsApi {
 
   /**
    * Retrieves the recent news feed given the query.
@@ -17,4 +17,9 @@ interface NewsApi {
 
   @GET("news/rss/headlines/section/topic/BUSINESS")
   suspend fun getBusinessNews(): NewsRssFeed
+}
+
+interface YahooFinanceNewsApi {
+  @GET("rssindex")
+  suspend fun getNewsFeed(): NewsRssFeed
 }
