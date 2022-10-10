@@ -1,10 +1,7 @@
 package com.github.premnirmal.ticker.news
 
-import android.content.res.Resources.Theme
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -14,11 +11,11 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.NewsFeedItem.TrendingStockNewsFeed
 import com.github.premnirmal.ticker.news.TrendingAdapter.TrendingListener
+import com.github.premnirmal.ticker.ui.bindStock
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.ItemNewsBinding
 import com.github.premnirmal.tickerwidget.databinding.ItemTrendingStockBinding
 import com.github.premnirmal.tickerwidget.databinding.ItemTrendingStocksBinding
-import com.robinhood.ticker.TickerUtils
 
 class TrendingAdapter(
   private val listener: TrendingListener
@@ -78,31 +75,6 @@ abstract class TrendingVH<T : ViewBinding>(protected val binding: T) : RecyclerV
 class TrendingStocksVH(binding: ItemTrendingStocksBinding) : TrendingVH<ItemTrendingStocksBinding>(
     binding
 ) {
-
-  protected val positiveColor: Int = ContextCompat.getColor(binding.root.context, R.color.positive_green)
-  protected val negativeColor: Int = ContextCompat.getColor(binding.root.context, R.color.negative_red)
-  protected val neutralColor: Int by lazy {
-    try {
-      val typedValue = TypedValue()
-      val theme: Theme = binding.root.context.theme
-      theme.resolveAttribute(
-          com.google.android.material.R.attr.colorOnSurfaceVariant,
-          typedValue,
-          true
-      )
-      ContextCompat.getColor(binding.root.context, typedValue.data)
-    } catch (e: Exception) {
-      ContextCompat.getColor(binding.root.context, R.color.text_2)
-    }
-  }
-
-  init {
-    arrayOf(binding.stock1, binding.stock2, binding.stock3, binding.stock4, binding.stock5, binding.stock6).forEach { stockView ->
-      stockView.changePercent.setCharacterLists(TickerUtils.provideNumberList())
-      stockView.changeValue.setCharacterLists(TickerUtils.provideNumberList())
-      stockView.totalValue.setCharacterLists(TickerUtils.provideNumberList())
-    }
-  }
 
   override fun update(
     item: NewsFeedItem,
@@ -176,38 +148,9 @@ class TrendingStocksVH(binding: ItemTrendingStocksBinding) : TrendingVH<ItemTren
     binding: ItemTrendingStockBinding,
     listener: TrendingListener
   ) {
-    binding.root.setOnClickListener { v ->
+    binding.bindStock(quote) {
       listener.onClickQuote(quote)
     }
-
-    val tickerView = binding.ticker
-    val nameView = binding.name
-
-    tickerView.text = quote.symbol
-    nameView.text = quote.name
-
-    val totalValueText = binding.totalValue
-    totalValueText.text = quote.priceFormat.format(quote.lastTradePrice)
-
-    val change: Float = quote.change
-    val changePercent: Float = quote.changeInPercent
-    val color = when {
-      (change < 0f || changePercent < 0f) -> {
-        negativeColor
-      }
-      (change == 0f) -> {
-        neutralColor
-      }
-      else -> {
-        positiveColor
-      }
-    }
-    val changeInPercentView = binding.changePercent
-    changeInPercentView.text = quote.changePercentStringWithSign()
-    val changeValueView = binding.changeValue
-    changeValueView.text = quote.changeStringWithSign()
-    changeInPercentView.setTextColor(color)
-    changeValueView.setTextColor(color)
   }
 }
 

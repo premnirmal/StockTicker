@@ -11,11 +11,13 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
 import com.github.premnirmal.ticker.dismissKeyboard
@@ -26,9 +28,11 @@ import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.showKeyboard
+import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.FragmentSearchBinding
 import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,7 +58,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
   }
 
   private val viewModel: SearchViewModel by viewModels()
-  private lateinit var adapter: SuggestionsAdapter
+  private lateinit var suggestionsAdapter: SuggestionsAdapter
+  private lateinit var trendingAdapter: TrendingStocksAdapter
   override val simpleName: String = "SearchFragment"
 
   private var selectedWidgetId: Int = -1
@@ -86,24 +91,48 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
         insets
       }
     }
-    adapter = SuggestionsAdapter(this)
-    binding.recyclerView.layoutManager = LinearLayoutManager(activity)
-    binding.recyclerView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
-    binding.recyclerView.adapter = adapter
+    trendingAdapter = TrendingStocksAdapter { quote ->
+      analytics.trackClickEvent(ClickEvent("InstrumentClick"))
+      val intent = Intent(requireContext(), QuoteDetailActivity::class.java)
+      intent.putExtra(QuoteDetailActivity.TICKER, quote.symbol)
+      startActivity(intent)
+    }
+    binding.trendingRecyclerView?.layoutManager = GridLayoutManager(activity, 3)
+    binding.trendingRecyclerView?.addItemDecoration(
+      SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing_double))
+    )
+    binding.trendingRecyclerView?.adapter = trendingAdapter
+
+    suggestionsAdapter = SuggestionsAdapter(this)
+    binding.searchResultsRecyclerView?.layoutManager = LinearLayoutManager(activity)
+    binding.searchResultsRecyclerView?.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+    binding.searchResultsRecyclerView?.adapter = suggestionsAdapter
+
     binding.searchView.addTextChangedListener(this)
 
     savedInstanceState?.let { selectedWidgetId = it.getInt(ARG_WIDGET_ID, -1) }
+
     if (viewModel.searchResult.value?.wasSuccessful == true) {
-      adapter.setData(viewModel.searchResult.value!!.data)
+      suggestionsAdapter.setData(viewModel.searchResult.value!!.data)
     }
-    viewModel.searchResult.observe(viewLifecycleOwner, Observer {
+    viewModel.fetchTrendingStocks().observe(viewLifecycleOwner) { quotes ->
+      if (quotes.isNotEmpty()) trendingAdapter.setData(quotes)
+    }
+    viewModel.searchResult.observe(viewLifecycleOwner) {
       if (it.wasSuccessful) {
-        adapter.setData(it.data)
+        suggestionsAdapter.setData(it.data)
       } else {
-        adapter.setData(listOf(Suggestion(binding.searchView.text?.toString().orEmpty())))
+        suggestionsAdapter.setData(
+            listOf(
+                Suggestion(
+                    binding.searchView.text?.toString()
+                        .orEmpty()
+                )
+            )
+        )
         InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
       }
-    })
+    }
   }
 
   override fun onResume() {
@@ -155,11 +184,16 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
         .trim { it <= ' ' }
         .replace(" ".toRegex(), "")
     if (query.isNotEmpty()) {
+      binding.searchResultsRecyclerView?.isVisible = true
+      binding.trendingHolder?.isVisible = false
       if (requireActivity().isNetworkOnline()) {
         viewModel.fetchResults(query)
       } else {
         InAppMessage.showToast(requireActivity(), R.string.no_network_message)
       }
+    } else {
+      binding.searchResultsRecyclerView?.isVisible = false
+      binding.trendingHolder?.isVisible = true
     }
   }
 
@@ -193,7 +227,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
                   val id = widgetDatas[which].widgetId
                   addTickerToWidget(ticker, id)
                   suggestion.exists = viewModel.doesSuggestionExist(suggestion)
-                  adapter.notifyDataSetChanged()
+                  suggestionsAdapter.notifyDataSetChanged()
                   dialog.dismiss()
                 }
                 .create()
@@ -221,6 +255,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
   }
 
   override fun scrollToTop() {
-    binding.recyclerView.smoothScrollToPosition(0)
+    binding.searchResultsRecyclerView?.smoothScrollToPosition(0)
+    binding.trendingRecyclerView?.smoothScrollToPosition(0)
   }
 }

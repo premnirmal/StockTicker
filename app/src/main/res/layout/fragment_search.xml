@@ -53,11 +53,41 @@
         />
   </com.google.android.material.appbar.AppBarLayout>
 
+  <LinearLayout
+      android:id="@+id/trending_holder"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_behavior="@string/appbar_scrolling_view_behavior"
+      >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:text="@string/trending_stocks"
+        android:textAppearance="@style/TextAppearance.StocksWidget.TitleSmall"
+        style="@style/Widget.StocksWidget.TextView.TitleSmall"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trending_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
+  </LinearLayout>
+
   <androidx.recyclerview.widget.RecyclerView
-      android:id="@+id/recycler_view"
+      android:id="@+id/search_results_recycler_view"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:scrollbars="none"
+      android:visibility="gone"
       app:layout_behavior="@string/appbar_scrolling_view_behavior"
       />
 

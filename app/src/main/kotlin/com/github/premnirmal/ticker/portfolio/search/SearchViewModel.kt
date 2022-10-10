@@ -3,10 +3,13 @@ package com.github.premnirmal.ticker.portfolio.search
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.widget.WidgetData
@@ -24,7 +27,8 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
   private val stocksApi: StocksApi,
   private val widgetDataProvider: WidgetDataProvider,
-  private val stocksProvider: StocksProvider
+  private val stocksProvider: StocksProvider,
+  private val newsProvider: NewsProvider
 ) : ViewModel() {
 
   val searchResult: LiveData<FetchResult<List<Suggestion>>>
@@ -56,6 +60,13 @@ class SearchViewModel @Inject constructor(
         _searchResult.postValue(FetchResult.failure(suggestions.error))
       }
     }
+  }
+
+  fun fetchTrendingStocks(): LiveData<List<Quote>> = liveData {
+    val trendingResult = newsProvider.fetchTrendingStocks(true)
+    if (trendingResult.wasSuccessful) {
+      emit(trendingResult.data)
+    } else emit(emptyList())
   }
 
   fun doesSuggestionExist(sug: Suggestion) =
