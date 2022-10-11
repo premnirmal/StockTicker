@@ -5,6 +5,6 @@ import retrofit2.http.GET
 
 interface ApeWisdom {
 
-  @GET("filter/all-stocks")
+  @GET("filter/stocks")
   suspend fun getTrendingStocks(): TrendingResult
 }

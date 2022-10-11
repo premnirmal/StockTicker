@@ -94,6 +94,18 @@ class NetworkModule {
     return apewisdom
   }
 
+  @Provides @Singleton internal fun provideYahooFinanceMostActive(
+    @ApplicationContext context: Context,
+    okHttpClient: OkHttpClient,
+  ): YahooFinanceMostActive {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.yahoo_finance_endpoint))
+        .addConverterFactory(JsoupConverterFactory())
+        .build()
+    return retrofit.create(YahooFinanceMostActive::class.java)
+  }
+
   @Provides @Singleton internal fun provideGoogleNewsApi(
     @ApplicationContext context: Context,
     okHttpClient: OkHttpClient

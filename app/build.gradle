@@ -237,6 +237,7 @@ dependencies {
   implementation "com.squareup.retrofit2:retrofit:$RETROFIT_VERSION"
   implementation "com.squareup.retrofit2:converter-gson:$RETROFIT_VERSION"
   implementation "com.squareup.retrofit2:converter-simplexml:$RETROFIT_VERSION"
+  implementation "org.jsoup:jsoup:1.10.2"
 
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$COROUTINES_VERSION"
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:$LIFECYCLE_VERSION"

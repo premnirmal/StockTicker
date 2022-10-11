@@ -20,14 +20,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.dismissKeyboard
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.ticker.showKeyboard
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -133,16 +131,6 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
         InAppMessage.showToast(requireActivity(), R.string.error_fetching_suggestions)
       }
     }
-  }
-
-  override fun onResume() {
-    super.onResume()
-    binding.searchView.showKeyboard()
-  }
-
-  override fun onPause() {
-    super.onPause()
-    dismissKeyboard()
   }
 
   override fun onSaveInstanceState(outState: Bundle) {

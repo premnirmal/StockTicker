@@ -18,6 +18,7 @@ class NewsProvider @Inject constructor(
   private val googleNewsApi: GoogleNewsApi,
   private val yahooNewsApi: YahooFinanceNewsApi,
   private val apeWisdom: ApeWisdom,
+  private val yahooFinanceMostActive: YahooFinanceMostActive,
   private val stocksApi: StocksApi
 ) {
 
@@ -72,6 +73,34 @@ class NewsProvider @Inject constructor(
         if (useCache && cachedTrendingStocks.isNotEmpty()) {
           return@withContext FetchResult.success(cachedTrendingStocks)
         }
+
+        // adding this extra try/catch because html format can change and parsing will fail
+        try {
+          val mostActiveHtml = yahooFinanceMostActive.getMostActive()
+          if (mostActiveHtml.isSuccessful) {
+            val doc = mostActiveHtml.body()!!
+            val elements = doc.select("fin-streamer")
+            val symbols = ArrayList<String>()
+            for (element in elements) {
+              if (element.hasAttr("data-symbol") && element.attr("class").equals("fw(600)", ignoreCase = true)) {
+                val symbol = element.attr("data-symbol")
+                if (!symbols.contains(symbol)) symbols.add(symbol)
+              }
+            }
+            if (symbols.isNotEmpty()) {
+              Timber.d("symbols: ${symbols.joinToString(",")}")
+              val mostActiveStocks = stocksApi.getStocks(symbols.toList())
+              if (mostActiveStocks.wasSuccessful) {
+                cachedTrendingStocks = mostActiveStocks.data
+              }
+              return@withContext mostActiveStocks
+            }
+          }
+        } catch (e: Exception) {
+          Timber.w(e)
+        }
+
+        // fallback to apewisdom api
         val result = apeWisdom.getTrendingStocks().results
         val data = result.map { it.ticker }
         val trendingResult = stocksApi.getStocks(data)
