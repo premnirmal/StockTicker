@@ -69,7 +69,7 @@ class AppModule {
 
   @Provides @Singleton fun provideQuoteDao(db: QuotesDB): QuoteDao = db.quoteDao()
 
-  @Provides @Singleton fun provideAppReviewManager(@ApplicationContext context: Context, appPreferences: AppPreferences): IAppReviewManager {
-    return AppReviewManager(context, appPreferences)
+  @Provides @Singleton fun providesAppReviewManager(@ApplicationContext context: Context): IAppReviewManager {
+    return AppReviewManager(context)
   }
 }

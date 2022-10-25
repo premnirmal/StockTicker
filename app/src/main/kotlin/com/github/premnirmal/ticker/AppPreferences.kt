@@ -118,14 +118,7 @@ class AppPreferences @Inject constructor(
         .apply()
   }
 
-  fun userDidRate() {
-    sharedPreferences.edit()
-        .putBoolean(DID_RATE, true)
-        .apply()
-  }
-
-  fun shouldPromptRate(): Boolean = // if the user hasn't rated, ask them again but not too often.
-    !sharedPreferences.getBoolean(DID_RATE, false) && (Random.nextInt() % 5 == 0)
+  fun shouldPromptRate(): Boolean = Random.nextBoolean()
 
   fun backOffAttemptCount(): Int = sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
 

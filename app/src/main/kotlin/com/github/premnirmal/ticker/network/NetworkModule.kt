@@ -80,6 +80,20 @@ class NetworkModule {
     return yahooFinance
   }
 
+  @Provides @Singleton internal fun provideYahooQuoteDetailsApi(
+    @ApplicationContext context: Context,
+    okHttpClient: OkHttpClient,
+    converterFactory: GsonConverterFactory
+  ): YahooQuoteDetails {
+    val retrofit = Retrofit.Builder()
+        .client(okHttpClient)
+        .baseUrl(context.getString(R.string.yahoo_endpoint_quote_details))
+        .addConverterFactory(converterFactory)
+        .build()
+    val yahooFinance = retrofit.create(YahooQuoteDetails::class.java)
+    return yahooFinance
+  }
+
   @Provides @Singleton internal fun provideApeWisdom(
     @ApplicationContext context: Context,
     okHttpClient: OkHttpClient,

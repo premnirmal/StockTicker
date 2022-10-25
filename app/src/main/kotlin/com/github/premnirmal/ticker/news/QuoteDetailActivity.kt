@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Paint
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup.MarginLayoutParams
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog.Builder
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -29,6 +31,7 @@ import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
@@ -65,6 +68,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
   private lateinit var quoteDetailsAdapter: QuoteDetailsAdapter
   private lateinit var ticker: String
   private lateinit var quote: Quote
+  private var quoteSummary: QuoteSummary? = null
   private val viewModel: QuoteDetailViewModel by viewModels()
   override var range: Range = Range.ONE_MONTH
 
@@ -111,7 +115,8 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     updateToolbar()
     viewModel.quote.observe(this) { result ->
       if (result.wasSuccessful) {
-        quote = result.data
+        quote = result.data.quote
+        quoteSummary = result.data.quoteSummary
         fetchNewsAndChartData()
         setupQuoteUi()
         viewModel.data.observe(this) { data ->
@@ -200,6 +205,21 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     }
     binding.alertsContainer.setOnClickListener {
       alertsOnClickListener()
+    }
+    quoteSummary?.let {
+      binding.description.isVisible = true
+      binding.description.text = it.assetProfile.longBusinessSummary ?: ""
+      it.assetProfile.website?.let { website ->
+        binding.website.isVisible = true
+        binding.website.text = website
+        binding.website.paintFlags = binding.website.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.website.setOnClickListener {
+          CustomTabs.openTab(this, website)
+        }
+      }
+    } ?: run {
+      binding.description.isVisible = false
+      binding.website.isVisible = false
     }
   }
 

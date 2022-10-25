@@ -6,7 +6,6 @@ data class YahooResponse(
   @SerializedName("quoteResponse") val quoteResponse: QuoteResponse
 )
 
-
 data class QuoteResponse(
   @SerializedName("result") val result: List<YahooQuoteNet>?
 )
@@ -86,4 +85,54 @@ data class YahooQuoteNet(
   val annualDividendRate: Float,
   @SerializedName("trailingAnnualDividendYield")
   val annualDividendYield: Float
+)
+
+data class AssetDetailsResponse(
+  @SerializedName("quoteSummary")
+  val quoteSummary: QuoteSummaryResult
+)
+
+data class QuoteSummaryResult(
+  @SerializedName("result")
+  val result: List<QuoteSummary>,
+  @SerializedName("error")
+  val error: String?
+)
+
+data class QuoteSummary(
+  @SerializedName("assetProfile")
+  val assetProfile: AssetProfile,
+  @SerializedName("financialData")
+  val financialData: FinancialData
+)
+
+data class AssetProfile(
+  @SerializedName("longBusinessSummary")
+  val longBusinessSummary: String?,
+  @SerializedName("website")
+  val website: String?
+)
+
+data class FinancialData(
+  @SerializedName("revenueGrowth")
+  val revenueGrowth: GrowthItem?,
+  @SerializedName("grossMargins")
+  val grossMargins: GrowthItem?,
+  @SerializedName("earningsGrowth")
+  val earningsGrowth: GrowthItem?,
+  @SerializedName("ebitdaMargins")
+  val ebitdaMargins: GrowthItem?,
+  @SerializedName("operatingMargins")
+  val operatingMargins: GrowthItem?,
+  @SerializedName("profitMargins")
+  val profitMargins: GrowthItem?,
+  @SerializedName("financialCurrency")
+  val financialCurrency: String?
+)
+
+data class GrowthItem(
+  @SerializedName("raw")
+  val raw: Float,
+  @SerializedName("fmt")
+  val fmt: String
 )

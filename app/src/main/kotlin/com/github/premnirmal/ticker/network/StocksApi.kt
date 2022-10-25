@@ -4,6 +4,7 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.google.gson.Gson
@@ -20,6 +21,7 @@ import javax.inject.Singleton
 class StocksApi @Inject constructor(
   private val gson: Gson,
   private val yahooFinance: YahooFinance,
+  private val yahooQuoteDetails: YahooQuoteDetails,
   private val suggestionApi: SuggestionApi,
   private val clock: AppClock
 ) {
@@ -58,6 +60,26 @@ class StocksApi @Inject constructor(
       } catch (ex: Exception) {
         Timber.w(ex)
         return@withContext FetchResult.failure(FetchException("Failed to fetch $ticker", ex))
+      }
+    }
+
+  suspend fun getQuoteDetails(ticker: String): FetchResult<QuoteSummary> =
+    withContext(Dispatchers.IO) {
+      try {
+        val quoteSummaryResponse = yahooQuoteDetails.getAssetDetails(ticker)
+        val data = quoteSummaryResponse.quoteSummary.result.firstOrNull()
+        return@withContext data?.let {
+          FetchResult.success(it)
+        } ?: FetchResult.failure(
+            FetchException(
+                "Failed to fetch quote details for $ticker with error ${quoteSummaryResponse.quoteSummary.error}"
+            )
+        )
+      } catch (e: Exception) {
+        Timber.w(e)
+        return@withContext FetchResult.failure(
+            FetchException("Failed to fetch quote details for $ticker", e)
+        )
       }
     }
 

@@ -26,6 +26,7 @@ class StocksApiTest : BaseUnitTest() {
   }
 
   internal lateinit var yahooFinance: YahooFinance
+  internal lateinit var yahooFinanceQuoteDetails: YahooQuoteDetails
   internal lateinit var mockPrefs: SharedPreferences
 
   private lateinit var stocksApi: StocksApi
@@ -34,9 +35,10 @@ class StocksApiTest : BaseUnitTest() {
     runBlocking {
       yahooFinance = Mocker.provide(YahooFinance::class)
       mockPrefs = Mocker.provide(SharedPreferences::class)
+      yahooFinanceQuoteDetails = Mocker.provide(YahooQuoteDetails::class)
       val suggestionApi = Mocker.provide(SuggestionApi::class)
       val clock = Mocker.provide(AppClock::class)
-      stocksApi = StocksApi(Mocker.provide(Gson::class), yahooFinance, suggestionApi, clock)
+      stocksApi = StocksApi(Mocker.provide(Gson::class), yahooFinance, yahooFinanceQuoteDetails, suggestionApi, clock)
       val listType = object : TypeToken<List<YahooQuoteNet>>() {}.type
       val yahooStockList =
         parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
