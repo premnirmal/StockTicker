@@ -208,8 +208,8 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     }
     quoteSummary?.let {
       binding.description.isVisible = true
-      binding.description.text = it.assetProfile.longBusinessSummary ?: ""
-      it.assetProfile.website?.let { website ->
+      binding.description.text = it.assetProfile?.longBusinessSummary ?: ""
+      it.assetProfile?.website?.let { website ->
         binding.website.isVisible = true
         binding.website.text = website
         binding.website.paintFlags = binding.website.paintFlags or Paint.UNDERLINE_TEXT_FLAG

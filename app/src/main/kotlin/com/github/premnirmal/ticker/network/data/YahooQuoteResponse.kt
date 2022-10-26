@@ -101,9 +101,9 @@ data class QuoteSummaryResult(
 
 data class QuoteSummary(
   @SerializedName("assetProfile")
-  val assetProfile: AssetProfile,
+  val assetProfile: AssetProfile?,
   @SerializedName("financialData")
-  val financialData: FinancialData
+  val financialData: FinancialData?
 )
 
 data class AssetProfile(
