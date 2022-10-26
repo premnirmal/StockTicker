@@ -89,7 +89,7 @@ class StocksProvider @Inject constructor(
         synchronized(quoteMap) {
           quotes.forEach { quoteMap[it.symbol] = it }
         }
-        _portfolio.emit(quoteMap.values.toList())
+        _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
       } catch (e: Exception) {
         Timber.w(e)
       }
@@ -195,7 +195,7 @@ class StocksProvider @Inject constructor(
             exponentialBackoff.reset()
             scheduleUpdate()
           }
-          FetchResult.success(quoteMap.values.toList())
+          FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
         }
       } catch(ex: CancellationException) {
         if (allowScheduling) {
@@ -236,14 +236,14 @@ class StocksProvider @Inject constructor(
       }
     }
     _tickers.tryEmit(tickerSet.toList())
-    _portfolio.tryEmit(quoteMap.values.toList())
+    _portfolio.tryEmit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
     coroutineScope.launch {
       val result = fetchStockInternal(ticker, false)
       if (result.wasSuccessful) {
         val data = result.data
         quoteMap[ticker] = data
         storage.saveQuote(result.data)
-        _portfolio.emit(quoteMap.values.toList())
+        _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
       }
     }
     return tickerSet
@@ -276,7 +276,7 @@ class StocksProvider @Inject constructor(
     quote?.position = position
     val id = storage.addHolding(holding)
     holding.id = id
-    _portfolio.emit(quoteMap.values.toList())
+    _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
     return holding
   }
 
@@ -291,7 +291,7 @@ class StocksProvider @Inject constructor(
       quote?.position = position
     }
     storage.removeHolding(ticker, holding)
-    _portfolio.emit(quoteMap.values.toList())
+    _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
   }
 
   fun addStocks(symbols: Collection<String>): Collection<String> {
@@ -306,7 +306,7 @@ class StocksProvider @Inject constructor(
       }
     }
     _tickers.tryEmit(tickerSet.toList())
-    _portfolio.tryEmit(quoteMap.values.toList())
+    _portfolio.tryEmit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
     return this.tickerSet
   }
 
@@ -318,7 +318,7 @@ class StocksProvider @Inject constructor(
     }
     storage.removeQuoteBySymbol(ticker)
     _tickers.emit(tickerSet.toList())
-    _portfolio.emit(quoteMap.values.toList())
+    _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
     return tickerSet
   }
 
@@ -331,7 +331,7 @@ class StocksProvider @Inject constructor(
     }
     storage.removeQuotesBySymbol(symbols.toList())
     _tickers.emit(tickerSet.toList())
-    _portfolio.emit(quoteMap.values.toList())
+    _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
     saveTickers()
   }
 
