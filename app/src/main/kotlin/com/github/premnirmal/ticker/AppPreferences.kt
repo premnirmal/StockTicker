@@ -118,7 +118,7 @@ class AppPreferences @Inject constructor(
         .apply()
   }
 
-  fun shouldPromptRate(): Boolean = Random.nextBoolean()
+  fun shouldPromptRate(): Boolean = Random.nextInt() % 5 == 0
 
   fun backOffAttemptCount(): Int = sharedPreferences.getInt(BACKOFF_ATTEMPTS, 1)
 
