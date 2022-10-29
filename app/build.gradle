@@ -179,6 +179,10 @@ android {
     }
   }
 
+  buildFeatures {
+    compose true
+  }
+
   packagingOptions {
     resources {
       excludes +=
@@ -218,6 +222,8 @@ dependencies {
   implementation "androidx.viewpager2:viewpager2:1.1.0"
   implementation 'androidx.core:core-splashscreen:1.0.1'
   implementation "androidx.fragment:fragment-ktx:1.8.5"
+
+  implementation project(":UI")
 
   implementation "io.coil-kt:coil:2.2.2"
 
