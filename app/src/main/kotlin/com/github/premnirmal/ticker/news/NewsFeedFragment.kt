@@ -87,7 +87,7 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
     viewModel.fetchNews(forceRefresh = true)
   }
 
-  // NewsFeedAdapter.NewsClickListener
+  // TrendingAdapter.TrendingListener
 
   override fun onClickNewsArticle(article: NewsArticle) {
     CustomTabs.openTab(requireContext(), article.url)
