@@ -222,6 +222,11 @@ dependencies {
   implementation "androidx.viewpager2:viewpager2:1.1.0"
   implementation 'androidx.core:core-splashscreen:1.0.1'
   implementation "androidx.fragment:fragment-ktx:1.8.5"
+  implementation 'androidx.activity:activity-compose:1.8.2'
+  implementation 'androidx.compose.material3:material3:1.1.2'
+  implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
+  implementation "androidx.compose.material3:material3-window-size-class:1.1.2"
+  implementation "com.google.accompanist:accompanist-adaptive:0.27.0"
 
   implementation project(":UI")
 
