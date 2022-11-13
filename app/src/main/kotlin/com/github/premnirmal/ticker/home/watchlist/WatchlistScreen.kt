@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.home.watchlist.SelectionVisibilityState.NoSelection
@@ -38,6 +39,7 @@ import com.github.premnirmal.ticker.ui.ContentType.DUAL_PANE
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.ListDetail
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -245,4 +247,16 @@ private fun QuoteDetailContent(
         text = "Select a quote"
     )
   }
+}
+
+@Preview
+@Composable
+fun WatchlistScreenHandset(
+) {
+  WatchlistScreen(
+      contentType = SINGLE_PANE,
+      displayFeatures = emptyList(),
+      quotesFlow = MutableStateFlow(emptyList()
+  )
+  )
 }

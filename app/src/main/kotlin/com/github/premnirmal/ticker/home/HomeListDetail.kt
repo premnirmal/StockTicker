@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
@@ -15,6 +16,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -37,6 +41,7 @@ import com.github.premnirmal.ticker.ui.navigation.HomeNavigationRail
 import com.github.premnirmal.ticker.ui.navigation.NavigationActions
 import com.github.premnirmal.ticker.ui.navigation.Route
 import com.github.premnirmal.ticker.ui.navigation.TopLevelDestination
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -89,7 +94,7 @@ fun HomeListDetail(
       contentType = ContentType.SINGLE_PANE
     }
     WindowWidthSizeClass.Medium -> {
-      navigationType = NavigationType.NAVIGATION_RAIL
+      navigationType = NavigationType.BOTTOM_NAVIGATION
       contentType = if (foldingDevicePosture != DevicePosture.NormalPosture) {
         ContentType.DUAL_PANE
       } else {
@@ -220,6 +225,17 @@ private fun HomeNavHost(
       EmptyComingSoon()
     }
   }
+}
+
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@Preview
+@Composable
+fun HomeListDetailHandset() {
+  HomeListDetail(
+      windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(720.dp, 500.dp)),
+      displayFeatures = emptyList(),
+      quotesFlow = MutableStateFlow(emptyList())
+  )
 }
 
 
