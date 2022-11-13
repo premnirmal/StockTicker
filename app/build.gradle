@@ -238,6 +238,8 @@ dependencies {
   implementation "javax.inject:javax.inject:1"
   implementation "javax.annotation:javax.annotation-api:1.3.2"
 
+  implementation 'androidx.compose.ui:ui-tooling-preview:1.6.0'
+  debugImplementation 'androidx.compose.ui:ui-tooling:1.6.0'
   implementation "com.google.dagger:hilt-android:2.48.1"
   kapt "com.google.dagger:hilt-compiler:2.48.1"
 

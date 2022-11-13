@@ -1,11 +1,15 @@
 package com.github.premnirmal.ticker.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -28,12 +33,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
 import androidx.window.layout.FoldingFeature
 import com.github.premnirmal.ticker.home.SelectionVisibilityState.NoSelection
@@ -41,11 +52,17 @@ import com.github.premnirmal.ticker.home.SelectionVisibilityState.ShowSelection
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DevicePosture
+import com.github.premnirmal.ticker.ui.EmptyComingSoon
 import com.github.premnirmal.ticker.ui.ListDetail
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationType
 import com.github.premnirmal.ticker.ui.isBookPosture
 import com.github.premnirmal.ticker.ui.isSeparating
+import com.github.premnirmal.ticker.ui.navigation.BottomNavigationBar
+import com.github.premnirmal.ticker.ui.navigation.HomeNavigationRail
+import com.github.premnirmal.ticker.ui.navigation.NavigationActions
+import com.github.premnirmal.ticker.ui.navigation.Route
+import com.github.premnirmal.ticker.ui.navigation.TopLevelDestination
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import kotlinx.coroutines.flow.StateFlow
 
@@ -142,11 +159,103 @@ fun HomeListDetail(
 
 @Composable
 private fun HomeListDetailNavigationWrapper(
+  modifier: Modifier = Modifier,
   widthSizeClass: WindowWidthSizeClass,
   navigationType: NavigationType,
   contentType: ContentType,
   displayFeatures: List<DisplayFeature>,
   navigationContentPosition: NavigationContentPosition = NavigationContentPosition.TOP,
+  navigateToTopLevelDestination: (TopLevelDestination) -> Unit,
+  quotesFlow: StateFlow<List<Quote>>
+) {
+  val scope = rememberCoroutineScope()
+  val navController = rememberNavController()
+  val navigationActions = remember(navController) {
+    NavigationActions(navController)
+  }
+  val navBackStackEntry by navController.currentBackStackEntryAsState()
+  val selectedDestination = navBackStackEntry?.destination?.route ?: Route.Watchlist
+
+  Row(modifier = modifier.fillMaxSize()) {
+    AnimatedVisibility(visible = navigationType == NavigationType.NAVIGATION_RAIL) {
+      HomeNavigationRail(
+          selectedDestination = selectedDestination,
+          navigationContentPosition = navigationContentPosition,
+          navigateToTopLevelDestination = navigateToTopLevelDestination,
+          listOf(
+              TopLevelDestination(
+                  Route.Watchlist
+              )
+          )
+      )
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.inverseOnSurface)
+    ) {
+      HomeNavHost(
+          navController = navController,
+          contentType = contentType,
+          displayFeatures = displayFeatures,
+          navigationType = navigationType,
+          closeDetailScreen = closeDetailScreen,
+          navigateToDetail = navigateToDetail,
+          modifier = Modifier.weight(1f),
+      )
+      AnimatedVisibility(visible = navigationType == NavigationType.BOTTOM_NAVIGATION) {
+        BottomNavigationBar(
+            selectedDestination = selectedDestination,
+            navigateToTopLevelDestination = navigateToTopLevelDestination
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun HomeNavHost(
+  navController: NavHostController,
+  contentType: ContentType,
+  displayFeatures: List<DisplayFeature>,
+  navigationType: NavigationType,
+  closeDetailScreen: () -> Unit,
+  navigateToDetail: (Long, ContentType) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  NavHost(
+      modifier = modifier,
+      navController = navController,
+      startDestination = Route.Watchlist,
+  ) {
+    composable(Route.Watchlist) {
+      WatchListScreen(
+          contentType = contentType,
+          navigationType = navigationType,
+          displayFeatures = displayFeatures,
+          closeDetailScreen = closeDetailScreen,
+          navigateToDetail = navigateToDetail,
+      )
+    }
+    composable(Route.Trending) {
+      EmptyComingSoon()
+    }
+    composable(Route.Search) {
+      EmptyComingSoon()
+    }
+    composable(Route.Widgets) {
+      EmptyComingSoon()
+    }
+    composable(Route.Settings) {
+      EmptyComingSoon()
+    }
+  }
+}
+
+@Composable
+fun HomeListDetailContent(
+  widthSizeClass: WindowWidthSizeClass,
+  displayFeatures: List<DisplayFeature>,
   quotesFlow: StateFlow<List<Quote>>
 ) {
 
@@ -213,6 +322,7 @@ private fun HomeListDetailNavigationWrapper(
       displayFeatures = displayFeatures,
       modifier = Modifier.padding(horizontal = 16.dp)
   )
+
 }
 
 /**
