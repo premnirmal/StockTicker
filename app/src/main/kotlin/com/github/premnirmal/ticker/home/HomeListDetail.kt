@@ -74,12 +74,11 @@ fun HomeListDetail(
   ListDetail(
       isDetailOpen = isDetailOpen,
       setIsDetailOpen = { isDetailOpen = it },
-      showListAndDetail = if (quotes.isNotEmpty() && selectedQuote >= 0) true else {
-        when (widthSizeClass) {
-          WindowWidthSizeClass.Compact -> false
-          WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> true
-          else -> true
-        }
+      showListAndDetail =
+      when (widthSizeClass) {
+        WindowWidthSizeClass.Compact -> false
+        WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> quotes.isNotEmpty() && selectedQuote >= 0
+        else -> quotes.isNotEmpty() && selectedQuote >= 0
       },
       detailKey = selectedQuote,
       list = { isDetailVisible ->
