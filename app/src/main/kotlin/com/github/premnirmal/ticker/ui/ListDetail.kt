@@ -60,14 +60,7 @@ fun ListDetail(
       // Set up a SaveableStateProvider so the list state will be preserved even while it
       // is hidden if the detail is showing instead.
       listSaveableStateHolder.SaveableStateProvider(0) {
-        Box(
-            modifier = Modifier
-                .userInteractionNotification {
-                  // When interacting with the list, consider the detail to no longer be
-                  // open in the case of resize.
-                  setIsDetailOpen(false)
-                }
-        ) {
+        Box {
           list(showDetail)
         }
       }

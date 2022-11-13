@@ -73,9 +73,11 @@ fun HomeListDetail(
 
   ListDetail(
       isDetailOpen = isDetailOpen,
-      setIsDetailOpen = { isDetailOpen = it },
-      showListAndDetail =
-      when (widthSizeClass) {
+      setIsDetailOpen = {
+        selectedQuote = -1
+        isDetailOpen = it
+      },
+      showListAndDetail = when (widthSizeClass) {
         WindowWidthSizeClass.Compact -> false
         WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> quotes.isNotEmpty() && selectedQuote >= 0
         else -> quotes.isNotEmpty() && selectedQuote >= 0
