@@ -26,6 +26,7 @@ class HomeViewModel @Inject constructor(
   val fetchState = stocksProvider.fetchState.asLiveData(Dispatchers.Main)
   val hasHoldings: Boolean
     get() = stocksProvider.hasPositions()
+  val portfolio = stocksProvider.portfolio
 
   fun getTotalGainLoss(): LiveData<TotalGainLoss> {
     val data = MutableLiveData<TotalGainLoss>()

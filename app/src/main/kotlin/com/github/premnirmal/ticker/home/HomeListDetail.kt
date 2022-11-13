@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,17 +32,29 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.home.SelectionVisibilityState.NoSelection
 import com.github.premnirmal.ticker.home.SelectionVisibilityState.ShowSelection
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ListDetail
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun MainListDetail(
+fun HomeListDetail(
   windowSizeClass: WindowSizeClass,
-  displayFeatures: List<DisplayFeature>
+  displayFeatures: List<DisplayFeature>,
+  homeViewModel: HomeViewModel = viewModel()
+) {
+  HomeListDetail(windowSizeClass, displayFeatures, homeViewModel.portfolio)
+}
+
+@Composable
+fun HomeListDetail(
+  windowSizeClass: WindowSizeClass,
+  displayFeatures: List<DisplayFeature>,
+  quotesFlow: StateFlow<List<Quote>>
 ) {
   // Query for the current window size class
   val widthSizeClass by rememberUpdatedState(windowSizeClass.widthSizeClass)
@@ -49,26 +62,29 @@ fun MainListDetail(
   /**
    * The index of the currently selected quote.
    */
-  var selectedQuote by rememberSaveable { mutableStateOf(0) }
+  var selectedQuote by rememberSaveable { mutableStateOf(-1) }
 
   /**
    * True if the detail is currently open. This is the primary control for "navigation".
    */
   var isDetailOpen by rememberSaveable { mutableStateOf(false) }
 
+  val quotes by quotesFlow.collectAsState()
+
   ListDetail(
       isDetailOpen = isDetailOpen,
       setIsDetailOpen = { isDetailOpen = it },
-      showListAndDetail =
-      when (widthSizeClass) {
-        WindowWidthSizeClass.Compact -> false
-        WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> true
-        else -> true
+      showListAndDetail = if (quotes.isNotEmpty() && selectedQuote >= 0) true else {
+        when (widthSizeClass) {
+          WindowWidthSizeClass.Compact -> false
+          WindowWidthSizeClass.Medium, WindowWidthSizeClass.Expanded -> true
+          else -> true
+        }
       },
       detailKey = selectedQuote,
       list = { isDetailVisible ->
         ListContent(
-            quotes = sampleWords.map(DefinedWord::word),
+            quotes = quotes,
             selectionState = if (isDetailVisible) {
               SelectionVisibilityState.ShowSelection(selectedQuote)
             } else {
@@ -89,9 +105,9 @@ fun MainListDetail(
         )
       },
       detail = { isListVisible ->
-        val definedWord = quotes[selectedQuote]
+        val quote = if (selectedQuote >= 0) quotes[selectedQuote] else null
         DetailContent(
-            definedWord = definedWord,
+            quote = quote,
             modifier = if (isListVisible) {
               Modifier.padding(start = 8.dp)
             } else {
@@ -220,7 +236,7 @@ private fun ListContent(
  */
 @Composable
 private fun DetailContent(
-  quote: Quote,
+  quote: Quote?,
   modifier: Modifier = Modifier,
 ) {
   Column(
@@ -228,12 +244,16 @@ private fun DetailContent(
           .verticalScroll(rememberScrollState())
           .padding(vertical = 16.dp)
   ) {
-    Text(
-        text = quote.symbol,
-        style = MaterialTheme.typography.headlineMedium
-    )
-    Text(
-        text = quote.name
+    if (quote != null) {
+      Text(
+          text = quote.symbol,
+          style = MaterialTheme.typography.headlineMedium
+      )
+      Text(
+          text = quote.name
+      )
+    } else Text(
+        text = "Select a quote"
     )
   }
 }
