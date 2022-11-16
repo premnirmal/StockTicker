@@ -1,25 +1,25 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,6 +29,7 @@ import androidx.window.layout.DisplayFeature
 import androidx.window.layout.FoldingFeature
 import com.github.premnirmal.ticker.home.watchlist.WatchlistScreen
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.news.NewsFeedScreen
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DevicePosture
 import com.github.premnirmal.ticker.ui.EmptyComingSoon
@@ -41,27 +42,32 @@ import com.github.premnirmal.ticker.ui.navigation.HomeNavigationRail
 import com.github.premnirmal.ticker.ui.navigation.NavigationActions
 import com.github.premnirmal.ticker.ui.navigation.Route
 import com.github.premnirmal.ticker.ui.navigation.TopLevelDestination
+import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun HomeListDetail(
-  windowSizeClass: WindowSizeClass,
+  windowWidthSizeClass: WindowWidthSizeClass,
+  windowHeightSizeClass: WindowHeightSizeClass,
   displayFeatures: List<DisplayFeature>,
-  homeViewModel: HomeViewModel = viewModel()
+  homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-  HomeListDetail(windowSizeClass, displayFeatures, homeViewModel.portfolio)
+  HomeListDetail(
+      windowWidthSizeClass, windowHeightSizeClass, displayFeatures, homeViewModel.portfolio
+  )
 }
 
 @Composable
 fun HomeListDetail(
-  windowSizeClass: WindowSizeClass,
+  windowWidthSizeClass: WindowWidthSizeClass,
+  windowHeightSizeClass: WindowHeightSizeClass,
   displayFeatures: List<DisplayFeature>,
   quotesFlow: StateFlow<List<Quote>>
 ) {
   // Query for the current window size class
-  val widthSizeClass by rememberUpdatedState(windowSizeClass.widthSizeClass)
-  val heightSizeClass by rememberUpdatedState(windowSizeClass.heightSizeClass)
+  val widthSizeClass by rememberUpdatedState(windowWidthSizeClass)
+  val heightSizeClass by rememberUpdatedState(windowHeightSizeClass)
 
   /**
    * This will help us select type of navigation and content type depending on window size and
@@ -133,13 +139,11 @@ fun HomeListDetail(
       contentType = contentType,
       displayFeatures = displayFeatures,
       quotesFlow = quotesFlow,
-      navigationContentPosition = navigationContentPosition,
-      navigateToTopLevelDestination = { destination ->
-
-      }
+      navigationContentPosition = navigationContentPosition
   )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeListDetailNavigationWrapper(
   modifier: Modifier = Modifier,
@@ -147,45 +151,91 @@ private fun HomeListDetailNavigationWrapper(
   contentType: ContentType,
   displayFeatures: List<DisplayFeature>,
   navigationContentPosition: NavigationContentPosition,
-  navigateToTopLevelDestination: (TopLevelDestination) -> Unit,
   quotesFlow: StateFlow<List<Quote>>
 ) {
-  val scope = rememberCoroutineScope()
   val navController = rememberNavController()
   val navigationActions = remember(navController) {
     NavigationActions(navController)
   }
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val selectedDestination = navBackStackEntry?.destination?.route ?: Route.Watchlist
-  // todo add destinations
-  val destinations = emptyList<TopLevelDestination>()
-
-  Row(modifier = modifier.fillMaxSize()) {
-    AnimatedVisibility(visible = navigationType == NavigationType.NAVIGATION_RAIL) {
-      HomeNavigationRail(
-          selectedDestination = selectedDestination,
-          navigationContentPosition = navigationContentPosition,
-          navigateToTopLevelDestination = navigateToTopLevelDestination,
-          destinations = destinations
+  val destinations = listOf(
+      TopLevelDestination(
+          Route.Watchlist,
+          ImageVector.vectorResource(id = R.drawable.ic_trending_up),
+          ImageVector.vectorResource(id = R.drawable.ic_trending_up),
+          R.string.action_portfolio
+      ),
+      TopLevelDestination(
+          Route.Trending,
+          ImageVector.vectorResource(id = R.drawable.ic_news),
+          ImageVector.vectorResource(id = R.drawable.ic_news),
+          R.string.action_feed
+      ),
+      TopLevelDestination(
+          Route.Search,
+          ImageVector.vectorResource(id = R.drawable.ic_search),
+          ImageVector.vectorResource(id = R.drawable.ic_search),
+          R.string.action_search
+      ),
+      TopLevelDestination(
+          Route.Widgets,
+          ImageVector.vectorResource(id = R.drawable.ic_widget),
+          ImageVector.vectorResource(id = R.drawable.ic_widget),
+          R.string.action_widgets
+      ),
+      TopLevelDestination(
+          Route.Settings,
+          ImageVector.vectorResource(id = R.drawable.ic_settings),
+          ImageVector.vectorResource(id = R.drawable.ic_settings),
+          R.string.action_settings
       )
-    }
-    Column(
+  )
+
+  if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
+    Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.inverseOnSurface)
-    ) {
+            .background(MaterialTheme.colorScheme.surface),
+        bottomBar = {
+          BottomNavigationBar(
+              selectedDestination = selectedDestination,
+              navigateToTopLevelDestination = {
+                navigationActions.navigateTo(it)
+              },
+              destinations = destinations
+          )
+        }
+    ) { padding ->
       HomeNavHost(
           navController = navController,
           displayFeatures = displayFeatures,
-          modifier = Modifier.weight(1f),
+          modifier = Modifier.padding(padding),
           quotesFlow = quotesFlow,
           contentType = contentType
       )
-      AnimatedVisibility(visible = navigationType == NavigationType.BOTTOM_NAVIGATION) {
-        BottomNavigationBar(
-            selectedDestination = selectedDestination,
-            navigateToTopLevelDestination = navigateToTopLevelDestination,
-            destinations = destinations
+    }
+  } else {
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+      HomeNavigationRail(
+          selectedDestination = selectedDestination,
+          navigationContentPosition = navigationContentPosition,
+          navigateToTopLevelDestination = {
+            navigationActions.navigateTo(it)
+          },
+          destinations = destinations
+      )
+      Column {
+        HomeNavHost(
+            navController = navController,
+            displayFeatures = displayFeatures,
+            modifier = Modifier.weight(1f),
+            quotesFlow = quotesFlow,
+            contentType = contentType
         )
       }
     }
@@ -213,7 +263,9 @@ private fun HomeNavHost(
       )
     }
     composable(Route.Trending) {
-      EmptyComingSoon()
+      NewsFeedScreen(onQuoteClick = {
+        // TODO open quote detail
+      })
     }
     composable(Route.Search) {
       EmptyComingSoon()
@@ -227,14 +279,27 @@ private fun HomeNavHost(
   }
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Preview
 @Composable
 fun HomeListDetailHandset() {
   HomeListDetail(
-      windowSizeClass = WindowSizeClass.calculateFromSize(DpSize(720.dp, 500.dp)),
+      windowWidthSizeClass = WindowWidthSizeClass.Compact,
+      windowHeightSizeClass = WindowHeightSizeClass.Compact,
       displayFeatures = emptyList(),
-      quotesFlow = MutableStateFlow(emptyList())
+      quotesFlow = MutableStateFlow(listOf(Quote("GOOG", "Alphabet Corp.", 0f, 0f, 0f)))
+  )
+}
+
+@Preview(
+    device = Devices.NEXUS_9
+)
+@Composable
+fun HomeListDetailTablet() {
+  HomeListDetail(
+      windowWidthSizeClass = WindowWidthSizeClass.Expanded,
+      windowHeightSizeClass = WindowHeightSizeClass.Expanded,
+      displayFeatures = emptyList(),
+      quotesFlow = MutableStateFlow(listOf(Quote("GOOG", "Alphabet Corp.", 0f, 0f, 0f)))
   )
 }
 

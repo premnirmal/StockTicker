@@ -74,14 +74,7 @@ fun ListDetail(
       // If this behavior isn't desired, this can be replaced with a key on the
       // selectedWordIndex.
       detailSaveableStateHolder.SaveableStateProvider(currentDetailKey) {
-        Box(
-            modifier = Modifier
-                .userInteractionNotification {
-                  // When interacting with the detail, consider the detail to be
-                  // open in the case of resize.
-                  setIsDetailOpen(true)
-                }
-        ) {
+        Box {
           detail(showList)
         }
       }

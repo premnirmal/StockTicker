@@ -16,15 +16,21 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
+import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
+import com.github.premnirmal.tickerwidget.R
 
 @Composable
 fun BottomNavigationBar(
@@ -40,6 +46,7 @@ fun BottomNavigationBar(
           icon = {
             Icon(
                 imageVector = destination.selectedIcon,
+                tint = MaterialTheme.colorScheme.primary,
                 contentDescription = stringResource(id = destination.iconTextId)
             )
           }
@@ -132,7 +139,8 @@ fun HomeNavigationRail(
 }
 
 enum class LayoutType {
-  HEADER, CONTENT
+  HEADER,
+  CONTENT
 }
 
 class NavigationActions(private val navController: NavHostController) {
@@ -152,4 +160,87 @@ class NavigationActions(private val navController: NavHostController) {
       restoreState = true
     }
   }
+}
+
+@Preview(device = Devices.NEXUS_9)
+@Composable
+fun NavigationRailPreview() {
+  HomeNavigationRail(
+      selectedDestination = Route.Watchlist,
+      destinations = listOf(
+          TopLevelDestination(
+              Route.Watchlist,
+              ImageVector.vectorResource(id = R.drawable.ic_trending_up),
+              ImageVector.vectorResource(id = R.drawable.ic_trending_up),
+              R.string.action_portfolio
+          ),
+          TopLevelDestination(
+              Route.Trending,
+              ImageVector.vectorResource(id = R.drawable.ic_news),
+              ImageVector.vectorResource(id = R.drawable.ic_news),
+              R.string.action_feed
+          ),
+          TopLevelDestination(
+              Route.Search,
+              ImageVector.vectorResource(id = R.drawable.ic_search),
+              ImageVector.vectorResource(id = R.drawable.ic_search),
+              R.string.action_search
+          ),
+          TopLevelDestination(
+              Route.Widgets,
+              ImageVector.vectorResource(id = R.drawable.ic_widget),
+              ImageVector.vectorResource(id = R.drawable.ic_widget),
+              R.string.action_widgets
+          ),
+          TopLevelDestination(
+              Route.Settings,
+              ImageVector.vectorResource(id = R.drawable.ic_settings),
+              ImageVector.vectorResource(id = R.drawable.ic_settings),
+              R.string.action_settings
+          )
+      ),
+      navigateToTopLevelDestination = {},
+      navigationContentPosition = TOP
+  )
+}
+
+@Preview
+@Composable
+fun BottomNavigationBarPreview() {
+  BottomNavigationBar(
+      selectedDestination = Route.Watchlist,
+      destinations = listOf(
+          TopLevelDestination(
+              Route.Watchlist,
+              ImageVector.vectorResource(id = R.drawable.ic_trending_up),
+              ImageVector.vectorResource(id = R.drawable.ic_trending_up),
+              R.string.action_portfolio
+          ),
+          TopLevelDestination(
+              Route.Trending,
+              ImageVector.vectorResource(id = R.drawable.ic_news),
+              ImageVector.vectorResource(id = R.drawable.ic_news),
+              R.string.action_feed
+          ),
+          TopLevelDestination(
+              Route.Search,
+              ImageVector.vectorResource(id = R.drawable.ic_search),
+              ImageVector.vectorResource(id = R.drawable.ic_search),
+              R.string.action_search
+          ),
+          TopLevelDestination(
+              Route.Widgets,
+              ImageVector.vectorResource(id = R.drawable.ic_widget),
+              ImageVector.vectorResource(id = R.drawable.ic_widget),
+              R.string.action_widgets
+          ),
+          TopLevelDestination(
+              Route.Settings,
+              ImageVector.vectorResource(id = R.drawable.ic_settings),
+              ImageVector.vectorResource(id = R.drawable.ic_settings),
+              R.string.action_settings
+          )
+      ),
+      navigateToTopLevelDestination = {}
+  )
 }

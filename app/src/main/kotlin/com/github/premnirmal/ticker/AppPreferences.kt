@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker
 
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
@@ -21,6 +22,7 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
+  @get:VisibleForTesting
   internal val sharedPreferences: SharedPreferences,
   private val clock: AppClock
 ) {
@@ -245,6 +247,6 @@ class AppPreferences @Inject constructor(
     val DECIMAL_FORMAT_2DP: Format = DecimalFormat("#,##0.00")
 
     val SELECTED_DECIMAL_FORMAT: Format
-      get() = INSTANCE.selectedDecimalFormat
+      get() = if (::INSTANCE.isInitialized) { INSTANCE.selectedDecimalFormat } else DECIMAL_FORMAT
   }
 }

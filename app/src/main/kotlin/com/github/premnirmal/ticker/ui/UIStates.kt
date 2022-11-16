@@ -1,9 +1,9 @@
 package com.github.premnirmal.ticker.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,13 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EmptyComingSoon(
-  modifier: Modifier = Modifier
-) {
-  Column(
-      modifier = modifier.fillMaxSize(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally
+fun EmptyComingSoon() {
+  BoxWithConstraints(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
   ) {
     Text(
         modifier = Modifier.padding(8.dp),
@@ -29,6 +26,34 @@ fun EmptyComingSoon(
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.primary
     )
+  }
+}
+
+@Composable
+fun ErrorState(
+  text: String
+) {
+  BoxWithConstraints(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+  ) {
+    Text(
+        modifier = Modifier.padding(8.dp),
+        text = text,
+        style = MaterialTheme.typography.titleLarge,
+        textAlign = TextAlign.Center,
+        color = MaterialTheme.colorScheme.error
+    )
+  }
+}
+
+@Composable
+fun ProgressState() {
+  BoxWithConstraints(
+      modifier = Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+  ) {
+    CircularProgressIndicator()
   }
 }
 

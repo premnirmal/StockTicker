@@ -1,5 +1,7 @@
 package com.github.premnirmal.tickerwidget.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 internal object BaseAppColours {
@@ -101,4 +103,15 @@ internal object ColourPaletteDark {
   val positive_green = Color(0xFFccff66)
   val positive_green_dark = Color(0xFF009900)
   val text_2 = Color(0xfff3f3f3)
+}
+
+object ColourPalette {
+  val ChangePositive: Color
+    @Composable get() {
+      return if (isSystemInDarkTheme()) ColourPaletteDark.change_positive else ColourPaletteLight.change_positive
+    }
+  val ChangeNegative: Color
+    @Composable get() {
+      return if (isSystemInDarkTheme()) ColourPaletteDark.change_negative else ColourPaletteLight.change_negative
+    }
 }

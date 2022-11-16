@@ -22,12 +22,15 @@ class NewsArticle : Comparable<NewsArticle> {
   @get:Element(name = "link")
   @set:Element(name = "link")
   var url: String = ""
+
   @get:Element(name = "title", required = false)
   @set:Element(name = "title", required = false)
   var title: String? = null
+
   @get:Element(name = "description", required = false)
   @set:Element(name = "description", required = false)
   var description: String? = null
+
   @get:Element(name = "pubDate", required = false)
   @set:Element(name = "pubDate", required = false)
   var publishedAt: String? = null
@@ -40,7 +43,9 @@ class NewsArticle : Comparable<NewsArticle> {
     try {
       LocalDateTime.parse(publishedAt, DateTimeFormatter.RFC_1123_DATE_TIME)
     } catch (e: Exception) {
-      Instant.parse(publishedAt).atZone(ZoneId.systemDefault()).toLocalDateTime()
+      Instant.parse(publishedAt)
+          .atZone(ZoneId.systemDefault())
+          .toLocalDateTime()
     }
   }
 
@@ -57,17 +62,21 @@ class NewsArticle : Comparable<NewsArticle> {
 
   fun descriptionSanitized(): String {
     return if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      Html.fromHtml(description.orEmpty(), Html.FROM_HTML_MODE_COMPACT).toString()
+      Html.fromHtml(description.orEmpty(), Html.FROM_HTML_MODE_COMPACT)
+          .toString()
     } else {
-      Html.fromHtml(description.orEmpty()).toString()
+      Html.fromHtml(description.orEmpty())
+          .toString()
     }
   }
 
   fun titleSanitized(): String {
     return if (VERSION.SDK_INT >= VERSION_CODES.N) {
-      Html.fromHtml(title.orEmpty(), Html.FROM_HTML_MODE_COMPACT).toString()
+      Html.fromHtml(title.orEmpty(), Html.FROM_HTML_MODE_COMPACT)
+          .toString()
     } else {
-      Html.fromHtml(title.orEmpty()).toString()
+      Html.fromHtml(title.orEmpty())
+          .toString()
     }
   }
 
@@ -96,3 +105,13 @@ data class Thumbnail(
   @param:Attribute(name = "url", required = false)
   val url: String? = null
 )
+
+fun NewsArticle(
+  title: String,
+  url: String,
+  publishedAt: String
+) = NewsArticle().apply {
+  this.title = title
+  this.url = url
+  this.publishedAt = publishedAt
+}

@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import com.github.premnirmal.ticker.base.BaseComposeActivity
@@ -18,28 +17,23 @@ class HomeActivity : BaseComposeActivity() {
 
   val viewModel: HomeViewModel by viewModels()
 
-  @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      AppTheme(currentTheme) {
-        val windowSize = calculateWindowSizeClass(this)
-        HomeScreen(windowSize.widthSizeClass)
+      AppTheme(theme = currentTheme) {
+        HomeScreen()
       }
     }
   }
 
   @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
   @Composable
-  fun HomeScreen(windowSize: WindowWidthSizeClass) {
+  fun HomeScreen() {
+    val windowSizeClass = calculateWindowSizeClass(this)
     HomeListDetail(
-        windowSizeClass = calculateWindowSizeClass(this),
+        windowWidthSizeClass = windowSizeClass.widthSizeClass,
+        windowHeightSizeClass = windowSizeClass.heightSizeClass,
         displayFeatures = calculateDisplayFeatures(this)
     )
-    if (windowSize == WindowWidthSizeClass.Expanded) {
-
-    } else {
-
-    }
   }
 }

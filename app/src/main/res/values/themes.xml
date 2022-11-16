@@ -41,6 +41,10 @@
   </style>
 
   <style name="MainActivityTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
     <item name="android:statusBarColor">@color/transparent</item>
     <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle.MainActivity</item>
   </style>

@@ -1,7 +1,10 @@
 package com.github.premnirmal.ticker.network.data
 
 import android.os.Parcelable
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import kotlinx.android.parcel.Parcelize
 
 /**
@@ -18,7 +21,7 @@ data class Quote constructor(
 
   var isPostMarket: Boolean = false
   var stockExchange: String = ""
-  var currencyCode: String = ""
+  var currencyCode: String = "USD"
   var annualDividendRate: Float = 0.toFloat()
   var annualDividendYield: Float = 0.toFloat()
 
@@ -99,6 +102,12 @@ data class Quote constructor(
       AppPreferences.DECIMAL_FORMAT_2DP.format(annualDividendRate)
     }
   }
+
+  val isUp: Boolean
+    get() = change >= 0f
+
+  val changeColour: Color
+    @Composable get() = if (isUp) ColourPalette.ChangePositive else ColourPalette.ChangeNegative
 
   private fun positionPrice(): Float = position?.averagePrice() ?: 0f
 
