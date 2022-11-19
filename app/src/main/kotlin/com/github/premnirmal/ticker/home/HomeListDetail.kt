@@ -19,6 +19,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.fragment.app.Fragment
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -68,6 +69,7 @@ fun HomeListDetail(
       NavigationContentPosition.TOP
     }
   }
+  val viewModel: HomeViewModel = hiltViewModel()
   val destinations = ArrayList<HomeBottomNavDestination>().apply {
     add(
         HomeBottomNavDestination(
@@ -99,7 +101,8 @@ fun HomeListDetail(
             HomeRoute.Widgets,
             ImageVector.vectorResource(id = drawable.ic_widget),
             ImageVector.vectorResource(id = drawable.ic_widget),
-            string.action_widgets
+            string.action_widgets,
+            enabled = viewModel.hasWidgets()
         )
     )
     add(

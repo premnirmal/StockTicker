@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -139,7 +140,8 @@ fun HomeNavHost(
         EmptyComingSoon(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface))
+                .background(MaterialTheme.colorScheme.surface)
+        )
       } else {
         FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
           replace(id, WidgetsFragment())
@@ -153,7 +155,8 @@ fun HomeNavHost(
         EmptyComingSoon(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface))
+                .background(MaterialTheme.colorScheme.surface)
+        )
       } else {
         FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
           replace(id, SettingsParentFragment())
@@ -176,11 +179,12 @@ fun BottomNavigationBar(
       NavigationBarItem(
           selected = selectedDestination == destination.route,
           onClick = { navigateToTopLevelDestination(destination) },
+          enabled = destination.enabled,
           icon = {
             Icon(
                 imageVector = destination.selectedIcon,
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = stringResource(id = destination.iconTextId)
+                contentDescription = stringResource(id = destination.iconTextId),
+                tint = if (!destination.enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.primary
             )
           }
       )
@@ -221,12 +225,14 @@ fun HomeNavigationRail(
               NavigationRailItem(
                   selected = selectedDestination == Destination.route,
                   onClick = { navigateToTopLevelDestination(Destination) },
+                  enabled = Destination.enabled,
                   icon = {
                     Icon(
                         imageVector = Destination.selectedIcon,
                         contentDescription = stringResource(
                             id = Destination.iconTextId
-                        )
+                        ),
+                        tint = if (!Destination.enabled) LocalContentColor.current.copy(alpha = 0.2f) else LocalContentColor.current
                     )
                   }
               )
@@ -302,7 +308,8 @@ data class HomeBottomNavDestination(
   val route: String,
   val selectedIcon: ImageVector,
   val unselectedIcon: ImageVector,
-  val iconTextId: Int
+  val iconTextId: Int,
+  val enabled: Boolean = true
 )
 
 @Preview(device = Devices.NEXUS_9)
@@ -315,7 +322,7 @@ fun NavigationRailPreview() {
               HomeRoute.Watchlist,
               ImageVector.vectorResource(id = drawable.ic_trending_up),
               ImageVector.vectorResource(id = drawable.ic_trending_up),
-              string.action_portfolio
+              string.action_portfolio,
           ),
           HomeBottomNavDestination(
               HomeRoute.Trending,

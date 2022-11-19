@@ -30,7 +30,8 @@ fun RootNavigationGraph(
           rootNavController = navHostController,
           windowWidthSizeClass = windowWidthSizeClass,
           windowHeightSizeClass = windowHeightSizeClass, displayFeatures = displayFeatures,
-          onFragmentChange = onFragmentChange)
+          onFragmentChange = onFragmentChange
+      )
     }
     composable(route = "${Graph.QUOTE_DETAIL}/{symbol}") {
       val symbol = it.arguments?.getString("symbol")

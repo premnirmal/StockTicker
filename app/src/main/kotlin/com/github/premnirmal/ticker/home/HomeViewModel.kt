@@ -11,6 +11,8 @@ import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
+import com.github.premnirmal.ticker.widget.WidgetData
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +27,8 @@ class HomeViewModel @Inject constructor(
   private val stocksProvider: StocksProvider,
   private val appPreferences: AppPreferences,
   private val newsProvider: NewsProvider,
-  private val commitsProvider: CommitsProvider
+  private val commitsProvider: CommitsProvider,
+  private val widgetDataProvider: WidgetDataProvider
 ) : ViewModel() {
 
   val fetchState = stocksProvider.fetchState.asLiveData(Dispatchers.Main)
@@ -43,6 +46,10 @@ class HomeViewModel @Inject constructor(
       commitsProvider.initCache()
     }
   }
+
+  fun hasWidgets(): Boolean = widgetDataProvider.hasWidget()
+
+  fun widgets(): List<WidgetData> = widgetDataProvider.widgetDataList()
 
   fun getTotalGainLoss(): LiveData<TotalGainLoss> {
     val data = MutableLiveData<TotalGainLoss>()
