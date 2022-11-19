@@ -42,15 +42,20 @@ def getVersionName = { ->
 
 def getOldGitVersion = { ->
   def stdout = new ByteArrayOutputStream()
-  exec {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      commandLine 'powershell', '-command', "& {git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1}"
-    } else {
-      commandLine 'sh', '-c', "git tag --sort=-committerdate | head -10 | tail -1"
+  try {
+    exec {
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd', '/c', 'Powershell',
+            "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1"
+      } else {
+        commandLine 'sh', '-c', "git tag --sort=-committerdate | head -10 | tail -1"
+      }
+      standardOutput = stdout
     }
-    standardOutput = stdout
+    return stdout.toString().trim()
+  } catch (e) {
+    return "1.0"
   }
-  return stdout.toString().trim()
 }
 
 android {
@@ -232,10 +237,12 @@ dependencies {
   implementation "com.google.accompanist:accompanist-adaptive:0.27.0"
   implementation 'androidx.compose.runtime:runtime-livedata:1.4.0-alpha02'
   implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+  implementation 'androidx.compose.ui:ui-viewbinding:1.3.1'
 
   implementation project(":UI")
 
   implementation "io.coil-kt:coil:2.2.2"
+  implementation "io.coil-kt:coil-compose:2.2.2"
 
   implementation "javax.inject:javax.inject:1"
   implementation "javax.annotation:javax.annotation-api:1.3.2"

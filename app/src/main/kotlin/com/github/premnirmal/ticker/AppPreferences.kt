@@ -6,6 +6,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.tickerwidget.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.DayOfWeek
@@ -248,5 +249,8 @@ class AppPreferences @Inject constructor(
 
     val SELECTED_DECIMAL_FORMAT: Format
       get() = if (::INSTANCE.isInitialized) { INSTANCE.selectedDecimalFormat } else DECIMAL_FORMAT
+
+    val USE_JETPACK_COMPOSE: Boolean
+      get() = BuildConfig.DEBUG
   }
 }

@@ -15,15 +15,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.premnirmal.ticker.home.watchlist.QuoteCard
+import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.NewsFeedItem.TrendingStockNewsFeed
 import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.ProgressState
+import com.github.premnirmal.ticker.ui.TopBar
 
 @Composable
 fun NewsFeedScreen(
+  modifier: Modifier = Modifier,
   onQuoteClick: (Quote) -> Unit,
   viewModel: NewsFeedViewModel = hiltViewModel()
 ) {
@@ -32,45 +34,58 @@ fun NewsFeedScreen(
   when (newsFeed.value?.wasSuccessful) {
     true -> {
       val newsFeedItems = newsFeed.value!!.data
-      NewsFeedItems(newsFeedItems, onQuoteClick)
+      NewsFeedItems(modifier, newsFeedItems, onQuoteClick)
     }
     false -> {
-      ErrorState("Error fetching news")
+      ErrorState(modifier = modifier, text = "Error fetching news")
     }
     else -> {
-      ProgressState()
+      ProgressState(modifier = modifier)
     }
   }
 }
 
 @Composable
 private fun NewsFeedItems(
+  modifier: Modifier = Modifier,
   newsFeedItems: List<NewsFeedItem>,
   onQuoteClick: (Quote) -> Unit
 ) {
-  LazyColumn(
-      modifier = Modifier.fillMaxWidth(),
-      contentPadding = PaddingValues(all = 8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
-  ) {
-    items(newsFeedItems.size) { i ->
-      val data = newsFeedItems[i]
-      if (data is TrendingStockNewsFeed) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-          val trending = data.quotes.withIndex()
-              .groupBy { it.index / 3 }
-              .map { it.value.map { it.value } }
-          trending.forEach { group ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(intrinsicSize = IntrinsicSize.Max),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-              group.forEach { quote ->
+  Column {
+    TopBar(text = "Trending")
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(all = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+      items(
+          count = newsFeedItems.size,
+          key = { i ->
+            val item = newsFeedItems[i]
+            if (item is ArticleNewsFeed) {
+              item.article.url
+            } else {
+              (item as TrendingStockNewsFeed).quotes.size
+            }
+          }
+      ) { i ->
+        val data = newsFeedItems[i]
+        if (data is TrendingStockNewsFeed) {
+          Column(
+              modifier = Modifier.fillMaxWidth(),
+              verticalArrangement = Arrangement.spacedBy(8.dp)
+          ) {
+            val trending = data.quotes.withIndex()
+                .groupBy { it.index / 3 }
+                .map { it.value.map { it.value } }
+            trending.forEach { group ->
+              Row(
+                  modifier = Modifier
+                      .fillMaxWidth()
+                      .height(intrinsicSize = IntrinsicSize.Max),
+                  horizontalArrangement = Arrangement.spacedBy(8.dp)
+              ) {
+                group.forEach { quote ->
                   QuoteCard(
                       quote = quote,
                       modifier = Modifier
@@ -78,12 +93,13 @@ private fun NewsFeedItems(
                           .fillMaxHeight(),
                       onClick = { onQuoteClick(quote) }
                   )
+                }
               }
             }
           }
+        } else if (data is ArticleNewsFeed) {
+          NewsCard(data.article)
         }
-      } else if (data is ArticleNewsFeed) {
-        NewsCard(data.article)
       }
     }
   }
@@ -93,7 +109,7 @@ private fun NewsFeedItems(
 @Composable
 fun NewsFeedPreview() {
   NewsFeedItems(
-      listOf(
+      newsFeedItems = listOf(
           TrendingStockNewsFeed(
               listOf(
                   Quote("Goog", "Alphabet Inc"),

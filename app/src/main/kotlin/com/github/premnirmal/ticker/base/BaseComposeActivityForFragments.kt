@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker.base
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.compositeOver
@@ -19,7 +19,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-abstract class BaseComposeActivity : ComponentActivity() {
+abstract class BaseComposeActivityForFragments : AppCompatActivity() {
 
   abstract val simpleName: String
   open val subscribeToErrorEvents = true

@@ -57,12 +57,19 @@ class WidgetsFragment : BaseFragment<FragmentWidgetsBinding>(), ChildFragment, O
     binding.widgetSelectionSpinner.adapter = WidgetSpinnerAdapter(widgetDataList)
     binding.widgetSelectionSpinner.onItemSelectedListener = this
 
+    var selected = false
+
     arguments?.let {
+      selected = true
       selectWidgetFromBundle(it)
     }
 
     savedInstanceState?.let {
+      selected = true
       selectWidgetFromBundle(it)
+    }
+    if (!selected && widgetDataList.isNotEmpty()) {
+      setWidgetFragment(widgetDataList[0].widgetId)
     }
   }
 

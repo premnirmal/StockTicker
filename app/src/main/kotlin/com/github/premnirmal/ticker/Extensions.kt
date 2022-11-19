@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
@@ -34,6 +35,14 @@ import java.text.SimpleDateFormat
 import java.util.Currency
 import java.util.Date
 import java.util.Locale
+
+
+val Number.toPx
+  get() = TypedValue.applyDimension(
+      TypedValue.COMPLEX_UNIT_DIP,
+      this.toFloat(),
+      Resources.getSystem().displayMetrics
+  )
 
 fun Drawable.toBitmap(): Bitmap {
   if (this is BitmapDrawable) {

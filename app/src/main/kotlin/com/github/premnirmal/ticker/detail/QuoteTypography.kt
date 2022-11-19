@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.home.watchlist
+package com.github.premnirmal.ticker.detail
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

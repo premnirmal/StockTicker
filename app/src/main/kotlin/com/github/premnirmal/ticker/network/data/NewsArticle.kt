@@ -109,9 +109,13 @@ data class Thumbnail(
 fun NewsArticle(
   title: String,
   url: String,
-  publishedAt: String
+  publishedAt: String,
+  imageUrl: String? = null
 ) = NewsArticle().apply {
   this.title = title
   this.url = url
   this.publishedAt = publishedAt
+  imageUrl?.let {
+    this.thumbnail = Thumbnail(url = imageUrl)
+  }
 }

@@ -37,7 +37,10 @@ class SearchViewModel @Inject constructor(
   private var searchJob: Job? = null
 
   fun fetchResults(query: String) {
-    if (query.isEmpty()) return
+    if (query.isEmpty()) {
+      _searchResult.value = FetchResult.success(emptyList())
+      return
+    }
     searchJob?.cancel()
     searchJob = viewModelScope.launch(Dispatchers.Default) {
       delay(500L)

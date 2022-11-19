@@ -1,40 +1,73 @@
 package com.github.premnirmal.ticker.home.watchlist
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
+import com.github.premnirmal.ticker.detail.QuoteCard
+import com.github.premnirmal.ticker.detail.QuoteDetailScreen
+import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.DUAL_PANE
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.ListDetail
+import com.github.premnirmal.ticker.ui.TopBar
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun WatchlistScreen(
+  modifier: Modifier = Modifier,
+  widthSizeClass: WindowWidthSizeClass,
+  contentType: ContentType,
+  displayFeatures: List<DisplayFeature>,
+  detailOpen: Boolean = contentType == DUAL_PANE,
+  selectedQuoteIndex: Int = -1,
+  viewModel: HomeViewModel = hiltViewModel()
+) {
+  WatchlistScreen(
+      modifier = modifier,
+      widthSizeClass = widthSizeClass,
+      contentType = contentType,
+      displayFeatures = displayFeatures,
+      detailOpen = detailOpen,
+      selectedQuoteIndex = selectedQuoteIndex,
+      quotesFlow = viewModel.portfolio
+  )
+}
+
+@Composable
+fun WatchlistScreen(
+  modifier: Modifier = Modifier,
+  widthSizeClass: WindowWidthSizeClass,
   contentType: ContentType,
   displayFeatures: List<DisplayFeature>,
   quotesFlow: StateFlow<List<Quote>>,
-  detailOpen: Boolean = false,
+  detailOpen: Boolean = contentType == DUAL_PANE,
   selectedQuoteIndex: Int = -1
 ) {
 
@@ -51,6 +84,7 @@ fun WatchlistScreen(
   val quotes by quotesFlow.collectAsState()
 
   ListDetail(
+      modifier = modifier,
       isDetailOpen = isDetailOpen,
       setIsDetailOpen = {
         selectedQuote = -1
@@ -58,7 +92,7 @@ fun WatchlistScreen(
       },
       showListAndDetail = when (contentType) {
         SINGLE_PANE -> false
-        DUAL_PANE -> quotes.isNotEmpty() && selectedQuote >= 0
+        DUAL_PANE -> quotes.isNotEmpty()
       },
       detailKey = selectedQuote,
       list = { isDetailVisible ->
@@ -82,14 +116,19 @@ fun WatchlistScreen(
         val quote = if (selectedQuote >= 0) quotes[selectedQuote] else null
         if (quote != null) {
           QuoteDetailScreen(
+              widthSizeClass = widthSizeClass,
+              contentType = SINGLE_PANE,
+              displayFeatures = displayFeatures,
               quote = quote
           )
         } else {
-          Text("Select a quote")
+          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Select a quote")
+          }
         }
       },
       twoPaneStrategy = HorizontalTwoPaneStrategy(
-          splitFraction = 1f / 3f,
+          splitFraction = 1f / 2.25f,
       ),
       displayFeatures = displayFeatures
   )
@@ -99,25 +138,29 @@ fun WatchlistScreen(
 /**
  * The content for the list pane.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WatchlistContent(
   quotes: List<Quote>,
   onIndexClick: (index: Int) -> Unit,
   modifier: Modifier = Modifier
 ) {
-  LazyVerticalGrid(
-      columns = GridCells.Adaptive(minSize = 150.dp),
-      contentPadding = PaddingValues(all = 8.dp),
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp)
-  ) {
-    itemsIndexed(quotes) { index, quote ->
-      QuoteCard(
-          quote = quote,
-          modifier = Modifier.fillMaxWidth(),
-          onClick = { onIndexClick(index) }
-      )
+  Column {
+    TopBar(text = "Watchlist")
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(all = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+      itemsIndexed(quotes) { index, quote ->
+        QuoteCard(
+            quote = quote,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { onIndexClick(index) }
+        )
+      }
     }
   }
 }
@@ -127,6 +170,7 @@ private fun WatchlistContent(
 fun WatchlistScreenHandset(
 ) {
   WatchlistScreen(
+      widthSizeClass = WindowWidthSizeClass.Compact,
       contentType = SINGLE_PANE,
       displayFeatures = emptyList(),
       quotesFlow = MutableStateFlow(
@@ -143,6 +187,7 @@ fun WatchlistScreenHandset(
 fun WatchlistScreenTablet(
 ) {
   WatchlistScreen(
+      widthSizeClass = WindowWidthSizeClass.Expanded,
       contentType = DUAL_PANE,
       displayFeatures = emptyList(),
       detailOpen = true,

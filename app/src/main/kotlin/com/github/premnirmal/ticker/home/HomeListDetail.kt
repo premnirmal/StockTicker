@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,103 +18,39 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.fragment.app.Fragment
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
-import androidx.window.layout.FoldingFeature
-import com.github.premnirmal.ticker.home.watchlist.WatchlistScreen
-import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.news.NewsFeedScreen
+import com.github.premnirmal.ticker.navigation.BottomNavigationBar
+import com.github.premnirmal.ticker.navigation.CalculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
+import com.github.premnirmal.ticker.navigation.HomeNavHost
+import com.github.premnirmal.ticker.navigation.HomeNavigationActions
+import com.github.premnirmal.ticker.navigation.HomeNavigationRail
+import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.ui.ContentType
-import com.github.premnirmal.ticker.ui.DevicePosture
-import com.github.premnirmal.ticker.ui.EmptyComingSoon
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationType
-import com.github.premnirmal.ticker.ui.isBookPosture
-import com.github.premnirmal.ticker.ui.isSeparating
-import com.github.premnirmal.ticker.ui.navigation.BottomNavigationBar
-import com.github.premnirmal.ticker.ui.navigation.HomeNavigationRail
-import com.github.premnirmal.ticker.ui.navigation.NavigationActions
-import com.github.premnirmal.ticker.ui.navigation.Route
-import com.github.premnirmal.ticker.ui.navigation.TopLevelDestination
-import com.github.premnirmal.tickerwidget.R
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import com.github.premnirmal.tickerwidget.R.drawable
+import com.github.premnirmal.tickerwidget.R.string
 
 @Composable
 fun HomeListDetail(
+  rootNavController: NavHostController = rememberNavController(),
   windowWidthSizeClass: WindowWidthSizeClass,
   windowHeightSizeClass: WindowHeightSizeClass,
   displayFeatures: List<DisplayFeature>,
-  homeViewModel: HomeViewModel = hiltViewModel()
-) {
-  HomeListDetail(
-      windowWidthSizeClass, windowHeightSizeClass, displayFeatures, homeViewModel.portfolio
-  )
-}
-
-@Composable
-fun HomeListDetail(
-  windowWidthSizeClass: WindowWidthSizeClass,
-  windowHeightSizeClass: WindowHeightSizeClass,
-  displayFeatures: List<DisplayFeature>,
-  quotesFlow: StateFlow<List<Quote>>
+  onFragmentChange: (Int, Fragment) -> Unit
 ) {
   // Query for the current window size class
   val widthSizeClass by rememberUpdatedState(windowWidthSizeClass)
   val heightSizeClass by rememberUpdatedState(windowHeightSizeClass)
 
-  /**
-   * This will help us select type of navigation and content type depending on window size and
-   * fold state of the device.
-   */
-  val navigationType: NavigationType
-  val contentType: ContentType
-
-  /**
-   * We are using display's folding features to map the device postures a fold is in.
-   * In the state of folding device If it's half fold in BookPosture we want to avoid content
-   * at the crease/hinge
-   */
-  val foldingFeature = displayFeatures.filterIsInstance<FoldingFeature>()
-      .firstOrNull()
-
-  val foldingDevicePosture = when {
-    isBookPosture(foldingFeature) ->
-      DevicePosture.BookPosture(foldingFeature.bounds)
-
-    isSeparating(foldingFeature) ->
-      DevicePosture.Separating(foldingFeature.bounds, foldingFeature.orientation)
-
-    else -> DevicePosture.NormalPosture
-  }
-
-  when (widthSizeClass) {
-    WindowWidthSizeClass.Compact -> {
-      navigationType = NavigationType.BOTTOM_NAVIGATION
-      contentType = ContentType.SINGLE_PANE
-    }
-    WindowWidthSizeClass.Medium -> {
-      navigationType = NavigationType.BOTTOM_NAVIGATION
-      contentType = if (foldingDevicePosture != DevicePosture.NormalPosture) {
-        ContentType.DUAL_PANE
-      } else {
-        ContentType.SINGLE_PANE
-      }
-    }
-    WindowWidthSizeClass.Expanded -> {
-      navigationType = NavigationType.NAVIGATION_RAIL
-      contentType = ContentType.DUAL_PANE
-    }
-    else -> {
-      navigationType = NavigationType.BOTTOM_NAVIGATION
-      contentType = ContentType.SINGLE_PANE
-    }
-  }
+  val pair = CalculateContentAndNavigationType(widthSizeClass, displayFeatures)
+  val navigationType = pair.first
+  val contentType = pair.second
 
   /**
    * Content inside Navigation Rail/Drawer can also be positioned at top, bottom or center for
@@ -133,13 +68,59 @@ fun HomeListDetail(
       NavigationContentPosition.TOP
     }
   }
+  val destinations = ArrayList<HomeBottomNavDestination>().apply {
+    add(
+        HomeBottomNavDestination(
+            HomeRoute.Watchlist,
+            ImageVector.vectorResource(id = drawable.ic_trending_up),
+            ImageVector.vectorResource(id = drawable.ic_trending_up),
+            string.action_portfolio
+        ))
+    if (widthSizeClass != WindowWidthSizeClass.Expanded) {
+      add(
+          HomeBottomNavDestination(
+              HomeRoute.Trending,
+              ImageVector.vectorResource(id = drawable.ic_news),
+              ImageVector.vectorResource(id = drawable.ic_news),
+              string.action_feed
+          )
+      )
+    }
+    add(
+        HomeBottomNavDestination(
+            HomeRoute.Search,
+            ImageVector.vectorResource(id = drawable.ic_search),
+            ImageVector.vectorResource(id = drawable.ic_search),
+            string.action_search
+        )
+    )
+    add(
+        HomeBottomNavDestination(
+            HomeRoute.Widgets,
+            ImageVector.vectorResource(id = drawable.ic_widget),
+            ImageVector.vectorResource(id = drawable.ic_widget),
+            string.action_widgets
+        )
+    )
+    add(
+        HomeBottomNavDestination(
+            HomeRoute.Settings,
+            ImageVector.vectorResource(id = drawable.ic_settings),
+            ImageVector.vectorResource(id = drawable.ic_settings),
+            string.action_settings
+        )
+    )
+  }
 
   HomeListDetailNavigationWrapper(
+      rootNavController = rootNavController,
       navigationType = navigationType,
       contentType = contentType,
+      destinations = destinations,
+      widthSizeClass = windowWidthSizeClass,
       displayFeatures = displayFeatures,
-      quotesFlow = quotesFlow,
-      navigationContentPosition = navigationContentPosition
+      navigationContentPosition = navigationContentPosition,
+      onFragmentChange = onFragmentChange
   )
 }
 
@@ -147,50 +128,21 @@ fun HomeListDetail(
 @Composable
 private fun HomeListDetailNavigationWrapper(
   modifier: Modifier = Modifier,
+  rootNavController: NavHostController = rememberNavController(),
   navigationType: NavigationType,
   contentType: ContentType,
+  destinations: List<HomeBottomNavDestination>,
+  widthSizeClass: WindowWidthSizeClass,
   displayFeatures: List<DisplayFeature>,
   navigationContentPosition: NavigationContentPosition,
-  quotesFlow: StateFlow<List<Quote>>
+  onFragmentChange: (Int, Fragment) -> Unit
 ) {
   val navController = rememberNavController()
-  val navigationActions = remember(navController) {
-    NavigationActions(navController)
+  val homeNavigationActions = remember(navController) {
+    HomeNavigationActions(navController)
   }
   val navBackStackEntry by navController.currentBackStackEntryAsState()
-  val selectedDestination = navBackStackEntry?.destination?.route ?: Route.Watchlist
-  val destinations = listOf(
-      TopLevelDestination(
-          Route.Watchlist,
-          ImageVector.vectorResource(id = R.drawable.ic_trending_up),
-          ImageVector.vectorResource(id = R.drawable.ic_trending_up),
-          R.string.action_portfolio
-      ),
-      TopLevelDestination(
-          Route.Trending,
-          ImageVector.vectorResource(id = R.drawable.ic_news),
-          ImageVector.vectorResource(id = R.drawable.ic_news),
-          R.string.action_feed
-      ),
-      TopLevelDestination(
-          Route.Search,
-          ImageVector.vectorResource(id = R.drawable.ic_search),
-          ImageVector.vectorResource(id = R.drawable.ic_search),
-          R.string.action_search
-      ),
-      TopLevelDestination(
-          Route.Widgets,
-          ImageVector.vectorResource(id = R.drawable.ic_widget),
-          ImageVector.vectorResource(id = R.drawable.ic_widget),
-          R.string.action_widgets
-      ),
-      TopLevelDestination(
-          Route.Settings,
-          ImageVector.vectorResource(id = R.drawable.ic_settings),
-          ImageVector.vectorResource(id = R.drawable.ic_settings),
-          R.string.action_settings
-      )
-  )
+  val selectedDestination = navBackStackEntry?.destination?.route ?: HomeRoute.Watchlist
 
   if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
     Scaffold(
@@ -201,18 +153,20 @@ private fun HomeListDetailNavigationWrapper(
           BottomNavigationBar(
               selectedDestination = selectedDestination,
               navigateToTopLevelDestination = {
-                navigationActions.navigateTo(it)
+                homeNavigationActions.navigateTo(it)
               },
               destinations = destinations
           )
         }
     ) { padding ->
       HomeNavHost(
+          rootNavController = rootNavController,
           navController = navController,
+          widthSizeClass = widthSizeClass,
           displayFeatures = displayFeatures,
-          modifier = Modifier.padding(padding),
-          quotesFlow = quotesFlow,
-          contentType = contentType
+          modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
+          contentType = contentType,
+          onFragmentChange = onFragmentChange
       )
     }
   } else {
@@ -225,56 +179,19 @@ private fun HomeListDetailNavigationWrapper(
           selectedDestination = selectedDestination,
           navigationContentPosition = navigationContentPosition,
           navigateToTopLevelDestination = {
-            navigationActions.navigateTo(it)
+            homeNavigationActions.navigateTo(it)
           },
           destinations = destinations
       )
-      Column {
-        HomeNavHost(
-            navController = navController,
-            displayFeatures = displayFeatures,
-            modifier = Modifier.weight(1f),
-            quotesFlow = quotesFlow,
-            contentType = contentType
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun HomeNavHost(
-  navController: NavHostController,
-  displayFeatures: List<DisplayFeature>,
-  modifier: Modifier = Modifier,
-  contentType: ContentType,
-  quotesFlow: StateFlow<List<Quote>>
-) {
-  NavHost(
-      modifier = modifier,
-      navController = navController,
-      startDestination = Route.Watchlist,
-  ) {
-    composable(Route.Watchlist) {
-      WatchlistScreen(
+      HomeNavHost(
+          rootNavController = rootNavController,
+          navController = navController,
+          widthSizeClass = widthSizeClass,
           displayFeatures = displayFeatures,
-          quotesFlow = quotesFlow,
-          contentType = contentType
+          modifier = Modifier.weight(1f),
+          contentType = contentType,
+          onFragmentChange = onFragmentChange
       )
-    }
-    composable(Route.Trending) {
-      NewsFeedScreen(onQuoteClick = {
-        // TODO open quote detail
-      })
-    }
-    composable(Route.Search) {
-      EmptyComingSoon()
-    }
-    composable(Route.Widgets) {
-      EmptyComingSoon()
-    }
-    composable(Route.Settings) {
-      EmptyComingSoon()
     }
   }
 }
@@ -286,7 +203,7 @@ fun HomeListDetailHandset() {
       windowWidthSizeClass = WindowWidthSizeClass.Compact,
       windowHeightSizeClass = WindowHeightSizeClass.Compact,
       displayFeatures = emptyList(),
-      quotesFlow = MutableStateFlow(listOf(Quote("GOOG", "Alphabet Corp.", 0f, 0f, 0f)))
+      onFragmentChange = { _, _ -> }
   )
 }
 
@@ -299,7 +216,7 @@ fun HomeListDetailTablet() {
       windowWidthSizeClass = WindowWidthSizeClass.Expanded,
       windowHeightSizeClass = WindowHeightSizeClass.Expanded,
       displayFeatures = emptyList(),
-      quotesFlow = MutableStateFlow(listOf(Quote("GOOG", "Alphabet Corp.", 0f, 0f, 0f)))
+      onFragmentChange = { _, _ -> }
   )
 }
 

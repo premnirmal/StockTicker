@@ -24,6 +24,7 @@ import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -176,11 +177,19 @@ class QuoteDetailViewModel @Inject constructor(
   }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), 1)
 
   fun loadQuote(ticker: String) = viewModelScope.launch {
-    _quote.emit(FetchResult.success(QuoteWithSummary(checkNotNull(stocksProvider.getStock(ticker)), quoteSummary)))
+    quoteSummary = null
+    if (stocksProvider.hasTicker(ticker)) {
+      _quote.emit(
+          FetchResult.success(
+              QuoteWithSummary(checkNotNull(stocksProvider.getStock(ticker)), quoteSummary)
+          )
+      )
+    }
   }
 
   fun fetchQuote(ticker: String) {
     viewModelScope.launch {
+      quoteSummary = null
       val fetchStock = stocksProvider.fetchStock(ticker)
       if (fetchStock.wasSuccessful) {
         val fetchDetails = stocksApi.getQuoteDetails(ticker)
@@ -249,10 +258,6 @@ class QuoteDetailViewModel @Inject constructor(
 
   fun fetchNews(quote: Quote) {
     viewModelScope.launch {
-      if (_newsData.value != null) {
-        _newsData.postValue(_newsData.value)
-        return@launch
-      }
       val query = quote.newsQuery()
       val result = newsProvider.fetchNewsForQuery(query)
       when {
@@ -288,6 +293,13 @@ class QuoteDetailViewModel @Inject constructor(
     } else {
       false
     }
+  }
+
+  @OptIn(ExperimentalCoroutinesApi::class)
+  fun clear() {
+    _newsData.value = emptyList()
+    _data.value = emptyList()
+    _quote.resetReplayCache()
   }
 
   data class QuoteDetail(

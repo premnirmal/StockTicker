@@ -2,6 +2,10 @@
 <resources>
 
   <style name="BaseAppTheme" parent="AppTheme">
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
     <item name="android:windowBackground">?android:attr/colorBackground</item>
     <item name="android:textViewStyle">@style/Widget.StocksWidget.TextView</item>
     <item name="android:editTextStyle">@style/EditTextStyle</item>
@@ -49,6 +53,10 @@
     <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle.MainActivity</item>
   </style>
   <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+    <item name="android:windowActionBar">false</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
     <!-- Set the splash screen background, animated icon, and animation duration. -->
     <item name="windowSplashScreenBackground">@drawable/bg_splash</item>
     <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an

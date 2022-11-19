@@ -27,6 +27,7 @@ interface LegacyComponent {
   fun inject(adapter: RemoteStockViewAdapter)
 
   fun inject(receiver: WidgetClickReceiver)
+  fun inject(receiver: RefreshWorker)
   fun inject(receiver: RefreshReceiver)
   fun inject(receiver: UpdateReceiver)
   fun inject(receiver: DailySummaryNotificationReceiver)

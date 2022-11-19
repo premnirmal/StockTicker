@@ -14,9 +14,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EmptyComingSoon() {
+fun EmptyComingSoon(
+  modifier: Modifier = Modifier
+) {
   BoxWithConstraints(
-      modifier = Modifier.fillMaxSize(),
+      modifier = modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
   ) {
     Text(
@@ -31,10 +33,11 @@ fun EmptyComingSoon() {
 
 @Composable
 fun ErrorState(
+  modifier: Modifier = Modifier,
   text: String
 ) {
   BoxWithConstraints(
-      modifier = Modifier.fillMaxSize(),
+      modifier = modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
   ) {
     Text(
@@ -48,9 +51,9 @@ fun ErrorState(
 }
 
 @Composable
-fun ProgressState() {
+fun ProgressState(modifier: Modifier = Modifier) {
   BoxWithConstraints(
-      modifier = Modifier.fillMaxSize(),
+      modifier = modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
   ) {
     CircularProgressIndicator()
