@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.components
 
 import com.github.premnirmal.ticker.UpdateReceiver
+import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
@@ -29,6 +30,7 @@ interface LegacyComponent {
   fun inject(receiver: RefreshReceiver)
   fun inject(receiver: UpdateReceiver)
   fun inject(receiver: DailySummaryNotificationReceiver)
+  fun inject(refreshWorker: RefreshWorker)
 }
 
 @InstallIn(SingletonComponent::class)

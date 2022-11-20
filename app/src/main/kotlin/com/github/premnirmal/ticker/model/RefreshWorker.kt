@@ -16,10 +16,9 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
 
   @Inject internal lateinit var stocksProvider: StocksProvider
 
-  
-
   override suspend fun doWork(): Result {
     return if (applicationContext.isNetworkOnline()) {
+      Injector.appComponent().inject(this)
       val result = stocksProvider.fetch()
       if (result.hasError) {
         Result.failure()
