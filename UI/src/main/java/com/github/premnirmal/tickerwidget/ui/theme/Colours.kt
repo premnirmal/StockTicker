@@ -114,4 +114,6 @@ object ColourPalette {
     @Composable get() {
       return if (isSystemInDarkTheme()) ColourPaletteDark.change_negative else ColourPaletteLight.change_negative
     }
+
+  val ImagePlaceHolderGray = Color(0x20a7a7a7)
 }

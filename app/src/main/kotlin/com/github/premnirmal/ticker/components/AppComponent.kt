@@ -19,15 +19,10 @@ import dagger.hilt.components.SingletonComponent
 
 interface LegacyComponent {
   fun gson(): Gson
-
   fun inject(widget: StockWidget)
-
   fun inject(data: WidgetData)
-
   fun inject(adapter: RemoteStockViewAdapter)
-
   fun inject(receiver: WidgetClickReceiver)
-  fun inject(receiver: RefreshWorker)
   fun inject(receiver: RefreshReceiver)
   fun inject(receiver: UpdateReceiver)
   fun inject(receiver: DailySummaryNotificationReceiver)

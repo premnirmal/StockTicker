@@ -17,13 +17,22 @@ import androidx.compose.ui.unit.dp
 fun EmptyComingSoon(
   modifier: Modifier = Modifier
 ) {
+  EmptyState(modifier = modifier, text = "This tab is under construction")
+}
+
+@Composable
+fun EmptyState(
+  modifier: Modifier = Modifier,
+  contentAlignment: Alignment = Alignment.Center,
+  text: String
+) {
   BoxWithConstraints(
       modifier = modifier.fillMaxSize(),
-      contentAlignment = Alignment.Center
+      contentAlignment = contentAlignment
   ) {
     Text(
         modifier = Modifier.padding(8.dp),
-        text = "This tab is under construction",
+        text = text,
         style = MaterialTheme.typography.titleLarge,
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.primary

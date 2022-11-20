@@ -1,5 +1,8 @@
 package com.github.premnirmal.ticker.home.watchlist
 
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,15 +10,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,6 +35,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
+import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +50,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.DUAL_PANE
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
+import com.github.premnirmal.ticker.ui.EmptyState
 import com.github.premnirmal.ticker.ui.ListDetail
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
@@ -107,7 +119,7 @@ fun WatchlistScreen(
           )
         } else {
           Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Select a quote")
+            EmptyState(text = "Select a quote")
           }
         }
       },
@@ -116,13 +128,16 @@ fun WatchlistScreen(
       ),
       displayFeatures = displayFeatures
   )
-
 }
 
 /**
  * The content for the list pane.
  */
-@OptIn(ExperimentalFoundationApi::class, ExperimentalPagerApi::class)
+@OptIn(
+    ExperimentalFoundationApi::class,
+    ExperimentalPagerApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 private fun WatchlistContent(
   modifier: Modifier = Modifier,
@@ -136,16 +151,17 @@ private fun WatchlistContent(
   val tabIndex = pagerState.currentPage
   val coroutineScope = rememberCoroutineScope()
   Column(modifier = modifier) {
-    TopBar(text = stringResource(R.string.action_portfolio))
+    TopBar(
+        text = stringResource(R.string.action_portfolio),
+        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+    )
     TabRow(
         selectedTabIndex = tabIndex,
         modifier = Modifier.padding(horizontal = 8.dp),
         divider = {},
         indicator = { tabPositions ->
-          TabRowDefaults.Indicator(
-              Modifier.tabIndicatorOffset(tabPositions[tabIndex]),
-          )
-        },
+          TabRowDefaults.Indicator(modifier = Modifier.customTabIndicatorOffset(tabPositions[tabIndex]))
+        }
     ) {
       widgets.forEachIndexed { index, widget ->
         Tab(
@@ -183,6 +199,28 @@ private fun WatchlistContent(
       }
     }
   }
+}
+
+fun Modifier.customTabIndicatorOffset(
+  currentTabPosition: TabPosition
+): Modifier = composed(
+    inspectorInfo = debugInspectorInfo {
+      name = "tabIndicatorOffset"
+      value = currentTabPosition
+    }
+) {
+  val currentTabWidth by animateDpAsState(
+      targetValue = currentTabPosition.width * 0.33f,
+      animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+  )
+  val indicatorOffset by animateDpAsState(
+      targetValue = currentTabPosition.left,
+      animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+  )
+  fillMaxWidth()
+      .wrapContentSize(Alignment.BottomStart)
+      .offset(x = indicatorOffset + currentTabPosition.width * 0.33f)
+      .width(currentTabWidth)
 }
 
 @Preview(device = Devices.PIXEL_3A_XL)

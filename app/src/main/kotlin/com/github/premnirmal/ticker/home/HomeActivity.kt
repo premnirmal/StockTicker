@@ -20,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeActivity : BaseComposeActivityForFragments() {
-  override val simpleName = "MainActivity2"
+  override val simpleName = "HomeActivity"
 
   val viewModel: HomeViewModel by viewModels()
 
