@@ -9,7 +9,6 @@ import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkInfo.State.RUNNING
@@ -129,19 +128,6 @@ class AlarmScheduler @Inject constructor(
     Timber.d("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
     val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)
     val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    val workRequest = OneTimeWorkRequestBuilder<RefreshWorker>()
-        .setConstraints(
-            Constraints.Builder()
-                .setRequiredNetworkType(CONNECTED)
-                .build()
-        )
-        .addTag(RefreshWorker.TAG)
-        .setInitialDelay(msToNextAlarm, MILLISECONDS)
-        .build()
-    with(workManager) {
-      this.cancelAllWorkByTag(RefreshWorker.TAG)
-      this.enqueue(workRequest)
-    }
     val refreshReceiverIntent = Intent(context, RefreshReceiver::class.java)
     val alarmManager = checkNotNull(context.getSystemService<AlarmManager>())
     val pendingIntent = PendingIntent.getBroadcast(
@@ -155,7 +141,6 @@ class AlarmScheduler @Inject constructor(
   }
 
   suspend fun enqueuePeriodicRefresh(
-    context: Context,
     force: Boolean = true
   ) {
     with(workManager) {

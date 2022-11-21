@@ -70,9 +70,6 @@ class StocksProvider @Inject constructor(
     _lastFetched.tryEmit(lastFetched)
     val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     _nextFetch.tryEmit(nextFetch)
-    coroutineScope.launch {
-      alarmScheduler.enqueuePeriodicRefresh(context)
-    }
     runBlocking { fetchLocal() }
     if (lastFetched == 0L) {
       coroutineScope.launch {
@@ -222,7 +219,7 @@ class StocksProvider @Inject constructor(
   fun schedule() {
     scheduleUpdate()
     coroutineScope.launch {
-      alarmScheduler.enqueuePeriodicRefresh(context, force = true)
+      alarmScheduler.enqueuePeriodicRefresh(force = true)
     }
   }
 
