@@ -22,9 +22,9 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     notifyDataSetChanged()
   }
 
-  override fun getCount(): Int = widgetData.getStocks().size
+  override fun getCount(): Int = widgetData.getQuotesList().size
 
-  override fun getItem(position: Int): Quote = widgetData.getStocks()[position]
+  override fun getItem(position: Int): Quote = widgetData.getQuotesList()[position]
 
   override fun getItemId(position: Int): Long = position.toLong()
 

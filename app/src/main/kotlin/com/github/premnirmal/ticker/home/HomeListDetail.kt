@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -42,8 +41,7 @@ fun HomeListDetail(
   rootNavController: NavHostController = rememberNavController(),
   windowWidthSizeClass: WindowWidthSizeClass,
   windowHeightSizeClass: WindowHeightSizeClass,
-  displayFeatures: List<DisplayFeature>,
-  onFragmentChange: (Int, Fragment) -> Unit
+  displayFeatures: List<DisplayFeature>
 ) {
   // Query for the current window size class
   val widthSizeClass by rememberUpdatedState(windowWidthSizeClass)
@@ -122,8 +120,7 @@ fun HomeListDetail(
       destinations = destinations,
       widthSizeClass = windowWidthSizeClass,
       displayFeatures = displayFeatures,
-      navigationContentPosition = navigationContentPosition,
-      onFragmentChange = onFragmentChange
+      navigationContentPosition = navigationContentPosition
   )
 }
 
@@ -137,8 +134,7 @@ private fun HomeListDetailNavigationWrapper(
   destinations: List<HomeBottomNavDestination>,
   widthSizeClass: WindowWidthSizeClass,
   displayFeatures: List<DisplayFeature>,
-  navigationContentPosition: NavigationContentPosition,
-  onFragmentChange: (Int, Fragment) -> Unit
+  navigationContentPosition: NavigationContentPosition
 ) {
   val navController = rememberNavController()
   val homeNavigationActions = remember(navController) {
@@ -168,8 +164,7 @@ private fun HomeListDetailNavigationWrapper(
           widthSizeClass = widthSizeClass,
           displayFeatures = displayFeatures,
           modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
-          contentType = contentType,
-          onFragmentChange = onFragmentChange
+          contentType = contentType
       )
     }
   } else {
@@ -192,8 +187,7 @@ private fun HomeListDetailNavigationWrapper(
           widthSizeClass = widthSizeClass,
           displayFeatures = displayFeatures,
           modifier = Modifier.weight(1f),
-          contentType = contentType,
-          onFragmentChange = onFragmentChange
+          contentType = contentType
       )
     }
   }
@@ -205,8 +199,7 @@ fun HomeListDetailHandset() {
   HomeListDetail(
       windowWidthSizeClass = WindowWidthSizeClass.Compact,
       windowHeightSizeClass = WindowHeightSizeClass.Compact,
-      displayFeatures = emptyList(),
-      onFragmentChange = { _, _ -> }
+      displayFeatures = emptyList()
   )
 }
 
@@ -218,8 +211,7 @@ fun HomeListDetailTablet() {
   HomeListDetail(
       windowWidthSizeClass = WindowWidthSizeClass.Expanded,
       windowHeightSizeClass = WindowHeightSizeClass.Expanded,
-      displayFeatures = emptyList(),
-      onFragmentChange = { _, _ -> }
+      displayFeatures = emptyList()
   )
 }
 

@@ -135,9 +135,11 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     }
     viewModel.fetchQuoteInRealTime(ticker)
     viewModel.dataFetchError.observe(this) {
-      binding.progress.visibility = View.GONE
-      binding.graphView.setNoDataText(getString(R.string.graph_fetch_failed))
-      InAppMessage.showMessage(binding.parentView, R.string.graph_fetch_failed, error = true)
+      it?.let {
+        binding.progress.visibility = View.GONE
+        binding.graphView.setNoDataText(getString(R.string.graph_fetch_failed))
+        InAppMessage.showMessage(binding.parentView, R.string.graph_fetch_failed, error = true)
+      }
     }
     viewModel.newsData.observe(this) { data ->
       analytics.trackGeneralEvent(
@@ -240,7 +242,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
       when (menuItem.itemId) {
         R.id.action_add -> {
           if (viewModel.hasWidget()) {
-            val widgetDatas = viewModel.getWidgetDatas()
+            val widgetDatas = viewModel.getWidgetDataList()
             if (widgetDatas.size > 1) {
               val widgetNames = widgetDatas.map { it.widgetName() }
                   .toTypedArray()

@@ -62,10 +62,10 @@ data class Quote constructor(
       PriceFormat(currencyCode = currencyCode, symbol = it, prefix = prefixCurrencies[currencyCode] ?: true)
     } ?: PriceFormat(currencyCode, currencyCode)
 
-  fun hasAlertAbove(): Boolean =
+  fun showAlertAbove(): Boolean =
     this.properties != null && this.properties!!.alertAbove > 0.0f && this.properties!!.alertAbove < this.lastTradePrice
 
-  fun hasAlertBelow(): Boolean =
+  fun showAlertBelow(): Boolean =
     this.properties != null && this.properties!!.alertBelow > 0.0f && this.properties!!.alertBelow > this.lastTradePrice
 
   fun getAlertAbove(): Float = this.properties?.alertAbove ?: 0.0f

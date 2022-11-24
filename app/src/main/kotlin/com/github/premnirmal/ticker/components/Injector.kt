@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.components
 
 import com.github.premnirmal.ticker.StocksApp
+import com.github.premnirmal.ticker.ui.AppMessaging
 import dagger.hilt.EntryPoints
 
 /**
@@ -12,6 +13,7 @@ object Injector {
 
   fun init(app: StocksApp) {
     this.app = app
+    AppMessaging.context = app
   }
 
   fun appComponent(): AppEntryPoint {

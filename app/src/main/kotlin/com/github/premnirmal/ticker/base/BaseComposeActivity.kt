@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.base
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.compositeOver
@@ -12,6 +13,9 @@ import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
+import com.github.premnirmal.ticker.ui.AppMessage.BottomSheetMessage
+import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
@@ -59,7 +63,17 @@ abstract class BaseComposeActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     DynamicColors.applyToActivityIfAvailable(this)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
+    setContent {
+      AppTheme(theme = currentTheme) {
+        ApplyThemeColourToNavigationBar()
+        ApplyThemeColourToStatusBar()
+        ShowContent()
+      }
+    }
   }
+
+  @Composable
+  abstract fun ShowContent()
 
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
@@ -78,6 +92,21 @@ abstract class BaseComposeActivity : ComponentActivity() {
               delay(500L)
             }
           }
+        }
+      }
+    }
+    lifecycleScope.launch {
+      AppMessaging.messageQueue.collect { message ->
+        if (message is BottomSheetMessage) {
+          // TODO
+//          val dialog = BottomSheetDialog(this@BaseComposeActivity)
+//          val binding = DialogBottomSheetMessageBinding.inflate(layoutInflater)
+//          binding.title.text = message.title
+//          binding.message.text = message.message
+//          binding.action.text = message.dismissText
+//          binding.action.setOnClickListener { dialog.dismiss() }
+//          dialog.setContentView(binding.root)
+//          dialog.show()
         }
       }
     }

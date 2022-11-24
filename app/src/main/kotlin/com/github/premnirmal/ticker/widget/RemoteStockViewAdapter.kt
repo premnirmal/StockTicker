@@ -38,14 +38,14 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
   override fun onCreate() {
         val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    val stocks = widgetData.getStocks()
+    val stocks = widgetData.getQuotesList()
     quotes.clear()
     quotes.addAll(stocks)
   }
 
   override fun onDataSetChanged() {
     val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-    val stocksList = widgetData.getStocks()
+    val stocksList = widgetData.getQuotesList()
     this.quotes.clear()
     this.quotes.addAll(stocksList)
   }

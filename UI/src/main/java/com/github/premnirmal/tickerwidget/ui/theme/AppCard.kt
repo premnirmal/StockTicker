@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Shape
 @Composable
 fun AppCard(
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
   shape: Shape = MaterialTheme.shapes.large,
   colors: CardColors = CardDefaults.elevatedCardColors(),
   elevation: CardElevation = CardDefaults.elevatedCardElevation(),
@@ -24,6 +25,7 @@ fun AppCard(
   ElevatedCard(
       modifier = modifier,
       shape = shape,
+      enabled = enabled,
       colors = colors,
       elevation = elevation,
       content = content,

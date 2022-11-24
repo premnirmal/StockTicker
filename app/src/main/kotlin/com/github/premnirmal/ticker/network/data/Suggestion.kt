@@ -12,6 +12,20 @@ data class Suggestion(
   var typeDisp: String = ""
   var exists: Boolean = false
 
+  fun displayString(): String {
+    val builder = StringBuilder(symbol)
+    if (name.isNotEmpty()) {
+      builder.append(" - ")
+      builder.append(name)
+    }
+    if (exch.isNotEmpty()) {
+      builder.append(" (")
+      builder.append(exch)
+      builder.append(")")
+    }
+    return builder.toString()
+  }
+
   companion object {
     fun fromSuggestionNet(suggestionNet: SuggestionNet): Suggestion {
       val suggestion = Suggestion(suggestionNet.symbol)

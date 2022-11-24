@@ -51,8 +51,8 @@ class QuoteDetailViewModel @Inject constructor(
   private val _data = MutableLiveData<List<DataPoint>>()
   val data: LiveData<List<DataPoint>>
     get() = _data
-  private val _dataFetchError = MutableLiveData<Throwable>()
-  val dataFetchError: LiveData<Throwable>
+  private val _dataFetchError = MutableLiveData<Throwable?>()
+  val dataFetchError: LiveData<Throwable?>
     get() = _dataFetchError
   private val _newsData = MutableLiveData<List<ArticleNewsFeed>>()
   val newsData: LiveData<List<ArticleNewsFeed>>
@@ -173,6 +173,8 @@ class QuoteDetailViewModel @Inject constructor(
         )
       }
       emit(details)
+    } else {
+      emit(emptyList())
     }
   }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), 1)
 
@@ -256,13 +258,18 @@ class QuoteDetailViewModel @Inject constructor(
     }
   }
 
-  fun fetchNews(quote: Quote) {
+  fun fetchNews(quote: Quote, truncate: Boolean = true) {
     viewModelScope.launch {
       val query = quote.newsQuery()
       val result = newsProvider.fetchNewsForQuery(query)
       when {
         result.wasSuccessful -> {
-          _newsData.value = result.data.map { ArticleNewsFeed(it) }
+          val newsFeeds = result.data.map { ArticleNewsFeed(it) }
+          if (truncate) {
+            _newsData.value = newsFeeds.take(8)
+          } else {
+            _newsData.value = newsFeeds
+          }
         }
         else -> {
           _newsError.value = result.error
@@ -271,10 +278,8 @@ class QuoteDetailViewModel @Inject constructor(
     }
   }
 
-  fun getWidgetDatas(): List<WidgetData> {
-    val widgetIds = widgetDataProvider.getAppWidgetIds()
-    return widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
-        .sortedBy { it.widgetName() }
+  fun getWidgetDataList(): List<WidgetData> {
+    return widgetDataProvider.widgetDataList()
   }
 
   fun hasWidget(): Boolean {
@@ -300,6 +305,7 @@ class QuoteDetailViewModel @Inject constructor(
     _newsData.value = emptyList()
     _data.value = emptyList()
     _quote.resetReplayCache()
+    _dataFetchError.value = null
   }
 
   data class QuoteDetail(

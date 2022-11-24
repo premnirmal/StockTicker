@@ -28,7 +28,6 @@ import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.Suggesti
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SpacingDecoration
 import com.github.premnirmal.ticker.viewBinding
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.dimen
 import com.github.premnirmal.tickerwidget.databinding.FragmentSearchBinding
@@ -204,8 +203,8 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
         addTickerToWidget(ticker, selectedWidgetId)
         return true
       } else {
+        val widgetDatas = viewModel.getWidgetDataList()
         if (viewModel.hasWidget()) {
-          val widgetDatas = viewModel.getWidgetDatas()
           if (widgetDatas.size > 1) {
             val widgetNames = widgetDatas.map { it.widgetName() }
                 .toTypedArray()
@@ -226,7 +225,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
             return true
           }
         } else {
-          addTickerToWidget(ticker, WidgetDataProvider.INVALID_WIDGET_ID)
+          addTickerToWidget(ticker, widgetDatas.first().widgetId)
           return true
         }
       }

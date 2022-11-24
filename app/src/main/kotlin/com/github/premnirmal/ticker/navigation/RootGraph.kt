@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.navigation
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,8 +16,7 @@ fun RootNavigationGraph(
   windowWidthSizeClass: WindowWidthSizeClass,
   windowHeightSizeClass: WindowHeightSizeClass,
   displayFeatures: List<DisplayFeature>,
-  navHostController: NavHostController,
-  onFragmentChange: (Int, Fragment) -> Unit
+  navHostController: NavHostController
 ) {
   NavHost(
       navController = navHostController,
@@ -29,8 +27,7 @@ fun RootNavigationGraph(
       HomeListDetail(
           rootNavController = navHostController,
           windowWidthSizeClass = windowWidthSizeClass,
-          windowHeightSizeClass = windowHeightSizeClass, displayFeatures = displayFeatures,
-          onFragmentChange = onFragmentChange
+          windowHeightSizeClass = windowHeightSizeClass, displayFeatures = displayFeatures
       )
     }
     composable(route = "${Graph.QUOTE_DETAIL}/{symbol}") {

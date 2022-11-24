@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.portfolio.search
 
+import android.appwidget.AppWidgetManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -73,7 +74,8 @@ class SearchViewModel @Inject constructor(
   }
 
   fun doesSuggestionExist(sug: Suggestion) =
-    stocksProvider.hasTicker(sug.symbol) && widgetDataProvider.widgetCount <= 1
+    widgetDataProvider.containsTicker(sug.symbol)
+//    stocksProvider.hasTicker(sug.symbol) && widgetDataProvider.widgetCount <= 1
 
   fun addTickerToWidget(
     ticker: String,
@@ -93,19 +95,20 @@ class SearchViewModel @Inject constructor(
     ticker: String,
     selectedWidgetId: Int
   ) {
-    if (selectedWidgetId > 0) {
+    if (selectedWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
       val widgetData = widgetDataProvider.dataForWidgetId(selectedWidgetId)
       widgetData.removeStock(ticker)
     } else {
       val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
       widgetData.forEach { it.removeStock(ticker) }
+      viewModelScope.launch {
+        stocksProvider.removeStock(ticker)
+      }
     }
   }
 
-  fun getWidgetDatas(): List<WidgetData> {
-    val widgetIds = widgetDataProvider.getAppWidgetIds()
-    return widgetIds.map { widgetDataProvider.dataForWidgetId(it) }
-        .sortedBy { it.widgetName() }
+  fun getWidgetDataList(): List<WidgetData> {
+    return widgetDataProvider.widgetDataList()
   }
 
   fun hasWidget(): Boolean {

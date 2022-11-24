@@ -5,6 +5,8 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +23,11 @@ class WidgetDataProvider @Inject constructor(
   private val widgets: MutableMap<Int, WidgetData> by lazy {
     HashMap()
   }
+
+  val widgetData: StateFlow<List<WidgetData>>
+    get() = _widgetData
+
+  private val _widgetData: MutableStateFlow<List<WidgetData>> by lazy { MutableStateFlow(widgetDataList()) }
 
   fun getAppWidgetIds(): IntArray =
     widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
@@ -56,6 +63,7 @@ class WidgetDataProvider @Inject constructor(
           widgetData.addAllFromStocksProvider()
         }
         widgets[widgetId] = widgetData
+        _widgetData.tryEmit(widgets.values.toList())
         widgetData
       }
     }
@@ -71,6 +79,7 @@ class WidgetDataProvider @Inject constructor(
         }
         it.onWidgetRemoved()
       }
+      _widgetData.tryEmit(widgets.values.toList())
       return@synchronized removed
     }
   }

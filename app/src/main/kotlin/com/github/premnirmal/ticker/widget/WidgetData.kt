@@ -15,8 +15,12 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class WidgetData {
@@ -54,6 +58,7 @@ class WidgetData {
   private val position: Int
   val widgetId: Int
   private val tickerList: MutableList<String>
+  private val _tickerList = MutableStateFlow<List<String>>(emptyList())
   private val preferences: SharedPreferences
   private val _autoSortEnabled = MutableStateFlow(false)
   val autoSortEnabled: StateFlow<Boolean>
@@ -266,7 +271,17 @@ class WidgetData {
         .apply()
   }
 
-  fun getStocks(): List<Quote> {
+  val stocks: Flow<List<Quote>> = _tickerList.map { tickers ->
+    val quoteList = tickers.mapNotNull {
+      stocksProvider.getStock(it)
+    }
+    if (autoSortEnabled()) {
+      quoteList.sortedByDescending { it.changeInPercent }
+    } else quoteList
+  }.flowOn(Dispatchers.IO)
+
+  @Deprecated("Use the stocks flow")
+  fun getQuotesList(): List<Quote> {
     val quoteList = ArrayList<Quote>()
     tickerList.map { stocksProvider.getStock(it) }
         .forEach { quote -> quote?.let { quoteList.add(it) } }
@@ -346,5 +361,6 @@ class WidgetData {
           .putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString())
           .apply()
     }
+    _tickerList.value = tickerList
   }
 }

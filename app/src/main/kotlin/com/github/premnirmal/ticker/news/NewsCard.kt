@@ -29,7 +29,7 @@ import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.tickerwidget.ui.theme.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
-import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette.ImagePlaceHolderGray
+import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 
 @Composable
@@ -64,19 +64,22 @@ fun NewsCard(item: NewsArticle) {
         item.imageUrl?.let {
           var sizeImage by remember { mutableStateOf(IntSize.Zero) }
           val gradient = Brush.verticalGradient(
-              colors = listOf(ImagePlaceHolderGray, MaterialTheme.colorScheme.surfaceVariant),
-              startY = 0f,
-              endY = sizeImage.height.toFloat()
+              colors = listOf(ColourPalette.ImagePlaceHolderGray, MaterialTheme.colorScheme.surfaceVariant),
+              startY = sizeImage.height.toFloat(),
+              endY = 0f
           )
-          Box {
-            Box(modifier = Modifier.background(gradient))
+          Box(modifier = Modifier.padding(start = 8.dp)) {
+            Box(modifier = Modifier
+                .width(70.dp)
+                .height(70.dp)
+                .background(gradient)
+            )
             AsyncImage(
                 model = it,
                 contentDescription = null,
                 modifier = Modifier
                     .width(70.dp)
                     .height(70.dp)
-                    .padding(start = 8.dp)
                     .onGloballyPositioned {
                       sizeImage = it.size
                     },

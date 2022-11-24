@@ -9,9 +9,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.tickerwidget.R.string
 
 @Composable
 fun EmptyComingSoon(
@@ -52,7 +54,7 @@ fun ErrorState(
     Text(
         modifier = Modifier.padding(8.dp),
         text = text,
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleMedium,
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.error
     )
@@ -73,4 +75,15 @@ fun ProgressState(modifier: Modifier = Modifier) {
 @Composable
 fun ComingSoonPreview() {
   EmptyComingSoon()
+}
+
+@Preview
+@Composable
+fun ErrorStatePreview() {
+  ErrorState(
+      modifier = Modifier
+          .fillMaxSize()
+          .padding(horizontal = 8.dp),
+      text = stringResource(id = string.no_data)
+  )
 }

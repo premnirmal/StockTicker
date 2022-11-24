@@ -1,12 +1,9 @@
 package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,7 +11,6 @@ import androidx.compose.foundation.lazy.grid.GridCells.Adaptive
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,12 +24,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
@@ -67,6 +63,11 @@ fun SearchScreen(
   val onSuggestionClick: (Suggestion) -> Unit = {
     onQuoteClick(Quote(it.symbol))
   }
+  var showAddRemoveForSuggestion by remember { mutableStateOf<Suggestion?>(null) }
+  val onSuggestionAddRemoveClick: (Suggestion) -> Boolean = {
+    showAddRemoveForSuggestion = it
+    it.exists
+  }
   val contentType: ContentType = CalculateContentAndNavigationType(
       widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
   ).second
@@ -78,13 +79,14 @@ fun SearchScreen(
       }
   ) { padding ->
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    val searchResults = searchViewModel.searchResult.observeAsState()
+    val results = searchViewModel.searchResult.observeAsState()
+    val searchResults = remember { results }
     val trendingStocks = searchViewModel.fetchTrendingStocks()
         .observeAsState(emptyList())
     if (contentType == SINGLE_PANE) {
       LazyVerticalGrid(
           modifier = Modifier.padding(horizontal = 8.dp),
-          columns = Adaptive(150.dp),
+          columns = Adaptive(120.dp),
           contentPadding = padding,
           verticalArrangement = Arrangement.spacedBy(8.dp),
           horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -94,7 +96,8 @@ fun SearchScreen(
             trendingStocks = trendingStocks,
             searchResults = searchResults,
             onQuoteClick = onQuoteClick,
-            onSuggestionClick = onSuggestionClick
+            onSuggestionClick = onSuggestionClick,
+            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick
         ) {
           searchQuery = it
           searchViewModel.fetchResults(searchQuery)
@@ -125,7 +128,8 @@ fun SearchScreen(
                   trendingStocks = trendingStocks,
                   searchResults = searchResults,
                   onQuoteClick = onQuoteClick,
-                  onSuggestionClick = onSuggestionClick
+                  onSuggestionClick = onSuggestionClick,
+                  onSuggestionAddRemoveClick = onSuggestionAddRemoveClick
               ) {
                 searchQuery = it
                 searchViewModel.fetchResults(searchQuery)
@@ -170,6 +174,24 @@ fun SearchScreen(
       )
     }
   }
+  showAddRemoveForSuggestion?.let { suggestion ->
+    AddSuggestionScreen(
+        suggestion = suggestion,
+        onChange = { suggestion, widgetId ->
+          suggestion.exists = !suggestion.exists
+          if (suggestion.exists) {
+            searchViewModel.addTickerToWidget(suggestion.symbol, widgetId)
+          } else {
+            searchViewModel.removeStock(suggestion.symbol, widgetId)
+          }
+          showAddRemoveForSuggestion = null
+        },
+        onDismissRequest = {
+          showAddRemoveForSuggestion = null
+        },
+        widgetDataList = searchViewModel.getWidgetDataList()
+    )
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,6 +201,7 @@ private fun LazyGridScope.searchAndTrending(
   searchResults: State<FetchResult<List<Suggestion>>?>,
   onQuoteClick: (Quote) -> Unit,
   onSuggestionClick: (Suggestion) -> Unit,
+  onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
   onQueryChange: (String) -> Unit
 ) {
   var text = searchQuery
@@ -218,14 +241,18 @@ private fun LazyGridScope.searchAndTrending(
             key = { i -> suggestions[i].symbol }
         ) { i ->
           val suggestion = suggestions[i]
-          SuggestionItem(suggestion = suggestion, onSuggestionClick = onSuggestionClick)
+          SuggestionItem(
+              suggestion = suggestion,
+              onSuggestionClick = onSuggestionClick,
+              onSuggestionAddRemoveClick = onSuggestionAddRemoveClick
+          )
         }
       }
     } else {
       item(span = {
         GridItemSpan(maxLineSpan)
       }) {
-        ErrorState(text = "Error fetching suggestions")
+        ErrorState(text = stringResource(R.string.error_fetching_suggestions))
       }
     }
   } else {
@@ -242,27 +269,6 @@ private fun LazyGridScope.trendingStocks(
       key = { i -> trendingStocks.value[i].symbol }
   ) { i ->
     val quote = trendingStocks.value[i]
-    QuoteCard(quote = quote, onClick = onQuoteClick)
-  }
-}
-
-@Composable
-fun SuggestionItem(
-  modifier: Modifier = Modifier,
-  suggestion: Suggestion,
-  onSuggestionClick: (Suggestion) -> Unit
-) {
-  Column(
-      modifier
-          .padding(all = 4.dp)
-          .clickable(onClick = { onSuggestionClick(suggestion) })
-  )
-   {
-   Text(
-       text = AnnotatedString(text = suggestion.symbol + " - " + suggestion.name)
-    )
-    Divider(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 4.dp))
+    QuoteCard(quote = quote, onClick = onQuoteClick, quoteNameMaxLines = 1)
   }
 }

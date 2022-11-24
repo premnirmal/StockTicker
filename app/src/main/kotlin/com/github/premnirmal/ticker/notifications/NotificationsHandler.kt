@@ -156,7 +156,7 @@ class NotificationsHandler @Inject constructor(
     val portfolio: List<Quote> = stocksProvider.portfolio.value
     for (quote in portfolio) {
       when {
-        quote.hasAlertAbove() -> {
+        quote.showAlertAbove() -> {
           notificationFactory.sendNotificationForRise(quote)
           // Remove alert.
           with(quote) {
@@ -169,7 +169,7 @@ class NotificationsHandler @Inject constructor(
             stocksStorage.saveQuoteProperties(it)
           }
         }
-        quote.hasAlertBelow() -> {
+        quote.showAlertBelow() -> {
           notificationFactory.sendNotificationForFall(quote)
           // Remove alert.
           with(quote) {

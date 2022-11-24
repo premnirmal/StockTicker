@@ -16,6 +16,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,29 +31,21 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
-import androidx.fragment.app.Fragment
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
-import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.home.HomeFragment
-import com.github.premnirmal.ticker.home.watchlist.WatchlistScreen
+import com.github.premnirmal.ticker.home.WatchlistScreen
 import com.github.premnirmal.ticker.navigation.LayoutType.CONTENT
 import com.github.premnirmal.ticker.navigation.LayoutType.HEADER
-import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.news.NewsFeedScreen
-import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.portfolio.search.SearchScreen
-import com.github.premnirmal.ticker.settings.SettingsParentFragment
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.EmptyComingSoon
-import com.github.premnirmal.ticker.ui.FragmentContainer
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.CENTER
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
-import com.github.premnirmal.ticker.widget.WidgetsFragment
 import com.github.premnirmal.tickerwidget.R.drawable
 import com.github.premnirmal.tickerwidget.R.string
 
@@ -63,8 +56,7 @@ fun HomeNavHost(
   navController: NavHostController,
   displayFeatures: List<DisplayFeature>,
   modifier: Modifier = Modifier,
-  contentType: ContentType,
-  onFragmentChange: (Int, Fragment) -> Unit
+  contentType: ContentType
 ) {
   NavHost(
       modifier = modifier,
@@ -72,98 +64,58 @@ fun HomeNavHost(
       startDestination = HomeRoute.Watchlist,
   ) {
     composable(HomeRoute.Watchlist) {
-      if (AppPreferences.USE_JETPACK_COMPOSE) {
-        WatchlistScreen(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
-            widthSizeClass = widthSizeClass,
-            displayFeatures = displayFeatures,
-            contentType = contentType
-        )
-      } else {
-        FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
-          replace(id, HomeFragment())
-        }) { id, fragment ->
-          onFragmentChange(id, fragment)
-        }
-      }
+      WatchlistScreen(
+          modifier = Modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.surface),
+          widthSizeClass = widthSizeClass,
+          displayFeatures = displayFeatures,
+          contentType = contentType
+      )
     }
     composable(HomeRoute.Trending) {
-      if (AppPreferences.USE_JETPACK_COMPOSE) {
-        NewsFeedScreen(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
-            onQuoteClick = {
-              rootNavController.navigate("${Graph.QUOTE_DETAIL}/${it.symbol}") {
-                popUpTo(HomeRoute.Trending) {
-                  inclusive = true
-                }
+      NewsFeedScreen(
+          modifier = Modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.surface),
+          onQuoteClick = {
+            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${it.symbol}") {
+              popUpTo(HomeRoute.Trending) {
+                inclusive = true
               }
             }
-        )
-      } else {
-        FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
-          replace(id, NewsFeedFragment())
-        }) { id, fragment ->
-          onFragmentChange(id, fragment)
-        }
-      }
+          }
+      )
     }
     composable(HomeRoute.Search) {
-      if (AppPreferences.USE_JETPACK_COMPOSE) {
-        SearchScreen(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
-            widthSizeClass = widthSizeClass,
-            displayFeatures = displayFeatures,
-            onQuoteClick = {
-              rootNavController.navigate("${Graph.QUOTE_DETAIL}/${it.symbol}") {
-                popUpTo(HomeRoute.Search) {
-                  inclusive = true
-                }
+      SearchScreen(
+          modifier = Modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.surface),
+          widthSizeClass = widthSizeClass,
+          displayFeatures = displayFeatures,
+          onQuoteClick = {
+            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${it.symbol}") {
+              popUpTo(HomeRoute.Search) {
+                inclusive = true
               }
             }
-        )
-      } else {
-        FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
-          replace(id, SearchFragment())
-        }) { id, fragment ->
-          onFragmentChange(id, fragment)
-        }
-      }
+          }
+      )
     }
     composable(HomeRoute.Widgets) {
-      if (AppPreferences.USE_JETPACK_COMPOSE) {
-        EmptyComingSoon(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-        )
-      } else {
-        FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
-          replace(id, WidgetsFragment())
-        }) { id, fragment ->
-          onFragmentChange(id, fragment)
-        }
-      }
+      EmptyComingSoon(
+          modifier = Modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.surface)
+      )
     }
     composable(HomeRoute.Settings) {
-      if (AppPreferences.USE_JETPACK_COMPOSE) {
-        EmptyComingSoon(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-        )
-      } else {
-        FragmentContainer(modifier = Modifier.fillMaxSize(), commit = { id ->
-          replace(id, SettingsParentFragment())
-        }) { id, fragment ->
-          onFragmentChange(id, fragment)
-        }
-      }
+      EmptyComingSoon(
+          modifier = Modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.surface)
+      )
     }
   }
 }
@@ -180,11 +132,20 @@ fun BottomNavigationBar(
           selected = selectedDestination == destination.route,
           onClick = { navigateToTopLevelDestination(destination) },
           enabled = destination.enabled,
+          label = {
+            Text(
+                stringResource(id = destination.iconTextId),
+                color = MaterialTheme.colorScheme.primary
+            )
+          },
+          alwaysShowLabel = false,
           icon = {
             Icon(
                 imageVector = destination.selectedIcon,
                 contentDescription = stringResource(id = destination.iconTextId),
-                tint = if (!destination.enabled) MaterialTheme.colorScheme.primary.copy(alpha = 0.2f) else MaterialTheme.colorScheme.primary
+                tint = if (!destination.enabled) MaterialTheme.colorScheme.primary.copy(
+                    alpha = 0.2f
+                ) else MaterialTheme.colorScheme.primary
             )
           }
       )
@@ -232,7 +193,9 @@ fun HomeNavigationRail(
                         contentDescription = stringResource(
                             id = Destination.iconTextId
                         ),
-                        tint = if (!Destination.enabled) LocalContentColor.current.copy(alpha = 0.2f) else LocalContentColor.current
+                        tint = if (!Destination.enabled) LocalContentColor.current.copy(
+                            alpha = 0.2f
+                        ) else LocalContentColor.current
                     )
                   }
               )

@@ -25,6 +25,7 @@ import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.ProgressState
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.R.string
 
 @Composable
 fun NewsFeedScreen(
@@ -40,7 +41,7 @@ fun NewsFeedScreen(
       NewsFeedItems(modifier, newsFeedItems, onQuoteClick)
     }
     false -> {
-      ErrorState(modifier = modifier, text = "Error fetching news")
+      ErrorState(modifier = modifier, text = stringResource(id = string.error_fetching_news))
     }
     else -> {
       ProgressState(modifier = modifier)
@@ -56,7 +57,7 @@ private fun NewsFeedItems(
   onQuoteClick: (Quote) -> Unit
 ) {
   Column {
-    TopBar(text = stringResource(id = R.string.action_feed))
+    TopBar(text = stringResource(id = R.string.news_feed))
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         contentPadding = PaddingValues(all = 8.dp),
@@ -95,6 +96,7 @@ private fun NewsFeedItems(
                       modifier = Modifier
                           .weight(1f, true)
                           .fillMaxHeight(),
+                      quoteNameMaxLines = 1,
                       onClick = { onQuoteClick(quote) }
                   )
                 }

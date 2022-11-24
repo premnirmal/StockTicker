@@ -14,6 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 /**
  * Created by premnirmal on 2/26/16.
  */
+@Deprecated("Only for view-based layouts", replaceWith = ReplaceWith("AppMessaging"))
 object InAppMessage {
 
   private fun Activity.getRootView(): View =

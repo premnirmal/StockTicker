@@ -1,11 +1,10 @@
-package com.github.premnirmal.ticker.home.watchlist
+package com.github.premnirmal.ticker.home
 
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +26,8 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +46,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.detail.QuoteDetailScreen
-import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.DUAL_PANE
@@ -66,14 +66,13 @@ fun WatchlistScreen(
   widthSizeClass: WindowWidthSizeClass,
   contentType: ContentType,
   displayFeatures: List<DisplayFeature>,
-  detailOpen: Boolean = contentType == DUAL_PANE,
-  selectedQuoteItem: Quote? = null
+  detailOpen: Boolean = contentType == DUAL_PANE
 ) {
 
   /**
-   * The index of the currently selected quote.
+   * The currently selected quote.
    */
-  var selectedQuote by rememberSaveable { mutableStateOf(selectedQuoteItem) }
+  var selectedQuote by rememberSaveable { mutableStateOf<Quote?>(null) }
 
   /**
    * True if the detail is currently open. This is the primary control for "navigation".
@@ -84,7 +83,9 @@ fun WatchlistScreen(
       modifier = modifier,
       isDetailOpen = isDetailOpen,
       setIsDetailOpen = {
-        selectedQuote = null
+        if (!it) {
+          selectedQuote = null
+        }
         isDetailOpen = it
       },
       showListAndDetail = when (contentType) {
@@ -118,9 +119,7 @@ fun WatchlistScreen(
               quote = quote
           )
         } else {
-          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            EmptyState(text = "Select a quote")
-          }
+          EmptyState(text = "Select a quote")
         }
       },
       twoPaneStrategy = HorizontalTwoPaneStrategy(
@@ -144,57 +143,70 @@ private fun WatchlistContent(
   viewModel: HomeViewModel = hiltViewModel(),
   onQuoteClick: (Quote) -> Unit,
 ) {
-  val widgets = remember { viewModel.widgets() }
+  val hasWidgets by remember { derivedStateOf {  viewModel.hasWidgets() }}
+  val widgets = viewModel.widgets.collectAsState()
   val pagerState = rememberPagerState(
-      pageCount = widgets.size
+      pageCount = widgets.value.size
   )
   val tabIndex = pagerState.currentPage
   val coroutineScope = rememberCoroutineScope()
   Column(modifier = modifier) {
     TopBar(
         text = stringResource(R.string.action_portfolio),
-        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    )
-    TabRow(
-        selectedTabIndex = tabIndex,
-        modifier = Modifier.padding(horizontal = 8.dp),
-        divider = {},
-        indicator = { tabPositions ->
-          TabRowDefaults.Indicator(modifier = Modifier.customTabIndicatorOffset(tabPositions[tabIndex]))
-        }
-    ) {
-      widgets.forEachIndexed { index, widget ->
-        Tab(
-            selected = tabIndex == index,
-            onClick = {
-              coroutineScope.launch {
-                pagerState.animateScrollToPage(index)
-              }
-            },
-            text = {
-              Text(text = widget.widgetName())
-            }
+        scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+            rememberTopAppBarState()
         )
+    )
+    if (hasWidgets && widgets.value.isNotEmpty()) {
+      TabRow(
+          selectedTabIndex = tabIndex,
+          modifier = Modifier.padding(horizontal = 8.dp),
+          divider = {},
+          indicator = { tabPositions ->
+            TabRowDefaults.Indicator(
+                modifier = Modifier.customTabIndicatorOffset(tabPositions[tabIndex])
+            )
+          }
+      ) {
+        widgets.value.forEachIndexed { index, widget ->
+          Tab(
+              selected = tabIndex == index,
+              onClick = {
+                coroutineScope.launch {
+                  pagerState.animateScrollToPage(index)
+                }
+              },
+              text = {
+                Text(text = widget.widgetName())
+              }
+          )
+        }
       }
     }
-    HorizontalPager(
-        modifier = Modifier.fillMaxWidth(),
-        state = pagerState
-    ) { i ->
-      val widget = widgets[i]
-      LazyVerticalStaggeredGrid(
-          modifier = Modifier.fillMaxSize(),
-          columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-          contentPadding = PaddingValues(all = 8.dp),
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalArrangement = Arrangement.spacedBy(8.dp)
-      ) {
-        itemsIndexed(widget.getStocks()) { _, quote ->
-          QuoteCard(
-              quote = quote,
-              modifier = Modifier.fillMaxWidth(),
-              onClick = { onQuoteClick(quote) }
-          )
+    if (widgets.value.isNotEmpty()) {
+      HorizontalPager(
+          modifier = Modifier.fillMaxWidth(),
+          state = pagerState
+      ) { i ->
+        val widget = widgets.value[i]
+        val quotes = widget.stocks.collectAsState(initial = emptyList())
+        LazyVerticalStaggeredGrid(
+            modifier = Modifier.fillMaxSize(),
+            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+            contentPadding = PaddingValues(all = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+          itemsIndexed(
+              quotes.value,
+              key = { _, quote -> quote.symbol }
+          ) { _, quote ->
+            QuoteCard(
+                quote = quote,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onQuoteClick(quote) }
+            )
+          }
         }
       }
     }
@@ -205,7 +217,7 @@ fun Modifier.customTabIndicatorOffset(
   currentTabPosition: TabPosition
 ): Modifier = composed(
     inspectorInfo = debugInspectorInfo {
-      name = "tabIndicatorOffset"
+      name = "customTabIndicatorOffset"
       value = currentTabPosition
     }
 ) {

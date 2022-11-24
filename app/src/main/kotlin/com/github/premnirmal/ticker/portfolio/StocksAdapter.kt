@@ -43,7 +43,7 @@ class StocksAdapter constructor(
   }
 
   fun refresh() {
-    submitList(widgetData.getStocks())
+    submitList(widgetData.getQuotesList())
   }
 
   override fun getItemViewType(position: Int): Int {
@@ -86,7 +86,7 @@ class StocksAdapter constructor(
     fromPosition: Int,
     toPosition: Int
   ): Boolean {
-    val data = ArrayList(widgetData.getStocks())
+    val data = ArrayList(widgetData.getQuotesList())
     data.add(toPosition, data.removeAt(fromPosition))
     val newTickerList = data.mapTo(ArrayList()) { it.symbol }
     widgetData.rearrange(newTickerList)

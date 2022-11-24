@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.ui
 
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,13 +15,17 @@ import androidx.compose.ui.tooling.preview.Preview
 fun TopBar(
   modifier: Modifier = Modifier,
   text: String,
+  navigationIcon: @Composable () -> Unit = {},
+  actions: @Composable RowScope.() -> Unit = {},
   scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
   TopAppBar(
       modifier = modifier,
       scrollBehavior = scrollBehavior,
+      navigationIcon = navigationIcon,
+      actions = actions,
       title = {
-        Text(text = text, style = MaterialTheme.typography.headlineMedium)
+        Text(text = text, style = MaterialTheme.typography.headlineSmall)
       }
   )
 }

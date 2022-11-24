@@ -16,6 +16,9 @@ data class FetchResult<T>(private val _data: T? = null, private var _error: Thro
   val data: T
     get() = _data!!
 
+  val dataSafe: T?
+    get() = _data
+
   val error: Throwable
     get() = _error!!
 }
