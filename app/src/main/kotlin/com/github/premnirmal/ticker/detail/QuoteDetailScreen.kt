@@ -118,7 +118,7 @@ fun QuoteDetailScreen(
     viewModel.fetchQuoteInRealTime(quote.symbol)
     viewModel.fetchChartData(quote.symbol, Range.ONE_MONTH)
     onDispose {
-      viewModel.clear()
+      viewModel.reset()
     }
   }
 }

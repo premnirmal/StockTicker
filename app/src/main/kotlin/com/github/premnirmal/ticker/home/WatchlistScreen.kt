@@ -39,13 +39,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.detail.QuoteDetailScreen
+import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.DUAL_PANE
@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun WatchlistScreen(
+  rootNavController: NavController,
   modifier: Modifier = Modifier,
   widthSizeClass: WindowWidthSizeClass,
   contentType: ContentType,
@@ -79,7 +80,12 @@ fun WatchlistScreen(
    */
   var isDetailOpen by rememberSaveable { mutableStateOf(detailOpen) }
 
-  ListDetail(
+  val showListAndDetail = when (contentType) {
+    SINGLE_PANE -> false
+    DUAL_PANE -> true
+  }
+  if (showListAndDetail) {
+    ListDetail(
       modifier = modifier,
       isDetailOpen = isDetailOpen,
       setIsDetailOpen = {
@@ -88,45 +94,49 @@ fun WatchlistScreen(
         }
         isDetailOpen = it
       },
-      showListAndDetail = when (contentType) {
-        SINGLE_PANE -> false
-        DUAL_PANE -> true
-      },
+      showListAndDetail = true,
       detailKey = selectedQuote ?: "",
       list = { isDetailVisible ->
         WatchlistContent(
-            onQuoteClick = { quote ->
-              selectedQuote = quote
-              // Consider the detail to now be open. This acts like a navigation if
-              // there isn't room for both list and detail, and also will result
-              // in the detail remaining open in the case of resize.
-              isDetailOpen = true
-            },
-            modifier = if (isDetailVisible) {
-              Modifier.padding(end = 8.dp)
-            } else {
-              Modifier
-            }
+          onQuoteClick = { quote ->
+            selectedQuote = quote
+            // Consider the detail to now be open. This acts like a navigation if
+            // there isn't room for both list and detail, and also will result
+            // in the detail remaining open in the case of resize.
+            isDetailOpen = true
+          },
+          modifier = if (isDetailVisible) {
+            Modifier.padding(end = 8.dp)
+          } else {
+            Modifier
+          }
         )
       },
       detail = {
         val quote = selectedQuote
         if (quote != null) {
           QuoteDetailScreen(
-              widthSizeClass = widthSizeClass,
-              contentType = SINGLE_PANE,
-              displayFeatures = displayFeatures,
-              quote = quote
+            widthSizeClass = widthSizeClass,
+            contentType = SINGLE_PANE,
+            displayFeatures = displayFeatures,
+            quote = quote
           )
         } else {
           EmptyState(text = "Select a quote")
         }
       },
       twoPaneStrategy = HorizontalTwoPaneStrategy(
-          splitFraction = 1f / 2.25f,
+        splitFraction = 1f / 2.25f,
       ),
       displayFeatures = displayFeatures
-  )
+    )
+  } else {
+    WatchlistContent(
+      onQuoteClick = { quote ->
+        rootNavController.navigate(route = "${Graph.QUOTE_DETAIL}/${quote.symbol}")
+      }
+    )
+  }
 }
 
 /**
@@ -230,30 +240,7 @@ fun Modifier.customTabIndicatorOffset(
       animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
   )
   fillMaxWidth()
-      .wrapContentSize(Alignment.BottomStart)
-      .offset(x = indicatorOffset + currentTabPosition.width * 0.33f)
-      .width(currentTabWidth)
-}
-
-@Preview(device = Devices.PIXEL_3A_XL)
-@Composable
-fun WatchlistScreenHandset(
-) {
-  WatchlistScreen(
-      widthSizeClass = WindowWidthSizeClass.Compact,
-      contentType = SINGLE_PANE,
-      displayFeatures = emptyList()
-  )
-}
-
-@Preview(device = Devices.NEXUS_9)
-@Composable
-fun WatchlistScreenTablet(
-) {
-  WatchlistScreen(
-      widthSizeClass = WindowWidthSizeClass.Expanded,
-      contentType = DUAL_PANE,
-      displayFeatures = emptyList(),
-      detailOpen = true
-  )
+    .wrapContentSize(Alignment.BottomStart)
+    .offset(x = indicatorOffset + currentTabPosition.width * 0.33f)
+    .width(currentTabWidth)
 }

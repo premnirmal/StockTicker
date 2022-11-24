@@ -25,6 +25,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,7 +61,7 @@ class QuoteDetailViewModel @Inject constructor(
   private val _newsError = MutableLiveData<Throwable>()
   val newsError: LiveData<Throwable>
     get() = _newsError
-
+  private var fetchQuoteJob: Job? = null
   private var quoteSummary: QuoteSummary? = null
 
   val details: Flow<List<QuoteDetail>> = _quote.transform { summary ->
@@ -210,7 +211,8 @@ class QuoteDetailViewModel @Inject constructor(
   fun fetchQuoteInRealTime(
     symbol: String
   ) {
-    viewModelScope.launch {
+    fetchQuoteJob?.cancel()
+    fetchQuoteJob = viewModelScope.launch {
       do {
         var isMarketOpen = false
         val result = stocksProvider.fetchStock(symbol, allowCache = false)
@@ -301,7 +303,8 @@ class QuoteDetailViewModel @Inject constructor(
   }
 
   @OptIn(ExperimentalCoroutinesApi::class)
-  fun clear() {
+  fun reset() {
+    fetchQuoteJob?.cancel()
     _newsData.value = emptyList()
     _data.value = emptyList()
     _quote.resetReplayCache()

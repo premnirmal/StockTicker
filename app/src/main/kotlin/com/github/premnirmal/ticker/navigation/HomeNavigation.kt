@@ -65,6 +65,7 @@ fun HomeNavHost(
   ) {
     composable(HomeRoute.Watchlist) {
       WatchlistScreen(
+          rootNavController = rootNavController,
           modifier = Modifier
               .fillMaxSize()
               .background(MaterialTheme.colorScheme.surface),
