@@ -5,8 +5,10 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,19 +29,21 @@ class WidgetDataProvider @Inject constructor(
   val widgetData: StateFlow<List<WidgetData>>
     get() = _widgetData
 
-  private val _widgetData: MutableStateFlow<List<WidgetData>> by lazy { MutableStateFlow(widgetDataList()) }
+  private val _widgetData = MutableStateFlow<List<WidgetData>>(emptyList())
 
   fun getAppWidgetIds(): IntArray =
     widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
 
-  fun widgetDataList(): List<WidgetData> {
+  fun refreshWidgetDataList(): List<WidgetData> {
     val appWidgetIds = getAppWidgetIds().toMutableSet()
     if (appWidgetIds.isEmpty()) {
       appWidgetIds.add(INVALID_WIDGET_ID)
     }
-    return appWidgetIds.map {
+    val widgetDataList = appWidgetIds.map {
       dataForWidgetId(it)
     }
+    _widgetData.tryEmit(widgetDataList)
+    return widgetDataList
   }
 
   fun dataForWidgetId(widgetId: Int): WidgetData {
@@ -63,7 +67,6 @@ class WidgetDataProvider @Inject constructor(
           widgetData.addAllFromStocksProvider()
         }
         widgets[widgetId] = widgetData
-        _widgetData.tryEmit(widgets.values.toList())
         widgetData
       }
     }
@@ -79,12 +82,12 @@ class WidgetDataProvider @Inject constructor(
         }
         it.onWidgetRemoved()
       }
-      _widgetData.tryEmit(widgets.values.toList())
       return@synchronized removed
     }
   }
 
   fun broadcastUpdateWidget(widgetId: Int) {
+    refreshWidgetDataList()
     val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val ids = arrayOf(widgetId).toIntArray()
@@ -93,6 +96,7 @@ class WidgetDataProvider @Inject constructor(
   }
 
   fun broadcastUpdateAllWidgets() {
+    refreshWidgetDataList()
     val intent = Intent(context, StockWidget::class.java)
     intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
     val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
@@ -102,8 +106,14 @@ class WidgetDataProvider @Inject constructor(
 
   fun hasWidget(): Boolean = getAppWidgetIds().isNotEmpty()
 
+  val hasWidget: Flow<Boolean> by lazy {
+    widgetData.map {
+      hasWidget()
+    }
+  }
+
   val widgetCount: Int
-      get() = getAppWidgetIds().size
+    get() = getAppWidgetIds().size
 
   fun containsTicker(ticker: String): Boolean = widgets.any { it.value.hasTicker(ticker) }
 

@@ -27,10 +27,8 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -153,7 +151,7 @@ private fun WatchlistContent(
   viewModel: HomeViewModel = hiltViewModel(),
   onQuoteClick: (Quote) -> Unit,
 ) {
-  val hasWidgets by remember { derivedStateOf {  viewModel.hasWidgets() }}
+  val hasWidgets = viewModel.hasWidget.collectAsState(initial = false)
   val widgets = viewModel.widgets.collectAsState()
   val pagerState = rememberPagerState(
       pageCount = widgets.value.size
@@ -167,7 +165,7 @@ private fun WatchlistContent(
             rememberTopAppBarState()
         )
     )
-    if (hasWidgets && widgets.value.isNotEmpty()) {
+    if (hasWidgets.value && widgets.value.isNotEmpty()) {
       TabRow(
           selectedTabIndex = tabIndex,
           modifier = Modifier.padding(horizontal = 8.dp),
@@ -240,7 +238,7 @@ fun Modifier.customTabIndicatorOffset(
       animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
   )
   fillMaxWidth()
-    .wrapContentSize(Alignment.BottomStart)
-    .offset(x = indicatorOffset + currentTabPosition.width * 0.33f)
-    .width(currentTabWidth)
+      .wrapContentSize(Alignment.BottomStart)
+      .offset(x = indicatorOffset + currentTabPosition.width * 0.33f)
+      .width(currentTabWidth)
 }

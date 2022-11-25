@@ -32,7 +32,7 @@ open class StocksApp : Application() {
     DynamicColors.applyToActivitiesIfAvailable(this)
     AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
     initNotificationHandler()
-    widgetDataProvider.widgetDataList()
+    widgetDataProvider.refreshWidgetDataList()
   }
 
   protected open fun initNotificationHandler() {

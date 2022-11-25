@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.threeten.bp.Instant
@@ -38,6 +39,7 @@ class HomeViewModel @Inject constructor(
   val portfolio = stocksProvider.portfolio
 
   val widgets: StateFlow<List<WidgetData>> = widgetDataProvider.widgetData
+  val hasWidget: Flow<Boolean> = widgetDataProvider.hasWidget
 
   init {
     initCaches()
@@ -49,8 +51,6 @@ class HomeViewModel @Inject constructor(
       commitsProvider.initCache()
     }
   }
-
-  fun hasWidgets(): Boolean = widgetDataProvider.hasWidget()
 
   fun getTotalGainLoss(): LiveData<TotalGainLoss> {
     val data = MutableLiveData<TotalGainLoss>()

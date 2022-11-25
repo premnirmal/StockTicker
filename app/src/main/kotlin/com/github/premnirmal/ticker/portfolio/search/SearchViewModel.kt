@@ -108,7 +108,7 @@ class SearchViewModel @Inject constructor(
   }
 
   fun getWidgetDataList(): List<WidgetData> {
-    return widgetDataProvider.widgetDataList()
+    return widgetDataProvider.refreshWidgetDataList()
   }
 
   fun hasWidget(): Boolean {

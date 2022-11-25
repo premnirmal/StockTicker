@@ -12,11 +12,10 @@ import android.widget.RemoteViews
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.createTimeString
-import com.github.premnirmal.ticker.home.MainActivity
+import com.github.premnirmal.ticker.home.HomeActivity
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -47,9 +46,10 @@ class StockWidget : AppWidgetProvider() {
       Injector.appComponent().inject(this)
       injected = true
     }
+    widgetDataProvider.refreshWidgetDataList()
     super.onReceive(context, intent)
     if (intent.action == ACTION_NAME) {
-      context.startActivity(Intent(context, MainActivity::class.java))
+      context.startActivity(Intent(context, HomeActivity::class.java))
     }
   }
 
@@ -83,7 +83,7 @@ class StockWidget : AppWidgetProvider() {
   override fun onEnabled(context: Context?) {
     super.onEnabled(context)
     if (!injected) {
-            injected = true
+      injected = true
     }
     if (stocksProvider.nextFetchMs.value <= 0) {
       stocksProvider.schedule()
@@ -98,6 +98,7 @@ class StockWidget : AppWidgetProvider() {
     appWidgetIds?.let { id ->
       id.forEach { widgetId ->
         val removed = widgetDataProvider.removeWidget(widgetId)
+        widgetDataProvider.refreshWidgetDataList()
         if (widgetDataProvider.getAppWidgetIds().isNotEmpty()) {
 //          removed?.getTickers()
 //              ?.forEach { ticker ->
@@ -140,6 +141,7 @@ class StockWidget : AppWidgetProvider() {
     remoteViews: RemoteViews,
     appWidgetManager: AppWidgetManager
   ) {
+    widgetDataProvider.refreshWidgetDataList()
     val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
     val widgetAdapterIntent = Intent(context, RemoteStockProviderService::class.java)
     widgetAdapterIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -68,6 +69,7 @@ fun HomeListDetail(
     }
   }
   val viewModel: HomeViewModel = hiltViewModel()
+  val hasWidget = viewModel.hasWidget.collectAsState(initial = false)
   val destinations = ArrayList<HomeBottomNavDestination>().apply {
     add(
         HomeBottomNavDestination(
@@ -100,7 +102,7 @@ fun HomeListDetail(
             ImageVector.vectorResource(id = drawable.ic_widget),
             ImageVector.vectorResource(id = drawable.ic_widget),
             string.action_widgets,
-            enabled = viewModel.hasWidgets()
+            enabled = hasWidget.value
         )
     )
     add(

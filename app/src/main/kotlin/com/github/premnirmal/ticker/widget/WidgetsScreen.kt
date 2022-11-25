@@ -52,7 +52,7 @@ private fun WidgetsScreen(
       modifier = modifier
           .background(MaterialTheme.colorScheme.surface),
       topBar = {
-        TopBar(text = stringResource(id = string.action_search))
+        TopBar(text = stringResource(id = string.widgets))
       }
   ) { padding ->
     if (contentType == SINGLE_PANE) {

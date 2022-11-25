@@ -63,7 +63,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, Portfol
     adapter = HomePagerAdapter(childFragmentManager, lifecycle)
     binding.viewPager.adapter = adapter
     TabLayoutMediator(binding.tabs, binding.viewPager) { tab, position ->
-      tab.text = widgetDataProvider.widgetDataList()[position].widgetName()
+      tab.text = widgetDataProvider.refreshWidgetDataList()[position].widgetName()
     }.attach()
     binding.appBarLayout.addOnOffsetChangedListener(offsetChangedListener)
     binding.subtitle.text = subtitleText
@@ -92,7 +92,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, Portfol
 
   private fun updateHeader() {
     binding.tabs.visibility = if (widgetDataProvider.hasWidget()) View.VISIBLE else View.INVISIBLE
-    adapter.setData(widgetDataProvider.widgetDataList())
+    adapter.setData(widgetDataProvider.refreshWidgetDataList())
     binding.subtitle.text = subtitleText
     binding.toolbar.menu.findItem(R.id.total_holdings).apply {
       isVisible = viewModel.hasHoldings
