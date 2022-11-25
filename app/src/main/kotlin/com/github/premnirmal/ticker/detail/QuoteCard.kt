@@ -227,7 +227,7 @@ fun QuoteValueText(
       modifier = modifier,
       text = text,
       textAlign = textAlign,
-      style = MaterialTheme.typography.bodyMedium
+      style = MaterialTheme.typography.titleSmall
   )
 }
 
@@ -243,7 +243,7 @@ fun QuoteChangeText(
       text = text,
       textAlign = textAlign,
       style = MaterialTheme.typography.bodyMedium,
-      color = if (up) ColourPalette.ChangePositive else ColourPalette.ChangeNegative
+      color = if (up) ColourPalette.PositiveGreen else ColourPalette.NegativeRed
   )
 }
 
@@ -259,7 +259,7 @@ fun SmallQuoteChangeText(
       text = text,
       textAlign = textAlign,
       style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-      color = if (up) ColourPalette.ChangePositive else ColourPalette.ChangeNegative
+      color = if (up) ColourPalette.PositiveGreen else ColourPalette.NegativeRed
   )
 }
 
@@ -270,7 +270,7 @@ fun QuoteCardPreview() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(120.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
       QuoteCard(
@@ -291,7 +291,7 @@ fun QuoteCardPreview() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .height(120.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
       QuoteCard(

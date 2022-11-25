@@ -46,6 +46,7 @@ import com.github.premnirmal.ticker.ui.EmptyComingSoon
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.CENTER
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
+import com.github.premnirmal.ticker.widget.WidgetsScreen
 import com.github.premnirmal.tickerwidget.R.drawable
 import com.github.premnirmal.tickerwidget.R.string
 
@@ -105,10 +106,12 @@ fun HomeNavHost(
       )
     }
     composable(HomeRoute.Widgets) {
-      EmptyComingSoon(
+      WidgetsScreen(
           modifier = Modifier
               .fillMaxSize()
-              .background(MaterialTheme.colorScheme.surface)
+              .background(MaterialTheme.colorScheme.surface),
+          widthSizeClass = widthSizeClass,
+          displayFeatures = displayFeatures
       )
     }
     composable(HomeRoute.Settings) {

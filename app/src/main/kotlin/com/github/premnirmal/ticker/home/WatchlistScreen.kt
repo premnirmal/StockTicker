@@ -162,7 +162,7 @@ private fun WatchlistContent(
   val coroutineScope = rememberCoroutineScope()
   Column(modifier = modifier) {
     TopBar(
-        text = stringResource(R.string.action_portfolio),
+        text = stringResource(R.string.portfolio),
         scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState()
         )

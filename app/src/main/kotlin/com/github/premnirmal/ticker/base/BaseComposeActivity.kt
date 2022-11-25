@@ -51,10 +51,7 @@ abstract class BaseComposeActivity : ComponentActivity() {
 
   @Composable
   protected fun ApplyThemeColourToStatusBar() {
-    window.statusBarColor = colorScheme.primary
-        .copy(alpha = 0.08f)
-        .compositeOver(colorScheme.surface.copy())
-        .toArgb()
+    window.statusBarColor = colorScheme.surface.toArgb()
   }
 
   override fun onCreate(
