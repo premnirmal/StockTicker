@@ -9,11 +9,11 @@ import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Checkbox
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -43,8 +44,10 @@ import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.navigation.CalculateContentAndNavigationType
 import com.github.premnirmal.ticker.settings.WidgetPreviewAdapter
+import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
+import com.github.premnirmal.ticker.ui.ListPreference
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.drawable
@@ -53,9 +56,11 @@ import com.github.premnirmal.tickerwidget.databinding.Widget2x1Binding
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
+import kotlin.random.Random
 
 @Composable
 fun WidgetsScreen(
@@ -84,6 +89,7 @@ private fun WidgetsScreen(
       widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
   ).second
   val widgetData = widgetDataList.value.first()
+  val update = MutableStateFlow<Int>(0)
   Scaffold(
       modifier = modifier
           .background(MaterialTheme.colorScheme.surface),
@@ -98,35 +104,10 @@ private fun WidgetsScreen(
           verticalArrangement = Arrangement.spacedBy(8.dp)
       ) {
         item {
-          WidgetPreview(fetchState, nextFetchMs, widgetData)
+          val updateState = update.collectAsState()
+          WidgetPreview(fetchState, nextFetchMs, widgetData, updateState)
         }
-        item {
-          WidgetName(widgetData)
-        }
-        item {
-          AutoSort(widgetData)
-        }
-        item {
-          HideWidgetHeader(widgetData)
-        }
-        item {
-          WidgetType(widgetData)
-        }
-        item {
-          WidgetSize(widgetData)
-        }
-        item {
-          WidgetBackground(widgetData)
-        }
-        item {
-          TextColour(widgetData)
-        }
-        item {
-          BoldText(widgetData)
-        }
-        item {
-          ShowCurrency(widgetData)
-        }
+        widgetSettings(widgetData, update)
       }
     } else {
       TwoPane(
@@ -141,38 +122,13 @@ private fun WidgetsScreen(
                 contentPadding = padding,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-              item {
-                WidgetName(widgetData)
-              }
-              item {
-                AutoSort(widgetData)
-              }
-              item {
-                HideWidgetHeader(widgetData)
-              }
-              item {
-                WidgetType(widgetData)
-              }
-              item {
-                WidgetSize(widgetData)
-              }
-              item {
-                WidgetBackground(widgetData)
-              }
-              item {
-                TextColour(widgetData)
-              }
-              item {
-                BoldText(widgetData)
-              }
-              item {
-                ShowCurrency(widgetData)
-              }
+              widgetSettings(widgetData, update)
             }
           },
           second = {
-            Column {
-              WidgetPreview(fetchState, nextFetchMs, widgetData)
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
+              val updateState = update.collectAsState()
+              WidgetPreview(fetchState, nextFetchMs, widgetData, updateState)
             }
           }
       )
@@ -180,99 +136,134 @@ private fun WidgetsScreen(
   }
 }
 
-@Composable fun ShowCurrency(widgetData: WidgetData) {
-  var checked by rememberSaveable {
+private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  item {
+    WidgetName(widgetData, update)
+  }
+  item {
+    AutoSort(widgetData, update)
+  }
+  item {
+    WidgetType(widgetData, update)
+  }
+  item {
+    WidgetSize(widgetData, update)
+  }
+  item {
+    WidgetBackground(widgetData, update)
+  }
+  item {
+    TextColour(widgetData, update)
+  }
+  item {
+    BoldText(widgetData, update)
+  }
+  item {
+    HideWidgetHeader(widgetData, update)
+  }
+  item {
+    ShowCurrency(widgetData, update)
+  }
+}
+
+@Composable fun ShowCurrency(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val checked = rememberSaveable {
     mutableStateOf(widgetData.isCurrencyEnabled())
   }
-  Row {
-    SettingsText(
-        modifier = Modifier.weight(1f),
-        title = stringResource(id = string.setting_currency),
-        subtitle = stringResource(
-            id = string.setting_currency_desc
-        )
-    )
-    Checkbox(checked = checked, onCheckedChange = {
-      checked = it
-    })
+  CheckboxPreference(
+      title = stringResource(id = string.setting_currency),
+      subtitle = stringResource(id = string.setting_currency_desc),
+      checked = checked
+  ) {
+    widgetData.setCurrencyEnabled(it)
+    update.value = Random.nextInt()
   }
 }
 
-@Composable fun TextColour(widgetData: WidgetData) {
-
+@Composable fun TextColour(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val selected = rememberSaveable {
+    mutableStateOf(widgetData.textColorPref())
+  }
+  ListPreference(title = stringResource(id = string.text_color), items = stringArrayResource(id = R.array.text_colors), checked = selected, onSelected = {
+    widgetData.setTextColorPref(it)
+    update.value = Random.nextInt()
+  })
 }
 
-@Composable fun BoldText(widgetData: WidgetData) {
-  var checked by rememberSaveable {
+@Composable fun BoldText(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val checked = rememberSaveable {
     mutableStateOf(widgetData.isBoldEnabled())
   }
-  Row {
-    SettingsText(
-        modifier = Modifier.weight(1f),
-        title = stringResource(id = string.bold_change),
-        subtitle = stringResource(
-            id = string.bold_change_desc
-        )
-    )
-    Checkbox(checked = checked, onCheckedChange = {
-      checked = it
-      widgetData.setBoldEnabled(it)
-    })
+  CheckboxPreference(
+      title = stringResource(id = string.bold_change),
+      subtitle = stringResource(id = string.bold_change_desc),
+      checked = checked
+  ) {
+    widgetData.setBoldEnabled(it)
+    update.value = Random.nextInt()
   }
 }
 
-@Composable fun WidgetSize(widgetData: WidgetData) {
-
+@Composable fun WidgetSize(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val selected = rememberSaveable {
+    mutableStateOf(widgetData.widgetSizePref())
+  }
+  ListPreference(title = stringResource(id = string.widget_width), items = stringArrayResource(id = R.array.widget_width_types), checked = selected, onSelected = {
+    widgetData.setWidgetSizePref(it)
+    update.value = Random.nextInt()
+  })
 }
 
-@Composable fun WidgetBackground(widgetData: WidgetData) {
-
+@Composable fun WidgetBackground(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val selected = rememberSaveable {
+    mutableStateOf(widgetData.bgPref())
+  }
+  ListPreference(title = stringResource(id = string.bg), items = stringArrayResource(id = R.array.backgrounds), checked = selected, onSelected = {
+    widgetData.setWidgetSizePref(it)
+    update.value = Random.nextInt()
+  })
 }
 
-@Composable fun WidgetType(widgetData: WidgetData) {
-
+@Composable fun WidgetType(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val selected = rememberSaveable {
+    mutableStateOf(widgetData.layoutPref())
+  }
+  ListPreference(title = stringResource(id = string.layout_type), items = stringArrayResource(id = R.array.layout_types), checked = selected, onSelected = {
+    widgetData.setLayoutPref(it)
+    update.value = Random.nextInt()
+  })
 }
 
-@Composable fun HideWidgetHeader(widgetData: WidgetData) {
-  var checked by rememberSaveable {
+@Composable fun HideWidgetHeader(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val checked = rememberSaveable {
     mutableStateOf(widgetData.hideHeader())
   }
-  Row {
-    SettingsText(
-        modifier = Modifier.weight(1f),
-        title = stringResource(id = string.hide_header),
-        subtitle = stringResource(
-            id = string.hide_header_desc
-        )
-    )
-    Checkbox(checked = checked, onCheckedChange = {
-      checked = it
-      widgetData.setHideHeader(it)
-    })
+  CheckboxPreference(
+      title = stringResource(id = string.hide_header),
+      subtitle = stringResource(id = string.hide_header_desc),
+      checked = checked
+  ) {
+    widgetData.setHideHeader(it)
+    update.value = Random.nextInt()
   }
 }
 
-@Composable fun AutoSort(widgetData: WidgetData) {
-  var checked by rememberSaveable {
+@Composable fun AutoSort(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+  val checked = rememberSaveable {
     mutableStateOf(widgetData.autoSortEnabled())
   }
-  Row {
-    SettingsText(
-        modifier = Modifier.weight(1f),
-        title = stringResource(id = string.auto_sort),
-        subtitle = stringResource(
-            id = string.auto_sort_desc
-        )
-    )
-    Checkbox(checked = checked, onCheckedChange = {
-      checked = it
-      widgetData.setAutoSort(it)
-    })
+  CheckboxPreference(
+      title = stringResource(id = string.auto_sort),
+      subtitle = stringResource(id = string.auto_sort_desc),
+      checked = checked
+  ) {
+    widgetData.setAutoSort(it)
+    update.value = Random.nextInt()
   }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun WidgetName(widgetData: WidgetData) {
+@Composable fun WidgetName(widgetData: WidgetData, update: MutableStateFlow<Int>) {
   var widgetName by rememberSaveable { mutableStateOf(widgetData.widgetName()) }
   TextField(
       modifier = Modifier.fillMaxWidth(),
@@ -285,7 +276,10 @@ private fun WidgetsScreen(
       trailingIcon = {
         IconButton(
             enabled = true,
-            onClick = { widgetData.setWidgetName(widgetName) }
+            onClick = {
+              widgetData.setWidgetName(widgetName)
+              update.value = Random.nextInt()
+            }
         ) {
           Icon(
               painter = painterResource(id = drawable.ic_done),
@@ -300,7 +294,8 @@ private fun WidgetsScreen(
 fun WidgetPreview(
   fetchState: State<FetchState>,
   nextFetchMs: State<Long>,
-  widgetData: WidgetData
+  widgetData: WidgetData,
+  update: State<Int>
 ) {
   val padding = with(LocalDensity.current) { 44.dp.toPx() }
   val height = with(LocalDensity.current) { 220.dp.toPx() }
@@ -311,11 +306,11 @@ fun WidgetPreview(
     previewContainer.setPadding(padding.toInt())
     val binding = Widget2x1Binding.inflate(LayoutInflater.from(context), previewContainer, true)
     binding.list.adapter = adapter
-    updatePreview(context, binding.root, fetchState.value, nextFetchMs.value, widgetData, adapter)
+    updatePreview(context, binding.root, fetchState.value, nextFetchMs.value, widgetData, adapter, update)
     previewContainer
   }, update = {
     val widgetLayout = it.findViewById<View>(R.id.widget_layout)
-    updatePreview(it.context, widgetLayout, fetchState.value, nextFetchMs.value, widgetData, adapter)
+    updatePreview(it.context, widgetLayout, fetchState.value, nextFetchMs.value, widgetData, adapter, update)
   })
 }
 
@@ -325,7 +320,8 @@ private fun updatePreview(
   fetchState: FetchState,
   nextFetchMs: Long,
   widgetData: WidgetData,
-  adapter: WidgetPreviewAdapter
+  adapter: WidgetPreviewAdapter,
+  update: State<Int>
 ) {
   widgetLayout.setBackgroundResource(widgetData.backgroundResource())
   val lastUpdatedText = when (fetchState) {
@@ -341,23 +337,4 @@ private fun updatePreview(
   widgetLayout.findViewById<TextView>(R.id.next_update).text = nextUpdateText
   widgetLayout.findViewById<View>(R.id.widget_header).isVisible = !widgetData.hideHeader()
   adapter.refresh(widgetData)
-}
-
-@Composable
-private fun SettingsText(
-  modifier: Modifier = Modifier,
-  title: String,
-  subtitle: String
-) {
-  Column(modifier) {
-    Text(
-        text = title,
-        style = MaterialTheme.typography.bodyMedium
-    )
-    Text(
-        modifier = Modifier.padding(top = 4.dp),
-        text = subtitle,
-        style = MaterialTheme.typography.labelMedium
-    )
-  }
 }
