@@ -48,6 +48,7 @@ import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.ListPreference
+import com.github.premnirmal.ticker.ui.Spinner
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.drawable
@@ -88,8 +89,8 @@ private fun WidgetsScreen(
   val contentType: ContentType = CalculateContentAndNavigationType(
       widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
   ).second
-  val widgetData = widgetDataList.value.first()
-  val update = MutableStateFlow<Int>(0)
+  val update = MutableStateFlow(0)
+  var widgetDataSelectedIndex by rememberSaveable { mutableStateOf(0) }
   Scaffold(
       modifier = modifier
           .background(MaterialTheme.colorScheme.surface),
@@ -97,12 +98,22 @@ private fun WidgetsScreen(
         TopBar(text = stringResource(id = string.widgets))
       }
   ) { padding ->
+    val widgetData = widgetDataList.value[widgetDataSelectedIndex]
     if (contentType == SINGLE_PANE) {
       LazyColumn(
           modifier = Modifier.padding(horizontal = 8.dp),
           contentPadding = padding,
           verticalArrangement = Arrangement.spacedBy(8.dp)
       ) {
+        item {
+          Spinner(
+              items = widgetDataList.value,
+              selectedItemIndex = widgetDataSelectedIndex,
+              onItemSelected = {
+                widgetDataSelectedIndex = it
+              },
+              itemText = { it.widgetName() })
+        }
         item {
           val updateState = update.collectAsState()
           WidgetPreview(fetchState, nextFetchMs, widgetData, updateState)
@@ -122,6 +133,15 @@ private fun WidgetsScreen(
                 contentPadding = padding,
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+              item {
+                Spinner(
+                    items = widgetDataList.value,
+                    selectedItemIndex = widgetDataSelectedIndex,
+                    onItemSelected = {
+                      widgetDataSelectedIndex = it
+                    },
+                    itemText = { it.widgetName() })
+              }
               widgetSettings(widgetData, update)
             }
           },
@@ -136,7 +156,10 @@ private fun WidgetsScreen(
   }
 }
 
-private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+private fun LazyListScope.widgetSettings(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   item {
     WidgetName(widgetData, update)
   }
@@ -166,7 +189,10 @@ private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: Mutable
   }
 }
 
-@Composable fun ShowCurrency(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun ShowCurrency(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val checked = rememberSaveable {
     mutableStateOf(widgetData.isCurrencyEnabled())
   }
@@ -180,17 +206,25 @@ private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: Mutable
   }
 }
 
-@Composable fun TextColour(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun TextColour(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val selected = rememberSaveable {
     mutableStateOf(widgetData.textColorPref())
   }
-  ListPreference(title = stringResource(id = string.text_color), items = stringArrayResource(id = R.array.text_colors), checked = selected, onSelected = {
+  ListPreference(
+      title = stringResource(id = string.text_color),
+      items = stringArrayResource(id = R.array.text_colors), checked = selected, onSelected = {
     widgetData.setTextColorPref(it)
     update.value = Random.nextInt()
   })
 }
 
-@Composable fun BoldText(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun BoldText(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val checked = rememberSaveable {
     mutableStateOf(widgetData.isBoldEnabled())
   }
@@ -204,37 +238,56 @@ private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: Mutable
   }
 }
 
-@Composable fun WidgetSize(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun WidgetSize(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val selected = rememberSaveable {
     mutableStateOf(widgetData.widgetSizePref())
   }
-  ListPreference(title = stringResource(id = string.widget_width), items = stringArrayResource(id = R.array.widget_width_types), checked = selected, onSelected = {
-    widgetData.setWidgetSizePref(it)
-    update.value = Random.nextInt()
-  })
+  ListPreference(
+      title = stringResource(id = string.widget_width),
+      items = stringArrayResource(id = R.array.widget_width_types), checked = selected,
+      onSelected = {
+        widgetData.setWidgetSizePref(it)
+        update.value = Random.nextInt()
+      })
 }
 
-@Composable fun WidgetBackground(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun WidgetBackground(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val selected = rememberSaveable {
     mutableStateOf(widgetData.bgPref())
   }
-  ListPreference(title = stringResource(id = string.bg), items = stringArrayResource(id = R.array.backgrounds), checked = selected, onSelected = {
+  ListPreference(
+      title = stringResource(id = string.bg), items = stringArrayResource(id = R.array.backgrounds),
+      checked = selected, onSelected = {
     widgetData.setWidgetSizePref(it)
     update.value = Random.nextInt()
   })
 }
 
-@Composable fun WidgetType(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun WidgetType(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val selected = rememberSaveable {
     mutableStateOf(widgetData.layoutPref())
   }
-  ListPreference(title = stringResource(id = string.layout_type), items = stringArrayResource(id = R.array.layout_types), checked = selected, onSelected = {
+  ListPreference(
+      title = stringResource(id = string.layout_type),
+      items = stringArrayResource(id = R.array.layout_types), checked = selected, onSelected = {
     widgetData.setLayoutPref(it)
     update.value = Random.nextInt()
   })
 }
 
-@Composable fun HideWidgetHeader(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun HideWidgetHeader(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val checked = rememberSaveable {
     mutableStateOf(widgetData.hideHeader())
   }
@@ -248,7 +301,10 @@ private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: Mutable
   }
 }
 
-@Composable fun AutoSort(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun AutoSort(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   val checked = rememberSaveable {
     mutableStateOf(widgetData.autoSortEnabled())
   }
@@ -263,7 +319,10 @@ private fun LazyListScope.widgetSettings(widgetData: WidgetData, update: Mutable
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun WidgetName(widgetData: WidgetData, update: MutableStateFlow<Int>) {
+@Composable fun WidgetName(
+  widgetData: WidgetData,
+  update: MutableStateFlow<Int>
+) {
   var widgetName by rememberSaveable { mutableStateOf(widgetData.widgetName()) }
   TextField(
       modifier = Modifier.fillMaxWidth(),
@@ -306,11 +365,15 @@ fun WidgetPreview(
     previewContainer.setPadding(padding.toInt())
     val binding = Widget2x1Binding.inflate(LayoutInflater.from(context), previewContainer, true)
     binding.list.adapter = adapter
-    updatePreview(context, binding.root, fetchState.value, nextFetchMs.value, widgetData, adapter, update)
+    updatePreview(
+        context, binding.root, fetchState.value, nextFetchMs.value, widgetData, adapter, update
+    )
     previewContainer
   }, update = {
     val widgetLayout = it.findViewById<View>(R.id.widget_layout)
-    updatePreview(it.context, widgetLayout, fetchState.value, nextFetchMs.value, widgetData, adapter, update)
+    updatePreview(
+        it.context, widgetLayout, fetchState.value, nextFetchMs.value, widgetData, adapter, update
+    )
   })
 }
 
