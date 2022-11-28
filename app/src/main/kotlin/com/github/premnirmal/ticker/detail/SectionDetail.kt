@@ -77,7 +77,7 @@ fun PositionDetailCard(quote: Quote) {
         QuoteChangeText(
             modifier = Modifier.weight(0.5f),
             text = "${quote.gainLossString()} (${quote.gainLossPercentString()})",
-            up = quote.gainLoss() >= 0, textAlign = TextAlign.Center
+            up = quote.gainLoss() > 0, down = quote.gainLoss() < 0, textAlign = TextAlign.Center
         )
       }
       Row(
@@ -90,7 +90,8 @@ fun PositionDetailCard(quote: Quote) {
             style = MaterialTheme.typography.labelMedium
         )
         QuoteChangeText(
-            modifier = Modifier.weight(0.5f), text = quote.dayChangeString(), up = quote.isUp,
+            modifier = Modifier.weight(0.5f), text = quote.dayChangeString(),
+            up = quote.isUp, down = quote.isDown,
             textAlign = TextAlign.Center
         )
       }

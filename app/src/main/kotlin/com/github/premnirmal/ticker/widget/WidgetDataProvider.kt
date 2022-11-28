@@ -41,7 +41,7 @@ class WidgetDataProvider @Inject constructor(
     }
     val widgetDataList = appWidgetIds.map {
       dataForWidgetId(it)
-    }
+    }.sortedBy { it.widgetName() }
     _widgetData.tryEmit(widgetDataList)
     return widgetDataList
   }

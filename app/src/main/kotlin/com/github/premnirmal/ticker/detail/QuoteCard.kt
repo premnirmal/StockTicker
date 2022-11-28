@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -73,8 +74,8 @@ private fun PortfolioCard(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.Center
         ) {
-          QuoteChangeText(text = quote.changeStringWithSign(), up = quote.isUp)
-          QuoteChangeText(text = quote.changePercentStringWithSign(), up = quote.isUp)
+          QuoteChangeText(text = quote.changePercentStringWithSign(), up = quote.isUp, down = quote.isDown)
+          QuoteChangeText(text = quote.changeStringWithSign(), up = quote.isUp, down = quote.isDown)
         }
       }
     }
@@ -110,7 +111,8 @@ private fun PositionCard(
             modifier = Modifier
                 .weight(1f, fill = true),
             text = quote.priceFormat.format(quote.holdings()),
-            up = quote.holdings() >= 0,
+            up = quote.holdings() > 0,
+            down = quote.holdings() < 0,
             annotation = stringResource(id = R.string.holdings)
         )
         AnnotatedQuoteValue(
@@ -119,6 +121,7 @@ private fun PositionCard(
             textAlign = TextAlign.Center,
             text = quote.dayChangeString(),
             up = quote.isUp,
+            down = quote.isDown,
             annotation = stringResource(id = R.string.day_change_amount)
         )
         AnnotatedQuoteValue(
@@ -127,6 +130,7 @@ private fun PositionCard(
             textAlign = TextAlign.End,
             text = quote.changePercentStringWithSign(),
             up = quote.isUp,
+            down = quote.isDown,
             annotation = stringResource(id = R.string.change_percent)
         )
       }
@@ -140,7 +144,8 @@ private fun PositionCard(
             modifier = Modifier
                 .weight(1f, fill = true),
             text = quote.gainLossString(),
-            up = quote.gainLoss() >= 0,
+            up = quote.gainLoss() > 0,
+            down = quote.gainLoss() < 0,
             annotation = stringResource(id = gainOrLoss)
         )
         val gainPercentAnnotation = LocalContext.current.getString(gainOrLoss)+" %"
@@ -149,7 +154,8 @@ private fun PositionCard(
                 .weight(1f, fill = true),
             textAlign = TextAlign.Center,
             text = quote.gainLossPercentString(),
-            up = quote.gainLoss() >= 0,
+            up = quote.gainLoss() > 0,
+            down = quote.gainLoss() < 0,
             annotation = gainPercentAnnotation
         )
         AnnotatedQuoteValue(
@@ -158,6 +164,7 @@ private fun PositionCard(
             textAlign = TextAlign.End,
             text = quote.changeStringWithSign(),
             up = quote.isUp,
+            down = quote.isDown,
             annotation = stringResource(id = R.string.change_amount)
         )
       }
@@ -169,7 +176,8 @@ private fun PositionCard(
 fun AnnotatedQuoteValue(
   modifier: Modifier = Modifier,
   text: String,
-  up: Boolean = true,
+  up: Boolean,
+  down: Boolean,
   textAlign: TextAlign? = null,
   annotation: String
 ) {
@@ -185,7 +193,8 @@ fun AnnotatedQuoteValue(
         modifier = Modifier.fillMaxWidth(),
         text = text,
         textAlign = textAlign,
-        up = up
+        up = up,
+        down = down
     )
   }
 }
@@ -227,7 +236,7 @@ fun QuoteValueText(
       modifier = modifier,
       text = text,
       textAlign = textAlign,
-      style = MaterialTheme.typography.titleSmall
+      style = MaterialTheme.typography.bodyMedium,
   )
 }
 
@@ -236,14 +245,15 @@ fun QuoteChangeText(
   modifier: Modifier = Modifier,
   text: String,
   textAlign: TextAlign? = null,
-  up: Boolean = true
+  up: Boolean,
+  down: Boolean
 ) {
   Text(
       modifier = modifier,
       text = text,
       textAlign = textAlign,
       style = MaterialTheme.typography.bodyMedium,
-      color = if (up) ColourPalette.PositiveGreen else ColourPalette.NegativeRed
+      color = extractColour(up, down)
   )
 }
 
@@ -252,14 +262,15 @@ fun SmallQuoteChangeText(
   modifier: Modifier = Modifier,
   text: String,
   textAlign: TextAlign? = null,
-  up: Boolean = true
+  up: Boolean,
+  down: Boolean
 ) {
   Text(
       modifier = modifier,
       text = text,
       textAlign = textAlign,
       style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-      color = if (up) ColourPalette.PositiveGreen else ColourPalette.NegativeRed
+      color = extractColour(up, down)
   )
 }
 
@@ -312,5 +323,18 @@ fun QuoteCardPreview() {
       )
     }
   }
+}
 
+@Composable
+private fun extractColour(
+  up: Boolean,
+  down: Boolean
+): Color {
+  return if (up) {
+    ColourPalette.PositiveGreen
+  } else if (down) {
+    ColourPalette.NegativeRed
+  } else {
+    MaterialTheme.colorScheme.onSurfaceVariant
+  }
 }

@@ -58,6 +58,7 @@ import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZonedDateTime
@@ -115,8 +116,7 @@ private fun WidgetsScreen(
               itemText = { it.widgetName() })
         }
         item {
-          val updateState = update.collectAsState()
-          WidgetPreview(fetchState, nextFetchMs, widgetData, updateState)
+          WidgetPreview(fetchState, nextFetchMs, widgetData, update)
         }
         widgetSettings(widgetData, update)
       }
@@ -147,8 +147,7 @@ private fun WidgetsScreen(
           },
           second = {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-              val updateState = update.collectAsState()
-              WidgetPreview(fetchState, nextFetchMs, widgetData, updateState)
+              WidgetPreview(fetchState, nextFetchMs, widgetData, update)
             }
           }
       )
@@ -354,8 +353,9 @@ fun WidgetPreview(
   fetchState: State<FetchState>,
   nextFetchMs: State<Long>,
   widgetData: WidgetData,
-  update: State<Int>
+  updateState: StateFlow<Int>
 ) {
+  val update = updateState.collectAsState()
   val padding = with(LocalDensity.current) { 44.dp.toPx() }
   val height = with(LocalDensity.current) { 220.dp.toPx() }
   val adapter = WidgetPreviewAdapter(widgetData)

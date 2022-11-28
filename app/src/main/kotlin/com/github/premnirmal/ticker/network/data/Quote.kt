@@ -104,7 +104,10 @@ data class Quote constructor(
   }
 
   val isUp: Boolean
-    get() = change >= 0f
+    get() = change > 0f
+
+  val isDown: Boolean
+    get() = change < 0f
 
   val changeColour: Color
     @Composable get() = if (isUp) ColourPalette.ChangePositive else ColourPalette.ChangeNegative
