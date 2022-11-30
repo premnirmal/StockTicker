@@ -422,6 +422,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
   }
 
   private fun needsPermissionGrant(): Boolean {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      return false;
+    }
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && ContextCompat.checkSelfPermission(
         requireActivity(),
         Manifest.permission.WRITE_EXTERNAL_STORAGE
