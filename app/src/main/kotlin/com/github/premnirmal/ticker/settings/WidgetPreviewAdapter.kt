@@ -13,12 +13,18 @@ import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType.Percent
+import com.github.premnirmal.ticker.widget.WidgetData.ImmutableWidgetData
 import com.github.premnirmal.tickerwidget.R
 
-class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
+class WidgetPreviewAdapter(
+  private var widgetData: WidgetData,
+  private var widgetImmutableWidgetData: ImmutableWidgetData
+) : BaseAdapter() {
 
-  fun refresh(widgetData: WidgetData) {
+  fun refresh(widgetData: WidgetData,
+    widgetImmutableWidgetData: ImmutableWidgetData) {
     this.widgetData = widgetData
+    this.widgetImmutableWidgetData = widgetImmutableWidgetData
     notifyDataSetChanged()
   }
 
@@ -30,7 +36,7 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
 
   override fun getViewTypeCount(): Int = 4
 
-  override fun getItemViewType(position: Int): Int = widgetData.layoutPref()
+  override fun getItemViewType(position: Int): Int = widgetImmutableWidgetData.typePref
 
   override fun getView(
     position: Int,
@@ -38,14 +44,14 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     parent: ViewGroup
   ): View {
     val stock = getItem(position)
-    val stockViewLayout = widgetData.stockViewLayout()
+    val stockViewLayout = widgetImmutableWidgetData.stockViewLayout()
     val layout = itemView ?: LayoutInflater.from(parent.context)
         .inflate(stockViewLayout, parent, false)
     val changeValueFormatted = stock.changeString()
     val changePercentFormatted = stock.changePercentString()
     val gainLossFormatted = stock.gainLossString()
     val gainLossPercentFormatted = stock.gainLossPercentString()
-    val priceFormatted = if (widgetData.isCurrencyEnabled()) {
+    val priceFormatted = if (widgetImmutableWidgetData.showCurrency) {
       stock.priceFormat.format(stock.lastTradePrice)
     } else {
       stock.priceString()
@@ -61,13 +67,13 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     val priceString = SpannableString(priceFormatted)
 
     layout.findViewById<TextView>(R.id.ticker)?.text = stock.symbol
-    layout.findViewById<TextView>(R.id.holdings)?.text = if (widgetData.isCurrencyEnabled()) {
+    layout.findViewById<TextView>(R.id.holdings)?.text = if (widgetImmutableWidgetData.showCurrency) {
       stock.priceFormat.format(stock.holdings())
     } else {
       stock.holdingsString()
     }
 
-    if (widgetData.isBoldEnabled()) {
+    if (widgetImmutableWidgetData.boldText) {
       changePercentString.setSpan(
           StyleSpan(Typeface.BOLD), 0, changePercentString.length,
           Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -104,7 +110,7 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     }
 
     if (stockViewLayout == R.layout.stockview3) {
-      val changeType = widgetData.changeType()
+      val changeType = widgetImmutableWidgetData.changeType
       val changeText = layout.findViewById<TextView>(R.id.change)
       if (changeType === Percent) {
         changeText?.text = changePercentString
@@ -124,9 +130,9 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     layout.findViewById<TextView>(R.id.totalValue)?.text = priceString
 
     val color: Int = if (change < 0f || changeInPercent < 0f) {
-      ContextCompat.getColor(layout.context, widgetData.negativeTextColor)
+      ContextCompat.getColor(layout.context, widgetImmutableWidgetData.negativeTextColor())
     } else {
-      ContextCompat.getColor(layout.context, widgetData.positiveTextColor)
+      ContextCompat.getColor(layout.context, widgetImmutableWidgetData.positiveTextColor())
     }
     if (stockViewLayout == R.layout.stockview3) {
       layout.findViewById<TextView>(R.id.change)?.setTextColor(color)
@@ -136,16 +142,16 @@ class WidgetPreviewAdapter(private var widgetData: WidgetData) : BaseAdapter() {
     }
 
     val colorGainLoss: Int = if (gainLoss < 0f || gainLoss < 0f) {
-      ContextCompat.getColor(layout.context, widgetData.negativeTextColor)
+      ContextCompat.getColor(layout.context, widgetImmutableWidgetData.negativeTextColor())
     } else {
-      ContextCompat.getColor(layout.context, widgetData.positiveTextColor)
+      ContextCompat.getColor(layout.context, widgetImmutableWidgetData.positiveTextColor())
     }
     layout.findViewById<TextView>(R.id.gain_loss)?.setTextColor(colorGainLoss)
     layout.findViewById<TextView>(R.id.gain_loss_percent)?.setTextColor(colorGainLoss)
 
-    layout.findViewById<TextView>(R.id.ticker)?.setTextColor(widgetData.textColor())
-    layout.findViewById<TextView>(R.id.totalValue)?.setTextColor(widgetData.textColor())
-    layout.findViewById<TextView>(R.id.holdings)?.setTextColor(widgetData.textColor())
+    layout.findViewById<TextView>(R.id.ticker)?.setTextColor(widgetImmutableWidgetData.textColor(layout.context))
+    layout.findViewById<TextView>(R.id.totalValue)?.setTextColor(widgetImmutableWidgetData.textColor(layout.context))
+    layout.findViewById<TextView>(R.id.holdings)?.setTextColor(widgetImmutableWidgetData.textColor(layout.context))
 
     return layout
   }

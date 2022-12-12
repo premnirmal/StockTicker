@@ -6,8 +6,7 @@ import android.content.Context
 import android.content.Intent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -26,10 +25,10 @@ class WidgetDataProvider @Inject constructor(
     HashMap()
   }
 
-  val widgetData: StateFlow<List<WidgetData>>
+  val widgetData: Flow<List<WidgetData>>
     get() = _widgetData
 
-  private val _widgetData = MutableStateFlow<List<WidgetData>>(emptyList())
+  private val _widgetData = MutableSharedFlow<List<WidgetData>>(replay = 1)
 
   fun getAppWidgetIds(): IntArray =
     widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))

@@ -41,8 +41,8 @@ import com.github.premnirmal.ticker.navigation.LayoutType.CONTENT
 import com.github.premnirmal.ticker.navigation.LayoutType.HEADER
 import com.github.premnirmal.ticker.news.NewsFeedScreen
 import com.github.premnirmal.ticker.portfolio.search.SearchScreen
+import com.github.premnirmal.ticker.settings.SettingsScreen
 import com.github.premnirmal.ticker.ui.ContentType
-import com.github.premnirmal.ticker.ui.EmptyComingSoon
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.CENTER
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
@@ -115,7 +115,7 @@ fun HomeNavHost(
       )
     }
     composable(HomeRoute.Settings) {
-      EmptyComingSoon(
+      SettingsScreen(
           modifier = Modifier
               .fillMaxSize()
               .background(MaterialTheme.colorScheme.surface)

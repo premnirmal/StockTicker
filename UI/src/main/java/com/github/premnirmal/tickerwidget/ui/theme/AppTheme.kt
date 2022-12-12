@@ -21,25 +21,33 @@ enum class SelectedTheme {
   content: @Composable () -> Unit
 ) {
   val isDarkTheme = isSystemInDarkTheme()
-  val themePref = when (theme) {
-    SelectedTheme.SYSTEM -> if (isDarkTheme) ThemePref.Dark else ThemePref.Light
-    SelectedTheme.LIGHT -> ThemePref.Light
-    SelectedTheme.DARK -> ThemePref.Light
-    SelectedTheme.JUST_BLACK -> ThemePref.JustBlack
-  }
-  BaseTheme(dynamicColor = dynamicColor, themePref = themePref, content = content)
-}
-
-@Composable internal fun BaseTheme(
-  dynamicColor: Boolean,
-  themePref: ThemePref,
-  content: @Composable () -> Unit
-) {
-  val isDarkTheme = isSystemInDarkTheme()
-  val colorScheme = when {
-    dynamicColor && isDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
-    dynamicColor && !isDarkTheme -> dynamicLightColorScheme(LocalContext.current)
-    else -> themePref.colours.toColorScheme() // fallback
+  val colorScheme = when (theme) {
+    SelectedTheme.SYSTEM -> {
+      if (dynamicColor) {
+        if (isDarkTheme) {
+          dynamicDarkColorScheme(LocalContext.current)
+        } else {
+          dynamicLightColorScheme(LocalContext.current)
+        }
+      } else {
+        if (isDarkTheme) ThemePref.Dark.colours.toColorScheme() else ThemePref.Light.colours.toColorScheme()
+      }
+    }
+    SelectedTheme.LIGHT -> {
+      if (dynamicColor) {
+        dynamicLightColorScheme(LocalContext.current)
+      } else {
+        ThemePref.Light.colours.toColorScheme()
+      }
+    }
+    SelectedTheme.DARK -> {
+      if (dynamicColor) {
+        dynamicDarkColorScheme(LocalContext.current)
+      } else {
+        ThemePref.Dark.colours.toColorScheme()
+      }
+    }
+    SelectedTheme.JUST_BLACK -> ThemePref.JustBlack.colours.toColorScheme()
   }
   MaterialTheme(
       colorScheme = colorScheme,

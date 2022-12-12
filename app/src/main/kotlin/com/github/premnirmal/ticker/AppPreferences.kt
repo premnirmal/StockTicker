@@ -1,14 +1,23 @@
 package com.github.premnirmal.ticker
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.annotation.VisibleForTesting
+import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
-import com.github.premnirmal.ticker.components.AppClock
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.github.premnirmal.tickerwidget.BuildConfig
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
+import kotlinx.parcelize.Parcelize
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.format.FormatStyle.MEDIUM
@@ -23,9 +32,8 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
-  @get:VisibleForTesting
-  internal val sharedPreferences: SharedPreferences,
-  private val clock: AppClock
+  @ApplicationContext private val context: Context,
+  private val sharedPreferences: SharedPreferences
 ) {
 
   init {
@@ -153,9 +161,21 @@ class AppPreferences @Inject constructor(
         .apply()
   }
 
+  private val themePrefKey: Preferences.Key<Int> = intPreferencesKey(APP_THEME)
+
+  val themePrefFlow: Flow<Int> = context.dataStore.data.map { prefs ->
+    prefs[themePrefKey] ?: FOLLOW_SYSTEM_THEME
+  }
+
   var themePref: Int
-    get() = sharedPreferences.getInt(APP_THEME, FOLLOW_SYSTEM_THEME)
-    set(value) = sharedPreferences.edit().putInt(APP_THEME, value).apply()
+    get() = runBlocking {
+      themePrefFlow.first()
+    }
+    set(value) = runBlocking {
+      context.dataStore.edit { prefs ->
+        prefs[themePrefKey] = value
+      }
+    }
 
   @NightMode val nightMode: Int
     get() = when (themePref) {
@@ -175,10 +195,11 @@ class AppPreferences @Inject constructor(
           || Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "samsung".equals(Build.MANUFACTURER, ignoreCase = true))
     }
 
+  @Parcelize
   data class Time(
     val hour: Int,
     val minute: Int
-  )
+  ): Parcelable
 
   companion object {
 

@@ -21,6 +21,9 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
@@ -144,6 +147,38 @@ fun Activity.showDialog(
       .setTitle(title)
       .setMessage(message)
       .setCancelable(cancelable)
+      .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .show()
+}
+
+fun Context.showDialog(
+  message: String,
+  cancelable: Boolean = true,
+  listener: OnClickListener
+) {
+  AlertDialog.Builder(this)
+      .setMessage(message)
+      .setCancelable(cancelable)
+      .setNeutralButton(R.string.ok, listener)
+      .show()
+}
+
+fun Context.showDialog(message: String): AlertDialog {
+  return AlertDialog.Builder(this)
+      .setMessage(message)
+      .setCancelable(false)
+      .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+      .show()
+}
+
+fun Context.showDialog(
+  title: String,
+  message: String
+): AlertDialog {
+  return AlertDialog.Builder(this)
+      .setTitle(title)
+      .setMessage(message)
+      .setCancelable(false)
       .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }
@@ -283,3 +318,5 @@ inline fun <T : ViewBinding> Fragment.viewBinding(
   lazy(LazyThreadSafetyMode.NONE) {
     bindingInflater.invoke(layoutInflater)
   }
+
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AppPreferences.PREFS_NAME)

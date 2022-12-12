@@ -88,7 +88,7 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
     setCurrencySetting(widgetData)
     setBgSetting(widgetData)
     setTextColorSetting(widgetData)
-    adapter = WidgetPreviewAdapter(widgetData)
+    adapter = WidgetPreviewAdapter(widgetData, widgetData.toImmutableData())
     binding.widgetLayout.list.adapter = adapter
     updatePreview(widgetData)
 
@@ -269,7 +269,7 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
     }
     binding.widgetLayout.root.findViewById<TextView>(R.id.last_updated).text = lastUpdatedText
     binding.widgetLayout.root.findViewById<View>(R.id.widget_header).isVisible = !widgetData.hideHeader()
-    adapter.refresh(widgetData)
+    adapter.refresh(widgetData, widgetData.toImmutableData())
   }
 
   override fun scrollToTop() {

@@ -62,7 +62,7 @@ val AppTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = Bold,
         fontWeight = FontWeight.Medium,
-        fontSize = 22.sp,
+        fontSize = 20.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
     ),
@@ -90,14 +90,14 @@ val AppTypography = Typography(
     bodyMedium = TextStyle(
         fontFamily = Regular,
         fontWeight = FontWeight.Normal,
-        fontSize = 13.sp,
+        fontSize = 14.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp,
     ),
     bodySmall = TextStyle(
         fontFamily = Light,
         fontWeight = FontWeight.ExtraLight,
-        fontSize = 11.sp,
+        fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp,
     ),
@@ -118,7 +118,7 @@ val AppTypography = Typography(
     labelSmall = TextStyle(
         fontFamily = Italic,
         fontWeight = FontWeight.ExtraLight,
-        fontSize = 10.sp,
+        fontSize = 11.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp,
     ),

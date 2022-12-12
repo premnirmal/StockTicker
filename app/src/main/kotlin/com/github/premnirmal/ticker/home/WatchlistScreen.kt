@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.home
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -148,11 +150,12 @@ fun WatchlistScreen(
 @Composable
 private fun WatchlistContent(
   modifier: Modifier = Modifier,
-  viewModel: HomeViewModel = hiltViewModel(),
+  viewModel: HomeViewModel = hiltViewModel(LocalContext.current as ComponentActivity),
   onQuoteClick: (Quote) -> Unit,
 ) {
+  viewModel.fetchPortfolioInRealTime()
   val hasWidgets = viewModel.hasWidget.collectAsState(initial = false)
-  val widgets = viewModel.widgets.collectAsState()
+  val widgets = viewModel.widgets.collectAsState(emptyList())
   val pagerState = rememberPagerState(
       pageCount = widgets.value.size
   )
@@ -160,7 +163,7 @@ private fun WatchlistContent(
   val coroutineScope = rememberCoroutineScope()
   Column(modifier = modifier) {
     TopBar(
-        text = stringResource(R.string.portfolio),
+        text = stringResource(R.string.app_name),
         scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState()
         )

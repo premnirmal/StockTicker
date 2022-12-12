@@ -3,8 +3,10 @@ package com.github.premnirmal.ticker.base
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.lifecycleScope
@@ -15,8 +17,9 @@ import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.AppMessage.BottomSheetMessage
 import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.ui.ThemeViewModel
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
-import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme.SYSTEM
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -28,18 +31,10 @@ abstract class BaseComposeActivity : ComponentActivity() {
   abstract val simpleName: String
   open val subscribeToErrorEvents = true
   private var isErrorDialogShowing = false
+  private val themeViewModel by viewModels<ThemeViewModel>()
   @Inject lateinit var analytics: Analytics
   @Inject lateinit var stocksProvider: StocksProvider
   @Inject lateinit var appPreferences: AppPreferences
-
-  protected val currentTheme: SelectedTheme
-    get() = when (appPreferences.themePref) {
-      AppPreferences.JUST_BLACK_THEME -> SelectedTheme.JUST_BLACK
-      AppPreferences.DARK_THEME -> SelectedTheme.DARK
-      AppPreferences.LIGHT_THEME -> SelectedTheme.LIGHT
-      AppPreferences.FOLLOW_SYSTEM_THEME -> SelectedTheme.SYSTEM
-      else -> SelectedTheme.SYSTEM
-    }
 
   @Composable
   protected fun ApplyThemeColourToNavigationBar() {
@@ -61,7 +56,8 @@ abstract class BaseComposeActivity : ComponentActivity() {
     DynamicColors.applyToActivityIfAvailable(this)
     savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
     setContent {
-      AppTheme(theme = currentTheme) {
+      val currentTheme = themeViewModel.themePref.collectAsState(initial = SYSTEM)
+      AppTheme(theme = currentTheme.value) {
         ApplyThemeColourToNavigationBar()
         ApplyThemeColourToStatusBar()
         ShowContent()

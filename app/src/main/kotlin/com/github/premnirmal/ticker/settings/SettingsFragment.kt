@@ -23,7 +23,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.CheckBoxPreference
@@ -43,14 +42,12 @@ import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.threeten.bp.format.TextStyle.SHORT
 import timber.log.Timber
-import java.io.File
 import java.util.Locale
 import javax.inject.Inject
 import kotlin.system.exitProcess
@@ -487,30 +484,6 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         showDialog(getString(R.string.exported_to))
       }
     }
-  }
-
-  private fun shareTickers(file: File) {
-    val intent = Intent(Intent.ACTION_SEND)
-    intent.type = "text/plain"
-    intent.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>())
-    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.my_stock_portfolio))
-    intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_email_subject))
-    if (!file.exists() || !file.canRead()) {
-      showDialog(getString(R.string.error_sharing))
-      Timber.w(Throwable("Error sharing tickers"))
-      return
-    }
-    val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      FileProvider.getUriForFile(requireContext(), BuildConfig.APPLICATION_ID + ".provider", file)
-    } else {
-      Uri.fromFile(file)
-    }
-    intent.putExtra(Intent.EXTRA_STREAM, uri)
-    val launchIntent = Intent.createChooser(intent, getString(R.string.action_share))
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      launchIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-    }
-    startActivity(launchIntent)
   }
 
   private fun shareTickers(uri: Uri) {

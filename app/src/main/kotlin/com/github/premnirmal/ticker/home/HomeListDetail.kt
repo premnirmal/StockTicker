@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.home
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,7 +70,7 @@ fun HomeListDetail(
       NavigationContentPosition.TOP
     }
   }
-  val viewModel: HomeViewModel = hiltViewModel()
+  val viewModel: HomeViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
   val hasWidget = viewModel.hasWidget.collectAsState(initial = false)
   val destinations = ArrayList<HomeBottomNavDestination>().apply {
     add(

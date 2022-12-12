@@ -7,26 +7,10 @@ import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 internal object TickersExporter {
-
-  suspend fun exportTickers(file: File, vararg tickers: List<String>): String? = withContext(Dispatchers.IO) {
-    val tickerList = ArrayList(tickers[0])
-    try {
-      val fileOutputStream = FileOutputStream(file)
-      for (ticker: String in tickerList) {
-        fileOutputStream.use { it.write(("$ticker, ").toByteArray()) }
-      }
-    } catch (e: IOException) {
-      Timber.e(e)
-      return@withContext null
-    }
-
-    return@withContext file.path
-  }
 
   suspend fun exportTickers(context: Context, uri: Uri, vararg tickers: List<String>): String? = withContext(Dispatchers.IO) {
     val tickerList = ArrayList(tickers[0])
@@ -51,20 +35,6 @@ internal object TickersExporter {
 internal object PortfolioExporter {
 
   private val gson = Injector.appComponent().gson()
-
-  suspend fun exportQuotes(file: File, vararg quoteLists: List<Quote>): String? = withContext(Dispatchers.IO) {
-    val quoteList: List<Quote> = quoteLists[0]
-    try {
-      val jsonString = gson.toJson(quoteList)
-      val fileOutputStream = FileOutputStream(file)
-      fileOutputStream.use { it.write(jsonString.toByteArray()) }
-    } catch (e: IOException) {
-      Timber.e(e)
-      return@withContext null
-    }
-
-    return@withContext file.path
-  }
 
   suspend fun exportQuotes(context: Context, uri: Uri, vararg quoteLists: List<Quote>): String? =
     withContext(Dispatchers.IO) {

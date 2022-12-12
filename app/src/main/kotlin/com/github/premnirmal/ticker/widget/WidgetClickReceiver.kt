@@ -7,7 +7,7 @@ import android.content.Intent
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.home.MainActivity
+import com.github.premnirmal.ticker.home.HomeActivity
 import javax.inject.Inject
 
 /**
@@ -30,7 +30,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
       widgetDataProvider.broadcastUpdateWidget(widgetId)
       analytics.trackClickEvent(ClickEvent("WidgetFlipClick"))
     } else {
-      val startActivityIntent = Intent(context, MainActivity::class.java)
+      val startActivityIntent = Intent(context, HomeActivity::class.java)
       startActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
       context.startActivity(startActivityIntent)
       analytics.trackClickEvent(ClickEvent("WidgetClick"))
