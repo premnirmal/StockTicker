@@ -2,7 +2,9 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.network.data.AssetDetailsResponse
 import com.github.premnirmal.ticker.network.data.YahooResponse
+import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -16,9 +18,18 @@ interface YahooFinance {
    * @return A List of quotes.
    */
   @GET(
-      "quote?format=json"
+    "v7/finance/quote?format=json"
   )
-  suspend fun getStocks(@Query(value = "symbols") query: String): YahooResponse
+  suspend fun getStocks(@Query(value = "symbols") query: String): Response<YahooResponse>
+
+  @GET(
+    "v1/test/getcrumb"
+  )
+  suspend fun getCrumb(): Response<String>
+}
+interface YahooFinanceInitialLoad {
+  @GET("/")
+  suspend fun initialLoad(): Response<String?>
 }
 
 interface YahooQuoteDetails {

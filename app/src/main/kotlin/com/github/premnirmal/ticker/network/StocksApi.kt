@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.network
 
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
@@ -8,7 +9,9 @@ import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -20,13 +23,45 @@ import javax.inject.Singleton
 @Singleton
 class StocksApi @Inject constructor(
   private val gson: Gson,
+  private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
   private val yahooFinance: YahooFinance,
+  private val coroutineScope: CoroutineScope,
+  private val appPreferences: AppPreferences,
   private val yahooQuoteDetails: YahooQuoteDetails,
   private val suggestionApi: SuggestionApi,
   private val clock: AppClock
 ) {
 
   var lastFetched: Long = 0
+
+  init {
+    coroutineScope.launch {
+      loadCrumb()
+    }
+  }
+
+  private suspend fun loadCrumb() {
+    withContext(Dispatchers.IO) {
+      try {
+        val initialLoad = yahooFinanceInitialLoad.initialLoad()
+        if (!initialLoad.isSuccessful) {
+          Timber.e("Failed initial load with code: ${initialLoad.code()}")
+          return@withContext
+        }
+        val crumbResponse = yahooFinance.getCrumb()
+        if (crumbResponse.isSuccessful) {
+          val crumb = crumbResponse.body()
+          if (!crumb.isNullOrEmpty()) {
+            appPreferences.setCrumb(crumb)
+          }
+        } else {
+          Timber.e("Failed to get crumb with code: ${crumbResponse.code()}")
+        }
+      } catch (e: Exception) {
+        Timber.e(e, "Initial load failed")
+      }
+    }
+  }
 
   suspend fun getSuggestions(query: String): FetchResult<List<SuggestionNet>> =
     withContext(Dispatchers.IO) {
@@ -84,8 +119,17 @@ class StocksApi @Inject constructor(
     }
 
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
+    val crumb = appPreferences.getCrumb()
+    if (crumb.isNullOrEmpty()) {
+      loadCrumb()
+    }
     val query = tickerList.joinToString(",")
-    val quoteNets = yahooFinance.getStocks(query).quoteResponse.result ?: emptyList()
+    val quotesResponse = yahooFinance.getStocks(query)
+    if (quotesResponse.code() == 401) {
+      appPreferences.setCrumb(null)
+      loadCrumb()
+    }
+    val quoteNets = quotesResponse.body()?.quoteResponse?.result ?: emptyList()
     quoteNets
   }
 

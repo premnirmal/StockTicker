@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.Gson
@@ -15,7 +16,10 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
+import java.net.CookieHandler
+import java.net.CookieManager
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -30,14 +34,37 @@ class NetworkModule {
     internal const val READ_TIMEOUT: Long = 5000
   }
 
-  @Provides @Singleton internal fun provideHttpClientForYahoo(@ApplicationContext context: Context): OkHttpClient {
+  @Provides @Singleton internal fun provideHttpClient(
+    userAgentInterceptor: UserAgentInterceptor,
+  ): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level =
       if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient =
       OkHttpClient.Builder()
-          .addInterceptor(UserAgentInterceptor(context))
+        .addInterceptor(userAgentInterceptor)
+        .addInterceptor(logger)
+        .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+        .build()
+    return okHttpClient
+  }
+
+  @Named("yahoo")
+  @Provides @Singleton internal fun provideHttpClientForYahoo(
+    userAgentInterceptor: UserAgentInterceptor,
+    crumbInterceptor: CrumbInterceptor,
+    cookieJar: YahooFinanceCookies
+  ): OkHttpClient {
+    val logger = HttpLoggingInterceptor()
+    logger.level =
+      if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+    val okHttpClient =
+      OkHttpClient.Builder()
+          .addInterceptor(userAgentInterceptor)
           .addInterceptor(logger)
+          .addInterceptor(crumbInterceptor)
+          .cookieJar(cookieJar)
           .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
           .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
           .build()
@@ -55,7 +82,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideSuggestionsApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): SuggestionApi {
     val retrofit = Retrofit.Builder()
@@ -68,7 +95,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinance(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): YahooFinance {
     val retrofit = Retrofit.Builder()
@@ -80,9 +107,21 @@ class NetworkModule {
     return yahooFinance
   }
 
+  @Provides @Singleton internal fun provideYahooFinanceInitialLoad(
+    @ApplicationContext context: Context,
+    @Named("yahoo") okHttpClient: OkHttpClient
+  ): YahooFinanceInitialLoad {
+    val retrofit = Retrofit.Builder()
+      .client(okHttpClient)
+      .baseUrl(context.getString(R.string.yahoo_initial_load_endpoint))
+      .build()
+    val yahooFinance = retrofit.create(YahooFinanceInitialLoad::class.java)
+    return yahooFinance
+  }
+
   @Provides @Singleton internal fun provideYahooQuoteDetailsApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): YahooQuoteDetails {
     val retrofit = Retrofit.Builder()
@@ -110,7 +149,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinanceMostActive(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
   ): YahooFinanceMostActive {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
@@ -135,7 +174,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinanceNewsApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient
+    @Named("yahoo") okHttpClient: OkHttpClient
   ): YahooFinanceNewsApi {
     val retrofit =
       Retrofit.Builder()
@@ -148,7 +187,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideHistoricalDataApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): ChartApi {
     val retrofit = Retrofit.Builder()
