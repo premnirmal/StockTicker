@@ -6,7 +6,7 @@
   <string name="yahoo_news_endpoint" translatable="false">https://finance.yahoo.com/news/</string>
   <string name="yahoo_finance_endpoint" translatable="false">https://finance.yahoo.com/</string>
   <string name="suggestions_endpoint" translatable="false">https://query2.finance.yahoo.com/v1/finance/</string>
-  <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v7/finance/</string>
+  <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/v6/finance/</string>
   <string name="yahoo_endpoint_quote_details" translatable="false">https://query1.finance.yahoo.com/v11/finance/</string>
   <string name="historical_data_endpoint" translatable="false">https://query1.finance.yahoo.com/v8/finance/</string>
   <string name="github_endoint" translatable="false">https://api.github.com/</string>
