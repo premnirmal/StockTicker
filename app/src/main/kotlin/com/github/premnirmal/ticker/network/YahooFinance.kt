@@ -21,15 +21,17 @@ interface YahooFinance {
     "v7/finance/quote?format=json"
   )
   suspend fun getStocks(@Query(value = "symbols") query: String): Response<YahooResponse>
+}
+interface YahooFinanceInitialLoad {
+  @GET("/")
+  suspend fun initialLoad()
+}
+interface YahooFinanceCrumb {
 
   @GET(
     "v1/test/getcrumb"
   )
   suspend fun getCrumb(): Response<String>
-}
-interface YahooFinanceInitialLoad {
-  @GET("/")
-  suspend fun initialLoad(): Response<String?>
 }
 
 interface YahooQuoteDetails {

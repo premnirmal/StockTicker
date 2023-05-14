@@ -22,8 +22,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class StocksApi @Inject constructor(
-  private val gson: Gson,
   private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
+  private val yahooFinanceCrumb: YahooFinanceCrumb,
   private val yahooFinance: YahooFinance,
   private val coroutineScope: CoroutineScope,
   private val appPreferences: AppPreferences,
@@ -43,12 +43,8 @@ class StocksApi @Inject constructor(
   private suspend fun loadCrumb() {
     withContext(Dispatchers.IO) {
       try {
-        val initialLoad = yahooFinanceInitialLoad.initialLoad()
-        if (!initialLoad.isSuccessful) {
-          Timber.e("Failed initial load with code: ${initialLoad.code()}")
-          return@withContext
-        }
-        val crumbResponse = yahooFinance.getCrumb()
+        yahooFinanceInitialLoad.initialLoad()
+        val crumbResponse = yahooFinanceCrumb.getCrumb()
         if (crumbResponse.isSuccessful) {
           val crumb = crumbResponse.body()
           if (!crumb.isNullOrEmpty()) {

@@ -15,6 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -109,13 +110,55 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinanceInitialLoad(
     @ApplicationContext context: Context,
-    @Named("yahoo") okHttpClient: OkHttpClient
+    cookieJar: YahooFinanceCookies
   ): YahooFinanceInitialLoad {
     val retrofit = Retrofit.Builder()
-      .client(okHttpClient)
+      .client(OkHttpClient().newBuilder()
+        .addInterceptor { chain ->
+          val original = chain.request()
+          val newRequest = original
+            .newBuilder()
+            .removeHeader("Accept")
+            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+            .removeHeader("Accept-Encoding")
+            .addHeader("Accept-Encoding", "gzip, deflate, br")
+            .build()
+          chain.proceed(newRequest)
+        }
+        .cookieJar(cookieJar)
+        .build()
+      )
+      .addConverterFactory(ScalarsConverterFactory.create())
       .baseUrl(context.getString(R.string.yahoo_initial_load_endpoint))
       .build()
     val yahooFinance = retrofit.create(YahooFinanceInitialLoad::class.java)
+    return yahooFinance
+  }
+
+  @Provides @Singleton internal fun provideYahooFinanceCrumb(
+    @ApplicationContext context: Context,
+    cookieJar: YahooFinanceCookies
+  ): YahooFinanceCrumb {
+    val retrofit = Retrofit.Builder()
+      .client(OkHttpClient().newBuilder()
+        .addInterceptor { chain ->
+          val original = chain.request()
+          val newRequest = original
+            .newBuilder()
+            .removeHeader("Accept")
+            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+            .removeHeader("Accept-Encoding")
+            .addHeader("Accept-Encoding", "gzip, deflate, br")
+            .build()
+          chain.proceed(newRequest)
+        }
+        .cookieJar(cookieJar)
+        .build()
+      )
+      .addConverterFactory(ScalarsConverterFactory.create())
+      .baseUrl(context.getString(R.string.yahoo_endpoint))
+      .build()
+    val yahooFinance = retrofit.create(YahooFinanceCrumb::class.java)
     return yahooFinance
   }
 
