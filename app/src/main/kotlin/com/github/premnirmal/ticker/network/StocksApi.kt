@@ -39,12 +39,6 @@ class StocksApi @Inject constructor(
     Regex("csrfToken\" value=\"(.+)\">")
   }
 
-  init {
-    coroutineScope.launch {
-      loadCrumb()
-    }
-  }
-
   private suspend fun loadCrumb() { withContext(Dispatchers.IO) {
       try {
         val initialLoad = yahooFinanceInitialLoad.initialLoad()
