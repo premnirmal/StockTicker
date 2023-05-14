@@ -81,6 +81,9 @@ class TrendingStocksVH(binding: ItemTrendingStocksBinding) : TrendingVH<ItemTren
     listener: TrendingListener
   ) {
     val quotes = (item as TrendingStockNewsFeed).quotes
+    if (quotes.isEmpty()) {
+      return
+    }
     when (quotes.size) {
       1 -> {
         binding.stock2.root.isVisible = false

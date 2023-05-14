@@ -2,11 +2,15 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.network.data.AssetDetailsResponse
 import com.github.premnirmal.ticker.network.data.YahooResponse
+import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface YahooFinance {
 
@@ -24,7 +28,10 @@ interface YahooFinance {
 }
 interface YahooFinanceInitialLoad {
   @GET("/")
-  suspend fun initialLoad()
+  suspend fun initialLoad(): Response<String?>
+
+  @POST("/")
+  suspend fun cookieConsent(@Url url: String?, @Body body: RequestBody): Response<String?>
 }
 interface YahooFinanceCrumb {
 

@@ -8,11 +8,12 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
-import com.google.gson.Gson
+import com.github.premnirmal.ticker.network.data.YahooResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.FormBody
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -34,16 +35,39 @@ class StocksApi @Inject constructor(
 
   var lastFetched: Long = 0
 
+  val csrfTokenMatchPattern by lazy {
+    Regex("csrfToken\" value=\"(.+)\">")
+  }
+
   init {
     coroutineScope.launch {
       loadCrumb()
     }
   }
 
-  private suspend fun loadCrumb() {
-    withContext(Dispatchers.IO) {
+  private suspend fun loadCrumb() { withContext(Dispatchers.IO) {
       try {
-        yahooFinanceInitialLoad.initialLoad()
+        val initialLoad = yahooFinanceInitialLoad.initialLoad()
+
+        val html = initialLoad.body() ?: ""
+        val url = initialLoad.raw().request.url.toString()
+        val match = csrfTokenMatchPattern.find(html)
+        if (!match?.groupValues.isNullOrEmpty()) {
+          val csrfToken = match?.groupValues?.last().toString()
+          val sessionId = url.split("=").last()
+
+          val requestBody = FormBody.Builder()
+            .add("csrfToken", csrfToken)
+            .add("sessionId", sessionId)
+            .addEncoded("originalDoneUrl", "https://finance.yahoo.com/?guccounter=1")
+            .add("namespace", "yahoo")
+            .add("agree", "agree")
+            .add("agree", "agree")
+            .build()
+
+          yahooFinanceInitialLoad.cookieConsent(url, requestBody)
+        }
+
         val crumbResponse = yahooFinanceCrumb.getCrumb()
         if (crumbResponse.isSuccessful) {
           val crumb = crumbResponse.body()
@@ -64,7 +88,7 @@ class StocksApi @Inject constructor(
       val suggestions = try {
         suggestionApi.getSuggestions(query).result
       } catch (e: Exception) {
-        Timber.w(e)
+        Timber.e(e)
         return@withContext FetchResult.failure(FetchException("Error fetching", e))
       }
       val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
@@ -78,7 +102,7 @@ class StocksApi @Inject constructor(
         lastFetched = clock.currentTimeMillis()
         return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
-        Timber.w(ex)
+        Timber.e(ex)
         return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))
       }
     }
@@ -89,7 +113,7 @@ class StocksApi @Inject constructor(
         val quoteNets = getStocksYahoo(listOf(ticker))
         return@withContext FetchResult.success(quoteNets.first().toQuote())
       } catch (ex: Exception) {
-        Timber.w(ex)
+        Timber.e(ex)
         return@withContext FetchResult.failure(FetchException("Failed to fetch $ticker", ex))
       }
     }
@@ -107,7 +131,7 @@ class StocksApi @Inject constructor(
             )
         )
       } catch (e: Exception) {
-        Timber.w(e)
+        Timber.e(e)
         return@withContext FetchResult.failure(
             FetchException("Failed to fetch quote details for $ticker", e)
         )
@@ -120,12 +144,17 @@ class StocksApi @Inject constructor(
       loadCrumb()
     }
     val query = tickerList.joinToString(",")
-    val quotesResponse = yahooFinance.getStocks(query)
-    if (quotesResponse.code() == 401) {
-      appPreferences.setCrumb(null)
-      loadCrumb()
+    var quotesResponse: retrofit2.Response<YahooResponse>? = null
+    try {
+      quotesResponse = yahooFinance.getStocks(query)
+      if (quotesResponse.code() == 401) {
+        appPreferences.setCrumb(null)
+        loadCrumb()
+      }
+    } catch (ex: Exception) {
+      Timber.e(ex)
     }
-    val quoteNets = quotesResponse.body()?.quoteResponse?.result ?: emptyList()
+    val quoteNets = quotesResponse?.body()?.quoteResponse?.result ?: emptyList()
     quoteNets
   }
 
