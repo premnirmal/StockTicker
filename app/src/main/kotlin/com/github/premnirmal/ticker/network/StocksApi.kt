@@ -48,7 +48,6 @@ class StocksApi @Inject constructor(
   private suspend fun loadCrumb() { withContext(Dispatchers.IO) {
       try {
         val initialLoad = yahooFinanceInitialLoad.initialLoad()
-
         val html = initialLoad.body() ?: ""
         val url = initialLoad.raw().request.url.toString()
         val match = csrfTokenMatchPattern.find(html)
@@ -62,10 +61,13 @@ class StocksApi @Inject constructor(
             .addEncoded("originalDoneUrl", "https://finance.yahoo.com/?guccounter=1")
             .add("namespace", "yahoo")
             .add("agree", "agree")
-            .add("agree", "agree")
             .build()
 
-          yahooFinanceInitialLoad.cookieConsent(url, requestBody)
+          val cookieConsent = yahooFinanceInitialLoad.cookieConsent(url, requestBody)
+          if (!cookieConsent.isSuccessful) {
+            Timber.e("Failed cookie consent with code: ${cookieConsent.code()}")
+            return@withContext
+          }
         }
 
         val crumbResponse = yahooFinanceCrumb.getCrumb()

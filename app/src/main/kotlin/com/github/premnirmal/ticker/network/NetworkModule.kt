@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import android.content.Context
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.google.gson.Gson
@@ -17,8 +16,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
-import java.net.CookieHandler
-import java.net.CookieManager
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
@@ -120,8 +117,6 @@ class NetworkModule {
             .newBuilder()
             .removeHeader("Accept")
             .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
-            .removeHeader("Accept-Encoding")
-            .addHeader("Accept-Encoding", "gzip, deflate, br")
             .build()
           chain.proceed(newRequest)
         }
@@ -147,8 +142,6 @@ class NetworkModule {
             .newBuilder()
             .removeHeader("Accept")
             .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
-            .removeHeader("Accept-Encoding")
-            .addHeader("Accept-Encoding", "gzip, deflate, br")
             .build()
           chain.proceed(newRequest)
         }

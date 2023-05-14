@@ -17,12 +17,10 @@ class CrumbInterceptor @Inject constructor(
     val builder = chain.request().newBuilder()
     builder
       .removeHeader("Accept")
-      .removeHeader("Accept-Encoding")
       .addHeader(
         "Accept",
         "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
       )
-      .addHeader("Accept-Encoding", "gzip, deflate, br")
     if (!crumb.isNullOrEmpty()) {
       builder
         .url(chain.request().url.newBuilder().addQueryParameter("crumb", crumb).build())
