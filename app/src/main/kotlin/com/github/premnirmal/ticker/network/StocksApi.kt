@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.network
 
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
@@ -7,9 +8,12 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
-import com.google.gson.Gson
+import com.github.premnirmal.ticker.network.data.YahooResponse
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.FormBody
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,8 +23,11 @@ import javax.inject.Singleton
  */
 @Singleton
 class StocksApi @Inject constructor(
-  private val gson: Gson,
+  private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
+  private val yahooFinanceCrumb: YahooFinanceCrumb,
   private val yahooFinance: YahooFinance,
+  private val coroutineScope: CoroutineScope,
+  private val appPreferences: AppPreferences,
   private val yahooQuoteDetails: YahooQuoteDetails,
   private val suggestionApi: SuggestionApi,
   private val clock: AppClock
@@ -28,12 +35,56 @@ class StocksApi @Inject constructor(
 
   var lastFetched: Long = 0
 
+  val csrfTokenMatchPattern by lazy {
+    Regex("csrfToken\" value=\"(.+)\">")
+  }
+
+  private suspend fun loadCrumb() { withContext(Dispatchers.IO) {
+      try {
+        val initialLoad = yahooFinanceInitialLoad.initialLoad()
+        val html = initialLoad.body() ?: ""
+        val url = initialLoad.raw().request.url.toString()
+        val match = csrfTokenMatchPattern.find(html)
+        if (!match?.groupValues.isNullOrEmpty()) {
+          val csrfToken = match?.groupValues?.last().toString()
+          val sessionId = url.split("=").last()
+
+          val requestBody = FormBody.Builder()
+            .add("csrfToken", csrfToken)
+            .add("sessionId", sessionId)
+            .addEncoded("originalDoneUrl", "https://finance.yahoo.com/?guccounter=1")
+            .add("namespace", "yahoo")
+            .add("agree", "agree")
+            .build()
+
+          val cookieConsent = yahooFinanceInitialLoad.cookieConsent(url, requestBody)
+          if (!cookieConsent.isSuccessful) {
+            Timber.e("Failed cookie consent with code: ${cookieConsent.code()}")
+            return@withContext
+          }
+        }
+
+        val crumbResponse = yahooFinanceCrumb.getCrumb()
+        if (crumbResponse.isSuccessful) {
+          val crumb = crumbResponse.body()
+          if (!crumb.isNullOrEmpty()) {
+            appPreferences.setCrumb(crumb)
+          }
+        } else {
+          Timber.e("Failed to get crumb with code: ${crumbResponse.code()}")
+        }
+      } catch (e: Exception) {
+        Timber.e(e, "Initial load failed")
+      }
+    }
+  }
+
   suspend fun getSuggestions(query: String): FetchResult<List<SuggestionNet>> =
     withContext(Dispatchers.IO) {
       val suggestions = try {
         suggestionApi.getSuggestions(query).result
       } catch (e: Exception) {
-        Timber.w(e)
+        Timber.e(e)
         return@withContext FetchResult.failure(FetchException("Error fetching", e))
       }
       val suggestionList = suggestions?.let { ArrayList(it) } ?: ArrayList()
@@ -47,7 +98,7 @@ class StocksApi @Inject constructor(
         lastFetched = clock.currentTimeMillis()
         return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
-        Timber.w(ex)
+        Timber.e(ex)
         return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))
       }
     }
@@ -58,7 +109,7 @@ class StocksApi @Inject constructor(
         val quoteNets = getStocksYahoo(listOf(ticker))
         return@withContext FetchResult.success(quoteNets.first().toQuote())
       } catch (ex: Exception) {
-        Timber.w(ex)
+        Timber.e(ex)
         return@withContext FetchResult.failure(FetchException("Failed to fetch $ticker", ex))
       }
     }
@@ -76,7 +127,7 @@ class StocksApi @Inject constructor(
             )
         )
       } catch (e: Exception) {
-        Timber.w(e)
+        Timber.e(e)
         return@withContext FetchResult.failure(
             FetchException("Failed to fetch quote details for $ticker", e)
         )
@@ -84,8 +135,22 @@ class StocksApi @Inject constructor(
     }
 
   private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
+    val crumb = appPreferences.getCrumb()
+    if (crumb.isNullOrEmpty()) {
+      loadCrumb()
+    }
     val query = tickerList.joinToString(",")
-    val quoteNets = yahooFinance.getStocks(query).quoteResponse.result ?: emptyList()
+    var quotesResponse: retrofit2.Response<YahooResponse>? = null
+    try {
+      quotesResponse = yahooFinance.getStocks(query)
+      if (quotesResponse.code() == 401) {
+        appPreferences.setCrumb(null)
+        loadCrumb()
+      }
+    } catch (ex: Exception) {
+      Timber.e(ex)
+    }
+    val quoteNets = quotesResponse?.body()?.quoteResponse?.result ?: emptyList()
     quoteNets
   }
 

@@ -14,8 +14,10 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 /**
@@ -30,14 +32,37 @@ class NetworkModule {
     internal const val READ_TIMEOUT: Long = 5000
   }
 
-  @Provides @Singleton internal fun provideHttpClientForYahoo(@ApplicationContext context: Context): OkHttpClient {
+  @Provides @Singleton internal fun provideHttpClient(
+    userAgentInterceptor: UserAgentInterceptor,
+  ): OkHttpClient {
     val logger = HttpLoggingInterceptor()
     logger.level =
       if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient =
       OkHttpClient.Builder()
-          .addInterceptor(UserAgentInterceptor(context))
+        .addInterceptor(userAgentInterceptor)
+        .addInterceptor(logger)
+        .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+        .build()
+    return okHttpClient
+  }
+
+  @Named("yahoo")
+  @Provides @Singleton internal fun provideHttpClientForYahoo(
+    userAgentInterceptor: UserAgentInterceptor,
+    crumbInterceptor: CrumbInterceptor,
+    cookieJar: YahooFinanceCookies
+  ): OkHttpClient {
+    val logger = HttpLoggingInterceptor()
+    logger.level =
+      if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+    val okHttpClient =
+      OkHttpClient.Builder()
+          .addInterceptor(userAgentInterceptor)
           .addInterceptor(logger)
+          .addInterceptor(crumbInterceptor)
+          .cookieJar(cookieJar)
           .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
           .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
           .build()
@@ -55,7 +80,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideSuggestionsApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): SuggestionApi {
     val retrofit = Retrofit.Builder()
@@ -68,7 +93,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinance(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): YahooFinance {
     val retrofit = Retrofit.Builder()
@@ -80,9 +105,59 @@ class NetworkModule {
     return yahooFinance
   }
 
+  @Provides @Singleton internal fun provideYahooFinanceInitialLoad(
+    @ApplicationContext context: Context,
+    cookieJar: YahooFinanceCookies
+  ): YahooFinanceInitialLoad {
+    val retrofit = Retrofit.Builder()
+      .client(OkHttpClient().newBuilder()
+        .addInterceptor { chain ->
+          val original = chain.request()
+          val newRequest = original
+            .newBuilder()
+            .removeHeader("Accept")
+            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+            .build()
+          chain.proceed(newRequest)
+        }
+        .cookieJar(cookieJar)
+        .build()
+      )
+      .addConverterFactory(ScalarsConverterFactory.create())
+      .baseUrl(context.getString(R.string.yahoo_initial_load_endpoint))
+      .build()
+    val yahooFinance = retrofit.create(YahooFinanceInitialLoad::class.java)
+    return yahooFinance
+  }
+
+  @Provides @Singleton internal fun provideYahooFinanceCrumb(
+    @ApplicationContext context: Context,
+    cookieJar: YahooFinanceCookies
+  ): YahooFinanceCrumb {
+    val retrofit = Retrofit.Builder()
+      .client(OkHttpClient().newBuilder()
+        .addInterceptor { chain ->
+          val original = chain.request()
+          val newRequest = original
+            .newBuilder()
+            .removeHeader("Accept")
+            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+            .build()
+          chain.proceed(newRequest)
+        }
+        .cookieJar(cookieJar)
+        .build()
+      )
+      .addConverterFactory(ScalarsConverterFactory.create())
+      .baseUrl(context.getString(R.string.yahoo_endpoint))
+      .build()
+    val yahooFinance = retrofit.create(YahooFinanceCrumb::class.java)
+    return yahooFinance
+  }
+
   @Provides @Singleton internal fun provideYahooQuoteDetailsApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): YahooQuoteDetails {
     val retrofit = Retrofit.Builder()
@@ -110,7 +185,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinanceMostActive(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
   ): YahooFinanceMostActive {
     val retrofit = Retrofit.Builder()
         .client(okHttpClient)
@@ -135,7 +210,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinanceNewsApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient
+    @Named("yahoo") okHttpClient: OkHttpClient
   ): YahooFinanceNewsApi {
     val retrofit =
       Retrofit.Builder()
@@ -148,7 +223,7 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideHistoricalDataApi(
     @ApplicationContext context: Context,
-    okHttpClient: OkHttpClient,
+    @Named("yahoo") okHttpClient: OkHttpClient,
     converterFactory: GsonConverterFactory
   ): ChartApi {
     val retrofit = Retrofit.Builder()

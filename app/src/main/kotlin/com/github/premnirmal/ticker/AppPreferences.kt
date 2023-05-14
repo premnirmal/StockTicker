@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker
 
 import android.content.SharedPreferences
 import android.os.Build
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import com.github.premnirmal.ticker.components.AppClock
@@ -22,7 +21,6 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
-  @VisibleForTesting
   internal val sharedPreferences: SharedPreferences,
   private val clock: AppClock
 ) {
@@ -106,6 +104,14 @@ class AppPreferences @Inject constructor(
     sharedPreferences.edit()
         .putBoolean(WIDGET_REFRESHING, refreshing)
         .apply()
+  }
+
+  fun setCrumb(crumb: String?) {
+    sharedPreferences.edit().putString(CRUMB, crumb).apply()
+  }
+
+  fun getCrumb(): String? {
+    return sharedPreferences.getString(CRUMB, null)
   }
 
   fun tutorialShown(): Boolean {
@@ -217,7 +223,7 @@ class AppPreferences @Inject constructor(
     const val BOLD_CHANGE = "BOLD_CHANGE"
     const val SHOW_CURRENCY = "SHOW_CURRENCY"
     const val PERCENT = "PERCENT"
-    const val DID_RATE = "USER_DID_RATE"
+    const val CRUMB = "CRUMB"
     const val BACKOFF_ATTEMPTS = "BACKOFF_ATTEMPTS"
     const val APP_VERSION_CODE = "APP_VERSION_CODE"
     const val APP_THEME = "APP_THEME"
