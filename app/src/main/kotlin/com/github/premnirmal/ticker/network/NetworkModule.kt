@@ -107,50 +107,26 @@ class NetworkModule {
 
   @Provides @Singleton internal fun provideYahooFinanceInitialLoad(
     @ApplicationContext context: Context,
-    cookieJar: YahooFinanceCookies
+    @Named("yahoo") okHttpClient: OkHttpClient
   ): YahooFinanceInitialLoad {
     val retrofit = Retrofit.Builder()
-      .client(OkHttpClient().newBuilder()
-        .addInterceptor { chain ->
-          val original = chain.request()
-          val newRequest = original
-            .newBuilder()
-            .removeHeader("Accept")
-            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
-            .build()
-          chain.proceed(newRequest)
-        }
-        .cookieJar(cookieJar)
+        .client(okHttpClient)
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .baseUrl(context.getString(R.string.yahoo_initial_load_endpoint))
         .build()
-      )
-      .addConverterFactory(ScalarsConverterFactory.create())
-      .baseUrl(context.getString(R.string.yahoo_initial_load_endpoint))
-      .build()
     val yahooFinance = retrofit.create(YahooFinanceInitialLoad::class.java)
     return yahooFinance
   }
 
   @Provides @Singleton internal fun provideYahooFinanceCrumb(
     @ApplicationContext context: Context,
-    cookieJar: YahooFinanceCookies
+    @Named("yahoo") okHttpClient: OkHttpClient
   ): YahooFinanceCrumb {
     val retrofit = Retrofit.Builder()
-      .client(OkHttpClient().newBuilder()
-        .addInterceptor { chain ->
-          val original = chain.request()
-          val newRequest = original
-            .newBuilder()
-            .removeHeader("Accept")
-            .addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
-            .build()
-          chain.proceed(newRequest)
-        }
-        .cookieJar(cookieJar)
+        .client(okHttpClient)
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .baseUrl(context.getString(R.string.yahoo_endpoint))
         .build()
-      )
-      .addConverterFactory(ScalarsConverterFactory.create())
-      .baseUrl(context.getString(R.string.yahoo_endpoint))
-      .build()
     val yahooFinance = retrofit.create(YahooFinanceCrumb::class.java)
     return yahooFinance
   }

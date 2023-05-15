@@ -21,11 +21,10 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
       Injector.appComponent().inject(this)
       val result = stocksProvider.fetch()
       if (result.hasError) {
-        Result.failure()
+        Result.retry()
       } else {
         Result.success()
       }
-      Result.success()
     } else {
       Result.retry()
     }

@@ -9,17 +9,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class UpdateReceiver : BroadcastReceiver(), CoroutineScope {
+class UpdateReceiver : BroadcastReceiver() {
 
   @Inject internal lateinit var stocksProvider: StocksProvider
-
-  override val coroutineContext: CoroutineContext
-    get() = Dispatchers.Main
+  @Inject internal lateinit var coroutineScope: CoroutineScope
 
   override fun onReceive(
       context: Context,
@@ -27,7 +24,7 @@ class UpdateReceiver : BroadcastReceiver(), CoroutineScope {
   ) {
     Injector.appComponent().inject(this)
     val pendingResult = goAsync()
-    launch {
+    coroutineScope.launch(Dispatchers.Main) {
       stocksProvider.fetch()
       pendingResult.finish()
     }

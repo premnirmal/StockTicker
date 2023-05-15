@@ -118,29 +118,30 @@ fun Activity.showDialog(
       .show()
 }
 
-fun Activity.showDialog(message: String): AlertDialog {
+fun Activity.showDialog(message: String, cancelable: Boolean = true): AlertDialog {
   return AlertDialog.Builder(this)
       .setMessage(message)
-      .setCancelable(false)
+      .setCancelable(cancelable)
       .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }
 
 fun Activity.showDialog(
   title: String,
-  message: String
+  message: String,
+  cancelable: Boolean = true
 ): AlertDialog {
   return AlertDialog.Builder(this)
       .setTitle(title)
       .setMessage(message)
-      .setCancelable(false)
+      .setCancelable(cancelable)
       .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }
 
 fun Fragment.showDialog(
   message: String,
-  listener: OnClickListener
+  listener: OnClickListener,
 ) {
   AlertDialog.Builder(requireContext())
       .setMessage(message)
@@ -148,10 +149,10 @@ fun Fragment.showDialog(
       .show()
 }
 
-fun Fragment.showDialog(message: String): AlertDialog {
+fun Fragment.showDialog(message: String, cancelable: Boolean = true): AlertDialog {
   return AlertDialog.Builder(requireContext())
       .setMessage(message)
-      .setCancelable(false)
+      .setCancelable(cancelable)
       .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }
       .show()
 }

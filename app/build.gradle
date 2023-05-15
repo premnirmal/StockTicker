@@ -17,8 +17,8 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
-    classpath "com.google.gms:google-services:4.3.10"
-    classpath "com.google.firebase:firebase-crashlytics-gradle:2.7.1"
+    classpath "com.google.gms:google-services:4.3.15"
+    classpath "com.google.firebase:firebase-crashlytics-gradle:2.9.5"
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }

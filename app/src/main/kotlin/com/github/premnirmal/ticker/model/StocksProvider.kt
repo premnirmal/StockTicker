@@ -35,10 +35,10 @@ class StocksProvider @Inject constructor(
   @ApplicationContext private val context: Context,
   private val api: StocksApi,
   private val preferences: SharedPreferences,
+  private val clock: AppClock,
   private val appPreferences: AppPreferences,
   private val widgetDataProvider: WidgetDataProvider,
   private val alarmScheduler: AlarmScheduler,
-  private val clock: AppClock,
   private val storage: StocksStorage,
   private val coroutineScope: CoroutineScope,
   private val exponentialBackoff: ExponentialBackoff
@@ -55,7 +55,7 @@ class StocksProvider @Inject constructor(
   private val quoteMap: MutableMap<String, Quote> = HashMap()
   private val _fetchState = MutableStateFlow<FetchState>(FetchState.NotFetched)
   private val _nextFetch = MutableStateFlow<Long>(0)
-  private val _lastFetched = MutableStateFlow<Long>(0)
+  private var lastFetched = 0L
   private val _tickers = MutableStateFlow<List<String>>(emptyList())
   private val _portfolio = MutableStateFlow<List<Quote>>(emptyList())
 
@@ -66,8 +66,8 @@ class StocksProvider @Inject constructor(
       this.tickerSet.addAll(DEFAULT_STOCKS)
     }
     _tickers.tryEmit(tickerSet.toList())
-    val lastFetched = preferences.getLong(LAST_FETCHED, 0L)
-    _lastFetched.tryEmit(lastFetched)
+    val lastFetchedLoaded = preferences.getLong(LAST_FETCHED, 0L)
+    lastFetched = lastFetchedLoaded
     val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
     _nextFetch.tryEmit(nextFetch)
     runBlocking { fetchLocal() }
@@ -94,7 +94,7 @@ class StocksProvider @Inject constructor(
 
   private fun saveLastFetched() {
     preferences.edit()
-        .putLong(LAST_FETCHED, _lastFetched.value)
+        .putLong(LAST_FETCHED, lastFetched)
         .apply()
   }
 
@@ -103,7 +103,7 @@ class StocksProvider @Inject constructor(
   }
 
   private fun scheduleUpdate() {
-    scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(_lastFetched.value))
+    scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched))
   }
 
   private fun scheduleUpdateWithMs(
@@ -112,7 +112,7 @@ class StocksProvider @Inject constructor(
     val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
     _nextFetch.tryEmit(updateTime.toInstant().toEpochMilli())
     preferences.edit()
-        .putLong(NEXT_FETCH, _nextFetch.value)
+        .putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
         .apply()
     appPreferences.setRefreshing(false)
     widgetDataProvider.broadcastUpdateAllWidgets()
@@ -178,7 +178,7 @@ class StocksProvider @Inject constructor(
           }
           _tickers.emit(tickerSet.toList())
           // clean up existing tickers
-          ArrayList(tickerSet).forEach { ticker ->
+          tickerSet.toSet().forEach { ticker ->
             if (!widgetDataProvider.containsTicker(ticker)) {
               removeStock(ticker)
             }
@@ -186,8 +186,8 @@ class StocksProvider @Inject constructor(
           storage.saveQuotes(fetchedStocks)
           fetchLocal()
           if (allowScheduling) {
-            _lastFetched.emit(api.lastFetched)
-            _fetchState.emit(FetchState.Success(api.lastFetched))
+            lastFetched = clock.currentTimeMillis()
+            _fetchState.emit(FetchState.Success(lastFetched))
             saveLastFetched()
             exponentialBackoff.reset()
             scheduleUpdate()
@@ -209,16 +209,14 @@ class StocksProvider @Inject constructor(
         }
         FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } finally {
-        if (allowScheduling) {
-          appPreferences.setRefreshing(false)
-        }
+        appPreferences.setRefreshing(false)
       }
     }
   }
 
   fun schedule() {
     scheduleUpdate()
-    coroutineScope.launch {
+    runBlocking {
       alarmScheduler.enqueuePeriodicRefresh(force = true)
     }
   }

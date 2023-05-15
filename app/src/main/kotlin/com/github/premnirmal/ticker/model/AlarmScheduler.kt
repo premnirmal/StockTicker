@@ -9,6 +9,7 @@ import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
 import androidx.work.NetworkType.CONNECTED
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo.State.ENQUEUED
 import androidx.work.WorkInfo.State.RUNNING
@@ -137,6 +138,16 @@ class AlarmScheduler @Inject constructor(
     alarmManager.set(
         AlarmManager.ELAPSED_REALTIME_WAKEUP, clock.elapsedRealtime() + msToNextAlarm, pendingIntent
     )
+    val constraints = Constraints.Builder()
+        .setRequiredNetworkType(CONNECTED)
+        .build()
+    val request = OneTimeWorkRequestBuilder<RefreshWorker>()
+        .setInitialDelay(msToNextAlarm, MILLISECONDS)
+        .addTag(RefreshWorker.TAG)
+        .setBackoffCriteria(LINEAR, 1L, MINUTES)
+        .setConstraints(constraints)
+        .build()
+    workManager.enqueue(request)
     return nextAlarmDate
   }
 

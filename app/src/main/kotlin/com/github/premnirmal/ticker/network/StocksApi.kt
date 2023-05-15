@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.Quote
@@ -9,9 +8,7 @@ import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.github.premnirmal.ticker.network.data.YahooResponse
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
 import timber.log.Timber
@@ -26,14 +23,10 @@ class StocksApi @Inject constructor(
   private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
   private val yahooFinanceCrumb: YahooFinanceCrumb,
   private val yahooFinance: YahooFinance,
-  private val coroutineScope: CoroutineScope,
   private val appPreferences: AppPreferences,
   private val yahooQuoteDetails: YahooQuoteDetails,
-  private val suggestionApi: SuggestionApi,
-  private val clock: AppClock
+  private val suggestionApi: SuggestionApi
 ) {
-
-  var lastFetched: Long = 0
 
   val csrfTokenMatchPattern by lazy {
     Regex("csrfToken\" value=\"(.+)\">")
@@ -95,7 +88,6 @@ class StocksApi @Inject constructor(
     withContext(Dispatchers.IO) {
       try {
         val quoteNets = getStocksYahoo(tickerList)
-        lastFetched = clock.currentTimeMillis()
         return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
         Timber.e(ex)
@@ -134,7 +126,10 @@ class StocksApi @Inject constructor(
       }
     }
 
-  private suspend fun getStocksYahoo(tickerList: List<String>) = withContext(Dispatchers.IO) {
+  private suspend fun getStocksYahoo(
+    tickerList: List<String>,
+    invocationCount: Int = 1
+  ): List<YahooQuoteNet> = withContext(Dispatchers.IO) {
     val crumb = appPreferences.getCrumb()
     if (crumb.isNullOrEmpty()) {
       loadCrumb()
@@ -146,6 +141,9 @@ class StocksApi @Inject constructor(
       if (quotesResponse.code() == 401) {
         appPreferences.setCrumb(null)
         loadCrumb()
+        if (invocationCount == 1) {
+          return@withContext getStocksYahoo(tickerList, invocationCount + 1)
+        }
       }
     } catch (ex: Exception) {
       Timber.e(ex)

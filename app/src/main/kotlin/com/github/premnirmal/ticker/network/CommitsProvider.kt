@@ -46,9 +46,13 @@ class CommitsProvider @Inject constructor(
   suspend fun fetchWhatsNew(): FetchResult<List<String>> {
     with(fetchRepoCommits()) {
       return if (wasSuccessful) {
-        FetchResult.success(data.map {
-          it.commit.message.replace("\n", "").capitalize()
-        })
+        FetchResult.success(
+            data.filterNot {
+              it.commit.message.contains("Vcode++") || it.commit.message.contains("vcode++")
+            }.map { commit ->
+              commit.commit.message.replace("\n", "").replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
+        )
       } else FetchResult.failure(error)
     }
   }
