@@ -12,10 +12,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType.CONNECTED
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkInfo.State.ENQUEUED
-import androidx.work.WorkInfo.State.RUNNING
 import androidx.work.WorkManager
-import androidx.work.await
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
@@ -152,32 +149,19 @@ class AlarmScheduler @Inject constructor(
     return nextAlarmDate
   }
 
-  suspend fun enqueuePeriodicRefresh(
-    force: Boolean = true
-  ) {
+  fun enqueuePeriodicRefresh() {
     with(workManager) {
-      val enqueuedAlready = try {
-        getWorkInfosByTag(RefreshWorker.TAG_PERIODIC)
-            .await()
-            .any {
-              it.state == ENQUEUED || it.state == RUNNING
-            }
-      } catch (e: Exception) {
-        false
-      }
-      if (!enqueuedAlready || force) {
-        val delayMs = appPreferences.updateIntervalMs
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(CONNECTED)
-            .build()
-        val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
-            .setInitialDelay(delayMs, MILLISECONDS)
-            .addTag(RefreshWorker.TAG_PERIODIC)
-            .setBackoffCriteria(LINEAR, 1L, MINUTES)
-            .setConstraints(constraints)
-            .build()
-        this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
-      }
+      val delayMs = appPreferences.updateIntervalMs
+      val constraints = Constraints.Builder()
+          .setRequiredNetworkType(CONNECTED)
+          .build()
+      val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
+          .setInitialDelay(delayMs, MILLISECONDS)
+          .addTag(RefreshWorker.TAG_PERIODIC)
+          .setBackoffCriteria(LINEAR, 1L, MINUTES)
+          .setConstraints(constraints)
+          .build()
+      this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
     }
   }
 

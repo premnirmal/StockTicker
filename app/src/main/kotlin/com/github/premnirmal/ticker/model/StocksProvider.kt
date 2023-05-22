@@ -78,6 +78,7 @@ class StocksProvider @Inject constructor(
     } else {
       _fetchState.tryEmit(FetchState.Success(lastFetched))
     }
+    schedule()
   }
 
   private suspend fun fetchLocal() = withContext(Dispatchers.IO) {
@@ -216,9 +217,7 @@ class StocksProvider @Inject constructor(
 
   fun schedule() {
     scheduleUpdate()
-    runBlocking {
-      alarmScheduler.enqueuePeriodicRefresh(force = true)
-    }
+    alarmScheduler.enqueuePeriodicRefresh()
   }
 
   fun addStock(ticker: String): Collection<String> {

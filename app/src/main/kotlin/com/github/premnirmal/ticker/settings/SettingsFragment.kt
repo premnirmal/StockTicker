@@ -290,9 +290,10 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
           preferences.edit()
               .putInt(AppPreferences.UPDATE_INTERVAL, index)
               .apply()
-          broadcastUpdateWidget()
+          stocksProvider.schedule()
           refreshPreference.summary = refreshPreference.entries[index]
           InAppMessage.showMessage(requireView(), R.string.refresh_updated_message)
+          broadcastUpdateWidget()
           return true
         }
       }

@@ -508,6 +508,26 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightMedium"
+            style="@style/Widget.StocksWidget.TextView.BodyLightMedium"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            />
+
+        <TextView
+            android:id="@+id/website"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.StocksWidget.ItalicLabelLarge"
+            style="@style/Widget.StocksWidget.TextView.ItalicLabelLarge"
+            android:layout_margin="16dp"
+            />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -559,26 +579,6 @@
               />
 
         </ViewFlipper>
-
-        <TextView
-            android:id="@+id/description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightMedium"
-            style="@style/Widget.StocksWidget.TextView.BodyLightMedium"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            />
-
-        <TextView
-            android:id="@+id/website"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.StocksWidget.ItalicLabelLarge"
-            style="@style/Widget.StocksWidget.TextView.ItalicLabelLarge"
-            android:layout_margin="16dp"
-            />
 
       </LinearLayout>
     </androidx.core.widget.NestedScrollView>

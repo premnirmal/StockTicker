@@ -25,10 +25,10 @@ open class StocksApp : Application() {
   @Inject lateinit var widgetDataProvider: WidgetDataProvider
 
   override fun onCreate() {
-    Injector.init(this)
-    super.onCreate()
     initLogger()
     initThreeTen()
+    Injector.init(this)
+    super.onCreate()
     DynamicColors.applyToActivitiesIfAvailable(this)
     AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
     initNotificationHandler()
