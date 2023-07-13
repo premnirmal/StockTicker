@@ -18,7 +18,7 @@ buildscript {
   }
   dependencies {
     classpath "com.google.gms:google-services:4.3.15"
-    classpath "com.google.firebase:firebase-crashlytics-gradle:2.9.5"
+    classpath "com.google.firebase:firebase-crashlytics-gradle:2.9.6"
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
@@ -69,7 +69,7 @@ android {
 
   defaultConfig {
     applicationId appIdBase
-    minSdkVersion 21
+    minSdkVersion 28
     targetSdkVersion 33
 
     versionCode = code
@@ -205,24 +205,24 @@ ext {
   OKHTTP_VERSION = "4.9.0"
   ROBOLECTRIC_VERSION = "4.4"
   COROUTINES_VERSION = "1.6.0"
-  ROOM_VERSION = "2.4.2"
-  WORK_VERSION = "2.7.1"
+  ROOM_VERSION = "2.5.2"
+  WORK_VERSION = "2.8.1"
 }
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-  implementation "androidx.core:core-ktx:1.8.0"
+  implementation "androidx.core:core-ktx:1.10.1"
 
-  implementation "androidx.appcompat:appcompat:1.4.2"
+  implementation "androidx.appcompat:appcompat:1.6.1"
   implementation "androidx.legacy:legacy-support-v4:1.0.0"
-  implementation "com.google.android.material:material:1.6.1"
+  implementation "com.google.android.material:material:1.9.0"
   implementation "androidx.preference:preference-ktx:1.2.0"
-  implementation "androidx.browser:browser:1.4.0"
+  implementation "androidx.browser:browser:1.5.0"
   implementation "androidx.constraintlayout:constraintlayout:2.1.4"
   implementation "androidx.viewpager2:viewpager2:1.0.0"
-  implementation 'androidx.core:core-splashscreen:1.0.0'
-  implementation "androidx.fragment:fragment-ktx:1.5.3"
+  implementation 'androidx.core:core-splashscreen:1.0.1'
+  implementation "androidx.fragment:fragment-ktx:1.6.0"
 
   implementation "io.coil-kt:coil:2.2.2"
 
@@ -248,7 +248,7 @@ dependencies {
   implementation "androidx.work:work-runtime:$WORK_VERSION"
   implementation "androidx.work:work-runtime-ktx:$WORK_VERSION"
 
-  implementation "com.jakewharton.threetenabp:threetenabp:1.3.0"
+  implementation "com.jakewharton.threetenabp:threetenabp:1.4.6"
 
   implementation "com.jakewharton.timber:timber:4.7.1"
   implementation "com.github.PhilJay:MPAndroidChart:v3.0.3"
@@ -257,13 +257,13 @@ dependencies {
   kapt "androidx.room:room-compiler:$ROOM_VERSION"
   implementation "androidx.room:room-ktx:$ROOM_VERSION"
 
-  prodImplementation 'com.google.android.play:review:2.0.0'
-  prodImplementation 'com.google.android.play:review-ktx:2.0.0'
+  prodImplementation 'com.google.android.play:review:2.0.1'
+  prodImplementation 'com.google.android.play:review-ktx:2.0.1'
 
   implementation "com.robinhood.ticker:ticker:2.0.2"
 
-  prodImplementation "com.google.firebase:firebase-crashlytics:18.2.11"
-  prodImplementation "com.google.firebase:firebase-analytics:21.0.0"
+  prodImplementation "com.google.firebase:firebase-crashlytics:18.3.7"
+  prodImplementation "com.google.firebase:firebase-analytics:21.3.0"
 
 //  debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
 
@@ -276,7 +276,7 @@ dependencies {
   testImplementation "org.robolectric:shadows-multidex:$ROBOLECTRIC_VERSION"
   testImplementation "androidx.test:runner:1.4.0"
   testImplementation "androidx.test:rules:1.4.0"
-  testImplementation "androidx.annotation:annotation:1.2.0"
+  testImplementation "androidx.annotation:annotation:1.6.0"
   testImplementation "androidx.test:rules:1.4.0"
   testImplementation "androidx.test:runner:1.4.0"
   testImplementation "org.threeten:threetenbp:1.5.0"
