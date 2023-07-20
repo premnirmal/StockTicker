@@ -40,8 +40,7 @@ class StocksProvider @Inject constructor(
   private val widgetDataProvider: WidgetDataProvider,
   private val alarmScheduler: AlarmScheduler,
   private val storage: StocksStorage,
-  private val coroutineScope: CoroutineScope,
-  private val exponentialBackoff: ExponentialBackoff
+  private val coroutineScope: CoroutineScope
 ) {
 
   companion object {
@@ -190,24 +189,15 @@ class StocksProvider @Inject constructor(
             lastFetched = clock.currentTimeMillis()
             _fetchState.emit(FetchState.Success(lastFetched))
             saveLastFetched()
-            exponentialBackoff.reset()
             scheduleUpdate()
           }
           FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
         }
       } catch(ex: CancellationException) {
-        if (allowScheduling) {
-          val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
-          scheduleUpdateWithMs(backOffTimeMs)
-        }
         FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } catch (ex: Throwable) {
         Timber.w(ex)
-        if (allowScheduling) {
-          _fetchState.emit(FetchState.Failure(ex))
-          val backOffTimeMs = exponentialBackoff.getBackoffDurationMs()
-          scheduleUpdateWithMs(backOffTimeMs)
-        }
+        _fetchState.emit(FetchState.Failure(ex))
         FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } finally {
         appPreferences.setRefreshing(false)

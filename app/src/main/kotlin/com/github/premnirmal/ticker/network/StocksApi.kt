@@ -32,7 +32,8 @@ class StocksApi @Inject constructor(
     Regex("csrfToken\" value=\"(.+)\">")
   }
 
-  private suspend fun loadCrumb() { withContext(Dispatchers.IO) {
+  private suspend fun loadCrumb() {
+    withContext(Dispatchers.IO) {
       try {
         val initialLoad = yahooFinanceInitialLoad.initialLoad()
         val html = initialLoad.body() ?: ""
@@ -67,7 +68,7 @@ class StocksApi @Inject constructor(
           Timber.e("Failed to get crumb with code: ${crumbResponse.code()}")
         }
       } catch (e: Exception) {
-        Timber.e(e, "Initial load failed")
+        Timber.e(e, "Crumb load failed")
       }
     }
   }
@@ -129,11 +130,8 @@ class StocksApi @Inject constructor(
   private suspend fun getStocksYahoo(
     tickerList: List<String>,
     invocationCount: Int = 1
-  ): List<YahooQuoteNet> = withContext(Dispatchers.IO) {
-    val crumb = appPreferences.getCrumb()
-    if (crumb.isNullOrEmpty()) {
-      loadCrumb()
-    }
+  ): List<YahooQuoteNet> =
+    withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
     var quotesResponse: retrofit2.Response<YahooResponse>? = null
     try {
@@ -142,13 +140,14 @@ class StocksApi @Inject constructor(
         appPreferences.setCrumb(null)
         loadCrumb()
         if (invocationCount == 1) {
-          return@withContext getStocksYahoo(tickerList, invocationCount + 1)
+          return@withContext getStocksYahoo(tickerList, invocationCount = invocationCount + 1)
         }
       }
     } catch (ex: Exception) {
       Timber.e(ex)
+      throw ex
     }
-    val quoteNets = quotesResponse?.body()?.quoteResponse?.result ?: emptyList()
+    val quoteNets = quotesResponse.body()?.quoteResponse?.result ?: emptyList()
     quoteNets
   }
 

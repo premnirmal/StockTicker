@@ -50,7 +50,6 @@ class NetworkModule {
 
   @Named("yahoo")
   @Provides @Singleton internal fun provideHttpClientForYahoo(
-    userAgentInterceptor: UserAgentInterceptor,
     crumbInterceptor: CrumbInterceptor,
     cookieJar: YahooFinanceCookies
   ): OkHttpClient {
@@ -59,7 +58,14 @@ class NetworkModule {
       if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     val okHttpClient =
       OkHttpClient.Builder()
-          .addInterceptor(userAgentInterceptor)
+          .addInterceptor { chain ->
+            val newRequest = chain.request()
+                .newBuilder()
+                .removeHeader("User-Agent")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36")
+                .build()
+            chain.proceed(newRequest)
+          }
           .addInterceptor(logger)
           .addInterceptor(crumbInterceptor)
           .cookieJar(cookieJar)
