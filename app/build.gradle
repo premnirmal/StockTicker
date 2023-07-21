@@ -69,7 +69,7 @@ android {
 
   defaultConfig {
     applicationId appIdBase
-    minSdkVersion 28
+    minSdkVersion 26
     targetSdkVersion 33
 
     versionCode = code

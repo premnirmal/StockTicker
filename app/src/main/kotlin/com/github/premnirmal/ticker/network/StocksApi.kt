@@ -89,6 +89,7 @@ class StocksApi @Inject constructor(
     withContext(Dispatchers.IO) {
       try {
         val quoteNets = getStocksYahoo(tickerList)
+            ?: return@withContext FetchResult.failure(FetchException("Failed to fetch"))
         return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
       } catch (ex: Exception) {
         Timber.e(ex)
@@ -100,6 +101,7 @@ class StocksApi @Inject constructor(
     withContext(Dispatchers.IO) {
       try {
         val quoteNets = getStocksYahoo(listOf(ticker))
+            ?: return@withContext FetchResult.failure(FetchException("Failed to fetch $ticker"))
         return@withContext FetchResult.success(quoteNets.first().toQuote())
       } catch (ex: Exception) {
         Timber.e(ex)
@@ -130,12 +132,15 @@ class StocksApi @Inject constructor(
   private suspend fun getStocksYahoo(
     tickerList: List<String>,
     invocationCount: Int = 1
-  ): List<YahooQuoteNet> =
+  ): List<YahooQuoteNet>? =
     withContext(Dispatchers.IO) {
     val query = tickerList.joinToString(",")
     var quotesResponse: retrofit2.Response<YahooResponse>? = null
     try {
       quotesResponse = yahooFinance.getStocks(query)
+      if (!quotesResponse.isSuccessful) {
+        Timber.e("Yahoo quote fetch failed with code ${quotesResponse.code()}")
+      }
       if (quotesResponse.code() == 401) {
         appPreferences.setCrumb(null)
         loadCrumb()
@@ -147,7 +152,7 @@ class StocksApi @Inject constructor(
       Timber.e(ex)
       throw ex
     }
-    val quoteNets = quotesResponse.body()?.quoteResponse?.result ?: emptyList()
+    val quoteNets = quotesResponse.body()?.quoteResponse?.result
     quoteNets
   }
 
