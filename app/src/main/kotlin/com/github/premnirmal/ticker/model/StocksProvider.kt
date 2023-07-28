@@ -194,11 +194,9 @@ class StocksProvider @Inject constructor(
           FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
         }
       } catch(ex: CancellationException) {
-        _fetchState.emit(FetchState.Failure(ex))
         FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } catch (ex: Throwable) {
         Timber.w(ex)
-        _fetchState.emit(FetchState.Failure(ex))
         FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
       } finally {
         appPreferences.setRefreshing(false)
