@@ -167,16 +167,16 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
       val fontSize = getFontSize()
       if (stockViewLayout == R.layout.stockview3) {
-        remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        remoteViews.setTextViewTextSize(R.id.change, TypedValue.COMPLEX_UNIT_DIP, fontSize)
       } else {
-        remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_SP, fontSize)
-        remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_SP, fontSize)
-        remoteViews.setTextViewTextSize(R.id.gain_loss, TypedValue.COMPLEX_UNIT_SP, fontSize)
-        remoteViews.setTextViewTextSize(R.id.gain_loss_percent, TypedValue.COMPLEX_UNIT_SP, fontSize)
+        remoteViews.setTextViewTextSize(R.id.changePercent, TypedValue.COMPLEX_UNIT_DIP, fontSize)
+        remoteViews.setTextViewTextSize(R.id.changeValue, TypedValue.COMPLEX_UNIT_DIP, fontSize)
+        remoteViews.setTextViewTextSize(R.id.gain_loss, TypedValue.COMPLEX_UNIT_DIP, fontSize)
+        remoteViews.setTextViewTextSize(R.id.gain_loss_percent, TypedValue.COMPLEX_UNIT_DIP, fontSize)
       }
-      remoteViews.setTextViewTextSize(R.id.ticker, TypedValue.COMPLEX_UNIT_SP, fontSize)
-      remoteViews.setTextViewTextSize(R.id.totalValue, TypedValue.COMPLEX_UNIT_SP, fontSize)
-      remoteViews.setTextViewTextSize(R.id.holdings, TypedValue.COMPLEX_UNIT_SP, fontSize)
+      remoteViews.setTextViewTextSize(R.id.ticker, TypedValue.COMPLEX_UNIT_DIP, fontSize)
+      remoteViews.setTextViewTextSize(R.id.totalValue, TypedValue.COMPLEX_UNIT_DIP, fontSize)
+      remoteViews.setTextViewTextSize(R.id.holdings, TypedValue.COMPLEX_UNIT_DIP, fontSize)
 
       if (stockViewLayout == R.layout.stockview3) {
         val intent = Intent()
