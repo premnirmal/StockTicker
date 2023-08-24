@@ -23,7 +23,7 @@
 
   <string-array name="widget_width_types">
     <item>Standard</item>
-    <item>Einzeilig darstellen</item>
+    <item>Eine Aktie pro Zeile</item>
   </string-array>
 
   <string-array name="backgrounds">
