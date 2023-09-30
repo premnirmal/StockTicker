@@ -225,4 +225,10 @@
   <string name="quote_change_neg">%1$.2f</string>
   <string name="quote_change_percent_pos">+%1$.2f%%</string>
   <string name="quote_change_percent_neg">%1$.2f%%</string>
+  <string name="save_widget">Save</string>
+  <string name="load_widget">Load</string>
+  <string name="widget_saved_message">Widget data saved</string>
+  <string name="widget_loaded_message">Widget data loaded</string>
+    <string name="widget_data_updated">Widget data imported successfully</string>
+    <string name="something_went_wrong">Something went wrong</string>
 </resources>

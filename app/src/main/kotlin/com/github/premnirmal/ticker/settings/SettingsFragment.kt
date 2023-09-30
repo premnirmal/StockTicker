@@ -66,9 +66,9 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
     private const val REQCODE_WRITE_EXTERNAL_STORAGE = 850
     private const val REQCODE_READ_EXTERNAL_STORAGE = 851
     private const val REQCODE_WRITE_EXTERNAL_STORAGE_SHARE = 852
-    private const val REQCODE_FILE_READ = 853
-    private const val REQCODE_FILE_WRITE = 854
-    private const val REQCODE_FILE_WRITE_SHARE = 855
+    internal const val REQCODE_FILE_READ = 853
+    internal const val REQCODE_FILE_WRITE = 854
+    internal const val REQCODE_FILE_WRITE_SHARE = 855
   }
 
   @Inject internal lateinit var stocksProvider: StocksProvider
@@ -484,6 +484,7 @@ class SettingsFragment : PreferenceFragmentCompat(), ChildFragment,
         showDialog(getString(R.string.error_exporting))
         Timber.w(Throwable("Error exporting tickers"))
       } else {
+
         showDialog(getString(R.string.exported_to))
       }
     }

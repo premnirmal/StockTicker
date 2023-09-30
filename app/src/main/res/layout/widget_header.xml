@@ -8,10 +8,26 @@
     android:baselineAligned="false"
     >
 
+  <TextView
+      android:id="@+id/widget_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start"
+      android:gravity="start"
+      android:lines="1"
+      android:maxLines="1"
+      android:maxWidth="150dp"
+      android:ellipsize="middle"
+      android:paddingEnd="@dimen/quote_details_card_padding"
+      android:textSize="@dimen/medium_text"
+      tools:text="@string/widget_name"
+      />
   <LinearLayout
-      android:layout_width="0dp"
+      android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_weight="1"
+      android:layout_gravity="end"
+
       android:orientation="vertical"
       >
 
@@ -19,8 +35,6 @@
         android:id="@+id/next_update"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:gravity="start"
         android:lines="1"
         android:maxLines="1"
         android:textColor="@color/text_widget_header"
@@ -32,8 +46,6 @@
         android:id="@+id/last_updated"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:gravity="start"
         android:lines="1"
         android:maxLines="1"
         android:textColor="@color/text_widget_header"
@@ -46,13 +58,13 @@
   <FrameLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
+      android:layout_gravity="end"
       >
 
     <ImageView
         android:id="@+id/refresh_icon"
         android:layout_width="@dimen/widget_refresh_icon_size"
         android:layout_height="@dimen/widget_refresh_icon_size"
-        android:layout_gravity="center"
         android:src="@drawable/ic_refresh"
         />
 

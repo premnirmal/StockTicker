@@ -347,4 +347,10 @@ class WidgetData {
           .apply()
     }
   }
+
+    fun clearTickers() {
+      synchronized(tickerList){
+        tickerList.clear()
+      }
+    }
 }

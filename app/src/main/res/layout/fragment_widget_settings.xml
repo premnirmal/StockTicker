@@ -30,17 +30,17 @@
       android:background="?attr/colorSurface"
       android:orientation="vertical"
       >
+      <TextView
+          android:id="@+id/setting_add_stock"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          android:padding="@dimen/setting_padding"
+          android:text="@string/add_stock"
 
-    <TextView
-        android:id="@+id/setting_add_stock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:padding="@dimen/setting_padding"
-        android:text="@string/add_stock"
+          android:textSize="@dimen/large_text"
+          />
 
-        android:textSize="@dimen/large_text"
-        />
 
     <include layout="@layout/divider"/>
 
@@ -52,6 +52,37 @@
         />
 
     <include layout="@layout/divider"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        android:orientation="horizontal"
+        >
+      <TextView
+          android:id="@+id/setting_save_widget"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          android:padding="@dimen/setting_padding"
+          android:text="@string/save_widget"
+
+          android:textSize="@dimen/large_text"
+          />
+      <TextView
+          android:id="@+id/setting_load_widget"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="5dp"
+          android:padding="@dimen/setting_padding"
+          android:text="@string/load_widget"
+
+          android:textSize="@dimen/large_text"
+          />
+
+    </LinearLayout>
+
+    <include layout="@layout/divider"/>
+
 
     <LinearLayout
         android:id="@+id/setting_autosort"
