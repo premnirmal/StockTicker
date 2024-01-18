@@ -268,12 +268,6 @@ class WidgetSettingsFragment : BaseFragment<FragmentWidgetSettingsBinding>(), Ch
       else -> FetchState.NotFetched.displayString
     }
     binding.widgetLayout.root.findViewById<TextView>(R.id.last_updated).text = lastUpdatedText
-    val nextUpdateMs = stocksProvider.nextFetchMs.value
-    val instant = Instant.ofEpochMilli(nextUpdateMs)
-    val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    val nextUpdate = time.createTimeString()
-    val nextUpdateText: String = getString(R.string.next_fetch, nextUpdate)
-    binding.widgetLayout.root.findViewById<TextView>(R.id.next_update).text = nextUpdateText
     binding.widgetLayout.root.findViewById<View>(R.id.widget_header).isVisible = !widgetData.hideHeader()
     adapter.refresh(widgetData)
   }

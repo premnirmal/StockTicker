@@ -158,12 +158,6 @@ class StockWidget : AppWidgetProvider() {
       else -> FetchState.NotFetched.displayString
     }
     remoteViews.setTextViewText(R.id.last_updated, lastUpdatedText)
-    val nextUpdateMs = stocksProvider.nextFetchMs.value
-    val instant = Instant.ofEpochMilli(nextUpdateMs)
-    val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-    val nextUpdate = time.createTimeString()
-    val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
-    remoteViews.setTextViewText(R.id.next_update, nextUpdateText)
     remoteViews.setInt(R.id.widget_layout, "setBackgroundResource", widgetData.backgroundResource())
     // Refresh icon and progress
     val refreshing = appPreferences.isRefreshing.value

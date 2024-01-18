@@ -8,40 +8,19 @@
     android:baselineAligned="false"
     >
 
-  <LinearLayout
+  <TextView
+      android:id="@+id/last_updated"
       android:layout_width="0dp"
-      android:layout_height="wrap_content"
       android:layout_weight="1"
-      android:orientation="vertical"
-      >
-
-    <TextView
-        android:id="@+id/next_update"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:gravity="start"
-        android:lines="1"
-        android:maxLines="1"
-        android:textColor="@color/text_widget_header"
-        android:textSize="@dimen/small_text"
-        tools:text="Next fetch: 10:00"
-        />
-
-    <TextView
-        android:id="@+id/last_updated"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:gravity="start"
-        android:lines="1"
-        android:maxLines="1"
-        android:textColor="@color/text_widget_header"
-        android:textSize="@dimen/small_text"
-        tools:text="Last fetch: 10:00"
-        />
-
-  </LinearLayout>
+      android:layout_height="wrap_content"
+      android:layout_gravity="start|center_vertical"
+      android:gravity="start|center_vertical"
+      android:lines="1"
+      android:maxLines="1"
+      android:textColor="@color/text_widget_header"
+      android:textSize="@dimen/small_text"
+      tools:text="Last fetch: 10:00"
+      />
 
   <FrameLayout
       android:layout_width="wrap_content"
