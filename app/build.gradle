@@ -171,7 +171,10 @@ android {
     debug {
       debuggable true
       ext.enableCrashlytics = false
-      minifyEnabled false
+      minifyEnabled true
+      firebaseCrashlytics {
+        mappingFileUploadEnabled false
+      }
       proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
     }
   }
