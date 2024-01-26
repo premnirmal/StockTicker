@@ -206,7 +206,7 @@ private fun WatchlistContent(
             columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
             contentPadding = PaddingValues(all = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalItemSpacing = 8.dp
         ) {
           itemsIndexed(
               quotes.value,

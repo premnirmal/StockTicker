@@ -31,7 +31,7 @@ import javax.inject.Singleton
  * Created by premnirmal on 2/28/16.
  */
 @Singleton
-class StocksProvider @Inject constructor(
+class StocksProvider constructor(
   @ApplicationContext private val context: Context,
   private val api: StocksApi,
   private val preferences: SharedPreferences,
@@ -77,7 +77,6 @@ class StocksProvider @Inject constructor(
     } else {
       _fetchState.tryEmit(FetchState.Success(lastFetched))
     }
-    schedule()
   }
 
   private suspend fun fetchLocal() = withContext(Dispatchers.IO) {

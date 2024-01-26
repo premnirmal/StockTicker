@@ -121,7 +121,7 @@ private fun WidgetsScreen(
               itemText = { it.widgetName() })
         }
         item {
-          WidgetPreview(fetchState, nextFetchMs, widgetData, widgetDataImmutable.value)
+          WidgetPreview(fetchState, widgetData, widgetDataImmutable.value)
         }
         widgetSettings(widgetData, widgetDataImmutable)
       }
@@ -152,7 +152,7 @@ private fun WidgetsScreen(
           },
           second = {
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-              WidgetPreview(fetchState, nextFetchMs, widgetData, widgetDataImmutable.value)
+              WidgetPreview(fetchState, widgetData, widgetDataImmutable.value)
             }
           }
       )
@@ -354,7 +354,6 @@ private fun LazyListScope.widgetSettings(
 @Composable
 fun WidgetPreview(
   fetchState: State<FetchState>,
-  nextFetchMs: State<Long>,
   widgetData: WidgetData,
   widgetDataImmutable: WidgetData.ImmutableWidgetData
 ) {
@@ -375,8 +374,7 @@ fun WidgetPreview(
       }, update = {
     val widgetLayout = it.findViewById<View>(R.id.widget_layout)
     updatePreview(
-        it.context, widgetLayout, fetchState.value, nextFetchMs.value, widgetData,
-        widgetDataImmutable
+        it.context, widgetLayout, fetchState.value, widgetData, widgetDataImmutable
     )
   })
 }
@@ -385,7 +383,6 @@ private fun updatePreview(
   context: Context,
   widgetLayout: View,
   fetchState: FetchState,
-  nextFetchMs: Long,
   widgetData: WidgetData,
   widgetDataImmutable: WidgetData.ImmutableWidgetData
 ) {
@@ -396,11 +393,6 @@ private fun updatePreview(
     else -> FetchState.NotFetched.displayString
   }
   widgetLayout.findViewById<TextView>(R.id.last_updated).text = lastUpdatedText
-  val instant = Instant.ofEpochMilli(nextFetchMs)
-  val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-  val nextUpdate = time.createTimeString()
-  val nextUpdateText: String = context.getString(R.string.next_fetch, nextUpdate)
-  widgetLayout.findViewById<TextView>(R.id.next_update).text = nextUpdateText
   widgetLayout.findViewById<View>(R.id.widget_header).isVisible =
     !widgetDataImmutable.hideWidgetHeader
   (widgetLayout.findViewById<GridView>(R.id.list).adapter as WidgetPreviewAdapter).refresh(
