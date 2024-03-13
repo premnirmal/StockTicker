@@ -17,7 +17,11 @@ buildscript {
     maven { url "https://jitpack.io" }
   }
   dependencies {
+<<<<<<< HEAD
     classpath "com.google.gms:google-services:4.4.2"
+=======
+    classpath "com.google.gms:google-services:4.4.1"
+>>>>>>> 2dd2d7a8 (Lib updates)
     classpath "com.google.firebase:firebase-crashlytics-gradle:2.9.9"
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -231,15 +235,15 @@ dependencies {
   implementation 'androidx.core:core-splashscreen:1.0.1'
   implementation "androidx.fragment:fragment-ktx:1.8.5"
   implementation 'androidx.activity:activity-compose:1.8.2'
-  implementation "androidx.navigation:navigation-compose:2.7.6"
-  implementation 'androidx.compose.material3:material3-android:1.2.0-rc01'
+  implementation "androidx.navigation:navigation-compose:2.7.7"
+  implementation 'androidx.compose.material3:material3-android:1.2.1'
   implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0'
-  implementation "androidx.compose.material3:material3-window-size-class:1.1.2"
+  implementation "androidx.compose.material3:material3-window-size-class:1.2.1"
   implementation "com.google.accompanist:accompanist-adaptive:0.27.0"
   implementation "com.google.accompanist:accompanist-pager:0.12.0"
-  implementation 'androidx.compose.runtime:runtime-livedata:1.6.0'
-  implementation 'androidx.hilt:hilt-navigation-compose:1.1.0'
-  implementation 'androidx.compose.ui:ui-viewbinding:1.6.0'
+  implementation 'androidx.compose.runtime:runtime-livedata:1.6.3'
+  implementation 'androidx.hilt:hilt-navigation-compose:1.2.0'
+  implementation 'androidx.compose.ui:ui-viewbinding:1.6.3'
   implementation "androidx.datastore:datastore-preferences:1.0.0"
 
   implementation project(":UI")
@@ -252,10 +256,10 @@ dependencies {
   implementation "javax.inject:javax.inject:1"
   implementation "javax.annotation:javax.annotation-api:1.3.2"
 
-  implementation 'androidx.compose.ui:ui-tooling-preview:1.6.0'
-  debugImplementation 'androidx.compose.ui:ui-tooling:1.6.0'
-  implementation "com.google.dagger:hilt-android:2.48.1"
-  kapt "com.google.dagger:hilt-compiler:2.48.1"
+  implementation 'androidx.compose.ui:ui-tooling-preview:1.6.3'
+  debugImplementation 'androidx.compose.ui:ui-tooling:1.6.3'
+  implementation "com.google.dagger:hilt-android:2.49"
+  kapt "com.google.dagger:hilt-compiler:2.49"
 
   implementation "com.squareup.okhttp3:okhttp:4.10.0"
   implementation "com.squareup.okhttp3:logging-interceptor:4.10.0"
@@ -287,8 +291,13 @@ dependencies {
 
   implementation "com.robinhood.ticker:ticker:2.0.2"
 
+<<<<<<< HEAD
   prodImplementation "com.google.firebase:firebase-crashlytics:19.3.0"
   prodImplementation "com.google.firebase:firebase-analytics:22.1.2"
+=======
+  prodImplementation "com.google.firebase:firebase-crashlytics:18.6.2"
+  prodImplementation "com.google.firebase:firebase-analytics:21.5.1"
+>>>>>>> 2dd2d7a8 (Lib updates)
 
 //  debugImplementation "com.squareup.leakcanary:leakcanary-android:2.4"
 

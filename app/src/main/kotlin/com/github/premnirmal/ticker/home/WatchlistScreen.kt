@@ -174,7 +174,7 @@ private fun WatchlistContent(
           modifier = Modifier.padding(horizontal = 8.dp),
           divider = {},
           indicator = { tabPositions ->
-            TabRowDefaults.Indicator(
+            TabRowDefaults.SecondaryIndicator(
                 modifier = Modifier.customTabIndicatorOffset(tabPositions[tabIndex])
             )
           }
@@ -234,11 +234,13 @@ fun Modifier.customTabIndicatorOffset(
 ) {
   val currentTabWidth by animateDpAsState(
       targetValue = currentTabPosition.width * 0.33f,
-      animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+      animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
+      label = ""
   )
   val indicatorOffset by animateDpAsState(
       targetValue = currentTabPosition.left,
-      animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing)
+      animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
+      label = ""
   )
   fillMaxWidth()
       .wrapContentSize(Alignment.BottomStart)
