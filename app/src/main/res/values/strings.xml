@@ -225,4 +225,8 @@
   <string name="quote_change_neg">%1$.2f</string>
   <string name="quote_change_percent_pos">+%1$.2f%%</string>
   <string name="quote_change_percent_neg">%1$.2f%%</string>
+
+  <string name="market_state_open">Market open:</string>
+  <string name="market_state_closed">Market closed:</string>
+  <string name="market_state_at_close">At close:</string>
 </resources>

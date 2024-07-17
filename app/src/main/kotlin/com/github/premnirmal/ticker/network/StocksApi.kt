@@ -173,12 +173,17 @@ class StocksApi @Inject constructor(
   }
 
   private fun YahooQuoteNet.toQuote(): Quote {
+    val isPreMarket = "PRE" == this.marketState?.uppercase()
+
     val quote = Quote(
         symbol = this.symbol,
         name = (this.name ?: this.longName).orEmpty(),
         lastTradePrice = this.lastTradePrice,
         changeInPercent = this.changePercent,
-        change = this.change
+        change = this.change,
+        othPrice = if (isPreMarket) this.preMarketPrice else this.postMarketPrice,
+        othChangeInPercent = if (isPreMarket) this.preMarketChangePercent else this.postMarketChangePercent,
+        othChange = if (isPreMarket) this.preMarketChange else this.postMarketChange
     )
     quote.stockExchange = this.exchange ?: ""
     quote.currencyCode = this.currency ?: "USD"

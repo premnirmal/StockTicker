@@ -121,8 +121,9 @@ class StocksStorage @Inject constructor(
 
   private fun Quote.toQuoteRow(): QuoteRow {
     return QuoteRow(
-        this.symbol, this.name, this.lastTradePrice, this.changeInPercent,
-        this.change, this.stockExchange, this.currencyCode,
+        this.symbol, this.name, this.lastTradePrice, this.changeInPercent, this.change,
+        this.othPrice, this.othChangeInPercent, this.othChange,
+        this.stockExchange, this.currencyCode,
         this.isPostMarket, this.annualDividendRate, this.annualDividendYield,
         this.dayHigh, this.dayLow, this.previousClose, this.open,
         this.regularMarketVolume?.toFloat(), this.trailingPE,
@@ -154,7 +155,10 @@ class StocksStorage @Inject constructor(
         name = this.name,
         lastTradePrice = this.lastTradePrice,
         changeInPercent = this.changeInPercent,
-        change = this.change
+        change = this.change,
+        othPrice = this.othPrice,
+        othChangeInPercent = this.othChangeInPercent,
+        othChange = this.othChange
     )
     quote.name = this.name
     quote.lastTradePrice = this.lastTradePrice
