@@ -11,15 +11,15 @@
       android:id="@+id/stockContainer"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:paddingBottom="8dp"
       android:paddingStart="4dp"
       android:paddingTop="4dp"
+      android:paddingBottom="8dp"
       tools:layout_height="150dp"
-      tools:layout_marginTop="100dp"
-    >
+      tools:layout_marginTop="100dp">
 
     <TextView
         android:id="@+id/ticker"
+        style="@style/Widget.StocksWidget.TextView.TitleMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="4dp"
@@ -27,12 +27,10 @@
         android:ellipsize="end"
         android:gravity="center_vertical|start"
         android:maxLines="1"
-        tools:text="GOOG"
-        style="@style/Widget.StocksWidget.TextView.TitleMedium"
         android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="GOOG" />
 
     <ImageView
         android:id="@+id/more_menu"
@@ -41,71 +39,115 @@
         android:layout_gravity="center_vertical"
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_more"
-        app:tint="?attr/colorOnSurfaceVariant"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        app:tint="?attr/colorOnSurfaceVariant" />
 
     <TextView
         android:id="@+id/name"
+        style="@style/Widget.StocksWidget.TextView.LabelMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="4dp"
+        android:layout_marginTop="8dp"
         android:ellipsize="end"
         android:maxLines="2"
-        style="@style/Widget.StocksWidget.TextView.LabelMedium"
         android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
-        tools:text="Google Inc"
-        app:layout_constraintTop_toBottomOf="@id/ticker"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="8dp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/ticker"
+        tools:text="Google Inc" />
 
     <com.robinhood.ticker.TickerView
         android:id="@+id/totalValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
         android:gravity="center_vertical|start"
         android:maxLines="1"
-        tools:text="555.02"
         android:textAppearance="@style/TextAppearance.StocksWidget.TickerBold"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintStart_toStartOf="@+id/rthText"
+        app:layout_constraintTop_toBottomOf="@+id/rthText"
+        tools:text="615,246.28" />
 
     <com.robinhood.ticker.TickerView
         android:id="@+id/changePercent"
-        android:layout_width="match_parent"
+        style="@style/Widget.StocksWidget.TextView.BodyMedium"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginEnd="4dp"
         android:gravity="center_vertical|end"
         android:maxLines="1"
-        style="@style/Widget.StocksWidget.TextView.BodyMedium"
         android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
-        tools:text="5.02%"
-        app:layout_constraintBottom_toTopOf="@id/changeValue"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        />
+        app:layout_constraintStart_toStartOf="@+id/rthText"
+        app:layout_constraintTop_toBottomOf="@+id/changeValue"
+        tools:text="+9999.99%" />
 
     <com.robinhood.ticker.TickerView
         android:id="@+id/changeValue"
-        android:layout_width="match_parent"
+        style="@style/Widget.StocksWidget.TextView.BodyMedium"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
         android:gravity="center_vertical|end"
         android:maxLines="1"
-        style="@style/Widget.StocksWidget.TextView.BodyMedium"
         android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
-        tools:text="15.02345"
+        app:layout_constraintStart_toStartOf="@+id/rthText"
+        app:layout_constraintTop_toBottomOf="@+id/totalValue"
+        tools:text="+12,345.00" />
+
+    <com.robinhood.ticker.TickerView
+        android:id="@+id/othValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|start"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.StocksWidget.TickerBold"
+        app:layout_constraintStart_toStartOf="@+id/othText"
+        app:layout_constraintTop_toBottomOf="@+id/othText"
+        tools:text="123,456.78" />
+
+    <com.robinhood.ticker.TickerView
+        android:id="@+id/othChangePercent"
+        style="@style/Widget.StocksWidget.TextView.BodyMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
+        app:layout_constraintStart_toStartOf="@+id/othChangeValue"
+        app:layout_constraintTop_toBottomOf="@+id/othChangeValue"
+        tools:text="+1111.11%" />
+
+    <com.robinhood.ticker.TickerView
+        android:id="@+id/othChangeValue"
+        style="@style/Widget.StocksWidget.TextView.BodyMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical|end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
+        app:layout_constraintStart_toStartOf="@+id/othText"
+        app:layout_constraintTop_toBottomOf="@+id/othValue"
+        tools:text="+45,678.00" />
+
+    <EditText
+        android:id="@+id/rthText"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Market Open:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+    <EditText
+        android:id="@+id/othText"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Market Closed:"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintStart_toEndOf="@+id/rthText"
+        app:layout_constraintTop_toTopOf="@+id/rthText" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

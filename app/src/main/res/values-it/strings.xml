@@ -184,4 +184,8 @@
   <string name="error">Errore</string>
   <string name="error_fetching_whats_new">Errore ottenimento novità</string>
   <string name="loading">Caricamento</string>
+
+  <string name="market_state_open">Mercato aperto:</string>
+  <string name="market_state_closed">Mercato chiuso:</string>
+  <string name="market_state_at_close">Alla chiusura:</string>
 </resources>

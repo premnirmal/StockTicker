@@ -183,4 +183,8 @@
   <string name="error">Erreur</string>
   <string name="error_fetching_whats_new">Erreur lors de la récupération des nouveautés</string>
   <string name="loading">Chargement</string>
+
+  <string name="market_state_open">Marché ouvert:</string>
+  <string name="market_state_closed">Marché fermé:</string>
+  <string name="market_state_at_close">À la fermeture:</string>
 </resources>

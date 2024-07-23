@@ -172,4 +172,8 @@
   <string name="error">Erro</string>
   <string name="error_fetching_whats_new">Erro ao buscar novidades</string>
   <string name="loading">Carregando</string>
+
+  <string name="market_state_open">Mercado aberto:</string>
+  <string name="market_state_closed">Mercado fechado:</string>
+  <string name="market_state_at_close">De perto:</string>
 </resources>

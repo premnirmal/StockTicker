@@ -182,4 +182,7 @@
   <string name="error">Error</string>
   <string name="error_fetching_whats_new">Error al obtener las novedades</string>
   <string name="loading">Cargando</string>
-</resources>
+
+  <string name="market_state_open">Mercado abierto:</string>
+  <string name="market_state_closed">Mercado cerrado:</string>
+  <string name="market_state_at_close">Al cierre:</string></resources>

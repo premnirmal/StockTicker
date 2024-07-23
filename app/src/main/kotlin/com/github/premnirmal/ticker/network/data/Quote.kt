@@ -13,7 +13,10 @@ data class Quote constructor(
   var name: String = "",
   var lastTradePrice: Float = 0.toFloat(),
   var changeInPercent: Float = 0.toFloat(),
-  var change: Float = 0.toFloat()
+  var change: Float = 0.toFloat(),
+  var othPrice: Float = 0.toFloat(),
+  var othChangeInPercent: Float = 0.toFloat(),
+  var othChange: Float = 0.toFloat(),
 ) : Parcelable, Comparable<Quote> {
 
   var isPostMarket: Boolean = false
@@ -74,19 +77,35 @@ data class Quote constructor(
   fun changeString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
 
   fun changeStringWithSign(): String {
-    val changeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
-    if (change >= 0) {
-      return "+$changeString"
-    }
-    return changeString
+    return formatChangeValue(change)
+  }
+
+  fun othChangeStringWithSign(): String {
+    return formatChangeValue(othChange)
   }
 
   fun changePercentString(): String =
     "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
 
   fun changePercentStringWithSign(): String {
-    val changeString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
-    if (changeInPercent >= 0) {
+    return formatChangePercent(changeInPercent)
+  }
+
+  fun othChangePercentStringWithSign(): String {
+    return formatChangePercent(othChangeInPercent)
+  }
+
+  private fun formatChangeValue(value: Float): String {
+    val changeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(value)
+    if (value >= 0) {
+      return "+$changeString"
+    }
+    return changeString
+  }
+
+  private fun formatChangePercent(value: Float): String {
+    val changeString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(value)}%"
+    if (value >= 0) {
       return "+$changeString"
     }
     return changeString
@@ -172,6 +191,9 @@ data class Quote constructor(
     this.lastTradePrice = data.lastTradePrice
     this.changeInPercent = data.changeInPercent
     this.change = data.change
+    this.othPrice = data.othPrice
+    this.othChange = data.othChange
+    this.othChangeInPercent = data.othChangeInPercent
     this.stockExchange = data.stockExchange
     this.currencyCode = data.currencyCode
     this.annualDividendRate = data.annualDividendRate
