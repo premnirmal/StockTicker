@@ -64,7 +64,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineDataSet.Mode.CUBIC_BEZIER
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.HistoryProvider.Range
-import com.github.premnirmal.ticker.navigation.CalculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
@@ -137,7 +137,7 @@ private fun QuoteDetailContent(
   quoteDetail: State<FetchResult<QuoteWithSummary>?>
 ) {
   val contentType: ContentType = contentType
-      ?: CalculateContentAndNavigationType(
+      ?: calculateContentAndNavigationType(
           widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
       ).second
   var showAddOrRemoveDialog by remember { mutableStateOf(false) }

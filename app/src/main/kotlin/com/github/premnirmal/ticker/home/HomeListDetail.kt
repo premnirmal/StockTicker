@@ -27,7 +27,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.navigation.BottomNavigationBar
-import com.github.premnirmal.ticker.navigation.CalculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
 import com.github.premnirmal.ticker.navigation.HomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeNavigationActions
@@ -50,7 +50,7 @@ fun HomeListDetail(
   val widthSizeClass by rememberUpdatedState(windowWidthSizeClass)
   val heightSizeClass by rememberUpdatedState(windowHeightSizeClass)
 
-  val pair = CalculateContentAndNavigationType(widthSizeClass, displayFeatures)
+  val pair = calculateContentAndNavigationType(widthSizeClass, displayFeatures)
   val navigationType = pair.first
   val contentType = pair.second
 

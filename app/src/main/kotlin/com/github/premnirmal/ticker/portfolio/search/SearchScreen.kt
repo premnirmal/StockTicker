@@ -35,7 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.navigation.CalculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.NewsCard
@@ -68,7 +68,7 @@ fun SearchScreen(
     showAddRemoveForSuggestion = it
     it.exists
   }
-  val contentType: ContentType = CalculateContentAndNavigationType(
+  val contentType: ContentType = calculateContentAndNavigationType(
       widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
   ).second
   Scaffold(

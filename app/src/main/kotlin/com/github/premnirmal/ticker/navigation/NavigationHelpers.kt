@@ -16,7 +16,7 @@ enum class LayoutType {
 }
 
 @Composable
-fun CalculateContentAndNavigationType(
+fun calculateContentAndNavigationType(
   widthSizeClass: WindowWidthSizeClass,
   displayFeatures: List<DisplayFeature>
 ): Pair<NavigationType, ContentType> {

@@ -46,7 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
-import com.github.premnirmal.ticker.navigation.CalculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.settings.WidgetPreviewAdapter
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
@@ -88,7 +88,7 @@ private fun WidgetsScreen(
   val widgetDataList = viewModel.widgetDataList.collectAsState(emptyList())
   val fetchState = viewModel.fetchState.collectAsState()
   val nextFetchMs = viewModel.nextFetchMs.collectAsState()
-  val contentType: ContentType = CalculateContentAndNavigationType(
+  val contentType: ContentType = calculateContentAndNavigationType(
       widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
   ).second
   Scaffold(
