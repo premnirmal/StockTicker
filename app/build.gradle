@@ -268,7 +268,6 @@ dependencies {
   testImplementation "junit:junit:4.13.2"
   testImplementation "org.assertj:assertj-core:3.8.0"
   testImplementation "org.robolectric:robolectric:4.10.3"
-  testImplementation "org.robolectric:shadows-multidex:4.10.3"
   testImplementation "androidx.test:runner:1.5.2"
   testImplementation "androidx.test:rules:1.5.0"
   testImplementation "androidx.annotation:annotation:1.7.1"
