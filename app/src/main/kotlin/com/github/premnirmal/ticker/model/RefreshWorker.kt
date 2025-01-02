@@ -15,10 +15,14 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
   }
 
   @Inject internal lateinit var stocksProvider: StocksProvider
+  @Inject internal lateinit var alarmScheduler: AlarmScheduler
 
   override suspend fun doWork(): Result {
     return if (applicationContext.isNetworkOnline()) {
       Injector.appComponent().inject(this)
+      if (!alarmScheduler.isWithinSchedulingPreferences()) {
+        return Result.success()
+      }
       val result = stocksProvider.fetch()
       if (result.hasError) {
         Result.retry()

@@ -37,6 +37,30 @@ class AlarmScheduler @Inject constructor(
   private val workManager: WorkManager
 ) {
 
+  fun isWithinSchedulingPreferences(): Boolean {
+    val dayOfWeek = clock.todayLocal()
+      .dayOfWeek
+    val startTimez = appPreferences.startTime()
+    val endTimez = appPreferences.endTime()
+    // whether the start time is after the end time e.g. start time is 11pm and end time is 5am
+    val inverse =
+      startTimez.hour > endTimez.hour || (startTimez.hour == endTimez.hour && startTimez.minute > endTimez.minute)
+    val now: ZonedDateTime = clock.todayZoned()
+    val startTime = clock.todayZoned()
+      .withHour(startTimez.hour)
+      .withMinute(startTimez.minute)
+    var endTime = clock.todayZoned()
+      .withHour(endTimez.hour)
+      .withMinute(endTimez.minute)
+    if (inverse && now.isAfter(startTime)) {
+      endTime = endTime.plusDays(1)
+    }
+    val selectedDaysOfWeek = appPreferences.updateDays()
+
+    return (now.isBefore(endTime) && (now.isAfter(startTime)
+        || now.isEqual(startTime)) && selectedDaysOfWeek.contains(dayOfWeek))
+  }
+
   /**
    * Takes care of weekends and after hours
    */
