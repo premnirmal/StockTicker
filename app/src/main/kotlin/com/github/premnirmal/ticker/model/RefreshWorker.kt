@@ -20,7 +20,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
   override suspend fun doWork(): Result {
     return if (applicationContext.isNetworkOnline()) {
       Injector.appComponent().inject(this)
-      if (!alarmScheduler.isWithinSchedulingPreferences()) {
+      if (!alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()) {
         return Result.success()
       }
       val result = stocksProvider.fetch()

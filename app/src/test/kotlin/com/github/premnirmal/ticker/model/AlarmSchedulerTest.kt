@@ -252,4 +252,43 @@ class AlarmSchedulerTest : BaseUnitTest() {
       sundayEvening.toInstant().toEpochMilli() - clock.currentTimeMillis()
     assertEquals(expectedNext, msToNextAlarm)
   }
+
+  @Test fun testIsCurrentTimeWithinScheduledUpdateTime() {
+    var isWithinScheduledPreferenceTime: Boolean
+
+    setStartAndEndTime("09:30", "16:30")
+    setNow(TIME_1) // Monday 10:05am
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertTrue(isWithinScheduledPreferenceTime)
+
+    setStartAndEndTime("10:30", "16:30")
+    setNow(TIME_1) // Monday 10:30am
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertFalse(isWithinScheduledPreferenceTime)
+
+    setStartAndEndTime("21:00", "04:00")
+    setNow(FLIP_TIME_5) // Friday 6am
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertFalse(isWithinScheduledPreferenceTime)
+
+    setStartAndEndTime("21:00", "07:00")
+    setNow(FLIP_TIME_5) // Friday 6am
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY))
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertTrue(isWithinScheduledPreferenceTime)
+    // Remove Friday as an update day
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY))
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertFalse(isWithinScheduledPreferenceTime)
+
+    setStartAndEndTime("09:30", "16:30")
+    setNow(TIME_4) // Tuesday 6pm
+    setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY))
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertFalse(isWithinScheduledPreferenceTime)
+
+    setNow(TIME_3) // Sunday 10am
+    isWithinScheduledPreferenceTime = alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()
+    assertFalse(isWithinScheduledPreferenceTime)
+  }
 }
