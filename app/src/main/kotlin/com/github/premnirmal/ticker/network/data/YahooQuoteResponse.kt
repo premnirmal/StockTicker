@@ -25,6 +25,18 @@ data class YahooQuoteNet(
   val longName: String?,
   @SerializedName("gmtOffSetMilliseconds")
   val gmtOffSetMilliseconds: Long,
+  @SerializedName("postMarketChangePercent")
+  val postMarketChangePercent: Float,
+  @SerializedName("postMarketChange")
+  val postMarketChange: Float,
+  @SerializedName("postMarketPrice")
+  val postMarketPrice: Float,
+  @SerializedName("preMarketChangePercent")
+  val preMarketChangePercent: Float,
+  @SerializedName("preMarketChange")
+  val preMarketChange: Float,
+  @SerializedName("preMarketPrice")
+  val preMarketPrice: Float,
   @SerializedName("regularMarketChange")
   val change: Float,
   @SerializedName("regularMarketChangePercent")

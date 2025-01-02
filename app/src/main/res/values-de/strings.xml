@@ -184,4 +184,7 @@
   <string name="error">Fehler</string>
   <string name="error_fetching_whats_new">Fehler beim Abrufen der neuen Funktionen</string>
   <string name="loading">Wird geladen</string>
-</resources>
+
+  <string name="market_state_open">Markt geöffnet:</string>
+  <string name="market_state_closed">Markt geschlossen:</string>
+  <string name="market_state_at_close">Am Ende:</string></resources>

@@ -66,20 +66,10 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
     val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
     totalValueText.text = quote.priceFormat.format(quote.lastTradePrice)
 
-    val change: Float = quote.change
-    val changePercent: Float = quote.changeInPercent
-    val color = when {
-      (change < 0f || changePercent < 0f) -> {
-        negativeColor
-      }
-      (change == 0f) -> {
-        neutralColor
-      }
-      else -> {
-        positiveColor
-      }
-    }
-    updateView(quote, color)
+    val othValueText = itemView.findViewById<TickerView>(R.id.othValue)
+    othValueText.text = quote.priceFormat.format(quote.othPrice)
+
+    updateView(quote, 1)
   }
 
   override fun onItemSelected() {
@@ -99,15 +89,50 @@ abstract class PortfolioVH(itemView: View) : RecyclerView.ViewHolder(itemView), 
       changeValueView.setCharacterLists(TickerUtils.provideNumberList())
       val totalValueText = itemView.findViewById<TickerView>(R.id.totalValue)
       totalValueText.setCharacterLists(TickerUtils.provideNumberList())
+
+      itemView.findViewById<TickerView>(R.id.othValue).setCharacterLists(TickerUtils.provideNumberList())
+      itemView.findViewById<TickerView>(R.id.othChangeValue).setCharacterLists(TickerUtils.provideNumberList())
+      itemView.findViewById<TickerView>(R.id.othChangePercent).setCharacterLists(TickerUtils.provideNumberList())
     }
 
     override fun updateView(quote: Quote, color: Int) {
-      val changeInPercentView = binding.changePercent
-      changeInPercentView.text = quote.changePercentStringWithSign()
-      val changeValueView = binding.changeValue
-      changeValueView.text = quote.changeStringWithSign()
-      changeInPercentView.setTextColor(color)
-      changeValueView.setTextColor(color)
+      val context = binding.rthText.context;
+      val rthColor = getColor(quote.change, quote.changeInPercent)
+      binding.changePercent.text = quote.changePercentStringWithSign()
+      binding.changePercent.textColor = rthColor
+      binding.changeValue.text = quote.changeStringWithSign()
+      binding.changeValue.textColor = rthColor
+
+      if (quote.isMarketOpen) {
+        binding.rthText.setText(context.getString(R.string.market_state_open))
+        binding.othText.setText("")
+        binding.othValue.setText("")
+        binding.othChangePercent.setText("")
+        binding.othChangeValue.setText("")
+      } else {
+        binding.rthText.setText(context.getString(R.string.market_state_at_close))
+        binding.othText.setText(context.getString(R.string.market_state_closed))
+
+        val othColor = getColor(quote.othChange, quote.othChangeInPercent)
+        binding.othChangePercent.text = quote.othChangePercentStringWithSign()
+        binding.othChangePercent.textColor = othColor
+        binding.othChangeValue.text = quote.othChangeStringWithSign()
+        binding.othChangeValue.textColor = othColor
+      }
+    }
+
+    fun getColor(valueChange: Float, percentChange: Float) : Int {
+      return when {
+        (valueChange < 0f || percentChange < 0f) -> {
+          negativeColor
+        }
+        (valueChange == 0f) -> {
+          neutralColor
+        }
+        else -> {
+          positiveColor
+        }
+      }
     }
   }
 
