@@ -263,6 +263,8 @@ dependencies {
   implementation(libs.javax.annotation.api)
 
   implementation(AndroidX.compose.ui.toolingPreview)
+  implementation(Google.dagger.hilt.android)
+  kapt(Google.dagger.hilt.compiler)
 
   implementation(Square.okHttp3)
   implementation(Square.okHttp3.loggingInterceptor)
@@ -298,6 +300,9 @@ dependencies {
   "prodImplementation"(Firebase.analytics)
 
   //  debugImplementation(Square.leakCanary.android)
+
+  testImplementation(Google.dagger.hilt.android.testing)
+  kaptTest(Google.dagger.hilt.compiler)
 
   testImplementation(Testing.junit4)
   testImplementation(Testing.assertj.core)
