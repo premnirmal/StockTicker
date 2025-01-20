@@ -4,10 +4,11 @@
 
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version = "2.51.1" }
 
 [versions]
 
-kotlin = "2.0.0"
+kotlin = "2.0.21"
 
 androidx-databinding = "8.7.3"
 
@@ -18,6 +19,9 @@ androidx-compose-material3 = "1.3.1"
 google-accompanist = "0.27.0"
 
 [libraries]
+hilt = { group = 'com.google.dagger', name = 'hilt-android', version = '2.51.1'}
+androidx-hilt = { group = 'androidx.hilt', name = 'hilt-navigation-compose', version = '1.2.0'}
+hilt-android-compiler = { group = 'com.google.dagger', name = 'hilt-compiler', version = '2.51.1' }
 
 android-device-provider-ddmlib = "com.android.tools.utp:android-device-provider-ddmlib:31.7.3"
 
@@ -80,3 +84,4 @@ kotlin-build-tools-impl = { module = "org.jetbrains.kotlin:kotlin-build-tools-im
 kotlin-parcelize-compiler = { group = "org.jetbrains.kotlin", name = "kotlin-parcelize-compiler", version.ref = "kotlin" }
 
 kotlin-annotation-processing-gradle = { group = "org.jetbrains.kotlin", name = "kotlin-annotation-processing-gradle", version.ref = "kotlin" }
+

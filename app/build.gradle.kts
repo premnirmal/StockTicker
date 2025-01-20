@@ -5,13 +5,13 @@ import java.util.Properties
 
 plugins {
   id("com.android.application")
-  id("dagger.hilt.android.plugin")
-  id("kotlin-android")
+  id("org.jetbrains.kotlin.android")
   id("kotlin-parcelize")
   id("com.google.gms.google-services")
   id("com.google.firebase.crashlytics")
   id("kotlin-kapt")
   alias(libs.plugins.compose.compiler)
+  alias(libs.plugins.dagger.hilt)
 }
 
 buildscript {
@@ -50,7 +50,7 @@ android {
       ByteArrayOutputStream().use { stdout ->
       exec {
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-          commandLine("cmd", "/c", "Powershell", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
+          commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
         } else {
           commandLine("sh", "-c", "git tag --sort=-committerdate | head -10 | tail -1")
         }
@@ -263,8 +263,6 @@ dependencies {
   implementation(libs.javax.annotation.api)
 
   implementation(AndroidX.compose.ui.toolingPreview)
-  implementation(Google.dagger.hilt.android)
-  kapt(Google.dagger.hilt.compiler)
 
   implementation(Square.okHttp3)
   implementation(Square.okHttp3.loggingInterceptor)
@@ -300,9 +298,6 @@ dependencies {
   "prodImplementation"(Firebase.analytics)
 
   //  debugImplementation(Square.leakCanary.android)
-
-  testImplementation(Google.dagger.hilt.android.testing)
-  kaptTest(Google.dagger.hilt.compiler)
 
   testImplementation(Testing.junit4)
   testImplementation(Testing.assertj.core)

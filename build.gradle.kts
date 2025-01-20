@@ -17,5 +17,6 @@ buildscript {
 plugins {
   // Existing plugins
   alias(libs.plugins.compose.compiler) apply false
+  alias(libs.plugins.dagger.hilt) apply false
 }
 project.extra["preDexLibs"] = !project.hasProperty("disablePreDex")
