@@ -18,5 +18,6 @@ plugins {
   // Existing plugins
   alias(libs.plugins.compose.compiler) apply false
   alias(libs.plugins.dagger.hilt) apply false
+  alias(libs.plugins.com.google.devtools.ksp) apply false
 }
 project.extra["preDexLibs"] = !project.hasProperty("disablePreDex")

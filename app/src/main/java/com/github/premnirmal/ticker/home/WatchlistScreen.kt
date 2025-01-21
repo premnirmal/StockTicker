@@ -1,10 +1,8 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -143,22 +141,19 @@ fun WatchlistScreen(
  * The content for the list pane.
  */
 @OptIn(
-    ExperimentalFoundationApi::class,
     ExperimentalPagerApi::class,
     ExperimentalMaterial3Api::class
 )
 @Composable
 private fun WatchlistContent(
   modifier: Modifier = Modifier,
-  viewModel: HomeViewModel = hiltViewModel(LocalContext.current as ComponentActivity),
+  viewModel: HomeViewModel = hiltViewModel(),
   onQuoteClick: (Quote) -> Unit,
 ) {
   viewModel.fetchPortfolioInRealTime()
   val hasWidgets = viewModel.hasWidget.collectAsState(initial = false)
   val widgets = viewModel.widgets.collectAsState(emptyList())
-  val pagerState = rememberPagerState(
-      pageCount = widgets.value.size
-  )
+  val pagerState = rememberPagerState()
   val tabIndex = pagerState.currentPage
   val coroutineScope = rememberCoroutineScope()
   Column(modifier = modifier) {
@@ -197,7 +192,8 @@ private fun WatchlistContent(
     if (widgets.value.isNotEmpty()) {
       HorizontalPager(
           modifier = Modifier.fillMaxWidth(),
-          state = pagerState
+          state = pagerState,
+          count = widgets.value.size
       ) { i ->
         val widget = widgets.value[i]
         val quotes = widget.stocks.collectAsState(initial = emptyList())

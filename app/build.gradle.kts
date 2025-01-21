@@ -9,9 +9,9 @@ plugins {
   id("kotlin-parcelize")
   id("com.google.gms.google-services")
   id("com.google.firebase.crashlytics")
-  id("kotlin-kapt")
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.dagger.hilt)
+  alias(libs.plugins.com.google.devtools.ksp)
 }
 
 buildscript {
@@ -48,31 +48,20 @@ android {
   val getOldGitVersion = { ->
     try {
       ByteArrayOutputStream().use { stdout ->
-      exec {
-        if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-          commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
-        } else {
-          commandLine("sh", "-c", "git tag --sort=-committerdate | head -10 | tail -1")
+        exec {
+          if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+            commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
+          } else {
+            commandLine("sh", "-c", "git tag --sort=-committerdate | head -10 | tail -1")
+          }
+          standardOutput = stdout
         }
-        standardOutput = stdout
+        stdout.toString().trim()
       }
-      stdout.toString().trim()
-        }
     } catch (e: Exception) {
+      println(e.message)
+      println(e.stackTrace)
       "1.0"
-    }
-  }
-
-  class RoomSchemaArgProvider(
-    @get:InputDirectory
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    val schemaDir: File
-  ) : CommandLineArgumentProvider {
-
-    override fun asArguments(): Iterable<String> {
-      // Note: If you're using KAPT and javac, change the line below to
-      // return listOf("-Aroom.schemaLocation=${schemaDir.path}").
-      return listOf("room.schemaLocation=${schemaDir.path}")
     }
   }
 
@@ -104,19 +93,9 @@ android {
 
     buildConfigField("String", "PREVIOUS_VERSION", "\"$oldGitVersion\"")
 
-    javaCompileOptions {
-      annotationProcessorOptions {
-        compilerArgumentProviders(
-          RoomSchemaArgProvider(File(projectDir, "schemas"))
-        )
-      }
-    }
-
-    kapt {
-      arguments {
-        arg("room.schemaLocation", "$projectDir/schemas")
-      }
-    }
+    // room {
+    //   schemaDirectory("$projectDir/schemas")
+    // }
   }
   // resources.sourceSets["test"].resources {
   //   srcDirs("src/test/resources")
@@ -221,10 +200,6 @@ android {
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_17.toString()
   }
-  // Allow references to generated code
-  kapt {
-    correctErrorTypes = true
-  }
 }
 
 dependencies {
@@ -263,8 +238,9 @@ dependencies {
   implementation(libs.javax.annotation.api)
 
   implementation(AndroidX.compose.ui.toolingPreview)
-  implementation(Google.dagger.hilt.android)
-  kapt(Google.dagger.hilt.compiler)
+  implementation(libs.hilt)
+  implementation(libs.androidx.hilt)
+  ksp(libs.hilt.android.compiler)
 
   implementation(Square.okHttp3)
   implementation(Square.okHttp3.loggingInterceptor)
@@ -287,9 +263,9 @@ dependencies {
   implementation(JakeWharton.timber)
   implementation(libs.mpandroidchart)
 
-  implementation(AndroidX.room.runtime)
-  kapt(AndroidX.room.compiler)
-  implementation(AndroidX.room.ktx)
+  implementation(libs.room.runtime)
+  implementation(libs.room.ktx)
+  ksp(libs.room.compiler)
 
   "prodImplementation"(Google.android.play.review)
   "prodImplementation"(Google.android.play.reviewKtx)
@@ -302,7 +278,7 @@ dependencies {
   //  debugImplementation(Square.leakCanary.android)
 
   testImplementation(Google.dagger.hilt.android.testing)
-  kaptTest(Google.dagger.hilt.compiler)
+  kspTest(libs.hilt.android.compiler)
 
   testImplementation(Testing.junit4)
   testImplementation(Testing.assertj.core)
@@ -315,7 +291,7 @@ dependencies {
   testImplementation(Testing.mockito.core)
   testImplementation(Testing.mockito.kotlin)
   testImplementation(KotlinX.coroutines.test)
-  testImplementation(AndroidX.room.testing)
+  testImplementation(libs.room.testing)
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation(libs.opengl.api)
