@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "45b75fdf305f231f5130e6f3779db5ad",
+    "identityHash": "a9411595d733a02f3a0d29b7aba56959",
     "entities": [
       {
         "tableName": "QuoteRow",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`symbol` TEXT NOT NULL, `name` TEXT NOT NULL, `last_trade_price` REAL NOT NULL, `change_percent` REAL NOT NULL, `change` REAL NOT NULL, `exchange` TEXT NOT NULL, `currency` TEXT NOT NULL, `is_post_market` INTEGER NOT NULL, `annual_dividend_rate` REAL NOT NULL, `annual_dividend_yield` REAL NOT NULL, `dayHigh` REAL, `dayLow` REAL, `previousClose` REAL NOT NULL, `open` REAL, `regularMarketVolume` REAL, `peRatio` REAL, `fiftyTwoWeekLowChange` REAL, `fiftyTwoWeekLowChangePercent` REAL, `fiftyTwoWeekHighChange` REAL, `fiftyTwoWeekHighChangePercent` REAL, `fiftyTwoWeekLow` REAL, `fiftyTwoWeekHigh` REAL, `dividendDate` REAL, `earningsDate` REAL, `marketCap` REAL, `isTradeable` INTEGER, `isTriggerable` INTEGER, `marketState` TEXT, `fiftyDayAverage` REAL, `twoHundredDayAverage` REAL, PRIMARY KEY(`symbol`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`symbol` TEXT NOT NULL, `name` TEXT NOT NULL, `last_trade_price` REAL NOT NULL, `change_percent` REAL NOT NULL, `change` REAL NOT NULL, `exchange` TEXT NOT NULL, `currency` TEXT NOT NULL, `is_post_market` INTEGER NOT NULL, `annual_dividend_rate` REAL NOT NULL, `annual_dividend_yield` REAL NOT NULL, `dayHigh` REAL, `dayLow` REAL, `previousClose` REAL NOT NULL, `open` REAL, `regularMarketVolume` REAL, `peRatio` REAL, `fiftyTwoWeekLowChange` REAL, `fiftyTwoWeekLowChangePercent` REAL, `fiftyTwoWeekHighChange` REAL, `fiftyTwoWeekHighChangePercent` REAL, `fiftyTwoWeekLow` REAL, `fiftyTwoWeekHigh` REAL, `dividendDate` REAL, `earningsDate` REAL, `marketCap` REAL, `isTradeable` INTEGER, `isTriggerable` INTEGER, `marketState` TEXT, PRIMARY KEY(`symbol`))",
         "fields": [
           {
             "fieldPath": "symbol",
@@ -175,25 +175,13 @@
             "columnName": "marketState",
             "affinity": "TEXT",
             "notNull": false
-          },
-          {
-            "fieldPath": "fiftyDayAverage",
-            "columnName": "fiftyDayAverage",
-            "affinity": "REAL",
-            "notNull": false
-          },
-          {
-            "fieldPath": "twoHundredDayAverage",
-            "columnName": "twoHundredDayAverage",
-            "affinity": "REAL",
-            "notNull": false
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
           "columnNames": [
             "symbol"
-          ]
+          ],
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -228,10 +216,10 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
           "columnNames": [
             "id"
-          ]
+          ],
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -272,10 +260,10 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
           "columnNames": [
             "id"
-          ]
+          ],
+          "autoGenerate": true
         },
         "indices": [],
         "foreignKeys": []
@@ -284,7 +272,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '45b75fdf305f231f5130e6f3779db5ad')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a9411595d733a02f3a0d29b7aba56959')"
     ]
   }
 }
