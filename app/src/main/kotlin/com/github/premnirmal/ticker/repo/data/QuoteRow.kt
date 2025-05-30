@@ -33,5 +33,7 @@ data class QuoteRow(
   @ColumnInfo(name = "marketCap") val marketCap: Float?,
   @ColumnInfo(name = "isTradeable") val isTradeable: Boolean?,
   @ColumnInfo(name = "isTriggerable") val isTriggerable: Boolean?,
-  @ColumnInfo(name = "marketState") val marketState: String?
+  @ColumnInfo(name = "marketState") val marketState: String?,
+  @ColumnInfo(name = "fiftyDayAverage") val fiftyDayAverage: Float?,
+  @ColumnInfo(name = "twoHundredDayAverage") val twoHundredDayAverage: Float?,
 )

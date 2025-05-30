@@ -83,6 +83,26 @@ class QuoteDetailViewModel @Inject constructor(
             )
         )
       }
+      quote.fiftyDayAverage?.let {
+        if (it > 0f) {
+          details.add(
+            QuoteDetail(
+              R.string.quote_details_fifty_day_average,
+              it.format()
+            )
+          )
+        }
+      }
+      quote.twoHundredDayAverage?.let {
+        if (it > 0f) {
+          details.add(
+            QuoteDetail(
+              R.string.quote_details_two_hundred_day_average,
+              it.format()
+            )
+          )
+        }
+      }
       if (quote.fiftyTwoWeekLow != null && quote.fiftyTwoWeekHigh != null) {
         details.add(
             QuoteDetail(

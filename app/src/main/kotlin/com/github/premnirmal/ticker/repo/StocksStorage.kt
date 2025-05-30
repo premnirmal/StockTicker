@@ -134,7 +134,9 @@ class StocksStorage @Inject constructor(
         this.marketCap?.toFloat(),
         this.tradeable,
         this.triggerable,
-        this.marketState
+        this.marketState,
+        this.fiftyDayAverage,
+        this.twoHundredDayAverage
     )
   }
 
@@ -183,6 +185,8 @@ class StocksStorage @Inject constructor(
     quote.tradeable = this.isTradeable ?: false
     quote.triggerable = this.isTriggerable ?: false
     quote.marketState = this.marketState ?: ""
+    quote.fiftyDayAverage = this.fiftyDayAverage
+    quote.twoHundredDayAverage = this.twoHundredDayAverage
     return quote
   }
 

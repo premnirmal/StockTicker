@@ -216,6 +216,8 @@
   <string name="quote_details_profit_margins">Profit Margins</string>
   <string name="quote_details_revenue_growth">Revenue Growth</string>
   <string name="quote_details_earnings_growth">Earnings Growth</string>
+  <string name="quote_details_fifty_day_average">50 Day Average</string>
+  <string name="quote_details_two_hundred_day_average">200 Day Average</string>
   <string name="date_format_long">MMM dd, yyyy</string>
   <string name="number_format_thousands">%1$.2fK</string>
   <string name="number_format_millions">%1$.2fM</string>

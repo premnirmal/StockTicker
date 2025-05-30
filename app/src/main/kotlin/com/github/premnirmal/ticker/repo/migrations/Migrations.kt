@@ -96,3 +96,11 @@ val MIGRATION_5_6 = object : Migration(5, 6) {
     database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `marketState` TEXT;")
   }
 }
+
+val MIGRATION_6_7 = object : Migration(6, 7) {
+  override fun migrate(database: SupportSQLiteDatabase) {
+    val tableName = "QuoteRow"
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `fiftyDayAverage` REAL;")
+    database.execSQL("ALTER TABLE `$tableName` ADD COLUMN `twoHundredDayAverage` REAL;")
+  }
+}
