@@ -53,7 +53,7 @@ class NewsFeedFragment : BaseFragment<FragmentNewsFeedBinding>(), ChildFragment,
     adapter = TrendingAdapter(this)
     binding.recyclerView.layoutManager = LinearLayoutManager(activity)
     binding.recyclerView.addItemDecoration(
-        SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing_double))
+        SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing))
     )
     binding.recyclerView.adapter = adapter
     binding.swipeContainer.setOnRefreshListener { refreshNews() }

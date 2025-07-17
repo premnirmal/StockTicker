@@ -231,6 +231,10 @@
     <item name="android:textAllCaps">false</item>
   </style>
 
+  <style name="TextAppearance.StocksWidget.TickerBoldSmall" parent="TextAppearance.StocksWidget.BodySmall">
+    <item name="android:textStyle">bold</item>
+  </style>
+
   <style name="TextAppearance.StocksWidget.TickerBold" parent="TextAppearance.StocksWidget.BodyMedium">
     <item name="android:textStyle">bold</item>
   </style>

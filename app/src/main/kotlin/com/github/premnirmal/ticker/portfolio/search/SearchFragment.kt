@@ -97,7 +97,7 @@ class SearchFragment : BaseFragment<FragmentSearchBinding>(), ChildFragment, Sug
     }
     binding.trendingRecyclerView?.layoutManager = GridLayoutManager(activity, 3)
     binding.trendingRecyclerView?.addItemDecoration(
-      SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing_double))
+      SpacingDecoration(requireContext().resources.getDimensionPixelSize(dimen.list_spacing))
     )
     binding.trendingRecyclerView?.adapter = trendingAdapter
 

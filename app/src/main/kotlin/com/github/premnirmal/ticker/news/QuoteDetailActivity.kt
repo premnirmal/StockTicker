@@ -99,7 +99,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     adapter = TrendingAdapter(this)
     binding.recyclerView.layoutManager = LinearLayoutManager(this)
     binding.recyclerView.addItemDecoration(
-        SpacingDecoration(resources.getDimensionPixelSize(R.dimen.list_spacing_double))
+        SpacingDecoration(resources.getDimensionPixelSize(R.dimen.list_spacing))
     )
     binding.recyclerView.adapter = adapter
     binding.recyclerView.isNestedScrollingEnabled = false

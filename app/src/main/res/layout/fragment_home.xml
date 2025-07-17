@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     >
 
   <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -36,7 +37,7 @@
 
       <ImageView
           android:layout_width="match_parent"
-          android:layout_height="180dp"
+          android:layout_height="190dp"
           android:scaleType="centerCrop"
           android:src="@drawable/bg_header"
           android:alpha="0.75"
@@ -47,14 +48,14 @@
       <TextView
           android:id="@+id/subtitle"
           android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:gravity="center_vertical"
-          android:layout_marginTop="@dimen/activity_vertical_margin"
+          android:layout_height="wrap_content"
+          android:paddingTop="?attr/actionBarSize"
           android:layout_marginStart="16dp"
           android:textColor="?attr/colorOnSurface"
-          android:textSize="@dimen/text_size"
+          android:textSize="@dimen/header_subtext_size"
           app:layout_collapseMode="parallax"
           app:layout_collapseParallaxMultiplier="1.0"
+          tools:text="Last Fetch: 20:00"
           />
 
       <com.google.android.material.tabs.TabLayout

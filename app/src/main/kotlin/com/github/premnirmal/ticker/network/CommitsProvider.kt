@@ -51,7 +51,7 @@ class CommitsProvider @Inject constructor(
               it.commit.message.contains("Vcode++") || it.commit.message.contains("vcode++")
             }.map { commit ->
               commit.commit.message.replace("\n", "").replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-            }
+            }.take(7)
         )
       } else FetchResult.failure(error)
     }
