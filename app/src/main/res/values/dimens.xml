@@ -13,13 +13,13 @@
   <dimen name="button_text">11sp</dimen>
   <dimen name="graph_bottom_offset">8dp</dimen>
 
-  <integer name="text_size_small">10</integer>
-  <integer name="text_size_medium">12</integer>
+  <integer name="text_size_small">12</integer>
+  <integer name="text_size_medium">14</integer>
   <integer name="text_size_large">16</integer>
 
   <dimen name="list_spacing">3dp</dimen>
 
-  <dimen name="portfolio_stock_vh_text_size">12sp</dimen>
+  <dimen name="portfolio_stock_vh_text_size">14sp</dimen>
   <dimen name="portfolio_stock_vh_name_text_size">11sp</dimen>
   <dimen name="portfolio_position_vh_text_size">11sp</dimen>
   <dimen name="portfolio_position_vh_value_text_size">10sp</dimen>

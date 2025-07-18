@@ -43,10 +43,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(), ChildFragment, Portfol
         R.string.last_and_next_fetch, viewModel.lastFetched(), viewModel.nextFetch()
     )
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-      }
-
   @SuppressLint("RestrictedApi")
   override fun onViewCreated(
     view: View,

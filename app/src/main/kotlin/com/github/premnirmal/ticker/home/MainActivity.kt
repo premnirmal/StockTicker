@@ -5,6 +5,7 @@ import android.os.Build.VERSION
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
@@ -20,6 +21,7 @@ import com.github.premnirmal.ticker.news.NewsFeedFragment
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.portfolio.search.SearchFragment
 import com.github.premnirmal.ticker.settings.SettingsParentFragment
+import com.github.premnirmal.ticker.showBottomSheet
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.viewBinding
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -109,16 +111,16 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
     if (VERSION.SDK_INT >= 33 && appPreferences.notificationAlerts() && !hasNotificationPermission()) {
       requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
-    viewModel.showTutorial.observe(this) {
-      if (it == true) {
-        showTutorial()
-        viewModel.resetShowTutorial()
-      }
-    }
     viewModel.showWhatsNew.observe(this) {
       if (it == true) {
         showWhatsNew()
         viewModel.resetShowWhatsNew()
+      }
+    }
+    viewModel.showTutorial.observe(this) {
+      if (it == true) {
+        showTutorial()
+        viewModel.resetShowTutorial()
       }
     }
     viewModel.openSearchWidgetId.observe(this) {
@@ -193,7 +195,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
   }
 
   private fun showWhatsNew() {
-    val dialog = showDialog(
+    val dialog = showBottomSheet(
         getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
         getString(R.string.loading)
     )
@@ -201,10 +203,10 @@ class MainActivity : BaseActivity<ActivityMainBinding>() {
       commitsProvider.fetchWhatsNew().apply {
         if (wasSuccessful) {
           val whatsNew = data.joinToString("\n\u25CF ", "\u25CF ")
-          dialog.setMessage(whatsNew)
+          dialog.findViewById<TextView>(R.id.message)?.text = whatsNew
           appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
         } else {
-          dialog.setMessage("${getString(R.string.error_fetching_whats_new)}\n\n :( ${error.message.orEmpty()}")
+          dialog.findViewById<TextView>(R.id.message)?.text = "${getString(R.string.error_fetching_whats_new)}\n\n :( ${error.message.orEmpty()}"
         }
       }
     }
