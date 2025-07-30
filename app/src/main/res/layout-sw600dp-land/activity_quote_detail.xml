@@ -575,7 +575,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notes_container"
+            app:layout_constraintTop_toBottomOf="@id/displayname_container"
             android:textAppearance="@style/TextAppearance.StocksWidget.BodyLightMedium"
             style="@style/Widget.StocksWidget.TextView.BodyLightMedium"
             android:layout_marginTop="8dp"
