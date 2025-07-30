@@ -511,6 +511,58 @@
             />
 
       </LinearLayout>
+        
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/displayname_header"
+          android:layout_marginBottom="8dp"
+          android:layout_marginEnd="16dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="8dp"
+          android:orientation="horizontal"
+          >
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/displayname"
+            style="@style/Widget.StocksWidget.TextView.LabelMedium"
+	android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
+            />
+
+        <ImageView
+            android:id="@+id/edit_displayname"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_edit"
+            />
+
+      </LinearLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/displayname_container"
+          android:visibility="gone"
+          android:layout_margin="8dp"
+          android:orientation="vertical"
+          >
+
+        <TextView
+            android:id="@+id/displayname_display"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            />
+
+      </LinearLayout>
 
       <TextView
           android:id="@+id/description"

@@ -180,6 +180,7 @@
   <string name="discovered_db">You have discovered the secret entrance to the DB viewer</string>
   <string name="db_tap_count">Tap %1$d more times to unlock the DB viewer</string>
   <string name="notes">Notes</string>
+  <string name="displayname">Display Name</string>
   <string name="alerts">Alerts</string>
   <string name="alert_above">Alert Above</string>
   <string name="alert_below">Alert Below</string>
@@ -192,6 +193,7 @@
   <string name="alert_dismiss">Dismiss</string>
   <string name="alerts_disabled">Alerts disabled, check settings</string>
   <string name="add_notes">Add Notes</string>
+  <string name="add_displayname">Add Display Name</string>
   <string name="add_alerts">Alerts</string>
   <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
   <string name="save">Save</string>
