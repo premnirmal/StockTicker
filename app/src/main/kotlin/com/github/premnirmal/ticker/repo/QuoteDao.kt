@@ -89,7 +89,7 @@ interface QuoteDao {
     if (propertiesRow.quoteSymbol.isNotEmpty()) {
       deletePropertiesByQuoteId(propertiesRow.quoteSymbol)
     }
-    if (propertiesRow.notes.isNotEmpty() || propertiesRow.alertAbove > 0.0f || propertiesRow.alertBelow > 0.0f) {
+    if (propertiesRow.notes.isNotEmpty() || propertiesRow.displayname.isNotEmpty() || propertiesRow.alertAbove > 0.0f || propertiesRow.alertBelow > 0.0f) {
       insertProperties(propertiesRow)
     }
   }

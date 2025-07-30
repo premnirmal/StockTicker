@@ -21,6 +21,7 @@ import com.github.premnirmal.ticker.repo.migrations.MIGRATION_3_4
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_4_5
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_5_6
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_6_7
+import com.github.premnirmal.ticker.repo.migrations.MIGRATION_7_8
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,6 +67,7 @@ class AppModule {
         .addMigrations(MIGRATION_4_5)
         .addMigrations(MIGRATION_5_6)
         .addMigrations(MIGRATION_6_7)
+        .addMigrations(MIGRATION_7_8)
         .build()
   }
 

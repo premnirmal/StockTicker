@@ -9,6 +9,7 @@ data class PropertiesRow(
   @PrimaryKey(autoGenerate = true) var id: Long? = null,
   @ColumnInfo(name = "properties_quote_symbol") val quoteSymbol: String,
   @ColumnInfo(name = "notes") val notes: String = "",
+  @ColumnInfo(name = "displayname") val displayname: String = "",
   @ColumnInfo(name = "alert_above") val alertAbove: Float = 0.0f,
   @ColumnInfo(name = "alert_below") val alertBelow: Float = 0.0f
 )

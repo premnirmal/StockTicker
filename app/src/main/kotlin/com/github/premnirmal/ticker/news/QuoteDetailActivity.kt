@@ -35,6 +35,7 @@ import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
 import com.github.premnirmal.ticker.portfolio.AddNotesActivity
+import com.github.premnirmal.ticker.portfolio.AddDisplaynameActivity
 import com.github.premnirmal.ticker.portfolio.AddPositionActivity
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SpacingDecoration
@@ -56,6 +57,7 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     private const val REQ_EDIT_POSITIONS = 10001
     private const val REQ_EDIT_NOTES = 10002
     private const val REQ_EDIT_ALERTS = 10003
+    private const val REQ_EDIT_DISPLAYNAME = 10004
     private const val INDEX_PROGRESS = 0
     private const val INDEX_ERROR = 1
     private const val INDEX_EMPTY = 2
@@ -200,6 +202,13 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
       notesOnClickListener()
     }
 
+    binding.displaynameHeader.setOnClickListener {
+      displaynameOnClickListener()
+    }
+    binding.displaynameContainer.setOnClickListener {
+      displaynameOnClickListener()
+    }
+
     binding.alertHeader.setOnClickListener {
       alertsOnClickListener()
     }
@@ -292,6 +301,15 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
     startActivityForResult(intent, REQ_EDIT_NOTES)
   }
 
+  private fun displaynameOnClickListener() {
+    analytics.trackClickEvent(
+        ClickEvent("EditDisplaynameClick")
+    )
+    val intent = Intent(this, AddDisplaynameActivity::class.java)
+    intent.putExtra(AddDisplaynameActivity.TICKER, quote.symbol)
+    startActivityForResult(intent, REQ_EDIT_DISPLAYNAME)
+  }
+
   private fun alertsOnClickListener() {
     analytics.trackClickEvent(
         ClickEvent("EditAlertsClick")
@@ -333,6 +351,11 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
         viewModel.loadQuote(ticker)
       }
     }
+    if (requestCode == REQ_EDIT_DISPLAYNAME) {
+      if (resultCode == Activity.RESULT_OK) {
+        viewModel.loadQuote(ticker)
+      }
+    }
     super.onActivityResult(requestCode, resultCode, data)
   }
 
@@ -363,6 +386,8 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
       binding.positionsHeader.visibility = View.VISIBLE
       binding.notesHeader.visibility = View.VISIBLE
       binding.notesContainer.visibility = View.VISIBLE
+      binding.displaynameHeader.visibility = View.VISIBLE
+      binding.displaynameContainer.visibility = View.VISIBLE
       binding.alertHeader.visibility = View.VISIBLE
       binding.numShares.text = quote.numSharesString()
       binding.equityValue.text = quote.priceFormat.format(quote.holdings())
@@ -372,6 +397,13 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
         binding.notesDisplay.text = "--"
       } else {
         binding.notesDisplay.text = notesText
+      }
+      val displaynameText = quote.properties?.displayname
+      binding.displaynameContainer.visibility = View.VISIBLE
+      if (displaynameText.isNullOrEmpty()) {
+        binding.displaynameDisplay.text = quote.symbol
+      } else {
+        binding.displaynameDisplay.text = displaynameText
       }
       val alertAbove = quote.getAlertAbove()
       val alertBelow = quote.getAlertBelow()
@@ -420,6 +452,8 @@ class QuoteDetailActivity : BaseGraphActivity<ActivityQuoteDetailBinding>(), Tre
       binding.positionsContainer.visibility = View.GONE
       binding.notesHeader.visibility = View.GONE
       binding.notesContainer.visibility = View.GONE
+      binding.displaynameHeader.visibility = View.GONE
+      binding.displaynameContainer.visibility = View.GONE
       binding.alertHeader.visibility = View.GONE
       binding.alertsContainer.visibility = View.GONE
     }
