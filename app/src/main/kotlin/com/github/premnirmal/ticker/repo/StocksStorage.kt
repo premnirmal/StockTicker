@@ -192,11 +192,12 @@ class StocksStorage @Inject constructor(
 
   private fun PropertiesRow.toProperties(): Properties {
     return Properties(
-        this.quoteSymbol, this.notes, this.alertAbove, this.alertBelow
+        this.quoteSymbol, this.notes, this.displayname, this.alertAbove, this.alertBelow
     )
   }
 
   private fun Properties.toPropertiesRow(): PropertiesRow {
-    return PropertiesRow(this.id, this.symbol, this.notes, this.alertAbove, this.alertBelow)
+    return PropertiesRow(this.id, this.symbol, this.notes, this.displayname, this.alertAbove, this.alertBelow)
   }
 }
+

@@ -7,6 +7,7 @@ import kotlinx.android.parcel.Parcelize
 data class Properties(
   val symbol: String,
   var notes: String = "",
+  var displayname: String = "",
   var alertAbove: Float = 0.0f,
   var alertBelow: Float = 0.0f,
   var id: Long? = null
