@@ -7,12 +7,6 @@
 
   <style name="StocksWidget.App.Theme" parent="AppThemeV21"/>
 
-  <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowBackground">@android:color/transparent</item>
-    <item name="android:colorBackgroundCacheHint">@null</item>
-    <item name="android:windowShowWallpaper">true</item>
-  </style>
-
   <style name="SplashTheme" parent="TranslucentTheme">
     <item name="android:windowBackground">@drawable/bg_splash</item>
     <item name="android:navigationBarColor">@color/transparent</item>

@@ -4,7 +4,11 @@ If you would like to contribute code you can do so through GitHub by forking the
 
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
 
-The code style used is the [Square Android Code Style](https://github.com/square/java-code-styles)
+Use detekt to make sure your code follows the Kotlin style guide. You can run it with the command:
+
+```bash
+./gradlew [detekt](https://detekt.dev/) --auto-correct
+```
 
 ## License
 

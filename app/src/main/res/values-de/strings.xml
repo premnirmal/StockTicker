@@ -152,7 +152,7 @@
   <string name="three_month_short">3M</string>
   <string name="one_year_short">1Y</string>
   <string name="five_years_short">5Y</string>
-  <string name="max">Max</string>
+  <string name="max">∞</string>
   <string name="error_loading_graph">Fehler beim Laden des Diagramms</string>
   <string name="widgets">Widgets</string>
   <string name="tutorial">Lernprogramm</string>

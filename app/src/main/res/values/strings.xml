@@ -32,7 +32,7 @@
   <string name="action_feed">Trending</string>
   <string name="action_settings">Settings</string>
   <string name="app_settings">Settings</string>
-  <string name="news_feed">Trending</string>
+  <string name="news_feed">News</string>
   <string name="trending_stocks">Trending stocks</string>
   <string name="action_Settings">Widget Settings</string>
   <string name="action_rearrage">Rearrange stocks</string>
@@ -170,7 +170,7 @@
   <string name="three_month_short">3M</string>
   <string name="one_year_short">1Y</string>
   <string name="five_years_short">5Y</string>
-  <string name="max">Max</string>
+  <string name="max">∞</string>
   <string name="error_loading_graph">Error loading graph</string>
   <string name="widgets">Widgets</string>
   <string name="tutorial">Tutorial</string>

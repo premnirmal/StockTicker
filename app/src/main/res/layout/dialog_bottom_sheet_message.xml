@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    >
+
+  <TextView
+      android:id="@+id/title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      style="@style/Widget.StocksWidget.TextView.TitleMedium"
+      android:textAppearance="@style/TextAppearance.StocksWidget.TitleMedium"
+      android:gravity="center"
+      tools:text="Alert"
+      />
+
+  <TextView
+      android:id="@+id/message"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/title"
+      style="@style/Widget.StocksWidget.TextView.BodyMedium"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      android:textAppearance="@style/TextAppearance.StocksWidget.BodyMedium"
+      android:gravity="center"
+      tools:text="Message"
+      />
+
+  <Button
+      android:id="@+id/action"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/message"
+      app:layout_constraintBottom_toBottomOf="parent"
+      style="@style/ButtonStyle"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      android:gravity="center"
+      tools:text="OK"
+      />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
