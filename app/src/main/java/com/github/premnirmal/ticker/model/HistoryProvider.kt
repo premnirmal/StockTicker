@@ -1,5 +1,8 @@
 package com.github.premnirmal.ticker.model
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.FIVE_YEARS
 import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.MAX
 import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_DAY
@@ -9,6 +12,7 @@ import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.THREE_
 import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.TWO_WEEKS
 import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.data.DataPoint
+import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.threeten.bp.Duration
@@ -24,14 +28,20 @@ class HistoryProvider @Inject constructor(
     private val chartApi: ChartApi
 ) {
 
-    private var cachedData: WeakReference<Pair<String, List<DataPoint>>>? = null
+    private var cachedData: WeakReference<Pair<String, ChartData>>? = null
 
-    suspend fun fetchDataShort(symbol: String): FetchResult<List<DataPoint>> = withContext(Dispatchers.IO) {
-        val dataPoints = try {
-            if (symbol == cachedData?.get()?.first) {
-                cachedData!!.get()!!.second.filter {
+    suspend fun fetchDataShort(symbol: String): FetchResult<ChartData> = withContext(Dispatchers.IO) {
+        val chartData = try {
+            val cached = cachedData?.get()
+            if (symbol == cached?.first) {
+                val dataPoints = cached.second.dataPoints.filter {
                     it.getDate().isAfter(Range.ONE_DAY.end)
                 }.toMutableList().sorted()
+                ChartData(
+                    chartPreviousClose = cached.second.chartPreviousClose,
+                    regularMarketPrice = cached.second.regularMarketPrice,
+                    dataPoints = dataPoints
+                )
             } else {
                 val fetchDataByRange = fetchDataByRange(symbol, Range.ONE_DAY)
                 if (fetchDataByRange.wasSuccessful) {
@@ -48,14 +58,14 @@ class HistoryProvider @Inject constructor(
                 FetchException("Error fetching datapoints", ex)
             )
         }
-        return@withContext FetchResult.success(dataPoints)
+        return@withContext FetchResult.success(chartData)
     }
 
     suspend fun fetchDataByRange(
         symbol: String,
         range: Range
-    ): FetchResult<List<DataPoint>> = withContext(Dispatchers.IO) {
-        val dataPoints = try {
+    ): FetchResult<ChartData> = withContext(Dispatchers.IO) {
+        val chartData = try {
             val historicalData =
                 chartApi.fetchChartData(
                     symbol = symbol,
@@ -63,7 +73,9 @@ class HistoryProvider @Inject constructor(
                     range = range.rangeParam()
                 )
             with(historicalData.chart.result.first()) {
-                timestamp.mapIndexed { i, stamp ->
+                val chartPreviousClose = meta.chartPreviousClose.toFloat()
+                val regularMarketPrice = meta.regularMarketPrice.toFloat()
+                val dataPoints = timestamp.mapIndexed { i, stamp ->
                     val dataQuote = indicators.quote.first()
                     if (dataQuote.high[i] === null ||
                         dataQuote.low[i] === null ||
@@ -80,15 +92,20 @@ class HistoryProvider @Inject constructor(
                             dataQuote.close[i]!!.toFloat()
                         )
                     }
-                }.filterNotNull()
-            }.toMutableList().sorted()
+                    }.filterNotNull().sorted()
+                ChartData(
+                    chartPreviousClose = chartPreviousClose,
+                    regularMarketPrice = regularMarketPrice,
+                    dataPoints = dataPoints
+                )
+            }
         } catch (ex: Exception) {
             Timber.w(ex)
             return@withContext FetchResult.failure(
                 FetchException("Error fetching datapoints", ex)
             )
         }
-        return@withContext FetchResult.success(dataPoints)
+        return@withContext FetchResult.success(chartData)
     }
 
     private fun Range.intervalParam(): String {
@@ -109,6 +126,48 @@ class HistoryProvider @Inject constructor(
             FIVE_YEARS -> "5y"
             MAX -> "max"
             else -> "max"
+        }
+    }
+
+    data class ChartData(
+        val chartPreviousClose: Float,
+        val regularMarketPrice: Float,
+        val dataPoints: List<DataPoint>,
+    ) {
+        val change: Float
+            get() = regularMarketPrice - chartPreviousClose
+
+        val changeInPercent: Float
+            get() = (regularMarketPrice - chartPreviousClose) / chartPreviousClose * 100f
+
+        val isUp: Boolean
+            get() = change > 0f
+
+        val isDown: Boolean
+            get() = change < 0f
+
+        val changeColour: Color
+            @Composable get() = if (isUp) ColourPalette.ChangePositive else ColourPalette.ChangeNegative
+
+        fun changeString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
+
+        fun changeStringWithSign(): String {
+            val changeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
+            if (change >= 0) {
+                return "+$changeString"
+            }
+            return changeString
+        }
+
+        fun changePercentString(): String =
+            "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
+
+        fun changePercentStringWithSign(): String {
+            val changeString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
+            if (changeInPercent >= 0) {
+                return "+$changeString"
+            }
+            return changeString
         }
     }
 

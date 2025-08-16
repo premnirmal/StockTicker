@@ -56,8 +56,8 @@ class QuoteDetailViewModel @Inject constructor(
     private val _quote = MutableSharedFlow<FetchResult<QuoteWithSummary>>()
     val quote: LiveData<FetchResult<QuoteWithSummary>>
         get() = _quote.asLiveData()
-    private val _data = MutableLiveData<List<DataPoint>>()
-    val data: LiveData<List<DataPoint>>
+    private val _data = MutableStateFlow<HistoryProvider.ChartData?>(null)
+    val data: StateFlow<HistoryProvider.ChartData?>
         get() = _data
     private val _dataFetchError = MutableLiveData<Throwable?>()
     val dataFetchError: LiveData<Throwable?>
@@ -343,7 +343,7 @@ class QuoteDetailViewModel @Inject constructor(
     fun reset() {
         fetchQuoteJob?.cancel()
         _newsData.value = emptyList()
-        _data.value = emptyList()
+        _data.value = null
         _quote.resetReplayCache()
         _dataFetchError.value = null
     }

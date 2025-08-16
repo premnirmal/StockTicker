@@ -66,6 +66,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineDataSet.Mode.CUBIC_BEZIER
 import com.github.premnirmal.ticker.model.FetchResult
+import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.DataPoint
@@ -144,6 +145,7 @@ private fun QuoteDetailContent(
     var showAddOrRemoveDialog by remember { mutableStateOf(false) }
     var isInPortfolio by remember(quote, quote.position) { mutableStateOf(viewModel.isInPortfolio(quote.symbol)) }
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val chartData by viewModel.data.collectAsStateWithLifecycle()
     Scaffold(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface),
@@ -180,7 +182,7 @@ private fun QuoteDetailContent(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    quoteInfo(quote, viewModel)
+                    quoteInfo(quote, chartData, viewModel)
                     quoteDetailsGrid(details)
                     quotePositionsNotesAlerts(quote, isInPortfolio)
                     quoteBackground(quoteDetail)
@@ -201,7 +203,7 @@ private fun QuoteDetailContent(
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        quoteInfo(quote, viewModel)
+                        quoteInfo(quote, chartData, viewModel)
                         quoteBackground(quoteDetail)
                         item {
                             Spacer(modifier = Modifier.height(16.dp))
@@ -283,8 +285,12 @@ private fun LazyGridScope.quoteBackground(quoteDetail: FetchResult<QuoteWithSumm
 
 private fun LazyGridScope.quoteInfo(
     quote: Quote,
+    chartData: HistoryProvider.ChartData?,
     viewModel: QuoteDetailViewModel
 ) {
+    val lastTradePrice = quote.priceFormat.format(chartData?.regularMarketPrice ?: quote.lastTradePrice)
+    val change = chartData?.changeStringWithSign() ?: quote.changeStringWithSign()
+    val changePercent = chartData?.changePercentStringWithSign() ?: quote.changePercentStringWithSign()
     item(span = {
         GridItemSpan(maxLineSpan)
     }) {
@@ -299,9 +305,9 @@ private fun LazyGridScope.quoteInfo(
         GridItemSpan(maxLineSpan)
     }) {
         Text(
-            text = quote.priceFormat.format(quote.lastTradePrice),
+            text = lastTradePrice,
             style = MaterialTheme.typography.titleLarge,
-            color = quote.changeColour,
+            color = chartData?.changeColour ?: quote.changeColour,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
@@ -312,15 +318,15 @@ private fun LazyGridScope.quoteInfo(
         Row(horizontalArrangement = Arrangement.Center) {
             Text(
                 modifier = Modifier.padding(end = 4.dp),
-                text = quote.changeStringWithSign(),
-                color = quote.changeColour,
+                text = change,
+                color = chartData?.changeColour ?: quote.changeColour,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.End
             )
             Text(
                 modifier = Modifier.padding(start = 4.dp),
-                text = quote.changePercentStringWithSign(),
-                color = quote.changeColour,
+                text = changePercent,
+                color = chartData?.changeColour ?: quote.changeColour,
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Start
             )
@@ -329,13 +335,14 @@ private fun LazyGridScope.quoteInfo(
     item(span = {
         GridItemSpan(maxLineSpan)
     }) {
-        GraphItem(quote, viewModel)
+        GraphItem(quote, chartData, viewModel)
     }
 }
 
 @Composable
 private fun GraphItem(
     quote: Quote,
+    graphData: HistoryProvider.ChartData?,
     viewModel: QuoteDetailViewModel
 ) {
     Column {
@@ -349,11 +356,10 @@ private fun GraphItem(
                 .height(220.dp),
             contentAlignment = Alignment.Center
         ) {
-            val graphData by viewModel.data.observeAsState()
             val graphError by viewModel.dataFetchError.observeAsState()
-            if (graphError == null && graphData.isNullOrEmpty()) {
+            if (graphError == null && graphData?.dataPoints.isNullOrEmpty()) {
                 CircularProgressIndicator()
-            } else if (graphError != null && graphData.isNullOrEmpty()) {
+            } else if (graphError != null && graphData?.dataPoints.isNullOrEmpty()) {
                 ErrorState(text = stringResource(id = string.graph_fetch_failed))
             } else {
                 AndroidView(
@@ -361,7 +367,7 @@ private fun GraphItem(
                         createGraphView(context)
                     },
                     update = { graphView ->
-                        updateGraphView(graphData, graphView, quote, range)
+                        updateGraphView(graphData?.dataPoints, graphView, quote, range)
                     },
                 )
             }

@@ -234,7 +234,7 @@ private fun SearchInputField(
         mutableStateOf(searchQuery)
     }
     TextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
         value = text,
         onValueChange = {
             text = it
