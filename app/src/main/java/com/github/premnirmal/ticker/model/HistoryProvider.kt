@@ -92,7 +92,7 @@ class HistoryProvider @Inject constructor(
                             dataQuote.close[i]!!.toFloat()
                         )
                     }
-                    }.filterNotNull().sorted()
+                }.filterNotNull().sorted()
                 ChartData(
                     chartPreviousClose = chartPreviousClose,
                     regularMarketPrice = regularMarketPrice,

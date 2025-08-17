@@ -68,7 +68,7 @@ class HomeActivity : BaseComposeActivity() {
                             showTutorial()
                         }
                         is HomeEvent.ShowWhatsNew -> {
-                            showWhatsNew( event.result)
+                            showWhatsNew(event.result)
                         }
                         is HomeEvent.PromptRate -> {
                             if (!rateDialogShown && appPreferences.shouldPromptRate()) {
@@ -124,7 +124,8 @@ class HomeActivity : BaseComposeActivity() {
             }
         }
         showBottomSheet(
-            getString(R.string.whats_new_in, BuildConfig.VERSION_NAME), message
+            getString(R.string.whats_new_in, BuildConfig.VERSION_NAME),
+            message
         )
     }
 

@@ -2,6 +2,7 @@ import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import org.apache.tools.ant.taskdefs.condition.Os
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
+import java.util.Locale
 import java.util.Properties
 
 plugins {
@@ -17,7 +18,7 @@ plugins {
 }
 
 detekt {
-  toolVersion = "1.23.7"
+  toolVersion = libs.versions.detekt.get()
   config.setFrom(file("../config/detekt/detekt.yml"))
   buildUponDefaultConfig = true
   autoCorrect = true
@@ -133,7 +134,7 @@ android {
     }
   }
 
-  flavorDimensions("mobile")
+  flavorDimensions += "mobile"
 
   productFlavors {
     create("dev") {
@@ -315,23 +316,25 @@ dependencies {
   testImplementation(libs.opengl.api)
 }
 
-// configurations.configureEach {
-//   resolutionStrategy.force "org.objenesis:objenesis:_"
-//   exclude(group = "xpp3",) module = "xpp3"
-// }
-//
-// android.applicationVariants.configureEach { variant ->
-//   if (!variant.name.toLowerCase().contains("prod")) {
-//     val googleTask = tasks.findByName("process${variant.name.capi(talize()}GoogleServices"))
-//     val crashlyticsMappingTask = tasks.
-//         findByName("uploadCrashlyticsMappingFile${variant.name.capi(talize()}"))
-//     println("flavour: ${variant.name}")
-//     println("disabling ${googleTask.name}")
-//     googleTask.enabled = false
-//     if (crashlyticsMappingTask != null) {
-//       println("disabling ${crashlyticsMappingTask.name}")
-//       crashlyticsMappingTask.enabled = false
-//     }
-//   }
-// }
-
+// Remove google play services and crashlytics plugin for purefoss, because f-droid folks are snowflakes
+android {
+  androidComponents {
+    onVariants {
+      println("Variant: ${it.name}, buildType: ${it.buildType}, flavor: ${it.flavorName}")
+      if (!it.name.lowercase(Locale.getDefault()).contains("prod")) {
+        val googleTask =
+          tasks.findByName("process${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}GoogleServices")
+        val crashlyticsMappingTask =
+          tasks.findByName("uploadCrashlyticsMappingFile${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}")
+        googleTask?.let {
+          println("disabling ${googleTask.name}")
+          googleTask.enabled = false
+        }
+        crashlyticsMappingTask?.let {
+          println("disabling ${crashlyticsMappingTask.name}")
+          crashlyticsMappingTask.enabled = false
+        }
+      }
+    }
+  }
+}

@@ -16,8 +16,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -89,14 +87,16 @@ private fun NewsFeedItems(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
-            count = newsFeedItems.size, key = { i ->
+            count = newsFeedItems.size,
+            key = { i ->
                 val item = newsFeedItems[i]
                 if (item is ArticleNewsFeed) {
                     item.article.url
                 } else {
                     (item as TrendingStockNewsFeed).quotes.size
                 }
-            }) { i ->
+            }
+        ) { i ->
             val data = newsFeedItems[i]
             if (data is TrendingStockNewsFeed) {
                 Column(
@@ -118,7 +118,8 @@ private fun NewsFeedItems(
                                         .weight(1f, true)
                                         .fillMaxHeight(),
                                     quoteNameMaxLines = 1,
-                                    onClick = { onQuoteClick(quote) })
+                                    onClick = { onQuoteClick(quote) }
+                                )
                             }
                         }
                     }
@@ -145,5 +146,7 @@ fun NewsFeedPreview() {
                     Quote("TWTR", "Twitter Inc")
                 )
             )
-        ), onQuoteClick = {})
+        ),
+        onQuoteClick = {}
+    )
 }

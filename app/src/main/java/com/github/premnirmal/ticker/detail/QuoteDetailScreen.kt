@@ -194,37 +194,42 @@ private fun QuoteDetailContent(
             } else {
                 TwoPane(
                     strategy = HorizontalTwoPaneStrategy(
-                    splitFraction = 1f / 2f,
-                ), displayFeatures = displayFeatures, foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly, first = {
-                    LazyVerticalGrid(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        columns = Adaptive(150.dp),
-                        contentPadding = padding,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        quoteInfo(quote, chartData, viewModel)
-                        quoteBackground(quoteDetail)
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
+                        splitFraction = 1f / 2f,
+                    ),
+                    displayFeatures = displayFeatures,
+                    foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
+                    first = {
+                        LazyVerticalGrid(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            columns = Adaptive(150.dp),
+                            contentPadding = padding,
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            quoteInfo(quote, chartData, viewModel)
+                            quoteBackground(quoteDetail)
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+                        }
+                    },
+                    second = {
+                        LazyVerticalGrid(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            columns = Fixed(1),
+                            contentPadding = padding,
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            quoteDetailsGrid(details)
+                            quotePositionsNotesAlerts(quote, isInPortfolio)
+                            newsItems(articles)
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
                         }
                     }
-                }, second = {
-                    LazyVerticalGrid(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        columns = Fixed(1),
-                        contentPadding = padding,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        quoteDetailsGrid(details)
-                        quotePositionsNotesAlerts(quote, isInPortfolio)
-                        newsItems(articles)
-                        item {
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-                })
+                )
             }
         }
     }

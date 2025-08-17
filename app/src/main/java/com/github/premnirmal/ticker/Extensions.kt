@@ -1,20 +1,17 @@
 package com.github.premnirmal.ticker
 
 import android.Manifest
-import android.R.attr
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -24,7 +21,6 @@ import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.databinding.LayoutBottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.robinhood.ticker.TickerView
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT

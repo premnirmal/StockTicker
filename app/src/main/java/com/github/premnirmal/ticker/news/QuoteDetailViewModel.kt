@@ -16,7 +16,6 @@ import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
@@ -37,7 +36,6 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import javax.inject.Inject
 
 @HiltViewModel

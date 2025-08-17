@@ -13,7 +13,7 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltTestApplication
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -33,7 +33,7 @@ abstract class BaseUnitTest : TestCase() {
 
     private val parser = Parser()
 
-    @Before public override fun setUp() = runBlockingTest {
+    @Before public override fun setUp() = runTest {
         super.setUp()
         val iStocksProvider = Mocker.provide(StocksProvider::class)
         doNothing().whenever(iStocksProvider).schedule()

@@ -20,10 +20,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.base.BaseFragment
 import com.github.premnirmal.ticker.components.InAppMessage
-import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.home.ChildFragment
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.network.data.Suggestion
+import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.portfolio.search.SuggestionsAdapter.SuggestionClickListener
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.SpacingDecoration

@@ -14,6 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.Builder
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
+import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.hasNotificationPermission
@@ -38,7 +39,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.random.Random
-import androidx.core.content.edit
 
 @Singleton
 class NotificationsHandler @Inject constructor(
@@ -193,7 +193,8 @@ class NotificationsHandler @Inject constructor(
                         notificationFactory.sendGenericAlert(quote)
                         notificationPrefs.edit {
                             putLong(
-                                quote.symbol, ZonedDateTime.now().toInstant().toEpochMilli()
+                                quote.symbol,
+                                ZonedDateTime.now().toInstant().toEpochMilli()
                             )
                         }
                     }

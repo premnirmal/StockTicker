@@ -45,7 +45,7 @@ jobs:
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          automatic_release_tag: null
+          automatic_release_tag: "${{ env.VERSION }}"
           title: "${{ env.VERSION }}"
           files: |
             app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk
