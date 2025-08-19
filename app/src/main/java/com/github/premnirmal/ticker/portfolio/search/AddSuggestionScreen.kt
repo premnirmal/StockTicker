@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import android.appwidget.AppWidgetManager
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -62,17 +62,17 @@ fun AddSuggestionScreen(
                         .height(4.dp)
                 )
                 widgetDataList.forEach { widgetData ->
-                    ClickableText(
+                    Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 8.dp),
+                            .padding(top = 8.dp)
+                            .clickable {
+                                onChange(suggestion, widgetData.widgetId)
+                            },
                         text = AnnotatedString(widgetData.widgetName()),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.onSurface
                         ),
-                        onClick = {
-                            onChange(suggestion, widgetData.widgetId)
-                        }
                     )
                     Divider(
                         modifier = Modifier

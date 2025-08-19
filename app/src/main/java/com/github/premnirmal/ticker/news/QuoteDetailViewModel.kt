@@ -68,7 +68,7 @@ class QuoteDetailViewModel @Inject constructor(
         get() = _newsError
     private var fetchQuoteJob: Job? = null
     private var quoteSummary: QuoteSummary? = null
-    val range = MutableStateFlow<Range>(Range.ONE_MONTH)
+    val range = MutableStateFlow<Range>(Range.ONE_DAY)
 
     val details: Flow<List<QuoteDetail>> = _quote.transform { summary ->
         if (summary.wasSuccessful) {

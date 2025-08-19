@@ -45,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -352,6 +353,7 @@ private fun GraphItem(
 ) {
     Column {
         val range by viewModel.range.collectAsStateWithLifecycle()
+        val color = graphData?.changeColour ?: quote.changeColour
         LaunchedEffect(quote.symbol, range) {
             viewModel.fetchChartData(quote.symbol, range)
         }
@@ -372,7 +374,7 @@ private fun GraphItem(
                         createGraphView(context)
                     },
                     update = { graphView ->
-                        updateGraphView(graphData?.dataPoints, graphView, quote, range)
+                        updateGraphView(graphData?.dataPoints, graphView, quote, range, color.toArgb())
                     },
                 )
             }
@@ -543,7 +545,8 @@ private fun updateGraphView(
     dataPoints: List<DataPoint>?,
     graphView: LineChart,
     quote: Quote,
-    range: Range
+    range: Range,
+    color: Int
 ) {
     if (dataPoints.isNullOrEmpty()) {
         graphView.setNoDataText(graphView.context.getString(string.no_data))
@@ -555,14 +558,9 @@ private fun updateGraphView(
     val series = LineDataSet(dataPoints, quote.symbol)
     series.setDrawHorizontalHighlightIndicator(false)
     series.setDrawValues(false)
-    val colorAccent = if (quote.changeInPercent >= 0) {
-        ContextCompat.getColor(graphView.context, R.color.positive_green_dark)
-    } else {
-        ContextCompat.getColor(graphView.context, R.color.negative_red)
-    }
     series.setDrawFilled(true)
-    series.color = colorAccent
-    series.fillColor = colorAccent
+    series.color = color
+    series.fillColor = color
     series.fillAlpha = 150
     series.setDrawCircles(true)
     series.mode = CUBIC_BEZIER

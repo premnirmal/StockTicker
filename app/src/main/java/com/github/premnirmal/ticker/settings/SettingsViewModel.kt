@@ -18,11 +18,13 @@ import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.threeten.bp.DayOfWeek
 import timber.log.Timber
@@ -152,7 +154,9 @@ class SettingsViewModel @Inject constructor(
             preferences.edit {
                 clear()
             }
-            db.clearAllTables()
+            withContext(Dispatchers.IO) {
+                db.clearAllTables()
+            }
             exitProcess(0)
         }
     }

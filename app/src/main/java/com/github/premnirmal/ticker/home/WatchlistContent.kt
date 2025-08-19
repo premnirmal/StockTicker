@@ -331,11 +331,13 @@ private fun Header(
                     divider = {},
                     containerColor = Color.Transparent,
                     indicator = { tabPositions ->
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.customTabIndicatorOffset(tabPositions[selectedItemIndex]),
-                            height = 2.dp,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+                        if (tabPositions.isNotEmpty() && tabPositions.size > selectedItemIndex) {
+                            TabRowDefaults.SecondaryIndicator(
+                                modifier = Modifier.customTabIndicatorOffset(tabPositions[selectedItemIndex]),
+                                height = 2.dp,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
                     }
                 ) {
                     widgets.forEachIndexed { index, widget ->

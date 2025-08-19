@@ -79,10 +79,23 @@ fun SearchScreen(
     val onSuggestionClick: (Suggestion) -> Unit = {
         onQuoteClick(Quote(it.symbol))
     }
+    val hasWidgets by searchViewModel.hasWidget.collectAsStateWithLifecycle(false)
+    val widgetData by searchViewModel.widgetData.collectAsStateWithLifecycle(emptyList())
     var showAddRemoveForSuggestion by remember { mutableStateOf<Suggestion?>(null) }
-    val onSuggestionAddRemoveClick: (Suggestion) -> Boolean = {
-        showAddRemoveForSuggestion = it
-        it.exists
+    val onSuggestionAddRemoveClick: (Suggestion) -> Boolean = { suggestion ->
+        if (!suggestion.exists && hasWidgets && searchViewModel.widgetCount > 1) {
+            showAddRemoveForSuggestion = suggestion
+        } else {
+            widgetData.firstOrNull()?.let { widgetData ->
+                suggestion.exists = !suggestion.exists
+                if (suggestion.exists) {
+                    searchViewModel.addTickerToWidget(suggestion.symbol, widgetData.widgetId)
+                } else {
+                    searchViewModel.removeStock(suggestion.symbol, widgetData.widgetId)
+                }
+            }
+        }
+        suggestion.exists
     }
     val contentType: ContentType = calculateContentAndNavigationType(
         widthSizeClass = widthSizeClass,
