@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
@@ -134,7 +133,7 @@ fun BottomNavigationBar(
     destinations: List<HomeBottomNavDestination>,
     navigateToTopLevelDestination: (HomeBottomNavDestination) -> Unit
 ) {
-    NavigationBar(modifier = Modifier.fillMaxWidth()) {
+    NavigationBar(modifier = Modifier) {
         destinations.forEach { destination ->
             NavigationBarItem(
                 selected = selectedDestination == destination.route,
@@ -143,7 +142,7 @@ fun BottomNavigationBar(
                 label = {
                     Text(
                         stringResource(id = destination.iconTextId),
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 },
                 alwaysShowLabel = false,

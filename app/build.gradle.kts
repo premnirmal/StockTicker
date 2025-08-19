@@ -174,7 +174,7 @@ android {
     debug {
       isDebuggable = true
       extra["enableCrashlytics"] = false
-      isMinifyEnabled = true
+      isMinifyEnabled = false
       configure<CrashlyticsExtension> {
         mappingFileUploadEnabled = false
       }
@@ -230,8 +230,11 @@ dependencies {
   implementation(AndroidX.navigation.compose)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.foundation)
-  implementation(libs.androidx.compose.ui)
+  implementation(libs.androidx.compose.ui.ui)
   implementation(libs.androidx.compose.material3)
+  implementation(libs.androidx.compose.material3.android)
+  implementation(libs.androidx.compose.ui.tooling.preview)
+  debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(AndroidX.lifecycle.viewModelCompose)
   implementation(AndroidX.compose.material3.windowSizeClass)
   implementation(Google.accompanist.adaptive)

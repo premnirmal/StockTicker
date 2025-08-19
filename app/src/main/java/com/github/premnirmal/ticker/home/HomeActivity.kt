@@ -3,12 +3,16 @@ package com.github.premnirmal.ticker.home
 import android.Manifest
 import android.os.Build.VERSION
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +44,7 @@ class HomeActivity : BaseComposeActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         savedInstanceState?.let { rateDialogShown = it.getBoolean(DIALOG_SHOWN, false) }
+        enableEdgeToEdge()
         if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
             viewModel.showWhatsNew()
         } else {
@@ -90,12 +95,30 @@ class HomeActivity : BaseComposeActivity() {
 
     @Composable
     override fun ShowContent() {
+        val isDarkTheme = isSystemInDarkTheme()
+        DisposableEffect(isDarkTheme) {
+            enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.auto(
+                    android.graphics.Color.TRANSPARENT,
+                    android.graphics.Color.TRANSPARENT,
+                ) { isDarkTheme },
+                navigationBarStyle = SystemBarStyle.auto(
+                    lightScrim,
+                    darkScrim,
+                ) { isDarkTheme },
+            )
+            onDispose {}
+        }
         HomeScreen()
     }
 
+    private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+    private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
-    fun HomeScreen() {
+    private fun HomeScreen() {
         val windowSizeClass = calculateWindowSizeClass(this)
         val navHostController = rememberNavController()
         RootNavigationGraph(

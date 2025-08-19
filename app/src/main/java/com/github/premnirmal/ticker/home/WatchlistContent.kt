@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -102,7 +103,11 @@ fun WatchlistContent(
             headerHeightDp.roundToPx()
         }
     }
-    val connection = remember(headerHeight) { CollapsingTopBarScrollConnection(headerHeight) }
+    val connection = rememberSaveable(saver = CollapsingTopBarScrollConnection.saver(headerHeight)) {
+        CollapsingTopBarScrollConnection(
+            appBarMaxHeight = headerHeight,
+        )
+    }
     val spaceHeight by remember(density, headerHeight) {
         derivedStateOf {
             with(density) {
@@ -147,8 +152,7 @@ fun WatchlistContent(
             modifier = modifier.fillMaxSize()
         ) {
             Spacer(
-                Modifier
-                    .height(spaceHeight)
+                Modifier.height(spaceHeight)
             )
             Content(
                 viewModel = viewModel,

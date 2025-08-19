@@ -70,7 +70,9 @@
 
   <style name="GraphActivityTheme" parent="StocksWidget.App.Theme" />
 
-  <style name="AddPositionTheme" parent="StocksWidget.App.Theme" />
+  <style name="AddPositionTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowLightStatusBar">true</item>
+  </style>
 
   <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme"/>
 
