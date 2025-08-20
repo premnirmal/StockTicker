@@ -6,7 +6,6 @@ import android.content.Intent
 import android.view.Gravity
 import android.view.ViewConfiguration
 import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -56,9 +55,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel,
 ) {
     val viewModel = hiltViewModel<SettingsViewModel>()
-    val homeViewModel = hiltViewModel<HomeViewModel>(LocalContext.current as ComponentActivity)
     val settingsData = viewModel.settings.collectAsStateWithLifecycle()
     Scaffold(
         modifier = modifier

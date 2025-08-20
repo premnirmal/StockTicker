@@ -19,15 +19,12 @@ class AppMessaging @Inject constructor(
     private val coroutineScope: CoroutineScope,
 ) {
 
-    val snackbarQueue: Flow<SnackbarMessage>
+    val snackbars: Flow<SnackbarMessage>
         get() = _messageQueue.filterIsInstance(SnackbarMessage::class)
 
-    val bottomsheetQueue: Flow<BottomSheetMessage>
+    val bottomSheets: Flow<BottomSheetMessage>
         get() = _messageQueue.filterIsInstance(BottomSheetMessage::class)
-
-    val messageQueue: Flow<AppMessage>
-        get() = _messageQueue
-    private val _messageQueue = MutableSharedFlow<AppMessage>(replay = 0)
+    private val _messageQueue = MutableSharedFlow<AppMessage>(replay = 0, extraBufferCapacity = 100)
 
     fun sendSnackbar(
         title: Int,
@@ -70,8 +67,8 @@ class AppMessaging @Inject constructor(
         coroutineScope.launch {
             _messageQueue.emit(
                 BottomSheetMessage(
-                    context.getString(title),
-                    context.getString(message),
+                    title = context.getString(title),
+                    message = context.getString(message),
                 )
             )
         }
@@ -84,8 +81,8 @@ class AppMessaging @Inject constructor(
         coroutineScope.launch {
             _messageQueue.emit(
                 BottomSheetMessage(
-                    context.getString(title),
-                    message,
+                    title = context.getString(title),
+                    message = message,
                 )
             )
         }
@@ -94,10 +91,9 @@ class AppMessaging @Inject constructor(
     fun sendBottomSheet(
         title: String,
         message: String,
-        dismissText: String
     ) {
         coroutineScope.launch {
-            _messageQueue.emit(BottomSheetMessage(title, message))
+            _messageQueue.emit(BottomSheetMessage(title = title, message = message))
         }
     }
 }

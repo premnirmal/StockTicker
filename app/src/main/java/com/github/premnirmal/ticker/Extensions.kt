@@ -19,8 +19,6 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.databinding.LayoutBottomSheetBinding
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.ZonedDateTime
 import org.threeten.bp.format.TextStyle.SHORT
@@ -79,19 +77,6 @@ fun Context.showDialog(
 fun Context.showDialog(message: String): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
         .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
-}
-
-fun Activity.showBottomSheet(
-    title: String,
-    message: String,
-): BottomSheetDialog {
-    val dialog = BottomSheetDialog(this)
-    val layout = LayoutBottomSheetBinding.inflate(LayoutInflater.from(this))
-    layout.title.text = title
-    layout.message.text = message
-    dialog.setContentView(layout.root)
-    dialog.show()
-    return dialog
 }
 
 fun Fragment.showDialog(

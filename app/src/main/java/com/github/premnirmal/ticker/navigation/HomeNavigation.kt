@@ -30,15 +30,18 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
+import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
 import com.github.premnirmal.ticker.navigation.LayoutType.CONTENT
 import com.github.premnirmal.ticker.navigation.LayoutType.HEADER
@@ -62,12 +65,16 @@ fun HomeNavHost(
     modifier: Modifier = Modifier,
 ) {
     val contentType = LocalContentType.current
+    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
     NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = HomeRoute.Watchlist.route,
     ) {
-        composable(HomeRoute.Watchlist.route) {
+        composable(HomeRoute.Watchlist.route) { backStackEntry ->
+            val homeViewModel = hiltViewModel<HomeViewModel>(viewModelStoreOwner)
             WatchlistScreen(
                 rootNavController = rootNavController,
                 modifier = Modifier
@@ -75,7 +82,8 @@ fun HomeNavHost(
                     .background(MaterialTheme.colorScheme.surface),
                 widthSizeClass = widthSizeClass,
                 displayFeatures = displayFeatures,
-                contentType = contentType
+                contentType = contentType,
+                viewModel = homeViewModel,
             )
         }
         composable(HomeRoute.Trending.route) {
@@ -117,11 +125,13 @@ fun HomeNavHost(
                 displayFeatures = displayFeatures
             )
         }
-        composable(HomeRoute.Settings.route) {
+        composable(HomeRoute.Settings.route) { backStackEntry ->
+            val homeViewModel = hiltViewModel<HomeViewModel>(viewModelStoreOwner)
             SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(MaterialTheme.colorScheme.surface),
+                homeViewModel = homeViewModel,
             )
         }
     }

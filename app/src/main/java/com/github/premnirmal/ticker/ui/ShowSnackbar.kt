@@ -40,7 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun ShowSnackBar() {
     val appMessaging = LocalAppMessaging.current
 
-    val snackbar by appMessaging.snackbarQueue.collectAsStateWithLifecycle(initialValue = null)
+    val snackbar by appMessaging.snackbars.collectAsStateWithLifecycle(initialValue = null)
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(snackbar) {

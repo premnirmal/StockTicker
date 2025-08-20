@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.activity.ComponentActivity
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -57,7 +56,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -69,7 +67,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.network.data.Quote
@@ -92,7 +89,7 @@ import kotlin.math.min
 @Composable
 fun WatchlistContent(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = hiltViewModel(LocalContext.current as ComponentActivity),
+    viewModel: HomeViewModel,
     onQuoteClick: (Quote) -> Unit,
 ) {
     val hasWidgets by viewModel.hasWidget.collectAsState(initial = false)
@@ -119,8 +116,8 @@ fun WatchlistContent(
         val constraints = this.constraints
         val widgets by viewModel.widgets.collectAsState(emptyList())
         val rowState = rememberLazyListState()
-        val fetchState by viewModel.fetchStateFlow.collectAsStateWithLifecycle()
-        val nextFetch by viewModel.nextFetchFlow.collectAsStateWithLifecycle("")
+        val fetchState by viewModel.fetchState.collectAsStateWithLifecycle()
+        val nextFetch by viewModel.nextFetch.collectAsStateWithLifecycle("")
         val subtitleData by remember(fetchState, nextFetch) {
             derivedStateOf {
                 Pair(fetchState.displayString, nextFetch)

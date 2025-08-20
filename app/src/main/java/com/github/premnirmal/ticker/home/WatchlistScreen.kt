@@ -28,6 +28,7 @@ fun WatchlistScreen(
     widthSizeClass: WindowWidthSizeClass,
     contentType: ContentType,
     displayFeatures: List<DisplayFeature>,
+    viewModel: HomeViewModel,
     detailOpen: Boolean = contentType == DUAL_PANE
 ) {
     /**
@@ -64,7 +65,8 @@ fun WatchlistScreen(
                         Modifier.padding(end = 8.dp)
                     } else {
                         Modifier
-                    }
+                    },
+                    viewModel = viewModel,
                 )
             }, detail = {
                 val quote = selectedQuote
@@ -88,7 +90,8 @@ fun WatchlistScreen(
         WatchlistContent(
             onQuoteClick = { quote ->
                 rootNavController.navigate(route = "${Graph.QUOTE_DETAIL}/${quote.symbol}")
-            }
+            },
+            viewModel = viewModel,
         )
     }
 }
