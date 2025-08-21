@@ -109,7 +109,9 @@ class HomeViewModel @Inject constructor(
                     appPreferences.saveVersionCode(BuildConfig.VERSION_CODE)
                     data.joinToString("\n\u25CF ", "\u25CF ")
                 } else {
-                    "${getApplication<Application>().getString(R.string.error_fetching_whats_new)}\n\n :( ${error.message.orEmpty()}"
+                    "${getApplication<Application>().getString(
+                        R.string.error_fetching_whats_new
+                    )}\n\n :( ${error.message.orEmpty()}"
                 }
             }
             appMessaging.sendBottomSheet(title = title, message = message)

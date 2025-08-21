@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,6 +36,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.debug.DbViewerActivity
 import com.github.premnirmal.ticker.home.HomeViewModel
+import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.settings.SettingsViewModel.SettingsData
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.CheckboxPreference
@@ -60,6 +63,10 @@ fun SettingsScreen(
 ) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val settingsData = viewModel.settings.collectAsStateWithLifecycle()
+    val state = rememberLazyListState()
+    rememberScrollToTopAction(HomeRoute.Settings) {
+        state.animateScrollToItem(0)
+    }
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier
@@ -70,7 +77,8 @@ fun SettingsScreen(
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = padding
+            contentPadding = padding,
+            state = state,
         ) {
             settingsItems(viewModel, homeViewModel, settingsData.value)
         }

@@ -31,11 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -146,7 +142,7 @@ fun BottomNavigationBar(
     NavigationBar(modifier = Modifier) {
         destinations.forEach { destination ->
             NavigationBarItem(
-                selected = selectedDestination == destination.route,
+                selected = selectedDestination == destination.route.route,
                 onClick = { navigateToTopLevelDestination(destination) },
                 enabled = destination.enabled,
                 label = {
@@ -205,7 +201,7 @@ fun HomeNavigationRail(
                 ) {
                     destinations.forEach { Destination ->
                         NavigationRailItem(
-                            selected = selectedDestination == Destination.route,
+                            selected = selectedDestination == Destination.route.route,
                             onClick = { navigateToTopLevelDestination(Destination) },
                             enabled = Destination.enabled,
                             icon = {
@@ -265,10 +261,13 @@ fun HomeNavigationRail(
     }
 }
 
-class HomeNavigationActions(private val navController: NavHostController) {
+class HomeNavigationActions(
+    private val navController: NavHostController,
+    private val viewModel: NavigationViewModel,
+) {
 
     fun navigateTo(destination: HomeBottomNavDestination) {
-        navController.navigate(destination.route) {
+        navController.navigate(destination.route.route) {
             // Pop up to the start destination of the graph to
             // avoid building up a large stack of destinations
             // on the back stack as users select items
@@ -282,16 +281,11 @@ class HomeNavigationActions(private val navController: NavHostController) {
             restoreState = true
         }
         navController.currentBackStackEntry?.let {
-            if (it.destination.route == destination.route) {
-                val viewModel = it.viewModel<NavigationViewModel>()
+            if (it.destination.route == destination.route.route) {
                 viewModel.scrollToTop(destination.route)
             }
         }
     }
-}
-
-inline fun <reified VM : ViewModel> NavBackStackEntry.viewModel(): VM {
-    return ViewModelProvider(this).get()
 }
 
 enum class HomeRoute(val route: String) {
@@ -303,7 +297,7 @@ enum class HomeRoute(val route: String) {
 }
 
 data class HomeBottomNavDestination(
-    val route: String,
+    val route: HomeRoute,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
     val iconTextId: Int,
@@ -317,31 +311,31 @@ fun NavigationRailPreview() {
         selectedDestination = HomeRoute.Watchlist.route,
         destinations = listOf(
             HomeBottomNavDestination(
-                HomeRoute.Watchlist.route,
+                HomeRoute.Watchlist,
                 ImageVector.vectorResource(id = drawable.ic_trending_up),
                 ImageVector.vectorResource(id = drawable.ic_trending_up),
                 string.action_portfolio,
             ),
             HomeBottomNavDestination(
-                HomeRoute.Trending.route,
+                HomeRoute.Trending,
                 ImageVector.vectorResource(id = drawable.ic_news),
                 ImageVector.vectorResource(id = drawable.ic_news),
                 string.action_feed
             ),
             HomeBottomNavDestination(
-                HomeRoute.Search.route,
+                HomeRoute.Search,
                 ImageVector.vectorResource(id = drawable.ic_search),
                 ImageVector.vectorResource(id = drawable.ic_search),
                 string.action_search
             ),
             HomeBottomNavDestination(
-                HomeRoute.Widgets.route,
+                HomeRoute.Widgets,
                 ImageVector.vectorResource(id = drawable.ic_widget),
                 ImageVector.vectorResource(id = drawable.ic_widget),
                 string.action_widgets
             ),
             HomeBottomNavDestination(
-                HomeRoute.Settings.route,
+                HomeRoute.Settings,
                 ImageVector.vectorResource(id = drawable.ic_settings),
                 ImageVector.vectorResource(id = drawable.ic_settings),
                 string.action_settings
@@ -359,31 +353,31 @@ fun BottomNavigationBarPreview() {
         selectedDestination = HomeRoute.Watchlist.route,
         destinations = listOf(
             HomeBottomNavDestination(
-                HomeRoute.Watchlist.route,
+                HomeRoute.Watchlist,
                 ImageVector.vectorResource(id = drawable.ic_trending_up),
                 ImageVector.vectorResource(id = drawable.ic_trending_up),
                 string.action_portfolio
             ),
             HomeBottomNavDestination(
-                HomeRoute.Trending.route,
+                HomeRoute.Trending,
                 ImageVector.vectorResource(id = drawable.ic_news),
                 ImageVector.vectorResource(id = drawable.ic_news),
                 string.action_feed
             ),
             HomeBottomNavDestination(
-                HomeRoute.Search.route,
+                HomeRoute.Search,
                 ImageVector.vectorResource(id = drawable.ic_search),
                 ImageVector.vectorResource(id = drawable.ic_search),
                 string.action_search
             ),
             HomeBottomNavDestination(
-                HomeRoute.Widgets.route,
+                HomeRoute.Widgets,
                 ImageVector.vectorResource(id = drawable.ic_widget),
                 ImageVector.vectorResource(id = drawable.ic_widget),
                 string.action_widgets
             ),
             HomeBottomNavDestination(
-                HomeRoute.Settings.route,
+                HomeRoute.Settings,
                 ImageVector.vectorResource(id = drawable.ic_settings),
                 ImageVector.vectorResource(id = drawable.ic_settings),
                 string.action_settings

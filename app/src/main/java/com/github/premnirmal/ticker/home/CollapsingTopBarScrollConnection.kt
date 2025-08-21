@@ -16,6 +16,10 @@ class CollapsingTopBarScrollConnection(
     var appBarOffset by mutableIntStateOf(initialOffset)
         private set
 
+    fun resetOffset() {
+        appBarOffset = 0
+    }
+
     override fun onPreScroll(
         available: Offset,
         source: NestedScrollSource

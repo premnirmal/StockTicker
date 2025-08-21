@@ -69,6 +69,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.detail.QuoteCard
+import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.LocalContentType
@@ -111,6 +113,9 @@ fun WatchlistContent(
                 (headerHeight + connection.appBarOffset).toDp()
             }
         }
+    }
+    rememberScrollToTopAction(HomeRoute.Watchlist) {
+        connection.resetOffset()
     }
     BoxWithConstraints(modifier = Modifier.nestedScroll(connection)) {
         val constraints = this.constraints
@@ -157,7 +162,7 @@ fun WatchlistContent(
                 gridSize = gridSize,
                 rowState = rowState,
                 hapticFeedback = hapticFeedback,
-                onQuoteClick = onQuoteClick
+                onQuoteClick = onQuoteClick,
             )
         }
         Header(
@@ -235,6 +240,9 @@ private fun Content(
                         add(to.index, removeAt(from.index))
                     }
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
+                }
+                rememberScrollToTopAction(HomeRoute.Watchlist, index) {
+                    lazyStaggeredGridState.animateScrollToItem(0)
                 }
                 PullToRefreshBox(
                     modifier = Modifier

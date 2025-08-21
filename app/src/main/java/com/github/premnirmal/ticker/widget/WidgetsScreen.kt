@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,7 +49,9 @@ import androidx.core.view.setPadding
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
+import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.settings.WidgetPreviewAdapter
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
@@ -100,9 +103,14 @@ private fun WidgetsScreen(
         var widgetDataSelectedIndex by rememberSaveable { mutableIntStateOf(0) }
         val widgetData = widgetDataList[widgetDataSelectedIndex]
         val widgetDataImmutable by widgetData.changeFlow.collectAsState()
+        val state = rememberLazyListState()
+        rememberScrollToTopAction(HomeRoute.Widgets) {
+            state.animateScrollToItem(0)
+        }
         if (contentType == SINGLE_PANE) {
             LazyColumn(
-                contentPadding = padding
+                contentPadding = padding,
+                state = state,
             ) {
                 item {
                     Spinner(
@@ -135,7 +143,8 @@ private fun WidgetsScreen(
                 foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
                 first = {
                     LazyColumn(
-                        contentPadding = padding
+                        contentPadding = padding,
+                        state = state,
                     ) {
                         item {
                             Spinner(

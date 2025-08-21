@@ -33,8 +33,7 @@ class NetworkModule {
     }
 
     @Provides @Singleton
-    internal fun provideHttpClient(
-    ): OkHttpClient {
+    internal fun provideHttpClient(): OkHttpClient {
         val logger = HttpLoggingInterceptor()
         logger.level =
             if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE

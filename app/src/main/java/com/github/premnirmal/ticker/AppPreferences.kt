@@ -1,12 +1,10 @@
 package com.github.premnirmal.ticker
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.parcelize.Parcelize

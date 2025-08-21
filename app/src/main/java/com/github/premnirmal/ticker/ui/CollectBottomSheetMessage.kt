@@ -36,7 +36,7 @@ fun LifecycleOwner.CollectBottomSheetMessage() {
 
     LaunchedEffect(Unit) {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
-            while(isActive) {
+            while (isActive) {
                 delay(600L)
                 if (bottomSheetMessage == null) {
                     bottomSheetMessage = bottomSheetMessageQueue.poll()

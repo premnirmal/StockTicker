@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,11 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -33,6 +33,8 @@ import com.github.premnirmal.ticker.navigation.HomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeNavigationActions
 import com.github.premnirmal.ticker.navigation.HomeNavigationRail
 import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.LocalNavGraphViewModelStoreOwner
+import com.github.premnirmal.ticker.navigation.NavigationViewModel
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
@@ -73,12 +75,15 @@ fun HomeListDetail(
                 NavigationContentPosition.TOP
             }
         }
-        val viewModel: HomeViewModel = hiltViewModel(LocalContext.current as ComponentActivity)
+        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+        }
+        val viewModel: HomeViewModel = hiltViewModel(viewModelStoreOwner)
         val hasWidget = viewModel.hasWidget.collectAsState(initial = false)
         val destinations = ArrayList<HomeBottomNavDestination>().apply {
             add(
                 HomeBottomNavDestination(
-                    HomeRoute.Watchlist.route,
+                    HomeRoute.Watchlist,
                     ImageVector.vectorResource(id = drawable.ic_trending_up),
                     ImageVector.vectorResource(id = drawable.ic_trending_up),
                     string.action_portfolio
@@ -87,7 +92,7 @@ fun HomeListDetail(
             if (widthSizeClass != WindowWidthSizeClass.Expanded) {
                 add(
                     HomeBottomNavDestination(
-                        HomeRoute.Trending.route,
+                        HomeRoute.Trending,
                         ImageVector.vectorResource(id = drawable.ic_news),
                         ImageVector.vectorResource(id = drawable.ic_news),
                         string.action_feed
@@ -96,7 +101,7 @@ fun HomeListDetail(
             }
             add(
                 HomeBottomNavDestination(
-                    HomeRoute.Search.route,
+                    HomeRoute.Search,
                     ImageVector.vectorResource(id = drawable.ic_search),
                     ImageVector.vectorResource(id = drawable.ic_search),
                     string.action_search
@@ -104,7 +109,7 @@ fun HomeListDetail(
             )
             add(
                 HomeBottomNavDestination(
-                    HomeRoute.Widgets.route,
+                    HomeRoute.Widgets,
                     ImageVector.vectorResource(id = drawable.ic_widget),
                     ImageVector.vectorResource(id = drawable.ic_widget),
                     string.action_widgets,
@@ -113,7 +118,7 @@ fun HomeListDetail(
             )
             add(
                 HomeBottomNavDestination(
-                    HomeRoute.Settings.route,
+                    HomeRoute.Settings,
                     ImageVector.vectorResource(id = drawable.ic_settings),
                     ImageVector.vectorResource(id = drawable.ic_settings),
                     string.action_settings
@@ -143,9 +148,13 @@ private fun HomeListDetailNavigationWrapper(
     displayFeatures: List<DisplayFeature>,
     navigationContentPosition: NavigationContentPosition,
 ) {
+    val viewModelStoreOwner = checkNotNull(LocalNavGraphViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalNavGraphViewModelStoreOwner"
+    }
+    val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner)
     val navController = rememberNavController()
     val homeNavigationActions = remember(navController) {
-        HomeNavigationActions(navController)
+        HomeNavigationActions(navController, navigationViewModel)
     }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val selectedDestination = navBackStackEntry?.destination?.route ?: HomeRoute.Watchlist.route

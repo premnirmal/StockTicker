@@ -5,18 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -48,7 +45,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.model.FetchResult
+import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.NewsCard
@@ -71,7 +70,7 @@ fun SearchScreen(
     displayFeatures: List<DisplayFeature>,
     onQuoteClick: (Quote) -> Unit,
     searchViewModel: SearchViewModel = hiltViewModel(),
-    newsViewModel: NewsFeedViewModel = hiltViewModel()
+    newsViewModel: NewsFeedViewModel = hiltViewModel(),
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val searchResults by searchViewModel.searchResult.observeAsState()
@@ -134,7 +133,7 @@ fun SearchScreen(
                     onQuoteClick = onQuoteClick,
                     searchResults = searchResults,
                     onSuggestionClick = onSuggestionClick,
-                    onSuggestionAddRemoveClick = onSuggestionAddRemoveClick
+                    onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
                 )
             }
         } else {
@@ -159,7 +158,7 @@ fun SearchScreen(
                             onQuoteClick = onQuoteClick,
                             searchResults = searchResults,
                             onSuggestionClick = onSuggestionClick,
-                            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick
+                            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
                         )
                     }
                 },
@@ -181,10 +180,15 @@ fun SearchScreen(
                             )
                         } else {
                             val news = data.filterIsInstance<NewsFeedItem.ArticleNewsFeed>()
+                            val state = rememberLazyListState()
+                            rememberScrollToTopAction(HomeRoute.Search) {
+                                state.animateScrollToItem(0)
+                            }
                             LazyColumn(
                                 modifier = Modifier.padding(horizontal = 8.dp),
                                 contentPadding = padding,
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                state = state,
                             ) {
                                 items(
                                     count = news.size,
@@ -321,9 +325,6 @@ private fun SearchResults(
                 )
             }
         }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
     }
 }
 
@@ -333,6 +334,10 @@ private fun TrendingStocks(
     trendingStocks: List<Quote>,
     onQuoteClick: (Quote) -> Unit,
 ) {
+    val gridState = rememberLazyStaggeredGridState()
+    rememberScrollToTopAction(HomeRoute.Search) {
+        gridState.animateScrollToItem(0)
+    }
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxHeight().padding(
             horizontal = 8.dp
@@ -340,7 +345,7 @@ private fun TrendingStocks(
         columns = columns,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
-        state = rememberLazyStaggeredGridState(),
+        state = gridState,
     ) {
         items(
             count = trendingStocks.size,
@@ -352,9 +357,6 @@ private fun TrendingStocks(
                 onClick = onQuoteClick,
                 quoteNameMaxLines = 1,
             )
-        }
-        item(span = StaggeredGridItemSpan.FullLine) {
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
