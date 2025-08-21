@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.portfolio.search
 
 import android.appwidget.AppWidgetManager
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,9 +14,12 @@ import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
+import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,10 +33,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val stocksApi: StocksApi,
     private val widgetDataProvider: WidgetDataProvider,
     private val stocksProvider: StocksProvider,
-    private val newsProvider: NewsProvider
+    private val newsProvider: NewsProvider,
+    private val appMessaging: AppMessaging,
 ) : ViewModel() {
 
     val searchResult: LiveData<FetchResult<List<Suggestion>>>
@@ -90,6 +96,7 @@ class SearchViewModel @Inject constructor(
             } else {
                 Timber.w(suggestions.error)
                 _searchResult.postValue(FetchResult.failure(suggestions.error))
+                appMessaging.sendSnackbar(R.string.error_fetching_suggestions)
             }
         }
     }
@@ -105,7 +112,6 @@ class SearchViewModel @Inject constructor(
 
     fun doesSuggestionExist(sug: Suggestion) =
         widgetDataProvider.containsTicker(sug.symbol)
-//    stocksProvider.hasTicker(sug.symbol) && widgetDataProvider.widgetCount <= 1
 
     fun addTickerToWidget(
         ticker: String,
@@ -117,6 +123,7 @@ class SearchViewModel @Inject constructor(
             widgetDataProvider.broadcastUpdateWidget(widgetId)
             true
         } else {
+            appMessaging.sendSnackbar(message = context.getString(R.string.added_to_list, ticker))
             false
         }
     }

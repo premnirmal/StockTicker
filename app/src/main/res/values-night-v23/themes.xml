@@ -5,7 +5,27 @@
 
   <style name="StocksWidget.App.Theme" parent="AppThemeV23"/>
 
+  <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+
   <style name="AddPositionTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+
+  <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+
+  <style name="SearchTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+
+  <style name="WebViewTheme" parent="StocksWidget.App.Theme">
+    <item name="android:windowLightStatusBar">false</item>
+  </style>
+
+  <style name="DbViewerTheme" parent="StocksWidget.App.Theme">
     <item name="android:windowLightStatusBar">false</item>
   </style>
 

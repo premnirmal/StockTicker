@@ -68,13 +68,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setThemePref(themePref: Int) {
-        viewModelScope.launch {
-            appPreferences.themePref = themePref
-            _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
-        }
-    }
-
     fun setWidgetTextSizePref(textSizePref: Int) {
         viewModelScope.launch {
             preferences.edit {
@@ -213,7 +206,6 @@ class SettingsViewModel @Inject constructor(
     private fun buildData(widgetData: WidgetData): SettingsData {
         return SettingsData(
             hasWidgets = widgetDataProvider.hasWidget(),
-            themePref = appPreferences.themePref,
             textSizePref = preferences.getInt(AppPreferences.FONT_SIZE, 1),
             updateIntervalPref = preferences.getInt(AppPreferences.UPDATE_INTERVAL, 1),
             updateDays = appPreferences.updateDays(),
@@ -232,7 +224,6 @@ class SettingsViewModel @Inject constructor(
     @Parcelize
     data class SettingsData(
         val hasWidgets: Boolean,
-        val themePref: Int,
         val textSizePref: Int,
         val updateIntervalPref: Int,
         val updateDays: Set<DayOfWeek>,

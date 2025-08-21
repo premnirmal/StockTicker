@@ -30,7 +30,6 @@ import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.tickerwidget.ui.theme.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
-import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 
 @Composable
 fun NewsCard(item: NewsArticle) {
@@ -96,7 +95,7 @@ fun NewsCard(item: NewsArticle) {
 @Preview
 @Composable
 fun NewsCardPreview() {
-    AppTheme(theme = SelectedTheme.LIGHT) {
+    AppTheme {
         Column {
             NewsCard(
                 NewsArticle(

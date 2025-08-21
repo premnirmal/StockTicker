@@ -40,9 +40,6 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
     ) {
         super.onCreate(savedInstanceState)
         DynamicColors.applyToActivityIfAvailable(this)
-        if (appPreferences.themePref == AppPreferences.JUST_BLACK_THEME) {
-            theme.applyStyle(R.style.AppTheme_Overlay_JustBlack, true)
-        }
         setContentView(binding.root)
         savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
         if (subscribeToErrorEvents) {

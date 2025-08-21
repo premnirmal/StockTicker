@@ -2,22 +2,24 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridCells.Adaptive
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyGridScope
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -105,8 +108,8 @@ fun SearchScreen(
         displayFeatures = displayFeatures
     ).second
     Scaffold(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surface),
+        contentWindowInsets = WindowInsets(0.dp),
+        modifier = modifier.background(MaterialTheme.colorScheme.surface),
         topBar = {
             Column {
                 TopBar(text = stringResource(id = R.string.action_search))
@@ -119,15 +122,14 @@ fun SearchScreen(
     ) { padding ->
         if (contentType == SINGLE_PANE) {
             PullToRefreshBox(
-                modifier = modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize().padding(padding),
                 isRefreshing = isRefreshing,
                 onRefresh = {
                     searchViewModel.fetchTrending()
                 },
             ) {
                 SearchAndTrending(
-                    padding = padding,
-                    columns = Adaptive(120.dp),
+                    columns = StaggeredGridCells.Adaptive(minSize = 120.dp),
                     trendingStocks = trendingStocks,
                     onQuoteClick = onQuoteClick,
                     searchResults = searchResults,
@@ -137,6 +139,7 @@ fun SearchScreen(
             }
         } else {
             TwoPane(
+                modifier = Modifier.padding(padding),
                 strategy = HorizontalTwoPaneStrategy(
                     splitFraction = 1f / 2f,
                 ),
@@ -151,8 +154,7 @@ fun SearchScreen(
                         },
                     ) {
                         SearchAndTrending(
-                            padding = padding,
-                            columns = Adaptive(150.dp),
+                            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
                             trendingStocks = trendingStocks,
                             onQuoteClick = onQuoteClick,
                             searchResults = searchResults,
@@ -219,8 +221,7 @@ fun SearchScreen(
 
 @Composable
 private fun SearchAndTrending(
-    padding: PaddingValues,
-    columns: GridCells,
+    columns: StaggeredGridCells,
     trendingStocks: List<Quote>,
     onQuoteClick: (Quote) -> Unit,
     searchResults: FetchResult<List<Suggestion>>?,
@@ -229,15 +230,12 @@ private fun SearchAndTrending(
 ) {
     if (searchResults != null && searchResults.wasSuccessful && !searchResults.dataSafe.isNullOrEmpty()) {
         SearchResults(
-            padding = padding,
-            columns = columns,
             searchResults = searchResults,
             onSuggestionClick = onSuggestionClick,
             onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
         )
     } else {
         TrendingStocks(
-            padding = padding,
             columns = columns,
             trendingStocks = trendingStocks,
             onQuoteClick = onQuoteClick,
@@ -250,148 +248,113 @@ private fun SearchInputField(
     searchQuery: String,
     onQueryChange: (String) -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-    var text by remember {
-        mutableStateOf(searchQuery)
-    }
-    TextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = text,
-        onValueChange = {
-            text = it
-            onQueryChange(it)
-        },
-        label = {
-            Text(stringResource(id = R.string.enter_a_symbol))
-        },
-        singleLine = true,
-        keyboardActions = KeyboardActions {
-            focusManager.clearFocus(force = true)
-        },
-        trailingIcon = {
-            IconButton(
-                enabled = text.isNotEmpty(),
-                onClick = {
-                    text = ""
-                    onQueryChange("")
-                    focusManager.clearFocus(force = true)
-                }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = null
-                )
-            }
+    Box(
+        modifier = Modifier.fillMaxWidth().padding(8.dp).background(MaterialTheme.colorScheme.surface),
+    ) {
+        val focusManager = LocalFocusManager.current
+        var text by remember {
+            mutableStateOf(searchQuery)
         }
-    )
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = text,
+            onValueChange = {
+                text = it
+                onQueryChange(it)
+            },
+            label = {
+                Text(stringResource(id = R.string.enter_a_symbol))
+            },
+            singleLine = true,
+            keyboardActions = KeyboardActions {
+                focusManager.clearFocus(force = true)
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters),
+            trailingIcon = {
+                IconButton(
+                    enabled = text.isNotEmpty(),
+                    onClick = {
+                        text = ""
+                        onQueryChange("")
+                        focusManager.clearFocus(force = true)
+                    },
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_close),
+                        contentDescription = null
+                    )
+                }
+            }
+        )
+    }
 }
 
 @Composable
 private fun SearchResults(
-    padding: PaddingValues,
-    columns: GridCells,
     searchResults: FetchResult<List<Suggestion>>,
     onSuggestionClick: (Suggestion) -> Unit,
     onSuggestionAddRemoveClick: (Suggestion) -> Boolean
 ) {
-    LazyVerticalGrid(
-        modifier = Modifier.fillMaxHeight().padding(
-            horizontal = 8.dp
-        ).background(color = MaterialTheme.colorScheme.surface),
-        columns = columns,
-        contentPadding = padding,
+    LazyColumn(
+        modifier = Modifier.fillMaxHeight().background(color = MaterialTheme.colorScheme.surface),
+        contentPadding = PaddingValues(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        state = rememberLazyGridState(),
+        state = rememberLazyListState(),
     ) {
-        searchResults(
-            searchResults = searchResults,
-            onSuggestionClick = onSuggestionClick,
-            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick
-        )
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-private fun LazyGridScope.searchResults(
-    searchResults: FetchResult<List<Suggestion>>?,
-    onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
-) {
-    if (searchResults?.wasSuccessful == true) {
-        val suggestions = searchResults.data
-        items(
-            span = { GridItemSpan(maxLineSpan) },
-            count = suggestions.size,
-            key = { i -> suggestions[i].symbol }
-        ) { i ->
-            val suggestion = suggestions[i]
-            SuggestionItem(
-                suggestion = suggestion,
-                onSuggestionClick = onSuggestionClick,
-                onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
-            )
-        }
-    } else {
-        item(
-            span = {
-                GridItemSpan(maxLineSpan)
+        if (searchResults.wasSuccessful) {
+            val suggestions = searchResults.data
+            items(
+                count = suggestions.size,
+                key = { i -> suggestions[i].symbol }
+            ) { i ->
+                val suggestion = suggestions[i]
+                SuggestionItem(
+                    suggestion = suggestion,
+                    onSuggestionClick = onSuggestionClick,
+                    onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                )
             }
-        ) {
-            ErrorState(
-                text = stringResource(R.string.error_fetching_suggestions),
-            )
+        } else {
+            item {
+                ErrorState(
+                    text = stringResource(R.string.error_fetching_suggestions),
+                )
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
 @Composable
 private fun TrendingStocks(
-    padding: PaddingValues,
-    columns: GridCells,
+    columns: StaggeredGridCells,
     trendingStocks: List<Quote>,
     onQuoteClick: (Quote) -> Unit,
 ) {
-    LazyVerticalGrid(
+    LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxHeight().padding(
             horizontal = 8.dp
         ).background(color = MaterialTheme.colorScheme.surface),
         columns = columns,
-        contentPadding = padding,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        state = rememberLazyGridState(),
+        verticalItemSpacing = 8.dp,
+        state = rememberLazyStaggeredGridState(),
     ) {
-        trendingStocks(
-            trendingStocks = trendingStocks,
-            onQuoteClick = onQuoteClick,
-        )
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
+        items(
+            count = trendingStocks.size,
+            key = { i -> trendingStocks[i].symbol }
+        ) { i ->
+            val quote = trendingStocks[i]
+            QuoteCard(
+                quote = quote,
+                onClick = onQuoteClick,
+                quoteNameMaxLines = 1,
+            )
+        }
+        item(span = StaggeredGridItemSpan.FullLine) {
             Spacer(modifier = Modifier.height(16.dp))
         }
-    }
-}
-
-private fun LazyGridScope.trendingStocks(
-    trendingStocks: List<Quote>,
-    onQuoteClick: (Quote) -> Unit
-) {
-    items(
-        count = trendingStocks.size,
-        key = { i -> trendingStocks[i].symbol }
-    ) { i ->
-        val quote = trendingStocks[i]
-        QuoteCard(
-            quote = quote,
-            onClick = onQuoteClick,
-            quoteNameMaxLines = 1,
-        )
     }
 }

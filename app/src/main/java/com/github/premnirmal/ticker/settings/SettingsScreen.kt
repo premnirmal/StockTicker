@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -60,6 +61,7 @@ fun SettingsScreen(
     val viewModel = hiltViewModel<SettingsViewModel>()
     val settingsData = viewModel.settings.collectAsStateWithLifecycle()
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface),
         topBar = {
@@ -104,17 +106,6 @@ private fun LazyListScope.settingsItems(
                 },
             title = stringResource(id = R.string.tutorial),
             subtitle = stringResource(id = R.string.how_to_title)
-        )
-        Divider()
-    }
-    item {
-        ListPreference(
-            title = stringResource(id = R.string.app_theme),
-            items = stringArrayResource(id = R.array.app_themes),
-            selected = settingsData.themePref,
-            onSelected = {
-                viewModel.setThemePref(it)
-            }
         )
         Divider()
     }

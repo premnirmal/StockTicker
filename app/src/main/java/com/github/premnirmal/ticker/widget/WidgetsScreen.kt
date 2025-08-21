@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -87,6 +88,7 @@ private fun WidgetsScreen(
         displayFeatures = displayFeatures
     ).second
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface),
         topBar = {

@@ -6,16 +6,9 @@ import android.os.Build
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.DateTimeFormatter
@@ -31,7 +24,6 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences
 ) {
 
@@ -152,34 +144,11 @@ class AppPreferences @Inject constructor(
             .apply()
     }
 
-    private val themePrefKey: Preferences.Key<Int> = intPreferencesKey(APP_THEME)
-
-    val themePrefFlow: Flow<Int> = context.dataStore.data.map { prefs ->
-        prefs[themePrefKey] ?: FOLLOW_SYSTEM_THEME
-    }
-
-    var themePref: Int
-        get() = runBlocking {
-            themePrefFlow.first()
-        }
-        set(value) = runBlocking {
-            context.dataStore.edit { prefs ->
-                prefs[themePrefKey] = value
-            }
-        }
-
     @NightMode val nightMode: Int
-        get() = when (themePref) {
-            LIGHT_THEME -> AppCompatDelegate.MODE_NIGHT_NO
-            DARK_THEME, JUST_BLACK_THEME -> AppCompatDelegate.MODE_NIGHT_YES
-            FOLLOW_SYSTEM_THEME -> {
-                if (supportSystemNightMode) {
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                } else {
-                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                }
-            }
-            else -> AppCompatDelegate.MODE_NIGHT_YES
+        get() = if (supportSystemNightMode) {
+            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+        } else {
+            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
         }
 
     private val supportSystemNightMode: Boolean
@@ -245,16 +214,11 @@ class AppPreferences @Inject constructor(
         const val PERCENT = "PERCENT"
         const val CRUMB = "CRUMB"
         const val APP_VERSION_CODE = "APP_VERSION_CODE"
-        const val APP_THEME = "APP_THEME"
         const val SYSTEM = 0
         const val TRANSPARENT = 1
         const val TRANSLUCENT = 2
         const val LIGHT = 1
         const val DARK = 2
-        const val LIGHT_THEME = 0
-        const val DARK_THEME = 1
-        const val FOLLOW_SYSTEM_THEME = 2
-        const val JUST_BLACK_THEME = 3
 
         val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)

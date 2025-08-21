@@ -34,14 +34,12 @@ class NetworkModule {
 
     @Provides @Singleton
     internal fun provideHttpClient(
-        userAgentInterceptor: UserAgentInterceptor,
     ): OkHttpClient {
         val logger = HttpLoggingInterceptor()
         logger.level =
             if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         val okHttpClient =
             OkHttpClient.Builder()
-                .addInterceptor(userAgentInterceptor)
                 .addInterceptor(logger)
                 .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
                 .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)

@@ -11,9 +11,6 @@ internal data class ThemePref(val colours: AppColours) {
     val Dark: ThemePref
       @Composable
       get() = ThemePref(DarkThemeColours)
-    val JustBlack: ThemePref
-      @Composable
-      get() = ThemePref(JustBlackThemeColours)
   }
 }
 
@@ -81,43 +78,6 @@ internal val DarkThemeColours: AppColours
       inversePrimary = BaseAppColours.dark_inversePrimary,
       scrim = BaseAppColours.transparent,
       background = BaseAppColours.dark_background,
-      outlineVariant = MaterialTheme.colorScheme.outlineVariant,
-      surfaceTint = MaterialTheme.colorScheme.surfaceTint,
-  )
-
-/**
- * Same as material colours but with the surface and surface variant to be black
- */
-internal val JustBlackThemeColours: AppColours
-  @Composable
-  get() = AppColours(
-      primary = MaterialTheme.colorScheme.primary,
-      onPrimary = MaterialTheme.colorScheme.onPrimary,
-      primaryContainer = MaterialTheme.colorScheme.primaryContainer,
-      onPrimaryContainer = MaterialTheme.colorScheme.onPrimaryContainer,
-      secondary = MaterialTheme.colorScheme.secondary,
-      onSecondary = MaterialTheme.colorScheme.onSecondary,
-      secondaryContainer = MaterialTheme.colorScheme.secondaryContainer,
-      onSecondaryContainer = MaterialTheme.colorScheme.onSecondaryContainer,
-      tertiary = MaterialTheme.colorScheme.tertiary,
-      onTertiary = MaterialTheme.colorScheme.onTertiary,
-      tertiaryContainer = MaterialTheme.colorScheme.tertiaryContainer,
-      onTertiaryContainer = MaterialTheme.colorScheme.onTertiaryContainer,
-      error = MaterialTheme.colorScheme.error,
-      errorContainer = MaterialTheme.colorScheme.errorContainer,
-      onError = MaterialTheme.colorScheme.onError,
-      onErrorContainer = MaterialTheme.colorScheme.onErrorContainer,
-      onBackground = MaterialTheme.colorScheme.onBackground,
-      surface = BaseAppColours.black,
-      onSurface = MaterialTheme.colorScheme.onSurface,
-      surfaceVariant = BaseAppColours.black,
-      onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant,
-      outline = MaterialTheme.colorScheme.outline,
-      inverseOnSurface = MaterialTheme.colorScheme.inverseOnSurface,
-      inverseSurface = MaterialTheme.colorScheme.inverseSurface,
-      inversePrimary = MaterialTheme.colorScheme.inversePrimary,
-      scrim = MaterialTheme.colorScheme.scrim,
-      background = MaterialTheme.colorScheme.background,
       outlineVariant = MaterialTheme.colorScheme.outlineVariant,
       surfaceTint = MaterialTheme.colorScheme.surfaceTint,
   )

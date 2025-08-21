@@ -122,7 +122,7 @@ class WidgetData {
         @ColorRes get() {
             return when (textColorPref()) {
                 SYSTEM -> {
-                    if (appPreferences.themePref == AppPreferences.JUST_BLACK_THEME || nightMode) {
+                    if (nightMode) {
                         R.color.text_widget_positive_light
                     } else {
                         R.color.text_widget_positive
@@ -491,8 +491,7 @@ class WidgetData {
             val appPreferences = Injector.appComponent().appPreferences()
             return when (textColourPref) {
                 SYSTEM -> {
-                    if (appPreferences.themePref == AppPreferences.JUST_BLACK_THEME ||
-                        appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
+                    if (appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
                     ) {
                         R.color.text_widget_positive_light
                     } else {

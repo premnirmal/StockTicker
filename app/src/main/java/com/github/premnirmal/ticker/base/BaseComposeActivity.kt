@@ -3,14 +3,10 @@ package com.github.premnirmal.ticker.base
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
@@ -25,9 +21,7 @@ import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.ShowSnackBar
-import com.github.premnirmal.ticker.ui.ThemeViewModel
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
-import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme.SYSTEM
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -39,7 +33,6 @@ abstract class BaseComposeActivity : ComponentActivity() {
     abstract val simpleName: String
     open val subscribeToErrorEvents = true
     private var isErrorDialogShowing = false
-    private val themeViewModel by viewModels<ThemeViewModel>()
 
     @Inject lateinit var analytics: Analytics
 
@@ -85,8 +78,7 @@ abstract class BaseComposeActivity : ComponentActivity() {
             }
         }
         setContent {
-            val currentTheme = themeViewModel.themePref.collectAsState(initial = SYSTEM)
-            AppTheme(theme = currentTheme.value) {
+            AppTheme {
                 CompositionLocalProvider(LocalAppMessaging provides appMessaging) {
                     ApplyThemeColourToNavigationBar()
                     ApplyThemeColourToStatusBar()
