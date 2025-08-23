@@ -10,7 +10,7 @@
   <string name="nuke_desc">Сбросить приложение к изначальным настройкам. Используйте это, если у вас возникли проблемы с вашим портфолио.</string>
   <string name="export_desc">Экспортировать ваше портфолио в .json файл</string>
   <string name="action_import">Импорт котировок</string>
-  <string name="import_desc">Импорт котировок в текстовый .txt файл, или файл формата формата .json</string>
+  <string name="import_desc">Импорт котировок в текстовый .txt файл, или файл формата .json</string>
   <string name="action_portfolio">Список наблюдения</string>
   <string name="action_widgets">Виджеты</string>
   <string name="action_search">Поиск</string>
@@ -33,7 +33,7 @@
   <string name="update_interval">Интервал обновления</string>
   <string name="update_days">Дни обновления</string>
   <string name="update_days_desc">Обновления будут происходить в эти дни</string>
-  <string name="round_two_dp">Округлить до двух знаковОшибка экспорта файла</string>
+  <string name="round_two_dp">Округлить до двух знаков</string>
   <string name="round_two_dp_desc">Округлить изменения и значения до двух знаков после запятой</string>
   <string name="notification_alerts">Уведомление об обновлении</string>
   <string name="notification_alerts_desc">Получать уведомления об обновлении</string>
@@ -120,9 +120,9 @@
   <string name="add_positions_prompt">Хотите ли вы добавить позиции для %1$s?</string>
   <string name="already_in_portfolio">%1$s уже есть в вашем портфеле</string>
   <string name="added_to_list">%1$s добавлено в ваш портфель</string>
-  <string name="next_fetch">Следущее обновление в %1$s</string>
-  <string name="last_fetch">Крайнее обновление в %1$s</string>
-  <string name="last_and_next_fetch">Крайнее обновление в %1$s\nСледущее обновление в %2$s</string>
+  <string name="next_fetch">Следующее обновление данных в %1$s</string>
+  <string name="last_fetch">Данные были получены в %1$s</string>
+  <string name="last_and_next_fetch">Данные были получены в %1$s\nСледующее обновление в %2$s</string>
   <string name="total_holdings">Всего активов: %1$s</string>
   <string name="cannot_export_msg">Невозможно экспортировать котировки без разрешения на запись во внешнее хранилище</string>
   <string name="cannot_import_msg">Невозможно экспортировать котировки без разрешения на чтение внешнего хранилища</string>
@@ -132,7 +132,7 @@
   <string name="whats_new_in">Новое в v%1$s</string>
   <string name="enter_a_symbol">Введите симовол</string>
   <string name="no_symbols">¯\\_(ツ)_/¯\nНет символов</string>
-  <string name="error_fetching_news">¯\\_(ツ)_/¯\nОшибка интересных новостей</string>
+  <string name="error_fetching_news">¯\\_(ツ)_/¯\nОшибка загрузки интересных новостей</string>
   <string name="widget_name">Название виджета</string>
   <string name="widget_name_updated">Название виджета обновлено</string>
   <string name="set">Установить</string>
@@ -159,7 +159,7 @@
   <string name="widgets">Виджеты</string>
   <string name="tutorial">Руководство</string>
   <string name="how_to_title">Как добавить виджет</string>
-  <string name="how_to">- Нажмите и удерживайте пустое место на главном экране, чтобы открыть меню.\n\n- Теперь выберите опцию \'Widgets\'.\n\n- Выберите пункт \'Stocks Widget\' из списка виджетов.\n\n- Вы можете добавить несколько виджетов, каждый со своим собственным портфелем.</string>
+  <string name="how_to">- Нажмите и удерживайте пустое место на главном экране, чтобы открыть меню.\n\n- Теперь выберите опцию \'Виджеты\'.\n\n- Выберите пункт \'Stocks Widget\' из списка виджетов.\n\n- Вы можете добавить несколько виджетов, каждый со своим собственным портфелем.</string>
   <string name="db_viewer">База данных приложения</string>
   <string name="discovered_db">Вы обнаружили секретный вход в средство просмотра БД.</string>
   <string name="db_tap_count">Нажмите %1$d еще раз, чтобы разблокировать средство просмотра базы данных.</string>
@@ -187,9 +187,9 @@
   <string name="error_fetching_whats_new">Ошибка при загрузке новых данных</string>
   <string name="loading">Загрузка</string>
 
-  <string name="quote_details_open">Открыть</string>
-  <string name="quote_details_day_range">Диапазон дня</string>
-  <string name="quote_details_ftw_range">Диапазон 52 недель</string>
+  <string name="quote_details_open">Открыто</string>
+  <string name="quote_details_day_range">Диапазон за день</string>
+  <string name="quote_details_ftw_range">Диапазон за 52 недели</string>
   <string name="quote_details_volume">Уровень</string>
   <string name="quote_details_market_cap">Рыночная капитализация</string>
   <string name="quote_details_pe_ratio">Соотношение «цена/прибыль»</string>
@@ -200,8 +200,8 @@
   <string name="quote_details_profit_margins">Нормы прибыли</string>
   <string name="quote_details_revenue_growth">Рост доходов</string>
   <string name="quote_details_earnings_growth">Рост прибыли</string>
-  <string name="quote_details_fifty_day_average">50-дневное среднее</string>
-  <string name="quote_details_two_hundred_day_average">200-дневное среднее</string>
+  <string name="quote_details_fifty_day_average">Среднее значение за 50 дней</string>
+  <string name="quote_details_two_hundred_day_average">Среднее значение за 200 дней</string>
   <string name="date_format_long">MMM dd, yyyy</string>
   <string name="number_format_thousands">%1$.2fK</string>
   <string name="number_format_millions">%1$.2fM</string>
