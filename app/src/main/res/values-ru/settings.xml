@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+  <string-array name="font_sizes">
+    <item>Маленький</item>
+    <item>Средний</item>
+    <item>Большой</item>
+  </string-array>
+
+  <string-array name="app_themes">
+    <item>Светлая</item>
+    <item>Тёмная</item>
+    <item>Следовать настройкам системы</item>
+    <item>Абсолютно чёрная</item>
+  </string-array>
+
+  <string-array name="layout_types">
+    <item>Анимационный</item>
+    <item>Закладки</item>
+    <item>Фиксированный</item>
+    <item>Моё портфолио</item>
+  </string-array>
+
+  <string-array name="widget_width_types">
+    <item>По умолчанию</item>
+    <item>В одну строку</item>
+  </string-array>
+
+  <string-array name="backgrounds">
+    <item>Следовать настройкам системы</item>
+    <item>Прозрачный</item>
+    <item>Полупрозрачный</item>
+  </string-array>
+
+  <string-array name="text_colors">
+    <item>Следовать настройкам системы</item>
+    <item>Светлый</item>
+    <item>Тёмный</item>
+  </string-array>
+
+  <string-array name="sync_periods">
+    <item>Каждые 5 минут</item>
+    <item>Каждые 15 минут</item>
+    <item>Каждые 30 минут</item>
+    <item>Каждые 45 минут</item>
+    <item>Каждый час</item>
+  </string-array>
+
+  <string-array name="days">
+    <item>Понедельник</item>
+    <item>Вторник</item>
+    <item>Среда</item>
+    <item>Четверг</item>
+    <item>Пятница</item>
+    <item>Суббота</item>
+    <item>Воскресенье</item>
+  </string-array>
+</resources>
