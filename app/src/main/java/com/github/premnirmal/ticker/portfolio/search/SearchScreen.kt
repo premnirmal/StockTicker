@@ -306,7 +306,7 @@ private fun SearchResults(
             val suggestions = searchResults.data
             items(
                 count = suggestions.size,
-                key = { i -> suggestions[i].symbol }
+                key = { i -> suggestions[i].symbol+i }
             ) { i ->
                 val suggestion = suggestions[i]
                 SuggestionItem(

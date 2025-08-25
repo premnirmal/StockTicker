@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 @Composable fun AppTheme(
-  dynamicColor: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
   theme: SelectedTheme,
   content: @Composable () -> Unit
 ) {
