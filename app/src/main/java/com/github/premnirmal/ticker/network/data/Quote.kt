@@ -16,7 +16,9 @@ data class Quote constructor(
     var name: String = "",
     var lastTradePrice: Float = 0.toFloat(),
     var changeInPercent: Float = 0.toFloat(),
-    var change: Float = 0.toFloat()
+    var change: Float = 0.toFloat(),
+    var position: Position? = null,
+    var properties: Properties? = null,
 ) : Parcelable, Comparable<Quote> {
 
     var isPostMarket: Boolean = false
@@ -24,9 +26,6 @@ data class Quote constructor(
     var currencyCode: String = "USD"
     var annualDividendRate: Float = 0.toFloat()
     var annualDividendYield: Float = 0.toFloat()
-
-    var position: Position? = null
-    var properties: Properties? = null
 
     var region: String = ""
     var quoteType: String = ""

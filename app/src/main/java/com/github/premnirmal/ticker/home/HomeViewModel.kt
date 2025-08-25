@@ -62,6 +62,9 @@ class HomeViewModel @Inject constructor(
     val hasWidget: Flow<Boolean>
         get() = widgetDataProvider.hasWidget
 
+    val hasHoldings: Boolean
+        get() = stocksProvider.hasPositions()
+
     init {
         initCaches()
         widgetDataProvider.refreshWidgetDataList()
@@ -77,6 +80,32 @@ class HomeViewModel @Inject constructor(
     fun initNotifications() {
         notificationsHandler.initialize()
     }
+
+    val totalGainLoss: Flow<TotalGainLoss>
+        get() = stocksProvider.portfolio.map { portfolio ->
+            val totalHoldings = portfolio.filter { it.hasPositions() }.sumOf { quote ->
+                quote.holdings().toDouble()
+            }
+            val totalHoldingsStr = appPreferences.selectedDecimalFormat.format(totalHoldings)
+            var totalGain = 0.0f
+            var totalLoss = 0.0f
+            val quotesWithPositions = portfolio.filter { it.hasPositions() }
+            for (quote in quotesWithPositions) {
+                val gainLoss = quote.gainLoss()
+                if (gainLoss > 0.0f) {
+                    totalGain += gainLoss
+                } else {
+                    totalLoss += gainLoss
+                }
+            }
+            val totalGainStr = "+" + appPreferences.selectedDecimalFormat.format(totalGain)
+            val totalLossStr = if (totalLoss != 0.0f) {
+                appPreferences.selectedDecimalFormat.format(totalLoss)
+            } else {
+                ""
+            }
+            TotalGainLoss(totalHoldingsStr, totalGainStr, totalLossStr)
+        }
 
     fun checkShowTutorial() {
         val tutorialShown = appPreferences.tutorialShown()
@@ -139,4 +168,10 @@ class HomeViewModel @Inject constructor(
             } while (result.wasSuccessful && isMarketOpen)
         }
     }
+
+    data class TotalGainLoss(
+        val holdings: String,
+        val gain: String,
+        val loss: String
+    )
 }

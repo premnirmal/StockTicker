@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,8 +34,11 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRowDefaults
@@ -69,6 +73,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.detail.QuoteCard
@@ -80,6 +86,7 @@ import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -117,6 +124,9 @@ fun WatchlistContent(
                 (headerHeight + connection.appBarOffset).toDp()
             }
         }
+    }
+    var showTotalHoldingsPopup by remember {
+        mutableStateOf(false)
     }
     rememberScrollToTopAction(HomeRoute.Watchlist) {
         connection.resetOffset()
@@ -180,13 +190,36 @@ fun WatchlistContent(
             coroutineScope = coroutineScope,
             rowState = rowState
         )
-        TopAppBar(modifier = Modifier, scrollState = connection)
+        TopAppBar(
+            modifier = Modifier,
+            scrollState = connection,
+            viewModel = viewModel,
+            onTotalHoldingsClick = {
+                showTotalHoldingsPopup = true
+            }
+        )
+        val totalHoldings by viewModel.totalGainLoss.collectAsStateWithLifecycle(initialValue = null)
+        if (showTotalHoldingsPopup && totalHoldings != null) {
+            totalHoldings?.let { totalHoldings ->
+                TotalHoldingsPopup(
+                    totalHoldings = totalHoldings,
+                    onDismiss = {
+                        showTotalHoldingsPopup = false
+                    }
+                )
+            }
+        }
     }
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun TopAppBar(modifier: Modifier = Modifier, scrollState: CollapsingTopBarScrollConnection) {
+private fun TopAppBar(
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel,
+    scrollState: CollapsingTopBarScrollConnection,
+    onTotalHoldingsClick: () -> Unit,
+) {
     val backgroundColor = TopAppBarDefaults.topAppBarColors().containerColor
     val offset = abs(scrollState.appBarOffset / TopAppBarDefaults.TopAppBarExpandedHeight.value)
     val tobAppBarBackgroundColor = animateColorAsState(
@@ -208,7 +241,19 @@ private fun TopAppBar(modifier: Modifier = Modifier, scrollState: CollapsingTopB
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = tobAppBarBackgroundColor.value,
             titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        )
+        ),
+        actions = {
+            if (viewModel.hasHoldings) {
+                IconButton(
+                    onClick = onTotalHoldingsClick,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_money),
+                        contentDescription = null,
+                    )
+                }
+            }
+        }
     )
 }
 
