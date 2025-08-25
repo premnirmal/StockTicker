@@ -1,12 +1,22 @@
 package com.github.premnirmal.ticker
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.format.DateTimeFormatter
@@ -22,7 +32,8 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    @ApplicationContext private val context: Context,
+    private val sharedPreferences: SharedPreferences,
 ) {
 
     init {
@@ -142,11 +153,45 @@ class AppPreferences @Inject constructor(
             .apply()
     }
 
+    private val themePrefKey: Preferences.Key<Int> = intPreferencesKey(APP_THEME)
+
+    val themePrefFlow: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[themePrefKey] ?: FOLLOW_SYSTEM_THEME
+    }
+
+    val selectedTheme: SelectedTheme
+        get() = runBlocking {
+            val pref = themePrefFlow.first()
+            when (pref) {
+                LIGHT_THEME -> SelectedTheme.LIGHT
+                DARK_THEME -> SelectedTheme.DARK
+                FOLLOW_SYSTEM_THEME -> SelectedTheme.SYSTEM
+                else -> SelectedTheme.SYSTEM
+            }
+        }
+
+    var themePref: Int
+        get() = runBlocking {
+            themePrefFlow.first()
+        }
+        set(value) = runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs[themePrefKey] = value
+            }
+        }
+
     @NightMode val nightMode: Int
-        get() = if (supportSystemNightMode) {
-            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        } else {
-            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+        get() = when (themePref) {
+            LIGHT_THEME -> AppCompatDelegate.MODE_NIGHT_NO
+            DARK_THEME -> AppCompatDelegate.MODE_NIGHT_YES
+            FOLLOW_SYSTEM_THEME -> {
+                if (supportSystemNightMode) {
+                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                } else {
+                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                }
+            }
+            else -> AppCompatDelegate.MODE_NIGHT_YES
         }
 
     private val supportSystemNightMode: Boolean
@@ -212,11 +257,15 @@ class AppPreferences @Inject constructor(
         const val PERCENT = "PERCENT"
         const val CRUMB = "CRUMB"
         const val APP_VERSION_CODE = "APP_VERSION_CODE"
+        const val APP_THEME = "APP_THEME"
         const val SYSTEM = 0
         const val TRANSPARENT = 1
         const val TRANSLUCENT = 2
         const val LIGHT = 1
         const val DARK = 2
+        const val LIGHT_THEME = 0
+        const val DARK_THEME = 1
+        const val FOLLOW_SYSTEM_THEME = 2
 
         val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(MEDIUM)
@@ -227,5 +276,8 @@ class AppPreferences @Inject constructor(
 
         val SELECTED_DECIMAL_FORMAT: Format
             get() = if (::INSTANCE.isInitialized) { INSTANCE.selectedDecimalFormat } else DECIMAL_FORMAT
+
+        val SELECTED_THEME: SelectedTheme
+            get() = if (::INSTANCE.isInitialized) { INSTANCE.selectedTheme } else SelectedTheme.SYSTEM
     }
 }

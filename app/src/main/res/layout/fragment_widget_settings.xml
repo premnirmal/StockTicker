@@ -18,7 +18,7 @@
         android:id="@+id/preview_container"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:background="@drawable/bg_header"
+        android:background="@drawable/bg_header_light"
         android:padding="44dp">
       <include
           layout="@layout/widget_2x1"

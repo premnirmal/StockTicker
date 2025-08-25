@@ -8,6 +8,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,9 +34,9 @@ import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -68,6 +70,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
@@ -77,6 +80,7 @@ import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
@@ -309,6 +313,15 @@ private fun Header(
     rowState: LazyListState
 ) {
     val contentType = LocalContentType.current
+    val bg = when (AppPreferences.SELECTED_THEME) {
+        SelectedTheme.DARK -> R.drawable.bg_header_dark
+        SelectedTheme.LIGHT -> R.drawable.bg_header_light
+        else -> if (isSystemInDarkTheme()) {
+            R.drawable.bg_header_dark
+        } else {
+            R.drawable.bg_header_light
+        }
+    }
     Box(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -316,7 +329,7 @@ private fun Header(
             Image(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                painter = painterResource(R.drawable.bg_header),
+                painter = painterResource(bg),
                 contentDescription = null,
             )
         }
@@ -334,9 +347,10 @@ private fun Header(
                 style = MaterialTheme.typography.labelMedium
             )
             if (hasWidgets && widgets.isNotEmpty()) {
-                TabRow(
-                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                ScrollableTabRow(
+                    modifier = Modifier.wrapContentWidth().align(Alignment.CenterHorizontally),
                     selectedTabIndex = selectedItemIndex,
+                    edgePadding = 0.dp,
                     divider = {},
                     containerColor = Color.Transparent,
                     indicator = { tabPositions ->
@@ -344,37 +358,20 @@ private fun Header(
                             TabRowDefaults.SecondaryIndicator(
                                 modifier = Modifier.customTabIndicatorOffset(tabPositions[selectedItemIndex]),
                                 height = 2.dp,
-                                color = MaterialTheme.colorScheme.secondary
+                                color = MaterialTheme.colorScheme.secondary,
                             )
                         }
-                    }
+                    },
                 ) {
                     widgets.forEachIndexed { index, widget ->
                         val selected by remember(selectedItemIndex) { derivedStateOf { selectedItemIndex == index } }
-                        Tab(
+                        TabText(
                             selected = selected,
+                            text = widget.widgetName().uppercase(Locale.getDefault()),
                             onClick = {
                                 coroutineScope.launch {
                                     rowState.animateScrollToItem(index)
                                 }
-                            },
-                            text = {
-                                Text(
-                                    text = widget.widgetName().uppercase(Locale.getDefault()),
-                                    style = if (selected) {
-                                        MaterialTheme.typography.labelMedium.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-                                        )
-                                    } else {
-                                        MaterialTheme.typography.labelMedium
-                                    },
-                                    textAlign = TextAlign.Center,
-                                    color = if (selected) {
-                                        MaterialTheme.colorScheme.onPrimaryContainer
-                                    } else {
-                                        MaterialTheme.colorScheme.onSecondaryContainer
-                                    },
-                                )
                             }
                         )
                     }
@@ -382,6 +379,36 @@ private fun Header(
             }
         }
     }
+}
+
+@Composable
+private fun TabText(
+    selected: Boolean,
+    text: String,
+    onClick: () -> Unit,
+) {
+    Tab(
+        selected = selected,
+        onClick = onClick,
+        text = {
+            Text(
+                text = text,
+                style = if (selected) {
+                    MaterialTheme.typography.labelMedium.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                    )
+                } else {
+                    MaterialTheme.typography.labelMedium
+                },
+                textAlign = TextAlign.Center,
+                color = if (selected) {
+                    MaterialTheme.colorScheme.onPrimaryContainer
+                } else {
+                    MaterialTheme.colorScheme.onSecondaryContainer
+                },
+            )
+        }
+    )
 }
 
 private fun Modifier.customTabIndicatorOffset(

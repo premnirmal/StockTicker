@@ -384,7 +384,7 @@ fun WidgetPreview(
             previewContainer.layoutParams =
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             previewContainer.setPadding(padding.toInt())
-            previewContainer.setBackgroundResource(R.drawable.bg_header)
+            previewContainer.setBackgroundResource(R.drawable.bg_header_light)
             val binding = Widget2x1Binding.inflate(LayoutInflater.from(context), previewContainer, true)
             binding.list.adapter = WidgetPreviewAdapter(widgetData, widgetDataImmutable)
             previewContainer

@@ -16,7 +16,6 @@
     <item>Claro</item>
     <item>Escuro</item>
     <item>Como o sistema</item>
-    <item>Apenas preto</item>
   </string-array>
 
   <string-array name="layout_types">

@@ -33,7 +33,7 @@ fun ModalBottomSheetWithMessage(
             style = MaterialTheme.typography.titleLarge,
         )
         Text(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier.padding(bottom = 8.dp),
             text = message.message,
             style = MaterialTheme.typography.bodyMedium,
         )

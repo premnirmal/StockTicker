@@ -15,7 +15,6 @@ import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteDetailScreen
 import com.github.premnirmal.ticker.home.HomeListDetail
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.ui.LocalContentType
 
 @Composable
 fun RootNavigationGraph(
@@ -27,13 +26,18 @@ fun RootNavigationGraph(
     val viewModelStoreOwner = rememberViewModelStoreOwner()
     CompositionLocalProvider(LocalNavGraphViewModelStoreOwner provides viewModelStoreOwner) {
         NavHost(
-            navController = navHostController, route = Graph.ROOT, startDestination = Graph.HOME
+            navController = navHostController,
+            route = Graph.ROOT,
+            startDestination = Graph.HOME
         ) {
             composable(route = "${Graph.QUOTE_DETAIL}/{symbol}") {
                 val symbol = it.arguments?.getString("symbol")
                 symbol?.let { symbol ->
                     QuoteDetailScreen(
-                        widthSizeClass = windowWidthSizeClass, contentType = null, displayFeatures = displayFeatures, quote = Quote(symbol = symbol)
+                        widthSizeClass = windowWidthSizeClass,
+                        contentType = null,
+                        displayFeatures = displayFeatures,
+                        quote = Quote(symbol = symbol)
                     )
                     return@composable
                 }

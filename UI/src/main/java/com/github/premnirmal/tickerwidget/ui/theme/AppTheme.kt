@@ -9,18 +9,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 @Composable fun AppTheme(
+  dynamicColor: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
+  theme: SelectedTheme,
   content: @Composable () -> Unit
 ) {
   val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
   val isDarkTheme = isSystemInDarkTheme()
-  val colorScheme = if (dynamicColor) {
-    if (isDarkTheme) {
-      dynamicDarkColorScheme(LocalContext.current)
-    } else {
-      dynamicLightColorScheme(LocalContext.current)
+  val colorScheme = when (theme) {
+    SelectedTheme.SYSTEM -> {
+      if (dynamicColor) {
+        if (isDarkTheme) {
+          dynamicDarkColorScheme(LocalContext.current)
+        } else {
+          dynamicLightColorScheme(LocalContext.current)
+        }
+      } else {
+        if (isDarkTheme) ThemePref.Dark.colours.toColorScheme() else ThemePref.Light.colours.toColorScheme()
+      }
     }
-  } else {
-    if (isDarkTheme) ThemePref.Dark.colours.toColorScheme() else ThemePref.Light.colours.toColorScheme()
+
+    SelectedTheme.LIGHT -> {
+      if (dynamicColor) {
+        dynamicLightColorScheme(LocalContext.current)
+      } else {
+        ThemePref.Light.colours.toColorScheme()
+      }
+    }
+    SelectedTheme.DARK -> {
+      if (dynamicColor) {
+        dynamicDarkColorScheme(LocalContext.current)
+      } else {
+        ThemePref.Dark.colours.toColorScheme()
+      }
+    }
   }
   MaterialTheme(
       colorScheme = colorScheme,
@@ -29,4 +50,10 @@ import androidx.compose.ui.platform.LocalContext
   ) {
     content()
   }
+}
+
+enum class SelectedTheme {
+  SYSTEM,
+  LIGHT,
+  DARK,
 }

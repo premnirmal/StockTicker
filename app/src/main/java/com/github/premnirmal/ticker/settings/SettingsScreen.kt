@@ -119,6 +119,17 @@ private fun LazyListScope.settingsItems(
     }
     item {
         ListPreference(
+            title = stringResource(id = R.string.app_theme),
+            items = stringArrayResource(id = R.array.app_themes),
+            selected = settingsData.themePref,
+            onSelected = {
+                viewModel.setThemePref(it)
+            }
+        )
+        Divider()
+    }
+    item {
+        ListPreference(
             title = stringResource(id = R.string.choose_text_size),
             items = stringArrayResource(id = R.array.font_sizes),
             selected = settingsData.textSizePref,

@@ -145,50 +145,58 @@ fun SearchScreen(
                 },
             ) {
                 TwoPane(
-                    modifier = Modifier, strategy = HorizontalTwoPaneStrategy(
-                    splitFraction = 1f / 2f,
-                ), displayFeatures = displayFeatures, foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly, first = {
-                    SearchAndTrending(
-                        columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-                        trendingStocks = trendingStocks,
-                        onQuoteClick = onQuoteClick,
-                        searchResults = searchResults,
-                        onSuggestionClick = onSuggestionClick,
-                        onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
-                    )
-                }, second = {
-                    val fetchResult by newsViewModel.newsFeed.observeAsState()
-                    LaunchedEffect(fetchResult?.dataSafe.isNullOrEmpty()) {
-                        if (fetchResult?.dataSafe.isNullOrEmpty()) {
-                            newsViewModel.fetchNews()
-                        }
-                    }
-                    fetchResult?.let {
-                        val data = it.dataSafe
-                        if (data.isNullOrEmpty()) {
-                            ErrorState(
-                                modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
-                                text = stringResource(id = R.string.no_data)
-                            )
-                        } else {
-                            val news = data.filterIsInstance<NewsFeedItem.ArticleNewsFeed>()
-                            val state = rememberLazyListState()
-                            rememberScrollToTopAction(HomeRoute.Search) {
-                                state.animateScrollToItem(0)
+                    modifier = Modifier,
+                    strategy = HorizontalTwoPaneStrategy(
+                        splitFraction = 1f / 2f,
+                    ),
+                    displayFeatures = displayFeatures,
+                    foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
+                    first = {
+                        SearchAndTrending(
+                            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+                            trendingStocks = trendingStocks,
+                            onQuoteClick = onQuoteClick,
+                            searchResults = searchResults,
+                            onSuggestionClick = onSuggestionClick,
+                            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                        )
+                    },
+                    second = {
+                        val fetchResult by newsViewModel.newsFeed.observeAsState()
+                        LaunchedEffect(fetchResult?.dataSafe.isNullOrEmpty()) {
+                            if (fetchResult?.dataSafe.isNullOrEmpty()) {
+                                newsViewModel.fetchNews()
                             }
-                            LazyColumn(
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                state = state,
-                            ) {
-                                items(
-                                    count = news.size, key = { i -> news[i].article.url }) { i ->
-                                    NewsCard(item = news[i].article)
+                        }
+                        fetchResult?.let {
+                            val data = it.dataSafe
+                            if (data.isNullOrEmpty()) {
+                                ErrorState(
+                                    modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+                                    text = stringResource(id = R.string.no_data)
+                                )
+                            } else {
+                                val news = data.filterIsInstance<NewsFeedItem.ArticleNewsFeed>()
+                                val state = rememberLazyListState()
+                                rememberScrollToTopAction(HomeRoute.Search) {
+                                    state.animateScrollToItem(0)
+                                }
+                                LazyColumn(
+                                    modifier = Modifier.padding(horizontal = 8.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    state = state,
+                                ) {
+                                    items(
+                                        count = news.size,
+                                        key = { i -> news[i].article.url }
+                                    ) { i ->
+                                        NewsCard(item = news[i].article)
+                                    }
                                 }
                             }
                         }
                     }
-                })
+                )
             }
         }
     }

@@ -16,7 +16,6 @@
     <item>Chiaro</item>
     <item>Scuro</item>
     <item>Come da sistema</item>
-    <item>Solo nero</item>
   </string-array>
 
   <string-array name="layout_types">

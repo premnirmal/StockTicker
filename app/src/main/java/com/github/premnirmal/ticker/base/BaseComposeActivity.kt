@@ -3,13 +3,16 @@ package com.github.premnirmal.ticker.base
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.premnirmal.ticker.AppPreferences
@@ -21,7 +24,9 @@ import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.ShowSnackBar
+import com.github.premnirmal.ticker.ui.ThemeViewModel
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -33,6 +38,8 @@ abstract class BaseComposeActivity : ComponentActivity() {
     abstract val simpleName: String
     open val subscribeToErrorEvents = true
     private var isErrorDialogShowing = false
+
+    private val themeViewModel by viewModels<ThemeViewModel>()
 
     @Inject lateinit var analytics: Analytics
 
@@ -78,7 +85,10 @@ abstract class BaseComposeActivity : ComponentActivity() {
             }
         }
         setContent {
-            AppTheme {
+            val currentTheme by themeViewModel.themePref.collectAsStateWithLifecycle(
+                initialValue = SelectedTheme.SYSTEM
+            )
+            AppTheme(theme = currentTheme) {
                 CompositionLocalProvider(LocalAppMessaging provides appMessaging) {
                     ApplyThemeColourToNavigationBar()
                     ApplyThemeColourToStatusBar()
