@@ -11,7 +11,7 @@
   <string name="export_desc">Экспортировать ваше портфолио в .json файл</string>
   <string name="action_import">Импорт котировок</string>
   <string name="import_desc">Импорт котировок в текстовый .txt файл, или файл формата .json</string>
-  <string name="action_portfolio">Список наблюдения</string>
+  <string name="action_portfolio">Монитор</string>
   <string name="action_widgets">Виджеты</string>
   <string name="action_search">Поиск</string>
   <string name="action_feed">Тренд</string>
@@ -36,16 +36,16 @@
   <string name="round_two_dp">Округлить до двух знаков</string>
   <string name="round_two_dp_desc">Округлить изменения и значения до двух знаков после запятой</string>
   <string name="notification_alerts">Уведомление об обновлении</string>
-  <string name="notification_alerts_desc">Получать уведомления об обновлении</string>
+  <string name="notification_alerts_desc">Получать уведомления об обновлении данных</string>
   <string name="notification_alerts_required_message">Приложению необходимо разрешить отправку уведомлений для получения уведомлений об обновлении.</string>
-  <string name="auto_sort">Автосортировка</string>
+  <string name="auto_sort">Автоматическая сортировка</string>
   <string name="auto_sort_desc">Акции будут отсортированы по проценту изменения.</string>
   <string name="hide_header">Скрыть заголовок виджета</string>
-  <string name="hide_header_desc">Кнопка получения времени и обновления.</string>
+  <string name="hide_header_desc">Показывать кнопку обновления и время получения обновлений.</string>
   <string name="refresh_on_screen_unlock">Обновить при разблокировке</string>
   <string name="refresh_on_screen_unlock_desc">Обновлять при разблокировке экрана (только в установленные вами интервалы времени).</string>
   <string name="bold_change">Жирный текст</string>
-  <string name="bold_change_desc">Плкахываьб изменения и рыночную стоимость жирным шрифтом</string>
+  <string name="bold_change_desc">Выделять изменения и рыночную стоимость жирным шрифтом</string>
   <string name="setting_currency">Показать знак валюты</string>
   <string name="setting_currency_desc">Показывать знак валюты на виджете</string>
   <string name="choose_text_size">Размер текста виджета</string>
@@ -111,7 +111,7 @@
   <string name="change_amount">Изменение</string>
   <string name="day_change_percent">% Изменения за день</string>
   <string name="day_change_amount">Изменение за день</string>
-  <string name="autosort_disabled">Автосортировка отключена. Теперь сортировку можно производить перетаскиванием.</string>
+  <string name="autosort_disabled">Автоматическая сортировка отключена. Теперь сортировку можно производить перетаскиванием.</string>
   <string name="remove_prompt">Вы уверены, что хотите удалить %1$s из своего портфеля?</string>
   <string name="ok">ОК</string>
   <string name="cancel">Отмена</string>
@@ -154,7 +154,7 @@
   <string name="three_month_short">3М</string>
   <string name="one_year_short">1Г</string>
   <string name="five_years_short">5Г</string>
-  <string name="max">Макс</string>
+  <string name="max">∞</string>
   <string name="error_loading_graph">Ошибка загрузки графика</string>
   <string name="widgets">Виджеты</string>
   <string name="tutorial">Руководство</string>
