@@ -7,17 +7,16 @@ import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsIntent.SHARE_STATE_ON
 import com.github.premnirmal.ticker.settings.WebViewActivity
-import com.google.android.material.elevation.SurfaceColors
 import timber.log.Timber
 
 object CustomTabs {
 
     fun openTab(
         context: Context,
-        url: String
+        url: String,
+        color: Int,
     ) {
         try {
-            val color = SurfaceColors.SURFACE_2.getColor(context)
             val customTabsIntent = CustomTabsIntent.Builder()
                 .setShareState(SHARE_STATE_ON)
                 .setShowTitle(true)

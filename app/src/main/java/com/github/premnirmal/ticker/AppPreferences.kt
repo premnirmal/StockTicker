@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.format.DateTimeFormatter
-import org.threeten.bp.format.FormatStyle.MEDIUM
 import java.text.DecimalFormat
 import java.text.Format
+import java.time.DayOfWeek
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle.MEDIUM
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random

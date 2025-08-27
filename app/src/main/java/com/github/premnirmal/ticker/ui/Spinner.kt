@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.tickerwidget.R
 
 @Composable fun <T> Spinner(
     modifier: Modifier = Modifier,
@@ -58,7 +59,7 @@ import androidx.compose.ui.unit.dp
                 Spacer(modifier = (modifier.weight(1f)))
                 Icon(
                     modifier = modifier.padding(4.dp),
-                    painter = painterResource(id = androidx.preference.R.drawable.ic_arrow_down_24dp),
+                    painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = null
                 )
             }

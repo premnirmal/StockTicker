@@ -1,138 +1,148 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class YahooResponse(
-    @SerializedName("quoteResponse") val quoteResponse: QuoteResponse
+    @SerialName("quoteResponse") val quoteResponse: QuoteResponse
 )
 
+@Serializable
 data class QuoteResponse(
-    @SerializedName("result") val result: List<YahooQuoteNet>?
+    @SerialName("result") val result: List<YahooQuoteNet>?
 )
 
+@Serializable
 data class YahooQuoteNet(
-    @SerializedName("region")
+    @SerialName("region")
     val region: String,
-    @SerializedName("quoteType")
+    @SerialName("quoteType")
     val quoteType: String,
-    @SerializedName("currency")
+    @SerialName("currency")
     val currency: String?,
-    @SerializedName("exchange")
+    @SerialName("exchange")
     val exchange: String?,
-    @SerializedName("shortName")
+    @SerialName("shortName")
     val name: String?,
-    @SerializedName("longName")
+    @SerialName("longName")
     val longName: String?,
-    @SerializedName("gmtOffSetMilliseconds")
+    @SerialName("gmtOffSetMilliseconds")
     val gmtOffSetMilliseconds: Long,
-    @SerializedName("regularMarketChange")
+    @SerialName("regularMarketChange")
     val change: Float,
-    @SerializedName("regularMarketChangePercent")
+    @SerialName("regularMarketChangePercent")
     val changePercent: Float,
-    @SerializedName("regularMarketPrice")
+    @SerialName("regularMarketPrice")
     val lastTradePrice: Float,
-    @SerializedName("regularMarketDayHigh")
+    @SerialName("regularMarketDayHigh")
     val regularMarketDayHigh: Float,
-    @SerializedName("regularMarketDayLow")
+    @SerialName("regularMarketDayLow")
     val regularMarketDayLow: Float,
-    @SerializedName("regularMarketPreviousClose")
+    @SerialName("regularMarketPreviousClose")
     val regularMarketPreviousClose: Float,
-    @SerializedName("regularMarketOpen")
+    @SerialName("regularMarketOpen")
     val regularMarketOpen: Float,
-    @SerializedName("regularMarketVolume")
+    @SerialName("regularMarketVolume")
     val regularMarketVolume: Long,
-    @SerializedName("trailingPE")
+    @SerialName("trailingPE")
     val trailingPE: Float?,
-    @SerializedName("marketState")
+    @SerialName("marketState")
     val marketState: String?,
-    @SerializedName("tradeable")
+    @SerialName("tradeable")
     val tradeable: Boolean,
-    @SerializedName("triggerable")
+    @SerialName("triggerable")
     val triggerable: Boolean,
-    @SerializedName("fiftyTwoWeekLowChange")
+    @SerialName("fiftyTwoWeekLowChange")
     val fiftyTwoWeekLowChange: Float?,
-    @SerializedName("fiftyTwoWeekLowChangePercent")
+    @SerialName("fiftyTwoWeekLowChangePercent")
     val fiftyTwoWeekLowChangePercent: Float?,
-    @SerializedName("fiftyTwoWeekHighChange")
+    @SerialName("fiftyTwoWeekHighChange")
     val fiftyTwoWeekHighChange: Float?,
-    @SerializedName("fiftyTwoWeekHighChangePercent")
+    @SerialName("fiftyTwoWeekHighChangePercent")
     val fiftyTwoWeekHighChangePercent: Float?,
-    @SerializedName("fiftyTwoWeekLow")
+    @SerialName("fiftyTwoWeekLow")
     val fiftyTwoWeekLow: Float?,
-    @SerializedName("fiftyTwoWeekHigh")
+    @SerialName("fiftyTwoWeekHigh")
     val fiftyTwoWeekHigh: Float?,
-    @SerializedName("dividendDate")
+    @SerialName("dividendDate")
     val dividendDate: Long?,
-    @SerializedName("earningsTimestamp")
+    @SerialName("earningsTimestamp")
     val earningsTimestamp: Long?,
-    @SerializedName("fiftyDayAverage")
+    @SerialName("fiftyDayAverage")
     val fiftyDayAverage: Float?,
-    @SerializedName("fiftyDayAverageChange")
+    @SerialName("fiftyDayAverageChange")
     val fiftyDayAverageChange: Float?,
-    @SerializedName("fiftyDayAverageChangePercent")
+    @SerialName("fiftyDayAverageChangePercent")
     val fiftyDayAverageChangePercent: Float?,
-    @SerializedName("twoHundredDayAverage")
+    @SerialName("twoHundredDayAverage")
     val twoHundredDayAverage: Float?,
-    @SerializedName("twoHundredDayAverageChange")
+    @SerialName("twoHundredDayAverageChange")
     val twoHundredDayAverageChange: Float?,
-    @SerializedName("twoHundredDayAverageChangePercent")
+    @SerialName("twoHundredDayAverageChangePercent")
     val twoHundredDayAverageChangePercent: Float?,
-    @SerializedName("marketCap")
+    @SerialName("marketCap")
     val marketCap: Long?,
-    @SerializedName("symbol")
+    @SerialName("symbol")
     val symbol: String,
-    @SerializedName("trailingAnnualDividendRate")
-    val annualDividendRate: Float,
-    @SerializedName("trailingAnnualDividendYield")
-    val annualDividendYield: Float
+    @SerialName("trailingAnnualDividendRate")
+    val annualDividendRate: Float?,
+    @SerialName("trailingAnnualDividendYield")
+    val annualDividendYield: Float?
 )
 
+@Serializable
 data class AssetDetailsResponse(
-    @SerializedName("quoteSummary")
+    @SerialName("quoteSummary")
     val quoteSummary: QuoteSummaryResult
 )
 
+@Serializable
 data class QuoteSummaryResult(
-    @SerializedName("result")
+    @SerialName("result")
     val result: List<QuoteSummary>,
-    @SerializedName("error")
+    @SerialName("error")
     val error: String?
 )
 
+@Serializable
 data class QuoteSummary(
-    @SerializedName("assetProfile")
+    @SerialName("assetProfile")
     val assetProfile: AssetProfile?,
-    @SerializedName("financialData")
+    @SerialName("financialData")
     val financialData: FinancialData?
 )
 
+@Serializable
 data class AssetProfile(
-    @SerializedName("longBusinessSummary")
+    @SerialName("longBusinessSummary")
     val longBusinessSummary: String?,
-    @SerializedName("website")
+    @SerialName("website")
     val website: String?
 )
 
+@Serializable
 data class FinancialData(
-    @SerializedName("revenueGrowth")
+    @SerialName("revenueGrowth")
     val revenueGrowth: GrowthItem?,
-    @SerializedName("grossMargins")
+    @SerialName("grossMargins")
     val grossMargins: GrowthItem?,
-    @SerializedName("earningsGrowth")
+    @SerialName("earningsGrowth")
     val earningsGrowth: GrowthItem?,
-    @SerializedName("ebitdaMargins")
+    @SerialName("ebitdaMargins")
     val ebitdaMargins: GrowthItem?,
-    @SerializedName("operatingMargins")
+    @SerialName("operatingMargins")
     val operatingMargins: GrowthItem?,
-    @SerializedName("profitMargins")
+    @SerialName("profitMargins")
     val profitMargins: GrowthItem?,
-    @SerializedName("financialCurrency")
+    @SerialName("financialCurrency")
     val financialCurrency: String?
 )
 
+@Serializable
 data class GrowthItem(
-    @SerializedName("raw")
+    @SerialName("raw")
     val raw: Float,
-    @SerializedName("fmt")
+    @SerialName("fmt")
     val fmt: String
 )

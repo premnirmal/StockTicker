@@ -3,9 +3,7 @@ package com.github.premnirmal.ticker.network
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.mock.Mocker
-import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.github.premnirmal.ticker.network.data.YahooResponse
-import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.verify
@@ -25,7 +23,6 @@ class StocksApiTest : BaseUnitTest() {
     }
 
     internal lateinit var yahooFinance: YahooFinance
-    internal lateinit var yahooFinanceQuoteDetails: YahooQuoteDetails
     internal lateinit var yahooFinanceCrumb: YahooFinanceCrumb
     internal lateinit var yahooFinanceInitialLoad: YahooFinanceInitialLoad
     internal lateinit var mockPrefs: AppPreferences
@@ -36,14 +33,11 @@ class StocksApiTest : BaseUnitTest() {
         runBlocking {
             yahooFinance = Mocker.provide(YahooFinance::class)
             mockPrefs = Mocker.provide(AppPreferences::class)
-            yahooFinanceQuoteDetails = Mocker.provide(YahooQuoteDetails::class)
             yahooFinanceCrumb = Mocker.provide(YahooFinanceCrumb::class)
             yahooFinanceInitialLoad = Mocker.provide(YahooFinanceInitialLoad::class)
             val suggestionApi = Mocker.provide(SuggestionApi::class)
-            stocksApi = StocksApi(yahooFinanceInitialLoad, yahooFinanceCrumb, yahooFinance, mockPrefs, yahooFinanceQuoteDetails, suggestionApi)
-            val listType = object : TypeToken<List<YahooQuoteNet>>() {}.type
-            val yahooStockList =
-                parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
+            stocksApi = StocksApi(yahooFinanceInitialLoad, yahooFinanceCrumb, yahooFinance, mockPrefs, suggestionApi)
+            val yahooStockList = parseJsonFile<YahooResponse>("YahooQuotes.json")
             whenever(yahooFinance.getStocks(any())).thenReturn(Response.success(200, yahooStockList))
         }
     }

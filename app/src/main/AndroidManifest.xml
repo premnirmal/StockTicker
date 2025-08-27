@@ -31,17 +31,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.HoldingsActivity"
             android:label="@string/add_position"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AddNotesActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.NotesActivity"
             android:label="@string/add_notes"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AddAlertsActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.AlertsActivity"
             android:label="@string/add_alerts"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />

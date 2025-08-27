@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -19,11 +20,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -33,19 +35,53 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import java.util.LinkedList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShowSnackBar() {
+fun LifecycleOwner.CollectSnackbarMessage() {
     val appMessaging = LocalAppMessaging.current
 
-    val snackbar by appMessaging.snackbars.collectAsStateWithLifecycle(initialValue = null)
+    val snackbarQueue = remember {
+        LinkedList<AppMessage.SnackbarMessage>()
+    }
+    var snackbar: AppMessage.SnackbarMessage? by remember {
+        mutableStateOf(null)
+    }
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            appMessaging.snackbars.collect { message ->
+                snackbarQueue.add(message)
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (isActive) {
+                if (snackbar == null) {
+                    snackbar = snackbarQueue.poll()
+                }
+                delay(600L)
+            }
+        }
+    }
 
     LaunchedEffect(snackbar) {
         snackbar?.let {
-            snackbarHostState.showSnackbar(it.title + "\n" + it.message)
+            val message = if (it.title.isNotEmpty()) {
+                it.title + "\n" + it.message
+            } else {
+                it.message
+            }
+            snackbarHostState.showSnackbar(message)
+            snackbar = null
         }
     }
 
@@ -53,16 +89,16 @@ fun ShowSnackBar() {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .systemBarsPadding()
-                    .padding(bottom = TopAppBarDefaults.TopAppBarExpandedHeight)
                     .align(Alignment.BottomCenter)
             ) {
                 GradientSnackBar(
-                    message = snackbar?.message.orEmpty()
+                    message = snackbarHostState.currentSnackbarData?.visuals?.message.orEmpty()
                 )
             }
         }

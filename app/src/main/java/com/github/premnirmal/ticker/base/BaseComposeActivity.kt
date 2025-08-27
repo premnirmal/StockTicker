@@ -3,14 +3,14 @@ package com.github.premnirmal.ticker.base
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -22,12 +22,11 @@ import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
+import com.github.premnirmal.ticker.ui.CollectSnackbarMessage
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
-import com.github.premnirmal.ticker.ui.ShowSnackBar
 import com.github.premnirmal.ticker.ui.ThemeViewModel
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
-import com.google.android.material.color.DynamicColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -49,26 +48,13 @@ abstract class BaseComposeActivity : ComponentActivity() {
 
     @Inject lateinit var appMessaging: AppMessaging
 
-    @Composable
-    protected fun ApplyThemeColourToNavigationBar() {
-        window.navigationBarColor = colorScheme.primary
-            .copy(alpha = 0.08f)
-            .compositeOver(colorScheme.surface.copy())
-            .toArgb()
-    }
-
-    @Composable
-    protected fun ApplyThemeColourToStatusBar() {
-        window.statusBarColor = colorScheme.surface.toArgb()
-    }
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
-        DynamicColors.applyToActivityIfAvailable(this)
         savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
+        create(savedInstanceState)
         if (subscribeToErrorEvents) {
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -90,16 +76,21 @@ abstract class BaseComposeActivity : ComponentActivity() {
             )
             AppTheme(theme = currentTheme) {
                 CompositionLocalProvider(LocalAppMessaging provides appMessaging) {
-                    ApplyThemeColourToNavigationBar()
-                    ApplyThemeColourToStatusBar()
+                    val isDarkTheme = isSystemInDarkTheme()
+                    DisposableEffect(isDarkTheme) {
+                        enableEdgeToEdge()
+                        onDispose {}
+                    }
                     ShowContent()
 
                     CollectBottomSheetMessage()
-                    ShowSnackBar()
+                    CollectSnackbarMessage()
                 }
             }
         }
     }
+
+    open fun create(savedInstanceState: Bundle?) {}
 
     @Composable
     abstract fun ShowContent()

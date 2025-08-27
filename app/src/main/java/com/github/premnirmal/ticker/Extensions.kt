@@ -7,37 +7,20 @@ import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
-import android.view.LayoutInflater
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.fragment.app.Fragment
-import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.TextStyle.SHORT
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.time.ZonedDateTime
+import java.time.format.TextStyle.SHORT
 import java.util.Date
 import java.util.Locale
-
-inline fun <T : ViewBinding> Activity.viewBinding(
-    crossinline bindingInflater: (LayoutInflater) -> T
-) = lazy(LazyThreadSafetyMode.NONE) {
-    bindingInflater.invoke(layoutInflater)
-}
-
-inline fun <T : ViewBinding> Fragment.viewBinding(
-    crossinline bindingInflater: (LayoutInflater) -> T
-) = lazy(LazyThreadSafetyMode.NONE) {
-    bindingInflater.invoke(layoutInflater)
-}
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AppPreferences.PREFS_NAME)
 
@@ -46,14 +29,6 @@ fun Context.hasNotificationPermission(): Boolean {
     return checkCallingOrSelfPermission(
         Manifest.permission.POST_NOTIFICATIONS
     ) == PackageManager.PERMISSION_GRANTED
-}
-
-fun Activity.dismissKeyboard() {
-    val view = currentFocus
-    if (view is TextView) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
 }
 
 fun Activity.showDialog(
@@ -76,14 +51,6 @@ fun Context.showDialog(
 
 fun Context.showDialog(message: String): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
-        .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
-}
-
-fun Fragment.showDialog(
-    message: String,
-    cancelable: Boolean = true
-): AlertDialog {
-    return AlertDialog.Builder(requireContext()).setMessage(message).setCancelable(cancelable)
         .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
 }
 

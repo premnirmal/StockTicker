@@ -7,7 +7,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.google.gson.reflect.TypeToken
 import timber.log.Timber
 import java.io.BufferedReader
 import java.io.IOException
@@ -60,15 +59,15 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
 internal open class PortfolioImportTask(private val stocksProvider: StocksProvider) :
     ImportTask {
 
-    private val gson = Injector.appComponent().gson()
+    private val json = Injector.appComponent().json()
 
     override suspend fun import(context: Context, fileUri: Uri): Boolean {
         val contentResolver = context.applicationContext.contentResolver
         return try {
             contentResolver.openInputStream(fileUri)?.use { inputStream ->
                 BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                    val json: String = reader.readText()
-                    val portfolio: List<Quote> = gson.fromJson(json, genericType<List<Quote>>())
+                    val jsonText: String = reader.readText()
+                    val portfolio: List<Quote> = json.decodeFromString(jsonText)
                     stocksProvider.addPortfolio(portfolio)
                     true
                 }
@@ -79,5 +78,3 @@ internal open class PortfolioImportTask(private val stocksProvider: StocksProvid
         }
     }
 }
-
-private inline fun <reified T> genericType() = object : TypeToken<T>() {}.type

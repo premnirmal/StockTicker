@@ -5,6 +5,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -27,6 +28,7 @@ fun LinkText(
 ) {
     val annotatedString = createAnnotatedString(linkTextData)
     val context = LocalContext.current
+    val primaryColor = MaterialTheme.colorScheme.primary
     ClickableText(
         text = annotatedString,
         style = MaterialTheme.typography.bodySmall,
@@ -38,7 +40,7 @@ fun LinkText(
                         start = offset,
                         end = offset,
                     ).firstOrNull()?.let {
-                        annotatedStringData.onClick?.invoke(context, it) ?: CustomTabs.openTab(context, it.item)
+                        annotatedStringData.onClick?.invoke(context, it) ?: CustomTabs.openTab(context, it.item, primaryColor.toArgb())
                     }
                 }
             }

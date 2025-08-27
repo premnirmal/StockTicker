@@ -4,15 +4,21 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.viewBinding
-import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.databinding.ActivitySearchBinding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.news.QuoteDetailActivity
+import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SearchActivity : BaseActivity<ActivitySearchBinding>() {
-    override val binding: (ActivitySearchBinding) by viewBinding(ActivitySearchBinding::inflate)
+class SearchActivity : BaseComposeActivity() {
     override val simpleName: String = "SearchActivity"
 
     companion object {
@@ -28,15 +34,35 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>() {
         }
     }
 
-    var widgetId: Int = -1
+    var widgetId: Int? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.fragment_container, SearchFragment.newInstance(widgetId, showNavIcon = true))
-                .commit()
+    override fun create(savedInstanceState: Bundle?) {
+        super.create(savedInstanceState)
+        if (intent.hasExtra(ARG_WIDGET_ID)) {
+            widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    @Composable
+    override fun ShowContent() {
+        val windowSizeClass = calculateWindowSizeClass(this)
+        val displayFeatures = calculateDisplayFeatures(this)
+        Box(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                .systemBarsPadding(),
+        ) {
+            SearchScreen(
+                widthSizeClass = windowSizeClass.widthSizeClass,
+                selectedWidgetId = widgetId,
+                displayFeatures = displayFeatures,
+                onQuoteClick = { quote ->
+                    val intent = Intent(this@SearchActivity, QuoteDetailActivity::class.java)
+                    intent.putExtra(QuoteDetailActivity.EXTRA_SYMBOL, quote.symbol)
+                    intent.putExtra(QuoteDetailActivity.ARG_WIDGET_ID, widgetId)
+                    startActivity(intent)
+                }
+            )
         }
     }
 }

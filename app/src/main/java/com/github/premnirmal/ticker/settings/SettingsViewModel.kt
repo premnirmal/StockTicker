@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import org.threeten.bp.DayOfWeek
 import timber.log.Timber
+import java.time.DayOfWeek
 import javax.inject.Inject
 import kotlin.system.exitProcess
 

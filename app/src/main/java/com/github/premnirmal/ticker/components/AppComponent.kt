@@ -9,17 +9,17 @@ import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
-import com.google.gson.Gson
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
 
 /**
  * Created by premnirmal on 3/3/16.
  */
 
 interface LegacyComponent {
-    fun gson(): Gson
+    fun json(): Json
     fun appPreferences(): AppPreferences
     fun inject(widget: StockWidget)
     fun inject(data: WidgetData)

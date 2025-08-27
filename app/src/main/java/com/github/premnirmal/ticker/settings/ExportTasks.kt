@@ -36,12 +36,12 @@ internal object TickersExporter {
 
 internal object PortfolioExporter {
 
-    private val gson = Injector.appComponent().gson()
+    private val json = Injector.appComponent().json()
 
     suspend fun exportQuotes(context: Context, uri: Uri, vararg quoteLists: List<Quote>): String? =
         withContext(Dispatchers.IO) {
             val quoteList: List<Quote> = quoteLists[0]
-            val jsonString = gson.toJson(quoteList)
+            val jsonString = json.encodeToString(quoteList)
             val contentResolver = context.applicationContext.contentResolver
             try {
                 contentResolver.openFileDescriptor(uri, "rwt")

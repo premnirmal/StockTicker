@@ -238,13 +238,7 @@ class QuoteDetailViewModel @Inject constructor(
         quoteSummary = null
         val fetchStock = stocksProvider.fetchStock(ticker)
         if (fetchStock.wasSuccessful) {
-            val fetchDetails = stocksApi.getQuoteDetails(ticker)
-            if (fetchDetails.wasSuccessful) {
-                quoteSummary = fetchDetails.data
-                _quote.emit(FetchResult.success(QuoteWithSummary(fetchStock.data, quoteSummary)))
-            } else {
-                _quote.emit(FetchResult.success(QuoteWithSummary(fetchStock.data, quoteSummary)))
-            }
+            _quote.emit(FetchResult.success(QuoteWithSummary(fetchStock.data, quoteSummary)))
         } else {
             _quote.emit(FetchResult.failure(fetchStock.error))
         }

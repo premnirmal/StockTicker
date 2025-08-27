@@ -9,8 +9,10 @@ import android.widget.FrameLayout
 import android.widget.GridView
 import android.widget.TextView
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,6 +38,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -52,16 +55,17 @@ import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
+import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.settings.WidgetPreviewAdapter
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.Divider
 import com.github.premnirmal.ticker.ui.ListPreference
+import com.github.premnirmal.ticker.ui.SettingsText
 import com.github.premnirmal.ticker.ui.Spinner
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.databinding.Widget2x1Binding
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
@@ -70,10 +74,13 @@ import com.google.accompanist.adaptive.TwoPane
 fun WidgetsScreen(
     modifier: Modifier = Modifier,
     widthSizeClass: WindowWidthSizeClass,
-    displayFeatures: List<DisplayFeature>
+    displayFeatures: List<DisplayFeature>,
+    selectedWidgetId: Int? = null,
+    showSpinner: Boolean = true,
+    topAppBarActions: @Composable RowScope.() -> Unit = {},
 ) {
     val viewModel = hiltViewModel<WidgetsViewModel>()
-    WidgetsScreen(modifier, widthSizeClass, displayFeatures, viewModel)
+    WidgetsScreen(modifier, widthSizeClass, displayFeatures, viewModel, selectedWidgetId, showSpinner, topAppBarActions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,7 +89,10 @@ private fun WidgetsScreen(
     modifier: Modifier = Modifier,
     widthSizeClass: WindowWidthSizeClass,
     displayFeatures: List<DisplayFeature>,
-    viewModel: WidgetsViewModel
+    viewModel: WidgetsViewModel,
+    selectedWidgetId: Int? = null,
+    showSpinner: Boolean = true,
+    topAppBarActions: @Composable RowScope.() -> Unit = {},
 ) {
     val widgetDataList by viewModel.widgetDataList.collectAsState(emptyList())
     val fetchState by viewModel.fetchState.collectAsState()
@@ -95,35 +105,41 @@ private fun WidgetsScreen(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface),
         topBar = {
-            TopBar(text = stringResource(id = R.string.widgets))
+            TopBar(text = stringResource(id = R.string.widgets), actions = topAppBarActions)
         }
     ) { padding ->
         if (widgetDataList.isEmpty()) return@Scaffold
 
         var widgetDataSelectedIndex by rememberSaveable { mutableIntStateOf(0) }
-        val widgetData = widgetDataList[widgetDataSelectedIndex]
+        val widgetData = selectedWidgetId?.let {
+            widgetDataList.find { it.widgetId == selectedWidgetId }
+        } ?: widgetDataList[widgetDataSelectedIndex]
         val widgetDataImmutable by widgetData.changeFlow.collectAsState()
         val state = rememberLazyListState()
-        rememberScrollToTopAction(HomeRoute.Widgets) {
-            state.animateScrollToItem(0)
+        if (selectedWidgetId == null) {
+            rememberScrollToTopAction(HomeRoute.Widgets) {
+                state.animateScrollToItem(0)
+            }
         }
         if (contentType == SINGLE_PANE) {
             LazyColumn(
                 contentPadding = padding,
                 state = state,
             ) {
-                item {
-                    Spinner(
-                        items = widgetDataList,
-                        textAlign = TextAlign.Center,
-                        selectedItemIndex = widgetDataSelectedIndex,
-                        selectedItemText = widgetDataImmutable.name,
-                        onItemSelected = {
-                            widgetDataSelectedIndex = it
-                            viewModel.refreshWidgets()
-                        },
-                        itemText = { it.widgetName() }
-                    )
+                if (showSpinner) {
+                    item {
+                        Spinner(
+                            items = widgetDataList,
+                            textAlign = TextAlign.Center,
+                            selectedItemIndex = widgetDataSelectedIndex,
+                            selectedItemText = widgetDataImmutable.name,
+                            onItemSelected = {
+                                widgetDataSelectedIndex = it
+                                viewModel.refreshWidgets()
+                            },
+                            itemText = { it.widgetName() }
+                        )
+                    }
                 }
                 item {
                     WidgetPreview(
@@ -132,7 +148,7 @@ private fun WidgetsScreen(
                         widgetDataImmutable
                     )
                 }
-                widgetSettings(widgetData, widgetDataImmutable)
+                widgetSettings(widgetData, widgetDataImmutable, selectedWidgetId)
             }
         } else {
             TwoPane(
@@ -146,19 +162,21 @@ private fun WidgetsScreen(
                         contentPadding = padding,
                         state = state,
                     ) {
-                        item {
-                            Spinner(
-                                items = widgetDataList,
-                                textAlign = TextAlign.Center,
-                                selectedItemIndex = widgetDataSelectedIndex,
-                                selectedItemText = widgetDataImmutable.name,
-                                onItemSelected = {
-                                    widgetDataSelectedIndex = it
-                                },
-                                itemText = { it.widgetName() }
-                            )
+                        if (showSpinner) {
+                            item {
+                                Spinner(
+                                    items = widgetDataList,
+                                    textAlign = TextAlign.Center,
+                                    selectedItemIndex = widgetDataSelectedIndex,
+                                    selectedItemText = widgetDataImmutable.name,
+                                    onItemSelected = {
+                                        widgetDataSelectedIndex = it
+                                    },
+                                    itemText = { it.widgetName() }
+                                )
+                            }
                         }
-                        widgetSettings(widgetData, widgetDataImmutable)
+                        widgetSettings(widgetData, widgetDataImmutable, selectedWidgetId)
                     }
                 },
                 second = {
@@ -173,11 +191,18 @@ private fun WidgetsScreen(
 
 private fun LazyListScope.widgetSettings(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    widgetDataImmutable: WidgetData.ImmutableWidgetData,
+    selectedWidgetId: Int?,
 ) {
     item {
         WidgetName(widgetData, widgetDataImmutable)
         Divider()
+    }
+    selectedWidgetId?.let {
+        item {
+            AddStocks(it)
+            Divider()
+        }
     }
     item {
         AutoSort(widgetData, widgetDataImmutable)
@@ -314,6 +339,23 @@ private fun LazyListScope.widgetSettings(
     }
 }
 
+@Composable fun AddStocks(
+    widgetId: Int
+) {
+    val context = LocalContext.current
+    SettingsText(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable {
+                val intent = SearchActivity.launchIntent(context, widgetId)
+                context.startActivity(intent)
+            },
+        title = stringResource(R.string.add_stock),
+        subtitle = stringResource(R.string.trending_stocks),
+    )
+}
+
 @Composable fun AutoSort(
     widgetData: WidgetData,
     widgetDataImmutable: WidgetData.ImmutableWidgetData
@@ -340,7 +382,9 @@ fun WidgetName(
     }
     val focusManager = LocalFocusManager.current
     TextField(
-        modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(all = 8.dp),
         value = name,
         onValueChange = {
             name = it
@@ -385,8 +429,8 @@ fun WidgetPreview(
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             previewContainer.setPadding(padding.toInt())
             previewContainer.setBackgroundResource(R.drawable.bg_header_light)
-            val binding = Widget2x1Binding.inflate(LayoutInflater.from(context), previewContainer, true)
-            binding.list.adapter = WidgetPreviewAdapter(widgetData, widgetDataImmutable)
+            val view = LayoutInflater.from(context).inflate(R.layout.widget_2x1, previewContainer, true)
+            view.findViewById<GridView>(R.id.list).adapter = WidgetPreviewAdapter(widgetData, widgetDataImmutable)
             previewContainer
         },
         update = {

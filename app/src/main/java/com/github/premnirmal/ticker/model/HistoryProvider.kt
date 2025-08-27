@@ -15,11 +15,11 @@ import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.threeten.bp.Duration
-import org.threeten.bp.LocalDate
 import timber.log.Timber
 import java.io.Serializable
 import java.lang.ref.WeakReference
+import java.time.Duration
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 

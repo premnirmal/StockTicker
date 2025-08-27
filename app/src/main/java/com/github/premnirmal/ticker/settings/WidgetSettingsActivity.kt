@@ -1,80 +1,80 @@
 package com.github.premnirmal.ticker.settings
 
-import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
-import android.graphics.PorterDuff
 import android.os.Bundle
-import androidx.activity.viewModels
-import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.home.MainViewModel
-import com.github.premnirmal.ticker.portfolio.search.SearchActivity
-import com.github.premnirmal.ticker.viewBinding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.widget.WidgetsScreen
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.databinding.ActivityWidgetSettingsBinding
-import com.google.android.material.color.MaterialColors
+import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class WidgetSettingsActivity : BaseActivity<ActivityWidgetSettingsBinding>() {
-    override val binding: (ActivityWidgetSettingsBinding) by viewBinding(ActivityWidgetSettingsBinding::inflate)
+class WidgetSettingsActivity : BaseComposeActivity() {
 
     companion object {
         const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
     }
 
-    internal var widgetId = 0
+    private var widgetId: Int? = null
     override val simpleName: String = "WidgetSettingsActivity"
-    private val viewModel: MainViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener {
-            setOkResult()
-            finish()
+    override fun create(savedInstanceState: Bundle?) {
+        super.create(savedInstanceState)
+        if (intent.hasExtra(ARG_WIDGET_ID)) {
+            widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
         }
-        val tint = MaterialColors.getColor(binding.toolbar, com.google.android.material.R.attr.colorOnSurfaceVariant)
-        binding.toolbar.navigationIcon?.setTint(tint)
-        binding.toolbar.navigationIcon?.setTintMode(PorterDuff.Mode.SRC_IN)
-        binding.toolbar.inflateMenu(R.menu.menu_widget_settings)
-        binding.toolbar.setOnMenuItemClickListener {
-            setOkResult()
-            finish()
-            return@setOnMenuItemClickListener true
-        }
-        widgetId = intent.getIntExtra(ARG_WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
-        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+        if (widgetId != null) {
             setOkResult()
         } else {
-            setResult(Activity.RESULT_CANCELED)
+            setResult(RESULT_CANCELED)
         }
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(
-                    R.id.fragment_container,
-                    WidgetSettingsFragment.newInstance(
-                        widgetId,
-                        showAddStocks = true
-                    )
-                )
-                .commit()
-        }
-        viewModel.openSearchWidgetId.observe(this) {
-            it?.let {
-                openSearch(it)
-                viewModel.resetOpenSearch()
-            }
+    }
+
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+    @Composable
+    override fun ShowContent() {
+        val windowSizeClass = calculateWindowSizeClass(this)
+        val displayFeatures = calculateDisplayFeatures(this)
+        Box(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                .systemBarsPadding(),
+        ) {
+            WidgetsScreen(
+                widthSizeClass = windowSizeClass.widthSizeClass,
+                displayFeatures = displayFeatures,
+                selectedWidgetId = widgetId,
+                showSpinner = false,
+                topAppBarActions = {
+                    IconButton(
+                        onClick = {
+                            setOkResult()
+                            finish()
+                        }) {
+                        Text(
+                            text = stringResource(R.string.done),
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+                }
+            )
         }
     }
 
     private fun setOkResult() {
         val result = Intent()
         result.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
-        setResult(Activity.RESULT_OK, result)
-    }
-
-    private fun openSearch(widgetId: Int) {
-        val intent = SearchActivity.launchIntent(this, widgetId)
-        startActivity(intent)
+        setResult(RESULT_OK, result)
     }
 }

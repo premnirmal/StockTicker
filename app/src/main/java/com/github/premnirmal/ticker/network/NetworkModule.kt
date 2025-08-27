@@ -3,17 +3,18 @@ package com.github.premnirmal.ticker.network
 import android.content.Context
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
@@ -79,21 +80,26 @@ class NetworkModule {
     }
 
     @Provides @Singleton
-    internal fun provideGson(): Gson {
-        return GsonBuilder().setLenient()
-            .create()
+    internal fun provideJson(): Json {
+        return Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+            explicitNulls = false
+            coerceInputValues = true
+            prettyPrint = true
+        }
     }
 
     @Provides @Singleton
-    internal fun provideGsonFactory(gson: Gson): GsonConverterFactory {
-        return GsonConverterFactory.create(gson)
+    internal fun provideJsonFactory(json: Json): Converter.Factory {
+        return json.asConverterFactory("application/json".toMediaType())
     }
 
     @Provides @Singleton
     internal fun provideSuggestionsApi(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: Converter.Factory
     ): SuggestionApi {
         val retrofit = Retrofit.Builder()
             .client(okHttpClient)
@@ -107,7 +113,7 @@ class NetworkModule {
     internal fun provideYahooFinance(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: Converter.Factory
     ): YahooFinance {
         val retrofit = Retrofit.Builder()
             .client(okHttpClient)
@@ -147,25 +153,10 @@ class NetworkModule {
     }
 
     @Provides @Singleton
-    internal fun provideYahooQuoteDetailsApi(
-        @ApplicationContext context: Context,
-        @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
-    ): YahooQuoteDetails {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.yahoo_endpoint_quote_details))
-            .addConverterFactory(converterFactory)
-            .build()
-        val yahooFinance = retrofit.create(YahooQuoteDetails::class.java)
-        return yahooFinance
-    }
-
-    @Provides @Singleton
     internal fun provideApeWisdom(
         @ApplicationContext context: Context,
         okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: Converter.Factory
     ): ApeWisdom {
         val retrofit = Retrofit.Builder()
             .client(okHttpClient)
@@ -221,7 +212,7 @@ class NetworkModule {
     internal fun provideHistoricalDataApi(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: Converter.Factory
     ): ChartApi {
         val retrofit = Retrofit.Builder()
             .client(okHttpClient)
@@ -236,7 +227,7 @@ class NetworkModule {
     internal fun provideGithubApi(
         @ApplicationContext context: Context,
         okHttpClient: OkHttpClient,
-        converterFactory: GsonConverterFactory
+        converterFactory: Converter.Factory
     ): GithubApi {
         val retrofit = Retrofit.Builder()
             .client(okHttpClient)

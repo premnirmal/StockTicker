@@ -5,12 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 /**
  * Created by premnirmal on 3/30/17.
  */
 @Parcelize
+@Serializable
 data class Quote constructor(
     var symbol: String = "",
     var name: String = "",

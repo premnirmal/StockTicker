@@ -1,67 +1,71 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class HistoricalDataResult(
-    @SerializedName("chart") val chart: Chart
+    @SerialName("chart") val chart: Chart
 )
 
+@Serializable
 data class Result(
-    @SerializedName("meta") val meta: Meta,
-    @SerializedName("timestamp") val timestamp: List<Long>,
-    @SerializedName("indicators") val indicators: Indicators
+    @SerialName("meta") val meta: Meta,
+    @SerialName("timestamp") val timestamp: List<Long>,
+    @SerialName("indicators") val indicators: Indicators
 )
 
+@Serializable
 data class Indicators(
-    @SerializedName("quote") val quote: List<DataQuote>,
-    @SerializedName("adjclose") val adjclose: List<Adjclose>
+    @SerialName("quote") val quote: List<DataQuote>,
 )
 
-data class Adjclose(
-    @SerializedName("adjclose") val adjclose: List<Double>
-)
-
+@Serializable
 data class Chart(
-    @SerializedName("result") val result: List<Result>,
-    @SerializedName("error") val error: String
+    @SerialName("result") val result: List<Result>,
+    @SerialName("error") val error: String?
 )
 
+@Serializable
 data class Meta(
-    @SerializedName("currency") val currency: String,
-    @SerializedName("symbol") val symbol: String,
-    @SerializedName("exchangeName") val exchangeName: String,
-    @SerializedName("instrumentType") val instrumentType: String,
-    @SerializedName("firstTradeDate") val firstTradeDate: Long,
-    @SerializedName("regularMarketTime") val regularMarketTime: Long,
-    @SerializedName("gmtoffset") val gmtoffset: Long,
-    @SerializedName("timezone") val timezone: String,
-    @SerializedName("exchangeTimezoneName") val exchangeTimezoneName: String,
-    @SerializedName("regularMarketPrice") val regularMarketPrice: Double,
-    @SerializedName("chartPreviousClose") val chartPreviousClose: Double,
-    @SerializedName("priceHint") val priceHint: Long,
-    @SerializedName("currentTradingPeriod") val currentTradingPeriod: CurrentTradingPeriod,
-    @SerializedName("dataGranularity") val dataGranularity: String,
-    @SerializedName("range") val range: String,
-    @SerializedName("validRanges") val validRanges: List<String>
+    @SerialName("currency") val currency: String,
+    @SerialName("symbol") val symbol: String,
+    @SerialName("exchangeName") val exchangeName: String,
+    @SerialName("instrumentType") val instrumentType: String,
+    @SerialName("firstTradeDate") val firstTradeDate: Long,
+    @SerialName("regularMarketTime") val regularMarketTime: Long,
+    @SerialName("gmtoffset") val gmtoffset: Long,
+    @SerialName("timezone") val timezone: String,
+    @SerialName("exchangeTimezoneName") val exchangeTimezoneName: String,
+    @SerialName("regularMarketPrice") val regularMarketPrice: Double,
+    @SerialName("chartPreviousClose") val chartPreviousClose: Double,
+    @SerialName("priceHint") val priceHint: Long,
+    @SerialName("currentTradingPeriod") val currentTradingPeriod: CurrentTradingPeriod,
+    @SerialName("dataGranularity") val dataGranularity: String,
+    @SerialName("range") val range: String,
+    @SerialName("validRanges") val validRanges: List<String>
 )
 
+@Serializable
 data class CurrentTradingPeriod(
-    @SerializedName("pre") val pre: TradingPeriod,
-    @SerializedName("regular") val regular: TradingPeriod,
-    @SerializedName("post") val post: TradingPeriod
+    @SerialName("pre") val pre: TradingPeriod,
+    @SerialName("regular") val regular: TradingPeriod,
+    @SerialName("post") val post: TradingPeriod
 )
 
+@Serializable
 data class TradingPeriod(
-    @SerializedName("timezone") val timezone: String,
-    @SerializedName("start") val start: Long,
-    @SerializedName("end") val end: Long,
-    @SerializedName("gmtoffset") val gmtoffset: Long
+    @SerialName("timezone") val timezone: String,
+    @SerialName("start") val start: Long,
+    @SerialName("end") val end: Long,
+    @SerialName("gmtoffset") val gmtoffset: Long
 )
 
+@Serializable
 data class DataQuote(
-    @SerializedName("close") val close: List<Double?>,
-    @SerializedName("open") val open: List<Double?>,
-    @SerializedName("low") val low: List<Double?>,
-    @SerializedName("volume") val volume: List<Long?>,
-    @SerializedName("high") val high: List<Double?>
+    @SerialName("close") val close: List<Double?>,
+    @SerialName("open") val open: List<Double?>,
+    @SerialName("low") val low: List<Double?>,
+    @SerialName("volume") val volume: List<Long?>,
+    @SerialName("high") val high: List<Double?>
 )

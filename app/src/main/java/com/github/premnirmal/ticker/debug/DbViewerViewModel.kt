@@ -3,8 +3,6 @@ package com.github.premnirmal.ticker.debug
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -13,6 +11,8 @@ import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import java.io.File
@@ -30,17 +30,17 @@ class DbViewerViewModel @Inject constructor(
         private const val FILENAME = "db.html"
     }
 
-    private val _showProgress = MutableLiveData<Boolean>()
-    val showProgress: LiveData<Boolean>
+    private val _showProgress = MutableStateFlow<Boolean>(false)
+    val showProgress: StateFlow<Boolean>
         get() = _showProgress
 
-    private val _htmlFile = MutableLiveData<File>()
-    val htmlFile: LiveData<File>
+    private val _htmlFile = MutableStateFlow<File?>(null)
+    val htmlFile: StateFlow<File?>
         get() = _htmlFile
 
     fun generateDatabaseHtml() {
         viewModelScope.launch(Dispatchers.IO) {
-            _showProgress.postValue(true)
+            _showProgress.emit(true)
             val quotesInfo = StringBuilder()
                 .append(
                     """
@@ -195,8 +195,8 @@ class DbViewerViewModel @Inject constructor(
                 file.createNewFile()
             }
             file.writeText(stringBuilder.toString(), Charsets.UTF_8)
-            _htmlFile.postValue(file)
-            _showProgress.postValue(false)
+            _htmlFile.emit(file)
+            _showProgress.emit(false)
         }
     }
 

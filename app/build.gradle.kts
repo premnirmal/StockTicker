@@ -15,6 +15,7 @@ plugins {
   alias(libs.plugins.hilt)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.detekt.plugin)
+  alias(libs.plugins.kotlinx.serialization)
 }
 
 detekt {
@@ -102,21 +103,10 @@ android {
     versionName = name
 
     buildConfigField("String", "PREVIOUS_VERSION", "\"$oldGitVersion\"")
-
-    // room {
-    //   schemaDirectory("$projectDir/schemas")
-    // }
   }
-  // resources.sourceSets["test"].resources {
-  //   srcDirs("src/test/resources")
-  // }
 
   dexOptions {
     javaMaxHeapSize = "2048M"
-  }
-
-  buildFeatures {
-    viewBinding = true
   }
 
   signingConfigs {
@@ -217,15 +207,8 @@ dependencies {
   implementation(AndroidX.core.ktx)
 
   implementation(AndroidX.appCompat)
-  implementation(libs.legacy.support.v4)
-  implementation(Google.android.material)
-  implementation(AndroidX.preference.ktx)
   implementation(AndroidX.browser)
-
-  implementation(AndroidX.constraintLayout)
-  implementation(AndroidX.viewPager2)
   implementation(AndroidX.core.splashscreen)
-  implementation(AndroidX.fragment.ktx)
   implementation(AndroidX.activity.compose)
   implementation(AndroidX.navigation.compose)
   implementation(libs.androidx.compose.runtime)
@@ -238,7 +221,6 @@ dependencies {
   implementation(AndroidX.lifecycle.viewModelCompose)
   implementation(AndroidX.compose.material3.windowSizeClass)
   implementation(Google.accompanist.adaptive)
-  implementation(libs.accompanist.pager)
   implementation(libs.accompanist.permissions)
   implementation(AndroidX.compose.runtime.liveData)
   implementation(AndroidX.hilt.navigationCompose)
@@ -261,10 +243,11 @@ dependencies {
   implementation(Square.okHttp3)
   implementation(Square.okHttp3.loggingInterceptor)
   implementation(Square.retrofit2)
-  implementation(Square.retrofit2.converter.gson)
   implementation(Square.retrofit2.converter.simpleXml)
   implementation(Square.retrofit2.converter.scalars)
+  implementation(libs.retrofit.kotlin.serialization)
   implementation(libs.jsoup)
+  implementation(KotlinX.serialization.json)
 
   implementation(KotlinX.coroutines.android)
   implementation(AndroidX.lifecycle.runtime.ktx)
@@ -274,8 +257,6 @@ dependencies {
   implementation(AndroidX.work.runtime)
   implementation(AndroidX.work.runtimeKtx)
   implementation(AndroidX.dataStore)
-
-  implementation(libs.threetenabp)
 
   implementation(JakeWharton.timber)
   implementation(libs.mpandroidchart)
@@ -290,8 +271,6 @@ dependencies {
 
   "prodImplementation"(Google.android.play.review)
   "prodImplementation"(Google.android.play.reviewKtx)
-
-  implementation(libs.ticker)
 
   "prodImplementation"(platform("com.google.firebase:firebase-bom:34.1.0"))
   "prodImplementation"("com.google.firebase:firebase-analytics")
@@ -309,7 +288,6 @@ dependencies {
   testImplementation(AndroidX.test.rules)
   testImplementation(AndroidX.annotation)
   testImplementation(AndroidX.test.rules)
-  testImplementation(libs.threetenbp)
   testImplementation(Testing.mockito.core)
   testImplementation(Testing.mockito.kotlin)
   testImplementation(KotlinX.coroutines.test)

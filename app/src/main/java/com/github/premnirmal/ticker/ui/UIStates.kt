@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.ui
 
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
@@ -28,7 +28,7 @@ fun EmptyState(
     contentAlignment: Alignment = Alignment.Center,
     text: String
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = contentAlignment
     ) {
@@ -47,7 +47,7 @@ fun ErrorState(
     modifier: Modifier = Modifier,
     text: String
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -63,7 +63,7 @@ fun ErrorState(
 
 @Composable
 fun ProgressState(modifier: Modifier = Modifier) {
-    BoxWithConstraints(
+    Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {

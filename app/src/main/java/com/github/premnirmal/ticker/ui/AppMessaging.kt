@@ -6,6 +6,7 @@ import com.github.premnirmal.ticker.ui.AppMessage.BottomSheetMessage
 import com.github.premnirmal.ticker.ui.AppMessage.SnackbarMessage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -31,6 +32,7 @@ class AppMessaging @Inject constructor(
         message: Int,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(SnackbarMessage(context.getString(title), context.getString(message)))
         }
     }
@@ -39,6 +41,7 @@ class AppMessaging @Inject constructor(
         message: Int,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(SnackbarMessage("", context.getString(message)))
         }
     }
@@ -47,6 +50,7 @@ class AppMessaging @Inject constructor(
         message: String,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(SnackbarMessage("", message))
         }
     }
@@ -56,6 +60,7 @@ class AppMessaging @Inject constructor(
         message: String,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(SnackbarMessage(title, message))
         }
     }
@@ -65,6 +70,7 @@ class AppMessaging @Inject constructor(
         message: Int,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(
                 BottomSheetMessage(
                     title = context.getString(title),
@@ -79,6 +85,7 @@ class AppMessaging @Inject constructor(
         message: String,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(
                 BottomSheetMessage(
                     title = context.getString(title),
@@ -93,8 +100,13 @@ class AppMessaging @Inject constructor(
         message: String,
     ) {
         coroutineScope.launch {
+            delay(MESSAGE_EMIT_DELAY)
             _messageQueue.emit(BottomSheetMessage(title = title, message = message))
         }
+    }
+
+    companion object {
+        private const val MESSAGE_EMIT_DELAY = 300L
     }
 }
 

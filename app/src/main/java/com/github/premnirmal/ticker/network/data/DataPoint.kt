@@ -1,12 +1,12 @@
 package com.github.premnirmal.ticker.network.data
 
 import com.github.mikephil.charting.data.CandleEntry
-import kotlinx.android.parcel.Parcelize
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDate
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
+import kotlinx.parcelize.Parcelize
 import java.io.Serializable
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Parcelize
 class DataPoint(

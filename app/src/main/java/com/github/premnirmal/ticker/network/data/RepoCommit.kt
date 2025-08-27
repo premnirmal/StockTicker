@@ -1,40 +1,46 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class TagComparison(
-    @SerializedName("url") val url: String,
-    @SerializedName("html_url") val html_url: String,
-    @SerializedName("commits") val commits: List<RepoCommit>,
-    @SerializedName("status") val status: String,
-    @SerializedName("ahead_by") val aheadBy: Int,
-    @SerializedName("behind_by") val behindBy: Int,
-    @SerializedName("total_commits") val totalCommits: Int
+    @SerialName("url") val url: String,
+    @SerialName("html_url") val html_url: String,
+    @SerialName("commits") val commits: List<RepoCommit>,
+    @SerialName("status") val status: String,
+    @SerialName("ahead_by") val aheadBy: Int,
+    @SerialName("behind_by") val behindBy: Int,
+    @SerialName("total_commits") val totalCommits: Int
 )
 
+@Serializable
 data class RepoCommit(
-    @SerializedName("sha") val sha: String,
-    @SerializedName("node_id") val node_id: String,
-    @SerializedName("url") val url: String,
-    @SerializedName("html_url") val html_url: String,
-    @SerializedName("commit") val commit: Commit,
-    @SerializedName("author") val author: Author
+    @SerialName("sha") val sha: String,
+    @SerialName("node_id") val node_id: String,
+    @SerialName("url") val url: String,
+    @SerialName("html_url") val html_url: String,
+    @SerialName("commit") val commit: Commit,
+    @SerialName("author") val author: Author
 )
 
+@Serializable
 data class Commit(
-    @SerializedName("author") val author: Committer,
-    @SerializedName("committer") val committer: Committer,
-    @SerializedName("message") val message: String
+    @SerialName("author") val author: Committer,
+    @SerialName("committer") val committer: Committer,
+    @SerialName("message") val message: String
 )
 
+@Serializable
 data class Committer(
-    @SerializedName("name") val name: String,
-    @SerializedName("email") val email: String
+    @SerialName("name") val name: String,
+    @SerialName("email") val email: String
 )
 
+@Serializable
 data class Author(
-    @SerializedName("login") val login: String,
-    @SerializedName("id") val id: Long,
-    @SerializedName("type") val type: String,
-    @SerializedName("url") val url: String
+    @SerialName("login") val login: String,
+    @SerialName("id") val id: Long,
+    @SerialName("type") val type: String,
+    @SerialName("url") val url: String
 )

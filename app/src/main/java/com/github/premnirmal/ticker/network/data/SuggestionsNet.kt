@@ -1,40 +1,43 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Created by premnirmal on 3/30/17.
  */
+@Serializable
 data class SuggestionsNet(
-    @SerializedName("count") var count: Int,
-    @SerializedName("quotes") var result: List<SuggestionNet>? = null
+    @SerialName("count") var count: Int,
+    @SerialName("quotes") var result: List<SuggestionNet>? = null
 ) {
 
+    @Serializable
     data class SuggestionNet(
-        @SerializedName("symbol") var symbol: String = ""
+        @SerialName("symbol") var symbol: String = ""
     ) {
-        @SerializedName("shortname")
+        @SerialName("shortname")
         var name: String = ""
 
-        @SerializedName("longname")
+        @SerialName("longname")
         var longName: String = ""
 
-        @SerializedName("exchange")
+        @SerialName("exchange")
         var exch: String = ""
 
-        @SerializedName("quoteType")
+        @SerialName("quoteType")
         var type: String = ""
 
-        @SerializedName("exchDisp")
+        @SerialName("exchDisp")
         var exchDisp: String = ""
 
-        @SerializedName("typeDisp")
+        @SerialName("typeDisp")
         var typeDisp: String = ""
 
-        @SerializedName("score")
+        @SerialName("score")
         var score: Long = 0
 
-        @SerializedName("isYahooFinance")
+        @SerialName("isYahooFinance")
         var isYahooFinance: Boolean = false
     }
 }

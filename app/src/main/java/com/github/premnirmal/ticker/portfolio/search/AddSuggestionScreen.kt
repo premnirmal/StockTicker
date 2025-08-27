@@ -96,7 +96,7 @@ fun AddSuggestionScreen(
             }
         }
     } else {
-        onChange(suggestion, AppWidgetManager.INVALID_APPWIDGET_ID)
+        onChange(suggestion, widgetDataList.firstOrNull()?.widgetId ?: AppWidgetManager.INVALID_APPWIDGET_ID)
     }
 }
 

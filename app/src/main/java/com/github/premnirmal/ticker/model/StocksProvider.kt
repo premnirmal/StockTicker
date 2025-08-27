@@ -20,10 +20,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import javax.inject.Singleton
 
 /**
@@ -279,15 +279,17 @@ class StocksProvider constructor(
     suspend fun removePosition(
         ticker: String,
         holding: Holding
-    ) {
+    ): Boolean {
+        var removed = false
         synchronized(quoteMap) {
             val position = getPosition(ticker)
             val quote = quoteMap[ticker]
-            position?.remove(holding)
+            removed = position?.remove(holding) ?: false
             quote?.position = position
         }
         storage.removeHolding(ticker, holding)
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+        return removed
     }
 
     fun addStocks(symbols: Collection<String>): Collection<String> {

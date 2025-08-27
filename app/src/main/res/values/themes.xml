@@ -3,51 +3,13 @@
 
   <style name="BaseAppTheme" parent="AppTheme">
     <item name="android:windowBackground">?android:attr/colorBackground</item>
-    <item name="android:textViewStyle">@style/Widget.StocksWidget.TextView</item>
     <item name="android:editTextStyle">@style/EditTextStyle</item>
-    <item name="android:buttonStyle">@style/ButtonStyle</item>
-    <item name="buttonStyle">@style/ButtonStyle</item>
-    <item name="buttonCompat">@style/ButtonStyle</item>
-    <item name="textAppearanceButton">@style/TextAppearance.StocksWidget.Button</item>
-    <item name="textAppearanceBodyLarge">@style/TextAppearance.StocksWidget.BodyLarge</item>
-    <item name="textAppearanceBodyMedium">@style/TextAppearance.StocksWidget.BodyMedium</item>
-    <item name="textAppearanceBodySmall">@style/TextAppearance.StocksWidget.BodySmall</item>
-    <item name="textAppearanceHeadlineLarge">@style/TextAppearance.StocksWidget.HeadlineLarge</item>
-    <item name="textAppearanceHeadlineMedium">@style/TextAppearance.StocksWidget.HeadlineMedium</item>
-    <item name="textAppearanceHeadlineSmall">@style/TextAppearance.StocksWidget.HeadlineSmall</item>
-    <item name="textAppearanceTitleLarge">@style/TextAppearance.StocksWidget.TitleLarge</item>
-    <item name="textAppearanceTitleMedium">@style/TextAppearance.StocksWidget.TitleMedium</item>
-    <item name="textAppearanceTitleSmall">@style/TextAppearance.StocksWidget.TitleSmall</item>
-    <item name="textAppearanceLabelLarge">@style/TextAppearance.StocksWidget.LabelLarge</item>
-    <item name="textAppearanceLabelMedium">@style/TextAppearance.StocksWidget.LabelMedium</item>
-    <item name="textAppearanceLabelSmall">@style/TextAppearance.StocksWidget.LabelSmall</item>
-    <item name="android:alertDialogTheme">@style/AlertDialog</item>
-    <item name="android:dialogTheme">@style/AlertDialog</item>
-    <item name="android:actionBarStyle">@style/ActionBarStyle</item>
-    <item name="tabTextAppearance">@style/TabTextAppearence</item>
-    <item name="dialogTheme">@style/AlertDialog</item>
-    <item name="alertDialogTheme">@style/AlertDialog</item>
     <item name="editTextStyle">@style/EditTextStyle</item>
-    <item name="bottomNavigationStyle">@style/Widget.StocksWidget.BottomNavigationView</item>
-    <item name="materialCardViewStyle">@style/StocksWidget.Widget.CardView</item>
-    <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle</item>
   </style>
 
   <style name="StocksWidget.App.Theme" parent="BaseAppTheme"/>
 
-  <style name="TranslucentTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowIsTranslucent">true</item>
-    <item name="android:windowBackground">@color/transparent</item>
-  </style>
-
-  <style name="MainActivityTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowActionBar">false</item>
-    <item name="android:windowNoTitle">true</item>
-    <item name="windowActionBar">false</item>
-    <item name="windowNoTitle">true</item>
-    <item name="android:statusBarColor">@color/transparent</item>
-    <item name="toolbarStyle">@style/StocksWidget.ToolbarStyle.MainActivity</item>
-  </style>
+  <style name="MainActivityTheme" parent="StocksWidget.App.Theme"/>
   <style name="Theme.App.Starting" parent="Theme.SplashScreen">
     <item name="android:windowActionBar">false</item>
     <item name="android:windowNoTitle">true</item>
@@ -67,26 +29,20 @@
 
 
   <style name="NewsFeedActivityTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowLightStatusBar">true</item>
   </style>
 
   <style name="AddPositionTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowLightStatusBar">true</item>
   </style>
 
   <style name="WidgetSettingsTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowLightStatusBar">true</item>
   </style>
 
   <style name="SearchTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowLightStatusBar">true</item>
   </style>
 
   <style name="WebViewTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowLightStatusBar">true</item>
   </style>
 
   <style name="DbViewerTheme" parent="StocksWidget.App.Theme">
-    <item name="android:windowLightStatusBar">true</item>
   </style>
 </resources>

@@ -1,8 +1,8 @@
 package com.github.premnirmal.ticker.components
 
 import android.os.SystemClock
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZonedDateTime
+import java.time.LocalDateTime
+import java.time.ZonedDateTime
 
 interface AppClock {
     fun todayZoned(): ZonedDateTime

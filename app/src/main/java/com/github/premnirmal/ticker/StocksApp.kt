@@ -7,8 +7,6 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.google.android.material.color.DynamicColors
-import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
@@ -29,10 +27,8 @@ open class StocksApp : Application() {
 
     override fun onCreate() {
         initLogger()
-        initThreeTen()
         Injector.init(this)
         super.onCreate()
-        DynamicColors.applyToActivitiesIfAvailable(this)
         AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
         initNotificationHandler()
         widgetDataProvider.refreshWidgetDataList()
@@ -40,10 +36,6 @@ open class StocksApp : Application() {
 
     protected open fun initNotificationHandler() {
         notificationsHandler.initialize()
-    }
-
-    protected open fun initThreeTen() {
-        AndroidThreeTen.init(this)
     }
 
     protected open fun initLogger() {

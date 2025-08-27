@@ -5,25 +5,4 @@
     <item name="android:background">@drawable/app_widget_background</item>
     <item name="android:clipToOutline">true</item>
   </style>
-
-  <style name="AlertDialog" parent="@style/Theme.Material3.DayNight.Dialog.Alert">
-    <item name="android:textColor">?attr/colorOnSurface</item>
-    <item name="android:colorPrimary">?attr/colorTertiary</item>
-    <item name="android:colorBackground">?attr/colorSurface</item>
-    <item name="android:colorBackgroundCacheHint">?attr/colorSurface</item>
-    <item name="android:windowBackground">?attr/colorSurface</item>
-    <item name="android:textAppearanceSmall">@style/TextAppearance.Material3.BodySmall</item>
-    <item name="android:button">@style/Widget.Material3.Button</item>
-    <item name="android:buttonBarButtonStyle">@style/Widget.Material3.Button.TextButton
-    </item>
-    <item name="android:titleTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item>
-    <item name="titleTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item>
-    <item name="android:titleTextColor">?attr/colorTertiary</item>
-    <item name="titleTextColor">?attr/colorTertiary</item>
-    <item name="colorPrimary">?attr/colorTertiary</item>
-    <item name="colorPrimaryDark">?attr/colorOnSurfaceVariant</item>
-    <item name="colorControlNormal">?attr/colorTertiary</item>
-    <item name="colorControlHighlight">?attr/colorTertiary</item>
-    <item name="colorControlActivated">?attr/colorTertiary</item>
-  </style>
 </resources>

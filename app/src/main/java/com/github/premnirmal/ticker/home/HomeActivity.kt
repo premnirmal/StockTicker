@@ -3,16 +3,12 @@ package com.github.premnirmal.ticker.home
 import android.Manifest
 import android.os.Build.VERSION
 import android.os.Bundle
-import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +40,6 @@ class HomeActivity : BaseComposeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         if (VERSION.SDK_INT >= 33) {
             requestPermissionLauncher = registerForActivityResult(RequestPermission()) { granted ->
                 if (granted) {
@@ -62,26 +57,8 @@ class HomeActivity : BaseComposeActivity() {
 
     @Composable
     override fun ShowContent() {
-        val isDarkTheme = isSystemInDarkTheme()
-        DisposableEffect(isDarkTheme) {
-            enableEdgeToEdge(
-                statusBarStyle = SystemBarStyle.auto(
-                    android.graphics.Color.TRANSPARENT,
-                    android.graphics.Color.TRANSPARENT,
-                ) { isDarkTheme },
-                navigationBarStyle = SystemBarStyle.auto(
-                    lightScrim,
-                    darkScrim,
-                ) { isDarkTheme },
-            )
-            onDispose {}
-        }
         HomeScreen()
     }
-
-    private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-
-    private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable

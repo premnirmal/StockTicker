@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.detail
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.drawable
@@ -26,17 +26,22 @@ import com.github.premnirmal.tickerwidget.R.string
 import com.github.premnirmal.tickerwidget.ui.theme.AppCard
 
 @Composable
-fun PositionDetailCard(quote: Quote, onClick: () -> Unit) {
-    val hasPositions = remember(quote.position) { quote.hasPositions() }
-    val numShares = remember(quote.position) { quote.numSharesString() }
-    val holdings = remember(quote.position) { quote.holdingsString() }
-    val gainLoss = remember(quote.position) { quote.gainLoss() }
-    val gainLossString = remember(quote.position) { quote.gainLossString() }
-    val gainLossPercentage = remember(quote.position) { quote.gainLossPercentString() }
-    val dayChange = remember(quote.position) { quote.dayChangeString() }
-    val averagePositionPrice = remember(quote.position) { quote.averagePositionPrice() }
+fun PositionDetailCard(
+    modifier: Modifier,
+    quote: Quote,
+    position: Position?,
+    onClick: () -> Unit = {}
+) {
+    val hasPositions = remember(position) { quote.hasPositions() }
+    val numShares = remember(position) { quote.numSharesString() }
+    val holdings = remember(position) { quote.holdingsString() }
+    val gainLoss = remember(position) { quote.gainLoss() }
+    val gainLossString = remember(position) { quote.gainLossString() }
+    val gainLossPercentage = remember(position) { quote.gainLossPercentString() }
+    val dayChange = remember(position) { quote.dayChangeString() }
+    val averagePositionPrice = remember(position) { quote.averagePositionPrice() }
 
-    AppCard(onClick = onClick) {
+    AppCard(modifier = modifier, onClick = onClick) {
         Row(
             modifier = Modifier.padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -126,13 +131,17 @@ fun PositionDetailCard(quote: Quote, onClick: () -> Unit) {
 
 @Composable
 fun AlertsCard(
-    quote: Quote
+    modifier: Modifier = Modifier,
+    alertAbove: Float,
+    alertBelow: Float,
+    onClick: () -> Unit,
 ) {
-    val alertAbove = remember(quote.properties) { quote.getAlertAbove() }
-    val alertBelow = remember(quote.properties) { quote.getAlertBelow() }
     if (alertAbove > 0f || alertBelow > 0f) {
         val appPreferences = Injector.appComponent().appPreferences()
-        AppCard {
+        AppCard(
+            modifier = modifier,
+            onClick = onClick,
+        ) {
             Column {
                 if (alertAbove > 0f) {
                     Row(
@@ -178,7 +187,7 @@ fun AlertsCard(
 }
 
 @Composable
-fun EditSectionHeader(title: Int, onClick: () -> Unit) {
+fun EditSectionHeader(title: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,8 +202,7 @@ fun EditSectionHeader(title: Int, onClick: () -> Unit) {
         Icon(
             modifier = Modifier
                 .width(16.dp)
-                .height(16.dp)
-                .clickable(onClick = onClick),
+                .height(16.dp),
             painter = painterResource(id = drawable.ic_edit),
             contentDescription = null
         )

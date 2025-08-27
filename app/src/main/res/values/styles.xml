@@ -1,48 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-  <style name="StocksWidget.ToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
-    <item name="titleTextAppearance">@style/ActionBarTitleText</item>
-    <item name="titleTextColor">?attr/colorOnSurface</item>
-  </style>
-
-  <style name="StocksWidget.ToolbarStyle.MainActivity" parent="StocksWidget.ToolbarStyle">
-    <item name="titleTextAppearance">@style/ActionBarTitleText.Bold</item>
-  </style>
-
-  <style name="ActionBarStyle" parent="Widget.Material3.ActionBar.Solid">
-    <item name="android:titleTextStyle">@style/ActionBarTitleText</item>
-    <item name="android:background">?attr/colorPrimaryDark</item>
-  </style>
-
-  <style name="Widget.StocksWidget.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
-    <item name="android:background">?attr/colorSurface</item>
-    <item name="itemActiveIndicatorStyle">@style/BottomNavigationView.ActiveIndicator</item>
-    <item name="android:height">?attr/actionBarSize</item>
-    <item name="android:minHeight">?attr/actionBarSize</item>
-    <item name="itemIconTint">@drawable/bottom_nav_icon_tint</item>
-    <item name="itemTextColor">@drawable/bottom_nav_icon_tint</item>
-    <item name="itemTextAppearanceInactive">@style/TextAppearance.StocksWidget.BodyMedium</item>
-    <item name="itemTextAppearanceActive">@style/TextAppearance.StocksWidget.BodyMedium</item>
-    <item name="itemPaddingTop">8dp</item>
-    <item name="itemPaddingBottom">8dp</item>
-  </style>
-
-  <style name="BottomNavigationView.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-    <item name="android:color">@color/transparent</item>
-  </style>
-
-  <style name="StocksWidget.Widget.CardView" parent="Widget.Material3.CardView.Elevated">
-    <item name="cardCornerRadius">5dp</item>
-  </style>
-
-  <style name="TabTextAppearence" parent="TextAppearance.Design.Tab">
-    <item name="android:fontFamily">@font/ubuntu_regular</item>
-    <item name="fontFamily">@font/ubuntu_regular</item>
-    <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-    <item name="android:textAllCaps">false</item>
-  </style>
-
-  <style name="Widget.StocksWidget.TextView" parent="Widget.MaterialComponents.TextView">
+  <style name="Widget.StocksWidget.TextView" parent="Widget.AppCompat.TextView">
     <item name="android:fontFamily">@font/ubuntu_regular</item>
     <item name="fontFamily">@font/ubuntu_regular</item>
   </style>
@@ -53,57 +11,9 @@
     <item name="fontFamily">@font/ubuntu_regular</item>
   </style>
 
-  <style name="ButtonStyle" parent="Widget.Material3.Button">
-    <item name="android:textSize">@dimen/button_text</item>
-    <item name="android:fontFamily">@font/ubuntu_bold</item>
-    <item name="fontFamily">@font/ubuntu_bold</item>
-  </style>
-
-  <style name="ActionBarTitleText" parent="@style/TextAppearance.Material3.ActionBar.Title">
-    <item name="android:fontFamily">@font/ubuntu_regular</item>
-    <item name="fontFamily">@font/ubuntu_regular</item>
-  </style>
-
-  <style name="ActionBarTitleText.Bold" parent="@style/TextAppearance.Material3.ActionBar.Title">
-    <item name="android:fontFamily">@font/ubuntu_bold</item>
-    <item name="fontFamily">@font/ubuntu_bold</item>
-  </style>
-
-  <style name="AlertDialog" parent="@style/Theme.Material3.DayNight.Dialog.Alert">
-    <item name="android:textAppearanceSmall">@style/TextAppearance.Material3.BodySmall</item>
-    <item name="android:button">@style/Widget.Material3.Button</item>
-    <item name="android:buttonBarButtonStyle">@style/Widget.Material3.Button.TextButton
-    </item>
-    <item name="android:titleTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item>
-    <item name="titleTextAppearance">@style/TextAppearance.Material3.HeadlineMedium</item>
-    <item name="titleTextColor">?attr/colorAccent</item>
-  </style>
-
-  <style name="TextAppearance.Dialog" parent="@style/TextAppearance.Material3.BodySmall"/>
-
   <style name="Widget.Container" parent="android:Widget">
     <item name="android:background">@drawable/app_widget_background</item>
     <item name="android:padding">?attr/appWidgetPadding</item>
-  </style>
-
-  <style name="Widget.Quote.Details.Title" parent="Widget.StocksWidget.TextView">
-    <item name="android:textColor">?attr/colorOnSurface</item>
-  </style>
-
-  <style name="Widget.Quote.Details.Data" parent="Widget.StocksWidget.TextView">
-    <item name="android:textSize">@dimen/large_text</item>
-    <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
-  </style>
-
-  <style name="Widget.Chip.Chart" parent="Widget.MaterialComponents.Chip.Choice">
-    <item name="android:textAllCaps">true</item>
-    <item name="android:stateListAnimator">@null</item>
-    <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Chip</item>
-  </style>
-
-  <style name="ShapeAppearance.Chip" parent="ShapeAppearance.MaterialComponents.SmallComponent">
-    <item name="cornerFamily">rounded</item>
-    <item name="cornerSize">8dp</item>
   </style>
 
 </resources>

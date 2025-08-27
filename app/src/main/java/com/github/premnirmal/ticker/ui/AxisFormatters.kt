@@ -10,9 +10,9 @@ import com.github.mikephil.charting.utils.Transformer
 import com.github.mikephil.charting.utils.Utils
 import com.github.mikephil.charting.utils.ViewPortHandler
 import com.github.premnirmal.ticker.AppPreferences
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class DateAxisFormatter : IAxisValueFormatter {
 

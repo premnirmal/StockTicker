@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.detail
 
 import android.R.color
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -8,6 +9,9 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +45,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -79,9 +84,9 @@ import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteDetail
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteWithSummary
-import com.github.premnirmal.ticker.portfolio.AddAlertsActivity
-import com.github.premnirmal.ticker.portfolio.AddNotesActivity
-import com.github.premnirmal.ticker.portfolio.AddPositionActivity
+import com.github.premnirmal.ticker.portfolio.AlertsActivity
+import com.github.premnirmal.ticker.portfolio.HoldingsActivity
+import com.github.premnirmal.ticker.portfolio.NotesActivity
 import com.github.premnirmal.ticker.portfolio.search.AddSuggestionScreen
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
@@ -107,6 +112,7 @@ fun QuoteDetailScreen(
     contentType: ContentType?,
     displayFeatures: List<DisplayFeature>,
     quote: Quote,
+    selectedWidgetId: Int? = null,
     viewModel: QuoteDetailViewModel = hiltViewModel()
 ) {
     val details by viewModel.details.collectAsState(initial = emptyList())
@@ -114,7 +120,7 @@ fun QuoteDetailScreen(
     val quoteDetail by viewModel.quote.observeAsState()
     val quote = quoteDetail?.dataSafe?.quote ?: quote
     QuoteDetailContent(
-        modifier, widthSizeClass, contentType, displayFeatures, quote, viewModel, details, articles, quoteDetail
+        modifier, widthSizeClass, contentType, displayFeatures, quote, viewModel, details, articles, quoteDetail, selectedWidgetId
     )
 
     DisposableEffect(quote.symbol) {
@@ -138,7 +144,8 @@ private fun QuoteDetailContent(
     viewModel: QuoteDetailViewModel,
     details: List<QuoteDetail>,
     articles: List<ArticleNewsFeed>?,
-    quoteDetail: FetchResult<QuoteWithSummary>?
+    quoteDetail: FetchResult<QuoteWithSummary>?,
+    selectedWidgetId: Int? = null,
 ) {
     val contentType: ContentType = contentType
         ?: calculateContentAndNavigationType(
@@ -161,9 +168,21 @@ private fun QuoteDetailContent(
                     } else {
                         painterResource(id = R.drawable.ic_add_circle)
                     }
-                    IconButton(onClick = {
-                        showAddOrRemoveDialog = true
-                    }) {
+                    IconButton(
+                        onClick = {
+                            if (selectedWidgetId != null) {
+                                if (!isInPortfolio) {
+                                    viewModel.addTickerToWidget(quote.symbol, selectedWidgetId)
+                                    isInPortfolio = true
+                                } else {
+                                    viewModel.removeStock(quote.symbol)
+                                    isInPortfolio = false
+                                }
+                            } else {
+                                showAddOrRemoveDialog = true
+                            }
+                        }
+                    ) {
                         Icon(painter = resource, contentDescription = null)
                     }
                 }
@@ -469,64 +488,113 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
             GridItemSpan(maxLineSpan)
         }) {
             val context = LocalContext.current
-            val intent = Intent(context, AddPositionActivity::class.java)
-            intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
-            EditSectionHeader(title = string.positions, onClick = {
-                context.startActivity(intent)
-            })
-        }
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
-            val context = LocalContext.current
-            PositionDetailCard(quote = quote, onClick = {
-                val intent = Intent(context, AddPositionActivity::class.java)
-                intent.putExtra(AddPositionActivity.TICKER, quote.symbol)
-                context.startActivity(intent)
-            })
-        }
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
-            val context = LocalContext.current
-            val intent = Intent(context, AddAlertsActivity::class.java)
-            intent.putExtra(AddAlertsActivity.TICKER, quote.symbol)
-            EditSectionHeader(title = string.alerts, onClick = {
-                context.startActivity(intent)
-            })
-        }
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
-            AlertsCard(quote = quote)
-        }
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
-            val context = LocalContext.current
-            val intent = Intent(context, AddNotesActivity::class.java)
-            intent.putExtra(AddNotesActivity.TICKER, quote.symbol)
-            EditSectionHeader(title = string.notes, onClick = {
-                context.startActivity(intent)
-            })
-        }
-        item(span = {
-            GridItemSpan(maxLineSpan)
-        }) {
-            val context = LocalContext.current
-            val notes = remember(quote.properties) { quote.properties?.notes }
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        val intent = Intent(context, AddNotesActivity::class.java)
-                        intent.putExtra(AddNotesActivity.TICKER, quote.symbol)
+            val intent = Intent(context, HoldingsActivity::class.java)
+            intent.putExtra(HoldingsActivity.TICKER, quote.symbol)
+            var holdings by remember(quote.position) {
+                mutableStateOf(quote.position)
+            }
+            val launcher =
+                rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val intent = result.data
+                        holdings = intent?.getParcelableExtra(HoldingsActivity.POSITIONS) ?: holdings
+                    }
+                }
+            Column(
+                modifier = Modifier.clickable {
+                    launcher.launch(intent)
+                }
+            ) {
+                EditSectionHeader(title = string.positions)
+                PositionDetailCard(
+                    modifier = Modifier.padding(top = 8.dp),
+                    quote = quote,
+                    position = holdings,
+                    onClick = {
+                        launcher.launch(intent)
                     },
-                text = if (!notes.isNullOrEmpty()) notes else "--",
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis
-            )
+                )
+            }
+        }
+        item(span = {
+            GridItemSpan(maxLineSpan)
+        }) {
+        }
+        item(span = {
+            GridItemSpan(maxLineSpan)
+        }) {
+            val context = LocalContext.current
+            val intent = Intent(context, AlertsActivity::class.java)
+            intent.putExtra(AlertsActivity.TICKER, quote.symbol)
+            var alertAbove by remember {
+                mutableFloatStateOf(quote.getAlertAbove())
+            }
+            var alertBelow by remember {
+                mutableFloatStateOf(quote.getAlertBelow())
+            }
+            val launcher =
+                rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val intent = result.data
+                        alertAbove = intent?.getFloatExtra(AlertsActivity.ALERT_ABOVE, alertAbove) ?: alertAbove
+                        alertBelow = intent?.getFloatExtra(AlertsActivity.ALERT_BELOW, alertBelow) ?: alertBelow
+                    }
+                }
+            Column(
+                modifier = Modifier.clickable {
+                    launcher.launch(intent)
+                }
+            ) {
+                EditSectionHeader(title = string.alerts)
+                AlertsCard(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    alertAbove = alertAbove,
+                    alertBelow = alertBelow,
+                    onClick = {
+                        launcher.launch(intent)
+                    }
+                )
+            }
+        }
+        item(span = {
+            GridItemSpan(maxLineSpan)
+        }) {
+            val context = LocalContext.current
+            var notes by remember(quote.properties) { mutableStateOf(quote.properties?.notes ?: "") }
+            val intent = Intent(context, NotesActivity::class.java)
+            intent.putExtra(NotesActivity.TICKER, quote.symbol)
+            val launcher =
+                rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val intent = result.data
+                        notes = intent?.getStringExtra(NotesActivity.NOTES) ?: notes
+                    }
+                }
+            Column(
+                modifier = Modifier.clickable {
+                    launcher.launch(intent)
+                }
+            ) {
+                EditSectionHeader(title = string.notes)
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 16.dp)
+                        .clickable {
+                            launcher.launch(intent)
+                        },
+                    text = notes.ifEmpty { "--" },
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

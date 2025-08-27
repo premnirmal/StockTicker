@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -35,8 +36,9 @@ import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 @Composable
 fun NewsCard(item: NewsArticle) {
     val context = LocalContext.current
+    val primaryColor = MaterialTheme.colorScheme.primary
     AppCard(onClick = {
-        CustomTabs.openTab(context, item.url)
+        CustomTabs.openTab(context, item.url, primaryColor.toArgb())
     }) {
         Column(modifier = Modifier.padding(all = 8.dp)) {
             Row {

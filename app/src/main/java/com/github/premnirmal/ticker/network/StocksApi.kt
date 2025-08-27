@@ -4,7 +4,6 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.github.premnirmal.ticker.network.data.YahooResponse
@@ -24,7 +23,6 @@ class StocksApi @Inject constructor(
     private val yahooFinanceCrumb: YahooFinanceCrumb,
     private val yahooFinance: YahooFinance,
     private val appPreferences: AppPreferences,
-    private val yahooQuoteDetails: YahooQuoteDetails,
     private val suggestionApi: SuggestionApi
 ) {
 
@@ -109,26 +107,6 @@ class StocksApi @Inject constructor(
             }
         }
 
-    suspend fun getQuoteDetails(ticker: String): FetchResult<QuoteSummary> =
-        withContext(Dispatchers.IO) {
-            try {
-                val quoteSummaryResponse = yahooQuoteDetails.getAssetDetails(ticker)
-                val data = quoteSummaryResponse.quoteSummary.result.firstOrNull()
-                return@withContext data?.let {
-                    FetchResult.success(it)
-                } ?: FetchResult.failure(
-                    FetchException(
-                        "Failed to fetch quote details for $ticker with error ${quoteSummaryResponse.quoteSummary.error}"
-                    )
-                )
-            } catch (e: Exception) {
-                Timber.e(e)
-                return@withContext FetchResult.failure(
-                    FetchException("Failed to fetch quote details for $ticker", e)
-                )
-            }
-        }
-
     private suspend fun getStocksYahoo(
         tickerList: List<String>,
         invocationCount: Int = 1
@@ -182,8 +160,8 @@ class StocksApi @Inject constructor(
         )
         quote.stockExchange = this.exchange ?: ""
         quote.currencyCode = this.currency ?: "USD"
-        quote.annualDividendRate = this.annualDividendRate
-        quote.annualDividendYield = this.annualDividendYield
+        quote.annualDividendRate = this.annualDividendRate ?: 0f
+        quote.annualDividendYield = this.annualDividendYield ?: 0f
         quote.region = this.region
         quote.quoteType = this.quoteType
         quote.longName = this.longName

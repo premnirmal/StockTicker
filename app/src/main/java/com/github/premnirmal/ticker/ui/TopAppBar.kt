@@ -10,6 +10,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -20,7 +21,8 @@ fun TopBar(
     navigationIcon: @Composable () -> Unit = {},
     actions: @Composable RowScope.() -> Unit = {},
     colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
-    scrollBehavior: TopAppBarScrollBehavior? = null
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    textStyle: TextStyle = MaterialTheme.typography.headlineMedium,
 ) {
     TopAppBar(
         modifier = modifier,
@@ -29,7 +31,7 @@ fun TopBar(
         actions = actions,
         colors = colors,
         title = {
-            Text(text = text, style = MaterialTheme.typography.headlineMedium)
+            Text(text = text, style = textStyle)
         }
     )
 }

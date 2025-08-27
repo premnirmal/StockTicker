@@ -11,18 +11,18 @@ import com.nhaarman.mockitokotlin2.whenever
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
 import org.junit.Test
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.DayOfWeek.FRIDAY
-import org.threeten.bp.DayOfWeek.MONDAY
-import org.threeten.bp.DayOfWeek.SATURDAY
-import org.threeten.bp.DayOfWeek.SUNDAY
-import org.threeten.bp.DayOfWeek.THURSDAY
-import org.threeten.bp.DayOfWeek.TUESDAY
-import org.threeten.bp.DayOfWeek.WEDNESDAY
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneOffset
-import org.threeten.bp.ZonedDateTime
+import java.time.DayOfWeek
+import java.time.DayOfWeek.FRIDAY
+import java.time.DayOfWeek.MONDAY
+import java.time.DayOfWeek.SATURDAY
+import java.time.DayOfWeek.SUNDAY
+import java.time.DayOfWeek.THURSDAY
+import java.time.DayOfWeek.TUESDAY
+import java.time.DayOfWeek.WEDNESDAY
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 @HiltAndroidTest
 class AlarmSchedulerTest : BaseUnitTest() {

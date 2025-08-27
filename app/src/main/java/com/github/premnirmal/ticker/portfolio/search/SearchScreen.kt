@@ -69,6 +69,7 @@ fun SearchScreen(
     widthSizeClass: WindowWidthSizeClass,
     displayFeatures: List<DisplayFeature>,
     onQuoteClick: (Quote) -> Unit,
+    selectedWidgetId: Int? = null,
     searchViewModel: SearchViewModel = hiltViewModel(),
     newsViewModel: NewsFeedViewModel = hiltViewModel(),
 ) {
@@ -88,8 +89,15 @@ fun SearchScreen(
     val widgetData by searchViewModel.widgetData.collectAsStateWithLifecycle(emptyList())
     var showAddRemoveForSuggestion by remember { mutableStateOf<Suggestion?>(null) }
     val onSuggestionAddRemoveClick: (Suggestion) -> Boolean = { suggestion ->
-        if (!suggestion.exists && hasWidgets && searchViewModel.widgetCount > 1) {
+        if (!suggestion.exists && hasWidgets && searchViewModel.widgetCount > 1 && selectedWidgetId == null) {
             showAddRemoveForSuggestion = suggestion
+        } else if (selectedWidgetId != null) {
+            suggestion.exists = !suggestion.exists
+            if (suggestion.exists) {
+                searchViewModel.addTickerToWidget(suggestion.symbol, selectedWidgetId)
+            } else {
+                searchViewModel.removeStock(suggestion.symbol, selectedWidgetId)
+            }
         } else {
             widgetData.firstOrNull()?.let { widgetData ->
                 suggestion.exists = !suggestion.exists
@@ -134,6 +142,7 @@ fun SearchScreen(
                     searchResults = searchResults,
                     onSuggestionClick = onSuggestionClick,
                     onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                    selectedWidgetId = selectedWidgetId,
                 )
             }
         } else {
@@ -159,6 +168,7 @@ fun SearchScreen(
                             searchResults = searchResults,
                             onSuggestionClick = onSuggestionClick,
                             onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                            selectedWidgetId = selectedWidgetId,
                         )
                     },
                     second = {
@@ -178,8 +188,10 @@ fun SearchScreen(
                             } else {
                                 val news = data.filterIsInstance<NewsFeedItem.ArticleNewsFeed>()
                                 val state = rememberLazyListState()
-                                rememberScrollToTopAction(HomeRoute.Search) {
-                                    state.animateScrollToItem(0)
+                                if (selectedWidgetId == null) {
+                                    rememberScrollToTopAction(HomeRoute.Search) {
+                                        state.animateScrollToItem(0)
+                                    }
                                 }
                                 LazyColumn(
                                     modifier = Modifier.padding(horizontal = 8.dp),
@@ -227,7 +239,8 @@ private fun SearchAndTrending(
     onQuoteClick: (Quote) -> Unit,
     searchResults: FetchResult<List<Suggestion>>?,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean
+    onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
+    selectedWidgetId: Int?,
 ) {
     if (searchResults != null && searchResults.wasSuccessful && !searchResults.dataSafe.isNullOrEmpty()) {
         SearchResults(
@@ -240,6 +253,7 @@ private fun SearchAndTrending(
             columns = columns,
             trendingStocks = trendingStocks,
             onQuoteClick = onQuoteClick,
+            selectedWidgetId = selectedWidgetId,
         )
     }
 }
@@ -306,7 +320,7 @@ private fun SearchResults(
             val suggestions = searchResults.data
             items(
                 count = suggestions.size,
-                key = { i -> suggestions[i].symbol+i }
+                key = { i -> suggestions[i].symbol + i }
             ) { i ->
                 val suggestion = suggestions[i]
                 SuggestionItem(
@@ -330,10 +344,13 @@ private fun TrendingStocks(
     columns: StaggeredGridCells,
     trendingStocks: List<Quote>,
     onQuoteClick: (Quote) -> Unit,
+    selectedWidgetId: Int?,
 ) {
     val gridState = rememberLazyStaggeredGridState()
-    rememberScrollToTopAction(HomeRoute.Search) {
-        gridState.animateScrollToItem(0)
+    if (selectedWidgetId == null) {
+        rememberScrollToTopAction(HomeRoute.Search) {
+            gridState.animateScrollToItem(0)
+        }
     }
     LazyVerticalStaggeredGrid(
         modifier = Modifier.fillMaxHeight().padding(

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="AppThemeV26" parent="AppThemeV23">
+  <style name="AppThemeV26" parent="BaseAppTheme">
     <item name="android:fontFamily">@font/ubuntu_regular</item>
     <item name="fontFamily">@font/ubuntu_regular</item>
     <item name="android:font">@font/ubuntu_regular</item>

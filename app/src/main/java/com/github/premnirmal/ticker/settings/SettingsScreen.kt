@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
@@ -308,13 +309,15 @@ private fun LazyListScope.settingsItems(
     }
     item {
         val context = LocalContext.current
+        val primaryColor = MaterialTheme.colorScheme.primary
         SettingsText(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
                     CustomTabs.openTab(
                         context,
-                        context.getString(R.string.privacy_policy_url)
+                        context.getString(R.string.privacy_policy_url),
+                        primaryColor.toArgb(),
                     )
                 }
                 .padding(horizontal = 8.dp, vertical = 16.dp),
@@ -324,13 +327,15 @@ private fun LazyListScope.settingsItems(
     }
     item {
         val context = LocalContext.current
+        val primaryColor = MaterialTheme.colorScheme.primary
         Text(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
                     CustomTabs.openTab(
                         context,
-                        context.getString(R.string.checkout_open_source)
+                        context.getString(R.string.checkout_open_source),
+                        primaryColor.toArgb(),
                     )
                 }
                 .padding(8.dp),
