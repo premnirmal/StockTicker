@@ -23,8 +23,10 @@ class LoggingTree : Timber.Tree() {
     if (priority == Log.VERBOSE || priority == Log.DEBUG) {
       return
     }
+    Log.println(priority, tag, message)
     crashlytics.log(message)
     if (t != null) {
+      Log.e(tag, t.message, t)
       crashlytics.recordException(t)
     }
   }

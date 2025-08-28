@@ -36,15 +36,15 @@ data class YahooQuoteNet(
     @SerialName("regularMarketPrice")
     val lastTradePrice: Float,
     @SerialName("regularMarketDayHigh")
-    val regularMarketDayHigh: Float,
+    val regularMarketDayHigh: Float?,
     @SerialName("regularMarketDayLow")
-    val regularMarketDayLow: Float,
+    val regularMarketDayLow: Float?,
     @SerialName("regularMarketPreviousClose")
     val regularMarketPreviousClose: Float,
     @SerialName("regularMarketOpen")
-    val regularMarketOpen: Float,
+    val regularMarketOpen: Float?,
     @SerialName("regularMarketVolume")
-    val regularMarketVolume: Long,
+    val regularMarketVolume: Long?,
     @SerialName("trailingPE")
     val trailingPE: Float?,
     @SerialName("marketState")
