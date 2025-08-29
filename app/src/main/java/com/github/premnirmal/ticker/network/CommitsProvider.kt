@@ -49,7 +49,9 @@ class CommitsProvider @Inject constructor(
             return if (wasSuccessful) {
                 FetchResult.success(
                     data.filterNot {
-                        it.commit.message.contains("Vcode++") || it.commit.message.contains("vcode++")
+                        it.commit.message.contains("Vcode++") ||
+                            it.commit.message.contains("vcode++") ||
+                            it.commit.message.contains("Merge branch 'master'")
                     }.map { commit ->
                         commit.commit.message.replace(
                             "\n",

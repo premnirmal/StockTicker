@@ -44,7 +44,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -116,8 +115,8 @@ fun QuoteDetailScreen(
     viewModel: QuoteDetailViewModel = hiltViewModel()
 ) {
     val details by viewModel.details.collectAsState(initial = emptyList())
-    val articles by viewModel.newsData.observeAsState(initial = null)
-    val quoteDetail by viewModel.quote.observeAsState()
+    val articles by viewModel.newsData.collectAsStateWithLifecycle()
+    val quoteDetail by viewModel.quote.collectAsStateWithLifecycle(null)
     val quote = quoteDetail?.dataSafe?.quote ?: quote
     QuoteDetailContent(
         modifier, widthSizeClass, contentType, displayFeatures, quote, viewModel, details, articles, quoteDetail, selectedWidgetId
@@ -384,7 +383,7 @@ private fun GraphItem(
                 .height(220.dp),
             contentAlignment = Alignment.Center
         ) {
-            val graphError by viewModel.dataFetchError.observeAsState()
+            val graphError by viewModel.dataFetchError.collectAsStateWithLifecycle()
             if (graphError == null && graphData?.dataPoints.isNullOrEmpty()) {
                 CircularProgressIndicator()
             } else if (graphError != null && graphData?.dataPoints.isNullOrEmpty()) {

@@ -35,7 +35,7 @@ data class SuggestionsNet(
         var typeDisp: String = ""
 
         @SerialName("score")
-        var score: Long = 0
+        var score: Float? = 0f
 
         @SerialName("isYahooFinance")
         var isYahooFinance: Boolean = false

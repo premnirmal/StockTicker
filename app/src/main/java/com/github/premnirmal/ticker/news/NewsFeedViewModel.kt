@@ -1,7 +1,5 @@
 package com.github.premnirmal.ticker.news
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.model.FetchResult
@@ -29,9 +27,9 @@ class NewsFeedViewModel @Inject constructor(
         get() = _isRefreshing
     private val _isRefreshing = MutableStateFlow(false)
 
-    val newsFeed: LiveData<FetchResult<List<NewsFeedItem>>>
+    val newsFeed: StateFlow<FetchResult<List<NewsFeedItem>>?>
         get() = _newsFeed
-    private val _newsFeed = MutableLiveData<FetchResult<List<NewsFeedItem>>>()
+    private val _newsFeed = MutableStateFlow<FetchResult<List<NewsFeedItem>>?>(null)
 
     fun fetchNews(forceRefresh: Boolean = false) {
         _isRefreshing.value = true

@@ -16,7 +16,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,7 +42,7 @@ fun NewsFeedScreen(
     viewModel: NewsFeedViewModel = hiltViewModel()
 ) {
     val newsList by viewModel.newsFeedFlow.collectAsStateWithLifecycle()
-    val newsFeed by viewModel.newsFeed.observeAsState()
+    val newsFeed by viewModel.newsFeed.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     LaunchedEffect(newsList.isEmpty()) {
         if (newsList.isEmpty()) {

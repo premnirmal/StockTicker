@@ -2,10 +2,7 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.StocksProvider
@@ -41,9 +38,9 @@ class SearchViewModel @Inject constructor(
     private val appMessaging: AppMessaging,
 ) : ViewModel() {
 
-    val searchResult: LiveData<FetchResult<List<Suggestion>>>
+    val searchResult: StateFlow<FetchResult<List<Suggestion>>?>
         get() = _searchResult
-    private val _searchResult: MutableLiveData<FetchResult<List<Suggestion>>> = MutableLiveData()
+    private val _searchResult: MutableStateFlow<FetchResult<List<Suggestion>>?> = MutableStateFlow(null)
     private var searchJob: Job? = null
 
     val trendingStocks: StateFlow<List<Quote>>
@@ -61,8 +58,8 @@ class SearchViewModel @Inject constructor(
         get() = widgetDataProvider.widgetCount
 
     fun fetchTrending() {
-        _isRefreshing.value = true
         viewModelScope.launch {
+            _isRefreshing.value = true
             val trendingResult = newsProvider.fetchTrendingStocks(true)
             if (trendingResult.wasSuccessful) {
                 _trendingStocks.emit(trendingResult.data)
@@ -92,21 +89,12 @@ class SearchViewModel @Inject constructor(
                     sug.exists = doesSuggestionExist(sug)
                     sug
                 }
-                _searchResult.postValue(FetchResult.success(data))
+                _searchResult.emit(FetchResult.success(data))
             } else {
                 Timber.w(suggestions.error)
-                _searchResult.postValue(FetchResult.failure(suggestions.error))
+                _searchResult.emit(FetchResult.failure(suggestions.error))
                 appMessaging.sendSnackbar(R.string.error_fetching_suggestions)
             }
-        }
-    }
-
-    fun fetchTrendingStocks(): LiveData<List<Quote>> = liveData {
-        val trendingResult = newsProvider.fetchTrendingStocks(true)
-        if (trendingResult.wasSuccessful) {
-            emit(trendingResult.data)
-        } else {
-            emit(emptyList())
         }
     }
 

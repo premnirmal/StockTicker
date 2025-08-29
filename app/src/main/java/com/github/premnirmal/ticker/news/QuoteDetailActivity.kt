@@ -10,9 +10,9 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.base.BaseComposeActivity
 import com.github.premnirmal.ticker.detail.QuoteDetailScreen
 import com.google.accompanist.adaptive.calculateDisplayFeatures
@@ -46,7 +46,7 @@ class QuoteDetailActivity : BaseComposeActivity() {
     @Composable
     override fun ShowContent() {
         val windowSizeClass = calculateWindowSizeClass(this)
-        val quote by viewModel.quote.observeAsState()
+        val quote by viewModel.quote.collectAsStateWithLifecycle(null)
         if (quote == null) {
             Box(modifier = Modifier.fillMaxSize()) {
                 CircularProgressIndicator(

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -42,10 +45,19 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.HoldingSum
 import com.github.premnirmal.ticker.network.data.holdingsSum
+import com.github.premnirmal.ticker.ui.ContentType
+import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.Divider
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
+import com.google.accompanist.adaptive.FoldAwareConfiguration
+import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
+import com.google.accompanist.adaptive.TwoPane
+import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.internal.toImmutableList
 import java.text.NumberFormat
@@ -73,10 +85,41 @@ class HoldingsActivity : BaseComposeActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun ShowContent() {
-        val focusManager = LocalFocusManager.current
+        val windowSizeClass = calculateWindowSizeClass(this)
+        val displayFeatures = calculateDisplayFeatures(this)
+        val contentType: ContentType = calculateContentAndNavigationType(
+            widthSizeClass = windowSizeClass.widthSizeClass, displayFeatures = displayFeatures
+        ).second
+
+        val position by viewModel.position.collectAsStateWithLifecycle()
+        var holdings by remember(position.holdings) {
+            mutableStateOf(position.holdings.toImmutableList())
+        }
+        val holdingsSum by remember(holdings) {
+            derivedStateOf {
+                holdings.holdingsSum()
+            }
+        }
+        LaunchedEffect(ticker) {
+            viewModel.addedHolding.collect {
+                holdings = holdings.toMutableList().apply {
+                    add(it)
+                }
+                updateActivityResult()
+            }
+        }
+        LaunchedEffect(ticker) {
+            viewModel.removedHolding.collect {
+                holdings = holdings.toMutableList().apply {
+                    remove(it)
+                }
+                updateActivityResult()
+            }
+        }
+
         Scaffold(
             modifier = Modifier.imePadding(),
             topBar = {
@@ -85,170 +128,186 @@ class HoldingsActivity : BaseComposeActivity() {
                 )
             }
         ) { paddingValues ->
-            Box(
-                modifier = Modifier.padding(paddingValues)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+            if (contentType == SINGLE_PANE) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues)
                 ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        text = ticker,
-                        style = MaterialTheme.typography.headlineMedium,
-                    )
-
-                    val position by viewModel.position.collectAsStateWithLifecycle()
-                    var holdings by remember(position.holdings) {
-                        mutableStateOf(position.holdings.toImmutableList())
-                    }
-                    val holdingsSum by remember(holdings) {
-                        derivedStateOf {
-                            holdings.holdingsSum()
-                        }
-                    }
-                    LaunchedEffect(ticker) {
-                        viewModel.addedHolding.collect {
-                            holdings = holdings.toMutableList().apply {
-                                add(it)
-                            }
-                            updateActivityResult()
-                        }
-                    }
-                    LaunchedEffect(ticker) {
-                        viewModel.removedHolding.collect {
-                            holdings = holdings.toMutableList().apply {
-                                remove(it)
-                            }
-                            updateActivityResult()
-                        }
-                    }
-                    val decimalFormatter = remember {
-                        DecimalFormatter()
-                    }
-                    var sharesError by remember {
-                        mutableStateOf(false)
-                    }
-                    var priceError by remember {
-                        mutableStateOf(false)
-                    }
-                    var priceText by remember(ticker) {
-                        mutableStateOf("")
-                    }
-                    var sharesText by remember(ticker) {
-                        mutableStateOf("")
-                    }
-                    TextField(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp)
-                            .align(Alignment.CenterHorizontally),
-                        value = sharesText,
-                        maxLines = 1,
-                        singleLine = true,
-                        textStyle = TextStyle.Default.copy(
-                            textAlign = TextAlign.End
-                        ),
-                        isError = sharesError,
-                        label = { Text(text = stringResource(R.string.number_of_shares)) },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-                        visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
-                        onValueChange = {
-                            sharesText = decimalFormatter.cleanup(it).take(MAX_VALUE_LENGTH)
-                        },
-                        colors = TextFieldDefaults.colors().copy(
-                            focusedIndicatorColor = Color.Transparent,
-                        )
-                    )
-                    TextField(
-                        modifier = Modifier
-                            .padding(vertical = 16.dp)
-                            .align(Alignment.CenterHorizontally),
-                        value = priceText,
-                        maxLines = 1,
-                        singleLine = true,
-                        textStyle = TextStyle.Default.copy(
-                            textAlign = TextAlign.End
-                        ),
-                        isError = priceError,
-                        label = { Text(text = stringResource(R.string.price)) },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
-                        visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
-                        onValueChange = {
-                            priceText = decimalFormatter.cleanup(it).take(MAX_VALUE_LENGTH)
-                        },
-                        colors = TextFieldDefaults.colors().copy(
-                            focusedIndicatorColor = Color.Transparent,
-                        )
-                    )
-                    Button(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(bottom = 16.dp),
-                        onClick = {
-                            val pair = onAddClicked(priceText, sharesText)
-                            priceError = pair.first
-                            sharesError = pair.second
-                            if (!priceError && !sharesError) {
-                                priceText = ""
-                                sharesText = ""
-                                focusManager.clearFocus()
-                            }
-                        },
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                            .align(Alignment.Center)
+                            .padding(horizontal = 16.dp),
                     ) {
                         Text(
-                            text = stringResource(R.string.add).uppercase(),
-                            style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.align(Alignment.CenterHorizontally),
+                            text = ticker,
+                            style = MaterialTheme.typography.headlineMedium,
                         )
+                        HoldingsInput()
+                        CurrentHoldings(holdings, holdingsSum)
                     }
+                }
+            } else {
+                TwoPane(
+                    modifier = Modifier.padding(paddingValues),
+                    strategy = HorizontalTwoPaneStrategy(
+                        splitFraction = 1f / 2f,
+                    ),
+                    displayFeatures = displayFeatures,
+                    foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
+                    first = {
+                        Box(
+                            modifier = Modifier
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize()
+                                    .align(Alignment.Center)
+                                    .padding(horizontal = 16.dp),
+                            ) {
+                                Text(
+                                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                                    text = ticker,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                )
+                                HoldingsInput()
+                            }
+                        }
+                    },
+                    second = {
+                        CurrentHoldings(holdings, holdingsSum)
+                    }
+                )
+            }
+        }
+    }
 
-                    Text(
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        text = stringResource(R.string.current_positions),
-                        style = MaterialTheme.typography.labelLarge,
-                    )
+    @Composable
+    private fun HoldingsInput() {
+        val focusManager = LocalFocusManager.current
+        val decimalFormatter = remember {
+            DecimalFormatter()
+        }
+        var sharesError by remember {
+            mutableStateOf(false)
+        }
+        var priceError by remember {
+            mutableStateOf(false)
+        }
+        var priceText by remember(ticker) {
+            mutableStateOf("")
+        }
+        var sharesText by remember(ticker) {
+            mutableStateOf("")
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            TextField(
+                modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
+                value = sharesText,
+                maxLines = 1,
+                singleLine = true,
+                textStyle = TextStyle.Default.copy(
+                    textAlign = TextAlign.End
+                ),
+                isError = sharesError,
+                label = { Text(text = stringResource(R.string.number_of_shares)) },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
+                onValueChange = {
+                    sharesText = decimalFormatter.cleanup(it).take(MAX_VALUE_LENGTH)
+                },
+                colors = TextFieldDefaults.colors().copy(
+                    focusedIndicatorColor = Color.Transparent,
+                )
+            )
+            TextField(
+                modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
+                value = priceText,
+                maxLines = 1,
+                singleLine = true,
+                textStyle = TextStyle.Default.copy(
+                    textAlign = TextAlign.End
+                ),
+                isError = priceError,
+                label = { Text(text = stringResource(R.string.price)) },
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
+                onValueChange = {
+                    priceText = decimalFormatter.cleanup(it).take(MAX_VALUE_LENGTH)
+                },
+                colors = TextFieldDefaults.colors().copy(
+                    focusedIndicatorColor = Color.Transparent,
+                )
+            )
+            Button(
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp),
+                onClick = {
+                    val pair = onAddClicked(priceText, sharesText)
+                    priceError = pair.first
+                    sharesError = pair.second
+                    if (!priceError && !sharesError) {
+                        priceText = ""
+                        sharesText = ""
+                        focusManager.clearFocus()
+                    }
+                },
+            ) {
+                Text(
+                    text = stringResource(R.string.add).uppercase(),
+                    style = MaterialTheme.typography.labelLarge,
+                )
+            }
+        }
+    }
 
+    @Composable
+    private fun CurrentHoldings(
+        holdings: List<Holding>,
+        holdingsSum: HoldingSum
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                modifier = Modifier.padding(vertical = 16.dp),
+                text = stringResource(R.string.current_positions),
+                style = MaterialTheme.typography.labelLarge,
+            )
+
+            HoldingRow(
+                modifier = Modifier,
+                shares = stringResource(R.string.shares),
+                price = stringResource(R.string.price),
+                value = stringResource(R.string.value),
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+            )
+            LazyColumn(
+                Modifier.padding(vertical = 8.dp),
+                state = rememberLazyListState(),
+            ) {
+                items(
+                    count = holdings.size, key = { i -> holdings[i].id ?: i }) { i ->
+                    val holding = holdings[i]
                     HoldingRow(
-                        modifier = Modifier,
-                        shares = stringResource(R.string.shares),
-                        price = stringResource(R.string.price),
-                        value = stringResource(R.string.value),
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        ),
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        shares = AppPreferences.DECIMAL_FORMAT.format(holding.shares),
+                        price = AppPreferences.DECIMAL_FORMAT.format(holding.price),
+                        value = AppPreferences.DECIMAL_FORMAT.format(holding.totalValue()),
+                        showRemoveButton = true,
+                        onRemoveClick = {
+                            viewModel.removeHolding(ticker, holding)
+                        })
+                }
+                item {
+                    Divider()
+                }
+                item {
+                    HoldingRow(
+                        modifier = Modifier.padding(top = 8.dp),
+                        shares = AppPreferences.DECIMAL_FORMAT.format(holdingsSum.totalShares),
+                        price = AppPreferences.DECIMAL_FORMAT.format(holdingsSum.averagePrice),
+                        value = AppPreferences.DECIMAL_FORMAT.format(holdingsSum.totalPaidPrice),
                     )
-                    LazyColumn(
-                        Modifier.padding(vertical = 8.dp),
-                        state = rememberLazyListState(),
-                    ) {
-                        items(
-                            count = holdings.size,
-                            key = { i -> holdings[i].id ?: i }
-                        ) { i ->
-                            val holding = holdings[i]
-                            HoldingRow(
-                                modifier = Modifier.padding(bottom = 8.dp),
-                                shares = AppPreferences.DECIMAL_FORMAT.format(holding.shares),
-                                price = AppPreferences.DECIMAL_FORMAT.format(holding.price),
-                                value = AppPreferences.DECIMAL_FORMAT.format(holding.totalValue()),
-                                showRemoveButton = true,
-                                onRemoveClick = {
-                                    viewModel.removeHolding(ticker, holding)
-                                }
-                            )
-                        }
-                        item {
-                            Divider()
-                        }
-                        item {
-                            HoldingRow(
-                                modifier = Modifier.padding(top = 8.dp),
-                                shares = AppPreferences.DECIMAL_FORMAT.format(holdingsSum.totalShares),
-                                price = AppPreferences.DECIMAL_FORMAT.format(holdingsSum.averagePrice),
-                                value = AppPreferences.DECIMAL_FORMAT.format(holdingsSum.totalPaidPrice),
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -284,8 +343,7 @@ class HoldingsActivity : BaseComposeActivity() {
                 style = style,
             )
             IconButton(
-                enabled = showRemoveButton,
-                onClick = onRemoveClick
+                enabled = showRemoveButton, onClick = onRemoveClick
             ) {
                 if (showRemoveButton) {
                     Icon(
@@ -308,16 +366,14 @@ class HoldingsActivity : BaseComposeActivity() {
             var shares = 0f
             try {
                 val numberFormat: NumberFormat = NumberFormat.getNumberInstance()
-                price = numberFormat.parse(priceText)!!
-                    .toFloat()
+                price = numberFormat.parse(priceText)!!.toFloat()
             } catch (e: NumberFormatException) {
                 priceError = true
                 appMessaging.sendSnackbar(R.string.invalid_number)
             }
             try {
                 val numberFormat: NumberFormat = NumberFormat.getNumberInstance()
-                shares = numberFormat.parse(sharesText)!!
-                    .toFloat()
+                shares = numberFormat.parse(sharesText)!!.toFloat()
             } catch (e: NumberFormatException) {
                 sharesError = true
                 appMessaging.sendSnackbar(R.string.invalid_number)

@@ -3,9 +3,6 @@ package com.github.premnirmal.ticker.news
 import android.app.Application
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.format
 import com.github.premnirmal.ticker.formatBigNumbers
@@ -15,10 +12,10 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
+import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -30,6 +27,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.shareIn
@@ -42,7 +40,7 @@ import javax.inject.Inject
 class QuoteDetailViewModel @Inject constructor(
     application: Application,
     private val stocksProvider: StocksProvider,
-    private val stocksApi: StocksApi,
+    private val appMessaging: AppMessaging,
     private val newsProvider: NewsProvider,
     private val historyProvider: HistoryProvider,
     private val widgetDataProvider: WidgetDataProvider
@@ -51,21 +49,18 @@ class QuoteDetailViewModel @Inject constructor(
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
     private val _isRefreshing = MutableStateFlow(false)
-    private val _quote = MutableSharedFlow<FetchResult<QuoteWithSummary>>()
-    val quote: LiveData<FetchResult<QuoteWithSummary>>
-        get() = _quote.asLiveData()
+    val quote: SharedFlow<FetchResult<QuoteWithSummary>>
+        get() = _quote
+    private val _quote = MutableSharedFlow<FetchResult<QuoteWithSummary>>( 1)
     private val _data = MutableStateFlow<HistoryProvider.ChartData?>(null)
     val data: StateFlow<HistoryProvider.ChartData?>
         get() = _data
-    private val _dataFetchError = MutableLiveData<Throwable?>()
-    val dataFetchError: LiveData<Throwable?>
+    private val _dataFetchError = MutableStateFlow<Throwable?>(null)
+    val dataFetchError: StateFlow<Throwable?>
         get() = _dataFetchError
-    private val _newsData = MutableLiveData<List<ArticleNewsFeed>>()
-    val newsData: LiveData<List<ArticleNewsFeed>>
+    private val _newsData = MutableStateFlow<List<ArticleNewsFeed>>(emptyList())
+    val newsData: StateFlow<List<ArticleNewsFeed>>
         get() = _newsData
-    private val _newsError = MutableLiveData<Throwable>()
-    val newsError: LiveData<Throwable>
-        get() = _newsError
     private var fetchQuoteJob: Job? = null
     private var quoteSummary: QuoteSummary? = null
     val range = MutableStateFlow<Range>(Range.ONE_DAY)
@@ -288,7 +283,7 @@ class QuoteDetailViewModel @Inject constructor(
         if (result.wasSuccessful) {
             _data.value = result.data
         } else {
-            _dataFetchError.postValue(result.error)
+            _dataFetchError.emit(result.error)
         }
     }
 
@@ -308,7 +303,9 @@ class QuoteDetailViewModel @Inject constructor(
                 }
             }
             else -> {
-                _newsError.value = result.error
+                result.error.message?.let {
+                    appMessaging.sendSnackbar(it)
+                }
             }
         }
     }

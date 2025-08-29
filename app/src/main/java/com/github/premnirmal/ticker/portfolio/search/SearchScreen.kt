@@ -29,7 +29,6 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -74,7 +73,7 @@ fun SearchScreen(
     newsViewModel: NewsFeedViewModel = hiltViewModel(),
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
-    val searchResults by searchViewModel.searchResult.observeAsState()
+    val searchResults by searchViewModel.searchResult.collectAsStateWithLifecycle()
     val trendingStocks by searchViewModel.trendingStocks.collectAsStateWithLifecycle(emptyList())
     val isRefreshing by searchViewModel.isRefreshing.collectAsStateWithLifecycle()
     LaunchedEffect(trendingStocks.isEmpty()) {
@@ -147,7 +146,7 @@ fun SearchScreen(
             }
         } else {
             PullToRefreshBox(
-                modifier = Modifier.padding(padding).fillMaxSize(),
+                modifier = Modifier.fillMaxSize().padding(padding),
                 isRefreshing = isRefreshing,
                 onRefresh = {
                     searchViewModel.fetchTrending()
@@ -172,7 +171,7 @@ fun SearchScreen(
                         )
                     },
                     second = {
-                        val fetchResult by newsViewModel.newsFeed.observeAsState()
+                        val fetchResult by newsViewModel.newsFeed.collectAsStateWithLifecycle()
                         LaunchedEffect(fetchResult?.dataSafe.isNullOrEmpty()) {
                             if (fetchResult?.dataSafe.isNullOrEmpty()) {
                                 newsViewModel.fetchNews()
