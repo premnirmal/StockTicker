@@ -61,7 +61,8 @@ class WidgetSettingsActivity : BaseComposeActivity() {
                         onClick = {
                             setOkResult()
                             finish()
-                        }) {
+                        }
+                    ) {
                         Text(
                             text = stringResource(R.string.done),
                             style = MaterialTheme.typography.labelMedium,

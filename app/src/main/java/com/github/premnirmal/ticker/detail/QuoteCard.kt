@@ -46,13 +46,13 @@ fun QuoteCard(
         if (quote.hasPositions()) {
             PositionCard(quote)
         } else {
-            PortfolioCard(quote, quoteNameMaxLines)
+            InstrumentCard(quote, quoteNameMaxLines)
         }
     }
 }
 
 @Composable
-private fun PortfolioCard(
+private fun InstrumentCard(
     quote: Quote,
     quoteNameMaxLines: Int,
 ) {
@@ -63,7 +63,7 @@ private fun PortfolioCard(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(top = 8.dp)
+                .padding(top = 4.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -130,7 +130,6 @@ private fun PositionCard(
         val gainOrLoss = if (quote.gainLoss() >= 0) R.string.gain else R.string.loss
         Row(
             verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.padding(top = 4.dp)
         ) {
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
@@ -143,7 +142,7 @@ private fun PositionCard(
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
                 textAlign = TextAlign.Center,
-                text = quote.gainLossPercentString(),
+                text = quote.gainLossPercentStringNoPercentSign(),
                 up = quote.gainLoss() > 0,
                 down = quote.gainLoss() < 0,
                 annotation = gainPercentAnnotation
@@ -269,11 +268,12 @@ fun QuoteCardPreview() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(120.dp)
+                .padding(bottom = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             QuoteCard(
-                quote = Quote("GOOG", "Alphabet Corporation"),
+                quote = Quote("VBIAX", "Vanguard balanced admiral mutual funds"),
                 modifier = Modifier
                     .weight(1f, true)
                     .fillMaxHeight(),
@@ -290,7 +290,7 @@ fun QuoteCardPreview() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(130.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             QuoteCard(

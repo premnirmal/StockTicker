@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
+import com.github.premnirmal.ticker.home.HomeEvent
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
 import com.github.premnirmal.ticker.navigation.LayoutType.CONTENT
@@ -264,6 +265,7 @@ fun HomeNavigationRail(
 class HomeNavigationActions(
     private val navController: NavHostController,
     private val viewModel: NavigationViewModel,
+    private val homeViewModel: HomeViewModel,
 ) {
 
     fun navigateTo(destination: HomeBottomNavDestination) {
@@ -285,6 +287,7 @@ class HomeNavigationActions(
                 viewModel.scrollToTop(destination.route)
             }
         }
+        homeViewModel.sendHomeEvent(HomeEvent.PromptRate)
     }
 }
 

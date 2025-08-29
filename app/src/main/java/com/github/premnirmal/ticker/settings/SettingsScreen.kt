@@ -96,7 +96,6 @@ private fun LazyListScope.settingsItems(
         SettingsText(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
                 .clickable {
                     homeViewModel.showWhatsNew()
                 },
@@ -109,7 +108,6 @@ private fun LazyListScope.settingsItems(
         SettingsText(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
                 .clickable {
                     homeViewModel.showTutorial()
                 },
@@ -244,8 +242,7 @@ private fun LazyListScope.settingsItems(
                 .fillMaxWidth()
                 .clickable {
                     launcher.launch("portfolio.txt")
-                }
-                .padding(horizontal = 8.dp, vertical = 16.dp),
+                },
             title = stringResource(id = R.string.action_share)
         )
         Divider()
@@ -264,8 +261,7 @@ private fun LazyListScope.settingsItems(
                 .fillMaxWidth()
                 .clickable {
                     launcher.launch(arrayOf("application/json", "text/plain"))
-                }
-                .padding(8.dp),
+                },
             title = stringResource(id = R.string.action_import),
             subtitle = stringResource(id = R.string.action_import)
         )
@@ -285,8 +281,7 @@ private fun LazyListScope.settingsItems(
                 .fillMaxWidth()
                 .clickable {
                     launcher.launch("portfolio.json")
-                }
-                .padding(8.dp),
+                },
             title = stringResource(id = R.string.action_export),
             subtitle = stringResource(id = R.string.export_desc)
         )
@@ -319,8 +314,7 @@ private fun LazyListScope.settingsItems(
                         context.getString(R.string.privacy_policy_url),
                         primaryColor.toArgb(),
                     )
-                }
-                .padding(horizontal = 8.dp, vertical = 16.dp),
+                },
             title = stringResource(id = R.string.privacy_policy)
         )
         Divider()

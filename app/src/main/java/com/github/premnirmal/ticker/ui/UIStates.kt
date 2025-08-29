@@ -16,13 +16,6 @@ import androidx.compose.ui.unit.dp
 import com.github.premnirmal.tickerwidget.R.string
 
 @Composable
-fun EmptyComingSoon(
-    modifier: Modifier = Modifier
-) {
-    EmptyState(modifier = modifier, text = "This tab is under construction")
-}
-
-@Composable
 fun EmptyState(
     modifier: Modifier = Modifier,
     contentAlignment: Alignment = Alignment.Center,
@@ -69,12 +62,6 @@ fun ProgressState(modifier: Modifier = Modifier) {
     ) {
         CircularProgressIndicator()
     }
-}
-
-@Preview
-@Composable
-fun ComingSoonPreview() {
-    EmptyComingSoon()
 }
 
 @Preview

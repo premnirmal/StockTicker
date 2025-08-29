@@ -51,7 +51,7 @@ class QuoteDetailViewModel @Inject constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val quote: SharedFlow<FetchResult<QuoteWithSummary>>
         get() = _quote
-    private val _quote = MutableSharedFlow<FetchResult<QuoteWithSummary>>( 1)
+    private val _quote = MutableSharedFlow<FetchResult<QuoteWithSummary>>(1)
     private val _data = MutableStateFlow<HistoryProvider.ChartData?>(null)
     val data: StateFlow<HistoryProvider.ChartData?>
         get() = _data

@@ -37,7 +37,7 @@ fun PositionDetailCard(
     val holdings = remember(position) { quote.holdingsString() }
     val gainLoss = remember(position) { quote.gainLoss() }
     val gainLossString = remember(position) { quote.gainLossString() }
-    val gainLossPercentage = remember(position) { quote.gainLossPercentString() }
+    val gainLossPercentage = remember(position) { quote.gainLossPercentStringNoPercentSign() }
     val dayChange = remember(position) { quote.dayChangeString() }
     val averagePositionPrice = remember(position) { quote.averagePositionPrice() }
 

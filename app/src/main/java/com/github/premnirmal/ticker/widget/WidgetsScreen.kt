@@ -195,7 +195,7 @@ private fun LazyListScope.widgetSettings(
     selectedWidgetId: Int?,
 ) {
     item {
-        WidgetName(widgetData, widgetDataImmutable)
+        WidgetName(widgetData)
         Divider()
     }
     selectedWidgetId?.let {
@@ -346,7 +346,6 @@ private fun LazyListScope.widgetSettings(
     SettingsText(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
             .clickable {
                 val intent = SearchActivity.launchIntent(context, widgetId)
                 context.startActivity(intent)
@@ -375,7 +374,6 @@ private fun LazyListScope.widgetSettings(
 @Composable
 fun WidgetName(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
 ) {
     var name by rememberSaveable {
         mutableStateOf(widgetData.widgetName())
@@ -383,8 +381,7 @@ fun WidgetName(
     val focusManager = LocalFocusManager.current
     TextField(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(all = 8.dp),
+            .fillMaxWidth(),
         value = name,
         onValueChange = {
             name = it

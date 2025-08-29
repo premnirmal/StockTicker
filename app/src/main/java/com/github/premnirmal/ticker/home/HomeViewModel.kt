@@ -81,6 +81,12 @@ class HomeViewModel @Inject constructor(
         notificationsHandler.initialize()
     }
 
+    fun sendHomeEvent(event: HomeEvent) {
+        viewModelScope.launch {
+            _homeEvent.emit(event)
+        }
+    }
+
     val totalGainLoss: Flow<TotalGainLoss>
         get() = stocksProvider.portfolio.map { portfolio ->
             val totalHoldings = portfolio.filter { it.hasPositions() }.sumOf { quote ->

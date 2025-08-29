@@ -46,8 +46,7 @@ fun ListPreference(
     ) {
         SettingsText(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .fillMaxWidth(),
             title = title,
             subtitle = items[selected]
         )
@@ -89,8 +88,7 @@ fun MultiSelectListPreference(
     ) {
         SettingsText(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .fillMaxWidth(),
             title = title,
             subtitle = items.filterIndexed { index, _ -> selected.contains(index) }
                 .joinToString(", ")
@@ -116,8 +114,7 @@ fun CheckboxPreference(
                     checked = !checked
                     onCheckChanged(checked)
                 }
-            }
-            .padding(vertical = 4.dp, horizontal = 8.dp),
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         SettingsText(
@@ -171,8 +168,7 @@ fun TimeSelectorPreference(
     ) {
         SettingsText(
             modifier = Modifier
-                .weight(1f)
-                .padding(8.dp),
+                .weight(1f),
             title = title,
             subtitle = subtitle
         )
@@ -186,7 +182,10 @@ fun SettingsText(
     title: String,
     subtitle: String? = null,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .padding(8.dp)
+    ) {
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,

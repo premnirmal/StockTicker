@@ -135,7 +135,7 @@ class AppPreferences @Inject constructor(
             .apply()
     }
 
-    fun shouldPromptRate(): Boolean = Random.nextInt() % 2 == 0
+    fun shouldPromptRate(): Boolean = Random.nextBoolean()
 
     fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
 

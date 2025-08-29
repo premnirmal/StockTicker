@@ -42,6 +42,7 @@ class SearchViewModel @Inject constructor(
         get() = _searchResult
     private val _searchResult: MutableStateFlow<FetchResult<List<Suggestion>>?> = MutableStateFlow(null)
     private var searchJob: Job? = null
+    private var fetchTrendingJob: Job? = null
 
     val trendingStocks: StateFlow<List<Quote>>
         get() = _trendingStocks
@@ -58,7 +59,8 @@ class SearchViewModel @Inject constructor(
         get() = widgetDataProvider.widgetCount
 
     fun fetchTrending() {
-        viewModelScope.launch {
+        fetchTrendingJob?.cancel()
+        fetchTrendingJob = viewModelScope.launch {
             _isRefreshing.value = true
             val trendingResult = newsProvider.fetchTrendingStocks(true)
             if (trendingResult.wasSuccessful) {

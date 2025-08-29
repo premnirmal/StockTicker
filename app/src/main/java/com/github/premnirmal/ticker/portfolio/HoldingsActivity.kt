@@ -91,7 +91,8 @@ class HoldingsActivity : BaseComposeActivity() {
         val windowSizeClass = calculateWindowSizeClass(this)
         val displayFeatures = calculateDisplayFeatures(this)
         val contentType: ContentType = calculateContentAndNavigationType(
-            widthSizeClass = windowSizeClass.widthSizeClass, displayFeatures = displayFeatures
+            widthSizeClass = windowSizeClass.widthSizeClass,
+            displayFeatures = displayFeatures
         ).second
 
         val position by viewModel.position.collectAsStateWithLifecycle()
@@ -265,6 +266,9 @@ class HoldingsActivity : BaseComposeActivity() {
         holdings: List<Holding>,
         holdingsSum: HoldingSum
     ) {
+        if (holdings.isEmpty()) {
+            return
+        }
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 modifier = Modifier.padding(vertical = 16.dp),
@@ -286,7 +290,9 @@ class HoldingsActivity : BaseComposeActivity() {
                 state = rememberLazyListState(),
             ) {
                 items(
-                    count = holdings.size, key = { i -> holdings[i].id ?: i }) { i ->
+                    count = holdings.size,
+                    key = { i -> holdings[i].id ?: i }
+                ) { i ->
                     val holding = holdings[i]
                     HoldingRow(
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -296,7 +302,8 @@ class HoldingsActivity : BaseComposeActivity() {
                         showRemoveButton = true,
                         onRemoveClick = {
                             viewModel.removeHolding(ticker, holding)
-                        })
+                        }
+                    )
                 }
                 item {
                     Divider()
@@ -343,7 +350,8 @@ class HoldingsActivity : BaseComposeActivity() {
                 style = style,
             )
             IconButton(
-                enabled = showRemoveButton, onClick = onRemoveClick
+                enabled = showRemoveButton,
+                onClick = onRemoveClick
             ) {
                 if (showRemoveButton) {
                     Icon(

@@ -159,6 +159,15 @@ data class Quote constructor(
         return gainLossString
     }
 
+    fun gainLossPercentStringNoPercentSign(): String {
+        val gainLossPercent = gainLossPercent()
+        val gainLossString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(gainLossPercent)}"
+        if (gainLossPercent >= 0) {
+            return "+$gainLossString"
+        }
+        return gainLossString
+    }
+
     fun dayChange(): Float = totalPositionShares() * change
 
     fun dayChangeString(): String {

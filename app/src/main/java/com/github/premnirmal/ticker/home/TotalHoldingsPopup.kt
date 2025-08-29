@@ -34,12 +34,13 @@ fun TotalHoldingsPopup(
         Surface(
             modifier = Modifier
                 .wrapContentSize()
+                .padding(8.dp)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             shadowElevation = 4.dp,
         ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(8.dp)
             ) {
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),

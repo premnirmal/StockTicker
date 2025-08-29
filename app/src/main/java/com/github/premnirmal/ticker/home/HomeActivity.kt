@@ -9,16 +9,18 @@ import androidx.activity.viewModels
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.compose.rememberNavController
 import com.github.premnirmal.ticker.base.BaseComposeActivity
 import com.github.premnirmal.ticker.hasNotificationPermission
@@ -37,13 +39,14 @@ class HomeActivity : BaseComposeActivity() {
     @Inject internal lateinit var appReviewManager: IAppReviewManager
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
+    private val viewModel: HomeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         if (VERSION.SDK_INT >= 33) {
             requestPermissionLauncher = registerForActivityResult(RequestPermission()) { granted ->
                 if (granted) {
-                    val viewModel by viewModels<HomeViewModel>()
                     viewModel.initNotifications()
                 } else {
                     appMessaging.sendSnackbar(R.string.notification_alerts_required_message)
@@ -65,10 +68,20 @@ class HomeActivity : BaseComposeActivity() {
     private fun HomeScreen() {
         val windowSizeClass = calculateWindowSizeClass(this)
         val navHostController = rememberNavController()
+        DisposableEffect(navHostController) {
+            val listener = NavController.OnDestinationChangedListener { _: NavController, destination: NavDestination, _: Bundle? ->
+                if (destination.route == Graph.QUOTE_DETAIL) {
+                    viewModel.sendHomeEvent(HomeEvent.PromptRate)
+                }
+            }
+            navHostController.addOnDestinationChangedListener(listener)
+            onDispose {
+                navHostController.removeOnDestinationChangedListener(listener)
+            }
+        }
         val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
-        val viewModel = hiltViewModel<HomeViewModel>(viewModelStoreOwner)
         var rateDialogShown by rememberSaveable {
             mutableStateOf(false)
         }

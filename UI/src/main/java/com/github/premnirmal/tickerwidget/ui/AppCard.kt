@@ -1,6 +1,5 @@
 package com.github.premnirmal.tickerwidget.ui.theme
 
-import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.CardColors

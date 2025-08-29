@@ -44,7 +44,7 @@ import com.github.premnirmal.tickerwidget.R.string
 
 @Composable
 fun HomeListDetail(
-    rootNavController: NavHostController = rememberNavController(),
+    rootNavController: NavHostController,
     windowWidthSizeClass: WindowWidthSizeClass,
     windowHeightSizeClass: WindowHeightSizeClass,
     displayFeatures: List<DisplayFeature>
@@ -141,7 +141,7 @@ fun HomeListDetail(
 @Composable
 private fun HomeListDetailNavigationWrapper(
     modifier: Modifier = Modifier,
-    rootNavController: NavHostController = rememberNavController(),
+    rootNavController: NavHostController,
     navigationType: NavigationType,
     destinations: List<HomeBottomNavDestination>,
     widthSizeClass: WindowWidthSizeClass,
@@ -152,9 +152,10 @@ private fun HomeListDetailNavigationWrapper(
         "No ViewModelStoreOwner was provided via LocalNavGraphViewModelStoreOwner"
     }
     val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner)
+    val homeViewModel = viewModel<HomeViewModel>(viewModelStoreOwner)
     val navController = rememberNavController()
     val homeNavigationActions = remember(navController) {
-        HomeNavigationActions(navController, navigationViewModel)
+        HomeNavigationActions(navController, navigationViewModel, homeViewModel)
     }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val selectedDestination = navBackStackEntry?.destination?.route ?: HomeRoute.Watchlist.route
@@ -211,6 +212,7 @@ private fun HomeListDetailNavigationWrapper(
 @Composable
 fun HomeListDetailHandset() {
     HomeListDetail(
+        rootNavController = rememberNavController(),
         windowWidthSizeClass = WindowWidthSizeClass.Compact,
         windowHeightSizeClass = WindowHeightSizeClass.Compact,
         displayFeatures = emptyList()
@@ -223,6 +225,7 @@ fun HomeListDetailHandset() {
 @Composable
 fun HomeListDetailTablet() {
     HomeListDetail(
+        rootNavController = rememberNavController(),
         windowWidthSizeClass = WindowWidthSizeClass.Expanded,
         windowHeightSizeClass = WindowHeightSizeClass.Expanded,
         displayFeatures = emptyList()
