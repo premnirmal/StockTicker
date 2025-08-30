@@ -28,19 +28,19 @@ data class YahooQuoteNet(
     @SerialName("longName")
     val longName: String?,
     @SerialName("gmtOffSetMilliseconds")
-    val gmtOffSetMilliseconds: Long,
+    val gmtOffSetMilliseconds: Long?,
     @SerialName("regularMarketChange")
-    val change: Float,
+    val change: Float?,
     @SerialName("regularMarketChangePercent")
-    val changePercent: Float,
+    val changePercent: Float?,
     @SerialName("regularMarketPrice")
-    val lastTradePrice: Float,
+    val lastTradePrice: Float?,
     @SerialName("regularMarketDayHigh")
     val regularMarketDayHigh: Float?,
     @SerialName("regularMarketDayLow")
     val regularMarketDayLow: Float?,
     @SerialName("regularMarketPreviousClose")
-    val regularMarketPreviousClose: Float,
+    val regularMarketPreviousClose: Float?,
     @SerialName("regularMarketOpen")
     val regularMarketOpen: Float?,
     @SerialName("regularMarketVolume")
@@ -50,9 +50,9 @@ data class YahooQuoteNet(
     @SerialName("marketState")
     val marketState: String?,
     @SerialName("tradeable")
-    val tradeable: Boolean,
+    val tradeable: Boolean?,
     @SerialName("triggerable")
-    val triggerable: Boolean,
+    val triggerable: Boolean?,
     @SerialName("fiftyTwoWeekLowChange")
     val fiftyTwoWeekLowChange: Float?,
     @SerialName("fiftyTwoWeekLowChangePercent")

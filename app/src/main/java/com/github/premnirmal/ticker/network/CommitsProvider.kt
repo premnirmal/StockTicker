@@ -57,7 +57,7 @@ class CommitsProvider @Inject constructor(
                             "\n",
                             ""
                         ).replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-                    }.take(12)
+                    }
                 )
             } else {
                 FetchResult.failure(error)

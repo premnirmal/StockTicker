@@ -154,9 +154,9 @@ class StocksApi @Inject constructor(
         val quote = Quote(
             symbol = this.symbol,
             name = (this.name ?: this.longName).orEmpty(),
-            lastTradePrice = this.lastTradePrice,
-            changeInPercent = this.changePercent,
-            change = this.change
+            lastTradePrice = this.lastTradePrice ?: 0f,
+            changeInPercent = this.changePercent ?: 0f,
+            change = this.change ?: 0f
         )
         quote.stockExchange = this.exchange ?: ""
         quote.currencyCode = this.currency ?: "USD"
@@ -165,16 +165,16 @@ class StocksApi @Inject constructor(
         quote.region = this.region
         quote.quoteType = this.quoteType
         quote.longName = this.longName
-        quote.gmtOffSetMilliseconds = this.gmtOffSetMilliseconds
+        quote.gmtOffSetMilliseconds = this.gmtOffSetMilliseconds ?: 0L
         quote.dayHigh = this.regularMarketDayHigh
         quote.dayLow = this.regularMarketDayLow
-        quote.previousClose = this.regularMarketPreviousClose
+        quote.previousClose = this.regularMarketPreviousClose ?: 0f
         quote.open = this.regularMarketOpen
         quote.regularMarketVolume = this.regularMarketVolume
         quote.trailingPE = this.trailingPE
         quote.marketState = this.marketState ?: ""
-        quote.tradeable = this.tradeable
-        quote.triggerable = this.triggerable
+        quote.tradeable = this.tradeable ?: false
+        quote.triggerable = this.triggerable ?: false
         quote.fiftyTwoWeekLowChange = this.fiftyTwoWeekLowChange
         quote.fiftyTwoWeekLowChangePercent = this.fiftyTwoWeekLowChangePercent
         quote.fiftyTwoWeekHighChange = this.fiftyTwoWeekHighChange
