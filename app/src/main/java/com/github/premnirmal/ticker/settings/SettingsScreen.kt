@@ -11,9 +11,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -23,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.toArgb
@@ -243,7 +247,7 @@ private fun LazyListScope.settingsItems(
                 .clickable {
                     launcher.launch("portfolio.txt")
                 },
-            title = stringResource(id = R.string.action_share)
+            title = stringResource(id = R.string.action_share),
         )
         Divider()
     }
@@ -263,7 +267,7 @@ private fun LazyListScope.settingsItems(
                     launcher.launch(arrayOf("application/json", "text/plain"))
                 },
             title = stringResource(id = R.string.action_import),
-            subtitle = stringResource(id = R.string.action_import)
+            subtitle = stringResource(id = R.string.action_import),
         )
         Divider()
     }
@@ -283,7 +287,7 @@ private fun LazyListScope.settingsItems(
                     launcher.launch("portfolio.json")
                 },
             title = stringResource(id = R.string.action_export),
-            subtitle = stringResource(id = R.string.export_desc)
+            subtitle = stringResource(id = R.string.export_desc),
         )
         Divider()
     }
@@ -296,9 +300,8 @@ private fun LazyListScope.settingsItems(
                     context.showDialog(context.getString(R.string.are_you_sure)) { _, _ ->
                         viewModel.clearAppData()
                     }
-                }
-                .padding(horizontal = 8.dp, vertical = 16.dp),
-            title = stringResource(id = R.string.action_nuke)
+                },
+            title = stringResource(id = R.string.action_nuke),
         )
         Divider()
     }
@@ -322,23 +325,23 @@ private fun LazyListScope.settingsItems(
     item {
         val context = LocalContext.current
         val primaryColor = MaterialTheme.colorScheme.primary
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    CustomTabs.openTab(
-                        context,
-                        context.getString(R.string.checkout_open_source),
-                        primaryColor.toArgb(),
-                    )
-                }
-                .padding(8.dp),
-            text = stringResource(R.string.checkout_open_source),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontFamily = Bold
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
+                CustomTabs.openTab(
+                    context,
+                    context.getString(R.string.checkout_open_source),
+                    primaryColor.toArgb(),
+                )
+            }
+        ) {
+            Text(
+                modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
+                text = stringResource(R.string.checkout_open_source),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = Bold)
+        }
         Divider()
     }
     item {

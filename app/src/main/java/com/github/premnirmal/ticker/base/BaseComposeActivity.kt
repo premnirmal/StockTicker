@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -81,10 +82,12 @@ abstract class BaseComposeActivity : ComponentActivity() {
                         enableEdgeToEdge()
                         onDispose {}
                     }
-                    ShowContent()
+                    Box {
+                        ShowContent()
 
-                    CollectBottomSheetMessage()
-                    CollectSnackbarMessage()
+                        CollectBottomSheetMessage()
+                        CollectSnackbarMessage()
+                    }
                 }
             }
         }
