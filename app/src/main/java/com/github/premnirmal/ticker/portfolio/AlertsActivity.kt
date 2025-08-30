@@ -186,7 +186,7 @@ class AlertsActivity : BaseComposeActivity() {
             0f
         }
         if (!isErrorAlertAbove && !isErrorAlertBelow) {
-            if (alertBelow >= alertAbove) {
+            if (alertAbove > 0 && alertBelow > alertAbove) {
                 isErrorAlertAbove = true
                 isErrorAlertBelow = true
                 appMessaging.sendSnackbar(R.string.alert_below_error)
@@ -209,6 +209,6 @@ class AlertsActivity : BaseComposeActivity() {
         const val TICKER = "TICKER"
         const val ALERT_ABOVE = "ALERT_ABOVE"
         const val ALERT_BELOW = "ALERT_BELOW"
-        private const val MAX_VALUE_LENGTH = 9
+        private const val MAX_VALUE_LENGTH = 12
     }
 }

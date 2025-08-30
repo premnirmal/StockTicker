@@ -414,6 +414,6 @@ class HoldingsActivity : BaseComposeActivity() {
     companion object {
         const val TICKER = "TICKER"
         const val POSITIONS = "POSITIONS"
-        private const val MAX_VALUE_LENGTH = 9
+        private const val MAX_VALUE_LENGTH = 12
     }
 }

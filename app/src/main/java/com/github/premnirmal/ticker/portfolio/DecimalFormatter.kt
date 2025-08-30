@@ -17,17 +17,11 @@ class DecimalFormatter(
         val sb = StringBuilder()
         var hasDecimalSep = false
         for (char in input) {
-            if (hasDecimalSep) {
-                if (char.isDigit() && sb.split(decimalSeparator)[1].length < 2) {
-                    sb.append(char)
-                }
-                continue
-            }
             if (char.isDigit()) {
                 sb.append(char)
                 continue
             }
-            if (char == decimalSeparator && sb.isNotEmpty()) {
+            if (char == decimalSeparator && !hasDecimalSep && sb.isNotEmpty()) {
                 sb.append(char)
                 hasDecimalSep = true
             }
@@ -39,7 +33,7 @@ class DecimalFormatter(
     fun formatForVisual(input: String): String {
         val split = input.split(decimalSeparator)
         val intPart = split[0]
-        val fractionPart = split.getOrNull(1)?.take(2)
+        val fractionPart = split.getOrNull(1)
         return if (fractionPart == null) intPart else intPart + decimalSeparator + fractionPart
     }
 }
