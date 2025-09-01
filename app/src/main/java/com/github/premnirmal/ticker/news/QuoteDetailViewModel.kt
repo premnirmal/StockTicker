@@ -203,11 +203,14 @@ class QuoteDetailViewModel @Inject constructor(
     fun loadQuote(ticker: String) = viewModelScope.launch {
         quoteSummary = null
         if (stocksProvider.hasTicker(ticker)) {
-            _quote.emit(
-                FetchResult.success(
-                    QuoteWithSummary(checkNotNull(stocksProvider.getStock(ticker)), quoteSummary)
+            val stock = stocksProvider.getStock(ticker)
+            stock?.let {
+                _quote.emit(
+                    FetchResult.success(
+                        QuoteWithSummary(it, quoteSummary)
+                    )
                 )
-            )
+            }
         }
     }
 
