@@ -17,7 +17,7 @@ data class Result(
 
 @Serializable
 data class Indicators(
-    @SerialName("quote") val quote: List<DataQuote>,
+    @SerialName("quote") val quote: List<DataQuote>?,
 )
 
 @Serializable
@@ -63,9 +63,9 @@ data class TradingPeriod(
 
 @Serializable
 data class DataQuote(
-    @SerialName("close") val close: List<Double?>,
-    @SerialName("open") val open: List<Double?>,
-    @SerialName("low") val low: List<Double?>,
-    @SerialName("volume") val volume: List<Long?>,
-    @SerialName("high") val high: List<Double?>
+    @SerialName("close") val close: List<Double?>?,
+    @SerialName("open") val open: List<Double?>?,
+    @SerialName("low") val low: List<Double?>?,
+    @SerialName("volume") val volume: List<Long?>?,
+    @SerialName("high") val high: List<Double?>?,
 )
