@@ -52,6 +52,7 @@ import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
 import com.github.premnirmal.ticker.widget.WidgetsScreen
 import com.github.premnirmal.tickerwidget.R.drawable
 import com.github.premnirmal.tickerwidget.R.string
+import java.net.URLEncoder
 
 @Composable
 fun HomeNavHost(
@@ -89,7 +90,7 @@ fun HomeNavHost(
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
                 onQuoteClick = {
-                    rootNavController.navigate("${Graph.QUOTE_DETAIL}/${it.symbol}") {
+                    rootNavController.navigate("${Graph.QUOTE_DETAIL}/${URLEncoder.encode(it.symbol)}") {
                         popUpTo(HomeRoute.Trending.route) {
                             inclusive = true
                         }
@@ -105,7 +106,7 @@ fun HomeNavHost(
                 widthSizeClass = widthSizeClass,
                 displayFeatures = displayFeatures,
                 onQuoteClick = {
-                    rootNavController.navigate("${Graph.QUOTE_DETAIL}/${it.symbol}") {
+                    rootNavController.navigate("${Graph.QUOTE_DETAIL}/${URLEncoder.encode(it.symbol)}") {
                         popUpTo(HomeRoute.Search.route) {
                             inclusive = true
                         }

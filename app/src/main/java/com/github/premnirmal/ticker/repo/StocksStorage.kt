@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.core.content.edit
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -29,9 +30,9 @@ class StocksStorage @Inject constructor(
     }
 
     fun saveTickers(tickers: Set<String>) {
-        preferences.edit()
-            .putStringSet(KEY_TICKERS, tickers)
-            .apply()
+        preferences.edit {
+            putStringSet(KEY_TICKERS, tickers)
+        }
     }
 
     fun readTickers(): Set<String> {

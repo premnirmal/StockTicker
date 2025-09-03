@@ -25,6 +25,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Singleton
+import androidx.core.content.edit
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -103,9 +104,9 @@ class StocksProvider constructor(
     }
 
     private fun saveLastFetched() {
-        preferences.edit()
-            .putLong(LAST_FETCHED, lastFetched)
-            .apply()
+        preferences.edit {
+            putLong(LAST_FETCHED, lastFetched)
+        }
     }
 
     private fun saveTickers() {
@@ -121,9 +122,9 @@ class StocksProvider constructor(
     ) {
         val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
         _nextFetch.value = updateTime.toInstant().toEpochMilli()
-        preferences.edit()
-            .putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
-            .apply()
+        preferences.edit {
+            putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
+        }
         appPreferences.setRefreshing(false)
         widgetDataProvider.broadcastUpdateAllWidgets()
     }

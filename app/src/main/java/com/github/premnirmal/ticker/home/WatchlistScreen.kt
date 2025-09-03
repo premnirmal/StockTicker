@@ -22,6 +22,7 @@ import com.github.premnirmal.ticker.ui.EmptyState
 import com.github.premnirmal.ticker.ui.ListDetail
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
+import java.net.URLEncoder
 
 @Composable
 fun WatchlistScreen(
@@ -91,7 +92,7 @@ fun WatchlistScreen(
     } else {
         WatchlistContent(
             onQuoteClick = { quote ->
-                rootNavController.navigate(route = "${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                rootNavController.navigate(route = "${Graph.QUOTE_DETAIL}/${URLEncoder.encode(quote.symbol)}")
             },
             viewModel = viewModel,
         )

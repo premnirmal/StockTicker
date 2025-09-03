@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
+import androidx.core.content.edit
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
@@ -42,9 +43,9 @@ class AppPreferences @Inject constructor(
 
     fun getLastSavedVersionCode(): Int = sharedPreferences.getInt(APP_VERSION_CODE, -1)
     fun saveVersionCode(code: Int) {
-        sharedPreferences.edit()
-            .putInt(APP_VERSION_CODE, code)
-            .apply()
+        sharedPreferences.edit {
+            putInt(APP_VERSION_CODE, code)
+        }
     }
 
     val updateIntervalMs: Long
@@ -94,9 +95,9 @@ class AppPreferences @Inject constructor(
     }
 
     fun setUpdateDays(selected: Set<String>) {
-        sharedPreferences.edit()
-            .putStringSet(UPDATE_DAYS, selected)
-            .apply()
+        sharedPreferences.edit {
+            putStringSet(UPDATE_DAYS, selected)
+        }
     }
 
     fun updateDays(): Set<DayOfWeek> {
@@ -112,13 +113,13 @@ class AppPreferences @Inject constructor(
 
     fun setRefreshing(refreshing: Boolean) {
         _isRefreshing.value = refreshing
-        sharedPreferences.edit()
-            .putBoolean(WIDGET_REFRESHING, refreshing)
-            .apply()
+        sharedPreferences.edit {
+            putBoolean(WIDGET_REFRESHING, refreshing)
+        }
     }
 
     fun setCrumb(crumb: String?) {
-        sharedPreferences.edit().putString(CRUMB, crumb).apply()
+        sharedPreferences.edit { putString(CRUMB, crumb) }
     }
 
     fun getCrumb(): String? {
@@ -130,9 +131,9 @@ class AppPreferences @Inject constructor(
     }
 
     fun setTutorialShown(shown: Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(TUTORIAL_SHOWN, shown)
-            .apply()
+        sharedPreferences.edit {
+            putBoolean(TUTORIAL_SHOWN, shown)
+        }
     }
 
     fun shouldPromptRate(): Boolean = Random.nextBoolean()
@@ -140,17 +141,17 @@ class AppPreferences @Inject constructor(
     fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
 
     fun setRoundToTwoDecimalPlaces(round: Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(SETTING_ROUND_TWO_DP, round)
-            .apply()
+        sharedPreferences.edit {
+            putBoolean(SETTING_ROUND_TWO_DP, round)
+        }
     }
 
     fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
 
     fun setNotificationAlerts(set: Boolean) {
-        sharedPreferences.edit()
-            .putBoolean(SETTING_NOTIFICATION_ALERTS, set)
-            .apply()
+        sharedPreferences.edit {
+            putBoolean(SETTING_NOTIFICATION_ALERTS, set)
+        }
     }
 
     private val themePrefKey: Preferences.Key<Int> = intPreferencesKey(APP_THEME)
@@ -172,7 +173,7 @@ class AppPreferences @Inject constructor(
 
     var themePref: Int
         get() = runBlocking {
-            themePrefFlow.first()
+            themePrefFlow.first().coerceIn(0, 2)
         }
         set(value) = runBlocking {
             context.dataStore.edit { prefs ->

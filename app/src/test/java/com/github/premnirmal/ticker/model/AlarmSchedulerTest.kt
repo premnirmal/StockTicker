@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.test.core.app.ApplicationProvider
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
@@ -67,8 +68,10 @@ class AlarmSchedulerTest : BaseUnitTest() {
     }
 
     private fun setStartAndEndTime(startTime: String, endTime: String) {
-        sharedPreferences.edit().putString(AppPreferences.START_TIME, startTime).apply()
-        sharedPreferences.edit().putString(AppPreferences.END_TIME, endTime).apply()
+        sharedPreferences.edit {
+            putString(AppPreferences.START_TIME, startTime)
+            putString(AppPreferences.END_TIME, endTime)
+        }
     }
 
     private fun setNow(now: Long) {
