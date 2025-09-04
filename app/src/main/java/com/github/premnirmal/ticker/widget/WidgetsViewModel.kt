@@ -20,9 +20,6 @@ class WidgetsViewModel @Inject constructor(
     val fetchState: StateFlow<FetchState>
         get() = stocksProvider.fetchState
 
-    val nextFetchMs: StateFlow<Long>
-        get() = stocksProvider.nextFetchMs
-
     fun refreshWidgets() {
         widgetDataProvider.refreshWidgetDataList()
     }

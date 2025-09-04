@@ -18,7 +18,6 @@ import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.compose.rememberNavController
@@ -79,9 +78,6 @@ class HomeActivity : BaseComposeActivity() {
                 navHostController.removeOnDestinationChangedListener(listener)
             }
         }
-        val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
-            "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
-        }
         var rateDialogShown by rememberSaveable {
             mutableStateOf(false)
         }
@@ -115,8 +111,11 @@ class HomeActivity : BaseComposeActivity() {
                 }
             }
         }
-        LaunchedEffect(Unit) {
+        DisposableEffect(Unit) {
             viewModel.fetchPortfolioInRealTime()
+            onDispose {
+                viewModel.stopRealTimeFetch()
+            }
         }
     }
 

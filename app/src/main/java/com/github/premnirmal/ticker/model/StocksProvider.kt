@@ -25,7 +25,12 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Singleton
-import androidx.core.content.edit
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
+import com.github.premnirmal.ticker.dataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -34,7 +39,6 @@ import androidx.core.content.edit
 class StocksProvider constructor(
     @ApplicationContext private val context: Context,
     private val api: StocksApi,
-    private val preferences: SharedPreferences,
     private val clock: AppClock,
     private val appPreferences: AppPreferences,
     private val widgetDataProvider: WidgetDataProvider,
@@ -57,16 +61,38 @@ class StocksProvider constructor(
         get() = _portfolio // quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
 
     val fetchState: StateFlow<FetchState>
-        get() = _fetchState
+        get() = lastFetched.map {
+            if (it == 0L) {
+                FetchState.NotFetched
+            } else {
+                FetchState.Success(it)
+            }
+        }.let {
+            val initial = runBlocking { it.firstOrNull() }
+            MutableStateFlow(initial ?: FetchState.NotFetched)
+        }
 
     val nextFetchMs: StateFlow<Long>
-        get() = _nextFetch
+        get() = context.dataStore.data.map {
+            it[longPreferencesKey(NEXT_FETCH)] ?: 0L
+        }.let {
+            val initial = runBlocking { it.firstOrNull() }
+            MutableStateFlow(initial ?: 0L)
+        }
+
+    private val lastFetched: Flow<Long>
+        get() = context.dataStore.data.map {
+            val lastFetchedLoaded = it[longPreferencesKey(LAST_FETCHED)] ?: 0L
+            if (lastFetchedLoaded == 0L) {
+                coroutineScope.launch {
+                    fetch()
+                }
+            }
+            lastFetchedLoaded
+        }
 
     private val tickerSet: MutableSet<String> = HashSet()
     private val quoteMap: MutableMap<String, Quote> = HashMap()
-    private val _fetchState = MutableStateFlow<FetchState>(FetchState.NotFetched)
-    private val _nextFetch = MutableStateFlow<Long>(0)
-    private var lastFetched = 0L
     private val _tickers = MutableStateFlow<List<String>>(emptyList())
     private val _portfolio = MutableStateFlow<List<Quote>>(emptyList())
 
@@ -77,18 +103,7 @@ class StocksProvider constructor(
             this.tickerSet.addAll(DEFAULT_STOCKS)
         }
         _tickers.value = tickerSet.toList()
-        val lastFetchedLoaded = preferences.getLong(LAST_FETCHED, 0L)
-        lastFetched = lastFetchedLoaded
-        val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
-        _nextFetch.value = nextFetch
-        runBlocking { fetchLocal() }
-        if (lastFetched == 0L) {
-            coroutineScope.launch {
-                fetch()
-            }
-        } else {
-            _fetchState.value = FetchState.Success(lastFetched)
-        }
+        coroutineScope.launch { fetchLocal() }
     }
 
     private suspend fun fetchLocal() = withContext(Dispatchers.IO) {
@@ -103,9 +118,9 @@ class StocksProvider constructor(
         }
     }
 
-    private fun saveLastFetched() {
-        preferences.edit {
-            putLong(LAST_FETCHED, lastFetched)
+    private suspend fun saveLastFetched(lastFetched: Long) {
+        context.dataStore.edit {
+            it[longPreferencesKey( LAST_FETCHED)] = lastFetched
         }
     }
 
@@ -113,17 +128,16 @@ class StocksProvider constructor(
         storage.saveTickers(tickerSet)
     }
 
-    private fun scheduleUpdate() {
-        scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched))
+    private suspend fun scheduleUpdate() {
+        scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched.firstOrNull() ?: 0L))
     }
 
-    private fun scheduleUpdateWithMs(
+    private suspend fun scheduleUpdateWithMs(
         msToNextAlarm: Long
     ) {
         val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
-        _nextFetch.value = updateTime.toInstant().toEpochMilli()
-        preferences.edit {
-            putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
+        context.dataStore.edit {
+            it[longPreferencesKey(NEXT_FETCH)] = updateTime.toInstant().toEpochMilli()
         }
         appPreferences.setRefreshing(false)
         widgetDataProvider.broadcastUpdateAllWidgets()
@@ -168,9 +182,6 @@ class StocksProvider constructor(
 
     suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
         if (tickerSet.isEmpty()) {
-            if (allowScheduling) {
-                _fetchState.emit(FetchState.Failure(FetchException("No symbols in portfolio")))
-            }
             FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
         } else {
             return@withContext try {
@@ -199,9 +210,8 @@ class StocksProvider constructor(
                     storage.saveQuotes(fetchedStocks)
                     fetchLocal()
                     if (allowScheduling) {
-                        lastFetched = clock.currentTimeMillis()
-                        _fetchState.emit(FetchState.Success(lastFetched))
-                        saveLastFetched()
+                        val lastFetched = clock.currentTimeMillis()
+                        saveLastFetched(lastFetched)
                         scheduleUpdate()
                     }
                     widgetDataProvider.refreshWidgetDataList()
@@ -219,8 +229,10 @@ class StocksProvider constructor(
     }
 
     fun schedule() {
-        scheduleUpdate()
-        alarmScheduler.enqueuePeriodicRefresh()
+        coroutineScope.launch {
+            scheduleUpdate()
+            alarmScheduler.enqueuePeriodicRefresh()
+        }
     }
 
     fun addStock(ticker: String): Collection<String> {

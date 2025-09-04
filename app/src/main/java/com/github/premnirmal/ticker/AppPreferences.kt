@@ -75,6 +75,18 @@ class AppPreferences @Inject constructor(
         return Time(times[0], times[1])
     }
 
+    fun setStartTime(time: String) {
+        sharedPreferences.edit {
+            putString(START_TIME, time)
+        }
+    }
+
+    fun setEndTime(time: String) {
+        sharedPreferences.edit {
+            putString(END_TIME, time)
+        }
+    }
+
     fun startTime(): Time {
         val startTimeString = sharedPreferences.getString(START_TIME, "09:30")!!
         return parseTime(startTimeString)
@@ -83,6 +95,12 @@ class AppPreferences @Inject constructor(
     fun endTime(): Time {
         val endTimeString = sharedPreferences.getString(END_TIME, "16:00")!!
         return parseTime(endTimeString)
+    }
+
+    fun clear() {
+        sharedPreferences.edit {
+            clear()
+        }
     }
 
     fun updateDaysRaw(): Set<String> {
@@ -160,6 +178,18 @@ class AppPreferences @Inject constructor(
         prefs[themePrefKey] ?: FOLLOW_SYSTEM_THEME
     }
 
+    private val textSizePrefKey: Preferences.Key<Int> = intPreferencesKey(FONT_SIZE)
+
+    val textSizeFlow: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[textSizePrefKey] ?: 1
+    }
+
+    private val updateIntervalPrefKey: Preferences.Key<Int> = intPreferencesKey(UPDATE_INTERVAL)
+
+    val updateIntervalFlow: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[updateIntervalPrefKey] ?: 1
+    }
+
     val selectedTheme: SelectedTheme
         get() = runBlocking {
             val pref = themePrefFlow.first()
@@ -178,6 +208,26 @@ class AppPreferences @Inject constructor(
         set(value) = runBlocking {
             context.dataStore.edit { prefs ->
                 prefs[themePrefKey] = value
+            }
+        }
+
+    var textSizePref: Int
+        get() = runBlocking {
+            textSizeFlow.first().coerceIn(0, 2)
+        }
+        set(value) = runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs[textSizePrefKey] = value
+            }
+        }
+
+    var updateIntervalPref: Int
+        get() = runBlocking {
+            updateIntervalFlow.first().coerceIn(0, 2)
+        }
+        set(value) = runBlocking {
+            context.dataStore.edit { prefs ->
+                prefs[updateIntervalPrefKey] = value
             }
         }
 

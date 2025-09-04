@@ -30,35 +30,35 @@ data class Chart(
 data class Meta(
     @SerialName("currency") val currency: String,
     @SerialName("symbol") val symbol: String,
-    @SerialName("exchangeName") val exchangeName: String,
-    @SerialName("instrumentType") val instrumentType: String,
-    @SerialName("firstTradeDate") val firstTradeDate: Long,
-    @SerialName("regularMarketTime") val regularMarketTime: Long,
-    @SerialName("gmtoffset") val gmtoffset: Long,
-    @SerialName("timezone") val timezone: String,
-    @SerialName("exchangeTimezoneName") val exchangeTimezoneName: String,
+    @SerialName("exchangeName") val exchangeName: String?,
+    @SerialName("instrumentType") val instrumentType: String?,
+    @SerialName("firstTradeDate") val firstTradeDate: Long?,
+    @SerialName("regularMarketTime") val regularMarketTime: Long?,
+    @SerialName("gmtoffset") val gmtoffset: Long?,
+    @SerialName("timezone") val timezone: String?,
+    @SerialName("exchangeTimezoneName") val exchangeTimezoneName: String?,
     @SerialName("regularMarketPrice") val regularMarketPrice: Double,
     @SerialName("chartPreviousClose") val chartPreviousClose: Double,
-    @SerialName("priceHint") val priceHint: Long,
-    @SerialName("currentTradingPeriod") val currentTradingPeriod: CurrentTradingPeriod,
-    @SerialName("dataGranularity") val dataGranularity: String,
-    @SerialName("range") val range: String,
-    @SerialName("validRanges") val validRanges: List<String>
+    @SerialName("priceHint") val priceHint: Long?,
+    @SerialName("currentTradingPeriod") val currentTradingPeriod: CurrentTradingPeriod?,
+    @SerialName("dataGranularity") val dataGranularity: String?,
+    @SerialName("range") val range: String?,
+    @SerialName("validRanges") val validRanges: List<String>?
 )
 
 @Serializable
 data class CurrentTradingPeriod(
-    @SerialName("pre") val pre: TradingPeriod,
-    @SerialName("regular") val regular: TradingPeriod,
-    @SerialName("post") val post: TradingPeriod
+    @SerialName("pre") val pre: TradingPeriod?,
+    @SerialName("regular") val regular: TradingPeriod?,
+    @SerialName("post") val post: TradingPeriod?,
 )
 
 @Serializable
 data class TradingPeriod(
-    @SerialName("timezone") val timezone: String,
-    @SerialName("start") val start: Long,
-    @SerialName("end") val end: Long,
-    @SerialName("gmtoffset") val gmtoffset: Long
+    @SerialName("timezone") val timezone: String?,
+    @SerialName("start") val start: Long?,
+    @SerialName("end") val end: Long?,
+    @SerialName("gmtoffset") val gmtoffset: Long?,
 )
 
 @Serializable

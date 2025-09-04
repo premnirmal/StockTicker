@@ -3,10 +3,8 @@ package com.github.premnirmal.ticker.settings
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Parcelable
-import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
@@ -35,7 +33,6 @@ import kotlin.system.exitProcess
 class SettingsViewModel @Inject constructor(
     private val widgetDataProvider: WidgetDataProvider,
     private val appPreferences: AppPreferences,
-    private val preferences: SharedPreferences,
     private val db: QuotesDB,
     private val stocksProvider: StocksProvider,
     private val notificationsHandler: NotificationsHandler,
@@ -77,9 +74,7 @@ class SettingsViewModel @Inject constructor(
 
     fun setWidgetTextSizePref(textSizePref: Int) {
         viewModelScope.launch {
-            preferences.edit {
-                remove(AppPreferences.FONT_SIZE).putInt(AppPreferences.FONT_SIZE, textSizePref)
-            }
+            appPreferences.textSizePref = textSizePref
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
             broadcastUpdateWidget()
         }
@@ -87,9 +82,7 @@ class SettingsViewModel @Inject constructor(
 
     fun setUpdateIntervalPref(intervalPref: Int) {
         viewModelScope.launch {
-            preferences.edit {
-                putInt(AppPreferences.UPDATE_INTERVAL, intervalPref)
-            }
+            appPreferences.updateIntervalPref = intervalPref
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
             broadcastUpdateWidget()
         }
@@ -97,18 +90,14 @@ class SettingsViewModel @Inject constructor(
 
     fun setStartTime(time: String, hour: Int, minute: Int) {
         viewModelScope.launch {
-            preferences.edit {
-                putString(AppPreferences.START_TIME, time)
-            }
+            appPreferences.setStartTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
         }
     }
 
     fun setEndTime(time: String, hour: Int, minute: Int) {
         viewModelScope.launch {
-            preferences.edit {
-                putString(AppPreferences.END_TIME, time)
-            }
+            appPreferences.setEndTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
         }
     }
@@ -151,9 +140,7 @@ class SettingsViewModel @Inject constructor(
 
     fun clearAppData() {
         viewModelScope.launch {
-            preferences.edit {
-                clear()
-            }
+            appPreferences.clear()
             withContext(Dispatchers.IO) {
                 db.clearAllTables()
             }
@@ -214,8 +201,8 @@ class SettingsViewModel @Inject constructor(
         return SettingsData(
             hasWidgets = widgetDataProvider.hasWidget(),
             themePref = appPreferences.themePref,
-            textSizePref = preferences.getInt(AppPreferences.FONT_SIZE, 1),
-            updateIntervalPref = preferences.getInt(AppPreferences.UPDATE_INTERVAL, 1),
+            textSizePref = appPreferences.textSizePref,
+            updateIntervalPref = appPreferences.updateIntervalPref,
             updateDays = appPreferences.updateDays(),
             notificationAlerts = appPreferences.notificationAlerts(),
             startTime = appPreferences.startTime(),

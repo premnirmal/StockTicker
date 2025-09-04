@@ -60,7 +60,6 @@ class AppModule {
     fun provideStocksProvider(
         @ApplicationContext context: Context,
         stocksApi: StocksApi,
-        sharedPreferences: SharedPreferences,
         appPreferences: AppPreferences,
         clock: AppClock,
         widgetDataProvider: WidgetDataProvider,
@@ -68,7 +67,7 @@ class AppModule {
         storage: StocksStorage,
         coroutineScope: CoroutineScope
     ): StocksProvider {
-        return StocksProvider(context, stocksApi, sharedPreferences, clock, appPreferences, widgetDataProvider, alarmScheduler, storage, coroutineScope)
+        return StocksProvider(context, stocksApi, clock, appPreferences, widgetDataProvider, alarmScheduler, storage, coroutineScope)
     }
 
     @Provides @Singleton

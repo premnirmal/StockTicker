@@ -16,6 +16,7 @@ import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -64,6 +65,8 @@ class HomeViewModel @Inject constructor(
 
     val hasHoldings: Boolean
         get() = stocksProvider.hasPositions()
+
+    private var fetchJob: Job? = null
 
     init {
         initCaches()
@@ -163,7 +166,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchPortfolioInRealTime() {
-        viewModelScope.launch(Dispatchers.Default) {
+        fetchJob = viewModelScope.launch(Dispatchers.Default) {
             do {
                 var isMarketOpen = false
                 val result = stocksProvider.fetch(false)
@@ -173,6 +176,10 @@ class HomeViewModel @Inject constructor(
                 delay(StocksProvider.DEFAULT_INTERVAL_MS)
             } while (result.wasSuccessful && isMarketOpen)
         }
+    }
+
+    fun stopRealTimeFetch() {
+        fetchJob?.cancel()
     }
 
     data class TotalGainLoss(

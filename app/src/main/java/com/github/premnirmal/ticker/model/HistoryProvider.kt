@@ -30,37 +30,6 @@ class HistoryProvider @Inject constructor(
 
     private var cachedData: WeakReference<Pair<String, ChartData>>? = null
 
-    suspend fun fetchDataShort(symbol: String): FetchResult<ChartData> = withContext(Dispatchers.IO) {
-        val chartData = try {
-            val cached = cachedData?.get()
-            if (symbol == cached?.first) {
-                val dataPoints = cached.second.dataPoints.filter {
-                    it.getDate().isAfter(Range.ONE_DAY.end)
-                }.toMutableList().sorted()
-                ChartData(
-                    chartPreviousClose = cached.second.chartPreviousClose,
-                    regularMarketPrice = cached.second.regularMarketPrice,
-                    dataPoints = dataPoints
-                )
-            } else {
-                val fetchDataByRange = fetchDataByRange(symbol, Range.ONE_DAY)
-                if (fetchDataByRange.wasSuccessful) {
-                    cachedData = WeakReference(Pair(symbol, fetchDataByRange.data))
-                    fetchDataByRange.data
-                } else {
-                    return@withContext FetchResult.failure(
-                        FetchException("Error fetching datapoints", fetchDataByRange.error)
-                    )
-                }
-            }
-        } catch (ex: Exception) {
-            return@withContext FetchResult.failure(
-                FetchException("Error fetching datapoints", ex)
-            )
-        }
-        return@withContext FetchResult.success(chartData)
-    }
-
     suspend fun fetchDataByRange(
         symbol: String,
         range: Range
