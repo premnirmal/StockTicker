@@ -11,8 +11,8 @@ data class HistoricalDataResult(
 @Serializable
 data class Result(
     @SerialName("meta") val meta: Meta,
-    @SerialName("timestamp") val timestamp: List<Long>,
-    @SerialName("indicators") val indicators: Indicators
+    @SerialName("timestamp") val timestamp: List<Long>?,
+    @SerialName("indicators") val indicators: Indicators?
 )
 
 @Serializable

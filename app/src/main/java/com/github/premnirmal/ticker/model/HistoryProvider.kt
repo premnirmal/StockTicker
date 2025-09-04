@@ -44,8 +44,8 @@ class HistoryProvider @Inject constructor(
             with(historicalData.chart.result.first()) {
                 val chartPreviousClose = meta.chartPreviousClose.toFloat()
                 val regularMarketPrice = meta.regularMarketPrice.toFloat()
-                val dataPoints = timestamp.mapIndexed { i, stamp ->
-                    val dataQuote = indicators.quote?.firstOrNull()
+                val dataPoints = timestamp?.mapIndexed { i, stamp ->
+                    val dataQuote = indicators?.quote?.firstOrNull()
                     if (dataQuote == null ||
                         dataQuote.low == null || dataQuote.high == null ||
                         dataQuote.open == null || dataQuote.close == null ||
@@ -62,7 +62,7 @@ class HistoryProvider @Inject constructor(
                             dataQuote.close[i]!!.toFloat()
                         )
                     }
-                }.filterNotNull().sorted()
+                }?.filterNotNull()?.sorted().orEmpty()
                 ChartData(
                     chartPreviousClose = chartPreviousClose,
                     regularMarketPrice = regularMarketPrice,
