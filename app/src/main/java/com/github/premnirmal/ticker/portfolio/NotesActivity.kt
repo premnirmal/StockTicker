@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -86,6 +88,18 @@ class NotesActivity : BaseComposeActivity() {
             topBar = {
                 TopBar(
                     text = stringResource(R.string.notes),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                finish()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = null,
+                            )
+                        }
+                    },
                     actions = {
                         IconButton(
                             modifier = Modifier.align(Alignment.CenterVertically),

@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -126,6 +128,18 @@ class HoldingsActivity : BaseComposeActivity() {
             topBar = {
                 TopBar(
                     text = stringResource(R.string.add_position),
+                    navigationIcon = {
+                        IconButton(
+                            onClick = {
+                                finish()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = null,
+                            )
+                        }
+                    }
                 )
             }
         ) { paddingValues ->
@@ -266,9 +280,6 @@ class HoldingsActivity : BaseComposeActivity() {
         holdings: List<Holding>,
         holdingsSum: HoldingSum
     ) {
-        if (holdings.isEmpty()) {
-            return
-        }
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 modifier = Modifier.padding(vertical = 16.dp),

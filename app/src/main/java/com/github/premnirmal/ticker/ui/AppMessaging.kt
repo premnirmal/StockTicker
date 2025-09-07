@@ -106,7 +106,7 @@ class AppMessaging @Inject constructor(
     }
 
     companion object {
-        private const val MESSAGE_EMIT_DELAY = 300L
+        private const val MESSAGE_EMIT_DELAY = 100L
     }
 }
 
