@@ -182,7 +182,8 @@ class StocksProvider constructor(
 
     suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
         if (tickerSet.isEmpty()) {
-            FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
+            Timber.d("No tickers/symbols to fetch")
+            FetchResult.success(emptyList())
         } else {
             return@withContext try {
                 if (allowScheduling) {

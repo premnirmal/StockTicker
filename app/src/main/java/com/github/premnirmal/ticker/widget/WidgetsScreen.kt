@@ -35,6 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -111,9 +112,11 @@ private fun WidgetsScreen(
         if (widgetDataList.isEmpty()) return@Scaffold
 
         var widgetDataSelectedIndex by rememberSaveable { mutableIntStateOf(0) }
-        val widgetData = selectedWidgetId?.let {
-            widgetDataList.find { it.widgetId == selectedWidgetId }
-        } ?: widgetDataList[widgetDataSelectedIndex]
+        val widgetData = remember(widgetDataSelectedIndex, selectedWidgetId) {
+            selectedWidgetId?.let {
+                widgetDataList.find { it.widgetId == selectedWidgetId }
+            } ?: widgetDataList[widgetDataSelectedIndex]
+        }
         val widgetDataImmutable by widgetData.changeFlow.collectAsState()
         val state = rememberLazyListState()
         if (selectedWidgetId == null) {
