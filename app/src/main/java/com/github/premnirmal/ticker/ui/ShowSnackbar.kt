@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -29,15 +30,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import java.util.LinkedList
@@ -125,20 +128,13 @@ fun GradientSnackBar(
     ) {
         Box(
             modifier = Modifier
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.tertiaryContainer,
-                            MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    )
-                )
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(16.dp)
                 .fillMaxWidth(),
         ) {
             Text(
                 text = message,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Start,
                 lineHeight = 14.sp * 1.2f,
@@ -161,4 +157,21 @@ private fun animateFadeAndOffsetSnackBar(): Pair<Float, Dp> {
         label = "offset"
     )
     return alpha to offset
+}
+
+@Preview
+@Composable
+fun GradientSnackBarPreview() {
+    Column {
+        for (theme in SelectedTheme.values()) {
+            AppTheme(theme) {
+                Box(
+                    modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+                        .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 16.dp), contentAlignment = Alignment.BottomCenter
+                ) {
+                    GradientSnackBar(message = "This is a sample snackbar message")
+                }
+            }
+        }
+    }
 }
