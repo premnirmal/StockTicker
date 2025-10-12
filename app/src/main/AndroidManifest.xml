@@ -20,7 +20,8 @@
 
         <activity
             android:exported="true"
-            android:name="com.github.premnirmal.ticker.home.HomeActivity"
+            android:name="com.github.premnirmal.ticker.home.MainActivity"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.App.Starting">
@@ -31,17 +32,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.HoldingsActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
             android:label="@string/add_position"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.NotesActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.AddNotesActivity"
             android:label="@string/add_notes"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AlertsActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.AddDisplaynameActivity"
+            android:label="@string/add_displayname"
+            android:theme="@style/AddPositionTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.github.premnirmal.ticker.portfolio.AddAlertsActivity"
             android:label="@string/add_alerts"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
@@ -55,16 +61,20 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="com.github.premnirmal.ticker.news.QuoteDetailActivity"
-            android:label="@string/news_feed"
-            android:theme="@style/NewsFeedActivityTheme" />
-
         <activity
             android:name="com.github.premnirmal.ticker.portfolio.search.SearchActivity"
             android:label="@string/action_search"
-            android:theme="@style/SearchTheme" />
+            android:theme="@style/SearchTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.github.premnirmal.ticker.news.QuoteDetailActivity"
+            android:label="@string/news_feed"
+            android:theme="@style/NewsFeedActivityTheme"
+            android:parentActivityName="com.github.premnirmal.ticker.home.MainActivity" />
+        <activity
+            android:name="com.github.premnirmal.ticker.news.GraphActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/GraphActivityTheme" />
         <activity
             android:name="com.github.premnirmal.ticker.settings.WebViewActivity"
             android:theme="@style/WebViewTheme" />

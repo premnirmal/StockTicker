@@ -41,14 +41,14 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
     override fun onCreate() {
         val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-        val stocks = widgetData.getQuotesList()
+        val stocks = widgetData.getStocks()
         quotes.clear()
         quotes.addAll(stocks)
     }
 
     override fun onDataSetChanged() {
         val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-        val stocksList = widgetData.getQuotesList()
+        val stocksList = widgetData.getStocks()
         this.quotes.clear()
         this.quotes.addAll(stocksList)
     }
@@ -85,7 +85,13 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
             val gainLossPercentString = SpannableString(gainLossPercentFormatted)
             val priceString = SpannableString(priceFormatted)
 
-            remoteViews.setTextViewText(R.id.ticker, stock.symbol)
+            remoteViews.setTextViewText(
+                R.id.ticker,
+                stock.properties?.displayname
+                    .takeUnless { it.isNullOrBlank() }
+                    ?: stock.symbol
+            )
+
             remoteViews.setTextViewText(
                 R.id.holdings,
                 if (widgetData.isCurrencyEnabled()) {
