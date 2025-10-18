@@ -27,7 +27,7 @@ class DisplaynameViewModel @Inject constructor(
                     symbol
                 )
                 it.properties = properties
-                properties.dispalyname = displaynameText
+                properties.displayname = displaynameText
                 stocksStorage.saveQuoteProperties(properties)
             }
         }

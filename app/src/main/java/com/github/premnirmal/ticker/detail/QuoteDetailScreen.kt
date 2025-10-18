@@ -86,6 +86,7 @@ import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteWithSummary
 import com.github.premnirmal.ticker.portfolio.AlertsActivity
 import com.github.premnirmal.ticker.portfolio.HoldingsActivity
 import com.github.premnirmal.ticker.portfolio.NotesActivity
+import com.github.premnirmal.ticker.portfolio.DisplaynameActivity
 import com.github.premnirmal.ticker.portfolio.search.AddSuggestionScreen
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DateAxisFormatter

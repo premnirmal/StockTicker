@@ -104,7 +104,7 @@ class DisplaynameActivity : BaseComposeActivity() {
                         IconButton(
                             modifier = Modifier.align(Alignment.CenterVertically),
                             onClick = {
-                                viewModel.setDisplayname(displayna,e.text)
+                                viewModel.setDisplayname(displayname.text)
                                 setResult(
                                     RESULT_OK,
                                     Intent().apply {

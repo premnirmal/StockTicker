@@ -25,6 +25,7 @@ import com.github.premnirmal.ticker.repo.migrations.MIGRATION_3_4
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_4_5
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_5_6
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_6_7
+import com.github.premnirmal.ticker.repo.migrations.MIGRATION_7_8
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
