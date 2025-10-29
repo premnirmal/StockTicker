@@ -22,14 +22,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.ui.Divider
-import com.github.premnirmal.tickerwidget.R.drawable
+import com.github.premnirmal.tickerwidget.R
 
 @Composable
 fun SuggestionItem(
     modifier: Modifier = Modifier,
     suggestion: Suggestion,
+    widgetCount: Int,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
+    onSuggestionAddClick: (Suggestion) -> Boolean,
+    onSuggestionRemoveClick: (Suggestion) -> Boolean,
 ) {
     Column(
         modifier = modifier
@@ -45,15 +47,28 @@ fun SuggestionItem(
                 style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
             )
             var added by remember { mutableStateOf(suggestion.exists) }
-            IconButton(onClick = {
-                added = onSuggestionAddRemoveClick(suggestion)
-            }) {
-                Icon(
-                    painter = painterResource(
-                        id = if (added) drawable.ic_remove_circle else drawable.ic_add_circle
-                    ),
-                    contentDescription = null
-                )
+            if (!added || widgetCount > 1) {
+                IconButton(
+                    onClick = {
+                        added = onSuggestionAddClick(suggestion)
+                    }) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.ic_add_circle
+                        ), contentDescription = null
+                    )
+                }
+            }
+            if (added) {
+                IconButton(onClick = {
+                    added = onSuggestionRemoveClick(suggestion)
+                }) {
+                    Icon(
+                        painter = painterResource(
+                            id = R.drawable.ic_remove_circle
+                        ), contentDescription = null
+                    )
+                }
             }
         }
         Divider(
@@ -67,6 +82,6 @@ fun SuggestionItem(
 @Preview
 @Composable
 fun SuggestionItemPreview() {
-    SuggestionItem(modifier = Modifier.fillMaxWidth(), suggestion = Suggestion(symbol = "AAPL"), onSuggestionClick = {
-    }, onSuggestionAddRemoveClick = { false })
+    SuggestionItem(modifier = Modifier.fillMaxWidth(), widgetCount = 2, suggestion = Suggestion(symbol = "AAPL").apply { exists = true }, onSuggestionClick = {
+    }, onSuggestionAddClick = { false }, onSuggestionRemoveClick = { false })
 }

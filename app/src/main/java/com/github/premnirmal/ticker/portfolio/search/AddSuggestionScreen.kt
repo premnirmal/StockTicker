@@ -32,17 +32,17 @@ import com.github.premnirmal.tickerwidget.R.string
 @Composable
 fun AddSuggestionScreen(
     suggestion: Suggestion,
-    onChange: (Suggestion, Int) -> Unit,
+    onAdded: (Suggestion, Int) -> Unit,
+    onRemoved: (Suggestion, Int) -> Unit,
     onDismissRequest: () -> Unit = {},
     widgetDataList: List<WidgetData>
 ) {
     val openDialog = remember { mutableStateOf(true) }
     if (!openDialog.value) return
-    if (suggestion.exists) {
-        onChange(suggestion, AppWidgetManager.INVALID_APPWIDGET_ID)
+    if (suggestion.exists && widgetDataList.size <= 1) {
+        onRemoved(suggestion, widgetDataList.firstOrNull()?.widgetId ?: AppWidgetManager.INVALID_APPWIDGET_ID)
         return
-    }
-    if (widgetDataList.size > 1) {
+    } else if (widgetDataList.size > 1) {
         Dialog(
             onDismissRequest = onDismissRequest,
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
@@ -67,7 +67,7 @@ fun AddSuggestionScreen(
                             .fillMaxWidth()
                             .padding(top = 8.dp)
                             .clickable {
-                                onChange(suggestion, widgetData.widgetId)
+                                onAdded(suggestion, widgetData.widgetId)
                             },
                         text = AnnotatedString(widgetData.widgetName()),
                         style = MaterialTheme.typography.bodyLarge.copy(
@@ -96,7 +96,7 @@ fun AddSuggestionScreen(
             }
         }
     } else {
-        onChange(suggestion, widgetDataList.firstOrNull()?.widgetId ?: AppWidgetManager.INVALID_APPWIDGET_ID)
+        onAdded(suggestion, widgetDataList.firstOrNull()?.widgetId ?: AppWidgetManager.INVALID_APPWIDGET_ID)
     }
 }
 
@@ -105,7 +105,8 @@ fun AddSuggestionScreen(
 fun AddSuggestionScreenPreview() {
     AddSuggestionScreen(
         suggestion = Suggestion("AAPL"),
-        onChange = { _, _ -> },
+        onAdded = { _, _ -> },
+        onRemoved = { _, _ -> },
         onDismissRequest = {},
         widgetDataList = listOf(WidgetData(1, 123), WidgetData(2, 234))
     )

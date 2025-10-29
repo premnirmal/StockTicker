@@ -87,7 +87,29 @@ fun SearchScreen(
     val hasWidgets by searchViewModel.hasWidget.collectAsStateWithLifecycle(false)
     val widgetData by searchViewModel.widgetData.collectAsStateWithLifecycle(emptyList())
     var showAddRemoveForSuggestion by remember { mutableStateOf<Suggestion?>(null) }
-    val onSuggestionAddRemoveClick: (Suggestion) -> Boolean = { suggestion ->
+    val onSuggestionAddClick: (Suggestion) -> Boolean = { suggestion ->
+        if (!suggestion.exists && hasWidgets && searchViewModel.widgetCount > 1 && selectedWidgetId == null) {
+            showAddRemoveForSuggestion = suggestion
+        } else if (selectedWidgetId != null) {
+            suggestion.exists = !suggestion.exists
+            if (suggestion.exists) {
+                searchViewModel.addTickerToWidget(suggestion.symbol, selectedWidgetId)
+            } else {
+                searchViewModel.removeStock(suggestion.symbol, selectedWidgetId)
+            }
+        } else {
+            widgetData.firstOrNull()?.let { widgetData ->
+                suggestion.exists = !suggestion.exists
+                if (suggestion.exists) {
+                    searchViewModel.addTickerToWidget(suggestion.symbol, widgetData.widgetId)
+                } else {
+                    searchViewModel.removeStock(suggestion.symbol, widgetData.widgetId)
+                }
+            }
+        }
+        suggestion.exists
+    }
+    val onSuggestionRemoveClick: (Suggestion) -> Boolean = { suggestion ->
         if (!suggestion.exists && hasWidgets && searchViewModel.widgetCount > 1 && selectedWidgetId == null) {
             showAddRemoveForSuggestion = suggestion
         } else if (selectedWidgetId != null) {
@@ -137,10 +159,12 @@ fun SearchScreen(
                 SearchAndTrending(
                     columns = StaggeredGridCells.Adaptive(minSize = 120.dp),
                     trendingStocks = trendingStocks,
+                    widgetCount = searchViewModel.widgetCount,
                     onQuoteClick = onQuoteClick,
                     searchResults = searchResults,
                     onSuggestionClick = onSuggestionClick,
-                    onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                    onSuggestionAddClick = onSuggestionAddClick,
+                    onSuggestionRemoveClick = onSuggestionRemoveClick,
                     selectedWidgetId = selectedWidgetId,
                 )
             }
@@ -163,10 +187,12 @@ fun SearchScreen(
                         SearchAndTrending(
                             columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
                             trendingStocks = trendingStocks,
+                            widgetCount = searchViewModel.widgetCount,
                             onQuoteClick = onQuoteClick,
                             searchResults = searchResults,
                             onSuggestionClick = onSuggestionClick,
-                            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                            onSuggestionAddClick = onSuggestionAddClick,
+                            onSuggestionRemoveClick = onSuggestionRemoveClick,
                             selectedWidgetId = selectedWidgetId,
                         )
                     },
@@ -214,9 +240,8 @@ fun SearchScreen(
     showAddRemoveForSuggestion?.let { suggestion ->
         AddSuggestionScreen(
             suggestion = suggestion,
-            onChange = { suggestion, widgetId ->
-                suggestion.exists = !suggestion.exists
-                if (suggestion.exists) {
+            onChange = { suggestion, widgetId, added ->
+                if (added) {
                     searchViewModel.addTickerToWidget(suggestion.symbol, widgetId)
                 } else {
                     searchViewModel.removeStock(suggestion.symbol, widgetId)
@@ -235,17 +260,21 @@ fun SearchScreen(
 private fun SearchAndTrending(
     columns: StaggeredGridCells,
     trendingStocks: List<Quote>,
+    widgetCount: Int,
     onQuoteClick: (Quote) -> Unit,
     searchResults: FetchResult<List<Suggestion>>?,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
+    onSuggestionAddClick: (Suggestion) -> Boolean,
+    onSuggestionRemoveClick: (Suggestion) -> Boolean,
     selectedWidgetId: Int?,
 ) {
     if (searchResults != null && searchResults.wasSuccessful && !searchResults.dataSafe.isNullOrEmpty()) {
         SearchResults(
             searchResults = searchResults,
+            widgetCount = widgetCount,
             onSuggestionClick = onSuggestionClick,
-            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+            onSuggestionAddClick = onSuggestionAddClick,
+            onSuggestionRemoveClick = onSuggestionRemoveClick,
         )
     } else {
         TrendingStocks(
@@ -306,8 +335,10 @@ private fun SearchInputField(
 @Composable
 private fun SearchResults(
     searchResults: FetchResult<List<Suggestion>>,
+    widgetCount: Int,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean
+    onSuggestionAddClick: (Suggestion) -> Boolean,
+    onSuggestionRemoveClick: (Suggestion) -> Boolean,
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxHeight().background(color = MaterialTheme.colorScheme.surface),
@@ -324,8 +355,10 @@ private fun SearchResults(
                 val suggestion = suggestions[i]
                 SuggestionItem(
                     suggestion = suggestion,
+                    widgetCount = widgetCount,
                     onSuggestionClick = onSuggestionClick,
-                    onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                    onSuggestionAddClick = onSuggestionAddClick,
+                    onSuggestionRemoveClick = onSuggestionRemoveClick,
                 )
             }
         } else {
