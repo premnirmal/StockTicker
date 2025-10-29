@@ -29,11 +29,12 @@ import androidx.compose.foundation.lazy.grid.GridCells.Fixed
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -77,7 +78,6 @@ import com.github.premnirmal.ticker.model.HistoryProvider.Range
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.NewsCard
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
@@ -86,7 +86,7 @@ import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteWithSummary
 import com.github.premnirmal.ticker.portfolio.AlertsActivity
 import com.github.premnirmal.ticker.portfolio.HoldingsActivity
 import com.github.premnirmal.ticker.portfolio.NotesActivity
-import com.github.premnirmal.ticker.portfolio.search.AddSuggestionScreen
+import com.github.premnirmal.ticker.portfolio.search.AddSymbolDialog
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.ErrorState
@@ -103,6 +103,7 @@ import com.github.premnirmal.tickerwidget.R.string
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
+import com.mnikonov.fade_out.fadingEdges
 
 @Composable
 fun QuoteDetailScreen(
@@ -111,7 +112,6 @@ fun QuoteDetailScreen(
     contentType: ContentType?,
     displayFeatures: List<DisplayFeature>,
     quote: Quote,
-    selectedWidgetId: Int? = null,
     viewModel: QuoteDetailViewModel = hiltViewModel()
 ) {
     val details by viewModel.details.collectAsState(initial = emptyList())
@@ -119,7 +119,7 @@ fun QuoteDetailScreen(
     val quoteDetail by viewModel.quote.collectAsStateWithLifecycle(null)
     val quote = quoteDetail?.dataSafe?.quote ?: quote
     QuoteDetailContent(
-        modifier, widthSizeClass, contentType, displayFeatures, quote, viewModel, details, articles, quoteDetail, selectedWidgetId
+        modifier, widthSizeClass, contentType, displayFeatures, quote, viewModel, details, articles, quoteDetail
     )
 
     DisposableEffect(quote.symbol) {
@@ -144,16 +144,16 @@ private fun QuoteDetailContent(
     details: List<QuoteDetail>,
     articles: List<ArticleNewsFeed>?,
     quoteDetail: FetchResult<QuoteWithSummary>?,
-    selectedWidgetId: Int? = null,
 ) {
     val contentType: ContentType = contentType
         ?: calculateContentAndNavigationType(
             widthSizeClass = widthSizeClass, displayFeatures = displayFeatures
         ).second
-    var showAddOrRemoveDialog by remember { mutableStateOf(false) }
+    var showAddRemoveDialog by remember { mutableStateOf(false) }
     var isInPortfolio by remember(quote, quote.position) { mutableStateOf(viewModel.isInPortfolio(quote.symbol)) }
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val chartData by viewModel.data.collectAsStateWithLifecycle()
+    val state = rememberLazyGridState()
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier
@@ -161,30 +161,6 @@ private fun QuoteDetailContent(
         topBar = {
             TopBar(
                 text = quote.symbol,
-                actions = {
-                    val resource = if (isInPortfolio) {
-                        painterResource(id = R.drawable.ic_remove_circle)
-                    } else {
-                        painterResource(id = R.drawable.ic_add_circle)
-                    }
-                    IconButton(
-                        onClick = {
-                            if (selectedWidgetId != null) {
-                                if (!isInPortfolio) {
-                                    viewModel.addTickerToWidget(quote.symbol, selectedWidgetId)
-                                    isInPortfolio = true
-                                } else {
-                                    viewModel.removeStock(quote.symbol)
-                                    isInPortfolio = false
-                                }
-                            } else {
-                                showAddOrRemoveDialog = true
-                            }
-                        }
-                    ) {
-                        Icon(painter = resource, contentDescription = null)
-                    }
-                }
             )
         }
     ) { padding ->
@@ -197,8 +173,9 @@ private fun QuoteDetailContent(
         ) {
             if (contentType == ContentType.SINGLE_PANE) {
                 LazyVerticalGrid(
-                    modifier = Modifier.padding(horizontal = 8.dp),
+                    modifier = Modifier.padding(horizontal = 8.dp).fadingEdges(state = state),
                     columns = Adaptive(150.dp),
+                    state = state,
                     contentPadding = padding,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -221,8 +198,9 @@ private fun QuoteDetailContent(
                     foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
                     first = {
                         LazyVerticalGrid(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp).fadingEdges(state = state),
                             columns = Adaptive(150.dp),
+                            state = state,
                             contentPadding = padding,
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -236,8 +214,9 @@ private fun QuoteDetailContent(
                     },
                     second = {
                         LazyVerticalGrid(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier.padding(horizontal = 8.dp).fadingEdges(state = state),
                             columns = Fixed(1),
+                            state = state,
                             contentPadding = padding,
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -252,27 +231,27 @@ private fun QuoteDetailContent(
                     }
                 )
             }
+
+            FloatingActionButton(
+                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 32.dp),
+                onClick = {
+                    showAddRemoveDialog = true
+                },
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_star),
+                    contentDescription = null,
+                )
+            }
         }
     }
-    if (showAddOrRemoveDialog) {
-        AddSuggestionScreen(
-            suggestion = Suggestion(symbol = quote.symbol).apply {
-                exists = viewModel.isInPortfolio(symbol)
-            },
-            onChange = { suggestion, widgetId ->
-                isInPortfolio = !suggestion.exists
-                suggestion.exists = !suggestion.exists
-                if (suggestion.exists) {
-                    viewModel.addTickerToWidget(suggestion.symbol, widgetId)
-                } else {
-                    viewModel.removeStock(suggestion.symbol)
-                }
-                showAddOrRemoveDialog = false
-            },
+
+    if (showAddRemoveDialog) {
+        AddSymbolDialog(
+            symbol = quote.symbol,
             onDismissRequest = {
-                showAddOrRemoveDialog = false
+                showAddRemoveDialog = false
             },
-            widgetDataList = viewModel.getWidgetDataList()
         )
     }
 }

@@ -2,10 +2,12 @@ package com.github.premnirmal.ticker.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Icon
@@ -139,9 +141,12 @@ fun HomeNavHost(
 fun BottomNavigationBar(
     selectedDestination: String,
     destinations: List<HomeBottomNavDestination>,
-    navigateToTopLevelDestination: (HomeBottomNavDestination) -> Unit
+    navigateToTopLevelDestination: (HomeBottomNavDestination) -> Unit,
 ) {
-    NavigationBar(modifier = Modifier) {
+    NavigationBar(
+        modifier = Modifier,
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
         destinations.forEach { destination ->
             NavigationBarItem(
                 selected = selectedDestination == destination.route.route,
@@ -166,8 +171,7 @@ fun BottomNavigationBar(
                             MaterialTheme.colorScheme.primary
                         }
                     )
-                }
-            )
+                })
         }
     }
 }

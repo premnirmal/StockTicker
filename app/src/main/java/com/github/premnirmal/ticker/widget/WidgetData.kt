@@ -24,7 +24,7 @@ import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import kotlin.collections.sortByDescending
 
-class WidgetData {
+class WidgetData : IWidgetData {
 
     companion object {
         private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
@@ -63,7 +63,7 @@ class WidgetData {
     @Inject internal lateinit var coroutineScope: CoroutineScope
 
     private val position: Int
-    val widgetId: Int
+    override val widgetId: Int
     private val tickerList: MutableList<String>
     val tickers: StateFlow<List<String>>
         get() = _tickerList
@@ -145,14 +145,17 @@ class WidgetData {
             return R.color.text_widget_negative
         }
 
-    fun widgetName(): String {
-        var name = preferences.getString(WIDGET_NAME, "")!!
-        if (name.isEmpty()) {
-            name = "Widget #$position"
-            setWidgetName(name)
+    override val widgetName: String
+        get() {
+            var name = preferences.getString(WIDGET_NAME, "")!!
+            if (name.isEmpty()) {
+                name = "Widget #$position"
+                setWidgetName(name)
+            }
+            return name
         }
-        return name
-    }
+
+    fun widgetName(): String = widgetName
 
     fun setWidgetName(value: String) {
         preferences.edit {

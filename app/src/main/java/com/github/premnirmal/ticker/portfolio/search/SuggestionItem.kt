@@ -10,10 +10,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -22,14 +18,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.ui.Divider
-import com.github.premnirmal.tickerwidget.R.drawable
+import com.github.premnirmal.tickerwidget.R
 
 @Composable
 fun SuggestionItem(
     modifier: Modifier = Modifier,
     suggestion: Suggestion,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
+    onSuggestionAddRemoveClick: (Suggestion) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -39,20 +35,20 @@ fun SuggestionItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
                     .clickable { onSuggestionClick(suggestion) },
                 text = AnnotatedString(text = suggestion.displayString()),
                 style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
             )
-            var added by remember { mutableStateOf(suggestion.exists) }
-            IconButton(onClick = {
-                added = onSuggestionAddRemoveClick(suggestion)
-            }) {
+            IconButton(
+                onClick = {
+                    onSuggestionAddRemoveClick(suggestion)
+                }) {
                 Icon(
                     painter = painterResource(
-                        id = if (added) drawable.ic_remove_circle else drawable.ic_add_circle
-                    ),
-                    contentDescription = null
+                        id = R.drawable.ic_add
+                    ), contentDescription = null
                 )
             }
         }
@@ -67,6 +63,10 @@ fun SuggestionItem(
 @Preview
 @Composable
 fun SuggestionItemPreview() {
-    SuggestionItem(modifier = Modifier.fillMaxWidth(), suggestion = Suggestion(symbol = "AAPL"), onSuggestionClick = {
-    }, onSuggestionAddRemoveClick = { false })
+    SuggestionItem(
+        modifier = Modifier.fillMaxWidth(),
+        suggestion = Suggestion(symbol = "AAPL"),
+        onSuggestionClick = {},
+        onSuggestionAddRemoveClick = { }
+    )
 }

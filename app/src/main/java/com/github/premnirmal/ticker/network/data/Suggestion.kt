@@ -1,16 +1,18 @@
 package com.github.premnirmal.ticker.network.data
 
+import android.os.Parcelable
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Suggestion(
-    var symbol: String = ""
-) {
+    val symbol: String = ""
+) : Parcelable {
     var name: String = ""
     var exch: String = ""
     var type: String = ""
     var exchDisp: String = ""
     var typeDisp: String = ""
-    var exists: Boolean = false
 
     fun displayString(): String {
         val builder = StringBuilder(symbol)

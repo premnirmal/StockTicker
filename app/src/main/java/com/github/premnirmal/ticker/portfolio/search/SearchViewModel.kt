@@ -87,9 +87,7 @@ class SearchViewModel @Inject constructor(
                 }
                 val data = suggestionList.map {
                     ensureActive()
-                    val sug = Suggestion.fromSuggestionNet(it)
-                    sug.exists = doesSuggestionExist(sug)
-                    sug
+                    Suggestion.fromSuggestionNet(it)
                 }
                 _searchResult.emit(FetchResult.success(data))
             } else {

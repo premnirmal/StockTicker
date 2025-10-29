@@ -263,14 +263,6 @@ class QuoteDetailViewModel @Inject constructor(
         return stocksProvider.hasTicker(ticker)
     }
 
-    fun removeStock(ticker: String) {
-        val widgetData = widgetDataProvider.widgetDataWithStock(ticker)
-        widgetData.forEach { it.removeStock(ticker) }
-        viewModelScope.launch {
-            stocksProvider.removeStock(ticker)
-        }
-    }
-
     fun fetchChartData(symbol: String, range: Range) {
         viewModelScope.launch {
             fetchChartDataInternal(symbol, range)
@@ -310,24 +302,6 @@ class QuoteDetailViewModel @Inject constructor(
                     appMessaging.sendSnackbar(it)
                 }
             }
-        }
-    }
-
-    fun getWidgetDataList(): List<WidgetData> {
-        return widgetDataProvider.refreshWidgetDataList()
-    }
-
-    fun addTickerToWidget(
-        ticker: String,
-        widgetId: Int
-    ): Boolean {
-        val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
-        return if (!widgetData.hasTicker(ticker)) {
-            widgetData.addTicker(ticker)
-            widgetDataProvider.broadcastUpdateWidget(widgetId)
-            true
-        } else {
-            false
         }
     }
 

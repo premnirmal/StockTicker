@@ -70,6 +70,7 @@ import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
+import com.mnikonov.fade_out.fadingEdges
 
 @Composable
 fun WidgetsScreen(
@@ -126,6 +127,7 @@ private fun WidgetsScreen(
         }
         if (contentType == SINGLE_PANE) {
             LazyColumn(
+                modifier = Modifier.fadingEdges(state = state),
                 contentPadding = padding,
                 state = state,
             ) {
@@ -162,6 +164,7 @@ private fun WidgetsScreen(
                 foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
                 first = {
                     LazyColumn(
+                        modifier = Modifier.fadingEdges(state = state),
                         contentPadding = padding,
                         state = state,
                     ) {

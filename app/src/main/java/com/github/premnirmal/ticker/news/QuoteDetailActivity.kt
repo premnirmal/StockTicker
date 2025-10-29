@@ -61,7 +61,6 @@ class QuoteDetailActivity : BaseComposeActivity() {
                         contentType = null,
                         displayFeatures = calculateDisplayFeatures(this),
                         quote = it,
-                        selectedWidgetId = widgetId
                     )
                 }
             } else {

@@ -60,6 +60,7 @@ import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
+import com.mnikonov.fade_out.fadingEdges
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -84,30 +85,9 @@ fun SearchScreen(
     val onSuggestionClick: (Suggestion) -> Unit = {
         onQuoteClick(Quote(it.symbol))
     }
-    val hasWidgets by searchViewModel.hasWidget.collectAsStateWithLifecycle(false)
-    val widgetData by searchViewModel.widgetData.collectAsStateWithLifecycle(emptyList())
     var showAddRemoveForSuggestion by remember { mutableStateOf<Suggestion?>(null) }
-    val onSuggestionAddRemoveClick: (Suggestion) -> Boolean = { suggestion ->
-        if (!suggestion.exists && hasWidgets && searchViewModel.widgetCount > 1 && selectedWidgetId == null) {
-            showAddRemoveForSuggestion = suggestion
-        } else if (selectedWidgetId != null) {
-            suggestion.exists = !suggestion.exists
-            if (suggestion.exists) {
-                searchViewModel.addTickerToWidget(suggestion.symbol, selectedWidgetId)
-            } else {
-                searchViewModel.removeStock(suggestion.symbol, selectedWidgetId)
-            }
-        } else {
-            widgetData.firstOrNull()?.let { widgetData ->
-                suggestion.exists = !suggestion.exists
-                if (suggestion.exists) {
-                    searchViewModel.addTickerToWidget(suggestion.symbol, widgetData.widgetId)
-                } else {
-                    searchViewModel.removeStock(suggestion.symbol, widgetData.widgetId)
-                }
-            }
-        }
-        suggestion.exists
+    val onSuggestionAddRemoveClick: (Suggestion) -> Unit = { suggestion ->
+        showAddRemoveForSuggestion = suggestion
     }
     val contentType: ContentType = calculateContentAndNavigationType(
         widthSizeClass = widthSizeClass,
@@ -128,7 +108,9 @@ fun SearchScreen(
     ) { padding ->
         if (contentType == SINGLE_PANE) {
             PullToRefreshBox(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
                 isRefreshing = isRefreshing,
                 onRefresh = {
                     searchViewModel.fetchTrending()
@@ -146,7 +128,9 @@ fun SearchScreen(
             }
         } else {
             PullToRefreshBox(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
                 isRefreshing = isRefreshing,
                 onRefresh = {
                     searchViewModel.fetchTrending()
@@ -181,7 +165,9 @@ fun SearchScreen(
                             val data = it.dataSafe
                             if (data.isNullOrEmpty()) {
                                 ErrorState(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 8.dp),
                                     text = stringResource(id = R.string.no_data)
                                 )
                             } else {
@@ -212,21 +198,11 @@ fun SearchScreen(
         }
     }
     showAddRemoveForSuggestion?.let { suggestion ->
-        AddSuggestionScreen(
-            suggestion = suggestion,
-            onChange = { suggestion, widgetId ->
-                suggestion.exists = !suggestion.exists
-                if (suggestion.exists) {
-                    searchViewModel.addTickerToWidget(suggestion.symbol, widgetId)
-                } else {
-                    searchViewModel.removeStock(suggestion.symbol, widgetId)
-                }
-                showAddRemoveForSuggestion = null
-            },
+        AddSymbolDialog(
+            symbol = suggestion.symbol,
             onDismissRequest = {
                 showAddRemoveForSuggestion = null
             },
-            widgetDataList = searchViewModel.getWidgetDataList()
         )
     }
 }
@@ -238,7 +214,7 @@ private fun SearchAndTrending(
     onQuoteClick: (Quote) -> Unit,
     searchResults: FetchResult<List<Suggestion>>?,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean,
+    onSuggestionAddRemoveClick: (Suggestion) -> Unit,
     selectedWidgetId: Int?,
 ) {
     if (searchResults != null && searchResults.wasSuccessful && !searchResults.dataSafe.isNullOrEmpty()) {
@@ -263,7 +239,10 @@ private fun SearchInputField(
     onQueryChange: (String) -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(8.dp).background(MaterialTheme.colorScheme.surface),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .background(MaterialTheme.colorScheme.surface),
     ) {
         val focusManager = LocalFocusManager.current
         var text by remember {
@@ -307,10 +286,12 @@ private fun SearchInputField(
 private fun SearchResults(
     searchResults: FetchResult<List<Suggestion>>,
     onSuggestionClick: (Suggestion) -> Unit,
-    onSuggestionAddRemoveClick: (Suggestion) -> Boolean
+    onSuggestionAddRemoveClick: (Suggestion) -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier.fillMaxHeight().background(color = MaterialTheme.colorScheme.surface),
+        modifier = Modifier
+            .fillMaxHeight()
+            .background(color = MaterialTheme.colorScheme.surface),
         contentPadding = PaddingValues(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = rememberLazyListState(),
@@ -352,9 +333,13 @@ private fun TrendingStocks(
         }
     }
     LazyVerticalStaggeredGrid(
-        modifier = Modifier.fillMaxHeight().padding(
-            horizontal = 8.dp
-        ).background(color = MaterialTheme.colorScheme.surface),
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(
+                horizontal = 8.dp
+            )
+            .background(color = MaterialTheme.colorScheme.surface)
+            .fadingEdges(state = gridState),
         columns = columns,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,

@@ -83,6 +83,7 @@ import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
+import com.mnikonov.fade_out.fadingEdges
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
@@ -298,7 +299,8 @@ private fun Content(
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier
                             .width(width)
-                            .fillMaxHeight(),
+                            .fillMaxHeight()
+                            .fadingEdges(state = lazyStaggeredGridState),
                         state = lazyStaggeredGridState,
                         columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
                         contentPadding = PaddingValues(all = 8.dp),

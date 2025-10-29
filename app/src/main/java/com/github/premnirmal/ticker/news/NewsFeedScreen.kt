@@ -33,6 +33,7 @@ import com.github.premnirmal.ticker.ui.ProgressState
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
+import com.mnikonov.fade_out.fadingEdges
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,7 +88,7 @@ private fun NewsFeedItems(
         state.animateScrollToItem(0)
     }
     LazyColumn(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().fadingEdges(state = state),
         contentPadding = PaddingValues(all = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = state,
