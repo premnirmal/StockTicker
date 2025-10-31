@@ -13,13 +13,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.detail.QuoteDetailScreen
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class QuoteDetailActivity : BaseComposeActivity() {
+class QuoteDetailActivity : BaseActivity() {
 
     override val simpleName: String
         get() = "QuoteDetailActivity"

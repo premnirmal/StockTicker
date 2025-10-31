@@ -3,9 +3,12 @@ package com.github.premnirmal.ticker.model
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.createTimeString
+import com.github.premnirmal.ticker.dataStore
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -26,9 +29,6 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import javax.inject.Singleton
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
-import com.github.premnirmal.ticker.dataStore
 
 /**
  * Created by premnirmal on 2/28/16.
@@ -111,7 +111,7 @@ class StocksProvider constructor(
             putLong(LAST_FETCHED, lastFetched)
         }
         context.dataStore.edit {
-            it[longPreferencesKey( LAST_FETCHED)] = lastFetched
+            it[longPreferencesKey(LAST_FETCHED)] = lastFetched
         }
     }
 

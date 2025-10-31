@@ -340,7 +340,8 @@ private fun LazyListScope.settingsItems(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
-                fontFamily = Bold)
+                fontFamily = Bold
+            )
         }
         Divider()
     }

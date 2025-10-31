@@ -5,23 +5,25 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.widget.WidgetsScreen
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class WidgetSettingsActivity : BaseComposeActivity() {
+class WidgetSettingsActivity : BaseActivity() {
 
     companion object {
         const val ARG_WIDGET_ID = AppWidgetManager.EXTRA_APPWIDGET_ID
@@ -47,29 +49,36 @@ class WidgetSettingsActivity : BaseComposeActivity() {
     override fun ShowContent() {
         val windowSizeClass = calculateWindowSizeClass(this)
         val displayFeatures = calculateDisplayFeatures(this)
-        Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                .systemBarsPadding(),
-        ) {
-            WidgetsScreen(
-                widthSizeClass = windowSizeClass.widthSizeClass,
-                displayFeatures = displayFeatures,
-                selectedWidgetId = widgetId,
-                showSpinner = false,
-                topAppBarActions = {
-                    IconButton(
-                        onClick = {
-                            setOkResult()
-                            finish()
+        Scaffold(
+            modifier = Modifier,
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface),
+            ) {
+                WidgetsScreen(
+                    widthSizeClass = windowSizeClass.widthSizeClass,
+                    displayFeatures = displayFeatures,
+                    selectedWidgetId = widgetId,
+                    showSpinner = false,
+                    topAppBarActions = {
+                        IconButton(
+                            onClick = {
+                                setOkResult()
+                                finish()
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(R.string.done),
+                                style = MaterialTheme.typography.labelMedium,
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.done),
-                            style = MaterialTheme.typography.labelMedium,
-                        )
                     }
-                }
-            )
+                )
+            }
         }
     }
 

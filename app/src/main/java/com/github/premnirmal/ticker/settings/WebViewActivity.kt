@@ -14,17 +14,19 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class WebViewActivity : BaseComposeActivity() {
+class WebViewActivity : BaseActivity() {
     override var simpleName = "WebViewActivity"
     private lateinit var url: String
 
@@ -48,6 +50,9 @@ class WebViewActivity : BaseComposeActivity() {
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
             }
         ) { paddingValues ->
             Box(Modifier.fillMaxSize().padding(paddingValues)) {

@@ -23,7 +23,6 @@ import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
-import com.github.premnirmal.ticker.ui.CollectSnackbarMessage
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.ThemeViewModel
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
@@ -33,7 +32,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-abstract class BaseComposeActivity : ComponentActivity() {
+abstract class BaseActivity : ComponentActivity() {
 
     abstract val simpleName: String
     open val subscribeToErrorEvents = true
@@ -84,9 +83,7 @@ abstract class BaseComposeActivity : ComponentActivity() {
                     }
                     Box {
                         ShowContent()
-
                         CollectBottomSheetMessage()
-                        CollectSnackbarMessage()
                     }
                 }
             }

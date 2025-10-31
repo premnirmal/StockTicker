@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class SuggestionViewModel @AssistedInject constructor(
     @Assisted private val symbol: String,
     private val widgetDataProvider: WidgetDataProvider,
-): ViewModel() {
+) : ViewModel() {
 
     val suggestionState: Flow<SuggestionState>
         get() = _suggestionState
@@ -69,7 +69,7 @@ class SuggestionViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(symbol: String) : SuggestionViewModel
+        fun create(symbol: String): SuggestionViewModel
     }
 }
 

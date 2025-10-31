@@ -44,11 +44,13 @@ fun SuggestionItem(
             IconButton(
                 onClick = {
                     onSuggestionAddRemoveClick(suggestion)
-                }) {
+                }
+            ) {
                 Icon(
                     painter = painterResource(
                         id = R.drawable.ic_add
-                    ), contentDescription = null
+                    ),
+                    contentDescription = null
                 )
             }
         }

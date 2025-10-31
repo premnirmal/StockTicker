@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.repo
 
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import androidx.room.withTransaction
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -13,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import androidx.core.content.edit
 
 /**
  * Created by premnirmal on 2/28/16.

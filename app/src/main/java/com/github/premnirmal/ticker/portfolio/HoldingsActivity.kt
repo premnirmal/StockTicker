@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -46,7 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.HoldingSum
@@ -54,6 +55,7 @@ import com.github.premnirmal.ticker.network.data.holdingsSum
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.Divider
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.FoldAwareConfiguration
@@ -66,7 +68,7 @@ import java.text.NumberFormat
 import kotlin.getValue
 
 @AndroidEntryPoint
-class HoldingsActivity : BaseComposeActivity() {
+class HoldingsActivity : BaseActivity() {
     override val simpleName: String
         get() = "HoldingsActivity"
 
@@ -141,6 +143,9 @@ class HoldingsActivity : BaseComposeActivity() {
                         }
                     }
                 )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
             }
         ) { paddingValues ->
             if (contentType == SINGLE_PANE) {

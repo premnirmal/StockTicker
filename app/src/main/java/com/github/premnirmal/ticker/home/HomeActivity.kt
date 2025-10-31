@@ -21,7 +21,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.compose.rememberNavController
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.navigation.RootNavigationGraph
@@ -32,7 +32,7 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class HomeActivity : BaseComposeActivity() {
+class HomeActivity : BaseActivity() {
     override val simpleName = "HomeActivity"
 
     @Inject internal lateinit var appReviewManager: IAppReviewManager

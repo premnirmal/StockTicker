@@ -64,7 +64,8 @@ private fun AddSymbolDialogInternal(
     if (!openDialog.value) return
 
     Dialog(
-        onDismissRequest = onDismissRequest, properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
         Column(
             modifier = Modifier
@@ -84,8 +85,8 @@ private fun AddSymbolDialogInternal(
                 val exists = remember(widgetData) { widgetData.exists }
                 Row(
                     modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp)
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
                 ) {
                     Text(
                         modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
@@ -102,7 +103,8 @@ private fun AddSymbolDialogInternal(
                             } else {
                                 onAdded(widgetData)
                             }
-                        }) {
+                        }
+                    ) {
                         Icon(
                             painter = if (exists) {
                                 painterResource(R.drawable.ic_remove_circle)
@@ -122,7 +124,8 @@ private fun AddSymbolDialogInternal(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp), horizontalArrangement = Arrangement.End
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.End
             ) {
                 Button(onClick = {
                     onDismissRequest()
@@ -143,10 +146,16 @@ fun AddSymbolScreenPreview() {
             symbol = "AAPL",
             widgetDataList = listOf(
                 SuggestionWidgetDataState(
-                    "AAPL", "Widget #1", 1, true
+                    "AAPL",
+                    "Widget #1",
+                    1,
+                    true
                 ),
                 SuggestionWidgetDataState(
-                    "AAPL", "Widget #2", 2, false
+                    "AAPL",
+                    "Widget #2",
+                    2,
+                    false
                 ),
             )
         ),

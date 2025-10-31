@@ -6,19 +6,21 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SearchActivity : BaseComposeActivity() {
+class SearchActivity : BaseActivity() {
     override val simpleName: String = "SearchActivity"
 
     companion object {
@@ -48,21 +50,28 @@ class SearchActivity : BaseComposeActivity() {
     override fun ShowContent() {
         val windowSizeClass = calculateWindowSizeClass(this)
         val displayFeatures = calculateDisplayFeatures(this)
-        Box(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surface)
-                .systemBarsPadding(),
-        ) {
-            SearchScreen(
-                widthSizeClass = windowSizeClass.widthSizeClass,
-                selectedWidgetId = widgetId,
-                displayFeatures = displayFeatures,
-                onQuoteClick = { quote ->
-                    val intent = Intent(this@SearchActivity, QuoteDetailActivity::class.java)
-                    intent.putExtra(QuoteDetailActivity.EXTRA_SYMBOL, quote.symbol)
-                    intent.putExtra(QuoteDetailActivity.ARG_WIDGET_ID, widgetId)
-                    startActivity(intent)
-                }
-            )
+        Scaffold(
+            modifier = Modifier,
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+            ) {
+                SearchScreen(
+                    modifier = Modifier,
+                    widthSizeClass = windowSizeClass.widthSizeClass,
+                    selectedWidgetId = widgetId,
+                    displayFeatures = displayFeatures,
+                    onQuoteClick = { quote ->
+                        val intent = Intent(this@SearchActivity, QuoteDetailActivity::class.java)
+                        intent.putExtra(QuoteDetailActivity.EXTRA_SYMBOL, quote.symbol)
+                        intent.putExtra(QuoteDetailActivity.ARG_WIDGET_ID, widgetId)
+                        startActivity(intent)
+                    }
+                )
+            }
         }
     }
 }

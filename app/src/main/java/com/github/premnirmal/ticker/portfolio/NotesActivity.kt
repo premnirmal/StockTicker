@@ -18,6 +18,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -37,14 +38,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.getValue
 
 @AndroidEntryPoint
-class NotesActivity : BaseComposeActivity() {
+class NotesActivity : BaseActivity() {
 
     companion object {
         const val TICKER = "TICKER"
@@ -121,6 +123,9 @@ class NotesActivity : BaseComposeActivity() {
                         }
                     }
                 )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
             }
         ) { paddingValues ->
             Column(

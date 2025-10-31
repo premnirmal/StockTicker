@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.LocalNavGraphViewModelStoreOwner
 import com.github.premnirmal.ticker.navigation.NavigationViewModel
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationType
@@ -173,6 +175,9 @@ private fun HomeListDetailNavigationWrapper(
                     },
                     destinations = destinations
                 )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
             }
         ) { padding ->
             HomeNavHost(
@@ -184,26 +189,36 @@ private fun HomeListDetailNavigationWrapper(
             )
         }
     } else {
-        Row(
+        Scaffold(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            HomeNavigationRail(
-                selectedDestination = selectedDestination,
-                navigationContentPosition = navigationContentPosition,
-                navigateToTopLevelDestination = {
-                    homeNavigationActions.navigateTo(it)
-                },
-                destinations = destinations
-            )
-            HomeNavHost(
-                rootNavController = rootNavController,
-                navController = navController,
-                widthSizeClass = widthSizeClass,
-                displayFeatures = displayFeatures,
-                modifier = Modifier.weight(1f),
-            )
+                .background(MaterialTheme.colorScheme.surface),
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
+            }
+        ) { padding ->
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                HomeNavigationRail(
+                    selectedDestination = selectedDestination,
+                    navigationContentPosition = navigationContentPosition,
+                    navigateToTopLevelDestination = {
+                        homeNavigationActions.navigateTo(it)
+                    },
+                    destinations = destinations
+                )
+                HomeNavHost(
+                    rootNavController = rootNavController,
+                    navController = navController,
+                    widthSizeClass = widthSizeClass,
+                    displayFeatures = displayFeatures,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -17,13 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.github.premnirmal.ticker.base.BaseComposeActivity
+import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DbViewerActivity : BaseComposeActivity() {
+class DbViewerActivity : BaseActivity() {
 
     override val simpleName = "DebugViewerActivity"
     override val subscribeToErrorEvents = false
@@ -44,6 +46,9 @@ class DbViewerActivity : BaseComposeActivity() {
                 TopBar(
                     text = stringResource(R.string.db_viewer),
                 )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
             }
         ) { paddingValues ->
             Box(Modifier.fillMaxSize().padding(paddingValues)) {
