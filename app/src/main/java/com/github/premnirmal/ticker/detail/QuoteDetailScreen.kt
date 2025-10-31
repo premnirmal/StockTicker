@@ -12,6 +12,8 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,15 +32,16 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -51,6 +54,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -94,6 +98,7 @@ import com.github.premnirmal.ticker.ui.HourAxisFormatter
 import com.github.premnirmal.ticker.ui.LinkText
 import com.github.premnirmal.ticker.ui.LinkTextData
 import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
+import com.github.premnirmal.ticker.ui.ProgressState
 import com.github.premnirmal.ticker.ui.TextMarkerView
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.ValueAxisFormatter
@@ -161,19 +166,27 @@ private fun QuoteDetailContent(
         topBar = {
             TopBar(
                 text = quote.symbol,
+                actions = {
+                    IconButton(
+                        onClick = {
+                            viewModel.fetchAll(quote)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_refresh),
+                            contentDescription = null,
+                        )
+                    }
+                }
             )
         }
     ) { padding ->
-        PullToRefreshBox(
-            modifier = modifier.fillMaxSize(),
-            isRefreshing = isRefreshing,
-            onRefresh = {
-                viewModel.fetchAll(quote)
-            },
-        ) {
+        Box {
             if (contentType == ContentType.SINGLE_PANE) {
                 LazyVerticalGrid(
-                    modifier = Modifier.padding(horizontal = 8.dp).fadingEdges(state = state),
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .fadingEdges(state = state),
                     columns = Adaptive(150.dp),
                     state = state,
                     contentPadding = padding,
@@ -198,7 +211,9 @@ private fun QuoteDetailContent(
                     foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
                     first = {
                         LazyVerticalGrid(
-                            modifier = Modifier.padding(horizontal = 8.dp).fadingEdges(state = state),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .fadingEdges(state = state),
                             columns = Adaptive(150.dp),
                             state = state,
                             contentPadding = padding,
@@ -214,7 +229,9 @@ private fun QuoteDetailContent(
                     },
                     second = {
                         LazyVerticalGrid(
-                            modifier = Modifier.padding(horizontal = 8.dp).fadingEdges(state = state),
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .fadingEdges(state = state),
                             columns = Fixed(1),
                             state = state,
                             contentPadding = padding,
@@ -228,12 +245,13 @@ private fun QuoteDetailContent(
                                 Spacer(modifier = Modifier.height(16.dp))
                             }
                         }
-                    }
-                )
+                })
             }
 
             FloatingActionButton(
-                modifier = Modifier.align(Alignment.BottomEnd).padding(end = 16.dp, bottom = 32.dp),
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 16.dp, bottom = 32.dp),
                 onClick = {
                     showAddRemoveDialog = true
                 },
@@ -243,16 +261,37 @@ private fun QuoteDetailContent(
                     contentDescription = null,
                 )
             }
-        }
-    }
 
-    if (showAddRemoveDialog) {
-        AddSymbolDialog(
-            symbol = quote.symbol,
-            onDismissRequest = {
-                showAddRemoveDialog = false
-            },
-        )
+            Crossfade(
+                modifier = Modifier
+                    .padding(padding)
+                    .align(Alignment.TopCenter),
+                targetState = isRefreshing,
+                animationSpec = tween(durationMillis = 100)
+            ) { refreshing ->
+                if (refreshing) {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+                        contentAlignment = Alignment.TopCenter,
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(12.dp),
+                        )
+                    }
+                }
+            }
+
+            if (showAddRemoveDialog) {
+                AddSymbolDialog(
+                    symbol = quote.symbol,
+                    onDismissRequest = {
+                        showAddRemoveDialog = false
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -529,7 +568,9 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
             ) {
                 EditSectionHeader(title = string.alerts)
                 AlertsCard(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                     alertAbove = alertAbove,
                     alertBelow = alertBelow,
                     onClick = {
