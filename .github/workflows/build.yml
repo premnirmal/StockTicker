@@ -31,9 +31,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Build bundle
-        run: ./gradlew :app:bundlePurefossDebug
+        run: ./gradlew :app:bundleDevDebug
       - name: Build APK
-        run: ./gradlew :app:assemblePurefossDebug
+        run: ./gradlew :app:assembleDevDebug
       - name: Upload APK and bundle
         uses: actions/upload-artifact@v4
         with:
@@ -48,5 +48,5 @@ jobs:
           automatic_release_tag: "${{ env.VERSION }}"
           title: "${{ env.VERSION }}"
           files: |
-            app/build/outputs/apk/purefoss/debug/app-purefoss-debug.apk
-            app/build/outputs/bundle/purefossDebug/app-purefoss-debug.aab
+            app/build/outputs/apk/dev/debug/app-dev-debug.apk
+            app/build/outputs/bundle/dev/app-dev-debug.aab

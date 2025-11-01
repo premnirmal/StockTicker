@@ -22,11 +22,11 @@ jobs:
           java-version: 17
           distribution: 'temurin'
       - name: Unit tests
-        run: ./gradlew testPurefossDebug -PdisablePreDex --no-daemon
+        run: ./gradlew testDevDebug -PdisablePreDex --no-daemon
       - name: Archive test results
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: |
-            app/build/test-results/testPurefossDebugUnitTest/
+            app/build/test-results/testDevDebugUnitTest/
             app/build/reports/tests

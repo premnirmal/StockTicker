@@ -115,7 +115,7 @@ android {
 
       val propsFile: File = file("file:keystore.properties")
       if (propsFile.exists()) {
-        val props: Properties = Properties()
+        val props = Properties()
         props.load(FileInputStream(propsFile))
         storePassword = props.getProperty("key.store.password")
         keyPassword = props.getProperty("key.alias.password")
@@ -133,11 +133,6 @@ android {
     }
     create("prod") {
       dimension = "mobile"
-      applicationId = appIdBase
-    }
-    create("purefoss") {
-      dimension = "mobile"
-      // no analytics, but still using the production packageName
       applicationId = appIdBase
     }
   }
@@ -295,27 +290,4 @@ dependencies {
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation(libs.opengl.api)
-}
-
-// Remove google play services and crashlytics plugin for purefoss, because f-droid folks are snowflakes
-android {
-  androidComponents {
-    onVariants {
-      println("Variant: ${it.name}, buildType: ${it.buildType}, flavor: ${it.flavorName}")
-      if (!it.name.lowercase(Locale.getDefault()).contains("prod")) {
-        val googleTask =
-          tasks.findByName("process${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}GoogleServices")
-        val crashlyticsMappingTask =
-          tasks.findByName("uploadCrashlyticsMappingFile${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}")
-        googleTask?.let {
-          println("disabling ${googleTask.name}")
-          googleTask.enabled = false
-        }
-        crashlyticsMappingTask?.let {
-          println("disabling ${crashlyticsMappingTask.name}")
-          crashlyticsMappingTask.enabled = false
-        }
-      }
-    }
-  }
 }
