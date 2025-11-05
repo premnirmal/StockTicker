@@ -25,7 +25,7 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.ui.theme.AppCard
+import com.github.premnirmal.tickerwidget.ui.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 
 private const val QuoteMaxLines = 2

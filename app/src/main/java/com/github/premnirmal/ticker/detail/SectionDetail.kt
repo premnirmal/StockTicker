@@ -20,10 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.drawable
 import com.github.premnirmal.tickerwidget.R.string
-import com.github.premnirmal.tickerwidget.ui.theme.AppCard
+import com.github.premnirmal.tickerwidget.ui.AppCard
 
 @Composable
 fun PositionDetailCard(
@@ -150,7 +149,7 @@ fun AlertsCard(
                     ) {
                         Text(
                             modifier = Modifier.weight(0.5f),
-                            text = stringResource(id = R.string.alert_above),
+                            text = stringResource(id = string.alert_above),
                             style = MaterialTheme.typography.labelMedium,
                             textAlign = TextAlign.Center
                         )
@@ -169,7 +168,7 @@ fun AlertsCard(
                     ) {
                         Text(
                             modifier = Modifier.weight(0.5f),
-                            text = stringResource(id = R.string.alert_below),
+                            text = stringResource(id = string.alert_below),
                             style = MaterialTheme.typography.labelMedium,
                             textAlign = TextAlign.Center
                         )

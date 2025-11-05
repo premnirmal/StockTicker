@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -58,6 +59,7 @@ import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
 import com.github.premnirmal.ticker.settings.WidgetPreviewAdapter
+import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
@@ -387,7 +389,10 @@ fun WidgetName(
     val focusManager = LocalFocusManager.current
     TextField(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = AppTextFieldDefaultColors,
+        shape = com.github.premnirmal.ticker.ui.AppTextFieldShape,
         value = name,
         onValueChange = {
             name = it

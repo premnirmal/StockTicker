@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -24,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +51,7 @@ import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.HoldingSum
 import com.github.premnirmal.ticker.network.data.holdingsSum
+import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.Divider
@@ -222,6 +222,7 @@ class HoldingsActivity : BaseActivity() {
             modifier = Modifier.fillMaxWidth(),
         ) {
             TextField(
+                shape = com.github.premnirmal.ticker.ui.AppTextFieldShape,
                 modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
                 value = sharesText,
                 maxLines = 1,
@@ -236,11 +237,10 @@ class HoldingsActivity : BaseActivity() {
                 onValueChange = {
                     sharesText = decimalFormatter.cleanup(it).take(MAX_VALUE_LENGTH)
                 },
-                colors = TextFieldDefaults.colors().copy(
-                    focusedIndicatorColor = Color.Transparent,
-                )
+                colors = AppTextFieldDefaultColors,
             )
             TextField(
+                shape = com.github.premnirmal.ticker.ui.AppTextFieldShape,
                 modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
                 value = priceText,
                 maxLines = 1,
@@ -255,9 +255,7 @@ class HoldingsActivity : BaseActivity() {
                 onValueChange = {
                     priceText = decimalFormatter.cleanup(it).take(MAX_VALUE_LENGTH)
                 },
-                colors = TextFieldDefaults.colors().copy(
-                    focusedIndicatorColor = Color.Transparent,
-                )
+                colors = AppTextFieldDefaultColors,
             )
             Button(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp),

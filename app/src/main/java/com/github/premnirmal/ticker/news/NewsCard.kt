@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.network.data.NewsArticle
-import com.github.premnirmal.tickerwidget.ui.theme.AppCard
+import com.github.premnirmal.tickerwidget.ui.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme

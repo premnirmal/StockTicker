@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -21,7 +22,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,13 +32,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.base.BaseActivity
+import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
@@ -142,19 +142,17 @@ class NotesActivity : BaseActivity() {
                     style = MaterialTheme.typography.headlineMedium,
                 )
                 TextField(
+                    shape = com.github.premnirmal.ticker.ui.AppTextFieldShape,
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(vertical = 16.dp)
+                        .padding(vertical = 16.dp, horizontal = 8.dp)
                         .focusRequester(focusRequester)
                         .verticalScroll(rememberScrollState()),
                     value = notes,
                     label = { Text(text = stringResource(R.string.add_notes)) },
                     onValueChange = { notes = it },
-                    colors = TextFieldDefaults.colors().copy(
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                    )
+                    colors = AppTextFieldDefaultColors,
                 )
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
