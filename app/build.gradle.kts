@@ -135,11 +135,6 @@ android {
       dimension = "mobile"
       applicationId = appIdBase
     }
-    create("purefoss") {
-      dimension = "mobile"
-      // no analytics, but still using the production packageName
-      applicationId = appIdBase
-    }
   }
 
   bundle {
@@ -159,7 +154,7 @@ android {
       isDebuggable = false
       signingConfig = signingConfigs.getByName("release")
       isMinifyEnabled = true
-      setProguardFiles(listOf(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"))
+      setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
     }
     debug {
       isDebuggable = true
@@ -168,7 +163,7 @@ android {
       configure<CrashlyticsExtension> {
         mappingFileUploadEnabled = false
       }
-      setProguardFiles(listOf(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"))
+      setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
     }
   }
 
@@ -297,7 +292,7 @@ dependencies {
   testImplementation(libs.opengl.api)
 }
 
-// Remove google play services and crashlytics plugin for purefoss, because f-droid folks are snowflakes
+// Remove google play services and crashlytics plugin for non prod builds
 android {
   androidComponents {
     onVariants {

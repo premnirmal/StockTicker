@@ -56,7 +56,7 @@ private fun InstrumentCard(
     quote: Quote,
     quoteNameMaxLines: Int,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         QuoteSymbolText(text = quote.symbol)
         QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.name, maxLines = quoteNameMaxLines)
         Row(
@@ -89,7 +89,7 @@ private fun InstrumentCard(
 private fun PositionCard(
     quote: Quote,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             QuoteSymbolText(modifier = Modifier.weight(0.5f), text = quote.symbol)
             QuoteValueText(

@@ -55,7 +55,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -160,6 +164,17 @@ fun WatchlistContent(
                 visibleItems.minByOrNull { abs((it.offset + it.size / 2) - viewportCenter) }?.index ?: 0
             }
         }
+        Header(
+            modifier = Modifier
+                .heightIn(max = headerHeightDp)
+                .offset { IntOffset(0, (connection.appBarOffset * 0.5).toInt()) },
+            hasWidgets = hasWidgets,
+            subtitle = subtitle,
+            widgets = widgets,
+            selectedItemIndex = selectedItemIndex,
+            coroutineScope = coroutineScope,
+            rowState = rowState
+        )
         Column(
             modifier = modifier.fillMaxSize()
         ) {
@@ -175,17 +190,6 @@ fun WatchlistContent(
                 onQuoteClick = onQuoteClick,
             )
         }
-        Header(
-            modifier = Modifier
-                .heightIn(max = headerHeightDp)
-                .offset { IntOffset(0, connection.appBarOffset) },
-            hasWidgets = hasWidgets,
-            subtitle = subtitle,
-            widgets = widgets,
-            selectedItemIndex = selectedItemIndex,
-            coroutineScope = coroutineScope,
-            rowState = rowState
-        )
         TopAppBar(
             modifier = Modifier,
             scrollState = connection,
@@ -368,8 +372,20 @@ private fun Header(
         modifier = modifier.fillMaxWidth(),
     ) {
         if (contentType == ContentType.SINGLE_PANE) {
+            val color = MaterialTheme.colorScheme.surface
             Image(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().graphicsLayer { alpha = 0.99f }
+                    .drawWithContent {
+                        val colors = listOf(
+                            color,
+                            Color.Transparent,
+                        )
+                        drawContent()
+                        drawRect(
+                            brush = Brush.verticalGradient(colors),
+                            blendMode = BlendMode.DstIn
+                        )
+                    },
                 contentScale = ContentScale.Crop,
                 painter = painterResource(bg),
                 contentDescription = null,
