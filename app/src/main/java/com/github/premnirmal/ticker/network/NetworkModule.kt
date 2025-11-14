@@ -223,17 +223,17 @@ class NetworkModule {
         return api
     }
 
-    @Provides @Singleton
-    internal fun provideGithubApi(
-        @ApplicationContext context: Context,
-        okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
-    ): GithubApi {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.github_endoint))
-            .addConverterFactory(converterFactory)
-            .build()
-        return retrofit.create(GithubApi::class.java)
-    }
+    // @Provides @Singleton
+    // internal fun provideGithubApi(
+    //     @ApplicationContext context: Context,
+    //     okHttpClient: OkHttpClient,
+    //     converterFactory: Converter.Factory
+    // ): GithubApi {
+    //     val retrofit = Retrofit.Builder()
+    //         .client(okHttpClient)
+    //         .baseUrl(context.getString(R.string.github_endoint))
+    //         .addConverterFactory(converterFactory)
+    //         .build()
+    //     return retrofit.create(GithubApi::class.java)
+    // }
 }

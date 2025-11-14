@@ -13,7 +13,7 @@
   <string name="github_endoint" translatable="false">https://api.github.com/</string>
   <string name="apewisdom_endpoint" translatable="false">https://apewisdom.io/api/v1.0/</string>
   <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
-  <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/StockTicker/blob/master/PRIVACY_POLICY.md</string>
+  <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/privacy/blob/master/STOCKTICKER_PRIVACY.md</string>
   <string name="dotdotdot" translatable="false">…</string>
 
   <string name="portfolio">Portfolio</string>

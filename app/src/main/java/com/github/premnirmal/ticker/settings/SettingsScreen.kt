@@ -322,29 +322,29 @@ private fun LazyListScope.settingsItems(
         )
         Divider()
     }
-    item {
-        val context = LocalContext.current
-        val primaryColor = MaterialTheme.colorScheme.primary
-        Box(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
-                CustomTabs.openTab(
-                    context,
-                    context.getString(R.string.checkout_open_source),
-                    primaryColor.toArgb(),
-                )
-            }
-        ) {
-            Text(
-                modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
-                text = stringResource(R.string.checkout_open_source),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
-                fontFamily = Bold
-            )
-        }
-        Divider()
-    }
+    // item {
+    //     val context = LocalContext.current
+    //     val primaryColor = MaterialTheme.colorScheme.primary
+    //     Box(
+    //         modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
+    //             CustomTabs.openTab(
+    //                 context,
+    //                 context.getString(R.string.checkout_open_source),
+    //                 primaryColor.toArgb(),
+    //             )
+    //         }
+    //     ) {
+    //         Text(
+    //             modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
+    //             text = stringResource(R.string.checkout_open_source),
+    //             textAlign = TextAlign.Center,
+    //             style = MaterialTheme.typography.bodyMedium,
+    //             color = MaterialTheme.colorScheme.primary,
+    //             fontFamily = Bold
+    //         )
+    //     }
+    //     Divider()
+    // }
     item {
         val context = LocalContext.current
         val tapListener = OnVersionTap(context)

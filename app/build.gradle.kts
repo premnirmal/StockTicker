@@ -76,6 +76,22 @@ android {
     }
   }
 
+    fun getCommitsBetween(old: String, new: String): String {
+        try {
+            ByteArrayOutputStream().use { stdout ->
+                exec {
+                    commandLine("sh", "-c", "git log --pretty=format:\"%s\" $old...$new")
+                    standardOutput = stdout
+                }
+                return stdout.toString().trim().replace("\n", "\\n")
+            }
+        } catch (e: Exception) {
+            println(e.message)
+            println(e.stackTrace)
+            throw e
+        }
+    }
+
   buildFeatures {
     buildConfig = true
   }
@@ -90,8 +106,10 @@ android {
   val patch = name.split(".")[2].toInt()
   val code = (major * 100000000) + (minor * 100000) + patch
   val oldGitVersion = getOldGitVersion()
+  val changeLog = getCommitsBetween(old = oldGitVersion, new = name)
   println("get version name $name")
   println("Old git version $oldGitVersion")
+  println("Change log:\n $changeLog")
   val appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
@@ -103,6 +121,7 @@ android {
     versionName = name
 
     buildConfigField("String", "PREVIOUS_VERSION", "\"$oldGitVersion\"")
+    buildConfigField("String", "CHANGE_LOG", "\"$changeLog\"")
   }
 
   dexOptions {
