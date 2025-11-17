@@ -12,6 +12,7 @@
       android:gravity="center"
       android:padding="5dp"
       android:text=""
+      android:textColor="@color/marker_text"
       style="@style/Widget.StocksWidget.TextView.LabelMedium"
       android:textAppearance="@style/TextAppearance.StocksWidget.LabelMedium"
       />
