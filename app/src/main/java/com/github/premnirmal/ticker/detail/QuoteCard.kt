@@ -28,7 +28,7 @@ import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 
-private const val QuoteMaxLines = 2
+private const val QuoteMaxLines = 1
 
 @Composable
 fun QuoteCard(
@@ -223,7 +223,7 @@ fun QuoteValueText(
         modifier = modifier,
         text = text,
         textAlign = textAlign,
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodySmall,
     )
 }
 
@@ -239,7 +239,7 @@ fun QuoteChangeText(
         modifier = modifier,
         text = text,
         textAlign = textAlign,
-        style = MaterialTheme.typography.bodyMedium,
+        style = MaterialTheme.typography.bodySmall,
         color = extractColour(up, down)
     )
 }

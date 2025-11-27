@@ -200,7 +200,7 @@ private fun QuoteDetailContent(
                 },
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_star),
+                    painter = painterResource(R.drawable.ic_add_to_list),
                     contentDescription = null,
                 )
             }

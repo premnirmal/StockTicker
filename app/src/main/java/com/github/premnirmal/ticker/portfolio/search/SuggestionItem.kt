@@ -48,7 +48,7 @@ fun SuggestionItem(
             ) {
                 Icon(
                     painter = painterResource(
-                        id = R.drawable.ic_add
+                        id = R.drawable.ic_add_to_list
                     ),
                     contentDescription = null
                 )
