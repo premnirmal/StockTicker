@@ -92,6 +92,8 @@ import com.github.premnirmal.ticker.portfolio.AlertsActivity
 import com.github.premnirmal.ticker.portfolio.HoldingsActivity
 import com.github.premnirmal.ticker.portfolio.NotesActivity
 import com.github.premnirmal.ticker.portfolio.search.AddSymbolDialog
+import com.github.premnirmal.ticker.portfolio.DisplaynameActivity
+// import com.github.premnirmal.ticker.portfolio.search.AddSuggestionScreen
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.ErrorState
@@ -603,6 +605,42 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                             launcher.launch(intent)
                         },
                     text = notes.ifEmpty { "--" },
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        item(span = {
+            GridItemSpan(maxLineSpan)
+        }) {
+            val context = LocalContext.current
+            var displayname by remember(quote.properties) { mutableStateOf(quote.properties?.displayname ?: "") }
+            val intent = Intent(context, DisplaynameActivity::class.java)
+            intent.putExtra(DisplaynameActivity.TICKER, quote.symbol)
+            val launcher =
+                rememberLauncherForActivityResult(
+                    ActivityResultContracts.StartActivityForResult()
+                ) { result: ActivityResult ->
+                    if (result.resultCode == Activity.RESULT_OK) {
+                        val intent = result.data
+                        displayname = intent?.getStringExtra(DisplaynameActivity.DISPLAYNAME) ?: displayname
+                    }
+                }
+            Column(
+                modifier = Modifier.clickable {
+                    launcher.launch(intent)
+                }
+            ) {
+                EditSectionHeader(title = string.displayname)
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp, bottom = 16.dp)
+                        .clickable {
+                            launcher.launch(intent)
+                        },
+                    text = displayname.ifEmpty { "--" },
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 4,
                     overflow = TextOverflow.Ellipsis

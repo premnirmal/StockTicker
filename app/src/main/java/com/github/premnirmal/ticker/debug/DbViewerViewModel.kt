@@ -90,7 +90,7 @@ class DbViewerViewModel @Inject constructor(
             <h2>Properties</h2>
             <table>
             <tr>
-            <th>id</th><th>Symbol</th><th>Notes</th><th>Alert&nbsp;Above</th><th>Alert&nbsp;Below</th>
+            <th>id</th><th>Symbol</th><th>Notes</th><th>Display Name</th><th>Alert&nbsp;Above</th><th>Alert&nbsp;Below</th>
             </tr>
             """
                 )
@@ -171,6 +171,7 @@ class DbViewerViewModel @Inject constructor(
                                 .append("<td>${properties.id}</td>")
                                 .append("<td>${properties.quoteSymbol}</td>")
                                 .append("<td>${properties.notes}</td>")
+                                .append("<td>${properties.displayname}</td>")
                                 .append("<td>${properties.alertAbove}</td>")
                                 .append("<td>${properties.alertBelow}</td>")
                                 .append("</tr>")
