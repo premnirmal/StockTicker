@@ -194,7 +194,7 @@ fun QuoteSymbolText(
     Text(
         modifier = modifier,
         text = text,
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleSmall
     )
 }
 
