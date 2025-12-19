@@ -10,25 +10,24 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
-
 [versions]
 
-agp = "8.12.0"
+agp = "8.12.3"
 kotlin = "2.2.0"
-androidx-compose-base = '1.9.0'
-google-accompanist = "0.36.0"
-google-hilt = "2.57"
+androidx-compose-base = '1.10.0'
+google-accompanist = "0.37.3"
+google-hilt = "2.57.2"
 com-google-devtools-ksp = "2.1.21-2.0.1"
-androidx-room = "2.7.2"
+androidx-room = "2.8.4"
 detekt = "1.23.8"
-detektCompose = "0.4.27"
-reorderable = "2.5.1"
-material3 = "1.3.2"
+detektCompose = "0.5.2"
+reorderable = "3.0.0"
+material3 = "1.4.0"
 
 [libraries]
 
 hilt = { group = 'com.google.dagger', name = 'hilt-android', version.ref = 'google-hilt'}
-androidx-hilt = { group = 'androidx.hilt', name = 'hilt-navigation-compose', version = '1.2.0'}
+androidx-hilt = { group = 'androidx.hilt', name = 'hilt-navigation-compose', version = '1.3.0'}
 hilt-android-compiler = { group = 'com.google.dagger', name = 'hilt-compiler', version.ref = 'google-hilt' }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-compose-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3" }
@@ -48,7 +47,7 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 
 javax-inject = "javax.inject:javax.inject:1"
 javax-annotation-api = "javax.annotation:javax.annotation-api:1.3.2"
-jsoup = "org.jsoup:jsoup:1.21.1"
+jsoup = "org.jsoup:jsoup:1.21.2"
 mpandroidchart = "com.github.PhilJay:MPAndroidChart:v3.0.3"
 retrofit-kotlin-serialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0"
 opengl-api = "org.khronos:opengl-api:gl1.1-android-2.1_r1"

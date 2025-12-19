@@ -154,6 +154,10 @@ android {
       dimension = "mobile"
       applicationId = appIdBase
     }
+    create("purefoss") {
+      dimension = "mobile"
+      applicationId = appIdBase
+    }
   }
 
   bundle {

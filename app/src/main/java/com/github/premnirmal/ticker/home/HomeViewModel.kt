@@ -35,11 +35,12 @@ class HomeViewModel @Inject constructor(
     private val stocksProvider: StocksProvider,
     private val appPreferences: AppPreferences,
     private val newsProvider: NewsProvider,
-    private val commitsProvider: CommitsProvider,
     private val widgetDataProvider: WidgetDataProvider,
     private val notificationsHandler: NotificationsHandler,
     private val appMessaging: AppMessaging,
 ) : AndroidViewModel(application) {
+
+    private val commitsProvider by lazy { CommitsProvider() }
 
     val fetchState: StateFlow<StocksProvider.FetchState>
         get() = stocksProvider.fetchState
@@ -75,9 +76,6 @@ class HomeViewModel @Inject constructor(
 
     private fun initCaches() {
         newsProvider.initCache()
-        if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
-            commitsProvider.initCache()
-        }
     }
 
     fun initNotifications() {
@@ -140,7 +138,7 @@ class HomeViewModel @Inject constructor(
 
     fun showWhatsNew() {
         viewModelScope.launch {
-            val whatsNewResult = commitsProvider.fetchWhatsNew()
+            val whatsNewResult = commitsProvider.loadWhatsNew()
             val title = getApplication<Application>().getString(R.string.whats_new_in, BuildConfig.VERSION_NAME)
             val message = with(whatsNewResult) {
                 if (wasSuccessful) {
