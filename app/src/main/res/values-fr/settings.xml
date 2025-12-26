@@ -2,9 +2,13 @@
 <resources>
 
   <string-array name="font_sizes">
+    <item>Minuscule</item>
+    <item>Très petit</item>
     <item>Petit</item>
     <item>Moyen</item>
     <item>Grand</item>
+    <item>Très grand</item>
+    <item>Géant</item>
   </string-array>
 
   <string-array name="app_themes">
