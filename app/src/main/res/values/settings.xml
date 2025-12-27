@@ -2,14 +2,22 @@
 <resources>
 
   <string-array name="font_sizes">
+    <item>Nano</item>
+    <item>Mini</item>
     <item>Small</item>
     <item>Medium</item>
     <item>Large</item>
+    <item>Huge</item>
+    <item>Giant</item>
   </string-array>
   <string-array name="font_sizes_values" translatable="false">
+    <item>−2</item>
+    <item>−1</item>
     <item>0</item>
     <item>1</item>
     <item>2</item>
+    <item>3</item>
+    <item>4</item>
   </string-array>
 
   <string-array name="app_themes">

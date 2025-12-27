@@ -233,10 +233,16 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
     private fun getFontSize(): Float {
         val size = sharedPreferences.getInt(AppPreferences.FONT_SIZE, 1)
-        return when (size) {
-            0 -> this.context.resources.getInteger(R.integer.text_size_small).toFloat()
-            2 -> this.context.resources.getInteger(R.integer.text_size_large).toFloat()
-            else -> this.context.resources.getInteger(R.integer.text_size_medium).toFloat()
+        val resId = when (size) {
+            -2 -> R.integer.text_size_nano
+            -1 -> R.integer.text_size_mini
+            0 -> R.integer.text_size_small
+            1 -> R.integer.text_size_medium
+            2 -> R.integer.text_size_large
+            3 -> R.integer.text_size_huge
+            4 -> R.integer.text_size_giant
+            else -> R.integer.text_size_medium
         }
+        return context.resources.getInteger(resId).toFloat()
     }
 }

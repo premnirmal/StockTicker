@@ -2,9 +2,13 @@
 <resources>
 
   <string-array name="font_sizes">
+    <item>Nano</item>
+    <item>Mini</item>
     <item>Pequeña</item>
     <item>Medio</item>
     <item>Grande</item>
+    <item>Muy grande</item>
+    <item>Gigante</item>
   </string-array>
 
   <string-array name="app_themes">
