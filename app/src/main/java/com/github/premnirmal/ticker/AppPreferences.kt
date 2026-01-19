@@ -213,7 +213,7 @@ class AppPreferences @Inject constructor(
 
     var textSizePref: Int
         get() = runBlocking {
-            textSizeFlow.first().coerceIn(0, 2)
+            textSizeFlow.first().coerceIn(-2, 4)
         }
         set(value) = runBlocking {
             context.dataStore.edit { prefs ->
