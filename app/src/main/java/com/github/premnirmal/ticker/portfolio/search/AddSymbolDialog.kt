@@ -2,12 +2,16 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -67,21 +71,26 @@ private fun AddSymbolDialogInternal(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
     ) {
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surface)
                 .padding(all = 16.dp)
         ) {
-            Text(
-                text = stringResource(id = string.select_widget),
-                style = MaterialTheme.typography.headlineSmall
-            )
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-            )
-            suggestionState.widgetDataList.forEach { widgetData ->
+            stickyHeader {
+                Column {
+                    Text(
+                        text = stringResource(id = string.select_widget),
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                    )
+                }
+            }
+            items(suggestionState.widgetDataList.size) { i ->
+                val widgetData = suggestionState.widgetDataList[i]
                 val exists = remember(widgetData) { widgetData.exists }
                 Row(
                     modifier = Modifier
@@ -89,22 +98,22 @@ private fun AddSymbolDialogInternal(
                         .padding(top = 4.dp)
                 ) {
                     Text(
-                        modifier = Modifier.weight(1f).align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterVertically),
                         text = AnnotatedString(widgetData.widgetName),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = MaterialTheme.colorScheme.onSurface
                         ),
                     )
                     IconButton(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        onClick = {
+                        modifier = Modifier.align(Alignment.CenterVertically), onClick = {
                             if (exists) {
                                 onRemoved(widgetData)
                             } else {
                                 onAdded(widgetData)
                             }
-                        }
-                    ) {
+                        }) {
                         Icon(
                             painter = if (exists) {
                                 painterResource(R.drawable.ic_remove_circle)
@@ -115,23 +124,24 @@ private fun AddSymbolDialogInternal(
                         )
                     }
                 }
+
                 Divider(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 4.dp)
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(onClick = {
-                    onDismissRequest()
-                    openDialog.value = false
-                }) {
-                    Text(text = stringResource(id = string.alert_dismiss))
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Button(onClick = {
+                        onDismissRequest()
+                        openDialog.value = false
+                    }) {
+                        Text(text = stringResource(id = string.alert_dismiss))
+                    }
                 }
             }
         }
