@@ -35,4 +35,4 @@ jobs:
           git add .
           git commit -am "github-actions[bot]: Updated version.properties"
       - name: Push  version.properties changes
-        run: git push origin master
+        run: git push origin HEAD
