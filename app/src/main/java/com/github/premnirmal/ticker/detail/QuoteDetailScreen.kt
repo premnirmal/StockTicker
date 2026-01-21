@@ -12,6 +12,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +44,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -93,7 +99,6 @@ import com.github.premnirmal.ticker.portfolio.HoldingsActivity
 import com.github.premnirmal.ticker.portfolio.NotesActivity
 import com.github.premnirmal.ticker.portfolio.search.AddSymbolDialog
 import com.github.premnirmal.ticker.portfolio.DisplaynameActivity
-// import com.github.premnirmal.ticker.portfolio.search.AddSuggestionScreen
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.ErrorState
@@ -106,8 +111,6 @@ import com.github.premnirmal.ticker.ui.TextMarkerView
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.ValueAxisFormatter
 import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.dimen
-import com.github.premnirmal.tickerwidget.R.string
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
@@ -141,7 +144,7 @@ fun QuoteDetailScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 private fun QuoteDetailContent(
     modifier: Modifier = Modifier,
     widthSizeClass: WindowWidthSizeClass,
@@ -160,6 +163,7 @@ private fun QuoteDetailContent(
     var showAddRemoveDialog by remember { mutableStateOf(false) }
     var isInPortfolio by remember(quote, quote.position) { mutableStateOf(viewModel.isInPortfolio(quote.symbol)) }
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val showAddRemoveTooltip by viewModel.showAddRemoveTooltip.collectAsStateWithLifecycle(true)
     val chartData by viewModel.data.collectAsStateWithLifecycle()
     val state = rememberLazyGridState()
     Scaffold(
@@ -195,16 +199,43 @@ private fun QuoteDetailContent(
             SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
         },
         floatingActionButton = {
+            val tooltipPosition = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above)
+            val tooltipState = rememberTooltipState(
+                initialIsVisible = false,
+                isPersistent = true,
+            )
+            LaunchedEffect(quote.symbol) {
+                if (showAddRemoveTooltip) {
+                    tooltipState.show()
+                    viewModel.addRemoveTooltipShown()
+                }
+            }
             FloatingActionButton(
                 modifier = Modifier.windowInsetsPadding(WindowInsets.navigationBars),
                 onClick = {
                     showAddRemoveDialog = true
                 },
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add_to_list),
-                    contentDescription = null,
-                )
+                TooltipBox(
+                    positionProvider = tooltipPosition,
+                    state = tooltipState,
+                    tooltip = {
+                        Surface(
+                            color = MaterialTheme.colorScheme.surfaceTint,
+                            shape = MaterialTheme.shapes.medium,
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(12.dp),
+                                text = stringResource(R.string.add_to_portfolio),
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_add_to_list),
+                        contentDescription = null,
+                    )
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.End,
@@ -401,7 +432,7 @@ private fun GraphItem(
             if (graphError == null && graphData?.dataPoints.isNullOrEmpty()) {
                 CircularProgressIndicator()
             } else if (graphError != null && graphData?.dataPoints.isNullOrEmpty()) {
-                ErrorState(text = stringResource(id = string.graph_fetch_failed))
+                ErrorState(text = stringResource(id = R.string.graph_fetch_failed))
             } else {
                 AndroidView(
                     factory = { context ->
@@ -420,37 +451,37 @@ private fun GraphItem(
             FilterChip(onClick = {
                 viewModel.range.value = Range.ONE_DAY
             }, selected = range != Range.ONE_DAY, label = {
-                Text(text = stringResource(id = string.one_day_short))
+                Text(text = stringResource(id = R.string.one_day_short))
             })
             FilterChip(onClick = {
                 viewModel.range.value = Range.TWO_WEEKS
             }, selected = range != Range.TWO_WEEKS, label = {
-                Text(text = stringResource(id = string.two_weeks_short))
+                Text(text = stringResource(id = R.string.two_weeks_short))
             })
             FilterChip(onClick = {
                 viewModel.range.value = Range.ONE_MONTH
             }, selected = range != Range.ONE_MONTH, label = {
-                Text(text = stringResource(id = string.one_month_short))
+                Text(text = stringResource(id = R.string.one_month_short))
             })
             FilterChip(onClick = {
                 viewModel.range.value = Range.THREE_MONTH
             }, selected = range != Range.THREE_MONTH, label = {
-                Text(text = stringResource(id = string.three_month_short))
+                Text(text = stringResource(id = R.string.three_month_short))
             })
             FilterChip(onClick = {
                 viewModel.range.value = Range.ONE_YEAR
             }, selected = range != Range.ONE_YEAR, label = {
-                Text(text = stringResource(id = string.one_year_short))
+                Text(text = stringResource(id = R.string.one_year_short))
             })
             FilterChip(onClick = {
                 viewModel.range.value = Range.FIVE_YEARS
             }, selected = range != Range.FIVE_YEARS, label = {
-                Text(text = stringResource(id = string.five_years_short))
+                Text(text = stringResource(id = R.string.five_years_short))
             })
             FilterChip(onClick = {
                 viewModel.range.value = Range.MAX
             }, selected = range != Range.MAX, label = {
-                Text(text = stringResource(id = string.max))
+                Text(text = stringResource(id = R.string.max))
             })
         }
     }
@@ -520,7 +551,7 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = string.positions)
+                EditSectionHeader(title = R.string.positions)
                 PositionDetailCard(
                     modifier = Modifier.padding(top = 8.dp),
                     quote = quote,
@@ -562,7 +593,7 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = string.alerts)
+                EditSectionHeader(title = R.string.alerts)
                 AlertsCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -596,7 +627,7 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = string.notes)
+                EditSectionHeader(title = R.string.notes)
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -632,7 +663,7 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = string.displayname)
+                EditSectionHeader(title = R.string.displayname)
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -670,7 +701,7 @@ private fun updateGraphView(
     color: Int
 ) {
     if (dataPoints.isNullOrEmpty()) {
-        graphView.setNoDataText(graphView.context.getString(string.no_data))
+        graphView.setNoDataText(graphView.context.getString(R.string.no_data))
         graphView.invalidate()
         return
     }
@@ -733,7 +764,7 @@ private fun createGraphView(context: Context): LineChart {
         )
     )
     graphView.extraBottomOffset =
-        context.resources.getDimension(dimen.graph_bottom_offset)
+        context.resources.getDimension(R.dimen.graph_bottom_offset)
     graphView.legend.isEnabled = false
     graphView.description = null
     val colorAccent = if (VERSION.SDK_INT >= VERSION_CODES.S) {

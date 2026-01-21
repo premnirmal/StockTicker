@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.annotation.StringRes
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.format
 import com.github.premnirmal.ticker.formatBigNumbers
 import com.github.premnirmal.ticker.formatDate
@@ -42,7 +43,7 @@ class QuoteDetailViewModel @Inject constructor(
     private val appMessaging: AppMessaging,
     private val newsProvider: NewsProvider,
     private val historyProvider: HistoryProvider,
-    private val widgetDataProvider: WidgetDataProvider
+    private val appPreferences: AppPreferences,
 ) : AndroidViewModel(application) {
 
     val isRefreshing: StateFlow<Boolean>
@@ -60,6 +61,10 @@ class QuoteDetailViewModel @Inject constructor(
     private val _newsData = MutableStateFlow<List<ArticleNewsFeed>>(emptyList())
     val newsData: StateFlow<List<ArticleNewsFeed>>
         get() = _newsData
+
+    val showAddRemoveTooltip: Flow<Boolean>
+        get() = appPreferences.showAddRemoveTooltip
+
     private var fetchQuoteJob: Job? = null
     private var quoteSummary: QuoteSummary? = null
     val range = MutableStateFlow<Range>(Range.ONE_DAY)
@@ -301,6 +306,12 @@ class QuoteDetailViewModel @Inject constructor(
                     appMessaging.sendSnackbar(it)
                 }
             }
+        }
+    }
+
+    fun addRemoveTooltipShown() {
+        viewModelScope.launch {
+            appPreferences.setAddRemoveTooltipShown()
         }
     }
 

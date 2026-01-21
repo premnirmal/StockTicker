@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="portfolio">Portefeuille</string>
+  <string name="add_to_portfolio">Ajouter ou supprimer du portefeuille</string>
   <string name="action_add">Ajouter</string>
   <string name="action_export">Exporter côtes</string>
   <string name="action_share">Partager portefeuille</string>

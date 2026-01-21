@@ -17,6 +17,7 @@
   <string name="dotdotdot" translatable="false">…</string>
 
   <string name="portfolio">Portfolio</string>
+  <string name="add_to_portfolio">Add or remove from Portfolio</string>
   <string name="action_add">Add</string>
   <string name="action_export">Export quotes</string>
   <string name="action_share">Share Portfolio</string>

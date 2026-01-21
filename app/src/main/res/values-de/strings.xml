@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="portfolio">Portfolio</string>
+  <string name="add_to_portfolio">Zum Portfolio hinzufügen oder daraus entfernen</string>
   <string name="action_add">Hinzufügen</string>
   <string name="action_export">Aktienliste Exportieren</string>
   <string name="action_share">Portfolio teilen</string>

@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
@@ -254,6 +255,19 @@ class AppPreferences @Inject constructor(
                 )
         }
 
+    private val showAddRemoveTooltipPrefKey: Preferences.Key<Int> = intPreferencesKey(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP)
+
+    val showAddRemoveTooltip: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        (prefs[showAddRemoveTooltipPrefKey] ?: 0) > 5
+    }
+
+    suspend fun setAddRemoveTooltipShown() {
+        context.dataStore.edit { prefs ->
+            val count = prefs[showAddRemoveTooltipPrefKey] ?: 0
+            prefs[showAddRemoveTooltipPrefKey] = count + 1
+        }
+    }
+
     @Parcelize
     data class Time(
         val hour: Int,
@@ -278,7 +292,6 @@ class AppPreferences @Inject constructor(
         }
 
         const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
-        const val SETTING_APP_THEME = "com.github.premnirmal.ticker.theme"
         const val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
         const val PREFS_NAME = "com.github.premnirmal.ticker"
         const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
@@ -286,17 +299,12 @@ class AppPreferences @Inject constructor(
         const val END_TIME = "END_TIME"
         const val UPDATE_DAYS = "UPDATE_DAYS"
         const val TUTORIAL_SHOWN = "TUTORIAL_SHOWN"
-        const val SETTING_WHATS_NEW = "SETTING_WHATS_NEW"
-        const val SETTING_TUTORIAL = "SETTING_TUTORIAL"
         const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
         const val SETTING_HIDE_HEADER = "SETTING_HIDE_HEADER"
-        const val SETTING_EXPORT = "SETTING_EXPORT"
-        const val SETTING_IMPORT = "SETTING_IMPORT"
-        const val SETTING_SHARE = "SETTING_SHARE"
-        const val SETTING_NUKE = "SETTING_NUKE"
-        const val SETTING_PRIVACY_POLICY = "SETTING_PRIVACY_POLICY"
         const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
         const val SETTING_NOTIFICATION_ALERTS = "SETTING_NOTIFICATION_ALERTS"
+        const val PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP = "PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP"
+
         const val WIDGET_BG = "WIDGET_BG"
         const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
         const val TEXT_COLOR = "TEXT_COLOR"

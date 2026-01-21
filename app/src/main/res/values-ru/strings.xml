@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="portfolio">Портфолио</string>
+  <string name="add_to_portfolio">Добавить или удалить из портфеля</string>
   <string name="action_add">Добавить</string>
   <string name="action_export">Экспортировать портфолио</string>
   <string name="action_share">Отправить портфолио</string>

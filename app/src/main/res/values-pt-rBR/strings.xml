@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <string name="portfolio">Portfólio</string>
+  <string name="add_to_portfolio">Adicionar ou remover do portfólio</string>
   <string name="widget_label">StocksWidget</string>
   <string name="action_add">Adicionar</string>
   <string name="action_export">Exportar Cotações</string>
