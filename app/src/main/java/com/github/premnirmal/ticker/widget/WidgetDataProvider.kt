@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -109,7 +110,18 @@ class WidgetDataProvider @Inject constructor(
     suspend fun broadcastUpdateWidget(widgetId: Int) {
         refreshWidgetDataList()
         if (USE_GLANCE) {
-            GlanceStocksWidget().updateAll(context)
+            val intent = Intent(context, StockWidget::class.java)
+            intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            val ids = arrayOf(widgetId).toIntArray()
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            context.sendBroadcast(intent)
+            if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                try {
+                    GlanceStocksWidget().update(context, glanceAppWidgetManager.getGlanceIdBy(widgetId))
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
         } else {
             val intent = Intent(context, StockWidgetOld::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
@@ -122,6 +134,11 @@ class WidgetDataProvider @Inject constructor(
     suspend fun broadcastUpdateAllWidgets() {
         refreshWidgetDataList()
         if (USE_GLANCE) {
+            val intent = Intent(context, StockWidget::class.java)
+            intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
+            val ids = getAppWidgetIds()
+            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
+            context.sendBroadcast(intent)
             GlanceStocksWidget().updateAll(context)
         } else {
             val intent = Intent(context, StockWidgetOld::class.java)

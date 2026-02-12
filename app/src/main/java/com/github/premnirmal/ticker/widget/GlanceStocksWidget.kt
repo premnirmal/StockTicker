@@ -71,6 +71,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import kotlin.Boolean
 import kotlin.random.Random
@@ -348,13 +349,13 @@ private fun Header(
         modifier = GlanceModifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val fontSize = widgetData.fontSize
+        val fontSize = widgetData.fontSize - 2f
         Text(
             modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
             text = lastUpdatedText,
             style = TextStyle(
                 color = ColorProvider(R.color.text_widget_header),
-                fontSize = TextUnit(fontSize - 2f, TextUnitType.Sp),
+                fontSize = TextUnit(fontSize, TextUnitType.Sp),
                 textAlign = TextAlign.Start,
                 fontWeight = FontWeight.Normal,
             ),
@@ -639,14 +640,14 @@ private class PreviewWidgetData(
             textColourPref = 0,
             backgroundResource = R.drawable.app_widget_background,
             textColor = Color.Black.value,
-            fontSize = 14f,
+            fontSize = 12f,
         )
     ),
     @param:DrawableRes
     @get:DrawableRes
     @field:DrawableRes
     override val backgroundResource: Int = R.drawable.app_widget_background,
-    override val fontSize: Float = 14f,
+    override val fontSize: Float = 12f,
 ) : IWidgetData {
     override val widgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID
     override val widgetName: String = "Preview widget"
@@ -664,6 +665,8 @@ private class PreviewWidgetData(
 
 class RefreshCallback : ActionCallback {
 
+    @Inject
+    internal lateinit var widgetDataProvider: WidgetDataProvider
     @Inject
     internal lateinit var stocksProvider: StocksProvider
     @Inject
@@ -684,7 +687,9 @@ class RefreshCallback : ActionCallback {
             val fetchTask = async {
                 stocksProvider.fetch()
             }
-            GlanceStocksWidget().updateAll(context)
+            val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+            val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
+            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
             fetchTask.await()
         }
     }
@@ -705,10 +710,10 @@ class FlipTextCallback : ActionCallback {
             Injector.appComponent().inject(this)
             injected = true
         }
-        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(glanceId)
+        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+        val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
         val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
         widgetData.flipChange()
         widgetDataProvider.broadcastUpdateWidget(appWidgetId)
-        GlanceStocksWidget().updateAll(context)
     }
 }

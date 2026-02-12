@@ -213,7 +213,7 @@ class WidgetData : IWidgetData {
             4 -> R.integer.text_size_giant
             else -> R.integer.text_size_medium
         }
-        return context.resources.getInteger(resId).toFloat() - 2f
+        return context.resources.getInteger(resId).toFloat() - 4f
     }
 
     override fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color {
