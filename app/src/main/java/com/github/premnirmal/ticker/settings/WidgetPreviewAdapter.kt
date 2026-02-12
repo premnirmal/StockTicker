@@ -46,7 +46,7 @@ class WidgetPreviewAdapter(
         parent: ViewGroup
     ): View {
         val stock = getItem(position)
-        val stockViewLayout = widgetImmutableWidgetData.stockViewLayout()
+        val stockViewLayout = widgetImmutableWidgetData.stockViewLayout
         val layout = itemView ?: LayoutInflater.from(parent.context)
             .inflate(stockViewLayout, parent, false)
         val changeValueFormatted = stock.changeString()
@@ -148,9 +148,9 @@ class WidgetPreviewAdapter(
         layout.findViewById<TextView>(R.id.totalValue)?.text = priceString
 
         val color: Int = if (change < 0f || changeInPercent < 0f) {
-            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.negativeTextColor())
+            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.negativeTextColor)
         } else {
-            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.positiveTextColor())
+            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.positiveTextColor)
         }
         if (stockViewLayout == R.layout.stockview3) {
             layout.findViewById<TextView>(R.id.change)?.setTextColor(color)
@@ -160,18 +160,18 @@ class WidgetPreviewAdapter(
         }
 
         val colorGainLoss: Int = if (gainLoss < 0f || gainLoss < 0f) {
-            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.negativeTextColor())
+            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.negativeTextColor)
         } else {
-            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.positiveTextColor())
+            ContextCompat.getColor(layout.context, widgetImmutableWidgetData.positiveTextColor)
         }
         layout.findViewById<TextView>(R.id.gain_loss)?.setTextColor(colorGainLoss)
         layout.findViewById<TextView>(R.id.gain_loss_percent)?.setTextColor(colorGainLoss)
 
-        layout.findViewById<TextView>(R.id.ticker)?.setTextColor(widgetImmutableWidgetData.textColor(layout.context))
+        layout.findViewById<TextView>(R.id.ticker)?.setTextColor(ContextCompat.getColor(layout.context, widgetImmutableWidgetData.textColor))
         layout.findViewById<TextView>(
             R.id.totalValue
-        )?.setTextColor(widgetImmutableWidgetData.textColor(layout.context))
-        layout.findViewById<TextView>(R.id.holdings)?.setTextColor(widgetImmutableWidgetData.textColor(layout.context))
+        )?.setTextColor(ContextCompat.getColor(layout.context, widgetImmutableWidgetData.textColor))
+        layout.findViewById<TextView>(R.id.holdings)?.setTextColor(ContextCompat.getColor(layout.context, widgetImmutableWidgetData.textColor))
 
         return layout
     }

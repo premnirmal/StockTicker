@@ -460,7 +460,7 @@ private fun updatePreview(
     widgetData: WidgetData,
     widgetDataImmutable: WidgetData.ImmutableWidgetData
 ) {
-    widgetLayout.setBackgroundResource(widgetDataImmutable.backgroundResource())
+    widgetLayout.setBackgroundResource(widgetDataImmutable.backgroundResource)
     val lastUpdatedText = when (fetchState) {
         is FetchState.Success -> context.getString(R.string.last_fetch, fetchState.displayString)
         is FetchState.Failure -> context.getString(R.string.refresh_failed)

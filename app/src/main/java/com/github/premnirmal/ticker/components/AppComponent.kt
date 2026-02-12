@@ -9,6 +9,7 @@ import com.github.premnirmal.ticker.widget.GlanceStocksWidget
 import com.github.premnirmal.ticker.widget.RefreshCallback
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
+import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.StockWidgetOld
 import com.github.premnirmal.ticker.widget.WidgetClickReceiver
 import com.github.premnirmal.ticker.widget.WidgetData
@@ -25,6 +26,7 @@ interface LegacyComponent {
     fun json(): Json
     fun appPreferences(): AppPreferences
     fun inject(widget: StockWidgetOld)
+    fun inject(widget: StockWidget)
     fun inject(widget: GlanceStocksWidget)
     fun inject(data: WidgetData)
     fun inject(adapter: RemoteStockViewAdapter)

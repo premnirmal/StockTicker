@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
+import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -11,23 +12,12 @@ interface IWidgetData {
     val widgetId: Int
     val widgetName: String
 
+    val stocks: StateFlow<List<Quote>>
     val data: StateFlow<WidgetData.ImmutableWidgetData>
-
-    @get:DrawableRes
-    val backgroundResource: Int
-
-    @get:ColorInt val widgetTextColor: Color
-
-    val isBoldEnabled: Boolean
-    val hideHeader: Boolean
 
     val changeType: ChangeType
 
     val layoutType: LayoutType
-
-    val fontSize: Float
-
-    val isCurrencyEnabled: Boolean
 
     fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color
 

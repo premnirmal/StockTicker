@@ -20,10 +20,8 @@ import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import kotlin.collections.sortByDescending
@@ -67,7 +65,7 @@ class WidgetData : IWidgetData {
     val tickers: StateFlow<List<String>>
         get() = _tickerList
     private val _tickerList = MutableStateFlow<List<String>>(emptyList())
-    val stocks: StateFlow<List<Quote>>
+    override val stocks: StateFlow<List<Quote>>
         get() = _stocks
     private val _stocks = MutableStateFlow<List<Quote>>(emptyList())
     private val preferences: SharedPreferences
@@ -120,8 +118,9 @@ class WidgetData : IWidgetData {
     private val nightMode: Boolean
         get() = appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
 
+    @get:ColorRes
     val positiveTextColor: Int
-        @ColorRes get() {
+        get() {
             return when (textColorPref()) {
                 SYSTEM -> {
                     if (nightMode) {
@@ -130,20 +129,24 @@ class WidgetData : IWidgetData {
                         R.color.text_widget_positive
                     }
                 }
+
                 DARK -> {
                     R.color.text_widget_positive_dark
                 }
+
                 LIGHT -> {
                     R.color.text_widget_positive_light
                 }
+
                 else -> {
                     R.color.text_widget_positive
                 }
             }
         }
 
+    @get:ColorRes
     val negativeTextColor: Int
-        @ColorRes get() {
+        get() {
             return R.color.text_widget_negative
         }
 
@@ -170,9 +173,6 @@ class WidgetData : IWidgetData {
     override val changeType: IWidgetData.ChangeType
         get() = changeType()
 
-    override val isCurrencyEnabled: Boolean
-        get() = readIsCurrencyEnabled()
-
     fun changeType(): IWidgetData.ChangeType {
         val state = preferences.getBoolean(PERCENT, false)
         return if (state) IWidgetData.ChangeType.Percent else IWidgetData.ChangeType.Value
@@ -197,9 +197,6 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
     }
-
-    override val fontSize: Float
-        get() = readFontSize()
 
     fun readFontSize(): Float {
         val size = appPreferences.textSizePref
@@ -234,45 +231,28 @@ class WidgetData : IWidgetData {
     }
 
     @ColorInt fun textColor(): Int {
+        return ContextCompat.getColor(context, textColorRes())
+    }
+
+    @ColorRes fun textColorRes(): Int {
         val pref = textColorPref()
         return if (pref == SYSTEM) {
             if (nightMode) {
-                ContextCompat.getColor(context, R.color.dark_widget_text)
+                R.color.dark_widget_text
             } else {
-                ContextCompat.getColor(context, R.color.widget_text)
+                R.color.widget_text
             }
         } else if (pref == DARK) {
-            ContextCompat.getColor(context, R.color.widget_text_black)
+            R.color.widget_text_black
         } else if (pref == LIGHT) {
-            ContextCompat.getColor(context, R.color.widget_text_white)
+            R.color.widget_text_white
         } else {
-            ContextCompat.getColor(context, R.color.widget_text)
+            R.color.widget_text
         }
     }
 
-    override val widgetTextColor: Color
-        get() = widgetTextColor()
-
-    @ColorInt fun widgetTextColor(): Color {
-        val pref = textColorPref()
-        val color = if (pref == SYSTEM) {
-            if (nightMode) {
-                ContextCompat.getColor(context, R.color.dark_widget_text)
-            } else {
-                ContextCompat.getColor(context, R.color.widget_text)
-            }
-        } else if (pref == DARK) {
-            ContextCompat.getColor(context, R.color.widget_text_black)
-        } else if (pref == LIGHT) {
-            ContextCompat.getColor(context, R.color.widget_text_white)
-        } else {
-            ContextCompat.getColor(context, R.color.widget_text)
-        }
-        return Color(color)
-    }
-
-    override val layoutType: IWidgetData.LayoutType
-        get() = IWidgetData.LayoutType.fromInt(layoutPref())
+    override val layoutType: LayoutType
+        get() = LayoutType.fromInt(layoutPref())
 
     @LayoutRes fun stockViewLayout(): Int {
         return when (layoutPref()) {
@@ -282,9 +262,6 @@ class WidgetData : IWidgetData {
             else -> R.layout.stockview4
         }
     }
-
-    @get:DrawableRes override val backgroundResource: Int
-        get() = backgroundResource()
 
     @DrawableRes
     fun backgroundResource(): Int {
@@ -339,9 +316,6 @@ class WidgetData : IWidgetData {
         save()
     }
 
-    override val hideHeader: Boolean
-        get() = readHideHeader()
-
     fun readHideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
 
     fun setHideHeader(hide: Boolean) {
@@ -350,9 +324,6 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
     }
-
-    override val isBoldEnabled: Boolean
-        get() = readIsBoldEnabled()
 
     fun readIsBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
 
@@ -451,8 +422,10 @@ class WidgetData : IWidgetData {
     fun toImmutableData(): ImmutableWidgetData {
         return ImmutableWidgetData(
             widgetId, widgetName(), autoSortEnabled(), readIsBoldEnabled(),
-            readHideHeader(), readIsCurrencyEnabled(), layoutPref(), widgetSizePref(), bgPref(), textColorPref(),
-            backgroundResource, widgetTextColor.value, changeType, layoutType, fontSize,
+            readHideHeader(), readIsCurrencyEnabled(), nightMode,
+            layoutPref(), widgetSizePref(), bgPref(), textColorPref(),
+            changeType(), layoutType, readFontSize(), backgroundResource(), positiveTextColor, negativeTextColor, textColorRes(),
+            stockViewLayout()
         )
     }
 
@@ -506,103 +479,39 @@ class WidgetData : IWidgetData {
         val boldText: Boolean,
         val hideWidgetHeader: Boolean,
         val showCurrency: Boolean,
+        val isDarkMode: Boolean,
         val typePref: Int,
         val sizePref: Int,
         val backgroundPref: Int,
         val textColourPref: Int,
-        @get:DrawableRes
-        val backgroundResource: Int,
-        @get:ColorInt val textColor: ULong,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
         val fontSize: Float,
+        @param:DrawableRes
+        @get:DrawableRes
+        val backgroundResource: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val positiveTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val negativeTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val textColor: Int,
+        @param:LayoutRes
+        @get:LayoutRes
+        val stockViewLayout: Int,
     ) : Parcelable {
 
         val singleStockPerRow: Boolean
             get() = sizePref > 0
 
-        val widgetTextColor: Color
-            get() = Color(textColor)
-
-        @LayoutRes fun stockViewLayout(): Int {
-            return when (typePref) {
-                0 -> R.layout.stockview
-                1 -> R.layout.stockview2
-                2 -> R.layout.stockview3
-                else -> R.layout.stockview4
-            }
-        }
-
-        @DrawableRes
-        fun backgroundResource(): Int {
-            return when {
-                backgroundPref == TRANSPARENT -> {
-                    R.drawable.transparent_widget_bg
-                }
-                backgroundPref == TRANSLUCENT -> {
-                    R.drawable.translucent_widget_bg
-                }
-                Injector.appComponent().appPreferences().nightMode == AppCompatDelegate.MODE_NIGHT_YES -> {
-                    R.drawable.app_widget_background_dark
-                }
-                else -> {
-                    R.drawable.app_widget_background
-                }
-            }
-        }
-
-        @ColorInt fun textColor(
-            context: Context
-        ): Int {
-            val appPreferences = Injector.appComponent().appPreferences()
-            val pref = textColourPref
-            return if (pref == SYSTEM) {
-                if (appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-                    ContextCompat.getColor(context, R.color.dark_widget_text)
-                } else {
-                    ContextCompat.getColor(context, R.color.widget_text)
-                }
-            } else if (pref == DARK) {
-                ContextCompat.getColor(context, R.color.widget_text_black)
-            } else if (pref == LIGHT) {
-                ContextCompat.getColor(context, R.color.widget_text_white)
-            } else {
-                ContextCompat.getColor(context, R.color.widget_text)
-            }
-        }
-
-        fun positiveTextColor(): Int {
-            val appPreferences = Injector.appComponent().appPreferences()
-            return when (textColourPref) {
-                SYSTEM -> {
-                    if (appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
-                    ) {
-                        R.color.text_widget_positive_light
-                    } else {
-                        R.color.text_widget_positive
-                    }
-                }
-                DARK -> {
-                    R.color.text_widget_positive_dark
-                }
-                LIGHT -> {
-                    R.color.text_widget_positive_light
-                }
-                else -> {
-                    R.color.text_widget_positive
-                }
-            }
-        }
-
-        fun negativeTextColor(): Int {
-            return R.color.text_widget_negative
-        }
-
         fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color {
             return if (change < 0f || changeInPercent < 0f) {
-                Color(ContextCompat.getColor(context, negativeTextColor()))
+                Color(ContextCompat.getColor(context, negativeTextColor))
             } else {
-                Color(ContextCompat.getColor(context, positiveTextColor()))
+                Color(ContextCompat.getColor(context, positiveTextColor))
             }
         }
     }

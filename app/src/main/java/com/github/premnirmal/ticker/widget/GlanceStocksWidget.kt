@@ -2,12 +2,11 @@ package com.github.premnirmal.ticker.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.content.Intent
 import android.widget.RemoteViews
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -15,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.glance.ColorFilter
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
+import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
@@ -27,7 +27,6 @@ import androidx.glance.appwidget.AndroidRemoteViews
 import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
-import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
@@ -65,29 +64,13 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.Boolean
 import kotlin.random.Random
-
-class StockWidget : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = GlanceStocksWidget()
-
-    override fun onReceive(context: Context, intent: Intent) {
-        super.onReceive(context, intent)
-        if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
-            CoroutineScope(Dispatchers.Default).launch {
-                glanceAppWidget.updateAll(context)
-            }
-        }
-    }
-}
 
 class GlanceStocksWidget : GlanceAppWidget() {
 
@@ -107,8 +90,6 @@ class GlanceStocksWidget : GlanceAppWidget() {
 
     override val sizeMode = SizeMode.Exact
 
-
-
     override suspend fun provideGlance(
         context: Context,
         id: GlanceId,
@@ -118,12 +99,22 @@ class GlanceStocksWidget : GlanceAppWidget() {
             injected = true
         }
         val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-        val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
         provideContent {
-            val quotes by widgetData.stocks.collectAsState()
-            val fetchState by stocksProvider.fetchState.collectAsState()
-            val refreshing by appPreferences.isRefreshing.collectAsState()
-            val data by widgetData.data.collectAsState()
+            val widgetData = remember(stocksProvider, widgetDataProvider) {
+                widgetDataProvider.dataForWidgetId(appWidgetId)
+            }
+            Content(widgetData)
+        }
+    }
+
+    @Composable
+    private fun Content(widgetData: IWidgetData) {
+        val quotes by widgetData.stocks.collectAsState()
+        val fetchState by stocksProvider.fetchState.collectAsState()
+        val refreshing by appPreferences.isRefreshing.collectAsState()
+        val data by widgetData.data.collectAsState()
+        val colors = WidgetColors.colors()
+        GlanceTheme(colors = colors) {
             GlanceWidget(fetchState, data, quotes, refreshing)
         }
     }
@@ -146,10 +137,11 @@ fun GlanceWidget(
         width > 250 -> 2
         else -> 1
     }
+
     Box(
-        modifier = GlanceModifier.fillMaxSize().background(
-            ImageProvider(widgetData.backgroundResource())
-        ).padding(horizontal = 2.dp)
+        modifier = GlanceModifier.fillMaxSize()
+            .background(ImageProvider(widgetData.backgroundResource))
+            .padding(horizontal = 2.dp)
     ) {
         Column(
             modifier = GlanceModifier.fillMaxSize().padding(6.dp)
@@ -186,9 +178,9 @@ private fun QuotesGrid(
     quotes: List<Quote>,
 ) {
     val context = LocalContext.current
-    val textColor = widgetData.widgetTextColor
+    val changeType = remember(widgetData) { widgetData.changeType }
+    val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
-    val changeType = widgetData.changeType
     LazyVerticalGrid(
         modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
@@ -213,7 +205,7 @@ private fun QuotesGrid(
             } else {
                 changeValueFormatted
             }
-            val changeColor = widgetData.getChangeColor(context, change, changeInPercent)
+            val changeColor = ColorProvider(widgetData.getChangeColor(context, change, changeInPercent))
 
             if (layoutType == IWidgetData.LayoutType.MyPortfolio) {
                 MyPortfolio(
@@ -235,7 +227,7 @@ private fun QuotesGrid(
                         ),
                         text = displayName,
                         style = TextStyle(
-                            color = ColorProvider(textColor),
+                            color = textColor,
                             fontSize = TextUnit(fontSize, TextUnitType.Sp),
                             textAlign = TextAlign.Start,
                             fontWeight = FontWeight.Medium,
@@ -243,7 +235,7 @@ private fun QuotesGrid(
                         maxLines = 1,
                     )
                     Text(
-                        modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp).clickable(
+                        modifier = GlanceModifier.padding(horizontal = 2.dp).clickable(
                             actionStartActivity<HomeActivity>(
                                 // actionParametersOf(
                                 //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
@@ -252,7 +244,7 @@ private fun QuotesGrid(
                         ),
                         text = priceFormatted,
                         style = TextStyle(
-                            color = ColorProvider(textColor),
+                            color = textColor,
                             fontSize = TextUnit(fontSize, TextUnitType.Sp),
                             fontWeight = FontWeight.Normal,
                             textAlign = TextAlign.End,
@@ -278,7 +270,7 @@ private fun QuotesGrid(
                                     modifier = GlanceModifier,
                                     text = changeValueFormatted,
                                     style = TextStyle(
-                                        color = ColorProvider(changeColor),
+                                        color = changeColor,
                                         fontSize = TextUnit(fontSize, TextUnitType.Sp),
                                         fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
                                         textAlign = TextAlign.End,
@@ -289,7 +281,7 @@ private fun QuotesGrid(
                                     modifier = GlanceModifier,
                                     text = changePercentFormatted,
                                     style = TextStyle(
-                                        color = ColorProvider(changeColor),
+                                        color = changeColor,
                                         fontSize = TextUnit(fontSize, TextUnitType.Sp),
                                         fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
                                         textAlign = TextAlign.End,
@@ -304,7 +296,7 @@ private fun QuotesGrid(
                                 .clickable(actionRunCallback<FlipTextCallback>()),
                             text = changeFormatted,
                             style = TextStyle(
-                                color = ColorProvider(changeColor),
+                                color = changeColor,
                                 fontSize = TextUnit(fontSize, TextUnitType.Sp),
                                 fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
                                 textAlign = TextAlign.End,
@@ -318,7 +310,7 @@ private fun QuotesGrid(
                                     .clickable(actionRunCallback<FlipTextCallback>()),
                                 text = changePercentFormatted,
                                 style = TextStyle(
-                                    color = ColorProvider(changeColor),
+                                    color = changeColor,
                                     fontSize = TextUnit(fontSize, TextUnitType.Sp),
                                     fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
                                     textAlign = TextAlign.End,
@@ -387,7 +379,7 @@ private fun MyPortfolio(
     widgetData: WidgetData.ImmutableWidgetData,
 ) {
     val context = LocalContext.current
-    val textColor = widgetData.widgetTextColor
+    val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
     val gainLossFormatted = stock.gainLossString()
     val gainLossPercentFormatted = stock.gainLossPercentString()
@@ -403,7 +395,7 @@ private fun MyPortfolio(
     }
     val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
     val gainLoss = stock.gainLoss()
-    val gainLossColor = widgetData.getChangeColor(context, gainLoss, gainLoss)
+    val gainLossColor = ColorProvider(widgetData.getChangeColor(context, gainLoss, gainLoss))
     Column(modifier = GlanceModifier.fillMaxSize()
         .clickable(
             actionStartActivity<HomeActivity>(
@@ -418,7 +410,7 @@ private fun MyPortfolio(
                 modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
                 text = displayName,
                 style = TextStyle(
-                    color = ColorProvider(textColor),
+                    color = textColor,
                     fontSize = TextUnit(fontSize, TextUnitType.Sp),
                     textAlign = TextAlign.Start,
                     fontWeight = FontWeight.Medium,
@@ -429,7 +421,7 @@ private fun MyPortfolio(
                 modifier = GlanceModifier.padding(end = 2.dp),
                 text = holdingsFormatted,
                 style = TextStyle(
-                    color = ColorProvider(textColor),
+                    color = textColor,
                     fontSize = TextUnit(fontSize, TextUnitType.Sp),
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.Normal,
@@ -440,7 +432,7 @@ private fun MyPortfolio(
                 modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
                 text = gainLossFormatted,
                 style = TextStyle(
-                    color = ColorProvider(gainLossColor),
+                    color = gainLossColor,
                     fontSize = TextUnit(fontSize, TextUnitType.Sp),
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.Normal,
@@ -451,7 +443,7 @@ private fun MyPortfolio(
                 modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
                 text = gainLossPercentFormatted,
                 style = TextStyle(
-                    color = ColorProvider(gainLossColor),
+                    color = gainLossColor,
                     fontSize = TextUnit(fontSize, TextUnitType.Sp),
                     textAlign = TextAlign.End,
                     fontWeight = FontWeight.Normal,
@@ -465,7 +457,7 @@ private fun MyPortfolio(
                 modifier = GlanceModifier.defaultWeight(),
                 text = priceFormatted,
                 style = TextStyle(
-                    color = ColorProvider(textColor),
+                    color = textColor,
                     fontSize = TextUnit(fontSize, TextUnitType.Sp),
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Start,
@@ -484,7 +476,6 @@ private fun WidgetSingleColumnPreview() {
     Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
         val widgetData = PreviewWidgetData(
             layoutType = IWidgetData.LayoutType.Fixed,
-            isCurrencyEnabled = false,
         )
         val data by widgetData.data.collectAsState()
         GlanceWidget(
@@ -502,7 +493,6 @@ private fun WidgetEmptyPreview() {
     Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
         val widgetData = PreviewWidgetData(
             layoutType = IWidgetData.LayoutType.Fixed,
-            isCurrencyEnabled = false,
         )
         val data by widgetData.data.collectAsState()
         GlanceWidget(
@@ -520,7 +510,6 @@ private fun WidgetFixedPreview() {
     Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
         val widgetData = PreviewWidgetData(
             layoutType = IWidgetData.LayoutType.Fixed,
-            isCurrencyEnabled = false,
         )
         val data by widgetData.data.collectAsState()
         GlanceWidget(
@@ -538,7 +527,6 @@ private fun WidgetAnimatedPreview() {
     Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
         val widgetData = PreviewWidgetData(
             layoutType = IWidgetData.LayoutType.Animated,
-            isCurrencyEnabled = false,
         )
         val data by widgetData.data.collectAsState()
         GlanceWidget(
@@ -556,7 +544,6 @@ private fun WidgetTabsPreview() {
     Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
         val widgetData = PreviewWidgetData(
             layoutType = IWidgetData.LayoutType.Tabs,
-            isCurrencyEnabled = false,
         )
         val data by widgetData.data.collectAsState()
         GlanceWidget(
@@ -574,7 +561,6 @@ private fun WidgetMyPortfolioPreview() {
     Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
         val widgetData = PreviewWidgetData(
             layoutType = IWidgetData.LayoutType.MyPortfolio,
-            isCurrencyEnabled = false,
         )
         val data by widgetData.data.collectAsState()
         GlanceWidget(
@@ -619,10 +605,8 @@ private fun fakePosition(symbol: String): Position {
 }
 
 private class PreviewWidgetData(
-    override val widgetTextColor: Color = Color.Black,
+    override val stocks: StateFlow<List<Quote>> = MutableStateFlow(emptyList()),
     override val layoutType: IWidgetData.LayoutType = IWidgetData.LayoutType.Fixed,
-    override val isCurrencyEnabled: Boolean = false,
-    override val isBoldEnabled: Boolean = false,
     override val changeType: IWidgetData.ChangeType = IWidgetData.ChangeType.Percent,
     override val data: StateFlow<WidgetData.ImmutableWidgetData> = MutableStateFlow(
         WidgetData.ImmutableWidgetData(
@@ -638,20 +622,18 @@ private class PreviewWidgetData(
             sizePref = 0,
             backgroundPref = 0,
             textColourPref = 0,
-            backgroundResource = R.drawable.app_widget_background,
-            textColor = Color.Black.value,
             fontSize = 12f,
+            isDarkMode = false,
+            negativeTextColor = R.color.text_widget_negative,
+            positiveTextColor = R.color.text_widget_positive,
+            textColor = R.color.widget_text,
+            stockViewLayout = R.layout.stockview,
+            backgroundResource = R.drawable.app_widget_background,
         )
     ),
-    @param:DrawableRes
-    @get:DrawableRes
-    @field:DrawableRes
-    override val backgroundResource: Int = R.drawable.app_widget_background,
-    override val fontSize: Float = 12f,
 ) : IWidgetData {
     override val widgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID
     override val widgetName: String = "Preview widget"
-    override val hideHeader: Boolean = false
     override fun getChangeColor(
         context: Context,
         change: Float,
@@ -664,9 +646,6 @@ private class PreviewWidgetData(
 }
 
 class RefreshCallback : ActionCallback {
-
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
     @Inject
     internal lateinit var stocksProvider: StocksProvider
     @Inject
@@ -687,9 +666,7 @@ class RefreshCallback : ActionCallback {
             val fetchTask = async {
                 stocksProvider.fetch()
             }
-            val glanceAppWidgetManager = GlanceAppWidgetManager(context)
-            val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
-            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
+            GlanceStocksWidget().updateAll(context)
             fetchTask.await()
         }
     }
@@ -714,6 +691,6 @@ class FlipTextCallback : ActionCallback {
         val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
         val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
         widgetData.flipChange()
-        widgetDataProvider.broadcastUpdateWidget(appWidgetId)
+        GlanceStocksWidget().updateAll(context)
     }
 }

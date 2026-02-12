@@ -110,11 +110,7 @@ class WidgetDataProvider @Inject constructor(
     suspend fun broadcastUpdateWidget(widgetId: Int) {
         refreshWidgetDataList()
         if (USE_GLANCE) {
-            val intent = Intent(context, StockWidget::class.java)
-            intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            val ids = arrayOf(widgetId).toIntArray()
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-            context.sendBroadcast(intent)
+            GlanceStocksWidget().updateAll(context)
             if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
                 try {
                     GlanceStocksWidget().update(context, glanceAppWidgetManager.getGlanceIdBy(widgetId))
@@ -134,11 +130,6 @@ class WidgetDataProvider @Inject constructor(
     suspend fun broadcastUpdateAllWidgets() {
         refreshWidgetDataList()
         if (USE_GLANCE) {
-            val intent = Intent(context, StockWidget::class.java)
-            intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            val ids = getAppWidgetIds()
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-            context.sendBroadcast(intent)
             GlanceStocksWidget().updateAll(context)
         } else {
             val intent = Intent(context, StockWidgetOld::class.java)
