@@ -68,23 +68,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.Boolean
 import kotlin.random.Random
 
-class GlanceStocksWidgetReceiver : GlanceAppWidgetReceiver() {
+class StockWidget : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = GlanceStocksWidget()
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         if (intent.action == AppWidgetManager.ACTION_APPWIDGET_UPDATE) {
             CoroutineScope(Dispatchers.Default).launch {
-                GlanceStocksWidget().updateAll(context)
+                glanceAppWidget.updateAll(context)
             }
         }
     }

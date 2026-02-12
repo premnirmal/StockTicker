@@ -22,7 +22,7 @@ import javax.inject.Inject
  * Created by premnirmal on 2/27/16.
  */
 @Deprecated("Replaced by GlanceStocksWidget")
-class StockWidget : AppWidgetProvider() {
+class StockWidgetOld : AppWidgetProvider() {
 
     companion object {
         const val ACTION_NAME = "OPEN_APP"

@@ -14,6 +14,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
+@Deprecated("Replaced by GlanceStocksWidget")
 class WidgetClickReceiver : BroadcastReceiver() {
 
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider

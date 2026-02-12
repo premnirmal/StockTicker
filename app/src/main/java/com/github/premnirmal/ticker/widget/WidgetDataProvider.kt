@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -49,7 +48,7 @@ class WidgetDataProvider @Inject constructor(
                 }.toIntArray()
             }
         } else {
-            widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+            widgetManager.getAppWidgetIds(ComponentName(context, StockWidgetOld::class.java))
         }
     }
 
@@ -112,7 +111,7 @@ class WidgetDataProvider @Inject constructor(
         if (USE_GLANCE) {
             GlanceStocksWidget().updateAll(context)
         } else {
-            val intent = Intent(context, StockWidget::class.java)
+            val intent = Intent(context, StockWidgetOld::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
             val ids = arrayOf(widgetId).toIntArray()
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
@@ -125,9 +124,9 @@ class WidgetDataProvider @Inject constructor(
         if (USE_GLANCE) {
             GlanceStocksWidget().updateAll(context)
         } else {
-            val intent = Intent(context, StockWidget::class.java)
+            val intent = Intent(context, StockWidgetOld::class.java)
             intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidget::class.java))
+            val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidgetOld::class.java))
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
             context.sendBroadcast(intent)
         }

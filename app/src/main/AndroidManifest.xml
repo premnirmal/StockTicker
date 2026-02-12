@@ -121,7 +121,7 @@
 <!--            android:permission="android.permission.BIND_REMOTEVIEWS" />-->
 
         <!-- Glance Widget -->
-        <receiver android:name="com.github.premnirmal.ticker.widget.GlanceStocksWidgetReceiver"
+        <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:exported="true"
             android:label="@string/widget_label">
             <intent-filter>
@@ -129,7 +129,7 @@
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/glance_stocks_widget" />
+                android:resource="@xml/widget" />
         </receiver>
 
         <!-- File provider -->

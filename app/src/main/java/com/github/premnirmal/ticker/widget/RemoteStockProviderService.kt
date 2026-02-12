@@ -7,6 +7,7 @@ import android.widget.RemoteViewsService
 /**
  * Created by premnirmal on 2/27/16.
  */
+@Deprecated("Replaced by GlanceStocksWidget")
 class RemoteStockProviderService : RemoteViewsService() {
 
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {

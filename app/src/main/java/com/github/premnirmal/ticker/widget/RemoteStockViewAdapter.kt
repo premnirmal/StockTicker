@@ -23,6 +23,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
+@Deprecated("Replaced by GlanceStocksWidget")
 class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.RemoteViewsFactory {
 
     private val quotes: MutableList<Quote>
