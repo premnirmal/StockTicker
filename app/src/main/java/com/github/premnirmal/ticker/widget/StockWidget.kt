@@ -21,6 +21,7 @@ import javax.inject.Inject
 /**
  * Created by premnirmal on 2/27/16.
  */
+@Deprecated("Replaced by GlanceStocksWidget")
 class StockWidget : AppWidgetProvider() {
 
     companion object {
@@ -178,7 +179,7 @@ class StockWidget : AppWidgetProvider() {
             remoteViews.setViewVisibility(R.id.refresh_icon, View.VISIBLE)
         }
         // Show/hide header
-        val hideHeader = widgetData.hideHeader()
+        val hideHeader = widgetData.readHideHeader()
         if (hideHeader) {
             remoteViews.setViewVisibility(R.id.widget_header, View.GONE)
         } else {

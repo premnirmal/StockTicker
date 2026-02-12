@@ -184,7 +184,7 @@ fun HomeNavigationRail(
 ) {
     NavigationRail(
         modifier = Modifier.fillMaxHeight(),
-        containerColor = MaterialTheme.colorScheme.inverseOnSurface
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
         // TODO remove custom nav rail positioning when NavRail component supports it
         Layout(

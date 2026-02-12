@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType
+import com.github.premnirmal.ticker.widget.IWidgetData.ChangeType
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
@@ -70,7 +70,7 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
             val changePercentFormatted = stock.changePercentString()
             val gainLossFormatted = stock.gainLossString()
             val gainLossPercentFormatted = stock.gainLossPercentString()
-            val priceFormatted = if (widgetData.isCurrencyEnabled()) {
+            val priceFormatted = if (widgetData.readIsCurrencyEnabled()) {
                 stock.priceFormat.format(stock.lastTradePrice)
             } else {
                 stock.priceString()
@@ -94,14 +94,14 @@ class RemoteStockViewAdapter(private val widgetId: Int) : RemoteViewsService.Rem
 
             remoteViews.setTextViewText(
                 R.id.holdings,
-                if (widgetData.isCurrencyEnabled()) {
+                if (widgetData.readIsCurrencyEnabled()) {
                     stock.priceFormat.format(stock.holdings())
                 } else {
                     stock.holdingsString()
                 }
             )
 
-            if (widgetData.isBoldEnabled()) {
+            if (widgetData.readIsBoldEnabled()) {
                 changePercentString.setSpan(
                     StyleSpan(Typeface.BOLD),
                     0,

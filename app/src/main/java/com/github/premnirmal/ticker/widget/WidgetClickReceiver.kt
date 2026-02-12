@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.ClickEvent
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.home.HomeActivity
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 /**
@@ -28,7 +29,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
             val widgetId = intent.getIntExtra(WIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID)
             val widgetData = widgetDataProvider.dataForWidgetId(widgetId)
             widgetData.flipChange()
-            widgetDataProvider.broadcastUpdateWidget(widgetId)
+            runBlocking { widgetDataProvider.broadcastUpdateWidget(widgetId) }
             analytics.trackClickEvent(ClickEvent("WidgetFlipClick"))
         } else {
             val startActivityIntent = Intent(context, HomeActivity::class.java)

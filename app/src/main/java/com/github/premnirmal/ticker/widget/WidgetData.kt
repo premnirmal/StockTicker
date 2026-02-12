@@ -8,6 +8,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
@@ -15,11 +16,14 @@ import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedStr
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import kotlin.collections.sortByDescending
@@ -44,11 +48,6 @@ class WidgetData : IWidgetData {
         private const val SYSTEM = AppPreferences.SYSTEM
         private const val DARK = AppPreferences.DARK
         private const val LIGHT = AppPreferences.LIGHT
-
-        enum class ChangeType {
-            Value,
-            Percent
-        }
     }
 
     @Inject internal lateinit var stocksProvider: StocksProvider
@@ -78,6 +77,9 @@ class WidgetData : IWidgetData {
     val changeFlow: StateFlow<ImmutableWidgetData>
         get() = _changeFlow
     private val _changeFlow by lazy { MutableStateFlow(toImmutableData()) }
+
+    override val data: StateFlow<ImmutableWidgetData>
+        get() = _changeFlow
 
     constructor(
         position: Int,
@@ -165,9 +167,15 @@ class WidgetData : IWidgetData {
         widgetDataProvider.refreshWidgetDataList()
     }
 
-    fun changeType(): ChangeType {
+    override val changeType: IWidgetData.ChangeType
+        get() = changeType()
+
+    override val isCurrencyEnabled: Boolean
+        get() = readIsCurrencyEnabled()
+
+    fun changeType(): IWidgetData.ChangeType {
         val state = preferences.getBoolean(PERCENT, false)
-        return if (state) ChangeType.Percent else ChangeType.Value
+        return if (state) IWidgetData.ChangeType.Percent else IWidgetData.ChangeType.Value
     }
 
     fun flipChange() {
@@ -178,6 +186,9 @@ class WidgetData : IWidgetData {
         _changeFlow.value = toImmutableData()
     }
 
+    val singleStockPerRow: Boolean
+        get() = widgetSizePref() > 0
+
     fun widgetSizePref(): Int = preferences.getInt(WIDGET_SIZE, 0)
 
     fun setWidgetSizePref(value: Int) {
@@ -185,6 +196,32 @@ class WidgetData : IWidgetData {
             putInt(WIDGET_SIZE, value)
         }
         _changeFlow.value = toImmutableData()
+    }
+
+    override val fontSize: Float
+        get() = readFontSize()
+
+    fun readFontSize(): Float {
+        val size = appPreferences.textSizePref
+        val resId = when (size) {
+            -2 -> R.integer.text_size_nano
+            -1 -> R.integer.text_size_mini
+            0 -> R.integer.text_size_small
+            1 -> R.integer.text_size_medium
+            2 -> R.integer.text_size_large
+            3 -> R.integer.text_size_huge
+            4 -> R.integer.text_size_giant
+            else -> R.integer.text_size_medium
+        }
+        return context.resources.getInteger(resId).toFloat() - 2f
+    }
+
+    override fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color {
+        return if (change < 0f || changeInPercent < 0f) {
+            Color(ContextCompat.getColor(context, negativeTextColor))
+        } else {
+            Color(ContextCompat.getColor(context, positiveTextColor))
+        }
     }
 
     fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)
@@ -213,6 +250,30 @@ class WidgetData : IWidgetData {
         }
     }
 
+    override val widgetTextColor: Color
+        get() = widgetTextColor()
+
+    @ColorInt fun widgetTextColor(): Color {
+        val pref = textColorPref()
+        val color = if (pref == SYSTEM) {
+            if (nightMode) {
+                ContextCompat.getColor(context, R.color.dark_widget_text)
+            } else {
+                ContextCompat.getColor(context, R.color.widget_text)
+            }
+        } else if (pref == DARK) {
+            ContextCompat.getColor(context, R.color.widget_text_black)
+        } else if (pref == LIGHT) {
+            ContextCompat.getColor(context, R.color.widget_text_white)
+        } else {
+            ContextCompat.getColor(context, R.color.widget_text)
+        }
+        return Color(color)
+    }
+
+    override val layoutType: IWidgetData.LayoutType
+        get() = IWidgetData.LayoutType.fromInt(layoutPref())
+
     @LayoutRes fun stockViewLayout(): Int {
         return when (layoutPref()) {
             0 -> R.layout.stockview
@@ -221,6 +282,9 @@ class WidgetData : IWidgetData {
             else -> R.layout.stockview4
         }
     }
+
+    @get:DrawableRes override val backgroundResource: Int
+        get() = backgroundResource()
 
     @DrawableRes
     fun backgroundResource(): Int {
@@ -275,7 +339,10 @@ class WidgetData : IWidgetData {
         save()
     }
 
-    fun hideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
+    override val hideHeader: Boolean
+        get() = readHideHeader()
+
+    fun readHideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
 
     fun setHideHeader(hide: Boolean) {
         preferences.edit {
@@ -284,7 +351,10 @@ class WidgetData : IWidgetData {
         _changeFlow.value = toImmutableData()
     }
 
-    fun isBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
+    override val isBoldEnabled: Boolean
+        get() = readIsBoldEnabled()
+
+    fun readIsBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
 
     fun setBoldEnabled(value: Boolean) {
         preferences.edit {
@@ -293,7 +363,7 @@ class WidgetData : IWidgetData {
         _changeFlow.value = toImmutableData()
     }
 
-    fun isCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
+    fun readIsCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
 
     fun setCurrencyEnabled(value: Boolean) {
         preferences.edit {
@@ -380,9 +450,9 @@ class WidgetData : IWidgetData {
 
     fun toImmutableData(): ImmutableWidgetData {
         return ImmutableWidgetData(
-            widgetId, widgetName(), autoSortEnabled(), isBoldEnabled(),
-            hideHeader(), isCurrencyEnabled(), layoutPref(), widgetSizePref(), bgPref(), textColorPref(),
-            changeType()
+            widgetId, widgetName(), autoSortEnabled(), readIsBoldEnabled(),
+            readHideHeader(), readIsCurrencyEnabled(), layoutPref(), widgetSizePref(), bgPref(), textColorPref(),
+            backgroundResource, widgetTextColor.value, changeType, layoutType, fontSize,
         )
     }
 
@@ -440,8 +510,19 @@ class WidgetData : IWidgetData {
         val sizePref: Int,
         val backgroundPref: Int,
         val textColourPref: Int,
-        val changeType: ChangeType
+        @get:DrawableRes
+        val backgroundResource: Int,
+        @get:ColorInt val textColor: ULong,
+        val changeType: IWidgetData.ChangeType,
+        val layoutType: LayoutType,
+        val fontSize: Float,
     ) : Parcelable {
+
+        val singleStockPerRow: Boolean
+            get() = sizePref > 0
+
+        val widgetTextColor: Color
+            get() = Color(textColor)
 
         @LayoutRes fun stockViewLayout(): Int {
             return when (typePref) {
@@ -515,6 +596,14 @@ class WidgetData : IWidgetData {
 
         fun negativeTextColor(): Int {
             return R.color.text_widget_negative
+        }
+
+        fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color {
+            return if (change < 0f || changeInPercent < 0f) {
+                Color(ContextCompat.getColor(context, negativeTextColor()))
+            } else {
+                Color(ContextCompat.getColor(context, positiveTextColor()))
+            }
         }
     }
 }

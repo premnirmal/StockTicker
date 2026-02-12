@@ -23,6 +23,7 @@ detekt = "1.23.8"
 detektCompose = "0.5.2"
 reorderable = "3.0.0"
 material3 = "1.4.0"
+glanceAppwidget = "1.1.1"
 
 [libraries]
 
@@ -36,6 +37,10 @@ androidx-compose-foundation = { module = "androidx.compose.foundation:foundation
 androidx-compose-ui-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "androidx-compose-base" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "androidx-compose-base" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "androidx-compose-base" }
+androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceAppwidget" }
+androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glanceAppwidget" }
+androidx-glance-appwidget-preview = { module = "androidx.glance:glance-appwidget-preview", version.ref = "glanceAppwidget" }
+androidx-glance-preview = { module = "androidx.glance:glance-preview", version.ref = "glanceAppwidget" }
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidx-room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }

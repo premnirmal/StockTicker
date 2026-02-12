@@ -212,7 +212,7 @@ class SettingsViewModel @Inject constructor(
         )
     }
 
-    private fun broadcastUpdateWidget() {
+    private suspend fun broadcastUpdateWidget() {
         widgetDataProvider.broadcastUpdateAllWidgets()
     }
 

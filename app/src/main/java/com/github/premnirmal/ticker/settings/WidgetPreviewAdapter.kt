@@ -12,7 +12,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
-import com.github.premnirmal.ticker.widget.WidgetData.Companion.ChangeType.Percent
+import com.github.premnirmal.ticker.widget.IWidgetData.ChangeType.Percent
 import com.github.premnirmal.ticker.widget.WidgetData.ImmutableWidgetData
 import com.github.premnirmal.tickerwidget.R
 

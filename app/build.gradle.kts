@@ -47,12 +47,11 @@ repositories {
 android {
   val getVersionName = { ->
     ByteArrayOutputStream().use { outputStream ->
-      val stdout = outputStream
       exec {
         commandLine("git", "describe", "--tags", "--abbrev=0")
-        standardOutput = stdout
+          standardOutput = outputStream
       }
-      stdout.toString().trim()
+        outputStream.toString().trim()
     }
   }
 
@@ -63,7 +62,7 @@ android {
           if (Os.isFamily(Os.FAMILY_WINDOWS)) {
             commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
           } else {
-            commandLine("sh", "-c", "git tag --sort=-committerdate | head -10 | tail -1")
+            commandLine("sh", "-c", "git tag --sort=-committerdate | head -15 | tail -1")
           }
           standardOutput = stdout
         }
@@ -148,7 +147,7 @@ android {
   productFlavors {
     create("dev") {
       dimension = "mobile"
-      applicationId = appIdBase + ".dev"
+      applicationId = "$appIdBase.dev"
     }
     create("prod") {
       dimension = "mobile"
@@ -235,6 +234,10 @@ dependencies {
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.android)
   implementation(libs.androidx.compose.ui.tooling.preview)
+  implementation(libs.androidx.glance.appwidget)
+  implementation(libs.androidx.glance.material3)
+  implementation(libs.androidx.glance.appwidget.preview)
+  implementation(libs.androidx.glance.preview)
   debugImplementation(libs.androidx.compose.ui.tooling)
   implementation(AndroidX.lifecycle.viewModelCompose)
   implementation(AndroidX.compose.material3.windowSizeClass)
@@ -318,13 +321,13 @@ dependencies {
 // Remove google play services and crashlytics plugin for non prod builds
 android {
   androidComponents {
-    onVariants {
-      println("Variant: ${it.name}, buildType: ${it.buildType}, flavor: ${it.flavorName}")
-      if (!it.name.lowercase(Locale.getDefault()).contains("prod")) {
+    onVariants { variant ->
+      println("Variant: ${variant.name}, buildType: ${variant.buildType}, flavor: ${variant.flavorName}")
+      if (!variant.name.lowercase(Locale.getDefault()).contains("prod")) {
         val googleTask =
-          tasks.findByName("process${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}GoogleServices")
+          tasks.findByName("process${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}GoogleServices")
         val crashlyticsMappingTask =
-          tasks.findByName("uploadCrashlyticsMappingFile${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}")
+          tasks.findByName("uploadCrashlyticsMappingFile${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}")
         googleTask?.let {
           println("disabling ${googleTask.name}")
           googleTask.enabled = false
