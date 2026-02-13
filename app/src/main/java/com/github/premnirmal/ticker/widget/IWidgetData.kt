@@ -21,7 +21,8 @@ interface IWidgetData {
 
     fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color
 
-
+    fun flipChange() {}
+    fun fetchStocks() {}
 
     enum class ChangeType {
         Value,

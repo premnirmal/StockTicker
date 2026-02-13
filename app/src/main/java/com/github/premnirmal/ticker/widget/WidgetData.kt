@@ -20,8 +20,10 @@ import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 import kotlin.collections.sortByDescending
@@ -178,7 +180,7 @@ class WidgetData : IWidgetData {
         return if (state) IWidgetData.ChangeType.Percent else IWidgetData.ChangeType.Value
     }
 
-    fun flipChange() {
+    override fun flipChange() {
         val state = preferences.getBoolean(PERCENT, false)
         preferences.edit {
             putBoolean(PERCENT, !state)
@@ -459,6 +461,17 @@ class WidgetData : IWidgetData {
         }
     }
 
+    override fun fetchStocks() {
+        coroutineScope.launch {
+            appPreferences.setRefreshing(true)
+            val fetchTask = async {
+                stocksProvider.fetch()
+            }
+            fetchTask.await()
+            refreshStocksList()
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is WidgetData) return false
@@ -507,11 +520,12 @@ class WidgetData : IWidgetData {
         val singleStockPerRow: Boolean
             get() = sizePref > 0
 
-        fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color {
+        @ColorRes
+        fun getChangeColor(change: Float, changeInPercent: Float): Int {
             return if (change < 0f || changeInPercent < 0f) {
-                Color(ContextCompat.getColor(context, negativeTextColor))
+                negativeTextColor
             } else {
-                Color(ContextCompat.getColor(context, positiveTextColor))
+                positiveTextColor
             }
         }
     }

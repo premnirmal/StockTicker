@@ -5,8 +5,11 @@ import android.content.Context
 import android.widget.RemoteViews
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -28,12 +31,9 @@ import androidx.glance.appwidget.CircularProgressIndicator
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
-import androidx.glance.appwidget.action.ActionCallback
-import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.GridCells
 import androidx.glance.appwidget.lazy.LazyVerticalGrid
 import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.updateAll
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
@@ -63,9 +63,6 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -82,9 +79,6 @@ class GlanceStocksWidget : GlanceAppWidget() {
 
     @Inject
     internal lateinit var appPreferences: AppPreferences
-
-    @Inject
-    internal lateinit var coroutineScope: CoroutineScope
 
     var injected = false
 
@@ -115,7 +109,18 @@ class GlanceStocksWidget : GlanceAppWidget() {
         val data by widgetData.data.collectAsState()
         val colors = WidgetColors.colors()
         GlanceTheme(colors = colors) {
-            GlanceWidget(fetchState, data, quotes, refreshing)
+            GlanceWidget(
+                fetchState = fetchState,
+                widgetData = data,
+                quotes = quotes,
+                refreshing = refreshing,
+                flipClick = {
+                    widgetData.flipChange()
+                },
+                refreshCallback = {
+                    widgetData.fetchStocks()
+                }
+            )
         }
     }
 }
@@ -126,6 +131,8 @@ fun GlanceWidget(
     widgetData: WidgetData.ImmutableWidgetData,
     quotes: List<Quote>,
     refreshing: Boolean = false,
+    flipClick: () -> Unit = {},
+    refreshCallback: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val size = LocalSize.current
@@ -144,7 +151,7 @@ fun GlanceWidget(
             .padding(horizontal = 2.dp)
     ) {
         Column(
-            modifier = GlanceModifier.fillMaxSize().padding(6.dp)
+            modifier = GlanceModifier.fillMaxSize()
         ) {
             if (quotes.isEmpty()) {
                 Box(
@@ -163,9 +170,9 @@ fun GlanceWidget(
                 }
             } else {
                 if (!widgetData.hideWidgetHeader) {
-                    Header(fetchState, widgetData, refreshing)
+                    Header(fetchState, widgetData, refreshing, refreshCallback)
                 }
-                QuotesGrid(columns, widgetData, quotes)
+                QuotesGrid(columns, widgetData, quotes, flipClick)
             }
         }
     }
@@ -176,13 +183,14 @@ private fun QuotesGrid(
     columns: Int,
     widgetData: WidgetData.ImmutableWidgetData,
     quotes: List<Quote>,
+    flipClick: () -> Unit,
 ) {
     val context = LocalContext.current
-    val changeType = remember(widgetData) { widgetData.changeType }
+    var changeType by remember { mutableStateOf(widgetData.changeType) }
     val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
     LazyVerticalGrid(
-        modifier = GlanceModifier,
+        modifier = GlanceModifier.padding(bottom = 6.dp),
         gridCells = GridCells.Fixed(columns),
     ) {
         val isBold = widgetData.boldText
@@ -200,12 +208,14 @@ private fun QuotesGrid(
             val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
             val change = stock.change
             val changeInPercent = stock.changeInPercent
-            val changeFormatted = if (changeType == IWidgetData.ChangeType.Percent) {
-                changePercentFormatted
-            } else {
-                changeValueFormatted
+            val changeFormatted by derivedStateOf {
+                if (changeType == IWidgetData.ChangeType.Percent) {
+                    changePercentFormatted
+                } else {
+                    changeValueFormatted
+                }
             }
-            val changeColor = ColorProvider(widgetData.getChangeColor(context, change, changeInPercent))
+            val changeColor = ColorProvider(widgetData.getChangeColor(change, changeInPercent))
 
             if (layoutType == IWidgetData.LayoutType.MyPortfolio) {
                 MyPortfolio(
@@ -214,7 +224,7 @@ private fun QuotesGrid(
                 )
             } else {
                 Row(
-                    modifier = GlanceModifier.fillMaxSize(),
+                    modifier = GlanceModifier.fillMaxSize().padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -291,9 +301,17 @@ private fun QuotesGrid(
                             }
                         }
                     } else {
+                        val flipClickCallback = {
+                            changeType = if (changeType == IWidgetData.ChangeType.Percent) {
+                                IWidgetData.ChangeType.Value
+                            } else {
+                                IWidgetData.ChangeType.Percent
+                            }
+                            flipClick.invoke()
+                        }
                         Text(
                             modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp)
-                                .clickable(actionRunCallback<FlipTextCallback>()),
+                                .clickable(flipClickCallback),
                             text = changeFormatted,
                             style = TextStyle(
                                 color = changeColor,
@@ -307,7 +325,7 @@ private fun QuotesGrid(
                         if (layoutType == IWidgetData.LayoutType.Tabs) {
                             Text(
                                 modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp)
-                                    .clickable(actionRunCallback<FlipTextCallback>()),
+                                    .clickable(flipClickCallback),
                                 text = changePercentFormatted,
                                 style = TextStyle(
                                     color = changeColor,
@@ -329,7 +347,8 @@ private fun QuotesGrid(
 private fun Header(
     fetchState: FetchState,
     widgetData: WidgetData.ImmutableWidgetData,
-    refreshing: Boolean
+    refreshing: Boolean,
+    refreshCallback: () -> Unit,
 ) {
     val context = LocalContext.current
     val lastUpdatedText = when (fetchState) {
@@ -338,12 +357,12 @@ private fun Header(
         else -> FetchState.NotFetched.displayString
     }
     Row(
-        modifier = GlanceModifier.fillMaxWidth(),
+        modifier = GlanceModifier.fillMaxWidth().padding(start = 6.dp, end = 6.dp, top = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val fontSize = widgetData.fontSize - 2f
         Text(
-            modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
+            modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp),
             text = lastUpdatedText,
             style = TextStyle(
                 color = ColorProvider(R.color.text_widget_header),
@@ -353,7 +372,7 @@ private fun Header(
             ),
         )
         Box(
-            modifier = GlanceModifier.wrapContentSize().clickable(actionRunCallback<RefreshCallback>()),
+            modifier = GlanceModifier.wrapContentSize().clickable(refreshCallback),
             contentAlignment = Alignment.Center,
         ) {
             if (refreshing) {
@@ -395,8 +414,8 @@ private fun MyPortfolio(
     }
     val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
     val gainLoss = stock.gainLoss()
-    val gainLossColor = ColorProvider(widgetData.getChangeColor(context, gainLoss, gainLoss))
-    Column(modifier = GlanceModifier.fillMaxSize()
+    val gainLossColor = ColorProvider(widgetData.getChangeColor(gainLoss, gainLoss))
+    Column(modifier = GlanceModifier.fillMaxSize().padding(horizontal = 4.dp)
         .clickable(
             actionStartActivity<HomeActivity>(
                 actionParametersOf(
@@ -608,6 +627,8 @@ private class PreviewWidgetData(
     override val stocks: StateFlow<List<Quote>> = MutableStateFlow(emptyList()),
     override val layoutType: IWidgetData.LayoutType = IWidgetData.LayoutType.Fixed,
     override val changeType: IWidgetData.ChangeType = IWidgetData.ChangeType.Percent,
+    override val widgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID,
+    override val widgetName: String = "Preview widget",
     override val data: StateFlow<WidgetData.ImmutableWidgetData> = MutableStateFlow(
         WidgetData.ImmutableWidgetData(
             id = AppWidgetManager.INVALID_APPWIDGET_ID,
@@ -632,8 +653,6 @@ private class PreviewWidgetData(
         )
     ),
 ) : IWidgetData {
-    override val widgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID
-    override val widgetName: String = "Preview widget"
     override fun getChangeColor(
         context: Context,
         change: Float,
@@ -642,55 +661,5 @@ private class PreviewWidgetData(
         Color.Red
     } else {
         Color.Green
-    }
-}
-
-class RefreshCallback : ActionCallback {
-    @Inject
-    internal lateinit var stocksProvider: StocksProvider
-    @Inject
-    internal lateinit var appPreferences: AppPreferences
-    var injected = false
-
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters
-    ) {
-        if (!injected) {
-            Injector.appComponent().inject(this)
-            injected = true
-        }
-        coroutineScope {
-            appPreferences.setRefreshing(true)
-            val fetchTask = async {
-                stocksProvider.fetch()
-            }
-            GlanceStocksWidget().updateAll(context)
-            fetchTask.await()
-        }
-    }
-}
-
-class FlipTextCallback : ActionCallback {
-
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
-    var injected = false
-
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters
-    ) {
-        if (!injected) {
-            Injector.appComponent().inject(this)
-            injected = true
-        }
-        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
-        val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
-        val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
-        widgetData.flipChange()
-        GlanceStocksWidget().updateAll(context)
     }
 }

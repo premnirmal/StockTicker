@@ -4,9 +4,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.UpdateReceiver
 import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
-import com.github.premnirmal.ticker.widget.FlipTextCallback
 import com.github.premnirmal.ticker.widget.GlanceStocksWidget
-import com.github.premnirmal.ticker.widget.RefreshCallback
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.RemoteStockViewAdapter
 import com.github.premnirmal.ticker.widget.StockWidget
@@ -32,8 +30,6 @@ interface LegacyComponent {
     fun inject(adapter: RemoteStockViewAdapter)
     fun inject(receiver: WidgetClickReceiver)
     fun inject(receiver: RefreshReceiver)
-    fun inject(receiver: RefreshCallback)
-    fun inject(receiver: FlipTextCallback)
     fun inject(receiver: UpdateReceiver)
     fun inject(receiver: DailySummaryNotificationReceiver)
     fun inject(refreshWorker: RefreshWorker)
