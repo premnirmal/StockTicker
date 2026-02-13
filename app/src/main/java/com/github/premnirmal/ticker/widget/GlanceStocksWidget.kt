@@ -1,14 +1,13 @@
 package com.github.premnirmal.ticker.widget
 
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.widget.RemoteViews
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
@@ -45,7 +44,6 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.size
 import androidx.glance.layout.wrapContentHeight
 import androidx.glance.layout.wrapContentSize
-import androidx.glance.layout.wrapContentWidth
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
 import androidx.glance.text.FontStyle
@@ -65,8 +63,6 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 import kotlin.Boolean
 import kotlin.random.Random
@@ -124,7 +120,7 @@ class GlanceStocksWidget : GlanceAppWidget() {
 @Composable
 fun GlanceWidget(
     fetchState: FetchState,
-    widgetData: WidgetData.ImmutableWidgetData,
+    widgetData: WidgetData.State,
     quotes: List<Quote>,
     refreshing: Boolean = false,
 ) {
@@ -175,7 +171,7 @@ fun GlanceWidget(
 @Composable
 private fun QuotesGrid(
     columns: Int,
-    widgetData: WidgetData.ImmutableWidgetData,
+    widgetData: WidgetData.State,
     quotes: List<Quote>,
 ) {
     val context = LocalContext.current
@@ -333,7 +329,7 @@ private fun QuotesGrid(
 @Composable
 private fun Header(
     fetchState: FetchState,
-    widgetData: WidgetData.ImmutableWidgetData,
+    widgetData: WidgetData.State,
     refreshing: Boolean,
 ) {
     val context = LocalContext.current
@@ -383,7 +379,7 @@ private fun Header(
 @Composable
 private fun MyPortfolio(
     stock: Quote,
-    widgetData: WidgetData.ImmutableWidgetData,
+    widgetData: WidgetData.State,
 ) {
     val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
@@ -479,11 +475,10 @@ private fun MyPortfolio(
 @Preview(widthDp = 190, heightDp = 150)
 @Composable
 private fun WidgetSingleColumnPreview() {
-    Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
-        val widgetData = PreviewWidgetData(
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
             layoutType = IWidgetData.LayoutType.Fixed,
         )
-        val data by widgetData.data.collectAsState()
         GlanceWidget(
             fetchState = fakeFetchState(),
             widgetData = data,
@@ -496,11 +491,10 @@ private fun WidgetSingleColumnPreview() {
 @Preview(widthDp = 400, heightDp = 150)
 @Composable
 private fun WidgetEmptyPreview() {
-    Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
-        val widgetData = PreviewWidgetData(
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
             layoutType = IWidgetData.LayoutType.Fixed,
         )
-        val data by widgetData.data.collectAsState()
         GlanceWidget(
             fetchState = fakeFetchState(),
             widgetData = data,
@@ -513,11 +507,10 @@ private fun WidgetEmptyPreview() {
 @Preview(widthDp = 400, heightDp = 150)
 @Composable
 private fun WidgetFixedPreview() {
-    Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
-        val widgetData = PreviewWidgetData(
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
             layoutType = IWidgetData.LayoutType.Fixed,
         )
-        val data by widgetData.data.collectAsState()
         GlanceWidget(
             fetchState = fakeFetchState(),
             widgetData = data,
@@ -530,11 +523,10 @@ private fun WidgetFixedPreview() {
 @Preview(widthDp = 400, heightDp = 120)
 @Composable
 private fun WidgetAnimatedPreview() {
-    Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
-        val widgetData = PreviewWidgetData(
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
             layoutType = IWidgetData.LayoutType.Animated,
         )
-        val data by widgetData.data.collectAsState()
         GlanceWidget(
             fetchState = fakeFetchState(),
             widgetData = data,
@@ -547,11 +539,10 @@ private fun WidgetAnimatedPreview() {
 @Preview(widthDp = 550, heightDp = 140)
 @Composable
 private fun WidgetTabsPreview() {
-    Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
-        val widgetData = PreviewWidgetData(
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
             layoutType = IWidgetData.LayoutType.Tabs,
         )
-        val data by widgetData.data.collectAsState()
         GlanceWidget(
             fetchState = fakeFetchState(),
             widgetData = data,
@@ -564,11 +555,10 @@ private fun WidgetTabsPreview() {
 @Preview(widthDp = 550, heightDp = 200)
 @Composable
 private fun WidgetMyPortfolioPreview() {
-    Box(modifier = GlanceModifier.background(color = Color.Black).padding(20.dp)) {
-        val widgetData = PreviewWidgetData(
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
             layoutType = IWidgetData.LayoutType.MyPortfolio,
         )
-        val data by widgetData.data.collectAsState()
         GlanceWidget(
             fetchState = fakeFetchState(),
             widgetData = data,
@@ -610,46 +600,23 @@ private fun fakePosition(symbol: String): Position {
     )
 }
 
-private class PreviewWidgetData(
-    override val stocks: StateFlow<List<Quote>> = MutableStateFlow(emptyList()),
-    override val layoutType: IWidgetData.LayoutType = IWidgetData.LayoutType.Fixed,
-    override val changeType: IWidgetData.ChangeType = IWidgetData.ChangeType.Percent,
-    override val widgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID,
-    override val widgetName: String = "Preview widget",
-    override val data: StateFlow<WidgetData.ImmutableWidgetData> = MutableStateFlow(
-        WidgetData.ImmutableWidgetData(
-            id = AppWidgetManager.INVALID_APPWIDGET_ID,
-            name = "Preview Widget",
-            layoutType = IWidgetData.LayoutType.Fixed,
-            showCurrency = false,
-            boldText = false,
-            changeType = IWidgetData.ChangeType.Percent,
-            typePref = IWidgetData.LayoutType.Fixed.ordinal,
-            hideWidgetHeader = false,
-            autoSort = false,
-            sizePref = 0,
-            backgroundPref = 0,
-            textColourPref = 0,
-            fontSize = 12f,
-            isDarkMode = false,
-            negativeTextColor = R.color.text_widget_negative,
-            positiveTextColor = R.color.text_widget_positive,
-            textColor = R.color.widget_text,
-            stockViewLayout = R.layout.stockview,
-            backgroundResource = R.drawable.app_widget_background,
-        )
-    ),
-) : IWidgetData {
-    override fun getChangeColor(
-        context: Context,
-        change: Float,
-        changeInPercent: Float
-    ): Color = if (change < 0f || changeInPercent < 0f) {
-        Color.Red
-    } else {
-        Color.Green
-    }
-}
+private fun previewDataState(
+    layoutType: IWidgetData.LayoutType = IWidgetData.LayoutType.Fixed,
+): WidgetData.State = WidgetData.State(
+    layoutType = layoutType,
+    showCurrency = false,
+    boldText = false,
+    changeType = IWidgetData.ChangeType.Percent,
+    sizePref = 0,
+    fontSize = 12f,
+    isDarkMode = false,
+    hideWidgetHeader = false,
+    negativeTextColor = R.color.text_widget_negative,
+    positiveTextColor = R.color.text_widget_positive,
+    textColor = R.color.widget_text,
+    stockViewLayout = R.layout.stockview,
+    backgroundResource = R.drawable.app_widget_background,
+)
 
 class RefreshCallback : ActionCallback {
     @Inject internal lateinit var stocksProvider: StocksProvider

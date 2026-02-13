@@ -72,14 +72,13 @@ class WidgetData : IWidgetData {
     private val _stocks = MutableStateFlow<List<Quote>>(emptyList())
     private val preferences: SharedPreferences
     private val _autoSortEnabled = MutableStateFlow(false)
-    val autoSortEnabled: StateFlow<Boolean>
-        get() = _autoSortEnabled
-    val changeFlow: StateFlow<ImmutableWidgetData>
+    val changeFlow: StateFlow<Prefs>
         get() = _changeFlow
     private val _changeFlow by lazy { MutableStateFlow(toImmutableData()) }
 
-    override val data: StateFlow<ImmutableWidgetData>
-        get() = _changeFlow
+    override val data: StateFlow<State>
+        get() = _data
+    private val _data by lazy { MutableStateFlow(toState()) }
 
     constructor(
         position: Int,
@@ -169,6 +168,7 @@ class WidgetData : IWidgetData {
             putString(WIDGET_NAME, value)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
         widgetDataProvider.refreshWidgetDataList()
     }
 
@@ -186,6 +186,7 @@ class WidgetData : IWidgetData {
             putBoolean(PERCENT, !state)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     val singleStockPerRow: Boolean
@@ -198,6 +199,7 @@ class WidgetData : IWidgetData {
             putInt(WIDGET_SIZE, value)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     fun readFontSize(): Float {
@@ -230,6 +232,7 @@ class WidgetData : IWidgetData {
             putInt(LAYOUT_TYPE, value)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     @ColorInt fun textColor(): Int {
@@ -290,6 +293,7 @@ class WidgetData : IWidgetData {
             putInt(TEXT_COLOR, pref)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     fun bgPref(): Int {
@@ -306,6 +310,7 @@ class WidgetData : IWidgetData {
             putInt(WIDGET_BG, value)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
@@ -325,6 +330,7 @@ class WidgetData : IWidgetData {
             putBoolean(HIDE_HEADER, hide)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     fun readIsBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
@@ -334,6 +340,7 @@ class WidgetData : IWidgetData {
             putBoolean(BOLD_CHANGE, value)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     fun readIsCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
@@ -343,6 +350,7 @@ class WidgetData : IWidgetData {
             putBoolean(SHOW_CURRENCY, value)
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
     }
 
     @Deprecated("Use the stocks flow")
@@ -421,13 +429,45 @@ class WidgetData : IWidgetData {
         _changeFlow.value = toImmutableData()
     }
 
-    fun toImmutableData(): ImmutableWidgetData {
-        return ImmutableWidgetData(
-            widgetId, widgetName(), autoSortEnabled(), readIsBoldEnabled(),
-            readHideHeader(), readIsCurrencyEnabled(), nightMode,
-            layoutPref(), widgetSizePref(), bgPref(), textColorPref(),
-            changeType(), layoutType, readFontSize(), backgroundResource(), positiveTextColor, negativeTextColor, textColorRes(),
-            stockViewLayout()
+    fun toImmutableData(): Prefs {
+        return Prefs(
+            id = widgetId,
+            name = widgetName(),
+            autoSort = autoSortEnabled(),
+            boldText = readIsBoldEnabled(),
+            hideWidgetHeader = readHideHeader(),
+            showCurrency = readIsCurrencyEnabled(),
+            isDarkMode = nightMode,
+            typePref = layoutPref(),
+            sizePref = widgetSizePref(),
+            backgroundPref = bgPref(),
+            textColourPref = textColorPref(),
+            changeType = changeType(),
+            layoutType = layoutType,
+            fontSize = readFontSize(),
+            backgroundResource = backgroundResource(),
+            positiveTextColor = positiveTextColor,
+            negativeTextColor = negativeTextColor,
+            textColor = textColorRes(),
+            stockViewLayout = stockViewLayout()
+        )
+    }
+
+    fun toState(): State {
+        return State(
+            boldText = readIsBoldEnabled(),
+            changeType = changeType(),
+            layoutType = layoutType,
+            fontSize = readFontSize(),
+            showCurrency = readIsCurrencyEnabled(),
+            isDarkMode = nightMode,
+            sizePref = widgetSizePref(),
+            hideWidgetHeader = readHideHeader(),
+            backgroundResource = backgroundResource(),
+            positiveTextColor = positiveTextColor,
+            negativeTextColor = negativeTextColor,
+            textColor = textColorRes(),
+            stockViewLayout = stockViewLayout()
         )
     }
 
@@ -436,6 +476,7 @@ class WidgetData : IWidgetData {
             preferences.edit { putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString()) }
         }
         _changeFlow.value = toImmutableData()
+        _data.value = toState()
         _tickerList.value = tickerList
         _stocks.value = tickerList.mapNotNull {
             stocksProvider.getStock(it)
@@ -485,21 +526,15 @@ class WidgetData : IWidgetData {
     }
 
     @Parcelize
-    data class ImmutableWidgetData(
-        val id: Int,
-        val name: String,
-        val autoSort: Boolean,
+    data class State(
         val boldText: Boolean,
-        val hideWidgetHeader: Boolean,
-        val showCurrency: Boolean,
-        val isDarkMode: Boolean,
-        val typePref: Int,
-        val sizePref: Int,
-        val backgroundPref: Int,
-        val textColourPref: Int,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
         val fontSize: Float,
+        val showCurrency: Boolean,
+        val isDarkMode: Boolean,
+        val sizePref: Int,
+        val hideWidgetHeader: Boolean,
         @param:DrawableRes
         @get:DrawableRes
         val backgroundResource: Int,
@@ -529,4 +564,37 @@ class WidgetData : IWidgetData {
             }
         }
     }
+
+    @Parcelize
+    data class Prefs(
+        val id: Int,
+        val name: String,
+        val autoSort: Boolean,
+        val boldText: Boolean,
+        val hideWidgetHeader: Boolean,
+        val showCurrency: Boolean,
+        val isDarkMode: Boolean,
+        val typePref: Int,
+        val sizePref: Int,
+        val backgroundPref: Int,
+        val textColourPref: Int,
+        val changeType: IWidgetData.ChangeType,
+        val layoutType: LayoutType,
+        val fontSize: Float,
+        @param:DrawableRes
+        @get:DrawableRes
+        val backgroundResource: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val positiveTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val negativeTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val textColor: Int,
+        @param:LayoutRes
+        @get:LayoutRes
+        val stockViewLayout: Int,
+    ) : Parcelable
 }

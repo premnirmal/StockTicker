@@ -13,17 +13,17 @@ import androidx.core.content.ContextCompat
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.IWidgetData.ChangeType.Percent
-import com.github.premnirmal.ticker.widget.WidgetData.ImmutableWidgetData
+import com.github.premnirmal.ticker.widget.WidgetData.Prefs
 import com.github.premnirmal.tickerwidget.R
 
 class WidgetPreviewAdapter(
     private var widgetData: WidgetData,
-    private var widgetImmutableWidgetData: ImmutableWidgetData
+    private var widgetImmutableWidgetData: Prefs
 ) : BaseAdapter() {
 
     fun refresh(
         widgetData: WidgetData,
-        widgetImmutableWidgetData: ImmutableWidgetData
+        widgetImmutableWidgetData: Prefs
     ) {
         this.widgetData = widgetData
         this.widgetImmutableWidgetData = widgetImmutableWidgetData

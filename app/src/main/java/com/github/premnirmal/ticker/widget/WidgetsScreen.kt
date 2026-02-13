@@ -32,6 +32,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -119,7 +120,7 @@ private fun WidgetsScreen(
                 widgetDataList.find { it.widgetId == selectedWidgetId }
             } ?: widgetDataList[widgetDataSelectedIndex]
         }
-        val widgetDataImmutable by widgetData.changeFlow.collectAsState()
+        val prefs by widgetData.changeFlow.collectAsState()
         val state = rememberLazyListState()
         if (selectedWidgetId == null) {
             rememberScrollToTopAction(HomeRoute.Widgets) {
@@ -138,7 +139,7 @@ private fun WidgetsScreen(
                             items = widgetDataList,
                             textAlign = TextAlign.Center,
                             selectedItemIndex = widgetDataSelectedIndex,
-                            selectedItemText = widgetDataImmutable.name,
+                            selectedItemText = prefs.name,
                             onItemSelected = {
                                 widgetDataSelectedIndex = it
                                 viewModel.refreshWidgets()
@@ -151,10 +152,10 @@ private fun WidgetsScreen(
                     WidgetPreview(
                         fetchState,
                         widgetData,
-                        widgetDataImmutable
+                        prefs
                     )
                 }
-                widgetSettings(widgetData, widgetDataImmutable, selectedWidgetId)
+                widgetSettings(widgetData, prefs, selectedWidgetId)
             }
         } else {
             TwoPane(
@@ -175,7 +176,7 @@ private fun WidgetsScreen(
                                     items = widgetDataList,
                                     textAlign = TextAlign.Center,
                                     selectedItemIndex = widgetDataSelectedIndex,
-                                    selectedItemText = widgetDataImmutable.name,
+                                    selectedItemText = prefs.name,
                                     onItemSelected = {
                                         widgetDataSelectedIndex = it
                                     },
@@ -183,12 +184,12 @@ private fun WidgetsScreen(
                                 )
                             }
                         }
-                        widgetSettings(widgetData, widgetDataImmutable, selectedWidgetId)
+                        widgetSettings(widgetData, prefs, selectedWidgetId)
                     }
                 },
                 second = {
                     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                        WidgetPreview(fetchState, widgetData, widgetDataImmutable)
+                        WidgetPreview(fetchState, widgetData, prefs)
                     }
                 }
             )
@@ -198,7 +199,7 @@ private fun WidgetsScreen(
 
 private fun LazyListScope.widgetSettings(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData,
+    prefs: WidgetData.Prefs,
     selectedWidgetId: Int?,
 ) {
     item {
@@ -212,43 +213,43 @@ private fun LazyListScope.widgetSettings(
         }
     }
     item {
-        AutoSort(widgetData, widgetDataImmutable)
+        AutoSort(widgetData, prefs)
         Divider()
     }
     item {
-        WidgetType(widgetData, widgetDataImmutable)
+        WidgetType(widgetData, prefs)
         Divider()
     }
     item {
-        WidgetSize(widgetData, widgetDataImmutable)
+        WidgetSize(widgetData, prefs)
         Divider()
     }
     item {
-        WidgetBackground(widgetData, widgetDataImmutable)
+        WidgetBackground(widgetData, prefs)
         Divider()
     }
     item {
-        TextColour(widgetData, widgetDataImmutable)
+        TextColour(widgetData, prefs)
         Divider()
     }
     item {
-        BoldText(widgetData, widgetDataImmutable)
+        BoldText(widgetData, prefs)
         Divider()
     }
     item {
-        HideWidgetHeader(widgetData, widgetDataImmutable)
+        HideWidgetHeader(widgetData, prefs)
         Divider()
     }
     item {
-        ShowCurrency(widgetData, widgetDataImmutable)
+        ShowCurrency(widgetData, prefs)
     }
 }
 
 @Composable fun ShowCurrency(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val checked = widgetDataImmutable.showCurrency
+    val checked = prefs.showCurrency
     CheckboxPreference(
         title = stringResource(id = R.string.setting_currency),
         subtitle = stringResource(id = R.string.setting_currency_desc),
@@ -260,9 +261,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun TextColour(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val selected = widgetDataImmutable.textColourPref
+    val selected = prefs.textColourPref
     ListPreference(
         title = stringResource(id = R.string.text_color),
         items = stringArrayResource(id = R.array.text_colors),
@@ -275,9 +276,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun BoldText(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val checked = widgetDataImmutable.boldText
+    val checked = prefs.boldText
     CheckboxPreference(
         title = stringResource(id = R.string.bold_change),
         subtitle = stringResource(id = R.string.bold_change_desc),
@@ -289,9 +290,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun WidgetSize(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val selected = widgetDataImmutable.sizePref
+    val selected = prefs.sizePref
     ListPreference(
         title = stringResource(id = R.string.widget_width),
         items = stringArrayResource(id = R.array.widget_width_types),
@@ -304,9 +305,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun WidgetBackground(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val selected = widgetDataImmutable.backgroundPref
+    val selected = prefs.backgroundPref
     ListPreference(
         title = stringResource(id = R.string.bg),
         items = stringArrayResource(id = R.array.backgrounds),
@@ -319,9 +320,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun WidgetType(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val selected = widgetDataImmutable.typePref
+    val selected = prefs.typePref
     ListPreference(
         title = stringResource(id = R.string.layout_type),
         items = stringArrayResource(id = R.array.layout_types),
@@ -334,9 +335,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun HideWidgetHeader(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val checked = widgetDataImmutable.hideWidgetHeader
+    val checked = prefs.hideWidgetHeader
     CheckboxPreference(
         title = stringResource(id = R.string.hide_header),
         subtitle = stringResource(id = R.string.hide_header_desc),
@@ -364,9 +365,9 @@ private fun LazyListScope.widgetSettings(
 
 @Composable fun AutoSort(
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val checked = widgetDataImmutable.autoSort
+    val checked = prefs.autoSort
     CheckboxPreference(
         title = stringResource(id = R.string.auto_sort),
         subtitle = stringResource(id = R.string.auto_sort_desc),
@@ -423,9 +424,16 @@ fun WidgetName(
 fun WidgetPreview(
     fetchState: FetchState,
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    val padding = with(LocalDensity.current) { 44.dp.toPx() }
+    val padding = with(LocalDensity.current) { 24.dp.toPx() }
+    val widgetLayout by derivedStateOf {
+        if (prefs.sizePref > 0) {
+            R.layout.widget_1x1
+        } else {
+            R.layout.widget_2x1
+        }
+    }
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
@@ -436,8 +444,8 @@ fun WidgetPreview(
                 LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             previewContainer.setPadding(padding.toInt())
             previewContainer.setBackgroundResource(R.drawable.bg_header_light)
-            val view = LayoutInflater.from(context).inflate(R.layout.widget_2x1, previewContainer, true)
-            view.findViewById<GridView>(R.id.list).adapter = WidgetPreviewAdapter(widgetData, widgetDataImmutable)
+            val view = LayoutInflater.from(context).inflate(widgetLayout, previewContainer, true)
+            view.findViewById<GridView>(R.id.list).adapter = WidgetPreviewAdapter(widgetData, prefs)
             previewContainer
         },
         update = {
@@ -447,7 +455,7 @@ fun WidgetPreview(
                 widgetLayout,
                 fetchState,
                 widgetData,
-                widgetDataImmutable
+                prefs
             )
         }
     )
@@ -458,9 +466,9 @@ private fun updatePreview(
     widgetLayout: View,
     fetchState: FetchState,
     widgetData: WidgetData,
-    widgetDataImmutable: WidgetData.ImmutableWidgetData
+    prefs: WidgetData.Prefs
 ) {
-    widgetLayout.setBackgroundResource(widgetDataImmutable.backgroundResource)
+    widgetLayout.setBackgroundResource(prefs.backgroundResource)
     val lastUpdatedText = when (fetchState) {
         is FetchState.Success -> context.getString(R.string.last_fetch, fetchState.displayString)
         is FetchState.Failure -> context.getString(R.string.refresh_failed)
@@ -468,9 +476,9 @@ private fun updatePreview(
     }
     widgetLayout.findViewById<TextView>(R.id.last_updated).text = lastUpdatedText
     widgetLayout.findViewById<View>(R.id.widget_header).isVisible =
-        !widgetDataImmutable.hideWidgetHeader
+        !prefs.hideWidgetHeader
     (widgetLayout.findViewById<GridView>(R.id.list).adapter as WidgetPreviewAdapter).refresh(
         widgetData,
-        widgetDataImmutable
+        prefs
     )
 }

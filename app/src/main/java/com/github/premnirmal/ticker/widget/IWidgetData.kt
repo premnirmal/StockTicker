@@ -1,11 +1,8 @@
 package com.github.premnirmal.ticker.widget
 
 import android.content.Context
-import androidx.annotation.ColorInt
-import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import com.github.premnirmal.ticker.network.data.Quote
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface IWidgetData {
@@ -13,7 +10,7 @@ interface IWidgetData {
     val widgetName: String
 
     val stocks: StateFlow<List<Quote>>
-    val data: StateFlow<WidgetData.ImmutableWidgetData>
+    val data: StateFlow<WidgetData.State>
 
     val changeType: ChangeType
 
