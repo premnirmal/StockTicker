@@ -265,13 +265,14 @@ private fun QuotesGrid(
                                     //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
                                     // )
                                 )
-                            ), contentAlignment = Alignment.CenterEnd
+                            ),
+                            contentAlignment = Alignment.CenterEnd,
                         ) {
                             AndroidRemoteViews(
-                                remoteViews = flipper, containerViewId = R.id.view_flipper, modifier = GlanceModifier.wrapContentWidth()
+                                remoteViews = flipper, containerViewId = R.id.view_flipper, modifier = GlanceModifier.fillMaxWidth()
                             ) {
                                 Text(
-                                    modifier = GlanceModifier,
+                                    modifier = GlanceModifier.fillMaxWidth(),
                                     text = changeValueFormatted,
                                     style = TextStyle(
                                         color = changeColor,
@@ -282,7 +283,7 @@ private fun QuotesGrid(
                                     maxLines = 1,
                                 )
                                 Text(
-                                    modifier = GlanceModifier,
+                                    modifier = GlanceModifier.fillMaxWidth(),
                                     text = changePercentFormatted,
                                     style = TextStyle(
                                         color = changeColor,
@@ -651,10 +652,9 @@ private class PreviewWidgetData(
 }
 
 class RefreshCallback : ActionCallback {
-    @Inject
-    internal lateinit var stocksProvider: StocksProvider
-    @Inject
-    internal lateinit var appPreferences: AppPreferences
+    @Inject internal lateinit var stocksProvider: StocksProvider
+    @Inject internal lateinit var appPreferences: AppPreferences
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
     var injected = false
 
     override suspend fun onAction(
@@ -667,20 +667,22 @@ class RefreshCallback : ActionCallback {
             injected = true
         }
         coroutineScope {
+            val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+            val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
             appPreferences.setRefreshing(true)
+            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
             val fetchTask = async {
                 stocksProvider.fetch()
             }
-            GlanceStocksWidget().update(context, glanceId)
+            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
             fetchTask.await()
-            GlanceStocksWidget().update(context, glanceId)
+            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
         }
     }
 }
 
 class FlipTextCallback : ActionCallback {
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
     var injected = false
 
     override suspend fun onAction(
@@ -696,6 +698,6 @@ class FlipTextCallback : ActionCallback {
         val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
         val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
         widgetData.flipChange()
-        GlanceStocksWidget().update(context, glanceId)
+        widgetDataProvider.broadcastUpdateWidget(appWidgetId)
     }
 }

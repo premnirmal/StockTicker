@@ -18,6 +18,7 @@ class RefreshReceiver : BroadcastReceiver() {
     @Inject internal lateinit var stocksProvider: StocksProvider
 
     @Inject internal lateinit var coroutineScope: CoroutineScope
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
     override fun onReceive(
         context: Context,
@@ -27,6 +28,7 @@ class RefreshReceiver : BroadcastReceiver() {
         val pendingResult = goAsync()
         coroutineScope.launch(Dispatchers.Main) {
             stocksProvider.fetch()
+            widgetDataProvider.broadcastUpdateAllWidgets()
             pendingResult.finish()
         }
     }

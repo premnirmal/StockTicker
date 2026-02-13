@@ -5,6 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.isNetworkOnline
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import javax.inject.Inject
 
 class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -15,7 +16,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
     }
 
     @Inject internal lateinit var stocksProvider: StocksProvider
-
+    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
     @Inject internal lateinit var alarmScheduler: AlarmScheduler
 
     override suspend fun doWork(): Result {
@@ -25,6 +26,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
                 return Result.success()
             }
             val result = stocksProvider.fetch()
+            widgetDataProvider.broadcastUpdateAllWidgets()
             if (result.hasError) {
                 Result.retry()
             } else {
