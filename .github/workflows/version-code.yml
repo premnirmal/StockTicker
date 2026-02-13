@@ -2,6 +2,8 @@ name: version-code-change
 
 on:
   push:
+    branches:
+      - 'master'
     tags:
       - '*'
 
@@ -34,5 +36,5 @@ jobs:
           git status
           git add .
           git commit -am "github-actions[bot]: Updated version.properties"
-      - name: Push  version.properties changes
-        run: git push origin HEAD
+      - name: Push version.properties changes
+        run: git push
