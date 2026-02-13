@@ -138,7 +138,7 @@ fun GlanceWidget(
     Box(
         modifier = GlanceModifier.fillMaxSize()
             .background(ImageProvider(widgetData.backgroundResource))
-            .padding(horizontal = 2.dp)
+            .padding(6.dp)
     ) {
         Column(
             modifier = GlanceModifier.fillMaxSize()
@@ -179,7 +179,7 @@ private fun QuotesGrid(
     val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
     LazyVerticalGrid(
-        modifier = GlanceModifier.padding(bottom = 6.dp),
+        modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
     ) {
         val isBold = widgetData.boldText
@@ -214,7 +214,7 @@ private fun QuotesGrid(
                 )
             } else {
                 Row(
-                    modifier = GlanceModifier.fillMaxSize().padding(horizontal = 4.dp),
+                    modifier = GlanceModifier.fillMaxSize(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -255,7 +255,7 @@ private fun QuotesGrid(
                     if (layoutType == IWidgetData.LayoutType.Animated) {
                         val flipper = RemoteViews(context.packageName, R.layout.stockview_flipper)
                         Box(
-                            modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp).clickable(
+                            modifier = GlanceModifier.defaultWeight().padding(end = 2.dp).clickable(
                                 actionStartActivity<HomeActivity>(
                                     // actionParametersOf(
                                     //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
@@ -293,7 +293,7 @@ private fun QuotesGrid(
                         }
                     } else {
                         Text(
-                            modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp)
+                            modifier = GlanceModifier.defaultWeight().padding(end = 2.dp)
                                 .clickable(actionRunCallback<FlipTextCallback>()),
                             text = changeFormatted,
                             style = TextStyle(
@@ -307,7 +307,7 @@ private fun QuotesGrid(
 
                         if (layoutType == IWidgetData.LayoutType.Tabs) {
                             Text(
-                                modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp)
+                                modifier = GlanceModifier.defaultWeight().padding(end = 2.dp)
                                     .clickable(actionRunCallback<FlipTextCallback>()),
                                 text = changePercentFormatted,
                                 style = TextStyle(
@@ -339,7 +339,7 @@ private fun Header(
         else -> FetchState.NotFetched.displayString
     }
     Row(
-        modifier = GlanceModifier.fillMaxWidth().padding(start = 6.dp, end = 6.dp, top = 6.dp),
+        modifier = GlanceModifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         val fontSize = widgetData.fontSize - 2f
@@ -398,7 +398,7 @@ private fun MyPortfolio(
     val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
     val gainLoss = stock.gainLoss()
     val gainLossColor = ColorProvider(widgetData.getChangeColor(gainLoss, gainLoss))
-    Column(modifier = GlanceModifier.fillMaxSize().padding(horizontal = 4.dp)
+    Column(modifier = GlanceModifier.fillMaxSize()
         .clickable(
             actionStartActivity<HomeActivity>(
                 actionParametersOf(
@@ -504,7 +504,7 @@ private fun WidgetEmptyPreview() {
 }
 
 @OptIn(ExperimentalGlancePreviewApi::class)
-@Preview(widthDp = 400, heightDp = 150)
+@Preview(widthDp = 350, heightDp = 150)
 @Composable
 private fun WidgetFixedPreview() {
     Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
