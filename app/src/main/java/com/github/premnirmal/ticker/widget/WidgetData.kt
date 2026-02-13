@@ -180,7 +180,7 @@ class WidgetData : IWidgetData {
         return if (state) IWidgetData.ChangeType.Percent else IWidgetData.ChangeType.Value
     }
 
-    override fun flipChange() {
+    fun flipChange() {
         val state = preferences.getBoolean(PERCENT, false)
         preferences.edit {
             putBoolean(PERCENT, !state)

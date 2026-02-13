@@ -20,8 +20,6 @@ interface IWidgetData {
     val layoutType: LayoutType
 
     fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color
-
-    fun flipChange() {}
     fun fetchStocks() {}
 
     enum class ChangeType {
