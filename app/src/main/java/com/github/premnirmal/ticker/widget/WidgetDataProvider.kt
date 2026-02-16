@@ -23,7 +23,6 @@ class WidgetDataProvider @Inject constructor(
 ) {
 
     companion object {
-        const val INVALID_WIDGET_ID = AppWidgetManager.INVALID_APPWIDGET_ID
 
         const val USE_GLANCE = true
     }
@@ -56,7 +55,7 @@ class WidgetDataProvider @Inject constructor(
     fun refreshWidgetDataList(): List<WidgetData> {
         val appWidgetIds = getAppWidgetIds().toMutableSet()
         if (appWidgetIds.isEmpty()) {
-            appWidgetIds.add(INVALID_WIDGET_ID)
+            appWidgetIds.add(AppWidgetManager.INVALID_APPWIDGET_ID)
         }
         val widgetDataList = appWidgetIds.map {
             dataForWidgetId(it)
@@ -91,6 +90,11 @@ class WidgetDataProvider @Inject constructor(
         }
         widgetData.refreshStocksList()
         return widgetData
+    }
+
+    suspend fun stateForWidgetId(widgetId: Int) {
+        val data = dataForWidgetId(widgetId)
+
     }
 
     fun removeWidget(widgetId: Int): WidgetData? {

@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.widget
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Parcelable
@@ -11,6 +12,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.appwidget.updateAll
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
@@ -169,6 +173,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
         widgetDataProvider.refreshWidgetDataList()
     }
 
@@ -182,11 +187,16 @@ class WidgetData : IWidgetData {
 
     fun flipChange() {
         val state = preferences.getBoolean(PERCENT, false)
+        setChange(!state)
+    }
+
+    fun setChange(percent: Boolean) {
         preferences.edit {
-            putBoolean(PERCENT, !state)
+            putBoolean(PERCENT, percent)
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     val singleStockPerRow: Boolean
@@ -200,6 +210,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun readFontSize(): Float {
@@ -233,6 +244,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     @ColorInt fun textColor(): Int {
@@ -294,6 +306,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun bgPref(): Int {
@@ -311,6 +324,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
@@ -331,6 +345,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun readIsBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
@@ -341,6 +356,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun readIsCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
@@ -351,6 +367,7 @@ class WidgetData : IWidgetData {
         }
         _changeFlow.value = toImmutableData()
         _data.value = toState()
+        emitWidgetChanges()
     }
 
     @Deprecated("Use the stocks flow")
@@ -485,6 +502,31 @@ class WidgetData : IWidgetData {
                 quotes.toMutableList().sortedByDescending { it.changeInPercent }
             } else {
                 quotes
+            }
+        }
+        emitWidgetChanges()
+    }
+
+    private fun emitWidgetChanges() {
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            coroutineScope.launch {
+                val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(widgetId)
+                updateAppWidgetState(
+                    context = context,
+                    definition = WidgetGlanceStateDefinition,
+                    glanceId = glanceId,
+                ) { state ->
+                    val currentQuotes = stocks.value
+                    val currentState = data.value
+                    val currentFetchState = stocksProvider.fetchState.value
+                    val currentIsRefreshing = appPreferences.isRefreshing.value
+                    state.copy(
+                        widgetState = SerializableWidgetState.from(
+                            state = currentState, fetchState = currentFetchState, isRefreshing = currentIsRefreshing
+                        ), quotes = currentQuotes
+                    )
+                }
+                GlanceStocksWidget().update(context, glanceId)
             }
         }
     }
