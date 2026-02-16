@@ -6,7 +6,6 @@ import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.widget.FlipTextCallback
 import com.github.premnirmal.ticker.widget.GlanceStocksWidget
-import com.github.premnirmal.ticker.widget.RefreshCallback
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import com.github.premnirmal.ticker.widget.StockWidget
 import com.github.premnirmal.ticker.widget.WidgetData
@@ -26,7 +25,6 @@ interface LegacyComponent {
     fun inject(widget: GlanceStocksWidget)
     fun inject(data: WidgetData)
     fun inject(receiver: RefreshReceiver)
-    fun inject(receiver: RefreshCallback)
     fun inject(receiver: FlipTextCallback)
     fun inject(receiver: UpdateReceiver)
     fun inject(receiver: DailySummaryNotificationReceiver)

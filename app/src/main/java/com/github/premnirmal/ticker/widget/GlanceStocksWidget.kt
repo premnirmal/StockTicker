@@ -369,27 +369,6 @@ private fun Header(
                 fontWeight = FontWeight.Normal,
             ),
         )
-
-        Box(
-            modifier = GlanceModifier.wrapContentSize().clickable(
-                onClick = actionRunCallback<RefreshCallback>()
-            ),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (widgetData.isRefreshing) {
-                CircularProgressIndicator(
-                    modifier = GlanceModifier.size(18.dp),
-                    color = ColorProvider(R.color.text_widget_header),
-                )
-            } else {
-                Image(
-                    modifier = GlanceModifier.size(18.dp),
-                    provider = ImageProvider(R.drawable.ic_refresh),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(ColorProvider(R.color.text_widget_header)),
-                )
-            }
-        }
     }
 }
 
@@ -650,62 +629,6 @@ private fun previewDataState(
     isRefreshing = false,
     fetchState = SerializableFetchState.Success(System.currentTimeMillis()),
 )
-
-class RefreshCallback : ActionCallback {
-    @Inject
-    internal lateinit var stocksProvider: StocksProvider
-
-    @Inject
-    internal lateinit var appPreferences: AppPreferences
-
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
-    var injected = false
-
-    override suspend fun onAction(
-        context: Context,
-        glanceId: GlanceId,
-        parameters: ActionParameters
-    ) {
-        if (!injected) {
-            Injector.appComponent().inject(this)
-            injected = true
-        }
-        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
-        val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
-        appPreferences.setRefreshing(true)
-        // Update Glance state with the flipped change type
-        updateAppWidgetState(
-            context = context,
-            definition = WidgetGlanceStateDefinition,
-            glanceId = glanceId
-        ) { currentState ->
-            currentState.copy(
-                widgetState = currentState.widgetState.copy(isRefreshing = true)
-            )
-        }
-
-        stocksProvider.fetch()
-
-        val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
-        val currentQuotes = widgetData.stocks.value
-        val currentFetchState = stocksProvider.fetchState.value
-        updateAppWidgetState(
-            context = context,
-            definition = WidgetGlanceStateDefinition,
-            glanceId = glanceId,
-        ) { currentState ->
-            currentState.copy(
-                quotes = currentQuotes,
-                widgetState = currentState.widgetState.copy(
-                    fetchState = SerializableFetchState.from(currentFetchState),
-                    isRefreshing = false,
-                )
-            )
-        }
-        widgetDataProvider.broadcastUpdateWidget(appWidgetId)
-    }
-}
 
 class FlipTextCallback : ActionCallback {
     @Inject

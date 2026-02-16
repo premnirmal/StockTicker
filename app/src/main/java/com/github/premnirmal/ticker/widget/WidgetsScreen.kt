@@ -427,7 +427,6 @@ fun WidgetPreview(
             modifier = Modifier.fillMaxWidth().height(220.dp),
             widgetData = data,
             quotes = quotes,
-            onRefreshClick = {},
         )
     }
 }
