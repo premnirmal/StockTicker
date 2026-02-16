@@ -11,9 +11,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -23,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.toArgb
@@ -51,6 +54,7 @@ import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.theme.Alegreya
+import com.github.premnirmal.tickerwidget.ui.theme.Bold
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -318,29 +322,30 @@ private fun LazyListScope.settingsItems(
         )
         Divider()
     }
-    // item {
-    //     val context = LocalContext.current
-    //     val primaryColor = MaterialTheme.colorScheme.primary
-    //     Box(
-    //         modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
-    //             CustomTabs.openTab(
-    //                 context,
-    //                 context.getString(R.string.checkout_open_source),
-    //                 primaryColor.toArgb(),
-    //             )
-    //         }
-    //     ) {
-    //         Text(
-    //             modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
-    //             text = stringResource(R.string.checkout_open_source),
-    //             textAlign = TextAlign.Center,
-    //             style = MaterialTheme.typography.bodyMedium,
-    //             color = MaterialTheme.colorScheme.primary,
-    //             fontFamily = Bold
-    //         )
-    //     }
-    //     Divider()
-    // }
+    item {
+        val context = LocalContext.current
+        val primaryColor = MaterialTheme.colorScheme.primary
+        Box(
+            modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
+                val url = context.getString(R.string.checkout_open_source)
+                CustomTabs.openTab(
+                    context,
+                    url,
+                    primaryColor.toArgb(),
+                )
+            }
+        ) {
+            Text(
+                modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
+                text = stringResource(R.string.checkout_open_source),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = Bold
+            )
+        }
+        Divider()
+    }
     item {
         val context = LocalContext.current
         val tapListener = OnVersionTap(context)
@@ -353,7 +358,7 @@ private fun LazyListScope.settingsItems(
                     )
                 }
                 .padding(8.dp),
-            text = "v${BuildConfig.VERSION_NAME}",
+            text = BuildConfig.VERSION_NAME,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.primary,
