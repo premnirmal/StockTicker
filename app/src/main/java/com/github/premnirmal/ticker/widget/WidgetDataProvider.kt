@@ -1,9 +1,7 @@
 package com.github.premnirmal.ticker.widget
 
 import android.appwidget.AppWidgetManager
-import android.content.ComponentName
 import android.content.Context
-import android.content.Intent
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,13 +17,7 @@ import javax.inject.Singleton
 class WidgetDataProvider @Inject constructor(
     @param:ApplicationContext
     private val context: Context,
-    private val widgetManager: AppWidgetManager
 ) {
-
-    companion object {
-
-        const val USE_GLANCE = true
-    }
 
     private val glanceAppWidgetManager: GlanceAppWidgetManager by lazy {
         GlanceAppWidgetManager(context)
@@ -41,14 +33,10 @@ class WidgetDataProvider @Inject constructor(
     private val _widgetData = MutableSharedFlow<List<WidgetData>>(replay = 1)
 
     fun getAppWidgetIds(): IntArray {
-        return if (USE_GLANCE) {
-            runBlocking {
-                glanceAppWidgetManager.getGlanceIds(GlanceStocksWidget::class.java).map {
-                    glanceAppWidgetManager.getAppWidgetId(it)
-                }.toIntArray()
-            }
-        } else {
-            widgetManager.getAppWidgetIds(ComponentName(context, StockWidgetOld::class.java))
+        return runBlocking {
+            glanceAppWidgetManager.getGlanceIds(GlanceStocksWidget::class.java).map {
+                glanceAppWidgetManager.getAppWidgetId(it)
+            }.toIntArray()
         }
     }
 
@@ -92,56 +80,20 @@ class WidgetDataProvider @Inject constructor(
         return widgetData
     }
 
-    suspend fun stateForWidgetId(widgetId: Int) {
-        val data = dataForWidgetId(widgetId)
-
-    }
-
-    fun removeWidget(widgetId: Int): WidgetData? {
-        return synchronized(widgets) {
-            val removed = widgets.remove(widgetId)
-            removed?.let {
-                if (widgetCount == 0) {
-                    val widget = dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
-                    widget.addAllFromStocksProvider()
-                }
-                it.onWidgetRemoved()
-            }
-            return@synchronized removed
-        }
-    }
-
     suspend fun broadcastUpdateWidget(widgetId: Int) {
         refreshWidgetDataList()
-        if (USE_GLANCE) {
-            GlanceStocksWidget().updateAll(context)
-            if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
-                try {
-                    GlanceStocksWidget().update(context, glanceAppWidgetManager.getGlanceIdBy(widgetId))
-                } catch (e: Exception) {
-                    Timber.e(e)
-                }
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            try {
+                GlanceStocksWidget().update(context, glanceAppWidgetManager.getGlanceIdBy(widgetId))
+            } catch (e: Exception) {
+                Timber.e(e)
             }
-        } else {
-            val intent = Intent(context, StockWidgetOld::class.java)
-            intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            val ids = arrayOf(widgetId).toIntArray()
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-            context.sendBroadcast(intent)
         }
     }
 
     suspend fun broadcastUpdateAllWidgets() {
         refreshWidgetDataList()
-        if (USE_GLANCE) {
-            GlanceStocksWidget().updateAll(context)
-        } else {
-            val intent = Intent(context, StockWidgetOld::class.java)
-            intent.action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
-            val ids = widgetManager.getAppWidgetIds(ComponentName(context, StockWidgetOld::class.java))
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
-            context.sendBroadcast(intent)
-        }
+        GlanceStocksWidget().updateAll(context)
     }
 
     fun hasWidget(): Boolean = getAppWidgetIds().isNotEmpty()
@@ -152,13 +104,7 @@ class WidgetDataProvider @Inject constructor(
         }
     }
 
-    val widgetCount: Int
-        get() = getAppWidgetIds().size
-
     fun containsTicker(ticker: String): Boolean = widgets.any { it.value.hasTicker(ticker) }
-
-    fun widgetDataWithStock(ticker: String) =
-        widgets.filter { it.value.hasTicker(ticker) }.values.toList()
 
     fun updateWidgets(tickerList: List<String>) {
         if (hasWidget()) {

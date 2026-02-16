@@ -184,7 +184,6 @@ class StocksProvider constructor(
                 if (allowScheduling) {
                     appPreferences.setRefreshing(true)
                 }
-                widgetDataProvider.broadcastUpdateAllWidgets()
                 val fr = api.getStocks(tickerSet.toList())
                 if (fr.hasError) {
                     throw fr.error

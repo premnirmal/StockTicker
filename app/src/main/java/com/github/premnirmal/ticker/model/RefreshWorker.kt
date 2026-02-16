@@ -16,7 +16,9 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
     }
 
     @Inject internal lateinit var stocksProvider: StocksProvider
+
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+
     @Inject internal lateinit var alarmScheduler: AlarmScheduler
 
     override suspend fun doWork(): Result {

@@ -93,33 +93,6 @@
             android:enabled="true"
             android:exported="false" />
 
-<!--        Replaced by Glance Widget-->
-
-<!--        <receiver-->
-<!--            android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="com.github.premnirmal.ticker.WIDGET_CLICK" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
-<!--        <receiver-->
-<!--            android:exported="true"-->
-<!--            android:name="com.github.premnirmal.ticker.widget.StockWidget"-->
-<!--            android:label="@string/widget_label">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />-->
-<!--            </intent-filter>-->
-
-<!--            <meta-data-->
-<!--                android:name="android.appwidget.provider"-->
-<!--                android:resource="@xml/widget" />-->
-<!--        </receiver>-->
-
-<!--        <service-->
-<!--            android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"-->
-<!--            android:permission="android.permission.BIND_REMOTEVIEWS" />-->
-
         <!-- Glance Widget -->
         <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:exported="true"

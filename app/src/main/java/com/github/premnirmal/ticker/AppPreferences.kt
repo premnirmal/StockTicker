@@ -8,7 +8,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
@@ -255,7 +254,9 @@ class AppPreferences @Inject constructor(
                 )
         }
 
-    private val showAddRemoveTooltipPrefKey: Preferences.Key<Int> = intPreferencesKey(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP)
+    private val showAddRemoveTooltipPrefKey: Preferences.Key<Int> = intPreferencesKey(
+        PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP
+    )
 
     val showAddRemoveTooltip: Flow<Boolean> = context.dataStore.data.map { prefs ->
         (prefs[showAddRemoveTooltipPrefKey] ?: 0) > 5

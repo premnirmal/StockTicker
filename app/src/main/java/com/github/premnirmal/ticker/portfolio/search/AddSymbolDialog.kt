@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -107,13 +104,15 @@ private fun AddSymbolDialogInternal(
                         ),
                     )
                     IconButton(
-                        modifier = Modifier.align(Alignment.CenterVertically), onClick = {
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        onClick = {
                             if (exists) {
                                 onRemoved(widgetData)
                             } else {
                                 onAdded(widgetData)
                             }
-                        }) {
+                        }
+                    ) {
                         Icon(
                             painter = if (exists) {
                                 painterResource(R.drawable.ic_remove_circle)

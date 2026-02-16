@@ -4,17 +4,12 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Parcelable
-import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.ui.graphics.Color
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
-import androidx.glance.appwidget.updateAll
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
@@ -24,13 +19,11 @@ import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
-import kotlin.collections.sortByDescending
 
 class WidgetData : IWidgetData {
 
@@ -76,11 +69,11 @@ class WidgetData : IWidgetData {
     private val _stocks = MutableStateFlow<List<Quote>>(emptyList())
     private val preferences: SharedPreferences
     private val _autoSortEnabled = MutableStateFlow(false)
-    val changeFlow: StateFlow<Prefs>
-        get() = _changeFlow
-    private val _changeFlow by lazy { MutableStateFlow(toImmutableData()) }
+    val prefsFlow: StateFlow<Prefs>
+        get() = _prefsFlow
+    private val _prefsFlow by lazy { MutableStateFlow(toPrefs()) }
 
-    override val data: StateFlow<State>
+    override val data: StateFlow<Data>
         get() = _data
     private val _data by lazy { MutableStateFlow(toState()) }
 
@@ -90,8 +83,7 @@ class WidgetData : IWidgetData {
     ) {
         this.position = position
         this.widgetId = widgetId
-        Injector.appComponent()
-            .inject(this)
+        Injector.appComponent().inject(this)
         val prefsName = "$PREFS_NAME_PREFIX$widgetId"
         preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
@@ -171,7 +163,7 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putString(WIDGET_NAME, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
         widgetDataProvider.refreshWidgetDataList()
@@ -185,22 +177,14 @@ class WidgetData : IWidgetData {
         return if (state) IWidgetData.ChangeType.Percent else IWidgetData.ChangeType.Value
     }
 
-    fun flipChange() {
-        val state = preferences.getBoolean(PERCENT, false)
-        setChange(!state)
-    }
-
     fun setChange(percent: Boolean) {
         preferences.edit {
             putBoolean(PERCENT, percent)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
     }
-
-    val singleStockPerRow: Boolean
-        get() = widgetSizePref() > 0
 
     fun widgetSizePref(): Int = preferences.getInt(WIDGET_SIZE, 0)
 
@@ -208,7 +192,7 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putInt(WIDGET_SIZE, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
     }
@@ -228,27 +212,15 @@ class WidgetData : IWidgetData {
         return context.resources.getInteger(resId).toFloat() - 4f
     }
 
-    override fun getChangeColor(context: Context, change: Float, changeInPercent: Float): Color {
-        return if (change < 0f || changeInPercent < 0f) {
-            Color(ContextCompat.getColor(context, negativeTextColor))
-        } else {
-            Color(ContextCompat.getColor(context, positiveTextColor))
-        }
-    }
-
     fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)
 
     fun setLayoutPref(value: Int) {
         preferences.edit {
             putInt(LAYOUT_TYPE, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
-    }
-
-    @ColorInt fun textColor(): Int {
-        return ContextCompat.getColor(context, textColorRes())
     }
 
     @ColorRes fun textColorRes(): Int {
@@ -270,15 +242,6 @@ class WidgetData : IWidgetData {
 
     override val layoutType: LayoutType
         get() = LayoutType.fromInt(layoutPref())
-
-    @LayoutRes fun stockViewLayout(): Int {
-        return when (layoutPref()) {
-            0 -> R.layout.stockview
-            1 -> R.layout.stockview2
-            2 -> R.layout.stockview3
-            else -> R.layout.stockview4
-        }
-    }
 
     @DrawableRes
     fun backgroundResource(): Int {
@@ -304,7 +267,7 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putInt(TEXT_COLOR, pref)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
     }
@@ -322,7 +285,7 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putInt(WIDGET_BG, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
     }
@@ -343,7 +306,7 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putBoolean(HIDE_HEADER, hide)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
     }
@@ -354,7 +317,7 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putBoolean(BOLD_CHANGE, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
     }
@@ -365,20 +328,9 @@ class WidgetData : IWidgetData {
         preferences.edit {
             putBoolean(SHOW_CURRENCY, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
-    }
-
-    @Deprecated("Use the stocks flow")
-    fun getQuotesList(): List<Quote> {
-        val quoteList = ArrayList<Quote>()
-        tickerList.map { stocksProvider.getStock(it) }
-            .forEach { quote -> quote?.let { quoteList.add(it) } }
-        if (autoSortEnabled()) {
-            quoteList.sortByDescending { it.changeInPercent }
-        }
-        return quoteList
     }
 
     fun getTickers(): List<String> = tickerList
@@ -443,10 +395,10 @@ class WidgetData : IWidgetData {
         preferences.edit {
             clear()
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
     }
 
-    fun toImmutableData(): Prefs {
+    fun toPrefs(): Prefs {
         return Prefs(
             id = widgetId,
             name = widgetName(),
@@ -466,12 +418,11 @@ class WidgetData : IWidgetData {
             positiveTextColor = positiveTextColor,
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
-            stockViewLayout = stockViewLayout()
         )
     }
 
-    fun toState(): State {
-        return State(
+    fun toState(): Data {
+        return Data(
             boldText = readIsBoldEnabled(),
             changeType = changeType(),
             layoutType = layoutType,
@@ -484,7 +435,6 @@ class WidgetData : IWidgetData {
             positiveTextColor = positiveTextColor,
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
-            stockViewLayout = stockViewLayout()
         )
     }
 
@@ -492,7 +442,7 @@ class WidgetData : IWidgetData {
         synchronized(tickerList) {
             preferences.edit { putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString()) }
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
         _data.value = toState()
         _tickerList.value = tickerList
         _stocks.value = tickerList.mapNotNull {
@@ -522,8 +472,11 @@ class WidgetData : IWidgetData {
                     val currentIsRefreshing = appPreferences.isRefreshing.value
                     state.copy(
                         widgetState = SerializableWidgetState.from(
-                            state = currentState, fetchState = currentFetchState, isRefreshing = currentIsRefreshing
-                        ), quotes = currentQuotes
+                            state = currentState,
+                            fetchState = currentFetchState,
+                            isRefreshing = currentIsRefreshing
+                        ),
+                        quotes = currentQuotes
                     )
                 }
                 GlanceStocksWidget().update(context, glanceId)
@@ -544,31 +497,20 @@ class WidgetData : IWidgetData {
         }
     }
 
-    override fun fetchStocks() {
-        coroutineScope.launch {
-            appPreferences.setRefreshing(true)
-            val fetchTask = async {
-                stocksProvider.fetch()
-            }
-            fetchTask.await()
-            refreshStocksList()
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is WidgetData) return false
 
-        if (toImmutableData() != other.toImmutableData()) return false
+        if (toPrefs() != other.toPrefs()) return false
         return true
     }
 
     override fun hashCode(): Int {
-        return toImmutableData().hashCode()
+        return toPrefs().hashCode()
     }
 
     @Parcelize
-    data class State(
+    data class Data(
         val boldText: Boolean,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
@@ -589,23 +531,7 @@ class WidgetData : IWidgetData {
         @param:ColorRes
         @get:ColorRes
         val textColor: Int,
-        @param:LayoutRes
-        @get:LayoutRes
-        val stockViewLayout: Int,
-    ) : Parcelable {
-
-        val singleStockPerRow: Boolean
-            get() = sizePref > 0
-
-        @ColorRes
-        fun getChangeColor(change: Float, changeInPercent: Float): Int {
-            return if (change < 0f || changeInPercent < 0f) {
-                negativeTextColor
-            } else {
-                positiveTextColor
-            }
-        }
-    }
+    ) : Parcelable
 
     @Parcelize
     data class Prefs(
@@ -635,8 +561,5 @@ class WidgetData : IWidgetData {
         @param:ColorRes
         @get:ColorRes
         val textColor: Int,
-        @param:LayoutRes
-        @get:LayoutRes
-        val stockViewLayout: Int,
     ) : Parcelable
 }

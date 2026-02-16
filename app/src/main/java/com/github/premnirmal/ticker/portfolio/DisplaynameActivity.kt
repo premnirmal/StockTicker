@@ -156,4 +156,3 @@ class DisplaynameActivity : BaseActivity() {
         }
     }
 }
-

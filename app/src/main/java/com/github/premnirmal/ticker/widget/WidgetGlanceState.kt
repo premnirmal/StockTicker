@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.widget
 import android.content.Context
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
@@ -38,7 +37,7 @@ data class WidgetGlanceState(
 }
 
 /**
- * Serializable version of [WidgetData.State] that can be stored in Glance state.
+ * Serializable version of [WidgetData.Data] that can be stored in Glance state.
  */
 @Serializable
 data class SerializableWidgetState(
@@ -62,9 +61,6 @@ data class SerializableWidgetState(
     @param:ColorRes
     @get:ColorRes
     val textColor: Int = 0,
-    @param:LayoutRes
-    @get:LayoutRes
-    val stockViewLayout: Int = 0,
     val isRefreshing: Boolean = false,
     val fetchState: SerializableFetchState = SerializableFetchState.NotFetched,
 ) {
@@ -84,7 +80,7 @@ data class SerializableWidgetState(
          * Convert from WidgetData.State
          */
         fun from(
-            state: WidgetData.State,
+            state: WidgetData.Data,
             fetchState: StocksProvider.FetchState = StocksProvider.FetchState.NotFetched,
             isRefreshing: Boolean = false
         ): SerializableWidgetState {
@@ -101,7 +97,6 @@ data class SerializableWidgetState(
                 positiveTextColor = state.positiveTextColor,
                 negativeTextColor = state.negativeTextColor,
                 textColor = state.textColor,
-                stockViewLayout = state.stockViewLayout,
                 isRefreshing = isRefreshing,
                 fetchState = SerializableFetchState.from(fetchState)
             )
@@ -162,6 +157,7 @@ enum class SerializableLayoutType {
 @Serializable
 sealed class SerializableFetchState {
     abstract val displayString: String
+
     @Serializable
     object NotFetched : SerializableFetchState() {
         override val displayString: String = "--"

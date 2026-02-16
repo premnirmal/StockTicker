@@ -1,16 +1,10 @@
 package com.github.premnirmal.ticker.widget
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup.LayoutParams
-import android.widget.FrameLayout
-import android.widget.GridView
-import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
@@ -32,7 +26,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,17 +33,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.view.isVisible
-import androidx.core.view.setPadding
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
@@ -58,7 +49,6 @@ import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
-import com.github.premnirmal.ticker.settings.WidgetPreviewAdapter
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
@@ -120,7 +110,7 @@ private fun WidgetsScreen(
                 widgetDataList.find { it.widgetId == selectedWidgetId }
             } ?: widgetDataList[widgetDataSelectedIndex]
         }
-        val prefs by widgetData.changeFlow.collectAsState()
+        val prefs by widgetData.prefsFlow.collectAsState()
         val state = rememberLazyListState()
         if (selectedWidgetId == null) {
             rememberScrollToTopAction(HomeRoute.Widgets) {
@@ -152,7 +142,7 @@ private fun WidgetsScreen(
                     WidgetPreview(
                         fetchState,
                         widgetData,
-                        prefs
+                        widgetData.toState(),
                     )
                 }
                 widgetSettings(widgetData, prefs, selectedWidgetId)
@@ -189,7 +179,7 @@ private fun WidgetsScreen(
                 },
                 second = {
                     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                        WidgetPreview(fetchState, widgetData, prefs)
+                        WidgetPreview(fetchState, widgetData, widgetData.toState())
                     }
                 }
             )
@@ -424,61 +414,20 @@ fun WidgetName(
 fun WidgetPreview(
     fetchState: FetchState,
     widgetData: WidgetData,
-    prefs: WidgetData.Prefs
+    state: WidgetData.Data,
 ) {
-    val padding = with(LocalDensity.current) { 24.dp.toPx() }
-    val widgetLayout by derivedStateOf {
-        if (prefs.sizePref > 0) {
-            R.layout.widget_1x1
-        } else {
-            R.layout.widget_2x1
-        }
+    Box(
+        modifier = Modifier.fillMaxWidth().height(220.dp)
+            .paint(painterResource(R.drawable.bg_header_light), contentScale = ContentScale.FillBounds)
+            .padding(24.dp),
+    ) {
+        val quotes by widgetData.stocks.collectAsState()
+        val data = remember(state) { SerializableWidgetState.from(state, fetchState, false) }
+        GlanceWidgetPreview(
+            modifier = Modifier.fillMaxWidth().height(220.dp),
+            widgetData = data,
+            quotes = quotes,
+            onRefreshClick = {},
+        )
     }
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(220.dp),
-        factory = { context ->
-            val previewContainer = FrameLayout(context)
-            previewContainer.layoutParams =
-                LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            previewContainer.setPadding(padding.toInt())
-            previewContainer.setBackgroundResource(R.drawable.bg_header_light)
-            val view = LayoutInflater.from(context).inflate(widgetLayout, previewContainer, true)
-            view.findViewById<GridView>(R.id.list).adapter = WidgetPreviewAdapter(widgetData, prefs)
-            previewContainer
-        },
-        update = {
-            val widgetLayout = it.findViewById<View>(R.id.widget_layout)
-            updatePreview(
-                it.context,
-                widgetLayout,
-                fetchState,
-                widgetData,
-                prefs
-            )
-        }
-    )
-}
-
-private fun updatePreview(
-    context: Context,
-    widgetLayout: View,
-    fetchState: FetchState,
-    widgetData: WidgetData,
-    prefs: WidgetData.Prefs
-) {
-    widgetLayout.setBackgroundResource(prefs.backgroundResource)
-    val lastUpdatedText = when (fetchState) {
-        is FetchState.Success -> context.getString(R.string.last_fetch, fetchState.displayString)
-        is FetchState.Failure -> context.getString(R.string.refresh_failed)
-        else -> FetchState.NotFetched.displayString
-    }
-    widgetLayout.findViewById<TextView>(R.id.last_updated).text = lastUpdatedText
-    widgetLayout.findViewById<View>(R.id.widget_header).isVisible =
-        !prefs.hideWidgetHeader
-    (widgetLayout.findViewById<GridView>(R.id.list).adapter as WidgetPreviewAdapter).refresh(
-        widgetData,
-        prefs
-    )
 }

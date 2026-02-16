@@ -35,7 +35,6 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
 import androidx.glance.currentState
-import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
@@ -48,6 +47,7 @@ import androidx.glance.layout.wrapContentHeight
 import androidx.glance.layout.wrapContentSize
 import androidx.glance.preview.ExperimentalGlancePreviewApi
 import androidx.glance.preview.Preview
+import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontStyle
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
@@ -62,8 +62,6 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -192,13 +190,12 @@ private fun QuotesGrid(
     val changeType by remember(widgetData) { mutableStateOf(widgetData.changeType) }
     val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
+    val layoutType = remember(widgetData) { widgetData.layoutType }
+    val isBold = widgetData.boldText
     LazyVerticalGrid(
         modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
     ) {
-        val isBold = widgetData.boldText
-        val layoutType = widgetData.layoutType
-
         items(quotes.size) {
             val stock = quotes[it]
             val changeValueFormatted = stock.changeString()
@@ -279,7 +276,9 @@ private fun QuotesGrid(
                             contentAlignment = Alignment.CenterEnd,
                         ) {
                             AndroidRemoteViews(
-                                remoteViews = flipper, containerViewId = R.id.view_flipper, modifier = GlanceModifier.fillMaxWidth()
+                                remoteViews = flipper,
+                                containerViewId = R.id.view_flipper,
+                                modifier = GlanceModifier.fillMaxWidth()
                             ) {
                                 Text(
                                     modifier = GlanceModifier.fillMaxWidth(),
@@ -314,8 +313,7 @@ private fun QuotesGrid(
                                     } else {
                                         GlanceModifier
                                     }
-                                )
-                                ,
+                                ),
                             text = changeFormatted,
                             style = TextStyle(
                                 color = changeColor,
@@ -417,14 +415,15 @@ private fun MyPortfolio(
     val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
     val gainLoss = stock.gainLoss()
     val gainLossColor = ColorProvider(widgetData.getChangeColor(gainLoss, gainLoss))
-    Column(modifier = GlanceModifier.fillMaxSize()
-        .clickable(
-            actionStartActivity<HomeActivity>(
-                actionParametersOf(
-                    ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
+    Column(
+        modifier = GlanceModifier.fillMaxSize()
+            .clickable(
+                actionStartActivity<HomeActivity>(
+                    actionParametersOf(
+                        ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
+                    )
                 )
             )
-        )
     ) {
         Row(modifier = GlanceModifier.fillMaxWidth().wrapContentHeight()) {
             Text(
@@ -500,7 +499,13 @@ private fun WidgetSingleColumnPreview() {
         )
         GlanceWidget(
             widgetData = data,
-            quotes = listOf(fakeQuote("AAPL"), fakeQuote("MSFT"), fakeQuote("GOOG"), fakeQuote("AMZN"), fakeQuote("BRK-B"))
+            quotes = listOf(
+                fakeQuote("AAPL"),
+                fakeQuote("MSFT"),
+                fakeQuote("GOOG"),
+                fakeQuote("AMZN"),
+                fakeQuote("BRK-B")
+            )
         )
     }
 }
@@ -530,7 +535,13 @@ private fun WidgetFixedPreview() {
         )
         GlanceWidget(
             widgetData = data,
-            quotes = listOf(fakeQuote("AAPL"), fakeQuote("MSFT"), fakeQuote("GOOG"), fakeQuote("AMZN"), fakeQuote("BRK-B"))
+            quotes = listOf(
+                fakeQuote("AAPL"),
+                fakeQuote("MSFT"),
+                fakeQuote("GOOG"),
+                fakeQuote("AMZN"),
+                fakeQuote("BRK-B")
+            )
         )
     }
 }
@@ -545,7 +556,13 @@ private fun WidgetAnimatedPreview() {
         )
         GlanceWidget(
             widgetData = data,
-            quotes = listOf(fakeQuote("AAPL"), fakeQuote("MSFT"), fakeQuote("GOOG"), fakeQuote("AMZN"), fakeQuote("BRK-B"))
+            quotes = listOf(
+                fakeQuote("AAPL"),
+                fakeQuote("MSFT"),
+                fakeQuote("GOOG"),
+                fakeQuote("AMZN"),
+                fakeQuote("BRK-B")
+            )
         )
     }
 }
@@ -560,7 +577,13 @@ private fun WidgetTabsPreview() {
         )
         GlanceWidget(
             widgetData = data,
-            quotes = listOf(fakeQuote("AAPL"), fakeQuote("MSFT"), fakeQuote("GOOG"), fakeQuote("AMZN"), fakeQuote("BRK-B"))
+            quotes = listOf(
+                fakeQuote("AAPL"),
+                fakeQuote("MSFT"),
+                fakeQuote("GOOG"),
+                fakeQuote("AMZN"),
+                fakeQuote("BRK-B")
+            )
         )
     }
 }
@@ -623,7 +646,6 @@ private fun previewDataState(
     negativeTextColor = R.color.text_widget_negative,
     positiveTextColor = R.color.text_widget_positive,
     textColor = R.color.widget_text,
-    stockViewLayout = R.layout.stockview,
     backgroundResource = R.drawable.app_widget_background,
     isRefreshing = false,
     fetchState = SerializableFetchState.Success(System.currentTimeMillis()),
@@ -632,11 +654,14 @@ private fun previewDataState(
 class RefreshCallback : ActionCallback {
     @Inject
     internal lateinit var stocksProvider: StocksProvider
+
     @Inject
     internal lateinit var appPreferences: AppPreferences
+
     @Inject
     internal lateinit var widgetDataProvider: WidgetDataProvider
     var injected = false
+
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
@@ -646,54 +671,41 @@ class RefreshCallback : ActionCallback {
             Injector.appComponent().inject(this)
             injected = true
         }
-        coroutineScope {
-            val glanceAppWidgetManager = GlanceAppWidgetManager(context)
-            val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
-            appPreferences.setRefreshing(true)
-            // Update Glance state with the flipped change type
-            updateAppWidgetState(
-                context = context,
-                definition = WidgetGlanceStateDefinition,
-                glanceId = glanceId
-            ) { currentState ->
-                currentState.copy(
-                    widgetState = currentState.widgetState.copy(isRefreshing = true)
-                )
-            }
-            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
-            val fetchTask = async {
-                stocksProvider.fetch()
-            }
-            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
-            fetchTask.await()
-
-            val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
-            val currentQuotes = widgetData.stocks.value
-            val currentFetchState = stocksProvider.fetchState.value
-            val currentIsRefreshing = appPreferences.isRefreshing.value
-            updateAppWidgetState(
-                context = context,
-                definition = WidgetGlanceStateDefinition,
-                glanceId = glanceId,
-            ) { currentState ->
-                currentState.copy(
-                    widgetState = currentState.widgetState.copy(isRefreshing = false)
-                )
-                currentState.copy(
-                    quotes = currentQuotes,
-                    widgetState = currentState.widgetState.copy(
-                        fetchState = SerializableFetchState.from(currentFetchState),
-                        isRefreshing = currentIsRefreshing,
-                    )
-                )
-            }
-
-
-            widgetDataProvider.broadcastUpdateWidget(appWidgetId)
+        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+        val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
+        appPreferences.setRefreshing(true)
+        // Update Glance state with the flipped change type
+        updateAppWidgetState(
+            context = context,
+            definition = WidgetGlanceStateDefinition,
+            glanceId = glanceId
+        ) { currentState ->
+            currentState.copy(
+                widgetState = currentState.widgetState.copy(isRefreshing = true)
+            )
         }
+
+        stocksProvider.fetch()
+
+        val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
+        val currentQuotes = widgetData.stocks.value
+        val currentFetchState = stocksProvider.fetchState.value
+        updateAppWidgetState(
+            context = context,
+            definition = WidgetGlanceStateDefinition,
+            glanceId = glanceId,
+        ) { currentState ->
+            currentState.copy(
+                quotes = currentQuotes,
+                widgetState = currentState.widgetState.copy(
+                    fetchState = SerializableFetchState.from(currentFetchState),
+                    isRefreshing = false,
+                )
+            )
+        }
+        widgetDataProvider.broadcastUpdateWidget(appWidgetId)
     }
 }
-
 
 class FlipTextCallback : ActionCallback {
     @Inject
