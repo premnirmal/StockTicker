@@ -457,7 +457,7 @@ class WidgetData : IWidgetData {
         emitWidgetChanges()
     }
 
-    private fun emitWidgetChanges() {
+    fun emitWidgetChanges() {
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
             coroutineScope.launch {
                 val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(widgetId)

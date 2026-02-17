@@ -31,6 +31,7 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.GridCells
 import androidx.glance.appwidget.lazy.LazyVerticalGrid
+import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
@@ -196,11 +197,10 @@ private fun QuotesGrid(
         modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
     ) {
-        items(quotes.size) {
-            val stock = quotes[it]
+        items(items = quotes, itemId = { it.symbol.hashCode().toLong() }) { stock ->
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()
-            val priceFormatted = remember(widgetData.showCurrency) {
+            val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
                 if (widgetData.showCurrency) {
                     stock.priceFormat.format(stock.lastTradePrice)
                 } else {
@@ -369,6 +369,27 @@ private fun Header(
                 fontWeight = FontWeight.Normal,
             ),
         )
+
+        Box(
+            modifier = GlanceModifier.wrapContentSize().clickable(
+                onClick = actionRunCallback<RefreshCallback>()
+            ),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (widgetData.isRefreshing) {
+                CircularProgressIndicator(
+                    modifier = GlanceModifier.size(18.dp),
+                    color = ColorProvider(R.color.text_widget_header),
+                )
+            } else {
+                Image(
+                    modifier = GlanceModifier.size(18.dp),
+                    provider = ImageProvider(R.drawable.ic_refresh),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(ColorProvider(R.color.text_widget_header)),
+                )
+            }
+        }
     }
 }
 
@@ -630,7 +651,63 @@ private fun previewDataState(
     fetchState = SerializableFetchState.Success(System.currentTimeMillis()),
 )
 
+class RefreshCallback : ActionCallback {
+    @Inject
+    internal lateinit var stocksProvider: StocksProvider
+
+    @Inject
+    internal lateinit var appPreferences: AppPreferences
+
+    @Inject
+    internal lateinit var widgetDataProvider: WidgetDataProvider
+    var injected = false
+
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        if (!injected) {
+            Injector.appComponent().inject(this)
+            injected = true
+        }
+        val glanceAppWidgetManager = GlanceAppWidgetManager(context)
+        val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
+        appPreferences.setRefreshing(true)
+        updateAppWidgetState(
+            context = context,
+            definition = WidgetGlanceStateDefinition,
+            glanceId = glanceId
+        ) { currentState ->
+            currentState.copy(
+                widgetState = currentState.widgetState.copy(isRefreshing = true)
+            )
+        }
+
+        stocksProvider.fetch()
+
+        val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
+        val currentQuotes = widgetData.stocks.value
+        val currentFetchState = stocksProvider.fetchState.value
+        updateAppWidgetState(
+            context = context,
+            definition = WidgetGlanceStateDefinition,
+            glanceId = glanceId,
+        ) { currentState ->
+            currentState.copy(
+                quotes = currentQuotes,
+                widgetState = currentState.widgetState.copy(
+                    fetchState = SerializableFetchState.from(currentFetchState),
+                    isRefreshing = false,
+                )
+            )
+        }
+    }
+}
+
 class FlipTextCallback : ActionCallback {
+    @Inject
+    internal lateinit var stocksProvider: StocksProvider
     @Inject
     internal lateinit var widgetDataProvider: WidgetDataProvider
     var injected = false
@@ -647,6 +724,8 @@ class FlipTextCallback : ActionCallback {
         val glanceAppWidgetManager = GlanceAppWidgetManager(context)
         val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
         val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
+        val currentQuotes = widgetData.stocks.value
+        val currentFetchState = stocksProvider.fetchState.value
         // Update Glance state with the flipped change type
         updateAppWidgetState(
             context = context,
@@ -658,13 +737,14 @@ class FlipTextCallback : ActionCallback {
             } else {
                 SerializableChangeType.Value
             }
-
             widgetData.setChange(newChangeType == SerializableChangeType.Percent)
-
             currentState.copy(
-                widgetState = currentState.widgetState.copy(changeType = newChangeType)
+                quotes = currentQuotes,
+                widgetState = currentState.widgetState.copy(
+                    changeType = newChangeType,
+                    fetchState = SerializableFetchState.from(currentFetchState),
+                )
             )
         }
-        widgetDataProvider.broadcastUpdateWidget(appWidgetId)
     }
 }

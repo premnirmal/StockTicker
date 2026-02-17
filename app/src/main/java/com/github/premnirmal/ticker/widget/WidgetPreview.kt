@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -29,6 +32,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.AndroidUiModes.UI_MODE_NIGHT_YES
@@ -47,6 +51,7 @@ fun GlanceWidgetPreview(
     modifier: Modifier,
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
+    onRefreshClick: () -> Unit = {},
 ) {
     val columns = when {
         widgetData.singleStockPerRow -> 1
@@ -80,7 +85,7 @@ fun GlanceWidgetPreview(
                 }
             } else {
                 if (!widgetData.hideWidgetHeader) {
-                    Header(widgetData)
+                    Header(widgetData, onRefreshClick)
                 }
                 QuotesGrid(columns, widgetData, quotes)
             }
@@ -91,6 +96,7 @@ fun GlanceWidgetPreview(
 @Composable
 private fun Header(
     widgetData: SerializableWidgetState,
+    onRefreshClick: () -> Unit,
 ) {
     val lastUpdatedText = when (widgetData.fetchState) {
         is SerializableFetchState.Success -> stringResource(R.string.last_fetch, widgetData.fetchState.displayString)
@@ -114,6 +120,27 @@ private fun Header(
                 fontWeight = FontWeight.Normal,
             ),
         )
+
+        Box(
+            modifier = Modifier
+                .wrapContentSize()
+                .clickable(onClick = onRefreshClick),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (widgetData.isRefreshing) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(18.dp),
+                    color = colorResource(R.color.text_widget_header),
+                )
+            } else {
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(R.drawable.ic_refresh),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(colorResource(R.color.text_widget_header)),
+                )
+            }
+        }
     }
 }
 
@@ -123,7 +150,7 @@ private fun QuotesGrid(
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
 ) {
-    val changeType by remember(widgetData) { mutableStateOf(widgetData.changeType) }
+    var changeType by remember(widgetData) { mutableStateOf(widgetData.changeType) }
     val textColor = colorResource(widgetData.textColor)
     val fontSize = widgetData.fontSize
     val layoutType = remember(widgetData) { widgetData.layoutType }
@@ -132,8 +159,7 @@ private fun QuotesGrid(
         modifier = Modifier,
         columns = GridCells.Fixed(columns),
     ) {
-        items(quotes.size) {
-            val stock = quotes[it]
+        items(items = quotes, key = { it.symbol }) { stock ->
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()
             val priceFormatted = remember(widgetData.showCurrency) {
@@ -154,11 +180,20 @@ private fun QuotesGrid(
                 }
             }
 
+            val onClickValue = {
+                if (layoutType == SerializableLayoutType.Fixed) {
+                    changeType = when (changeType) {
+                        SerializableChangeType.Value -> SerializableChangeType.Percent
+                        SerializableChangeType.Percent -> SerializableChangeType.Value
+                    }
+                }
+            }
+
             if (layoutType == SerializableLayoutType.MyPortfolio) {
-                // MyPortfolio(
-                //     stock = stock,
-                //     widgetData = widgetData,
-                // )
+                MyPortfolio(
+                    stock = stock,
+                    widgetData = widgetData,
+                )
             } else {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -192,7 +227,8 @@ private fun QuotesGrid(
                     Text(
                         modifier = Modifier
                             .weight(1f)
-                            .padding(end = 2.dp),
+                            .padding(end = 2.dp)
+                            .clickable(onClick = onClickValue),
                         text = changeFormatted,
                         style = TextStyle(
                             color = changeColor,
@@ -220,6 +256,95 @@ private fun QuotesGrid(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun MyPortfolio(
+    stock: Quote,
+    widgetData: SerializableWidgetState,
+) {
+    val textColor = colorResource(widgetData.textColor)
+    val fontSize = widgetData.fontSize
+    val gainLossFormatted = stock.gainLossString()
+    val gainLossPercentFormatted = stock.gainLossPercentString()
+    val priceFormatted = if (widgetData.showCurrency) {
+        stock.priceFormat.format(stock.lastTradePrice)
+    } else {
+        stock.priceString()
+    }
+    val holdingsFormatted = if (widgetData.showCurrency) {
+        stock.priceFormat.format(stock.holdings())
+    } else {
+        stock.holdingsString()
+    }
+    val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
+    val gainLoss = stock.gainLoss()
+    val gainLossColor = colorResource(widgetData.getChangeColor(gainLoss, gainLoss))
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
+            Text(
+                modifier = Modifier.weight(1f).padding(end = 2.dp),
+                text = displayName,
+                style = TextStyle(
+                    color = textColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Medium,
+                ),
+                maxLines = 1,
+            )
+            Text(
+                modifier = Modifier.padding(end = 2.dp),
+                text = holdingsFormatted,
+                style = TextStyle(
+                    color = textColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Normal,
+                ),
+                maxLines = 1,
+            )
+            Text(
+                modifier = Modifier.weight(1f).padding(end = 2.dp),
+                text = gainLossFormatted,
+                style = TextStyle(
+                    color = gainLossColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Normal,
+                ),
+                maxLines = 1,
+            )
+            Text(
+                modifier = Modifier.weight(1f).padding(end = 2.dp),
+                text = gainLossPercentFormatted,
+                style = TextStyle(
+                    color = gainLossColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    textAlign = TextAlign.End,
+                    fontWeight = FontWeight.Normal,
+                ),
+                maxLines = 1,
+            )
+        }
+
+        Row(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = priceFormatted,
+                style = TextStyle(
+                    color = textColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Start,
+                    fontStyle = FontStyle.Italic,
+                ),
+                maxLines = 1,
+            )
         }
     }
 }

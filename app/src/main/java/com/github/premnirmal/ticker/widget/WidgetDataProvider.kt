@@ -6,7 +6,7 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -30,7 +30,7 @@ class WidgetDataProvider @Inject constructor(
     val widgetData: Flow<List<WidgetData>>
         get() = _widgetData
 
-    private val _widgetData = MutableSharedFlow<List<WidgetData>>(replay = 1)
+    private val _widgetData = MutableStateFlow<List<WidgetData>>(emptyList())
 
     fun getAppWidgetIds(): IntArray {
         return runBlocking {
@@ -48,7 +48,7 @@ class WidgetDataProvider @Inject constructor(
         val widgetDataList = appWidgetIds.map {
             dataForWidgetId(it)
         }.sortedBy { it.widgetName() }
-        _widgetData.tryEmit(widgetDataList)
+        _widgetData.value = widgetDataList
         return widgetDataList
     }
 
@@ -84,6 +84,7 @@ class WidgetDataProvider @Inject constructor(
         refreshWidgetDataList()
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
             try {
+                dataForWidgetId(widgetId).emitWidgetChanges()
                 GlanceStocksWidget().update(context, glanceAppWidgetManager.getGlanceIdBy(widgetId))
             } catch (e: Exception) {
                 Timber.e(e)
@@ -93,6 +94,9 @@ class WidgetDataProvider @Inject constructor(
 
     suspend fun broadcastUpdateAllWidgets() {
         refreshWidgetDataList()
+        _widgetData.value.forEach {
+            it.emitWidgetChanges()
+        }
         GlanceStocksWidget().updateAll(context)
     }
 

@@ -223,7 +223,7 @@ class AppPreferences @Inject constructor(
 
     var updateIntervalPref: Int
         get() = runBlocking {
-            updateIntervalFlow.first().coerceIn(0, 2)
+            updateIntervalFlow.first().coerceIn(0, 4)
         }
         set(value) = runBlocking {
             context.dataStore.edit { prefs ->

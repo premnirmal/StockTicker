@@ -69,6 +69,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.themePref = themePref
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -92,6 +93,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.setStartTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -99,6 +101,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.setEndTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -110,6 +113,7 @@ class SettingsViewModel @Inject constructor(
             }
             appPreferences.setUpdateDays(days.map { it.toString() }.toSet())
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -118,6 +122,7 @@ class SettingsViewModel @Inject constructor(
             val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
             widgetData.setAutoSort(autoSort)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -125,6 +130,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.setRoundToTwoDecimalPlaces(round)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 

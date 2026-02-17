@@ -140,9 +140,12 @@ private fun WidgetsScreen(
                 }
                 item {
                     WidgetPreview(
-                        fetchState,
-                        widgetData,
-                        widgetData.toState(),
+                        fetchState = fetchState,
+                        widgetData = widgetData,
+                        state = widgetData.toState(),
+                        onRefreshClick = {
+                            viewModel.refresh()
+                        },
                     )
                 }
                 widgetSettings(widgetData, prefs, selectedWidgetId)
@@ -170,7 +173,7 @@ private fun WidgetsScreen(
                                     onItemSelected = {
                                         widgetDataSelectedIndex = it
                                     },
-                                    itemText = { it.widgetName() }
+                                    itemText = { it.widgetName() },
                                 )
                             }
                         }
@@ -179,7 +182,14 @@ private fun WidgetsScreen(
                 },
                 second = {
                     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-                        WidgetPreview(fetchState, widgetData, widgetData.toState())
+                        WidgetPreview(
+                            fetchState = fetchState,
+                            widgetData = widgetData,
+                            state = widgetData.toState(),
+                            onRefreshClick = {
+                                viewModel.refresh()
+                            },
+                        )
                     }
                 }
             )
@@ -415,6 +425,7 @@ fun WidgetPreview(
     fetchState: FetchState,
     widgetData: WidgetData,
     state: WidgetData.Data,
+    onRefreshClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxWidth().height(220.dp)
@@ -427,6 +438,7 @@ fun WidgetPreview(
             modifier = Modifier.fillMaxWidth().height(220.dp),
             widgetData = data,
             quotes = quotes,
+            onRefreshClick = onRefreshClick,
         )
     }
 }

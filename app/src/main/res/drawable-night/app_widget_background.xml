@@ -4,7 +4,7 @@
   <corners android:radius="?attr/appWidgetRadius" />
   <gradient
       android:angle="135"
-      android:centerColor="#752a2a2a"
-      android:endColor="#98000000"
-      android:startColor="#98000000" />
+      android:centerColor="#FF2a2a2a"
+      android:endColor="#FF000000"
+      android:startColor="#FF000000" />
 </shape>

@@ -50,7 +50,7 @@ class AlarmScheduler @Inject constructor(
         var startTime = clock.todayZoned()
             .withHour(startTimez.hour)
             .withMinute(startTimez.minute)
-        var endTime = clock.todayZoned()
+        val endTime = clock.todayZoned()
             .withHour(endTimez.hour)
             .withMinute(endTimez.minute)
         if (inverse) {
