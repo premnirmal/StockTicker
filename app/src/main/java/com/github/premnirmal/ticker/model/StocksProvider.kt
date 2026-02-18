@@ -210,6 +210,7 @@ class StocksProvider constructor(
                         saveLastFetched(lastFetched)
                         scheduleUpdate()
                     }
+                    appPreferences.setRefreshing(false)
                     widgetDataProvider.broadcastUpdateAllWidgets()
                     FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
                 }

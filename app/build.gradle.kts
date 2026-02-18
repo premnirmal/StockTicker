@@ -60,9 +60,9 @@ android {
       ByteArrayOutputStream().use { stdout ->
         exec {
           if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
+            commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 15 | Select-Object -last 1")
           } else {
-            commandLine("sh", "-c", "git tag --sort=-committerdate | head -15 | tail -1")
+            commandLine("sh", "-c", "git tag --sort=-committerdate | head -20 | tail -1")
           }
           standardOutput = stdout
         }
