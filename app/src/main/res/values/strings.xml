@@ -42,7 +42,7 @@
   <string name="add_ticker">Add ticker</string>
   <string name="bg">Widget background</string>
   <string name="layout_type">Widget type</string>
-  <string name="widget_width">Widget size</string>
+  <string name="widget_width">Number of columns</string>
   <string name="text_color">Text color</string>
   <string name="start_time">Start time</string>
   <string name="end_time">End time</string>

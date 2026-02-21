@@ -141,7 +141,8 @@ fun GlanceWidget(
     val size = LocalSize.current
     val width = size.width.value.toInt()
     val columns = when {
-        widgetData.singleStockPerRow -> 1
+        widgetData.sizePref > 0 -> widgetData.sizePref
+        // 0 means auto, where we calculate column count based on the width below
         width > 850 -> 4
         width > 750 -> 3
         width > 250 -> 2

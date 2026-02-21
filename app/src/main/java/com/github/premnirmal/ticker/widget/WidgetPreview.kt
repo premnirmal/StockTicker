@@ -54,7 +54,7 @@ fun GlanceWidgetPreview(
     onRefreshClick: () -> Unit = {},
 ) {
     val columns = when {
-        widgetData.singleStockPerRow -> 1
+        widgetData.sizePref > 0 -> widgetData.sizePref
         widgetData.layoutType == SerializableLayoutType.MyPortfolio -> 1
         else -> 2
     }

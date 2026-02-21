@@ -64,9 +64,6 @@ data class SerializableWidgetState(
     val isRefreshing: Boolean = false,
     val fetchState: SerializableFetchState = SerializableFetchState.NotFetched,
 ) {
-    val singleStockPerRow: Boolean
-        get() = sizePref > 0
-
     fun getChangeColor(change: Float, changeInPercent: Float): Int {
         return if (change < 0f || changeInPercent < 0f) {
             negativeTextColor

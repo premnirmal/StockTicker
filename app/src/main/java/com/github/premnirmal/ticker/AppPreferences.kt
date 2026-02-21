@@ -292,7 +292,6 @@ class AppPreferences @Inject constructor(
             return builder.toString()
         }
 
-        const val UPDATE_FILTER = "com.github.premnirmal.ticker.UPDATE"
         const val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
         const val PREFS_NAME = "com.github.premnirmal.ticker"
         const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
