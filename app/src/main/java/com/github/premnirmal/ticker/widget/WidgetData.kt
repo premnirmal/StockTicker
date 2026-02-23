@@ -8,11 +8,13 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import androidx.datastore.preferences.core.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.dataStore
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
@@ -21,7 +23,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
 
@@ -33,6 +37,7 @@ class WidgetData : IWidgetData {
         private const val WIDGET_NAME = "WIDGET_NAME"
         private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
         private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
+        private const val FONT_SIZE = AppPreferences.FONT_SIZE
         private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
         private const val SHOW_CURRENCY = AppPreferences.SHOW_CURRENCY
         private const val PERCENT = AppPreferences.PERCENT
@@ -197,8 +202,10 @@ class WidgetData : IWidgetData {
         emitWidgetChanges()
     }
 
+    fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 0)
+
     fun readFontSize(): Float {
-        val size = appPreferences.textSizePref
+        val size = fontSizePref()
         val resId = when (size) {
             -2 -> R.integer.text_size_nano
             -1 -> R.integer.text_size_mini
@@ -210,6 +217,15 @@ class WidgetData : IWidgetData {
             else -> R.integer.text_size_medium
         }
         return context.resources.getInteger(resId).toFloat() - 4f
+    }
+
+    fun setFontSize(value: Int) {
+        preferences.edit {
+            putInt(FONT_SIZE, value)
+        }
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)
@@ -413,6 +429,7 @@ class WidgetData : IWidgetData {
             textColourPref = textColorPref(),
             changeType = changeType(),
             layoutType = layoutType,
+            fontSizePref = fontSizePref(),
             fontSize = readFontSize(),
             backgroundResource = backgroundResource(),
             positiveTextColor = positiveTextColor,
@@ -426,6 +443,7 @@ class WidgetData : IWidgetData {
             boldText = readIsBoldEnabled(),
             changeType = changeType(),
             layoutType = layoutType,
+            fontSizePref = fontSizePref(),
             fontSize = readFontSize(),
             showCurrency = readIsCurrencyEnabled(),
             isDarkMode = nightMode,
@@ -514,6 +532,7 @@ class WidgetData : IWidgetData {
         val boldText: Boolean,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
+        val fontSizePref: Int,
         val fontSize: Float,
         val showCurrency: Boolean,
         val isDarkMode: Boolean,
@@ -548,6 +567,7 @@ class WidgetData : IWidgetData {
         val textColourPref: Int,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
+        val fontSizePref: Int,
         val fontSize: Float,
         @param:DrawableRes
         @get:DrawableRes

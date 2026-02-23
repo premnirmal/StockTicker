@@ -178,12 +178,6 @@ class AppPreferences @Inject constructor(
         prefs[themePrefKey] ?: FOLLOW_SYSTEM_THEME
     }
 
-    private val textSizePrefKey: Preferences.Key<Int> = intPreferencesKey(FONT_SIZE)
-
-    val textSizeFlow: Flow<Int> = context.dataStore.data.map { prefs ->
-        prefs[textSizePrefKey] ?: 1
-    }
-
     private val updateIntervalPrefKey: Preferences.Key<Int> = intPreferencesKey(UPDATE_INTERVAL)
 
     val updateIntervalFlow: Flow<Int> = context.dataStore.data.map { prefs ->
@@ -208,16 +202,6 @@ class AppPreferences @Inject constructor(
         set(value) = runBlocking {
             context.dataStore.edit { prefs ->
                 prefs[themePrefKey] = value
-            }
-        }
-
-    var textSizePref: Int
-        get() = runBlocking {
-            textSizeFlow.first().coerceIn(-2, 4)
-        }
-        set(value) = runBlocking {
-            context.dataStore.edit { prefs ->
-                prefs[textSizePrefKey] = value
             }
         }
 
@@ -294,7 +278,6 @@ class AppPreferences @Inject constructor(
 
         const val SORTED_STOCK_LIST = "SORTED_STOCK_LIST"
         const val PREFS_NAME = "com.github.premnirmal.ticker"
-        const val FONT_SIZE = "com.github.premnirmal.ticker.textsize"
         const val START_TIME = "START_TIME"
         const val END_TIME = "END_TIME"
         const val UPDATE_DAYS = "UPDATE_DAYS"
@@ -311,6 +294,7 @@ class AppPreferences @Inject constructor(
         const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
         const val LAYOUT_TYPE = "LAYOUT_TYPE"
         const val WIDGET_SIZE = "WIDGET_SIZE"
+        const val FONT_SIZE = "FONT_SIZE"
         const val BOLD_CHANGE = "BOLD_CHANGE"
         const val SHOW_CURRENCY = "SHOW_CURRENCY"
         const val PERCENT = "PERCENT"

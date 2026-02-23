@@ -73,14 +73,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setWidgetTextSizePref(textSizePref: Int) {
-        viewModelScope.launch {
-            appPreferences.textSizePref = textSizePref
-            _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
-            broadcastUpdateWidget()
-        }
-    }
-
     fun setUpdateIntervalPref(intervalPref: Int) {
         viewModelScope.launch {
             appPreferences.updateIntervalPref = intervalPref
@@ -207,7 +199,6 @@ class SettingsViewModel @Inject constructor(
         return SettingsData(
             hasWidgets = widgetDataProvider.hasWidget(),
             themePref = appPreferences.themePref,
-            textSizePref = appPreferences.textSizePref,
             updateIntervalPref = appPreferences.updateIntervalPref,
             updateDays = appPreferences.updateDays(),
             notificationAlerts = appPreferences.notificationAlerts(),
@@ -226,7 +217,6 @@ class SettingsViewModel @Inject constructor(
     data class SettingsData(
         val hasWidgets: Boolean,
         val themePref: Int,
-        val textSizePref: Int,
         val updateIntervalPref: Int,
         val updateDays: Set<DayOfWeek>,
         val notificationAlerts: Boolean,

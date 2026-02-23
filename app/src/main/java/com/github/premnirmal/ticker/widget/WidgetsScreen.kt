@@ -221,6 +221,10 @@ private fun LazyListScope.widgetSettings(
         Divider()
     }
     item {
+        FontSize(widgetData, prefs)
+        Divider()
+    }
+    item {
         WidgetSize(widgetData, prefs)
         Divider()
     }
@@ -299,6 +303,21 @@ private fun LazyListScope.widgetSettings(
         selected = selected,
         onSelected = {
             widgetData.setWidgetSizePref(it)
+        }
+    )
+}
+
+@Composable fun FontSize(
+    widgetData: WidgetData,
+    prefs: WidgetData.Prefs
+) {
+    val selected = prefs.fontSizePref
+    ListPreference(
+        title = stringResource(id = R.string.choose_text_size),
+        items = stringArrayResource(id = R.array.font_sizes),
+        selected = selected,
+        onSelected = {
+            widgetData.setFontSize(it)
         }
     )
 }

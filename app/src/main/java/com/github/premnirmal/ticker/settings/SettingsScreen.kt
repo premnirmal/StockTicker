@@ -133,17 +133,6 @@ private fun LazyListScope.settingsItems(
     }
     item {
         ListPreference(
-            title = stringResource(id = R.string.choose_text_size),
-            items = stringArrayResource(id = R.array.font_sizes),
-            selected = settingsData.textSizePref,
-            onSelected = {
-                viewModel.setWidgetTextSizePref(it)
-            }
-        )
-        Divider()
-    }
-    item {
-        ListPreference(
             title = stringResource(id = R.string.update_interval),
             items = stringArrayResource(id = R.array.sync_periods),
             selected = settingsData.updateIntervalPref,
