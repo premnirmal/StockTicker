@@ -202,7 +202,7 @@ class WidgetData : IWidgetData {
         emitWidgetChanges()
     }
 
-    fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 2)
+    fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 3)
 
     fun readFontSize(): Float {
         val size = fontSizePref()
