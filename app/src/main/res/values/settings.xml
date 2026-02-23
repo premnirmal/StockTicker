@@ -10,27 +10,11 @@
     <item>Huge</item>
     <item>Giant</item>
   </string-array>
-  <string-array name="font_sizes_values" translatable="false">
-    <item>−2</item>
-    <item>−1</item>
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-  </string-array>
 
   <string-array name="app_themes">
     <item>Light</item>
     <item>Dark</item>
     <item>Follow system</item>
-  </string-array>
-
-  <string-array name="app_themes_values" translatable="false">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
   </string-array>
 
   <string-array name="layout_types">
@@ -40,22 +24,8 @@
     <item>My portfolio</item>
   </string-array>
 
-  <string-array name="layout_types_values" translatable="false">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-  </string-array>
-
   <string-array name="widget_width_types">
     <item>Auto</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-    <item>5</item>
-  </string-array>
-  <string-array name="widget_width_values" translatable="false">
-    <item>0</item>
     <item>1</item>
     <item>2</item>
     <item>3</item>
@@ -82,13 +52,6 @@
     <item>45 minutes</item>
     <item>1 hour</item>
   </string-array>
-  <string-array name="sync_periods_values" translatable="false">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-  </string-array>
 
   <string-array name="days">
     <item>Monday</item>
@@ -98,14 +61,5 @@
     <item>Friday</item>
     <item>Saturday</item>
     <item>Sunday</item>
-  </string-array>
-  <string-array name="days_values" translatable="false">
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-    <item>5</item>
-    <item>6</item>
-    <item>7</item>
   </string-array>
 </resources>

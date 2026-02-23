@@ -24,12 +24,6 @@
     <item>Meu portfólio</item>
   </string-array>
 
-  <string-array name="layout_types_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-  </string-array>
-
   <string-array name="backgrounds">
     <item>Como o sistema</item>
     <item>Transparente</item>
@@ -49,13 +43,6 @@
     <item>45 minutos</item>
     <item>1 hora</item>
   </string-array>
-  <string-array name="sync_periods_values">
-    <item>0</item>
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-  </string-array>
 
   <string-array name="days">
     <item>Segunda-Feira</item>
@@ -65,14 +52,5 @@
     <item>Sexta-Feira</item>
     <item>Sábado</item>
     <item>Domingo</item>
-  </string-array>
-  <string-array name="days_values">
-    <item>1</item>
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-    <item>5</item>
-    <item>6</item>
-    <item>7</item>
   </string-array>
 </resources>

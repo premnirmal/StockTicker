@@ -202,26 +202,27 @@ class WidgetData : IWidgetData {
         emitWidgetChanges()
     }
 
-    fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 0)
+    fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 2)
 
     fun readFontSize(): Float {
         val size = fontSizePref()
         val resId = when (size) {
-            -2 -> R.integer.text_size_nano
-            -1 -> R.integer.text_size_mini
-            0 -> R.integer.text_size_small
-            1 -> R.integer.text_size_medium
-            2 -> R.integer.text_size_large
-            3 -> R.integer.text_size_huge
-            4 -> R.integer.text_size_giant
+            0 -> R.integer.text_size_nano
+            1 -> R.integer.text_size_mini
+            2 -> R.integer.text_size_small
+            3 -> R.integer.text_size_medium
+            4 -> R.integer.text_size_large
+            5 -> R.integer.text_size_huge
+            6 -> R.integer.text_size_giant
             else -> R.integer.text_size_medium
         }
         return context.resources.getInteger(resId).toFloat() - 4f
     }
 
     fun setFontSize(value: Int) {
+        val validValue = value.coerceIn(0, 6)
         preferences.edit {
-            putInt(FONT_SIZE, value)
+            putInt(FONT_SIZE, validValue)
         }
         _prefsFlow.value = toPrefs()
         _data.value = toState()
