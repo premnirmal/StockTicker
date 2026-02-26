@@ -10,30 +10,25 @@ import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
-import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 import java.time.DayOfWeek
 import javax.inject.Inject
-import kotlin.system.exitProcess
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val widgetDataProvider: WidgetDataProvider,
     private val appPreferences: AppPreferences,
-    private val db: QuotesDB,
     private val stocksProvider: StocksProvider,
     private val notificationsHandler: NotificationsHandler,
 ) : ViewModel() {
@@ -133,16 +128,6 @@ class SettingsViewModel @Inject constructor(
         }
         if (initializeHandler) {
             notificationsHandler.initialize()
-        }
-    }
-
-    fun clearAppData() {
-        viewModelScope.launch {
-            appPreferences.clear()
-            withContext(Dispatchers.IO) {
-                db.clearAllTables()
-            }
-            exitProcess(0)
         }
     }
 

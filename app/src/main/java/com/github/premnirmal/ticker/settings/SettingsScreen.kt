@@ -282,20 +282,6 @@ private fun LazyListScope.settingsItems(
     }
     item {
         val context = LocalContext.current
-        SettingsText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    context.showDialog(context.getString(R.string.are_you_sure)) { _, _ ->
-                        viewModel.clearAppData()
-                    }
-                },
-            title = stringResource(id = R.string.action_nuke),
-        )
-        Divider()
-    }
-    item {
-        val context = LocalContext.current
         val primaryColor = MaterialTheme.colorScheme.primary
         SettingsText(
             modifier = Modifier

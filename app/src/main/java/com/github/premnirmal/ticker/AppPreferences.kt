@@ -97,12 +97,6 @@ class AppPreferences @Inject constructor(
         return parseTime(endTimeString)
     }
 
-    fun clear() {
-        sharedPreferences.edit {
-            clear()
-        }
-    }
-
     fun updateDaysRaw(): Set<String> {
         val defaultSet = setOf("1", "2", "3", "4", "5")
         var selectedDays = sharedPreferences.getStringSet(UPDATE_DAYS, defaultSet)!!

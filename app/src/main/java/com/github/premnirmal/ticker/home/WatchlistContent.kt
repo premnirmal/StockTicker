@@ -265,7 +265,7 @@ private fun Content(
     gridSize: DpSize,
     rowState: LazyListState,
     hapticFeedback: HapticFeedback,
-    onQuoteClick: (Quote) -> Unit
+    onQuoteClick: (Quote) -> Unit,
 ) {
     if (widgets.isNotEmpty()) {
         val width = gridSize.width
@@ -336,7 +336,11 @@ private fun Content(
                                         ),
                                     interactionSource = interactionSource,
                                     quote = quote,
-                                    onClick = { onQuoteClick(quote) }
+                                    onClick = { onQuoteClick(quote) },
+                                    showMore = true,
+                                    onRemoveClick = { quote ->
+                                        widget.removeStock(quote.symbol)
+                                    }
                                 )
                             }
                         }

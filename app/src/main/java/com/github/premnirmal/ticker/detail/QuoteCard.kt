@@ -1,20 +1,31 @@
 package com.github.premnirmal.ticker.detail
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -36,7 +47,9 @@ fun QuoteCard(
     modifier: Modifier = Modifier,
     quoteNameMaxLines: Int = QuoteMaxLines,
     interactionSource: MutableInteractionSource? = null,
-    onClick: (Quote) -> Unit
+    onClick: (Quote) -> Unit,
+    onRemoveClick: (Quote) -> Unit = {},
+    showMore: Boolean = false,
 ) {
     AppCard(
         modifier = modifier,
@@ -44,9 +57,9 @@ fun QuoteCard(
         onClick = { onClick(quote) }
     ) {
         if (quote.hasPositions()) {
-            PositionCard(quote)
+            PositionCard(quote, onRemoveClick, showMore)
         } else {
-            InstrumentCard(quote, quoteNameMaxLines)
+            InstrumentCard(quote, quoteNameMaxLines, onRemoveClick, showMore)
         }
     }
 }
@@ -55,9 +68,25 @@ fun QuoteCard(
 private fun InstrumentCard(
     quote: Quote,
     quoteNameMaxLines: Int,
+    onRemoveClick: (Quote) -> Unit = {},
+    showMore: Boolean = false,
 ) {
     Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
-        QuoteSymbolText(text = quote.symbol)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            QuoteSymbolText(
+                modifier = Modifier.weight(1f),
+                text = quote.symbol
+            )
+            if(showMore) {
+                MoreIcon(
+                    onClick = {
+                        onRemoveClick(quote)
+                    },
+                )
+            }
+        }
         QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.name, maxLines = quoteNameMaxLines)
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -76,7 +105,7 @@ private fun InstrumentCard(
             Column(
                 modifier = Modifier.weight(1f, fill = true),
                 horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 QuoteChangeText(text = quote.changePercentStringWithSign(), up = quote.isUp, down = quote.isDown)
                 QuoteChangeText(text = quote.changeStringWithSign(), up = quote.isUp, down = quote.isDown)
@@ -88,15 +117,24 @@ private fun InstrumentCard(
 @Composable
 private fun PositionCard(
     quote: Quote,
+    onMoreClick: (Quote) -> Unit = {},
+    showMore: Boolean = false,
 ) {
     Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            QuoteSymbolText(modifier = Modifier.weight(0.5f), text = quote.symbol)
+            QuoteSymbolText(modifier = Modifier.weight(1f), text = quote.symbol)
             QuoteValueText(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier.weight(1f),
                 text = quote.priceFormat.format(quote.lastTradePrice),
                 textAlign = TextAlign.End
             )
+            if(showMore) {
+                MoreIcon(
+                    onClick = {
+                        onMoreClick(quote)
+                    }
+                )
+            }
         }
         QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.name, maxLines = 1)
         Row(
@@ -277,7 +315,8 @@ fun QuoteCardPreview() {
                 modifier = Modifier
                     .weight(1f, true)
                     .fillMaxHeight(),
-                onClick = {}
+                onClick = {},
+                showMore = true,
             )
             QuoteCard(
                 quote = Quote("MSFT", "Microsoft Corporation"),
@@ -307,8 +346,50 @@ fun QuoteCardPreview() {
                 modifier = Modifier
                     .weight(1f, true)
                     .fillMaxHeight(),
+                showMore = true,
                 onClick = {}
             )
+        }
+    }
+}
+
+@Composable
+private fun MoreIcon(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    var showPopup by rememberSaveable { mutableStateOf(false) }
+    Box {
+        IconButton(
+            modifier = modifier.size(16.dp),
+            onClick = {
+                showPopup = !showPopup
+            },
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_more),
+                contentDescription = null,
+            )
+        }
+        DropdownMenu(
+            expanded = showPopup,
+            onDismissRequest = {
+                showPopup = false
+            },
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 4.dp).clickable {
+                    onClick()
+                }) {
+                Icon(
+                    modifier = Modifier.size(18.dp).padding(end = 4.dp),
+                    painter = painterResource(R.drawable.ic_remove_circle),
+                    contentDescription = null,
+                )
+                Text(
+                    text = stringResource(id = R.string.remove),
+                )
+            }
         }
     }
 }
