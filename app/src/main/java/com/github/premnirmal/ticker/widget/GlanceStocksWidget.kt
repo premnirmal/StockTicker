@@ -371,24 +371,26 @@ private fun Header(
             ),
         )
 
-        Box(
-            modifier = GlanceModifier.wrapContentSize().clickable(
-                onClick = actionRunCallback<RefreshCallback>()
-            ),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (widgetData.isRefreshing) {
-                CircularProgressIndicator(
-                    modifier = GlanceModifier.size(18.dp),
-                    color = ColorProvider(R.color.text_widget_header),
-                )
-            } else {
-                Image(
-                    modifier = GlanceModifier.size(18.dp),
-                    provider = ImageProvider(R.drawable.ic_refresh),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(ColorProvider(R.color.text_widget_header)),
-                )
+        if (widgetData.showRefreshButton) {
+            Box(
+                modifier = GlanceModifier.wrapContentSize().clickable(
+                    onClick = actionRunCallback<RefreshCallback>()
+                ),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (widgetData.isRefreshing) {
+                    CircularProgressIndicator(
+                        modifier = GlanceModifier.size(18.dp),
+                        color = ColorProvider(R.color.text_widget_header),
+                    )
+                } else {
+                    Image(
+                        modifier = GlanceModifier.size(18.dp),
+                        provider = ImageProvider(R.drawable.ic_refresh),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(ColorProvider(R.color.text_widget_header)),
+                    )
+                }
             }
         }
     }

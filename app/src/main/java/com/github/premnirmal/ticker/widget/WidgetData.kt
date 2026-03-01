@@ -40,6 +40,7 @@ class WidgetData : IWidgetData {
         private const val FONT_SIZE = AppPreferences.FONT_SIZE
         private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
         private const val SHOW_CURRENCY = AppPreferences.SHOW_CURRENCY
+        private const val SHOW_REFRESH = AppPreferences.SHOW_REFRESH
         private const val PERCENT = AppPreferences.PERCENT
         private const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
         private const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
@@ -408,11 +409,15 @@ class WidgetData : IWidgetData {
         addTickers(stocksProvider.tickers.value)
     }
 
-    fun onWidgetRemoved() {
+    fun showRefreshButton(): Boolean = preferences.getBoolean(SHOW_REFRESH, false)
+
+    fun setShowRefreshButton(show: Boolean) {
         preferences.edit {
-            clear()
+            putBoolean(SHOW_REFRESH, show)
         }
         _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun toPrefs(): Prefs {
@@ -436,6 +441,7 @@ class WidgetData : IWidgetData {
             positiveTextColor = positiveTextColor,
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
+            showRefreshButton = showRefreshButton(),
         )
     }
 
@@ -454,6 +460,7 @@ class WidgetData : IWidgetData {
             positiveTextColor = positiveTextColor,
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
+            showRefreshButton = showRefreshButton(),
         )
     }
 
@@ -551,6 +558,7 @@ class WidgetData : IWidgetData {
         @param:ColorRes
         @get:ColorRes
         val textColor: Int,
+        val showRefreshButton: Boolean,
     ) : Parcelable
 
     @Parcelize
@@ -582,5 +590,6 @@ class WidgetData : IWidgetData {
         @param:ColorRes
         @get:ColorRes
         val textColor: Int,
+        val showRefreshButton: Boolean,
     ) : Parcelable
 }

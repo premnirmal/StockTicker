@@ -291,6 +291,7 @@ class AppPreferences @Inject constructor(
         const val FONT_SIZE = "FONT_SIZE"
         const val BOLD_CHANGE = "BOLD_CHANGE"
         const val SHOW_CURRENCY = "SHOW_CURRENCY"
+        const val SHOW_REFRESH = "SHOW_REFRESH"
         const val PERCENT = "PERCENT"
         const val CRUMB = "CRUMB"
         const val APP_VERSION_CODE = "APP_VERSION_CODE"

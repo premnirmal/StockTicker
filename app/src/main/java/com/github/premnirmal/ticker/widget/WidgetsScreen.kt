@@ -247,6 +247,10 @@ private fun LazyListScope.widgetSettings(
     item {
         ShowCurrency(widgetData, prefs)
     }
+    item {
+        ShowRefreshButton(widgetData, prefs)
+        Divider()
+    }
 }
 
 @Composable fun ShowCurrency(
@@ -393,6 +397,20 @@ private fun LazyListScope.widgetSettings(
         checked = checked
     ) {
         widgetData.setAutoSort(it)
+    }
+}
+
+@Composable fun ShowRefreshButton(
+    widgetData: WidgetData,
+    prefs: WidgetData.Prefs
+) {
+    val checked = prefs.showRefreshButton
+    CheckboxPreference(
+        title = stringResource(id = R.string.show_refresh),
+        subtitle = stringResource(id = R.string.show_refresh_desc),
+        checked = checked
+    ) {
+        widgetData.setShowRefreshButton(it)
     }
 }
 
