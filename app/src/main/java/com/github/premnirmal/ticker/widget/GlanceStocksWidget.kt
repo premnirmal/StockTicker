@@ -359,7 +359,7 @@ private fun Header(
         modifier = GlanceModifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val fontSize = widgetData.fontSize - 2f
+        val fontSize = widgetData.fontSize
         Text(
             modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp),
             text = lastUpdatedText,

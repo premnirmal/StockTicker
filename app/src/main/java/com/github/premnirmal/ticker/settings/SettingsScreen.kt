@@ -204,7 +204,7 @@ private fun LazyListScope.settingsItems(
         val checked = settingsData.notificationAlerts
         val state = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS) { granted ->
             if (!granted) {
-                context.showDialog(context.getString(R.string.notification_alerts_required_message))
+                context.showDialog(R.string.notification_alerts_required_message)
             } else {
                 viewModel.setReceiveNotificationAlerts(receive = true, initializeHandler = true)
             }
@@ -227,7 +227,7 @@ private fun LazyListScope.settingsItems(
             if (it != null) {
                 viewModel.sharePortfolio(context, it)
             } else {
-                context.showDialog(context.getString(R.string.error_sharing))
+                context.showDialog(R.string.error_sharing)
             }
         }
         SettingsText(
@@ -246,7 +246,7 @@ private fun LazyListScope.settingsItems(
             if (it != null) {
                 viewModel.importPortfolio(context, it)
             } else {
-                context.showDialog(context.getString(R.string.error_exporting))
+                context.showDialog(R.string.error_exporting)
             }
         }
         SettingsText(
@@ -266,7 +266,7 @@ private fun LazyListScope.settingsItems(
             if (it != null) {
                 viewModel.exportPortfolio(context, it)
             } else {
-                context.showDialog(context.getString(R.string.error_exporting))
+                context.showDialog(R.string.error_exporting)
             }
         }
         SettingsText(
@@ -289,7 +289,7 @@ private fun LazyListScope.settingsItems(
                 .clickable {
                     CustomTabs.openTab(
                         context,
-                        context.getString(R.string.privacy_policy_url),
+                        R.string.privacy_policy_url,
                         primaryColor.toArgb(),
                     )
                 },
@@ -302,10 +302,9 @@ private fun LazyListScope.settingsItems(
         val primaryColor = MaterialTheme.colorScheme.primary
         Box(
             modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
-                val url = context.getString(R.string.checkout_open_source)
                 CustomTabs.openTab(
                     context,
-                    url,
+                    R.string.checkout_open_source,
                     primaryColor.toArgb(),
                 )
             }
@@ -314,9 +313,9 @@ private fun LazyListScope.settingsItems(
                 modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
                 text = stringResource(R.string.checkout_open_source),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
-                fontFamily = Bold
+                fontFamily = Bold,
             )
         }
         Divider()

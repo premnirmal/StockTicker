@@ -148,7 +148,7 @@ class AppPreferences @Inject constructor(
         }
     }
 
-    fun shouldPromptRate(): Boolean = Random.nextBoolean()
+    fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
     fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
 
@@ -288,6 +288,7 @@ class AppPreferences @Inject constructor(
         const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
         const val LAYOUT_TYPE = "LAYOUT_TYPE"
         const val WIDGET_SIZE = "WIDGET_SIZE"
+        @Deprecated("will be removed in future version")
         const val FONT_SIZE = "FONT_SIZE"
         const val BOLD_CHANGE = "BOLD_CHANGE"
         const val SHOW_CURRENCY = "SHOW_CURRENCY"

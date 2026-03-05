@@ -6,7 +6,6 @@
   </style>
 
   <style name="EditTextStyle" parent="android:Widget.EditText">
-    <item name="android:textSize">@dimen/text_size</item>
     <item name="android:fontFamily">@font/ubuntu_regular</item>
     <item name="fontFamily">@font/ubuntu_regular</item>
   </style>

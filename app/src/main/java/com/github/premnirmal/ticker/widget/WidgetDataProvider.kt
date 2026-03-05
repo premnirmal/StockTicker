@@ -7,6 +7,7 @@ import androidx.glance.appwidget.updateAll
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
@@ -27,7 +28,7 @@ class WidgetDataProvider @Inject constructor(
         HashMap()
     }
 
-    val widgetData: Flow<List<WidgetData>>
+    val widgetData: StateFlow<List<WidgetData>>
         get() = _widgetData
 
     private val _widgetData = MutableStateFlow<List<WidgetData>>(emptyList())
@@ -40,7 +41,7 @@ class WidgetDataProvider @Inject constructor(
         }
     }
 
-    fun refreshWidgetDataList(): List<WidgetData> {
+    suspend fun refreshWidgetDataList(): List<WidgetData> {
         val appWidgetIds = getAppWidgetIds().toMutableSet()
         if (appWidgetIds.isEmpty()) {
             appWidgetIds.add(AppWidgetManager.INVALID_APPWIDGET_ID)
@@ -48,7 +49,7 @@ class WidgetDataProvider @Inject constructor(
         val widgetDataList = appWidgetIds.map {
             dataForWidgetId(it)
         }.sortedBy { it.widgetName() }
-        _widgetData.value = widgetDataList
+        _widgetData.emit(widgetDataList)
         return widgetDataList
     }
 

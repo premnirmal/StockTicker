@@ -107,7 +107,7 @@ private fun Header(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val fontSize = widgetData.fontSize - 2f
+        val fontSize = widgetData.fontSize
         Text(
             modifier = Modifier
                 .weight(1f)
@@ -121,24 +121,24 @@ private fun Header(
             ),
         )
 
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .clickable(onClick = onRefreshClick),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (widgetData.isRefreshing) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(18.dp),
-                    color = colorResource(R.color.text_widget_header),
-                )
-            } else {
-                Image(
-                    modifier = Modifier.size(18.dp),
-                    painter = painterResource(R.drawable.ic_refresh),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(colorResource(R.color.text_widget_header)),
-                )
+        if (widgetData.showRefreshButton) {
+            Box(
+                modifier = Modifier.wrapContentSize().clickable(onClick = onRefreshClick),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (widgetData.isRefreshing) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(18.dp),
+                        color = colorResource(R.color.text_widget_header),
+                    )
+                } else {
+                    Image(
+                        modifier = Modifier.size(18.dp),
+                        painter = painterResource(R.drawable.ic_refresh),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(colorResource(R.color.text_widget_header)),
+                    )
+                }
             }
         }
     }

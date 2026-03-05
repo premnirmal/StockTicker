@@ -44,6 +44,7 @@ data class SerializableWidgetState(
     val boldText: Boolean = false,
     val changeType: SerializableChangeType = SerializableChangeType.Percent,
     val layoutType: SerializableLayoutType = SerializableLayoutType.Animated,
+    @Deprecated("will be removed in future version")
     val fontSize: Float = 12f,
     val showCurrency: Boolean = false,
     val isDarkMode: Boolean = false,

@@ -49,6 +49,7 @@ import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
+import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ContentType
@@ -311,6 +312,7 @@ private fun LazyListScope.widgetSettings(
     )
 }
 
+@Deprecated("will be removed in future version")
 @Composable fun FontSize(
     widgetData: WidgetData,
     prefs: WidgetData.Prefs

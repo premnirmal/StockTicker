@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -59,7 +60,7 @@ class HomeViewModel @Inject constructor(
         get() = _homeEvent
     private val _homeEvent = MutableSharedFlow<HomeEvent>()
 
-    val widgets: Flow<List<WidgetData>>
+    val widgets: StateFlow<List<WidgetData>>
         get() = widgetDataProvider.widgetData
     val hasWidget: Flow<Boolean>
         get() = widgetDataProvider.hasWidget
@@ -71,7 +72,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         initCaches()
-        widgetDataProvider.refreshWidgetDataList()
+        viewModelScope.launch { widgetDataProvider.refreshWidgetDataList() }
     }
 
     private fun initCaches() {
@@ -156,6 +157,9 @@ class HomeViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch {
+            if (widgets.value.isEmpty()) {
+                widgetDataProvider.refreshWidgetDataList()
+            }
             _isRefreshing.value = true
             stocksProvider.fetch()
         }.invokeOnCompletion {

@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -31,7 +32,7 @@ open class StocksApp : Application() {
         super.onCreate()
         AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
         initNotificationHandler()
-        widgetDataProvider.refreshWidgetDataList()
+        runBlocking { widgetDataProvider.refreshWidgetDataList() }
     }
 
     protected open fun initNotificationHandler() {

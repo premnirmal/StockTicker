@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Parcelable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -17,13 +18,16 @@ import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.dataStore
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
@@ -37,6 +41,7 @@ class WidgetData : IWidgetData {
         private const val WIDGET_NAME = "WIDGET_NAME"
         private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
         private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
+        @Deprecated("will be removed in future version")
         private const val FONT_SIZE = AppPreferences.FONT_SIZE
         private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
         private const val SHOW_CURRENCY = AppPreferences.SHOW_CURRENCY
@@ -63,6 +68,7 @@ class WidgetData : IWidgetData {
     @Inject internal lateinit var appPreferences: AppPreferences
 
     @Inject internal lateinit var coroutineScope: CoroutineScope
+    @Inject internal lateinit var appMessaging: AppMessaging
 
     private val position: Int
     override val widgetId: Int
@@ -70,9 +76,8 @@ class WidgetData : IWidgetData {
     val tickers: StateFlow<List<String>>
         get() = _tickerList
     private val _tickerList = MutableStateFlow<List<String>>(emptyList())
-    override val stocks: StateFlow<List<Quote>>
-        get() = _stocks
     private val _stocks = MutableStateFlow<List<Quote>>(emptyList())
+    override val stocks: StateFlow<List<Quote>> = _stocks.asStateFlow()
     private val preferences: SharedPreferences
     private val _autoSortEnabled = MutableStateFlow(false)
     val prefsFlow: StateFlow<Prefs>
@@ -172,7 +177,7 @@ class WidgetData : IWidgetData {
         _prefsFlow.value = toPrefs()
         _data.value = toState()
         emitWidgetChanges()
-        widgetDataProvider.refreshWidgetDataList()
+        runBlocking { widgetDataProvider.refreshWidgetDataList() }
     }
 
     override val changeType: IWidgetData.ChangeType
@@ -203,24 +208,32 @@ class WidgetData : IWidgetData {
         emitWidgetChanges()
     }
 
+    @Deprecated("will be removed in future version")
     fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 3)
 
+    @Deprecated("will be removed in future version")
     fun readFontSize(): Float {
         val size = fontSizePref()
         val resId = when (size) {
-            0 -> R.integer.text_size_nano
-            1 -> R.integer.text_size_mini
-            2 -> R.integer.text_size_small
-            3 -> R.integer.text_size_medium
-            4 -> R.integer.text_size_large
-            5 -> R.integer.text_size_huge
-            6 -> R.integer.text_size_giant
-            else -> R.integer.text_size_medium
+            0 -> R.dimen.text_size_nano
+            1 -> R.dimen.text_size_mini
+            2 -> R.dimen.text_size_small
+            3 -> R.dimen.text_size_medium
+            4 -> R.dimen.text_size_large
+            5 -> R.dimen.text_size_huge
+            6 -> R.dimen.text_size_giant
+            else -> R.dimen.text_size_medium
         }
-        return context.resources.getInteger(resId).toFloat() - 4f
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            context.resources.getFloat(resId)
+        } else {
+            context.resources.getDimension(resId)
+        }
     }
 
+    @Deprecated("will be removed in future version")
     fun setFontSize(value: Int) {
+        appMessaging.sendSnackbar("Font size is a deprecated setting, FYI this will be removed in a future version!")
         val validValue = value.coerceIn(0, 6)
         preferences.edit {
             putInt(FONT_SIZE, validValue)
@@ -512,14 +525,17 @@ class WidgetData : IWidgetData {
 
     fun refreshStocksList() {
         _tickerList.value = tickerList
-        _stocks.value = tickerList.mapNotNull {
-            stocksProvider.getStock(it)
+        val quotes = tickerList.map {
+            stocksProvider.getStock(it) ?: Quote(symbol = it)
         }.let { quotes ->
-            if (autoSortEnabled()) {
+            return@let if (autoSortEnabled()) {
                 quotes.toMutableList().sortedByDescending { it.changeInPercent }
             } else {
                 quotes
             }
+        }
+        _stocks.update {
+            quotes
         }
     }
 
@@ -528,11 +544,14 @@ class WidgetData : IWidgetData {
         if (other !is WidgetData) return false
 
         if (toPrefs() != other.toPrefs()) return false
+        if (toState() != other.toState()) return false
+        if (tickerList != other.tickerList) return false
+        if (_stocks.value != other._stocks.value) return false
         return true
     }
 
     override fun hashCode(): Int {
-        return toPrefs().hashCode()
+        return toPrefs().hashCode() * 31 + toState().hashCode() * 31 + tickerList.hashCode() * 31 + _stocks.value.hashCode()
     }
 
     @Parcelize
@@ -540,7 +559,9 @@ class WidgetData : IWidgetData {
         val boldText: Boolean,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
+        @Deprecated("will be removed in future version")
         val fontSizePref: Int,
+        @Deprecated("will be removed in future version")
         val fontSize: Float,
         val showCurrency: Boolean,
         val isDarkMode: Boolean,
@@ -576,7 +597,9 @@ class WidgetData : IWidgetData {
         val textColourPref: Int,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
+        @Deprecated("will be removed in future version")
         val fontSizePref: Int,
+        @Deprecated("will be removed in future version")
         val fontSize: Float,
         @param:DrawableRes
         @get:DrawableRes

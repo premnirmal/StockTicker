@@ -1,63 +1,15 @@
 <resources>
-  <dimen name="activity_horizontal_margin">12dp</dimen>
-  <dimen name="activity_vertical_margin">12dp</dimen>
-  <dimen name="activity_vertical_margin_x2">24dp</dimen>
   <dimen name="snackbar_margin">12dp</dimen>
 
   <integer name="flip_time">8000</integer>
-  <dimen name="text_padding">2dp</dimen>
-  <dimen name="suggestions_padding">5dp</dimen>
 
-  <dimen name="header_subtext_size">16dp</dimen>
-  <dimen name="text_size">14sp</dimen>
-  <dimen name="button_text">11sp</dimen>
   <dimen name="graph_bottom_offset">8dp</dimen>
 
-  <integer name="text_size_nano">8</integer>
-  <integer name="text_size_mini">10</integer>
-  <integer name="text_size_small">12</integer>
-  <integer name="text_size_medium">14</integer>
-  <integer name="text_size_large">16</integer>
-  <integer name="text_size_huge">18</integer>
-  <integer name="text_size_giant">20</integer>
-
-  <dimen name="list_spacing">3dp</dimen>
-
-  <dimen name="portfolio_stock_vh_text_size">14sp</dimen>
-  <dimen name="portfolio_stock_vh_name_text_size">11sp</dimen>
-  <dimen name="portfolio_position_vh_text_size">11sp</dimen>
-  <dimen name="portfolio_position_vh_value_text_size">10sp</dimen>
-
-  <dimen name="small_text">10sp</dimen>
-  <dimen name="xsmall_text">8sp</dimen>
-  <dimen name="medium_text">15sp</dimen>
-  <dimen name="large_text">16sp</dimen>
-  <dimen name="larger_text">18sp</dimen>
-  <dimen name="xlarge_text">20sp</dimen>
-  <dimen name="thin_title_text">14sp</dimen>
-
-  <dimen name="scroll_threshold">2dp</dimen>
-  <dimen name="portfolio_top_margin">20dp</dimen>
-
-  <dimen name="quote_details_card_margin">16dp</dimen>
-  <dimen name="quote_details_card_padding">16dp</dimen>
-  <dimen name="quote_details_peek_height">275dp</dimen>
-  <dimen name="quote_details_chart_height">200dp</dimen>
-  <dimen name="quote_details_margin">8dp</dimen>
-  <dimen name="quote_details_padding">8dp</dimen>
-
-  <dimen name="setting_padding">16dp</dimen>
-  <dimen name="fab_margin">12dp</dimen>
-  <dimen name="fab_margin_bottom">12dp</dimen>
-  <dimen name="fab_margin_bottom_without_nav">16dp</dimen>
-  <dimen name="first_fab_margin">65dp</dimen>
-  <dimen name="second_fab_margin">130dp</dimen>
-
-  <dimen name="widget_margin">6dp</dimen>
-  <dimen name="widget_refresh_icon_size">20dp</dimen>
-  <dimen name="widget_refresh_icon_padding_side">4dp</dimen>
-  <dimen name="widget_refresh_icon_padding_top">2dp</dimen>
-
-  <dimen name="tablet_width">600dp</dimen>
-  <dimen name="tablet_margin_horizontal">125dp</dimen>
+  <dimen name="text_size_nano">8f</dimen>
+  <dimen name="text_size_mini">9f</dimen>
+  <dimen name="text_size_small">10f</dimen>
+  <dimen name="text_size_medium">12f</dimen>
+  <dimen name="text_size_large">14f</dimen>
+  <dimen name="text_size_huge">18f</dimen>
+  <dimen name="text_size_giant">22f</dimen>
 </resources>

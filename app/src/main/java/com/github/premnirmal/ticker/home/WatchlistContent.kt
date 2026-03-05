@@ -133,7 +133,7 @@ fun WatchlistContent(
     }
     BoxWithConstraints(modifier = Modifier.nestedScroll(connection)) {
         val constraints = this.constraints
-        val widgets by viewModel.widgets.collectAsState(emptyList())
+        val widgets by viewModel.widgets.collectAsState()
         val rowState = rememberLazyListState()
         val fetchState by viewModel.fetchState.collectAsStateWithLifecycle()
         val nextFetch by viewModel.nextFetch.collectAsStateWithLifecycle("")

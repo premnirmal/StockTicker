@@ -23,7 +23,9 @@ class WidgetsViewModel @Inject constructor(
         get() = stocksProvider.fetchState
 
     fun refreshWidgets() {
-        widgetDataProvider.refreshWidgetDataList()
+        viewModelScope.launch {
+            widgetDataProvider.refreshWidgetDataList()
+        }
     }
 
     fun refresh() {

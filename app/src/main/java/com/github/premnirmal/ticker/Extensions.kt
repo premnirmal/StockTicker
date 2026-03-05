@@ -8,6 +8,7 @@ import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -51,6 +52,11 @@ fun Context.showDialog(
 
 fun Context.showDialog(message: String): AlertDialog {
     return AlertDialog.Builder(this).setMessage(message).setCancelable(false)
+        .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+}
+
+fun Context.showDialog(@StringRes stringRes: Int): AlertDialog {
+    return AlertDialog.Builder(this).setMessage(stringRes).setCancelable(false)
         .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
 }
 

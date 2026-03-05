@@ -66,7 +66,7 @@
   <string name="bold_change_desc">Show changes and market value in bold</string>
   <string name="setting_currency">Show currency</string>
   <string name="setting_currency_desc">Show currency in the widget</string>
-  <string name="choose_text_size">Widget text size</string>
+  <string name="choose_text_size">Widget text size (will be removed)</string>
   <string name="app_theme">App and widget theme</string>
   <string name="text_size_updated_message">Text size updated</string>
   <string name="bg_updated_message">Background updated</string>
