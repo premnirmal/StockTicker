@@ -3,19 +3,17 @@ package com.github.premnirmal.ticker.widget
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
-import android.os.Build
 import android.os.Parcelable
+import android.util.TypedValue
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
-import androidx.datastore.preferences.core.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
-import com.github.premnirmal.ticker.dataStore
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.AppMessaging
@@ -26,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -224,11 +221,9 @@ class WidgetData : IWidgetData {
             6 -> R.dimen.text_size_giant
             else -> R.dimen.text_size_medium
         }
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            context.resources.getFloat(resId)
-        } else {
-            context.resources.getDimension(resId)
-        }
+        val typedValue = TypedValue()
+        context.resources.getValue(resId, typedValue, true)
+        return typedValue.float
     }
 
     @Deprecated("will be removed in future version")

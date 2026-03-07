@@ -5,11 +5,11 @@
 
   <dimen name="graph_bottom_offset">8dp</dimen>
 
-  <dimen name="text_size_nano">8f</dimen>
-  <dimen name="text_size_mini">9f</dimen>
-  <dimen name="text_size_small">10f</dimen>
-  <dimen name="text_size_medium">12f</dimen>
-  <dimen name="text_size_large">14f</dimen>
-  <dimen name="text_size_huge">18f</dimen>
-  <dimen name="text_size_giant">22f</dimen>
+  <item name="text_size_nano" type="dimen" format="float">8.0</item>
+  <item name="text_size_mini" type="dimen" format="float">9.0</item>
+  <item name="text_size_small" type="dimen" format="float">10.0</item>
+  <item name="text_size_medium" type="dimen" format="float">12.0</item>
+  <item name="text_size_large" type="dimen" format="float">14.0</item>
+  <item name="text_size_huge" type="dimen" format="float">18.0</item>
+  <item name="text_size_giant" type="dimen" format="float">22.0</item>
 </resources>
