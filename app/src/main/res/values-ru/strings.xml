@@ -6,9 +6,7 @@
   <string name="action_add">Добавить</string>
   <string name="action_export">Экспортировать портфолио</string>
   <string name="action_share">Отправить портфолио</string>
-  <string name="action_nuke">Очистить данные приложения</string>
   <string name="privacy_policy">Политика конфеденциальности</string>
-  <string name="nuke_desc">Сбросить приложение к изначальным настройкам. Используйте это, если у вас возникли проблемы с вашим портфолио.</string>
   <string name="export_desc">Экспортировать ваше портфолио в .json файл</string>
   <string name="action_import">Импорт котировок</string>
   <string name="import_desc">Импорт котировок в текстовый .txt файл, или файл формата .json</string>

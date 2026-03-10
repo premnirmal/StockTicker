@@ -6,9 +6,7 @@
   <string name="action_add">Adicionar</string>
   <string name="action_export">Exportar Cotações</string>
   <string name="action_share">Compartilhar Portfólio</string>
-  <string name="action_nuke">Limpar dados do aplicativo</string>
   <string name="privacy_policy">Política de Privacidade</string>
-  <string name="nuke_desc">Reconfigurar aplicativo para o padrão de isntalação. Use isso se o seu portfólio apresenta problemas.</string>
   <string name="export_desc">Exportar seu portfólio para um arquivo .json</string>
   <string name="action_import">Importar Cotações</string>
   <string name="import_desc">Importar cotações de um arquivo .txt separado por vírgula ou de um arquivo .json</string>

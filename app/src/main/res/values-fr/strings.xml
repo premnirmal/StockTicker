@@ -5,9 +5,7 @@
   <string name="action_add">Ajouter</string>
   <string name="action_export">Exporter côtes</string>
   <string name="action_share">Partager portefeuille</string>
-  <string name="action_nuke">Vider le cache</string>
   <string name="privacy_policy">Politique de confidentialité</string>
-  <string name="nuke_desc">Réinitialiser l\'application à ses paramètres par défaut. Utilisez cette fonction si vous avec des problèmes avec votre portefeuille.</string>
   <string name="export_desc">Exporte votre portefeuille vers un fichier .json</string>
   <string name="action_import">Importer un portefeuille</string>
   <string name="import_desc">Importe votre portefeuille depuis un fichier .txt délimité par des virgules, ou un fichier .json</string>

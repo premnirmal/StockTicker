@@ -5,9 +5,7 @@
   <string name="action_add">Aggiungi</string>
   <string name="action_export">Esporta Quotazioni</string>
   <string name="action_share">Condividi Portfolio</string>
-  <string name="action_nuke">Ripulisci dati app</string>
   <string name="privacy_policy">Informativa Privacy</string>
-  <string name="nuke_desc">Resetta impostazioni predefinite dell\'app. Fallo se si verificano problemi con il tuo portfolio.</string>
   <string name="export_desc">Esporta il tuo portfolio in un file .json</string>
   <string name="action_import">Importa Quotazioni</string>
   <string name="import_desc">Importa quotazioni (separate da virgola) da un file .txt, o da un file .json</string>

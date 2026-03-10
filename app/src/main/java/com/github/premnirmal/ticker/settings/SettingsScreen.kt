@@ -289,6 +289,42 @@ private fun LazyListScope.settingsItems(
                 .clickable {
                     CustomTabs.openTab(
                         context,
+                        R.string.github_bug_report_new_issue_url,
+                        primaryColor.toArgb(),
+                    )
+                },
+            title = stringResource(id = R.string.report_bug),
+            subtitle = stringResource(id = R.string.report_bug_desc),
+        )
+        Divider()
+    }
+    item {
+        val context = LocalContext.current
+        val primaryColor = MaterialTheme.colorScheme.primary
+        SettingsText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    CustomTabs.openTab(
+                        context,
+                        R.string.github_feature_request_new_issue_url,
+                        primaryColor.toArgb(),
+                    )
+                },
+            title = stringResource(id = R.string.feature_request),
+            subtitle = stringResource(id = R.string.feature_request_desc),
+        )
+        Divider()
+    }
+    item {
+        val context = LocalContext.current
+        val primaryColor = MaterialTheme.colorScheme.primary
+        SettingsText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    CustomTabs.openTab(
+                        context,
                         R.string.privacy_policy_url,
                         primaryColor.toArgb(),
                     )

@@ -6,9 +6,7 @@
   <string name="action_add">Hinzufügen</string>
   <string name="action_export">Aktienliste Exportieren</string>
   <string name="action_share">Portfolio teilen</string>
-  <string name="action_nuke">Alle Daten entfernen</string>
   <string name="privacy_policy">Datenschutz-Bestimmungen</string>
-  <string name="nuke_desc">App auf Standardeinstellungen zurücksetzen. Verwenden Sie diese Option, wenn Probleme mit Ihrem Portfolio auftreten.</string>
   <string name="export_desc">Aktienliste ihres Portfolios in eine .json-Datei exportieren.</string>
   <string name="action_import">Aktienliste Importieren</string>
   <string name="import_desc">Aktienliste von einer durch Kommas getrennten TXT-Datei oder einer JSON-Datei importieren.</string>

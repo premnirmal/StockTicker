@@ -14,16 +14,20 @@
   <string name="apewisdom_endpoint" translatable="false">https://apewisdom.io/api/v1.0/</string>
   <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
   <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/privacy/blob/master/STOCKTICKER_PRIVACY.md</string>
+  <string name="github_bug_report_new_issue_url" translatable="false">https://github.com/premnirmal/StockTicker/issues/new?template=bug_report.md</string>
+  <string name="github_feature_request_new_issue_url" translatable="false">https://github.com/premnirmal/StockTicker/issues/new?template=feature_request.md</string>
   <string name="dotdotdot" translatable="false">…</string>
 
   <string name="portfolio">Portfolio</string>
   <string name="add_to_portfolio">Add or remove from Portfolio</string>
+  <string name="report_bug">Report a bug</string>
+  <string name="report_bug_desc">File a bug report</string>
+  <string name="feature_request">Request a feature</string>
+  <string name="feature_request_desc">File a new feature request</string>
   <string name="action_add">Add</string>
   <string name="action_export">Export quotes</string>
   <string name="action_share">Share Portfolio</string>
-  <string name="action_nuke">Clear app data</string>
   <string name="privacy_policy">Privacy policy</string>
-  <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
   <string name="export_desc">Export your portfolio to a .json file</string>
   <string name="action_import">Import quotes</string>
   <string name="import_desc">Import quotes from a comma separated .txt file, or a .json file</string>
