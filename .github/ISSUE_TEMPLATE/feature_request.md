@@ -17,10 +17,10 @@ These are MANDATORY, otherwise the issue will be automatically closed.
 [Readme]: https://github.com/premnirmal/StockTicker/blob/master/README.md
 [Contributing guide]: https://github.com/premnirmal/StockTicker/blob/master/CONTRIBUTING.md
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**Mandatory: Is your feature request related to a problem? Yes or no, please describe.**
+A clear and concise description of what the problem is. Eg. I'm always frustrated when [...]
 
-**Describe the solution you'd like**
+**Mandatory: Describe the solution you'd like**
 A clear and concise description of what you want to happen.
 
 **Describe alternatives you've considered**

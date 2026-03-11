@@ -7,10 +7,37 @@ on:
 jobs:
   autoclose:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
-      - name: Autoclose issues that did not follow issue template
-        uses: roots/issue-closer@v1.2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          issue-close-message: "@${issue.user.login} this issue was automatically closed because it did not follow the issue template."
-          issue-pattern: "/\[\] I agree to fill this issue template."
+      - name: Check issue body and close if template not followed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_USER: ${{ github.event.issue.user.login }}
+          REPO: ${{ github.repository }}
+        run: |
+          is_feature_request() {
+            echo "$ISSUE_BODY" | grep -qiP 'Is your feature request related to a problem' &&
+            echo "$ISSUE_BODY" | grep -qiP 'Describe the solution you'
+          }
+          is_valid_bug_report() {
+            echo "$ISSUE_BODY" | grep -qiP 'Describe the bug' &&
+            echo "$ISSUE_BODY" | grep -qiP 'App Version' &&
+            echo "$ISSUE_BODY" | grep -qiP 'Device:' &&
+            echo "$ISSUE_BODY" | grep -qiP 'Steps to reproduce'
+          }
+
+          if is_feature_request; then
+            echo "✓ Matched feature request template. No action taken."
+          elif is_valid_bug_report; then
+            echo "✓ Matched bug report template with all required fields. No action taken."
+          else
+            echo "✗ Issue did not match a valid template — closing issue #${ISSUE_NUMBER}."
+            gh issue edit "$ISSUE_NUMBER" --repo "$REPO" --add-label "template not followed"
+            gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment ":wave: @${ISSUE_USER} thanks for opening an issue! This was automatically closed because it did not follow the issue template.
+
+Please use one of the provided issue templates and ensure all required sections are filled out before submitting."
+            echo "✓ Issue #${ISSUE_NUMBER} labelled, closed, and comment posted."
+          fi
