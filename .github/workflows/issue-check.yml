@@ -1,0 +1,16 @@
+name: Issue Check
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  autoclose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Autoclose issues that did not follow issue template
+        uses: roots/issue-closer@v1.2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-close-message: "@${issue.user.login} this issue was automatically closed because it did not follow the issue template."
+          issue-pattern: "/\[\] I agree to fill this issue template."

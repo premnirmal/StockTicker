@@ -7,9 +7,19 @@ assignees: ''
 
 ---
 
+## Prerequisites
+
+These are MANDATORY, otherwise the issue will be automatically closed.
+
+* [] I agree to fill this issue template.
+* [] I have read the [Readme] and [Contributing guide].
+
+[Readme]: https://github.com/premnirmal/StockTicker/blob/master/README.md
+[Contributing guide]: https://github.com/premnirmal/StockTicker/blob/master/CONTRIBUTING.md
+
 **Describe the bug**
 A clear and concise description of what the bug is.
-- App Version [e.g. 3.9.123] **Please make sure you are not on an outdated app version before you file an issue, otherwise your issue will be closed. You can check the latest version in the releases part of the repo**.
+- App Version [e.g. 4.0.060] **Please make sure you are not on an outdated app version before you file an issue, otherwise your issue will be closed. You can check the latest version in the releases part of the repo**.
 
 **To Reproduce**
 Steps to reproduce the behavior:
@@ -25,8 +35,8 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
+ - Device: [e.g. Pixel 10]
+ - OS: [e.g. Android 16]
 
 **Additional context**
 Add any other context about the problem here.
