@@ -196,10 +196,13 @@ class StocksProvider constructor(
                         tickerSet.addAll(fetchedStocks.map { it.symbol })
                     }
                     _tickers.emit(tickerSet.toList())
-                    // clean up existing tickers
-                    tickerSet.toSet().forEach { ticker ->
-                        if (!widgetDataProvider.containsTicker(ticker)) {
-                            removeStock(ticker)
+                    // clean up existing tickers only if widget data has been initialized,
+                    // otherwise containsTicker returns false for everything and wipes all stocks
+                    if (widgetDataProvider.widgetData.value.isNotEmpty()) {
+                        tickerSet.toSet().forEach { ticker ->
+                            if (!widgetDataProvider.containsTicker(ticker)) {
+                                removeStock(ticker)
+                            }
                         }
                     }
                     storage.saveQuotes(fetchedStocks)
