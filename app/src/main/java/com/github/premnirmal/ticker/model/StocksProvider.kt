@@ -80,7 +80,7 @@ class StocksProvider constructor(
         val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
         _nextFetch.value = nextFetch
         runBlocking { fetchLocal() }
-        if (lastFetched == 0L) {
+        if (lastFetched == 0L || (nextFetch > 0L && nextFetch < clock.currentTimeMillis())) {
             coroutineScope.launch {
                 fetch()
             }
