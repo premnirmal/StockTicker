@@ -79,6 +79,11 @@ class StocksProvider constructor(
         lastFetched = lastFetchedLoaded
         val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
         _nextFetch.value = nextFetch
+        this.tickerSet.addAll(tickers)
+        if (this.tickerSet.isEmpty()) {
+            this.tickerSet.addAll(DEFAULT_STOCKS)
+        }
+        _tickers.value = tickerSet.toList()
         runBlocking { fetchLocal() }
         if (lastFetched == 0L || (nextFetch > 0L && nextFetch < clock.currentTimeMillis())) {
             coroutineScope.launch {
@@ -87,11 +92,6 @@ class StocksProvider constructor(
         } else {
             _fetchState.value = FetchState.Success(lastFetched)
         }
-        this.tickerSet.addAll(tickers)
-        if (this.tickerSet.isEmpty()) {
-            this.tickerSet.addAll(DEFAULT_STOCKS)
-        }
-        _tickers.value = tickerSet.toList()
     }
 
     private suspend fun fetchLocal() = withContext(Dispatchers.IO) {
@@ -196,15 +196,6 @@ class StocksProvider constructor(
                         tickerSet.addAll(fetchedStocks.map { it.symbol })
                     }
                     _tickers.emit(tickerSet.toList())
-                    // clean up existing tickers only if widget data has been initialized,
-                    // otherwise containsTicker returns false for everything and wipes all stocks
-                    if (widgetDataProvider.widgetData.value.isNotEmpty()) {
-                        tickerSet.toSet().forEach { ticker ->
-                            if (!widgetDataProvider.containsTicker(ticker)) {
-                                removeStock(ticker)
-                            }
-                        }
-                    }
                     storage.saveQuotes(fetchedStocks)
                     fetchLocal()
                     if (allowScheduling) {
