@@ -84,13 +84,12 @@ class StocksProvider constructor(
             this.tickerSet.addAll(DEFAULT_STOCKS)
         }
         _tickers.value = tickerSet.toList()
+        _fetchState.value = FetchState.Success(lastFetched)
         runBlocking { fetchLocal() }
         if (lastFetched == 0L || (nextFetch > 0L && nextFetch < clock.currentTimeMillis())) {
             coroutineScope.launch {
                 fetch()
             }
-        } else {
-            _fetchState.value = FetchState.Success(lastFetched)
         }
     }
 
