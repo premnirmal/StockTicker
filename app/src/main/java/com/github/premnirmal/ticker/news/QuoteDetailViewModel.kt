@@ -309,9 +309,7 @@ class QuoteDetailViewModel @Inject constructor(
     }
 
     fun addRemoveTooltipShown() {
-        viewModelScope.launch {
-            appPreferences.setAddRemoveTooltipShown()
-        }
+        appPreferences.setAddRemoveTooltipShown()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

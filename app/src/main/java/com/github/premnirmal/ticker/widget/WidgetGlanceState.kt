@@ -109,13 +109,6 @@ enum class SerializableChangeType {
     Value,
     Percent;
 
-    fun toChangeType(): IWidgetData.ChangeType {
-        return when (this) {
-            Value -> IWidgetData.ChangeType.Value
-            Percent -> IWidgetData.ChangeType.Percent
-        }
-    }
-
     companion object {
         fun from(changeType: IWidgetData.ChangeType): SerializableChangeType {
             return when (changeType) {
@@ -132,15 +125,6 @@ enum class SerializableLayoutType {
     Tabs,
     Fixed,
     MyPortfolio;
-
-    fun toLayoutType(): IWidgetData.LayoutType {
-        return when (this) {
-            Animated -> IWidgetData.LayoutType.Animated
-            Tabs -> IWidgetData.LayoutType.Tabs
-            Fixed -> IWidgetData.LayoutType.Fixed
-            MyPortfolio -> IWidgetData.LayoutType.MyPortfolio
-        }
-    }
 
     companion object {
         fun from(layoutType: IWidgetData.LayoutType): SerializableLayoutType {
@@ -177,14 +161,6 @@ sealed class SerializableFetchState {
     data class Failure(val errorMessage: String) : SerializableFetchState() {
 
         override val displayString = errorMessage
-    }
-
-    fun toFetchState(): StocksProvider.FetchState {
-        return when (this) {
-            is NotFetched -> StocksProvider.FetchState.NotFetched
-            is Success -> StocksProvider.FetchState.Success(fetchTime)
-            is Failure -> StocksProvider.FetchState.Failure(Exception(errorMessage))
-        }
     }
 
     companion object {

@@ -72,6 +72,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.updateIntervalPref = intervalPref
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            stocksProvider.scheduleUpdate()
             broadcastUpdateWidget()
         }
     }

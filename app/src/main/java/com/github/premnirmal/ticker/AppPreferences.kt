@@ -1,23 +1,15 @@
 package com.github.premnirmal.ticker
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import java.text.DecimalFormat
 import java.text.Format
@@ -33,7 +25,6 @@ import kotlin.random.Random
  */
 @Singleton
 class AppPreferences @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val sharedPreferences: SharedPreferences,
 ) {
 
@@ -166,46 +157,29 @@ class AppPreferences @Inject constructor(
         }
     }
 
-    private val themePrefKey: Preferences.Key<Int> = intPreferencesKey(APP_THEME)
+    private val _themePref = MutableStateFlow(sharedPreferences.getInt(APP_THEME, FOLLOW_SYSTEM_THEME))
 
-    val themePrefFlow: Flow<Int> = context.dataStore.data.map { prefs ->
-        prefs[themePrefKey] ?: FOLLOW_SYSTEM_THEME
-    }
-
-    private val updateIntervalPrefKey: Preferences.Key<Int> = intPreferencesKey(UPDATE_INTERVAL)
-
-    val updateIntervalFlow: Flow<Int> = context.dataStore.data.map { prefs ->
-        prefs[updateIntervalPrefKey] ?: 1
-    }
+    val themePrefFlow: Flow<Int> = _themePref
 
     val selectedTheme: SelectedTheme
-        get() = runBlocking {
-            val pref = themePrefFlow.first()
-            when (pref) {
-                LIGHT_THEME -> SelectedTheme.LIGHT
-                DARK_THEME -> SelectedTheme.DARK
-                FOLLOW_SYSTEM_THEME -> SelectedTheme.SYSTEM
-                else -> SelectedTheme.SYSTEM
-            }
+        get() = when (_themePref.value) {
+            LIGHT_THEME -> SelectedTheme.LIGHT
+            DARK_THEME -> SelectedTheme.DARK
+            else -> SelectedTheme.SYSTEM
         }
 
     var themePref: Int
-        get() = runBlocking {
-            themePrefFlow.first().coerceIn(0, 2)
-        }
-        set(value) = runBlocking {
-            context.dataStore.edit { prefs ->
-                prefs[themePrefKey] = value
-            }
+        get() = _themePref.value.coerceIn(0, 2)
+        set(value) {
+            _themePref.value = value
+            sharedPreferences.edit { putInt(APP_THEME, value) }
         }
 
     var updateIntervalPref: Int
-        get() = runBlocking {
-            updateIntervalFlow.first().coerceIn(0, 4)
-        }
-        set(value) = runBlocking {
-            context.dataStore.edit { prefs ->
-                prefs[updateIntervalPrefKey] = value
+        get() = sharedPreferences.getInt(UPDATE_INTERVAL, 1).coerceIn(0, 4)
+        set(value) {
+            sharedPreferences.edit {
+                putInt(UPDATE_INTERVAL, value)
             }
         }
 
@@ -232,19 +206,16 @@ class AppPreferences @Inject constructor(
                 )
         }
 
-    private val showAddRemoveTooltipPrefKey: Preferences.Key<Int> = intPreferencesKey(
-        PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP
+    private val _showAddRemoveTooltip = MutableStateFlow(
+        sharedPreferences.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) > 5
     )
 
-    val showAddRemoveTooltip: Flow<Boolean> = context.dataStore.data.map { prefs ->
-        (prefs[showAddRemoveTooltipPrefKey] ?: 0) > 5
-    }
+    val showAddRemoveTooltip: Flow<Boolean> = _showAddRemoveTooltip
 
-    suspend fun setAddRemoveTooltipShown() {
-        context.dataStore.edit { prefs ->
-            val count = prefs[showAddRemoveTooltipPrefKey] ?: 0
-            prefs[showAddRemoveTooltipPrefKey] = count + 1
-        }
+    fun setAddRemoveTooltipShown() {
+        val count = sharedPreferences.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) + 1
+        sharedPreferences.edit { putInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, count) }
+        _showAddRemoveTooltip.value = count > 5
     }
 
     @Parcelize

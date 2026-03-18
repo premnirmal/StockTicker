@@ -3,12 +3,9 @@ package com.github.premnirmal.ticker.model
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.longPreferencesKey
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.createTimeString
-import com.github.premnirmal.ticker.dataStore
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -105,12 +102,9 @@ class StocksProvider constructor(
         }
     }
 
-    private suspend fun saveLastFetched(lastFetched: Long) {
+    private fun saveLastFetched(lastFetched: Long) {
         preferences.edit {
             putLong(LAST_FETCHED, lastFetched)
-        }
-        context.dataStore.edit {
-            it[longPreferencesKey(LAST_FETCHED)] = lastFetched
         }
     }
 
@@ -118,7 +112,7 @@ class StocksProvider constructor(
         storage.saveTickers(tickerSet)
     }
 
-    private suspend fun scheduleUpdate() {
+    suspend fun scheduleUpdate() {
         scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched))
     }
 
@@ -129,9 +123,6 @@ class StocksProvider constructor(
         _nextFetch.value = updateTime.toInstant().toEpochMilli()
         preferences.edit {
             putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
-        }
-        context.dataStore.edit {
-            it[longPreferencesKey(NEXT_FETCH)] = updateTime.toInstant().toEpochMilli()
         }
         appPreferences.setRefreshing(false)
         widgetDataProvider.broadcastUpdateAllWidgets()

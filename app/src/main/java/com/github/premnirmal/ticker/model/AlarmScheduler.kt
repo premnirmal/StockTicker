@@ -23,6 +23,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Inject
@@ -111,7 +112,7 @@ class AlarmScheduler @Inject constructor(
             ) {
                 nextAlarmDate.plusMinutes(1)
             } else {
-                nextAlarmDate.plusSeconds(appPreferences.updateIntervalMs / 1000L)
+                nextAlarmDate.plus(appPreferences.updateIntervalMs, ChronoUnit.MILLIS)
             }
         } else if (!inverse && now.isBefore(startTime) && selectedDaysOfWeek.contains(dayOfWeek)) {
             nextAlarmDate = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {

@@ -10,9 +10,6 @@ import android.net.ConnectivityManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.tickerwidget.R
 import java.text.NumberFormat
@@ -22,8 +19,6 @@ import java.time.ZonedDateTime
 import java.time.format.TextStyle.SHORT
 import java.util.Date
 import java.util.Locale
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AppPreferences.PREFS_NAME)
 
 @RequiresApi(33)
 fun Context.hasNotificationPermission(): Boolean {
