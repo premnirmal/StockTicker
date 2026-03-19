@@ -220,7 +220,8 @@ private fun TopAppBar(
     scrollState: CollapsingTopBarScrollConnection,
     onTotalHoldingsClick: () -> Unit,
 ) {
-    val backgroundColor = TopAppBarDefaults.topAppBarColors().containerColor
+    val topAppBarColors = TopAppBarDefaults.topAppBarColors()
+    val backgroundColor = topAppBarColors.containerColor
     val offset = abs(scrollState.appBarOffset / TopAppBarDefaults.TopAppBarExpandedHeight.value)
     val tobAppBarBackgroundColor = animateColorAsState(
         when (offset) {
@@ -240,7 +241,7 @@ private fun TopAppBar(
         text = stringResource(R.string.app_name),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = tobAppBarBackgroundColor.value,
-            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            titleContentColor = topAppBarColors.titleContentColor,
         ),
         actions = {
             if (viewModel.hasHoldings) {
