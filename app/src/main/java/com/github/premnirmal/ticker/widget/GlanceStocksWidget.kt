@@ -550,6 +550,28 @@ private fun WidgetFixedPreview() {
 }
 
 @OptIn(ExperimentalGlancePreviewApi::class)
+@Preview(widthDp = 350, heightDp = 150)
+@Composable
+private fun WidgetFixedTranslucentPreview() {
+    Box(modifier = GlanceModifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+        val data = previewDataState(
+            layoutType = IWidgetData.LayoutType.Fixed,
+            backgroundResource = R.drawable.translucent_widget_bg,
+        )
+        GlanceWidget(
+            widgetData = data,
+            quotes = listOf(
+                fakeQuote("AAPL"),
+                fakeQuote("MSFT"),
+                fakeQuote("GOOG"),
+                fakeQuote("AMZN"),
+                fakeQuote("BRK-B")
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalGlancePreviewApi::class)
 @Preview(widthDp = 400, heightDp = 120)
 @Composable
 private fun WidgetAnimatedPreview() {
@@ -637,6 +659,7 @@ private fun fakePosition(symbol: String): Position {
 
 private fun previewDataState(
     layoutType: IWidgetData.LayoutType = IWidgetData.LayoutType.Fixed,
+    backgroundResource: Int = R.drawable.app_widget_background,
 ): SerializableWidgetState = SerializableWidgetState(
     layoutType = SerializableLayoutType.from(layoutType),
     showCurrency = false,
@@ -649,7 +672,7 @@ private fun previewDataState(
     negativeTextColor = R.color.text_widget_negative,
     positiveTextColor = R.color.text_widget_positive,
     textColor = R.color.widget_text,
-    backgroundResource = R.drawable.app_widget_background,
+    backgroundResource = backgroundResource,
     isRefreshing = false,
     fetchState = SerializableFetchState.Success(System.currentTimeMillis()),
 )
