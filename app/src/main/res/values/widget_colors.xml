@@ -9,5 +9,5 @@
   <color name="text_widget_positive_dark">#009900</color>
   <color name="text_widget_positive_light">#ccff66</color>
   <color name="text_widget_negative">#ff6666</color>
-  <color name="widget_bg">#faf9f6</color>
+  <color name="widget_bg">#F2FAF9F6</color>
 </resources>

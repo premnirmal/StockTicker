@@ -279,6 +279,8 @@ class WidgetData : IWidgetData {
                 R.drawable.translucent_widget_bg
             }
             nightMode -> {
+                // TODO remove this, because the night version of app_widget_background will be used
+                // below in the else check anyway, so we don't need this explicit nightMode check.
                 R.drawable.app_widget_background_dark
             }
             else -> {

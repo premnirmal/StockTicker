@@ -360,8 +360,6 @@ private fun Modifier.toBackgroundPainter(@DrawableRes resource: Int): Modifier {
             )
         }
         else -> {
-            // R.drawable.app_widget_background
-            // R.drawable.app_widget_background_dark
             this.background(
                 color = colorResource(R.color.widget_bg),
                 shape = RoundedCornerShape(12.dp),
