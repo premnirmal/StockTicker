@@ -16,6 +16,7 @@
   <color name="white_65">#A6FFFFFF</color>
   <color name="transparent">#00000000</color>
   <color name="translucent">#E6E4E3E9</color>
+  <color name="translucent_dark">#98000000</color>
   <color name="change_positive">#66BB6A</color>
   <color name="change_negative">#EF5350</color>
   <color name="error_red">#ff3232</color>

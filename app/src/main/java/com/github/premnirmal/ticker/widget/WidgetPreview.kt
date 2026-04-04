@@ -40,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
@@ -61,7 +62,7 @@ fun GlanceWidgetPreview(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .toBackgroundPainter(widgetData.backgroundResource)
+            .toBackgroundPainter(widgetData)
             // .paint(painterResource(widgetData.backgroundResource))
             .padding(6.dp)
     ) {
@@ -123,7 +124,9 @@ private fun Header(
 
         if (widgetData.showRefreshButton) {
             Box(
-                modifier = Modifier.wrapContentSize().clickable(onClick = onRefreshClick),
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable(onClick = onRefreshClick),
                 contentAlignment = Alignment.Center,
             ) {
                 if (widgetData.isRefreshing) {
@@ -285,9 +288,13 @@ private fun MyPortfolio(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()) {
             Text(
-                modifier = Modifier.weight(1f).padding(end = 2.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 2.dp),
                 text = displayName,
                 style = TextStyle(
                     color = textColor,
@@ -309,7 +316,9 @@ private fun MyPortfolio(
                 maxLines = 1,
             )
             Text(
-                modifier = Modifier.weight(1f).padding(end = 2.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 2.dp),
                 text = gainLossFormatted,
                 style = TextStyle(
                     color = gainLossColor,
@@ -320,7 +329,9 @@ private fun MyPortfolio(
                 maxLines = 1,
             )
             Text(
-                modifier = Modifier.weight(1f).padding(end = 2.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 2.dp),
                 text = gainLossPercentFormatted,
                 style = TextStyle(
                     color = gainLossColor,
@@ -332,7 +343,9 @@ private fun MyPortfolio(
             )
         }
 
-        Row(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = priceFormatted,
@@ -350,20 +363,34 @@ private fun MyPortfolio(
 }
 
 @Composable
-private fun Modifier.toBackgroundPainter(@DrawableRes resource: Int): Modifier {
-    return when (resource) {
+private fun Modifier.toBackgroundPainter(widgetData: SerializableWidgetState): Modifier {
+    return when (widgetData.backgroundResource) {
         R.drawable.transparent_widget_bg -> { this }
         R.drawable.translucent_widget_bg -> {
-            this.background(
-                color = colorResource(R.color.translucent),
-                shape = RoundedCornerShape(12.dp),
-            )
+            if (widgetData.isDarkMode) {
+                this.background(
+                    color = colorResource(R.color.translucent_dark),
+                    shape = RoundedCornerShape(12.dp),
+                )
+            } else {
+                this.background(
+                    color = colorResource(R.color.translucent),
+                    shape = RoundedCornerShape(12.dp),
+                )
+            }
         }
         else -> {
-            this.background(
-                color = colorResource(R.color.widget_bg),
-                shape = RoundedCornerShape(12.dp),
-            )
+            if (widgetData.isDarkMode) {
+                this.background(
+                    color = colorResource(R.color.widget_bg_dark),
+                    shape = RoundedCornerShape(12.dp),
+                )
+            } else {
+                this.background(
+                    color = colorResource(R.color.widget_bg),
+                    shape = RoundedCornerShape(12.dp),
+                )
+            }
         }
     }
 }
@@ -371,7 +398,9 @@ private fun Modifier.toBackgroundPainter(@DrawableRes resource: Int): Modifier {
 @Composable
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 private fun PreviewDark() {
-    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+    Box(modifier = Modifier
+        .background(color = MaterialTheme.colorScheme.inverseSurface)
+        .padding(20.dp)) {
         val data = previewDataState()
         GlanceWidgetPreview(
             modifier = Modifier.width(300.dp),
@@ -390,7 +419,9 @@ private fun PreviewDark() {
 @Composable
 @Preview
 private fun Preview() {
-    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.inverseSurface).padding(20.dp)) {
+    Box(modifier = Modifier
+        .background(color = MaterialTheme.colorScheme.inverseSurface)
+        .padding(20.dp)) {
         val data = previewDataState()
         GlanceWidgetPreview(
             modifier = Modifier.width(300.dp),
