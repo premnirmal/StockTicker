@@ -7,6 +7,7 @@ import android.os.Parcelable
 import android.util.TypedValue
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.annotation.Keep
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 import javax.inject.Inject
 
 class WidgetData : IWidgetData {
@@ -311,6 +313,26 @@ class WidgetData : IWidgetData {
         return pref
     }
 
+    fun bgType(): IWidgetData.BackgroundType {
+        val pref = bgPref()
+        return when (pref) {
+            TRANSPARENT -> IWidgetData.BackgroundType.Transparent
+            TRANSLUCENT -> IWidgetData.BackgroundType.Translucent
+            SYSTEM -> IWidgetData.BackgroundType.System
+            else -> IWidgetData.BackgroundType.System
+        }
+    }
+
+    fun textColorType(): IWidgetData.TextColorType {
+        val pref = textColorPref()
+        return when (pref) {
+            SYSTEM -> IWidgetData.TextColorType.System
+            LIGHT -> IWidgetData.TextColorType.Light
+            DARK -> IWidgetData.TextColorType.Dark
+            else -> IWidgetData.TextColorType.System
+        }
+    }
+
     fun setBgPref(value: Int) {
         preferences.edit {
             putInt(WIDGET_BG, value)
@@ -459,6 +481,8 @@ class WidgetData : IWidgetData {
 
     fun toState(): Data {
         return Data(
+            id = widgetId,
+            name = widgetName,
             boldText = readIsBoldEnabled(),
             changeType = changeType(),
             layoutType = layoutType,
@@ -469,6 +493,8 @@ class WidgetData : IWidgetData {
             sizePref = widgetSizePref(),
             hideWidgetHeader = readHideHeader(),
             backgroundResource = backgroundResource(),
+            bgPref = bgType(),
+            textColorPref = textColorType(),
             positiveTextColor = positiveTextColor,
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
@@ -554,7 +580,11 @@ class WidgetData : IWidgetData {
     }
 
     @Parcelize
+    @Serializable
+    @Keep
     data class Data(
+        val id: Int,
+        val name: String,
         val boldText: Boolean,
         val changeType: IWidgetData.ChangeType,
         val layoutType: LayoutType,
@@ -569,6 +599,8 @@ class WidgetData : IWidgetData {
         @param:DrawableRes
         @get:DrawableRes
         val backgroundResource: Int,
+        val bgPref: IWidgetData.BackgroundType,
+        val textColorPref: IWidgetData.TextColorType,
         @param:ColorRes
         @get:ColorRes
         val positiveTextColor: Int,

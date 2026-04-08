@@ -9,12 +9,14 @@ import androidx.work.WorkManager
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.util.Locale
 import javax.inject.Inject
@@ -23,7 +25,8 @@ import javax.inject.Inject
 class DbViewerViewModel @Inject constructor(
     application: Application,
     private val dao: QuoteDao,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
+    private val widgetDataProvider: WidgetDataProvider,
 ) : AndroidViewModel(application) {
 
     companion object {
@@ -181,11 +184,14 @@ class DbViewerViewModel @Inject constructor(
                 quotesInfo.append("</table>")
                 holdingsInfo.append("</table>")
                 propsInfo.append("</table>")
-                val workerInfo = extractWorkerInfo(getApplication<Application>())
+
+                val widgetsInfo = extractWidgetsInfo()
+                val workerInfo = extractWorkerInfo()
                 sb.append(quotesInfo)
                     .append(holdingsInfo)
                     .append(propsInfo)
                     .append(workerInfo)
+                    .append(widgetsInfo)
                     .append("</body></html>")
             }
             val file = File(getApplication<StocksApp>().cacheDir, FILENAME)
@@ -201,7 +207,49 @@ class DbViewerViewModel @Inject constructor(
         }
     }
 
-    private fun extractWorkerInfo(context: Context): StringBuilder {
+    private suspend fun extractWidgetsInfo(): StringBuilder {
+        val sb = StringBuilder().append(
+            """
+            <h2>Widgets</h2>
+            <table>
+            <tr>
+            <th>Name</th><th>Quotes</th><th>ID</th>
+            </tr>
+            """
+        )
+        val widgetData = widgetDataProvider.refreshWidgetDataList()
+        widgetData.forEach { wd ->
+            sb.append("<tr>")
+                .append("<td>${wd.widgetName}</td>")
+            val tickers = StringBuilder()
+            wd.getTickers().forEachIndexed { i, symbol ->
+                tickers.append(symbol)
+                tickers.append(", ")
+                if (i % 5 == 0) {
+                    tickers.append("\n")
+                }
+            }
+            sb.append("<td>$tickers</td>")
+                .append("<td>${wd.widgetId}</td>")
+            sb.append("</tr>")
+        }
+        sb.append("</table>")
+        sb.append("</p>")
+        val json = Json {
+            prettyPrint = true
+            isLenient = true
+        }
+        widgetData.forEach { wd ->
+            sb.append("<h3>Settings for ${wd.widgetId}:${wd.widgetName}</h3>")
+            sb.append(
+                json.encodeToString(wd.toState())
+            )
+            sb.append("</p>")
+        }
+        return sb
+    }
+
+    private fun extractWorkerInfo(): StringBuilder {
         val sb = StringBuilder().append(
             """
             <h2>Scheduled Work</h2>

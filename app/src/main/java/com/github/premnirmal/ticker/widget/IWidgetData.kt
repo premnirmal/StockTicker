@@ -37,4 +37,16 @@ interface IWidgetData {
             }
         }
     }
+
+    enum class BackgroundType {
+        System,
+        Transparent,
+        Translucent,
+    }
+
+    enum class TextColorType {
+        System,
+        Dark,
+        Light,
+    }
 }
