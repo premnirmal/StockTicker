@@ -109,7 +109,10 @@ class WidgetDataProvider @Inject constructor(
         }
     }
 
-    fun containsTicker(ticker: String): Boolean = widgets.any { it.value.hasTicker(ticker) }
+    suspend fun containsTicker(ticker: String): Boolean {
+        refreshWidgetDataList()
+        return widgets.any { it.value.getTickers().contains(ticker) }
+    }
 
     fun updateWidgets(tickerList: List<String>) {
         if (hasWidget()) {

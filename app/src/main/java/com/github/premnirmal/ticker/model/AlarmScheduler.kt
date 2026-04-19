@@ -7,15 +7,16 @@ import android.content.Intent
 import androidx.core.content.getSystemService
 import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
-import androidx.work.ExistingPeriodicWorkPolicy.REPLACE
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType.CONNECTED
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
+import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.widget.RefreshReceiver
 import timber.log.Timber
 import java.time.DayOfWeek
@@ -24,6 +25,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Inject
@@ -175,12 +177,12 @@ class AlarmScheduler @Inject constructor(
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
         )
         alarmManager.set(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            AlarmManager.ELAPSED_REALTIME,
             clock.elapsedRealtime() + msToNextAlarm,
             pendingIntent
         )
         val constraints = Constraints.Builder()
-            .setRequiredNetworkType(CONNECTED)
+            .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
         val request = OneTimeWorkRequestBuilder<RefreshWorker>()
             .setInitialDelay(msToNextAlarm, MILLISECONDS)
@@ -196,7 +198,7 @@ class AlarmScheduler @Inject constructor(
         with(workManager) {
             val delayMs = appPreferences.updateIntervalMs
             val constraints = Constraints.Builder()
-                .setRequiredNetworkType(CONNECTED)
+                .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
             val request = PeriodicWorkRequestBuilder<RefreshWorker>(delayMs, MILLISECONDS)
                 .setInitialDelay(delayMs, MILLISECONDS)
@@ -204,8 +206,25 @@ class AlarmScheduler @Inject constructor(
                 .setBackoffCriteria(LINEAR, 1L, MINUTES)
                 .setConstraints(constraints)
                 .build()
-            this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, REPLACE, request)
+            this.enqueueUniquePeriodicWork(RefreshWorker.TAG_PERIODIC, ExistingPeriodicWorkPolicy.REPLACE, request)
         }
+    }
+
+    fun enqueuePeriodicCleanup() {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build()
+        val request = PeriodicWorkRequestBuilder<CleanupWorker>(1, TimeUnit.DAYS)
+                .addTag(CleanupWorker.TAG_PERIODIC)
+                .setConstraints(constraints)
+                .build()
+        workManager.enqueueUniquePeriodicWork(CleanupWorker.TAG_PERIODIC, ExistingPeriodicWorkPolicy.UPDATE, request)
+    }
+
+    fun enqueueCleanup() {
+        val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build()
+        val request = OneTimeWorkRequestBuilder<CleanupWorker>()
+            .addTag(CleanupWorker.TAG)
+            .setConstraints(constraints).build()
+        workManager.enqueueUniqueWork(CleanupWorker.TAG, ExistingWorkPolicy.REPLACE, request)
     }
 
     fun scheduleDailySummaryNotification(
@@ -224,7 +243,7 @@ class AlarmScheduler @Inject constructor(
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
             )
         alarmManager.setRepeating(
-            AlarmManager.ELAPSED_REALTIME_WAKEUP,
+            AlarmManager.ELAPSED_REALTIME,
             clock.elapsedRealtime() + initialDelay,
             interval,
             pendingIntent

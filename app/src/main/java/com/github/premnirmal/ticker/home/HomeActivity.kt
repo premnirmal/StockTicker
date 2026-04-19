@@ -55,6 +55,9 @@ class HomeActivity : BaseActivity() {
         if (VERSION.SDK_INT >= 33 && appPreferences.notificationAlerts() && !hasNotificationPermission()) {
             requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
+        if (savedInstanceState == null) {
+            stocksProvider.schedule()
+        }
     }
 
     @Composable

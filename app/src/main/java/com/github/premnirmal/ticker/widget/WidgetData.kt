@@ -15,6 +15,7 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.AppMessaging
@@ -68,6 +69,7 @@ class WidgetData : IWidgetData {
 
     @Inject internal lateinit var coroutineScope: CoroutineScope
     @Inject internal lateinit var appMessaging: AppMessaging
+    @Inject internal lateinit var alarmScheduler: AlarmScheduler
 
     private val position: Int
     override val widgetId: Int
@@ -437,6 +439,7 @@ class WidgetData : IWidgetData {
             tickerList.remove(ticker)
         }
         save()
+        alarmScheduler.enqueueCleanup()
     }
 
     fun addAllFromStocksProvider() {

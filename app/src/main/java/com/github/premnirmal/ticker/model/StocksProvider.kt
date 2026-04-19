@@ -213,6 +213,7 @@ class StocksProvider constructor(
         coroutineScope.launch {
             scheduleUpdate()
             alarmScheduler.enqueuePeriodicRefresh()
+            alarmScheduler.enqueuePeriodicCleanup()
         }
     }
 
@@ -325,6 +326,14 @@ class StocksProvider constructor(
         _tickers.emit(tickerSet.toList())
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
         saveTickers()
+    }
+
+    suspend fun cleanup() {
+        val quotes = storage.readQuotes().map { it.symbol }
+        val toRemove = quotes.filterNot {
+            tickerSet.contains(it)
+        }
+        storage.removeQuotesBySymbol(toRemove)
     }
 
     suspend fun fetchStock(ticker: String, allowCache: Boolean = true): FetchResult<Quote> {

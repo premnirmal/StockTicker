@@ -8,6 +8,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.model.RefreshWorker
+import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -264,6 +265,8 @@ class DbViewerViewModel @Inject constructor(
             val workInfos = ArrayList<WorkInfo>().apply {
                 addAll(getWorkInfosByTag(RefreshWorker.TAG).get())
                 addAll(getWorkInfosByTag(RefreshWorker.TAG_PERIODIC).get())
+                addAll(getWorkInfosByTag(CleanupWorker.TAG).get())
+                addAll(getWorkInfosByTag(CleanupWorker.TAG_PERIODIC).get())
             }
             for (wi in workInfos) {
                 sb.append("<tr>")
