@@ -114,12 +114,12 @@ class AlertsActivity : BaseActivity() {
                     }
                     var alertAboveText by remember(ticker) {
                         mutableStateOf(
-                            if (alertAbove > 0f) alertAbove.toString() else ""
+                            if (alertAbove > 0f) decimalFormatter.cleanup(alertAbove.toString()) else ""
                         )
                     }
                     var alertBelowText by remember(ticker) {
                         mutableStateOf(
-                            if (alertBelow > 0f) alertBelow.toString() else ""
+                            if (alertBelow > 0f) decimalFormatter.cleanup(alertBelow.toString()) else ""
                         )
                     }
                     TextField(
@@ -187,18 +187,20 @@ class AlertsActivity : BaseActivity() {
         val alertAboveText = alertAboveText.ifEmpty { "0" }
         val alertBelowText = alertBelowText.ifEmpty { "0" }
         val alertAbove = try {
-            val parsed = numberFormat.parse(alertAboveText)!!.toFloat()
+            val parsed = numberFormat.parse(alertAboveText)?.toFloat()
+                ?: throw NumberFormatException("Unable to parse: $alertAboveText")
             isErrorAlertAbove = false
             parsed
-        } catch (e: NumberFormatException) {
+        } catch (e: Exception) {
             isErrorAlertAbove = true
             0f
         }
         val alertBelow = try {
-            val parsed = numberFormat.parse(alertBelowText)!!.toFloat()
+            val parsed = numberFormat.parse(alertBelowText)?.toFloat()
+                ?: throw NumberFormatException("Unable to parse: $alertBelowText")
             isErrorAlertBelow = false
             parsed
-        } catch (e: NumberFormatException) {
+        } catch (e: Exception) {
             isErrorAlertBelow = true
             0f
         }

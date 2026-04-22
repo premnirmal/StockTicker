@@ -12,6 +12,7 @@ class DecimalFormatter(
     private val decimalSeparator = symbols.decimalSeparator
 
     fun cleanup(input: String): String {
+        if (input.isEmpty()) return ""
         if (input.matches("\\D".toRegex())) return ""
         if (input.matches("0+".toRegex())) return "0"
         val sb = StringBuilder()
@@ -21,8 +22,11 @@ class DecimalFormatter(
                 sb.append(char)
                 continue
             }
-            if (char == decimalSeparator && !hasDecimalSep && sb.isNotEmpty()) {
-                sb.append(char)
+            // Accept either the locale decimal separator or '.' so that
+            // pre-populated values from Float.toString() (which always uses '.')
+            // work regardless of locale.
+            if ((char == decimalSeparator || char == '.') && !hasDecimalSep && sb.isNotEmpty()) {
+                sb.append(decimalSeparator)
                 hasDecimalSep = true
             }
         }
@@ -50,18 +54,10 @@ class DecimalInputVisualTransformation(
             spanStyles = text.spanStyles,
             paragraphStyles = text.paragraphStyles
         )
-        val offsetMapping = FixedCursorOffsetMapping(
-            contentLength = inputText.length,
-            formattedContentLength = formattedNumber.length
-        )
-        return TransformedText(newText, offsetMapping)
+        // formatForVisual preserves character count (it only re-joins using the same
+        // decimal separator), so using Identity is both correct and avoids the
+        // broken constant-offset mapping that was crashing the TextField when the
+        // field was pre-populated with an existing alert value.
+        return TransformedText(newText, OffsetMapping.Identity)
     }
-}
-
-private class FixedCursorOffsetMapping(
-    private val contentLength: Int,
-    private val formattedContentLength: Int,
-) : OffsetMapping {
-    override fun originalToTransformed(offset: Int): Int = formattedContentLength
-    override fun transformedToOriginal(offset: Int): Int = contentLength
 }
