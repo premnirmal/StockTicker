@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+
+  <string-array name="font_sizes">
+    <item>ナノ</item>
+    <item>ミニ</item>
+    <item>小</item>
+    <item>中</item>
+    <item>大</item>
+    <item>特大</item>
+    <item>超大</item>
+  </string-array>
+
+  <string-array name="app_themes">
+    <item>ライト</item>
+    <item>ダーク</item>
+    <item>システムに合わせる</item>
+  </string-array>
+
+  <string-array name="layout_types">
+    <item>アニメーション</item>
+    <item>タブ</item>
+    <item>固定</item>
+    <item>マイポートフォリオ</item>
+  </string-array>
+
+  <string-array name="widget_width_types">
+    <item>自動</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+  </string-array>
+
+  <string-array name="backgrounds">
+    <item>システム</item>
+    <item>透明</item>
+    <item>半透明</item>
+  </string-array>
+
+  <string-array name="text_colors">
+    <item>システム</item>
+    <item>ライト</item>
+    <item>ダーク</item>
+  </string-array>
+
+  <string-array name="sync_periods">
+    <item>5分</item>
+    <item>15分</item>
+    <item>30分</item>
+    <item>45分</item>
+    <item>1時間</item>
+  </string-array>
+
+  <string-array name="days">
+    <item>月曜日</item>
+    <item>火曜日</item>
+    <item>水曜日</item>
+    <item>木曜日</item>
+    <item>金曜日</item>
+    <item>土曜日</item>
+    <item>日曜日</item>
+  </string-array>
+</resources>
