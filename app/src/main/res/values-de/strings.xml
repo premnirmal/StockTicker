@@ -183,4 +183,7 @@
   <string name="error">Fehler</string>
   <string name="error_fetching_whats_new">Fehler beim Abrufen der neuen Funktionen</string>
   <string name="loading">Wird geladen</string>
+  <string name="exact_alarm_permission_required">Berechtigung für exakte Alarme erforderlich</string>
+  <string name="exact_alarm_permission_required_message">Die Berechtigung für exakte Alarme ist erforderlich, damit die App das Widget rechtzeitig aktualisieren kann.</string>
+  <string name="go_to_settings">Zu den Einstellungen.</string>
 </resources>

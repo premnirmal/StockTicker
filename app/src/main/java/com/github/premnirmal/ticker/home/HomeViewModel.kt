@@ -1,10 +1,13 @@
 package com.github.premnirmal.ticker.home
 
 import android.app.Application
+import android.os.Build
+import android.os.Build.VERSION
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.createTimeString
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -22,7 +25,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -39,6 +41,7 @@ class HomeViewModel @Inject constructor(
     private val widgetDataProvider: WidgetDataProvider,
     private val notificationsHandler: NotificationsHandler,
     private val appMessaging: AppMessaging,
+    private val alarmScheduler: AlarmScheduler,
 ) : AndroidViewModel(application) {
 
     private val commitsProvider by lazy { CommitsProvider() }
@@ -67,6 +70,9 @@ class HomeViewModel @Inject constructor(
 
     val hasHoldings: Boolean
         get() = stocksProvider.hasPositions()
+
+    val showAlarmPermissionRequest: Boolean
+        get() = VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmScheduler.canScheduleExactAlarm()
 
     private var fetchJob: Job? = null
 

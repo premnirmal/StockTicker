@@ -210,4 +210,7 @@
   <string name="quote_change_neg">%1$.2f</string>
   <string name="quote_change_percent_pos">+%1$.2f%%</string>
   <string name="quote_change_percent_neg">%1$.2f%%</string>
+  <string name="exact_alarm_permission_required">Требуется разрешение на точные будильники</string>
+  <string name="exact_alarm_permission_required_message">Разрешение на точные будильники необходимо, чтобы приложение могло своевременно обновлять виджет.</string>
+  <string name="go_to_settings">Перейти в настройки.</string>
 </resources>

@@ -1,8 +1,11 @@
 package com.github.premnirmal.ticker.home
 
 import android.Manifest
+import android.content.Intent
+import android.os.Build
 import android.os.Build.VERSION
 import android.os.Bundle
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
@@ -23,8 +26,10 @@ import androidx.navigation.NavDestination
 import androidx.navigation.compose.rememberNavController
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.hasNotificationPermission
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.navigation.RootNavigationGraph
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,6 +62,22 @@ class HomeActivity : BaseActivity() {
         }
         if (savedInstanceState == null) {
             stocksProvider.schedule()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.S && viewModel.showAlarmPermissionRequest) {
+            showDialog(
+                title = getString(R.string.exact_alarm_permission_required),
+                message = getString(R.string.exact_alarm_permission_required_message),
+                positiveButton = getString(R.string.go_to_settings),
+                negativeButton = getString(R.string.cancel),
+                cancelable = false,
+                listener = { _,_ ->
+                    startActivity(Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                },
+            )
         }
     }
 

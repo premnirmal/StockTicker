@@ -182,4 +182,7 @@
   <string name="error">Erreur</string>
   <string name="error_fetching_whats_new">Erreur lors de la récupération des nouveautés</string>
   <string name="loading">Chargement</string>
+  <string name="exact_alarm_permission_required">Autorisation d\'alarme exacte requise</string>
+  <string name="exact_alarm_permission_required_message">L\'autorisation d\'alarme exacte est requise pour que l\'application puisse actualiser le widget en temps voulu.</string>
+  <string name="go_to_settings">Aller aux paramètres.</string>
 </resources>

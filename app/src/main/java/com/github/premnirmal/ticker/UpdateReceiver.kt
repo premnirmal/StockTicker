@@ -24,10 +24,19 @@ class UpdateReceiver : BroadcastReceiver() {
         intent: Intent
     ) {
         Injector.appComponent().inject(this)
-        val pendingResult = goAsync()
-        coroutineScope.launch(Dispatchers.Main) {
-            stocksProvider.fetch()
-            pendingResult.finish()
+        if (intent.action == "android.intent.action.MY_PACKAGE_REPLACED") {
+            val pendingResult = goAsync()
+            coroutineScope.launch(Dispatchers.Main) {
+                stocksProvider.fetch()
+                pendingResult.finish()
+            }
+        }
+        if (intent.action == "android.intent.action.BOOT_COMPLETED") {
+            val pendingResult = goAsync()
+            coroutineScope.launch(Dispatchers.Main) {
+                stocksProvider.scheduleUpdate()
+                pendingResult.finish()
+            }
         }
     }
 }

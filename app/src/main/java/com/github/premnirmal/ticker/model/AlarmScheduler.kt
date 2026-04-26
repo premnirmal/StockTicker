@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.content.getSystemService
 import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
@@ -18,6 +19,7 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.widget.RefreshReceiver
+import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.time.DayOfWeek
 import java.time.Duration
@@ -36,10 +38,21 @@ import javax.inject.Singleton
  */
 @Singleton
 class AlarmScheduler @Inject constructor(
+    @param:ApplicationContext @field:ApplicationContext
+    private val context: Context,
     private val appPreferences: AppPreferences,
     private val clock: AppClock,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
 ) {
+
+    fun canScheduleExactAlarm(): Boolean {
+        val alarmManager: AlarmManager = context.getSystemService<AlarmManager>() ?: return false
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            alarmManager.canScheduleExactAlarms()
+        } else {
+            true
+        }
+    }
 
     fun isCurrentTimeWithinScheduledUpdateTime(): Boolean {
         var dayOfWeek = clock.todayLocal()
@@ -176,11 +189,15 @@ class AlarmScheduler @Inject constructor(
             refreshReceiverIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
         )
-        alarmManager.set(
-            AlarmManager.ELAPSED_REALTIME,
-            clock.elapsedRealtime() + msToNextAlarm,
-            pendingIntent
-        )
+        if (canScheduleExactAlarm()) {
+            alarmManager.setExact(
+                AlarmManager.ELAPSED_REALTIME, clock.elapsedRealtime() + msToNextAlarm, pendingIntent
+            )
+        } else {
+            alarmManager.setWindow(
+                AlarmManager.ELAPSED_REALTIME, clock.elapsedRealtime() + msToNextAlarm, MINUTES.toMillis(10), pendingIntent
+            )
+        }
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
@@ -191,6 +208,7 @@ class AlarmScheduler @Inject constructor(
             .setConstraints(constraints)
             .build()
         workManager.enqueueUniqueWork(RefreshWorker.TAG, ExistingWorkPolicy.REPLACE, request)
+
         return nextAlarmDate
     }
 

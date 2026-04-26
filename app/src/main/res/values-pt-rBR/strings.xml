@@ -171,4 +171,7 @@
   <string name="error">Erro</string>
   <string name="error_fetching_whats_new">Erro ao buscar novidades</string>
   <string name="loading">Carregando</string>
+  <string name="exact_alarm_permission_required">Permissão de alarme exato necessária</string>
+  <string name="exact_alarm_permission_required_message">A permissão de alarme exato é necessária para que o aplicativo consiga atualizar o widget no momento certo.</string>
+  <string name="go_to_settings">Ir para Configurações.</string>
 </resources>

@@ -36,13 +36,28 @@ fun Activity.showDialog(
 }
 
 fun Context.showDialog(
+    title: String,
     message: String,
     cancelable: Boolean = true,
     listener: OnClickListener
 ) {
     AlertDialog.Builder(
         this
-    ).setMessage(message).setCancelable(cancelable).setNeutralButton(R.string.ok, listener).show()
+    ).setTitle(title).setMessage(message).setCancelable(cancelable).setNeutralButton(R.string.ok, listener).show()
+}
+
+fun Context.showDialog(
+    title: String,
+    message: String,
+    positiveButton: String,
+    negativeButton: String,
+    cancelable: Boolean = true,
+    listener: OnClickListener
+) {
+    AlertDialog.Builder(
+        this
+    ).setTitle(title).setMessage(message).setCancelable(cancelable).setPositiveButton(positiveButton, listener)
+        .setNegativeButton(negativeButton, listener).show()
 }
 
 fun Context.showDialog(message: String): AlertDialog {

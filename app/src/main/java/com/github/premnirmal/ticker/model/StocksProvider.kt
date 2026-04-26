@@ -112,11 +112,11 @@ class StocksProvider constructor(
         storage.saveTickers(tickerSet)
     }
 
-    suspend fun scheduleUpdate() {
+    fun scheduleUpdate() {
         scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched))
     }
 
-    private suspend fun scheduleUpdateWithMs(
+    private fun scheduleUpdateWithMs(
         msToNextAlarm: Long
     ) {
         val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
@@ -125,7 +125,6 @@ class StocksProvider constructor(
             putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
         }
         appPreferences.setRefreshing(false)
-        widgetDataProvider.broadcastUpdateAllWidgets()
     }
 
     private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(

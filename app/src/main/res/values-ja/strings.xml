@@ -210,4 +210,7 @@
   <string name="quote_details_fifty_day_average">50日移動平均</string>
   <string name="quote_details_two_hundred_day_average">200日移動平均</string>
   <string name="date_format_long">yyyy年MM月dd日</string>
+  <string name="exact_alarm_permission_required">正確なアラームの権限が必要です</string>
+  <string name="exact_alarm_permission_required_message">アプリがウィジェットを適切なタイミングで更新できるようにするには、正確なアラームの権限が必要です。</string>
+  <string name="go_to_settings">設定へ移動。</string>
 </resources>

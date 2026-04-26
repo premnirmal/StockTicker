@@ -236,4 +236,8 @@
   <string name="quote_change_neg">%1$.2f</string>
   <string name="quote_change_percent_pos">+%1$.2f%%</string>
   <string name="quote_change_percent_neg">%1$.2f%%</string>
+
+  <string name="exact_alarm_permission_required">Exact alarm permission required</string>
+  <string name="exact_alarm_permission_required_message">The exact alarm permission is required for the app to be able to refresh the widget in a timely manner.</string>
+  <string name="go_to_settings">Go to Settings.</string>
 </resources>

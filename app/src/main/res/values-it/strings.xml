@@ -183,4 +183,7 @@
   <string name="error">Errore</string>
   <string name="error_fetching_whats_new">Errore ottenimento novità</string>
   <string name="loading">Caricamento</string>
+  <string name="exact_alarm_permission_required">Autorizzazione agli allarmi esatti richiesta</string>
+  <string name="exact_alarm_permission_required_message">L\'autorizzazione agli allarmi esatti è necessaria affinché l\'app possa aggiornare il widget tempestivamente.</string>
+  <string name="go_to_settings">Vai alle impostazioni.</string>
 </resources>
