@@ -11,6 +11,7 @@ jobs:
       issues: write
     steps:
       - name: Check issue body and close if template not followed
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -26,7 +27,7 @@ jobs:
             echo "$ISSUE_BODY" | grep -qiP 'Describe the bug' &&
             echo "$ISSUE_BODY" | grep -qiP 'App Version' &&
             echo "$ISSUE_BODY" | grep -qiP 'Device:' &&
-            echo "$ISSUE_BODY" | grep -qiP 'Steps to reproduce'
+            echo "$ISSUE_BODY" | grep -qiP '(To Reproduce|Steps to reproduce)'
           }
 
           if is_feature_request; then
@@ -36,8 +37,7 @@ jobs:
           else
             echo "✗ Issue did not match a valid template — closing issue #${ISSUE_NUMBER}."
             gh issue edit "$ISSUE_NUMBER" --repo "$REPO" --add-label "template not followed"
-            gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment ":wave: @${ISSUE_USER} thanks for opening an issue! This was automatically closed because it did not follow the issue template.
-
-Please use one of the provided issue templates and ensure all required sections are filled out before submitting."
+            issue_close_comment=$(printf ':wave: @%s thanks for opening an issue! This was automatically closed because it did not follow the issue template.\n\nPlease use one of the provided issue templates and ensure all required sections are filled out before submitting.' "$ISSUE_USER")
+            gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment "$issue_close_comment"
             echo "✓ Issue #${ISSUE_NUMBER} labelled, closed, and comment posted."
           fi
