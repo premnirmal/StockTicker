@@ -11,6 +11,7 @@ jobs:
       issues: write
     steps:
       - name: Check issue body and close if template not followed
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_BODY: ${{ github.event.issue.body }}
@@ -26,7 +27,7 @@ jobs:
             echo "$ISSUE_BODY" | grep -qiP 'Describe the bug' &&
             echo "$ISSUE_BODY" | grep -qiP 'App Version' &&
             echo "$ISSUE_BODY" | grep -qiP 'Device:' &&
-            echo "$ISSUE_BODY" | grep -qiP 'Steps to reproduce'
+            echo "$ISSUE_BODY" | grep -qiP '(To Reproduce|Steps to reproduce)'
           }
 
           if is_feature_request; then
