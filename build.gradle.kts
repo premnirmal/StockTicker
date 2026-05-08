@@ -1,3 +1,5 @@
+import com.github.premnirmal.gradle.VersionPropertiesTaskPlugin
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 plugins {
@@ -6,8 +8,8 @@ plugins {
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.hilt) apply false
   alias(libs.plugins.com.google.devtools.ksp) apply false
-  id("com.google.gms.google-services") version "4.4.3" apply false
-  id("com.google.firebase.crashlytics") version "3.0.6" apply false
+  id("com.google.gms.google-services") version "4.4.4" apply false
+  id("com.google.firebase.crashlytics") version "3.0.7" apply false
 }
 
-apply("app/updateVersionPropertiesFile.gradle.kts")
+apply<VersionPropertiesTaskPlugin>()

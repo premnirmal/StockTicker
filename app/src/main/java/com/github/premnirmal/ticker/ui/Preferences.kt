@@ -186,7 +186,7 @@ fun SettingsText(
 ) {
     Column(
         modifier = modifier
-            .padding(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .heightIn(min = 32.dp),
         verticalArrangement = Arrangement.Center,
     ) {

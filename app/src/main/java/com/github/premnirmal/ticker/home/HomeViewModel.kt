@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.home
 
 import android.app.Application
 import android.os.Build
-import android.os.Build.VERSION
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
@@ -72,7 +71,7 @@ class HomeViewModel @Inject constructor(
         get() = stocksProvider.hasPositions()
 
     val showAlarmPermissionRequest: Boolean
-        get() = VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmScheduler.canScheduleExactAlarm()
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmScheduler.canScheduleExactAlarm()
 
     private var fetchJob: Job? = null
 

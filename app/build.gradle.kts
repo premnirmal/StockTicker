@@ -1,9 +1,12 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import org.apache.tools.ant.taskdefs.condition.Os
-import java.io.ByteArrayOutputStream
+import com.github.premnirmal.gradle.getCommitsBetween
+import com.github.premnirmal.gradle.getOldGitVersionFromGit
+import com.github.premnirmal.gradle.getVersionNameFromGit
 import java.io.FileInputStream
 import java.util.Locale
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 
 plugins {
   id("com.android.application")
@@ -45,52 +48,6 @@ repositories {
 }
 
 android {
-  val getVersionName = { ->
-    ByteArrayOutputStream().use { outputStream ->
-      exec {
-        commandLine("git", "describe", "--tags", "--abbrev=0")
-          standardOutput = outputStream
-      }
-        outputStream.toString().trim()
-    }
-  }
-
-  val getOldGitVersion = { ->
-    try {
-      ByteArrayOutputStream().use { stdout ->
-        exec {
-          if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 15 | Select-Object -last 1")
-          } else {
-            commandLine("sh", "-c", "git tag --sort=-committerdate | head -20 | tail -1")
-          }
-          standardOutput = stdout
-        }
-        stdout.toString().trim()
-      }
-    } catch (e: Exception) {
-      println(e.message)
-      println(e.stackTrace)
-      "1.0"
-    }
-  }
-
-    fun getCommitsBetween(old: String, new: String): String {
-        try {
-            ByteArrayOutputStream().use { stdout ->
-                exec {
-                    commandLine("sh", "-c", "git log --pretty=format:\"%s\" $old...$new")
-                    standardOutput = stdout
-                }
-                return stdout.toString().trim().replace("\n", "\\n")
-            }
-        } catch (e: Exception) {
-            println(e.message)
-            println(e.stackTrace)
-            throw e
-        }
-    }
-
   buildFeatures {
     buildConfig = true
   }
@@ -99,13 +56,13 @@ android {
   compileSdk = 36
   buildToolsVersion = "31.0.0"
 
-  val name = getVersionName()
+  val name = project.getVersionNameFromGit()
   val major = name.split(".")[0].toInt()
   val minor = name.split(".")[1].toInt()
   val patch = name.split(".")[2].toInt()
   val code = (major * 100000000) + (minor * 100000) + patch
-  val oldGitVersion = getOldGitVersion()
-  val changeLog = getCommitsBetween(old = oldGitVersion, new = name)
+  val oldGitVersion = project.getOldGitVersionFromGit()
+  val changeLog = project.getCommitsBetween(old = oldGitVersion, new = name)
   println("get version name $name")
   println("Old git version $oldGitVersion")
   println("Change log:\n $changeLog")
@@ -123,15 +80,11 @@ android {
     buildConfigField("String", "CHANGE_LOG", "\"$changeLog\"")
   }
 
-  dexOptions {
-    javaMaxHeapSize = "2048M"
-  }
-
   signingConfigs {
     create("release") {
-      storeFile = file("file:keystore.jks")
+      storeFile = file("keystore.jks")
 
-      val propsFile: File = file("file:keystore.properties")
+      val propsFile: File = file("keystore.properties")
       if (propsFile.exists()) {
         val props: Properties = Properties()
         props.load(FileInputStream(propsFile))
@@ -196,7 +149,7 @@ android {
     kotlinCompilerExtensionVersion = "1.5.8"
   }
 
-  packagingOptions {
+  packaging {
     resources {
       excludes +=
           listOf("META-INF/DEPENDENCIES", "META-INF/NOTICE", "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE.txt")
@@ -214,8 +167,11 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
   }
 }
 

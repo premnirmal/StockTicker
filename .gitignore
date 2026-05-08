@@ -9,6 +9,8 @@
 app/build
 app/full-r8-config.txt
 app/prod/
+ui/build
+buildSrc/build
 /.vs/
 .kotlin/
 

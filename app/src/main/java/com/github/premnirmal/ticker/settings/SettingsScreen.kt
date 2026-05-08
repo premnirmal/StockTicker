@@ -3,6 +3,9 @@ package com.github.premnirmal.ticker.settings
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.os.Build.VERSION
+import android.provider.Settings
 import android.view.Gravity
 import android.view.ViewConfiguration
 import android.widget.Toast
@@ -12,6 +15,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,11 +25,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.debug.DbViewerActivity
@@ -72,6 +84,11 @@ fun SettingsScreen(
     rememberScrollToTopAction(HomeRoute.Settings) {
         state.animateScrollToItem(0)
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
+    val showAlarmPermissionRequest = remember(lifecycleState)  {
+        homeViewModel.showAlarmPermissionRequest
+    }
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier
@@ -81,11 +98,60 @@ fun SettingsScreen(
         }
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize().fadingEdges(state = state),
+            modifier = Modifier
+                .fillMaxSize()
+                .fadingEdges(state = state),
             contentPadding = padding,
             state = state,
         ) {
+            if (showAlarmPermissionRequest) {
+                stickyHeader(key = "alarm_permission_banner") {
+                    AlarmPermissionBanner()
+                }
+            }
             settingsItems(viewModel, homeViewModel, settingsData.value)
+        }
+    }
+}
+
+@Composable
+private fun AlarmPermissionBanner() {
+    val context = LocalContext.current
+    Surface(
+        modifier = Modifier.padding(8.dp)
+    ) {
+        Box(
+            modifier = Modifier.background(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = RoundedCornerShape(20.dp),
+            ),
+        ) {
+            Row(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.exact_alarm_permission_required_message),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    )
+                }
+                TextButton(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onClick = {
+                        if (VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                        }
+                    },
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.go_to_settings),
+                        color = MaterialTheme.colorScheme.secondary,
+                    )
+                }
+            }
         }
     }
 }
@@ -337,16 +403,22 @@ private fun LazyListScope.settingsItems(
         val context = LocalContext.current
         val primaryColor = MaterialTheme.colorScheme.primary
         Box(
-            modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp).clickable {
-                CustomTabs.openTab(
-                    context,
-                    R.string.checkout_open_source,
-                    primaryColor.toArgb(),
-                )
-            }
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 44.dp)
+                .clickable {
+                    CustomTabs.openTab(
+                        context,
+                        R.string.checkout_open_source,
+                        primaryColor.toArgb(),
+                    )
+                }
         ) {
             Text(
-                modifier = Modifier.fillMaxSize().padding(8.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp)
+                    .align(Alignment.Center),
                 text = stringResource(R.string.checkout_open_source),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall,

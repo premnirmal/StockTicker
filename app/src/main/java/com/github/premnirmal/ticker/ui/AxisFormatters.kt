@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.formatter.IAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.github.mikephil.charting.renderer.XAxisRenderer
 import com.github.mikephil.charting.utils.MPPointF
 import com.github.mikephil.charting.utils.Transformer
@@ -14,33 +15,30 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class DateAxisFormatter : IAxisValueFormatter {
+class DateAxisFormatter : ValueFormatter() {
 
     override fun getFormattedValue(
         value: Float,
-        axis: AxisBase
     ): String {
         val date = LocalDateTime.ofInstant(Instant.ofEpochSecond(value.toLong()), ZoneId.systemDefault()).toLocalDate()
         return date.format(AppPreferences.AXIS_DATE_FORMATTER)
     }
 }
 
-class HourAxisFormatter : IAxisValueFormatter {
+class HourAxisFormatter : ValueFormatter() {
 
     override fun getFormattedValue(
         value: Float,
-        axis: AxisBase?
     ): String {
         val hour = LocalDateTime.ofInstant(Instant.ofEpochSecond(value.toLong()), ZoneId.systemDefault()).toLocalTime()
         return hour.format(AppPreferences.TIME_FORMATTER)
     }
 }
 
-class ValueAxisFormatter : IAxisValueFormatter {
+class ValueAxisFormatter : ValueFormatter() {
 
     override fun getFormattedValue(
         value: Float,
-        axis: AxisBase
     ): String =
         AppPreferences.DECIMAL_FORMAT.format(value)
 }
