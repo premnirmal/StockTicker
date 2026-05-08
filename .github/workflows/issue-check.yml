@@ -37,6 +37,7 @@ jobs:
           else
             echo "✗ Issue did not match a valid template — closing issue #${ISSUE_NUMBER}."
             gh issue edit "$ISSUE_NUMBER" --repo "$REPO" --add-label "template not followed"
-            gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment $':wave: @'"${ISSUE_USER}"$' thanks for opening an issue! This was automatically closed because it did not follow the issue template.\n\nPlease use one of the provided issue templates and ensure all required sections are filled out before submitting.'
+            issue_close_comment=$(printf ':wave: @%s thanks for opening an issue! This was automatically closed because it did not follow the issue template.\n\nPlease use one of the provided issue templates and ensure all required sections are filled out before submitting.' "$ISSUE_USER")
+            gh issue close "$ISSUE_NUMBER" --repo "$REPO" --comment "$issue_close_comment"
             echo "✓ Issue #${ISSUE_NUMBER} labelled, closed, and comment posted."
           fi
