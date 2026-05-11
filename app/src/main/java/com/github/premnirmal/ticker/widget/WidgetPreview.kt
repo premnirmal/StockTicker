@@ -175,7 +175,10 @@ private fun QuotesGrid(
             val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
             val change = stock.change
             val changeInPercent = stock.changeInPercent
-            val changeColor = colorResource(widgetData.getChangeColor(change, changeInPercent))
+            val widgetChangeColor = remember(change, changeInPercent) {
+                widgetData.getChangeColor(change, changeInPercent)
+            }
+            val changeColor = colorResource(widgetChangeColor)
             val changeFormatted = remember(changeType, layoutType) {
                 if (layoutType == SerializableLayoutType.Tabs) {
                     changeValueFormatted
