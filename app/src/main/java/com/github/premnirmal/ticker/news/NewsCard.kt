@@ -109,7 +109,8 @@ fun NewsCardPreview() {
             )
             NewsCard(
                 NewsArticle(
-                    title = "Lorem ipsum testing this is a long news article lorem ipsum testing this is a long news article lorem ipsum testing this is a long news article lorem ipsum testing this is a long news article",
+                    title = "Lorem ipsum testing this is a long news article lorem ipsum " +
+                        "testing this is a long news article lorem ipsum testing",
                     url = "https://news.google.com/xyz",
                     publishedAt = "Tue, 3 Jun 2008 11:05:30 GMT",
                     imageUrl = "https://example.com/image.jpg"

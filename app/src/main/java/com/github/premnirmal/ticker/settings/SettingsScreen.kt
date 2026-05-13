@@ -57,20 +57,20 @@ import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.settings.SettingsViewModel.SettingsData
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.CheckboxPreference
-import com.github.premnirmal.ticker.ui.Divider
 import com.github.premnirmal.ticker.ui.ListPreference
 import com.github.premnirmal.ticker.ui.MultiSelectListPreference
 import com.github.premnirmal.ticker.ui.SettingsText
 import com.github.premnirmal.ticker.ui.TimeSelectorPreference
 import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.ui.Divider
 import com.github.premnirmal.tickerwidget.ui.theme.Alegreya
 import com.github.premnirmal.tickerwidget.ui.theme.Bold
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.mnikonov.fade_out.fadingEdges
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +86,7 @@ fun SettingsScreen(
     }
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleState by lifecycleOwner.lifecycle.currentStateFlow.collectAsState()
-    val showAlarmPermissionRequest = remember(lifecycleState)  {
+    val showAlarmPermissionRequest = remember(lifecycleState) {
         homeViewModel.showAlarmPermissionRequest
     }
     Scaffold(
@@ -157,6 +157,7 @@ private fun AlarmPermissionBanner() {
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
+@Suppress("LongMethod")
 private fun LazyListScope.settingsItems(
     viewModel: SettingsViewModel,
     homeViewModel: HomeViewModel,
@@ -454,7 +455,7 @@ class OnVersionTap(val context: Context) {
     var lastTapTimeMs = 0L
     var countToast: Toast? = null
 
-    fun onTap(offset: Offset) {
+    fun onTap(_offset: Offset) {
         if (System.currentTimeMillis() - lastTapTimeMs < ViewConfiguration.getDoubleTapTimeout()) {
             numberOfTaps++
             if (numberOfTaps > 0) {

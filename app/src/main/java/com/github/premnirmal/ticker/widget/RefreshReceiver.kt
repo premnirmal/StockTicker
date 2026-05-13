@@ -88,4 +88,3 @@ class RefreshReceiver : BroadcastReceiver() {
         }
     }
 }
-

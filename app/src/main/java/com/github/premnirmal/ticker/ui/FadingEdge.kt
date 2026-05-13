@@ -1,4 +1,4 @@
-package com.mnikonov.fade_out
+package com.github.premnirmal.ticker.ui
 
 import android.graphics.RuntimeShader
 import android.os.Build

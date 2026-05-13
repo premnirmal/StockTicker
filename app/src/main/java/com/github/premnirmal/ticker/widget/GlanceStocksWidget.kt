@@ -741,6 +741,7 @@ class RefreshCallback : ActionCallback {
 class FlipTextCallback : ActionCallback {
     @Inject
     internal lateinit var stocksProvider: StocksProvider
+
     @Inject
     internal lateinit var widgetDataProvider: WidgetDataProvider
     var injected = false

@@ -84,10 +84,10 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
-import com.mnikonov.fade_out.fadingEdges
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem

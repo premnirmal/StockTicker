@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TagComparison(
     @SerialName("url") val url: String,
-    @SerialName("html_url") val html_url: String,
+    @SerialName("html_url") val htmlUrl: String,
     @SerialName("commits") val commits: List<RepoCommit>,
     @SerialName("status") val status: String,
     @SerialName("ahead_by") val aheadBy: Int,
@@ -17,9 +17,9 @@ data class TagComparison(
 @Serializable
 data class RepoCommit(
     @SerialName("sha") val sha: String,
-    @SerialName("node_id") val node_id: String,
+    @SerialName("node_id") val nodeId: String,
     @SerialName("url") val url: String,
-    @SerialName("html_url") val html_url: String,
+    @SerialName("html_url") val htmlUrl: String,
     @SerialName("commit") val commit: Commit,
     @SerialName("author") val author: Author
 )

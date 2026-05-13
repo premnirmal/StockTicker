@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.Serializable
-import java.lang.ref.WeakReference
 import java.time.Duration
 import java.time.LocalDate
 import javax.inject.Inject
@@ -27,8 +26,6 @@ import javax.inject.Singleton
 class HistoryProvider @Inject constructor(
     private val chartApi: ChartApi
 ) {
-
-    private var cachedData: WeakReference<Pair<String, ChartData>>? = null
 
     suspend fun fetchDataByRange(
         symbol: String,

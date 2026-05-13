@@ -12,4 +12,3 @@ data class FetchLogRow(
     @ColumnInfo(name = "event") val event: String,
     @ColumnInfo(name = "detail") val detail: String,
 )
-

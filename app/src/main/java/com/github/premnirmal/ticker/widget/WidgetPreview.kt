@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.widget
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,7 +39,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
@@ -295,9 +293,11 @@ private fun MyPortfolio(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             Text(
                 modifier = Modifier
                     .weight(1f)
@@ -350,9 +350,11 @@ private fun MyPortfolio(
             )
         }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             Text(
                 modifier = Modifier.weight(1f),
                 text = priceFormatted,
@@ -405,9 +407,11 @@ private fun Modifier.toBackgroundPainter(widgetData: SerializableWidgetState): M
 @Composable
 @Preview(uiMode = UI_MODE_NIGHT_YES)
 private fun PreviewDark() {
-    Box(modifier = Modifier
-        .background(color = MaterialTheme.colorScheme.inverseSurface)
-        .padding(20.dp)) {
+    Box(
+        modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.inverseSurface)
+            .padding(20.dp)
+    ) {
         val data = previewDataState()
         GlanceWidgetPreview(
             modifier = Modifier.width(300.dp),
@@ -426,9 +430,11 @@ private fun PreviewDark() {
 @Composable
 @Preview
 private fun Preview() {
-    Box(modifier = Modifier
-        .background(color = MaterialTheme.colorScheme.inverseSurface)
-        .padding(20.dp)) {
+    Box(
+        modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.inverseSurface)
+            .padding(20.dp)
+    ) {
         val data = previewDataState()
         GlanceWidgetPreview(
             modifier = Modifier.width(300.dp),

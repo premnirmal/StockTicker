@@ -1,4 +1,4 @@
-package com.github.premnirmal.ticker.ui
+package com.github.premnirmal.tickerwidget.ui
 
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable

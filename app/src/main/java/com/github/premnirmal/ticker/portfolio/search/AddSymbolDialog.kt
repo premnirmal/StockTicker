@@ -29,9 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.github.premnirmal.ticker.ui.Divider
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
+import com.github.premnirmal.tickerwidget.ui.Divider
 
 @Composable
 fun AddSymbolDialog(

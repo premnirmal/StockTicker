@@ -31,9 +31,9 @@ import com.github.premnirmal.ticker.news.NewsFeedItem.TrendingStockNewsFeed
 import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.ProgressState
 import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
-import com.mnikonov.fade_out.fadingEdges
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -57,11 +57,11 @@ import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
-import com.mnikonov.fade_out.fadingEdges
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

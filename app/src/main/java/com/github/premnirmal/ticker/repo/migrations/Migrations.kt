@@ -50,7 +50,9 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
 
         // Add the new table PropertiesRow.
         database.execSQL(
-            "CREATE TABLE IF NOT EXISTS `PropertiesRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `properties_quote_symbol` TEXT NOT NULL, `notes` TEXT NOT NULL, `alert_above` REAL NOT NULL, `alert_below` REAL NOT NULL)"
+            "CREATE TABLE IF NOT EXISTS `PropertiesRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`properties_quote_symbol` TEXT NOT NULL, `notes` TEXT NOT NULL, " +
+                "`alert_above` REAL NOT NULL, `alert_below` REAL NOT NULL)"
         )
     }
 }
@@ -114,8 +116,8 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
 val MIGRATION_8_9 = object : Migration(8, 9) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL(
-            "CREATE TABLE IF NOT EXISTS `FetchLogRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created_at_ms` INTEGER NOT NULL, `source` TEXT NOT NULL, `event` TEXT NOT NULL, `detail` TEXT NOT NULL)"
+            "CREATE TABLE IF NOT EXISTS `FetchLogRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`created_at_ms` INTEGER NOT NULL, `source` TEXT NOT NULL, `event` TEXT NOT NULL, `detail` TEXT NOT NULL)"
         )
     }
 }
-

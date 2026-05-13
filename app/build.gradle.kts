@@ -23,7 +23,7 @@ plugins {
 
 detekt {
   toolVersion = libs.versions.detekt.get()
-  config.setFrom(file("../config/detekt/detekt.yml"))
+  config.setFrom(files("../config/detekt/detekt.yml", "../config/detekt/detekt-formatting.yml"))
   buildUponDefaultConfig = true
   autoCorrect = true
 }

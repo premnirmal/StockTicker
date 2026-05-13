@@ -259,6 +259,7 @@ class AppPreferences @Inject constructor(
         const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
         const val LAYOUT_TYPE = "LAYOUT_TYPE"
         const val WIDGET_SIZE = "WIDGET_SIZE"
+
         @Deprecated("will be removed in future version")
         const val FONT_SIZE = "FONT_SIZE"
         const val BOLD_CHANGE = "BOLD_CHANGE"

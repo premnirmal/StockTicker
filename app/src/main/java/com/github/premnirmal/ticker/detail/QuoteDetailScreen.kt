@@ -110,11 +110,11 @@ import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
 import com.github.premnirmal.ticker.ui.TextMarkerView
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.ValueAxisFormatter
+import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
-import com.mnikonov.fade_out.fadingEdges
 
 @Composable
 fun QuoteDetailScreen(
@@ -523,6 +523,7 @@ private fun LazyGridScope.quoteDetailsGrid(details: List<QuoteDetail>) {
     }
 }
 
+@Suppress("LongMethod")
 private fun LazyGridScope.quotePositionsNotesAlerts(
     quote: Quote,
     isInPortfolio: Boolean

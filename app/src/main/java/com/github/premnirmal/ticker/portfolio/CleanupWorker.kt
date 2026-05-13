@@ -17,6 +17,7 @@ class CleanupWorker(context: Context, params: WorkerParameters) : CoroutineWorke
     }
 
     @Inject internal lateinit var stocksProvider: StocksProvider
+
     @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
 
     override suspend fun doWork(): Result {

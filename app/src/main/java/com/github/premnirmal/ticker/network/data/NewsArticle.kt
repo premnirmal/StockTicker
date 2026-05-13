@@ -106,6 +106,7 @@ data class Thumbnail(
     val url: String? = null
 )
 
+@Suppress("FunctionNaming")
 fun NewsArticle(
     title: String,
     url: String,

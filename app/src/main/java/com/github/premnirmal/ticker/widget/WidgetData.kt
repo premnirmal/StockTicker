@@ -41,6 +41,7 @@ class WidgetData : IWidgetData {
         private const val WIDGET_NAME = "WIDGET_NAME"
         private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
         private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
+
         @Deprecated("will be removed in future version")
         private const val FONT_SIZE = AppPreferences.FONT_SIZE
         private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
@@ -68,7 +69,9 @@ class WidgetData : IWidgetData {
     @Inject internal lateinit var appPreferences: AppPreferences
 
     @Inject internal lateinit var coroutineScope: CoroutineScope
+
     @Inject internal lateinit var appMessaging: AppMessaging
+
     @Inject internal lateinit var alarmScheduler: AlarmScheduler
 
     private val position: Int

@@ -51,10 +51,10 @@ import com.github.premnirmal.ticker.network.data.holdingsSum
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
-import com.github.premnirmal.ticker.ui.Divider
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.ui.Divider
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane

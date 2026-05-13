@@ -17,8 +17,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.ui.Divider
 import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.tickerwidget.ui.Divider
 
 @Composable
 fun SuggestionItem(

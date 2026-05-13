@@ -191,11 +191,16 @@ class AlarmScheduler @Inject constructor(
         )
         if (canScheduleExactAlarm()) {
             alarmManager.setExact(
-                AlarmManager.ELAPSED_REALTIME, clock.elapsedRealtime() + msToNextAlarm, pendingIntent
+                AlarmManager.ELAPSED_REALTIME,
+                clock.elapsedRealtime() + msToNextAlarm,
+                pendingIntent
             )
         } else {
             alarmManager.setWindow(
-                AlarmManager.ELAPSED_REALTIME, clock.elapsedRealtime() + msToNextAlarm, MINUTES.toMillis(10), pendingIntent
+                AlarmManager.ELAPSED_REALTIME,
+                clock.elapsedRealtime() + msToNextAlarm,
+                MINUTES.toMillis(10),
+                pendingIntent
             )
         }
         val constraints = Constraints.Builder()
@@ -231,9 +236,9 @@ class AlarmScheduler @Inject constructor(
     fun enqueuePeriodicCleanup() {
         val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build()
         val request = PeriodicWorkRequestBuilder<CleanupWorker>(1, TimeUnit.DAYS)
-                .addTag(CleanupWorker.TAG_PERIODIC)
-                .setConstraints(constraints)
-                .build()
+            .addTag(CleanupWorker.TAG_PERIODIC)
+            .setConstraints(constraints)
+            .build()
         workManager.enqueueUniquePeriodicWork(CleanupWorker.TAG_PERIODIC, ExistingPeriodicWorkPolicy.UPDATE, request)
     }
 

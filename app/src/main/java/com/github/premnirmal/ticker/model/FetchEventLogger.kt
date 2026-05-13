@@ -40,4 +40,3 @@ class FetchEventLogger @Inject constructor(
         }
     }
 }
-

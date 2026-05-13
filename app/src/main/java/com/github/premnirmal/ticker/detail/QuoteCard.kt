@@ -39,13 +39,13 @@ import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 
-private const val QuoteMaxLines = 1
+private const val QUOTE_MAX_LINES = 1
 
 @Composable
 fun QuoteCard(
     quote: Quote,
     modifier: Modifier = Modifier,
-    quoteNameMaxLines: Int = QuoteMaxLines,
+    quoteNameMaxLines: Int = QUOTE_MAX_LINES,
     interactionSource: MutableInteractionSource? = null,
     onClick: (Quote) -> Unit,
     onRemoveClick: (Quote) -> Unit = {},
@@ -79,7 +79,7 @@ private fun InstrumentCard(
                 modifier = Modifier.weight(1f),
                 text = quote.symbol
             )
-            if(showMore) {
+            if (showMore) {
                 MoreIcon(
                     onClick = {
                         onRemoveClick(quote)
@@ -128,7 +128,7 @@ private fun PositionCard(
                 text = quote.priceFormat.format(quote.lastTradePrice),
                 textAlign = TextAlign.End
             )
-            if(showMore) {
+            if (showMore) {
                 MoreIcon(
                     onClick = {
                         onMoreClick(quote)
@@ -378,9 +378,11 @@ private fun MoreIcon(
             },
         ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 4.dp).clickable {
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 4.dp).clickable {
                     onClick()
-                }) {
+                }
+            ) {
                 Icon(
                     modifier = Modifier.size(18.dp).padding(end = 4.dp),
                     painter = painterResource(R.drawable.ic_remove_circle),

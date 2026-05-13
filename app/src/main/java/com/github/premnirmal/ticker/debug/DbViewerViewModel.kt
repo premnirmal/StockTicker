@@ -47,6 +47,7 @@ class DbViewerViewModel @Inject constructor(
     val htmlFile: StateFlow<File?>
         get() = _htmlFile
 
+    @Suppress("LongMethod")
     fun generateDatabaseHtml() {
         viewModelScope.launch(Dispatchers.IO) {
             _showProgress.emit(true)

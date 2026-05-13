@@ -77,7 +77,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setStartTime(time: String, hour: Int, minute: Int) {
+    fun setStartTime(time: String, _hour: Int, _minute: Int) {
         viewModelScope.launch {
             appPreferences.setStartTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
@@ -85,7 +85,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun setEndTime(time: String, hour: Int, minute: Int) {
+    fun setEndTime(time: String, _hour: Int, _minute: Int) {
         viewModelScope.launch {
             appPreferences.setEndTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
