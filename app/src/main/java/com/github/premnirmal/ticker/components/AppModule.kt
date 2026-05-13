@@ -14,6 +14,7 @@ import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.home.AppReviewManager
 import com.github.premnirmal.ticker.home.IAppReviewManager
 import com.github.premnirmal.ticker.model.AlarmScheduler
+import com.github.premnirmal.ticker.model.FetchEventLogger
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.repo.QuoteDao
@@ -26,6 +27,7 @@ import com.github.premnirmal.ticker.repo.migrations.MIGRATION_4_5
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_5_6
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_6_7
 import com.github.premnirmal.ticker.repo.migrations.MIGRATION_7_8
+import com.github.premnirmal.ticker.repo.migrations.MIGRATION_8_9
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
@@ -42,7 +44,7 @@ import javax.inject.Singleton
 class AppModule {
 
     @Singleton @Provides
-    fun provideApplicationScope(): CoroutineScope = CoroutineScope(Dispatchers.Unconfined + SupervisorJob())
+    fun provideApplicationScope(): CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     @Provides @Singleton
     fun provideClock(): AppClock = AppClockImpl
@@ -66,10 +68,22 @@ class AppModule {
         clock: AppClock,
         widgetDataProvider: WidgetDataProvider,
         alarmScheduler: AlarmScheduler,
+        fetchEventLogger: FetchEventLogger,
         storage: StocksStorage,
         coroutineScope: CoroutineScope
     ): StocksProvider {
-        return StocksProvider(context, stocksApi, sharedPreferences, clock, appPreferences, widgetDataProvider, alarmScheduler, storage, coroutineScope)
+        return StocksProvider(
+            context,
+            stocksApi,
+            sharedPreferences,
+            clock,
+            appPreferences,
+            widgetDataProvider,
+            alarmScheduler,
+            fetchEventLogger,
+            storage,
+            coroutineScope
+        )
     }
 
     @Provides @Singleton
@@ -96,6 +110,7 @@ class AppModule {
             .addMigrations(MIGRATION_5_6)
             .addMigrations(MIGRATION_6_7)
             .addMigrations(MIGRATION_7_8)
+            .addMigrations(MIGRATION_8_9)
             .build()
     }
 

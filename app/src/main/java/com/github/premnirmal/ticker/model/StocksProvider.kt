@@ -25,6 +25,7 @@ import timber.log.Timber
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.concurrent.TimeUnit.MINUTES
 import javax.inject.Singleton
 
 /**
@@ -39,6 +40,7 @@ class StocksProvider constructor(
     private val appPreferences: AppPreferences,
     private val widgetDataProvider: WidgetDataProvider,
     private val alarmScheduler: AlarmScheduler,
+    private val fetchEventLogger: FetchEventLogger,
     private val storage: StocksStorage,
     private val coroutineScope: CoroutineScope
 ) {
@@ -46,6 +48,9 @@ class StocksProvider constructor(
     companion object {
         private const val LAST_FETCHED = "LAST_FETCHED"
         private const val NEXT_FETCH = "NEXT_FETCH"
+        private const val CONSECUTIVE_FETCH_FAILURES = "CONSECUTIVE_FETCH_FAILURES"
+        private const val MIN_SCHEDULE_MS = 15_000L
+        private const val MAX_FAILURE_BACKOFF_MS = 30 * 60 * 1000L
         private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
         const val DEFAULT_INTERVAL_MS: Long = 15_000L
     }
@@ -112,19 +117,81 @@ class StocksProvider constructor(
         storage.saveTickers(tickerSet)
     }
 
-    fun scheduleUpdate() {
-        scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched))
+    fun scheduleUpdate(reason: String = "regular") {
+        val msToNextAlarm = alarmScheduler.msToNextAlarm(lastFetched)
+        scheduleUpdateWithMs(msToNextAlarm, reason)
     }
 
     private fun scheduleUpdateWithMs(
-        msToNextAlarm: Long
+        msToNextAlarm: Long,
+        reason: String
     ) {
-        val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
+        val clampedDelayMs = msToNextAlarm.coerceAtLeast(MIN_SCHEDULE_MS)
+        val updateTime = alarmScheduler.scheduleUpdate(clampedDelayMs, context)
         _nextFetch.value = updateTime.toInstant().toEpochMilli()
         preferences.edit {
             putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
         }
+        Timber.i(
+            "Scheduled next refresh reason=%s delayMs=%d at=%s",
+            reason,
+            clampedDelayMs,
+            updateTime.toInstant()
+        )
+        logFetchEvent(
+            source = "StocksProvider",
+            event = "schedule_next",
+            detail = "reason=$reason delayMs=$clampedDelayMs nextAt=${updateTime.toInstant()}"
+        )
         appPreferences.setRefreshing(false)
+    }
+
+    private fun logFetchEvent(source: String, event: String, detail: String) =
+        fetchEventLogger.log(source = source, event = event, detail = detail)
+
+    private fun resetConsecutiveFailures() {
+        preferences.edit { putInt(CONSECUTIVE_FETCH_FAILURES, 0) }
+    }
+
+    private fun incrementConsecutiveFailures(): Int {
+        val nextValue = preferences.getInt(CONSECUTIVE_FETCH_FAILURES, 0) + 1
+        preferences.edit { putInt(CONSECUTIVE_FETCH_FAILURES, nextValue) }
+        return nextValue
+    }
+
+    private fun scheduleFailureBackoff(reason: String, error: Throwable?) {
+        val failureCount = incrementConsecutiveFailures()
+        val exponent = (failureCount - 1).coerceAtMost(10)
+        val backoffMs = (MINUTES.toMillis(1) * (1L shl exponent)).coerceAtMost(MAX_FAILURE_BACKOFF_MS)
+        val regularScheduleMs = alarmScheduler.msToNextAlarm(lastFetched)
+        val retryDelayMs = minOf(regularScheduleMs, backoffMs)
+        val scheduleReason = "failure_backoff($failureCount):$reason"
+        if (error != null) {
+            Timber.w(
+                error,
+                "Fetch failed reason=%s failures=%d backoffMs=%d regularMs=%d chosenMs=%d",
+                reason,
+                failureCount,
+                backoffMs,
+                regularScheduleMs,
+                retryDelayMs
+            )
+        } else {
+            Timber.w(
+                "Fetch failed reason=%s failures=%d backoffMs=%d regularMs=%d chosenMs=%d",
+                reason,
+                failureCount,
+                backoffMs,
+                regularScheduleMs,
+                retryDelayMs
+            )
+        }
+        logFetchEvent(
+            source = "StocksProvider",
+            event = "failure_backoff",
+            detail = "reason=$reason failures=$failureCount backoffMs=$backoffMs regularMs=$regularScheduleMs chosenMs=$retryDelayMs"
+        )
+        scheduleUpdateWithMs(retryDelayMs, scheduleReason)
     }
 
     private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(
@@ -164,21 +231,34 @@ class StocksProvider constructor(
         return tickerSet.contains(ticker)
     }
 
+
     suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
         if (tickerSet.isEmpty()) {
             Timber.d("No tickers/symbols to fetch")
             FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
         } else {
+            var shouldScheduleInFinally = allowScheduling
+            var failureReason = "unknown"
+            var failureError: Throwable? = null
             return@withContext try {
+                Timber.i("Starting fetch allowScheduling=%s tickers=%d", allowScheduling, tickerSet.size)
+                logFetchEvent(
+                    source = "StocksProvider",
+                    event = "fetch_start",
+                    detail = "allowScheduling=$allowScheduling tickers=${tickerSet.size}"
+                )
                 if (allowScheduling) {
                     appPreferences.setRefreshing(true)
                 }
                 val fr = api.getStocks(tickerSet.toList())
                 if (fr.hasError) {
+                    failureReason = "api_error"
                     throw fr.error
                 }
                 val fetchedStocks = fr.data
                 if (fetchedStocks.isEmpty()) {
+                    failureReason = "empty_response"
+                    failureError = FetchException("Refresh failed")
                     return@withContext FetchResult.failure<List<Quote>>(FetchException("Refresh failed"))
                 } else {
                     synchronized(tickerSet) {
@@ -191,19 +271,41 @@ class StocksProvider constructor(
                         lastFetched = clock.currentTimeMillis()
                         _fetchState.emit(FetchState.Success(lastFetched))
                         saveLastFetched(lastFetched)
-                        scheduleUpdate()
+                        resetConsecutiveFailures()
+                        scheduleUpdate(reason = "fetch_success")
+                        shouldScheduleInFinally = false
                     }
                     appPreferences.setRefreshing(false)
                     widgetDataProvider.broadcastUpdateAllWidgets()
+                    Timber.i("Fetch succeeded stocks=%d", fetchedStocks.size)
+                    logFetchEvent(
+                        source = "StocksProvider",
+                        event = "fetch_success",
+                        detail = "stocks=${fetchedStocks.size}"
+                    )
                     FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
                 }
             } catch (ex: CancellationException) {
+                failureReason = "cancelled"
+                failureError = ex
                 FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
             } catch (ex: Throwable) {
+                failureReason = ex::class.java.simpleName
+                failureError = ex
                 Timber.w(ex)
                 FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
             } finally {
                 appPreferences.setRefreshing(false)
+                if (shouldScheduleInFinally) {
+                    // Keep scheduling chain alive across transient failures.
+                    logFetchEvent(
+                        source = "StocksProvider",
+                        event = "fetch_failure",
+                        detail = "reason=$failureReason error=${failureError?.message.orEmpty()}"
+                    )
+                    runCatching { scheduleFailureBackoff(failureReason, failureError) }
+                        .onFailure { Timber.w(it, "Failed scheduling after fetch failure") }
+                }
             }
         }
     }

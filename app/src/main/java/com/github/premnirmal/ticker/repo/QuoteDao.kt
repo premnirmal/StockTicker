@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.github.premnirmal.ticker.repo.data.FetchLogRow
 import com.github.premnirmal.ticker.repo.data.HoldingRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
@@ -100,4 +101,15 @@ interface QuoteDao {
 
     @Query("DELETE FROM PropertiesRow WHERE properties_quote_symbol = :symbol")
     suspend fun deletePropertiesByQuoteId(symbol: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertFetchLog(log: FetchLogRow): Long
+
+    @Query("SELECT * FROM FetchLogRow ORDER BY created_at_ms DESC LIMIT :limit")
+    suspend fun getFetchLogs(limit: Int): List<FetchLogRow>
+
+    @Query(
+        "DELETE FROM FetchLogRow WHERE id NOT IN (SELECT id FROM FetchLogRow ORDER BY created_at_ms DESC LIMIT :maxRows)"
+    )
+    suspend fun trimFetchLogs(maxRows: Int)
 }

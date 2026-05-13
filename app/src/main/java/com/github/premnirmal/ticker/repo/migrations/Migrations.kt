@@ -110,3 +110,12 @@ val MIGRATION_7_8 = object : Migration(7, 8) {
         database.execSQL("ALTER TABLE PropertiesRow ADD COLUMN displayname TEXT NOT NULL DEFAULT ''")
     }
 }
+
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL(
+            "CREATE TABLE IF NOT EXISTS `FetchLogRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created_at_ms` INTEGER NOT NULL, `source` TEXT NOT NULL, `event` TEXT NOT NULL, `detail` TEXT NOT NULL)"
+        )
+    }
+}
+

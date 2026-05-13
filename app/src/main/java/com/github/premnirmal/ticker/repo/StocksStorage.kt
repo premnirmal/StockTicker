@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.repo.data.FetchLogRow
 import com.github.premnirmal.ticker.repo.data.HoldingRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
@@ -27,6 +28,7 @@ class StocksStorage @Inject constructor(
 
     companion object {
         private const val KEY_TICKERS = "TICKERS"
+        private const val MAX_FETCH_LOG_ROWS = 500
     }
 
     fun saveTickers(tickers: Set<String>) {
@@ -124,6 +126,27 @@ class StocksStorage @Inject constructor(
         properties: Properties
     ) = db.withTransaction {
         quoteDao.upsertProperties(properties.toPropertiesRow())
+    }
+
+    suspend fun addFetchLog(
+        createdAtMs: Long,
+        source: String,
+        event: String,
+        detail: String
+    ) = db.withTransaction {
+        quoteDao.insertFetchLog(
+            FetchLogRow(
+                createdAtMs = createdAtMs,
+                source = source,
+                event = event,
+                detail = detail
+            )
+        )
+        quoteDao.trimFetchLogs(MAX_FETCH_LOG_ROWS)
+    }
+
+    suspend fun readFetchLogs(limit: Int): List<FetchLogRow> = db.withTransaction {
+        quoteDao.getFetchLogs(limit)
     }
 
     private fun Quote.toQuoteRow(): QuoteRow {

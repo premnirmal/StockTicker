@@ -187,7 +187,7 @@ class AlarmScheduler @Inject constructor(
             context,
             0,
             refreshReceiverIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         if (canScheduleExactAlarm()) {
             alarmManager.setExact(
@@ -258,7 +258,7 @@ class AlarmScheduler @Inject constructor(
                 context,
                 REQUEST_CODE_SUMMARY_NOTIFICATION,
                 receiverIntent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
         alarmManager.setRepeating(
             AlarmManager.ELAPSED_REALTIME,

@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.debug
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
@@ -19,6 +18,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
 
@@ -32,6 +34,9 @@ class DbViewerViewModel @Inject constructor(
 
     companion object {
         private const val FILENAME = "db.html"
+        private const val FETCH_LOG_LIMIT = 300
+        private val LOG_TIME_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
     }
 
     private val _showProgress = MutableStateFlow<Boolean>(false)
@@ -188,10 +193,12 @@ class DbViewerViewModel @Inject constructor(
 
                 val widgetsInfo = extractWidgetsInfo()
                 val workerInfo = extractWorkerInfo()
+                val fetchLogsInfo = extractFetchLogsInfo()
                 sb.append(quotesInfo)
                     .append(holdingsInfo)
                     .append(propsInfo)
                     .append(workerInfo)
+                    .append(fetchLogsInfo)
                     .append(widgetsInfo)
                     .append("</body></html>")
             }
@@ -278,5 +285,35 @@ class DbViewerViewModel @Inject constructor(
         }
         sb.append("</table>")
         return sb
+    }
+
+    private suspend fun extractFetchLogsInfo(): StringBuilder {
+        val sb = StringBuilder().append(
+            """
+            <h2>Fetch Logs</h2>
+            <table>
+            <tr>
+            <th>id</th><th>time</th><th>source</th><th>event</th><th>detail</th>
+            </tr>
+            """
+        )
+        dao.getFetchLogs(FETCH_LOG_LIMIT).forEach { log ->
+            sb.append("<tr>")
+                .append("<td>${log.id}</td>")
+                .append("<td>${LOG_TIME_FORMATTER.format(Instant.ofEpochMilli(log.createdAtMs))}</td>")
+                .append("<td>${log.source.escapeHtml()}</td>")
+                .append("<td>${log.event.escapeHtml()}</td>")
+                .append("<td>${log.detail.escapeHtml()}</td>")
+                .append("</tr>")
+            yield()
+        }
+        sb.append("</table>")
+        return sb
+    }
+
+    private fun String.escapeHtml(): String {
+        return this.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
     }
 }

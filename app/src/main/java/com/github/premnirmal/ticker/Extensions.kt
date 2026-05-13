@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -71,18 +72,12 @@ fun Context.showDialog(@StringRes stringRes: Int): AlertDialog {
 }
 
 fun Context.isNetworkOnline(): Boolean {
-    try {
-        val connectivityManager = this.getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        val i = connectivityManager.activeNetworkInfo ?: return false
-        if (!i.isConnected) return false
-        if (!i.isAvailable) return false
-        return true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return false
-    }
+    val connectivityManager =
+        getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 }
 
 fun ZonedDateTime.createTimeString(): String {
