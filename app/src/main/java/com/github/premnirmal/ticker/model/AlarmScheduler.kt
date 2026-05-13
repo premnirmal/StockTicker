@@ -4,7 +4,9 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Build
+import androidx.core.content.edit
 import androidx.core.content.getSystemService
 import androidx.work.BackoffPolicy.LINEAR
 import androidx.work.Constraints
@@ -42,6 +44,7 @@ class AlarmScheduler @Inject constructor(
     private val context: Context,
     private val appPreferences: AppPreferences,
     private val clock: AppClock,
+    private val preferences: SharedPreferences,
     private val workManager: WorkManager,
 ) {
 
@@ -178,6 +181,30 @@ class AlarmScheduler @Inject constructor(
         msToNextAlarm: Long,
         context: Context
     ): ZonedDateTime {
+        resetConsecutiveNoNetworkRetries()
+        return scheduleUpdateInternal(msToNextAlarm, context)
+    }
+
+    fun scheduleNoNetworkRetry(
+        context: Context,
+        reason: String = "no_network"
+    ): ZonedDateTime {
+        val retryCount = incrementConsecutiveNoNetworkRetries()
+        val exponent = (retryCount - 1).coerceAtMost(10)
+        val retryDelayMs = (NO_NETWORK_RETRY_BASE_MS * (1L shl exponent)).coerceAtMost(MAX_NO_NETWORK_RETRY_MS)
+        Timber.w(
+            "No network retry reason=%s retries=%d delayMs=%d",
+            reason,
+            retryCount,
+            retryDelayMs
+        )
+        return scheduleUpdateInternal(retryDelayMs, context)
+    }
+
+    private fun scheduleUpdateInternal(
+        msToNextAlarm: Long,
+        context: Context
+    ): ZonedDateTime {
         Timber.d("Scheduled for ${msToNextAlarm / (1000 * 60)} minutes")
         val instant = Instant.ofEpochMilli(clock.currentTimeMillis() + msToNextAlarm)
         val nextAlarmDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
@@ -215,6 +242,16 @@ class AlarmScheduler @Inject constructor(
         workManager.enqueueUniqueWork(RefreshWorker.TAG, ExistingWorkPolicy.REPLACE, request)
 
         return nextAlarmDate
+    }
+
+    private fun resetConsecutiveNoNetworkRetries() {
+        preferences.edit { putInt(CONSECUTIVE_NO_NETWORK_RETRIES, 0) }
+    }
+
+    private fun incrementConsecutiveNoNetworkRetries(): Int {
+        val nextValue = preferences.getInt(CONSECUTIVE_NO_NETWORK_RETRIES, 0) + 1
+        preferences.edit { putInt(CONSECUTIVE_NO_NETWORK_RETRIES, nextValue) }
+        return nextValue
     }
 
     fun enqueuePeriodicRefresh() {
@@ -275,5 +312,8 @@ class AlarmScheduler @Inject constructor(
 
     companion object {
         private const val REQUEST_CODE_SUMMARY_NOTIFICATION = 123
+        private const val CONSECUTIVE_NO_NETWORK_RETRIES = "CONSECUTIVE_NO_NETWORK_RETRIES"
+        private const val NO_NETWORK_RETRY_BASE_MS = 30_000L
+        private const val MAX_NO_NETWORK_RETRY_MS = 10 * 60 * 1000L
     }
 }

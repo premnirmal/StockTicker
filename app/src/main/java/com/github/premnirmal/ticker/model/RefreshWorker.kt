@@ -25,7 +25,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         Injector.appComponent().inject(this)
         return if (applicationContext.isNetworkOnline()) {
             if (!alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()) {
-                Timber.i("RefreshWorker skipped: outside configured update window")
+                Timber.d("RefreshWorker skipped: outside configured update window")
                 fetchEventLogger.log(
                     source = "RefreshWorker",
                     event = "skipped_window",
@@ -43,7 +43,7 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
                 )
                 Result.retry()
             } else {
-                Timber.i("RefreshWorker fetch succeeded")
+                Timber.d("RefreshWorker fetch succeeded")
                 fetchEventLogger.log(
                     source = "RefreshWorker",
                     event = "fetch_success",

@@ -132,7 +132,7 @@ class StocksProvider constructor(
         preferences.edit {
             putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
         }
-        Timber.i(
+        Timber.d(
             "Scheduled next refresh reason=%s delayMs=%d at=%s",
             reason,
             clampedDelayMs,
@@ -240,7 +240,7 @@ class StocksProvider constructor(
             var failureReason = "unknown"
             var failureError: Throwable? = null
             return@withContext try {
-                Timber.i("Starting fetch allowScheduling=%s tickers=%d", allowScheduling, tickerSet.size)
+                Timber.d("Starting fetch allowScheduling=%s tickers=%d", allowScheduling, tickerSet.size)
                 logFetchEvent(
                     source = "StocksProvider",
                     event = "fetch_start",
@@ -276,7 +276,7 @@ class StocksProvider constructor(
                     }
                     appPreferences.setRefreshing(false)
                     widgetDataProvider.broadcastUpdateAllWidgets()
-                    Timber.i("Fetch succeeded stocks=%d", fetchedStocks.size)
+                    Timber.d("Fetch succeeded stocks=%d", fetchedStocks.size)
                     logFetchEvent(
                         source = "StocksProvider",
                         event = "fetch_success",

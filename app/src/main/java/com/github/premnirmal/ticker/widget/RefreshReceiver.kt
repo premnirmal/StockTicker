@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.isNetworkOnline
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.FetchEventLogger
 import com.github.premnirmal.ticker.model.StocksProvider
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +22,8 @@ class RefreshReceiver : BroadcastReceiver() {
 
     @Inject internal lateinit var stocksProvider: StocksProvider
 
+    @Inject internal lateinit var alarmScheduler: AlarmScheduler
+
     @Inject internal lateinit var fetchEventLogger: FetchEventLogger
 
     @Inject internal lateinit var coroutineScope: CoroutineScope
@@ -31,7 +35,7 @@ class RefreshReceiver : BroadcastReceiver() {
         Injector.appComponent().inject(this)
         val pendingResult = goAsync()
         val startedAtMs = System.currentTimeMillis()
-        Timber.i(
+        Timber.d(
             "RefreshReceiver triggered action=%s hasExtras=%s",
             intent.action,
             intent.extras != null
@@ -41,6 +45,18 @@ class RefreshReceiver : BroadcastReceiver() {
             event = "triggered",
             detail = "action=${intent.action} hasExtras=${intent.extras != null}"
         )
+
+        if (!context.isNetworkOnline()) {
+            Timber.w("RefreshReceiver skipped: no validated network, rescheduling")
+            fetchEventLogger.log(
+                source = "RefreshReceiver",
+                event = "no_network",
+                detail = "skipped fetch and rescheduled"
+            )
+            alarmScheduler.scheduleNoNetworkRetry(context, reason = "refresh_receiver_no_network")
+            pendingResult.finish()
+            return
+        }
 
         coroutineScope.launch(Dispatchers.IO) {
             try {
@@ -62,7 +78,7 @@ class RefreshReceiver : BroadcastReceiver() {
                         detail = result.error.message.orEmpty()
                     )
                 } else {
-                    Timber.i("Fetch completed successfully in RefreshReceiver")
+                    Timber.d("Fetch completed successfully in RefreshReceiver")
                     fetchEventLogger.log(
                         source = "RefreshReceiver",
                         event = "fetch_success",
@@ -77,7 +93,7 @@ class RefreshReceiver : BroadcastReceiver() {
                     detail = e.message.orEmpty()
                 )
             } finally {
-                Timber.i("RefreshReceiver finishing elapsedMs=%d", System.currentTimeMillis() - startedAtMs)
+                Timber.d("RefreshReceiver finishing elapsedMs=%d", System.currentTimeMillis() - startedAtMs)
                 fetchEventLogger.log(
                     source = "RefreshReceiver",
                     event = "finished",
