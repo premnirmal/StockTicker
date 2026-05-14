@@ -139,15 +139,14 @@ class StocksProvider constructor(
             updateTime.toInstant()
         )
         logFetchEvent(
-            source = "StocksProvider",
             event = "schedule_next",
             detail = "reason=$reason delayMs=$clampedDelayMs nextAt=${updateTime.toInstant()}"
         )
         appPreferences.setRefreshing(false)
     }
 
-    private fun logFetchEvent(source: String, event: String, detail: String) =
-        fetchEventLogger.log(source = source, event = event, detail = detail)
+    private fun logFetchEvent(event: String, detail: String) =
+        fetchEventLogger.log(source = "StocksProvider", event = event, detail = detail)
 
     private fun resetConsecutiveFailures() {
         preferences.edit { putInt(CONSECUTIVE_FETCH_FAILURES, 0) }
@@ -187,7 +186,6 @@ class StocksProvider constructor(
             )
         }
         logFetchEvent(
-            source = "StocksProvider",
             event = "failure_backoff",
             detail = "reason=$reason failures=$failureCount backoffMs=$backoffMs regularMs=$regularScheduleMs chosenMs=$retryDelayMs"
         )
@@ -242,7 +240,6 @@ class StocksProvider constructor(
             return@withContext try {
                 Timber.d("Starting fetch allowScheduling=%s tickers=%d", allowScheduling, tickerSet.size)
                 logFetchEvent(
-                    source = "StocksProvider",
                     event = "fetch_start",
                     detail = "allowScheduling=$allowScheduling tickers=${tickerSet.size}"
                 )
@@ -278,13 +275,13 @@ class StocksProvider constructor(
                     widgetDataProvider.broadcastUpdateAllWidgets()
                     Timber.d("Fetch succeeded stocks=%d", fetchedStocks.size)
                     logFetchEvent(
-                        source = "StocksProvider",
                         event = "fetch_success",
                         detail = "stocks=${fetchedStocks.size}"
                     )
                     FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
                 }
             } catch (ex: CancellationException) {
+                shouldScheduleInFinally = false
                 failureReason = "cancelled"
                 failureError = ex
                 FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
@@ -298,7 +295,6 @@ class StocksProvider constructor(
                 if (shouldScheduleInFinally) {
                     // Keep scheduling chain alive across transient failures.
                     logFetchEvent(
-                        source = "StocksProvider",
                         event = "fetch_failure",
                         detail = "reason=$failureReason error=${failureError?.message.orEmpty()}"
                     )

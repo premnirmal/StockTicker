@@ -26,11 +26,6 @@ class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorke
         return if (applicationContext.isNetworkOnline()) {
             if (!alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()) {
                 Timber.d("RefreshWorker skipped: outside configured update window")
-                fetchEventLogger.log(
-                    source = "RefreshWorker",
-                    event = "skipped_window",
-                    detail = "outside configured update window"
-                )
                 return Result.success()
             }
             val result = stocksProvider.fetch()

@@ -34,7 +34,6 @@ class RefreshReceiver : BroadcastReceiver() {
     ) {
         Injector.appComponent().inject(this)
         val pendingResult = goAsync()
-        val startedAtMs = System.currentTimeMillis()
         Timber.d(
             "RefreshReceiver triggered action=%s hasExtras=%s",
             intent.action,
@@ -93,12 +92,6 @@ class RefreshReceiver : BroadcastReceiver() {
                     detail = e.message.orEmpty()
                 )
             } finally {
-                Timber.d("RefreshReceiver finishing elapsedMs=%d", System.currentTimeMillis() - startedAtMs)
-                fetchEventLogger.log(
-                    source = "RefreshReceiver",
-                    event = "finished",
-                    detail = "elapsedMs=${System.currentTimeMillis() - startedAtMs}"
-                )
                 pendingResult.finish()
             }
         }
