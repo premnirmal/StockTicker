@@ -57,7 +57,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
         context = mock()
         sharedPreferences = ApplicationProvider.getApplicationContext<Context>().getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
         appPreferences = AppPreferences(sharedPreferences)
-        alarmScheduler = AlarmScheduler(context, appPreferences, clock, mock())
+        alarmScheduler = AlarmScheduler(context, appPreferences, clock, sharedPreferences, mock())
         setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY))
     }
 
