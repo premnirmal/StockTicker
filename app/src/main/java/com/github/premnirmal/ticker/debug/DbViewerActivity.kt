@@ -23,6 +23,7 @@ import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class DbViewerActivity : BaseActivity() {
@@ -35,6 +36,11 @@ class DbViewerActivity : BaseActivity() {
     override fun create(savedInstanceState: Bundle?) {
         super.create(savedInstanceState)
         viewModel.generateDatabaseHtml()
+    }
+
+    override fun onDestroy() {
+        File(cacheDir, DbViewerViewModel.FILENAME).delete()
+        super.onDestroy()
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -53,19 +59,22 @@ class DbViewerActivity : BaseActivity() {
         ) { paddingValues ->
             Box(Modifier.fillMaxSize().padding(paddingValues)) {
                 val showProgress by viewModel.showProgress.collectAsStateWithLifecycle()
-                val html by viewModel.html.collectAsStateWithLifecycle()
+                val htmlFile by viewModel.htmlFile.collectAsStateWithLifecycle()
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = {
                         WebView(it).apply {
-                            settings.allowFileAccess = false
-                            settings.allowContentAccess = false
+                            settings.allowFileAccess = true
+                            @Suppress("DEPRECATION")
+                            settings.allowFileAccessFromFileURLs = false
+                            @Suppress("DEPRECATION")
+                            settings.allowUniversalAccessFromFileURLs = false
                             settings.javaScriptEnabled = false
                         }
                     },
                     update = { webView ->
-                        html?.let {
-                            webView.loadDataWithBaseURL(null, it, "text/html", "UTF-8", null)
+                        htmlFile?.let {
+                            webView.loadUrl("file://${it.absolutePath}")
                         }
                     }
                 )
