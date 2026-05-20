@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.github.premnirmal.ticker.StocksApp
 import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 import kotlinx.serialization.json.Json
-import java.io.File
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -33,7 +31,6 @@ class DbViewerViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     companion object {
-        private const val FILENAME = "db.html"
         private const val FETCH_LOG_LIMIT = 300
         private val LOG_TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
@@ -43,9 +40,9 @@ class DbViewerViewModel @Inject constructor(
     val showProgress: StateFlow<Boolean>
         get() = _showProgress
 
-    private val _htmlFile = MutableStateFlow<File?>(null)
-    val htmlFile: StateFlow<File?>
-        get() = _htmlFile
+    private val _html = MutableStateFlow<String?>(null)
+    val html: StateFlow<String?>
+        get() = _html
 
     @Suppress("LongMethod")
     fun generateDatabaseHtml() {
@@ -203,15 +200,7 @@ class DbViewerViewModel @Inject constructor(
                     .append(widgetsInfo)
                     .append("</body></html>")
             }
-            val file = File(getApplication<StocksApp>().cacheDir, FILENAME)
-            if (!file.exists()) {
-                file.createNewFile()
-            } else {
-                file.delete()
-                file.createNewFile()
-            }
-            file.writeText(stringBuilder.toString(), Charsets.UTF_8)
-            _htmlFile.emit(file)
+            _html.emit(stringBuilder.toString())
             _showProgress.emit(false)
         }
     }

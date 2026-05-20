@@ -53,17 +53,19 @@ class DbViewerActivity : BaseActivity() {
         ) { paddingValues ->
             Box(Modifier.fillMaxSize().padding(paddingValues)) {
                 val showProgress by viewModel.showProgress.collectAsStateWithLifecycle()
-                val htmlFile by viewModel.htmlFile.collectAsStateWithLifecycle()
+                val html by viewModel.html.collectAsStateWithLifecycle()
                 AndroidView(
                     modifier = Modifier.fillMaxSize(),
                     factory = {
                         WebView(it).apply {
-                            settings.allowFileAccess = true
+                            settings.allowFileAccess = false
+                            settings.allowContentAccess = false
+                            settings.javaScriptEnabled = false
                         }
                     },
                     update = { webView ->
-                        htmlFile?.let {
-                            webView.loadUrl("file://${it.absolutePath}")
+                        html?.let {
+                            webView.loadDataWithBaseURL(null, it, "text/html", "UTF-8", null)
                         }
                     }
                 )
