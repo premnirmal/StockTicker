@@ -23,6 +23,7 @@ import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import dagger.hilt.android.AndroidEntryPoint
+import java.io.File
 
 @AndroidEntryPoint
 class DbViewerActivity : BaseActivity() {
@@ -35,6 +36,11 @@ class DbViewerActivity : BaseActivity() {
     override fun create(savedInstanceState: Bundle?) {
         super.create(savedInstanceState)
         viewModel.generateDatabaseHtml()
+    }
+
+    override fun onDestroy() {
+        File(cacheDir, DbViewerViewModel.FILENAME).delete()
+        super.onDestroy()
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -59,6 +65,11 @@ class DbViewerActivity : BaseActivity() {
                     factory = {
                         WebView(it).apply {
                             settings.allowFileAccess = true
+                            @Suppress("DEPRECATION")
+                            settings.allowFileAccessFromFileURLs = false
+                            @Suppress("DEPRECATION")
+                            settings.allowUniversalAccessFromFileURLs = false
+                            settings.javaScriptEnabled = false
                         }
                     },
                     update = { webView ->

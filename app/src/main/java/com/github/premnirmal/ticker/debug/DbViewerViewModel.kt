@@ -33,7 +33,7 @@ class DbViewerViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     companion object {
-        private const val FILENAME = "db.html"
+        const val FILENAME = "db.html"
         private const val FETCH_LOG_LIMIT = 300
         private val LOG_TIME_FORMATTER: DateTimeFormatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
