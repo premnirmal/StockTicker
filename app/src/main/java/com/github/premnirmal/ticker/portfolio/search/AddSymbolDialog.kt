@@ -139,7 +139,7 @@ private fun AddSymbolDialogInternal(
                         onDismissRequest()
                         openDialog.value = false
                     }) {
-                        Text(text = stringResource(id = string.done))
+                        Text(text = stringResource(id = string.save))
                     }
                 }
             }
