@@ -180,22 +180,42 @@ data class Quote constructor(
     }
 
     fun newsQuery(): String {
-        return "${if (symbol.contains(
-                "."
-            )
-        ) {
-            symbol.substring(
-                0,
-                symbol.indexOf('.')
-            )
+        return "${newsTicker()} ${companyNameForNews()} stock"
+    }
+
+    fun matchesNewsArticle(article: NewsArticle): Boolean {
+        val articleText = "${article.title.orEmpty()} ${article.description.orEmpty()}"
+        val ticker = newsTicker()
+        val companyName = companyNameForNews()
+        return ticker.isNotBlank() && articleText.containsWholeTerm(ticker, ignoreCase = false) ||
+            companyName.isNotBlank() && articleText.containsWholeTerm(companyName, ignoreCase = true)
+    }
+
+    private fun newsTicker(): String {
+        return if (symbol.contains(".")) {
+            symbol.substring(0, symbol.indexOf('.'))
         } else {
             symbol
-        }} ${name.split(
-            " "
-        ).toMutableList().apply { removeAll(
-            arrayOf("Inc.", "Corporation", "PLC", "ORD")
-        )
-        }.take(3).joinToString(" ")} stock"
+        }
+    }
+
+    private fun companyNameForNews(): String {
+        return name.split(" ")
+            .toMutableList()
+            .apply {
+                removeAll(arrayOf("Inc.", "Corporation", "PLC", "ORD"))
+            }
+            .take(3)
+            .joinToString(" ")
+    }
+
+    private fun String.containsWholeTerm(
+        term: String,
+        ignoreCase: Boolean
+    ): Boolean {
+        val options = if (ignoreCase) setOf(RegexOption.IGNORE_CASE) else emptySet()
+        val pattern = "(?<![A-Za-z0-9])${Regex.escape(term)}(?![A-Za-z0-9])"
+        return Regex(pattern, options).containsMatchIn(this)
     }
 
     val isMarketOpen: Boolean

@@ -293,7 +293,9 @@ class QuoteDetailViewModel @Inject constructor(
         val result = newsProvider.fetchNewsForQuery(query)
         when {
             result.wasSuccessful -> {
-                val newsFeeds = result.data.map { ArticleNewsFeed(it) }
+                val newsFeeds = result.data
+                    .filter { quote.matchesNewsArticle(it) }
+                    .map { ArticleNewsFeed(it) }
                 if (truncate) {
                     _newsData.value = newsFeeds.take(8)
                 } else {
