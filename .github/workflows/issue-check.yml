@@ -10,7 +10,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - name: Check issue body and close if template not followed
+      - name: Check issue body and close if template not followed, and assign bug to copilot
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -20,13 +20,12 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           is_feature_request() {
+            echo "$ISSUE_BODY" | grep -qiP '[x] I agree to fill this issue template.' &&
             echo "$ISSUE_BODY" | grep -qiP 'Is your feature request related to a problem' &&
             echo "$ISSUE_BODY" | grep -qiP 'Describe the solution you'
           }
           is_valid_bug_report() {
-            echo "$ISSUE_BODY" | grep -qiP 'Describe the bug' &&
-            echo "$ISSUE_BODY" | grep -qiP 'App Version' &&
-            echo "$ISSUE_BODY" | grep -qiP 'Device:' &&
+            echo "$ISSUE_BODY" | grep -qiP '[x] I agree to fill this issue template.' &&
             echo "$ISSUE_BODY" | grep -qiP '(To Reproduce|Steps to reproduce)'
           }
 
@@ -34,6 +33,9 @@ jobs:
             echo "✓ Matched feature request template. No action taken."
           elif is_valid_bug_report; then
             echo "✓ Matched bug report template with all required fields. No action taken."
+            echo "Assigning issue to copilot for triage."
+            gh issue edit <ISSUE_NUMBER> --add-assignee @copilot
+            echo "✓ Issue assigned to copilot."
           else
             echo "✗ Issue did not match a valid template — closing issue #${ISSUE_NUMBER}."
             gh issue edit "$ISSUE_NUMBER" --repo "$REPO" --add-label "template not followed"
