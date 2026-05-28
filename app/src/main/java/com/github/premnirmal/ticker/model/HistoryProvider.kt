@@ -78,7 +78,6 @@ class HistoryProvider @Inject constructor(
     private fun Range.intervalParam(): String {
         return when (this) {
             ONE_DAY -> "1h"
-            TWO_WEEKS -> "1h"
             else -> "1d"
         }
     }
