@@ -20,12 +20,10 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           is_feature_request() {
-            echo "$ISSUE_BODY" | grep -qiP '[x] I agree to fill this issue template.' &&
             echo "$ISSUE_BODY" | grep -qiP 'Is your feature request related to a problem' &&
             echo "$ISSUE_BODY" | grep -qiP 'Describe the solution you'
           }
           is_valid_bug_report() {
-            echo "$ISSUE_BODY" | grep -qiP '[x] I agree to fill this issue template.' &&
             echo "$ISSUE_BODY" | grep -qiP '(To Reproduce|Steps to reproduce)'
           }
 
