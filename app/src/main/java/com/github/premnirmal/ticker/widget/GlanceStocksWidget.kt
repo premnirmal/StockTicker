@@ -196,14 +196,14 @@ private fun QuotesGrid(
     val isBold = widgetData.boldText
     val keyedQuotes = remember(quotes) {
         val symbolOccurrences = mutableMapOf<String, Int>()
-        val stableKeys = quotes.map { quote ->
+        val stableIds = mutableMapOf<String, Long>()
+        var nextId = 0L
+        quotes.map { quote ->
             val currentCount = symbolOccurrences.getOrDefault(quote.symbol, 0)
             symbolOccurrences[quote.symbol] = currentCount + 1
-            "${quote.symbol}#${currentCount + 1}"
-        }
-        val stableIds = stableKeys.sorted().mapIndexed { index, key -> key to index.toLong() }.toMap()
-        stableKeys.zip(quotes) { stableKey, quote ->
-            requireNotNull(stableIds[stableKey]) { "Missing stable item id for key $stableKey" } to quote
+            val stableKey = "${quote.symbol}#${currentCount + 1}"
+            val itemId = stableIds.getOrPut(stableKey) { nextId++ }
+            itemId to quote
         }
     }
     LazyVerticalGrid(
