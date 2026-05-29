@@ -201,9 +201,9 @@ private fun QuotesGrid(
             symbolOccurrences[quote.symbol] = currentCount + 1
             "${quote.symbol}#${currentCount + 1}"
         }
-        val stableIds = stableKeys.distinct().sorted().mapIndexed { index, key -> key to index.toLong() }.toMap()
+        val stableIds = stableKeys.sorted().mapIndexed { index, key -> key to index.toLong() }.toMap()
         stableKeys.zip(quotes) { stableKey, quote ->
-            checkNotNull(stableIds[stableKey]) to quote
+            requireNotNull(stableIds[stableKey]) { "Missing stable item id for key $stableKey" } to quote
         }
     }
     LazyVerticalGrid(
