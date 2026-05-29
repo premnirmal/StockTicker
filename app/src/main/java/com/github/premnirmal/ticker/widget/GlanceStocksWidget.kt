@@ -194,13 +194,20 @@ private fun QuotesGrid(
     val fontSize = widgetData.fontSize
     val layoutType = remember(widgetData) { widgetData.layoutType }
     val isBold = widgetData.boldText
-    val indexedQuotes = remember(quotes) { quotes.withIndex().toList() }
+    val keyedQuotes = remember(quotes) {
+        val symbolOccurrences = mutableMapOf<String, Int>()
+        quotes.map { quote ->
+            val currentCount = symbolOccurrences.getOrDefault(quote.symbol, 0)
+            symbolOccurrences[quote.symbol] = currentCount + 1
+            ("${quote.symbol}#$currentCount").hashCode().toLong() to quote
+        }
+    }
     LazyVerticalGrid(
         modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
     ) {
-        items(items = indexedQuotes, itemId = { it.index.toLong() }) { indexedQuote ->
-            val stock = indexedQuote.value
+        items(items = keyedQuotes, itemId = { it.first }) { keyedQuote ->
+            val stock = keyedQuote.second
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()
             val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
