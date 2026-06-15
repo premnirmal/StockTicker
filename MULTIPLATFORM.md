@@ -1,21 +1,27 @@
 # Kotlin Multiplatform migration
 
 This document tracks the incremental migration of StockTicker from an Android-only
-app to a Kotlin Multiplatform (KMP) project with a shared core and a native iOS app.
+app to a Kotlin Multiplatform (KMP) project with a shared core and shared Compose
+Multiplatform UI, plus a thin native iOS shell and a native iOS widget.
 
 The migration is deliberately **incremental**: the Android app must keep building and
 all existing tests must keep passing at every step. Large rewrites (Glance widget →
-WidgetKit, Compose UI → SwiftUI, Retrofit → Ktor, Room → Room KMP/SQLDelight) are
-broken into separate, independently reviewable changes.
+WidgetKit, Retrofit → Ktor, Room → Room KMP/SQLDelight, and adopting Compose
+Multiplatform for the shared screens) are broken into separate, independently
+reviewable changes.
 
 ## Module layout
 
 | Module    | Type                         | Contents                                            |
 |-----------|------------------------------|-----------------------------------------------------|
 | `:shared` | Kotlin Multiplatform library | Platform-agnostic code shared by Android and iOS    |
-| `:app`    | Android application          | Compose UI, Glance widget, Firebase, WorkManager    |
+| `:app`    | Android application          | Android entry point, Glance widget, Firebase, WorkManager |
 | `:UI`     | Android library              | Shared Android theming/resources                    |
-| `iosApp`  | Xcode project (planned)      | SwiftUI app + WidgetKit extension consuming `:shared`|
+| `iosApp`  | Xcode project (planned)      | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
+
+The in-app screens are shared via **Compose Multiplatform** (see "UI strategy"
+below), so the bulk of the Compose UI lives in `:shared` (`commonMain`) and is hosted
+by both `:app` (Android) and `iosApp` (inside a `UIViewController`).
 
 `:shared` declares the following Kotlin targets:
 
@@ -28,6 +34,32 @@ Source sets:
 - `commonMain` — code that runs on every target (no Android/JVM-only APIs).
 - `androidMain` / `iosMain` — `actual` implementations of `expect` declarations.
 - `commonTest` — multiplatform unit tests (e.g. DTO serialization round-trips).
+
+## UI strategy: shared UI with Compose Multiplatform (Option A)
+
+The app is already written entirely in Jetpack Compose, so the **in-app screens are
+shared using Compose Multiplatform (CMP)** rather than rewritten natively per platform.
+The shared `@Composable` screens live in `:shared` `commonMain` and are hosted by the
+Android app and by the iOS app (inside a `UIViewController`).
+
+What is shared via CMP:
+
+- The in-app Compose screens (watchlists, quote detail, search/suggestions, settings).
+- Navigation (Compose Multiplatform navigation).
+- Presentation/state (shared ViewModels and UI state — see Phase 3).
+
+What stays platform-native (cannot be shared):
+
+- **The home-screen widget.** Android uses Glance; iOS requires a native WidgetKit +
+  SwiftUI extension running in a separate process. This is a per-platform rewrite.
+- The platform entry point / app shell, plus platform integrations (Firebase,
+  background scheduling) wired per platform.
+
+Android-only UI libraries are replaced with multiplatform equivalents as part of this
+work: Coil → Coil 3 (multiplatform), Hilt → Koin (or Hilt kept as Android-only wiring),
+and Android-only Compose artifacts (`activity.compose`, `runtime.liveData`,
+`windowSizeClass`, Glance previews) swapped for CMP equivalents or `expect`/`actual`
+shims.
 
 ## Status
 
@@ -54,13 +86,17 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or
   Hilt-on-Android only), logging (Timber → Kermit/Napier), background refresh
   (WorkManager + a common scheduler interface).
-- **Phase 3:** Share ViewModels / presentation logic.
-- **Phase 4:** Repoint `:app` to consume shared logic; keep Glance/Compose/Firebase on
-  Android.
-- **Phase 5:** Add the `iosApp` Xcode project — SwiftUI screens, Swift Charts, and a
-  native WidgetKit home-screen widget; Firebase iOS SDK (or no-op for FOSS).
-- **Phase 6:** CI for Android + the iOS framework (macOS runner) and `commonTest` on
-  the simulator.
+- **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
+  the shared Compose UI binds to).
+- **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
+  `@Composable` screens into `commonMain`, swap Android-only UI libraries for
+  multiplatform equivalents (Coil 3, CMP navigation, Koin), and repoint `:app` to host
+  the shared Compose UI. Keep Glance widget + Firebase on Android.
+- **Phase 5:** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
+  shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget
+  (Swift Charts where the widget needs charts); Firebase iOS SDK (or no-op for FOSS).
+- **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
+  on the simulator.
 
 ## Building
 
