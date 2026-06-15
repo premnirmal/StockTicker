@@ -154,17 +154,9 @@ class NetworkModule {
 
     @Provides @Singleton
     internal fun provideApeWisdom(
-        @ApplicationContext context: Context,
-        okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
+        @ApplicationContext context: Context
     ): ApeWisdom {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.apewisdom_endpoint))
-            .addConverterFactory(converterFactory)
-            .build()
-        val apewisdom = retrofit.create(ApeWisdom::class.java)
-        return apewisdom
+        return ApeWisdom(baseUrl = context.getString(R.string.apewisdom_endpoint))
     }
 
     @Provides @Singleton
