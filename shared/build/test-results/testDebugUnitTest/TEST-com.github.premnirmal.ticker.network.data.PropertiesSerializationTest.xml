@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.github.premnirmal.ticker.network.data.PropertiesSerializationTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-15T14:24:01.083Z" hostname="runnervm1li68" time="0.01">
-  <properties/>
-  <testcase name="isEmptyReflectsContent" classname="com.github.premnirmal.ticker.network.data.PropertiesSerializationTest" time="0.006"/>
-  <testcase name="roundTripsProperties" classname="com.github.premnirmal.ticker.network.data.PropertiesSerializationTest" time="0.002"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

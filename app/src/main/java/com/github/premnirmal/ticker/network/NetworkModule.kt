@@ -98,15 +98,12 @@ class NetworkModule {
     @Provides @Singleton
     internal fun provideSuggestionsApi(
         @ApplicationContext context: Context,
-        @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
+        @Named("yahoo") okHttpClient: OkHttpClient
     ): SuggestionApi {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.suggestions_endpoint))
-            .addConverterFactory(converterFactory)
-            .build()
-        return retrofit.create(SuggestionApi::class.java)
+        return createSuggestionApi(
+            baseUrl = context.getString(R.string.suggestions_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton
