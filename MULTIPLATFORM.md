@@ -147,6 +147,13 @@ shims.
   (`NewsProviderTest`, via Ktor `MockEngine`) covers the merged market-news feeds, the
   trending-stocks ApeWisdom fallback and the news-query failure path, so the aggregation is verified
   on iOS as well as Android.
+- Moved the `CommitsProvider` ("what's new" changelog reader) from `:app` into `commonMain`. Like
+  `StocksApi`/`NewsProvider` it is now a plain, Android-free class: the raw changelog text (previously
+  read directly from `BuildConfig.CHANGE_LOG`) is injected, so `:app` passes `BuildConfig.CHANGE_LOG`
+  via `NetworkModule.provideCommitsProvider` and `HomeViewModel` consumes it. The public contract
+  (`loadWhatsNew()` → `FetchResult<List<String>>`, filtering the version-bump/F-droid bot commits) is
+  unchanged, and `commonTest` (`CommitsProviderTest`) covers the line splitting and bot-commit
+  filtering, so it is verified on iOS as well as Android.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:

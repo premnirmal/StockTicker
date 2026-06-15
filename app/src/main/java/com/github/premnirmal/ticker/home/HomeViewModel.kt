@@ -41,9 +41,8 @@ class HomeViewModel @Inject constructor(
     private val notificationsHandler: NotificationsHandler,
     private val appMessaging: AppMessaging,
     private val alarmScheduler: AlarmScheduler,
+    private val commitsProvider: CommitsProvider,
 ) : AndroidViewModel(application) {
-
-    private val commitsProvider by lazy { CommitsProvider() }
 
     val fetchState: StateFlow<StocksProvider.FetchState>
         get() = stocksProvider.fetchState

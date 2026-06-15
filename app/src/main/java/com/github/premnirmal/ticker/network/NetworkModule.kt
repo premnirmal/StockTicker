@@ -213,6 +213,11 @@ class NetworkModule {
     }
 
     @Provides @Singleton
+    internal fun provideCommitsProvider(): CommitsProvider {
+        return CommitsProvider(changeLog = BuildConfig.CHANGE_LOG)
+    }
+
+    @Provides @Singleton
     internal fun provideHistoricalDataApi(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient
