@@ -186,8 +186,13 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   fetch-event logging also has a shared `FetchLogger` interface (the common `log(source, event,
   detail)` contract, in `commonMain`) implemented on Android by `FetchEventLogger`; the Room-backed
   persistence (`StocksStorage.addFetchLog`) and the `Timber` failure reporting stay on the concrete
-  implementation, and iOS will provide its own sink once it exists. Wiring an iOS-backed
-  `CrumbProvider`/`CrumbStore` remains for the iOS app.
+  implementation, and iOS will provide its own sink once it exists. The analytics layer has its
+  platform-neutral event model (`AnalyticsEvent`/`GeneralEvent`/`ClickEvent` — an event name plus an
+  accumulating string property map) in `commonMain`; the `Analytics` interface (whose
+  `trackScreenView` takes an `android.app.Activity`) and `GeneralProperties` (which reads the Android
+  `WidgetDataProvider`/`StocksProvider`) stay on Android, and the per-flavor `AnalyticsImpl` reports
+  the events through Firebase (prod) or no-ops (purefoss/dev), with iOS providing its own sink once it
+  exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
