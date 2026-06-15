@@ -149,8 +149,14 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   persistence (Room → Room KMP or SQLDelight), preferences (DataStore multiplatform), DI
   (Hilt → Koin or Hilt-on-Android only), background refresh (WorkManager + a common scheduler
   interface). Done so far: the shared Yahoo auth layer (`YahooAuth`/`CrumbProvider`), a
-  multiplatform logger (`AppLogger`) and IO dispatcher (`ioDispatcher`), and the shared `StocksApi`
-  orchestrator. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app.
+  multiplatform logger (`AppLogger`) and IO dispatcher (`ioDispatcher`), the shared `StocksApi`
+  orchestrator, and the shared `RefreshScheduler` interface (the common background-refresh
+  contract — `canScheduleExactAlarm`/`isCurrentTimeWithinScheduledUpdateTime`/`msToNextAlarm` and
+  the periodic refresh/cleanup enqueue operations — implemented on Android by `AlarmScheduler`; the
+  platform-specific `AlarmManager`/`WorkManager` enqueueing and the exact-alarm/daily-summary
+  scheduling stay on the concrete implementation, and the iOS app will provide a
+  `BGTaskScheduler`/`WidgetKit` implementation once it exists). Wiring an iOS-backed
+  `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app

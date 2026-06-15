@@ -48,9 +48,9 @@ class AlarmScheduler @Inject constructor(
     private val clock: AppClock,
     private val preferences: SharedPreferences,
     private val workManager: WorkManager,
-) {
+) : RefreshScheduler {
 
-    fun canScheduleExactAlarm(): Boolean {
+    override fun canScheduleExactAlarm(): Boolean {
         val alarmManager: AlarmManager = context.getSystemService<AlarmManager>() ?: return false
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             alarmManager.canScheduleExactAlarms()
@@ -59,7 +59,7 @@ class AlarmScheduler @Inject constructor(
         }
     }
 
-    fun isCurrentTimeWithinScheduledUpdateTime(): Boolean {
+    override fun isCurrentTimeWithinScheduledUpdateTime(): Boolean {
         var dayOfWeek = clock.todayLocal()
             .dayOfWeek
         val startTimez = appPreferences.startTime()
@@ -97,7 +97,7 @@ class AlarmScheduler @Inject constructor(
     /**
      * Takes care of weekends and after hours
      */
-    fun msToNextAlarm(lastFetchedMs: Long): Long {
+    override fun msToNextAlarm(lastFetchedMs: Long): Long {
         val dayOfWeek = clock.todayLocal()
             .dayOfWeek
         val startTimez = appPreferences.startTime()
@@ -256,7 +256,7 @@ class AlarmScheduler @Inject constructor(
         return nextValue
     }
 
-    fun enqueuePeriodicRefresh() {
+    override fun enqueuePeriodicRefresh() {
         with(workManager) {
             val delayMs = appPreferences.updateIntervalMs
             val constraints = Constraints.Builder()
@@ -272,7 +272,7 @@ class AlarmScheduler @Inject constructor(
         }
     }
 
-    fun enqueuePeriodicCleanup() {
+    override fun enqueuePeriodicCleanup() {
         val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build()
         val request = PeriodicWorkRequestBuilder<CleanupWorker>(1, TimeUnit.DAYS)
             .addTag(CleanupWorker.TAG_PERIODIC)
@@ -281,7 +281,7 @@ class AlarmScheduler @Inject constructor(
         workManager.enqueueUniquePeriodicWork(CleanupWorker.TAG_PERIODIC, ExistingPeriodicWorkPolicy.UPDATE, request)
     }
 
-    fun enqueueCleanup() {
+    override fun enqueueCleanup() {
         val constraints = Constraints.Builder().setRequiredNetworkType(NetworkType.NOT_REQUIRED).build()
         val request = OneTimeWorkRequestBuilder<CleanupWorker>()
             .addTag(CleanupWorker.TAG)
