@@ -71,6 +71,9 @@ shims.
 - Migrated the pure-Kotlin `FetchResult` wrapper into `commonMain`.
 - Migrated `FetchException` into `commonMain` via an `expect`/`actual` wrapper; the
   Android `actual` extends `java.io.IOException` so existing handling is unchanged.
+- Migrated the `Suggestion` model into `commonMain` (it only depends on the already
+  shared `SuggestionNet`). Its `Parcelable`/`@Parcelize` was dropped because it was
+  never used as a `Parcelable` (never put in a `Bundle`/`Intent`/nav argument).
 - Added an `expect`/`actual` `Platform` abstraction and a `commonTest` serialization test.
 
 ### Remaining (high level)
@@ -78,9 +81,11 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that need an
   `expect`/`actual` wrapper first: `AppClock` (uses `android.os.SystemClock` +
-  `java.time`), `DataPoint` (MPAndroidChart `CandleEntry` + `Parcelable`),
-  `PriceFormat`/`Properties`/`Quote`/`Position`/`Suggestion`/`NewsArticle`
-  (`Parcelable`/`AppPreferences`).
+  `java.time`; needs a `kotlinx-datetime` migration that also touches `AlarmScheduler`),
+  `DataPoint` (MPAndroidChart `CandleEntry` + `Parcelable`), `NewsArticle` (SimpleXML +
+  `android.text.Html`), and `PriceFormat`/`Properties`/`Quote`/`Position`
+  (`Parcelable`/`AppPreferences`). A reusable `expect`/`actual` `Parcelable` abstraction
+  should be introduced when the first model that genuinely needs parceling is migrated.
 - **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
   (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or
