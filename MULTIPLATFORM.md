@@ -155,8 +155,12 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   the periodic refresh/cleanup enqueue operations — implemented on Android by `AlarmScheduler`; the
   platform-specific `AlarmManager`/`WorkManager` enqueueing and the exact-alarm/daily-summary
   scheduling stay on the concrete implementation, and the iOS app will provide a
-  `BGTaskScheduler`/`WidgetKit` implementation once it exists). Wiring an iOS-backed
-  `CrumbProvider`/`CrumbStore` remains for the iOS app.
+  `BGTaskScheduler`/`WidgetKit` implementation once it exists). The persistence layer also has a
+  shared `QuoteStorage` interface (the common contract for persisting tickers/quotes/holdings/
+  properties, in already-shared `commonMain` models) implemented on Android by `StocksStorage`; the
+  Room-backed engine (`QuotesDB`/`QuoteDao`/`*Row`) and the platform-typed fetch-log operations stay
+  on the concrete implementation, and iOS will provide a Room KMP / SQLDelight-backed implementation
+  once it exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app

@@ -24,27 +24,27 @@ class StocksStorage @Inject constructor(
     private val preferences: SharedPreferences,
     private val db: QuotesDB,
     private val quoteDao: QuoteDao
-) {
+) : QuoteStorage {
 
     companion object {
         private const val KEY_TICKERS = "TICKERS"
         private const val MAX_FETCH_LOG_ROWS = 500
     }
 
-    fun saveTickers(tickers: Set<String>) {
+    override fun saveTickers(tickers: Set<String>) {
         preferences.edit {
             putStringSet(KEY_TICKERS, tickers)
         }
     }
 
-    fun readTickers(): Set<String> {
+    override fun readTickers(): Set<String> {
         return preferences.getStringSet(
             KEY_TICKERS,
             emptySet()
         )!!
     }
 
-    suspend fun readQuotes(): List<Quote> {
+    override suspend fun readQuotes(): List<Quote> {
         val quotesWithHoldings = db.withTransaction { quoteDao.getQuotesWithHoldings() }
         return withContext(Dispatchers.IO) {
             return@withContext quotesWithHoldings.map { quoteWithHoldings ->
@@ -64,7 +64,7 @@ class StocksStorage @Inject constructor(
         }
     }
 
-    suspend fun readQuote(symbol: String): Quote? {
+    override suspend fun readQuote(symbol: String): Quote? {
         val quoteWithHolding = db.withTransaction { quoteDao.getQuoteWithHoldings(symbol) }
         return withContext(Dispatchers.IO) {
             quoteWithHolding?.let {
@@ -84,11 +84,11 @@ class StocksStorage @Inject constructor(
         }
     }
 
-    suspend fun saveQuote(quote: Quote) = db.withTransaction {
+    override suspend fun saveQuote(quote: Quote) = db.withTransaction {
         quoteDao.upsertQuoteAndHolding(quote.toQuoteRow(), quote.position?.toHoldingRows())
     }
 
-    suspend fun saveQuotes(quotes: List<Quote>) = withContext(Dispatchers.IO) {
+    override suspend fun saveQuotes(quotes: List<Quote>) = withContext(Dispatchers.IO) {
         val quoteRows = quotes.map { it.toQuoteRow() }
         val positions = quotes.mapNotNull { it.position }
         val properties = quotes.mapNotNull { it.properties }
@@ -103,26 +103,26 @@ class StocksStorage @Inject constructor(
         }
     }
 
-    suspend fun removeQuoteBySymbol(symbol: String) = db.withTransaction {
+    override suspend fun removeQuoteBySymbol(symbol: String) = db.withTransaction {
         quoteDao.deleteQuoteAndHoldings(symbol)
     }
 
-    suspend fun removeQuotesBySymbol(tickers: List<String>) = db.withTransaction {
+    override suspend fun removeQuotesBySymbol(tickers: List<String>) = db.withTransaction {
         quoteDao.deleteQuotesAndHoldings(tickers)
     }
 
-    suspend fun addHolding(holding: Holding) = db.withTransaction {
+    override suspend fun addHolding(holding: Holding) = db.withTransaction {
         quoteDao.insertHolding(holding.toHoldingRow())
     }
 
-    suspend fun removeHolding(
+    override suspend fun removeHolding(
         ticker: String,
         holding: Holding
     ) = db.withTransaction {
         quoteDao.deleteHolding(HoldingRow(holding.id, ticker, holding.shares, holding.price))
     }
 
-    suspend fun saveQuoteProperties(
+    override suspend fun saveQuoteProperties(
         properties: Properties
     ) = db.withTransaction {
         quoteDao.upsertProperties(properties.toPropertiesRow())
