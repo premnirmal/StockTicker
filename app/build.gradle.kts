@@ -205,6 +205,7 @@ dependencies {
   implementation(libs.reorderable)
 
   implementation(project(":UI"))
+  implementation(project(":shared"))
 
   implementation(COIL)
   implementation(COIL.compose)

@@ -19,6 +19,13 @@
 - Only performs automatic fetching of stocks during trading hours
 - Displays price change and summary alerts
 
+## Kotlin Multiplatform
+
+This project is being incrementally migrated to Kotlin Multiplatform (KMP) with planned
+iOS support. Platform-agnostic code lives in the `:shared` module
+(`androidTarget` + iOS targets). See [MULTIPLATFORM.md](MULTIPLATFORM.md) for the module
+layout, current status, and the migration roadmap.
+
 ## License
 
 GPL
