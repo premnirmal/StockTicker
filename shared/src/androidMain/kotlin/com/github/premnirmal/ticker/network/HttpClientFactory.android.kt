@@ -51,4 +51,3 @@ fun createYahooFinanceApi(baseUrl: String, okHttpClient: OkHttpClient): YahooFin
  */
 fun createYahooCrumbApi(baseUrl: String, okHttpClient: OkHttpClient): YahooCrumbApi =
     YahooCrumbApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
-
