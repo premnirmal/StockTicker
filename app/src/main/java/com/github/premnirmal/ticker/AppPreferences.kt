@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
+import com.github.premnirmal.ticker.components.AppNumberFormat
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,7 @@ class AppPreferences @Inject constructor(
 
     init {
         INSTANCE = this
+        AppNumberFormat.roundToTwoDecimalPlaces = roundToTwoDecimalPlaces()
     }
 
     fun getLastSavedVersionCode(): Int = sharedPreferences.getInt(APP_VERSION_CODE, -1)
@@ -141,9 +143,14 @@ class AppPreferences @Inject constructor(
 
     fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
-    fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
+    fun roundToTwoDecimalPlaces(): Boolean {
+        val round = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
+        AppNumberFormat.roundToTwoDecimalPlaces = round
+        return round
+    }
 
     fun setRoundToTwoDecimalPlaces(round: Boolean) {
+        AppNumberFormat.roundToTwoDecimalPlaces = round
         sharedPreferences.edit {
             putBoolean(SETTING_ROUND_TWO_DP, round)
         }

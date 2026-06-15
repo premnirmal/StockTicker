@@ -91,16 +91,22 @@ shims.
   (`SystemClock.elapsedRealtime()` on Android, `NSProcessInfo.systemUptime` on iOS). Android
   scheduling/notification code keeps its `java.time` arithmetic via `todayZoned()` /
   `todayLocal()` extensions (in `:app`) that derive `java.time` values from the clock.
+- Migrated `PriceFormat` into `commonMain`. Its only blocker was the JVM-only
+  `AppPreferences.SELECTED_DECIMAL_FORMAT` (`java.text.DecimalFormat`), now replaced by an
+  `expect`/`actual` `DecimalFormatter` (Android `java.text.DecimalFormat`, iOS
+  `NSNumberFormatter`) and a shared `AppNumberFormat` holding the two formats and the
+  `roundToTwoDecimalPlaces` selection flag (kept in sync from `:app`'s `AppPreferences`). This
+  also lays the groundwork for `Quote`, whose `…String()` helpers use the same formats.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that still need an
   `expect`/`actual` wrapper or further decoupling: `DataPoint` (MPAndroidChart `CandleEntry`
-  + `Parcelable`), `NewsArticle` (SimpleXML + `android.text.Html`), and
-  `PriceFormat`/`Quote` (`Parcelable`/`AppPreferences`/Compose `Color`). `Quote` can reuse
-  the shared `Parcelable` abstraction once its Compose and `AppPreferences` dependencies are
-  factored out (`Properties` has already been migrated).
+  + `Parcelable`), `NewsArticle` (SimpleXML + `android.text.Html`), and `Quote`
+  (`Parcelable`/`AppPreferences`/Compose `Color`). `Quote` can reuse the shared `Parcelable`
+  abstraction and the shared `AppNumberFormat` once its remaining Compose `Color` dependency is
+  factored out (`Properties` and `PriceFormat` have already been migrated).
 - **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
   (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or
