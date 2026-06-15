@@ -135,14 +135,11 @@ class NetworkModule {
     internal fun provideYahooFinanceCrumb(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient
-    ): YahooFinanceCrumb {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .baseUrl(context.getString(R.string.yahoo_endpoint))
-            .build()
-        val yahooFinance = retrofit.create(YahooFinanceCrumb::class.java)
-        return yahooFinance
+    ): YahooCrumbApi {
+        return createYahooCrumbApi(
+            baseUrl = context.getString(R.string.yahoo_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton

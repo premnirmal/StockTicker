@@ -19,7 +19,7 @@ import javax.inject.Singleton
 @Singleton
 class StocksApi @Inject constructor(
     private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
-    private val yahooFinanceCrumb: YahooFinanceCrumb,
+    private val yahooFinanceCrumb: YahooCrumbApi,
     private val yahooFinance: YahooFinanceApi,
     private val appPreferences: AppPreferences,
     private val suggestionApi: SuggestionApi
@@ -57,12 +57,12 @@ class StocksApi @Inject constructor(
 
                 val crumbResponse = yahooFinanceCrumb.getCrumb()
                 if (crumbResponse.isSuccessful) {
-                    val crumb = crumbResponse.body()
+                    val crumb = crumbResponse.crumb
                     if (!crumb.isNullOrEmpty()) {
                         appPreferences.setCrumb(crumb)
                     }
                 } else {
-                    Timber.e("Failed to get crumb with code: ${crumbResponse.code()}")
+                    Timber.e("Failed to get crumb with code: ${crumbResponse.statusCode}")
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Crumb load failed")

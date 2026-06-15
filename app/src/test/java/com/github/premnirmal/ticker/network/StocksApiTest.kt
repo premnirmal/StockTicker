@@ -22,7 +22,7 @@ class StocksApiTest : BaseUnitTest() {
     }
 
     internal lateinit var yahooFinance: YahooFinanceApi
-    internal lateinit var yahooFinanceCrumb: YahooFinanceCrumb
+    internal lateinit var yahooFinanceCrumb: YahooCrumbApi
     internal lateinit var yahooFinanceInitialLoad: YahooFinanceInitialLoad
     internal lateinit var mockPrefs: AppPreferences
 
@@ -32,7 +32,7 @@ class StocksApiTest : BaseUnitTest() {
         runBlocking {
             yahooFinance = Mocker.provide(YahooFinanceApi::class)
             mockPrefs = Mocker.provide(AppPreferences::class)
-            yahooFinanceCrumb = Mocker.provide(YahooFinanceCrumb::class)
+            yahooFinanceCrumb = Mocker.provide(YahooCrumbApi::class)
             yahooFinanceInitialLoad = Mocker.provide(YahooFinanceInitialLoad::class)
             val suggestionApi = Mocker.provide(SuggestionApi::class)
             stocksApi = StocksApi(yahooFinanceInitialLoad, yahooFinanceCrumb, yahooFinance, mockPrefs, suggestionApi)

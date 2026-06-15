@@ -14,10 +14,3 @@ interface YahooFinanceInitialLoad {
     @POST
     suspend fun cookieConsent(@Url url: String?, @Body body: RequestBody): Response<String?>
 }
-interface YahooFinanceCrumb {
-
-    @GET(
-        "v1/test/getcrumb"
-    )
-    suspend fun getCrumb(): Response<String>
-}
