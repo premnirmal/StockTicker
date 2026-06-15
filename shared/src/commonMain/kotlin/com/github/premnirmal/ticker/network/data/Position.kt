@@ -1,15 +1,15 @@
 package com.github.premnirmal.ticker.network.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.github.premnirmal.shared.CommonParcelable
+import com.github.premnirmal.shared.CommonParcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
+@CommonParcelize
 @Serializable
 data class Position(
     var symbol: String = "",
     var holdings: MutableList<Holding> = ArrayList()
-) : Parcelable {
+) : CommonParcelable {
 
     fun add(holding: Holding) {
         holdings.add(holding)
@@ -39,21 +39,21 @@ fun List<Holding>.holdingsSum(): HoldingSum {
     return HoldingSum(totalShares, totalPaidPrice, averagePrice)
 }
 
-@Parcelize
+@CommonParcelize
 data class HoldingSum(
     val totalShares: Float,
     val totalPaidPrice: Float,
     val averagePrice: Float,
-) : Parcelable
+) : CommonParcelable
 
-@Parcelize
+@CommonParcelize
 @Serializable
 data class Holding(
     val symbol: String,
     val shares: Float = 0.0f,
     val price: Float = 0.0f,
     var id: Long? = null
-) : Parcelable {
+) : CommonParcelable {
 
     fun totalValue(): Float = shares * price
 }
