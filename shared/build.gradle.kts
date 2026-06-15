@@ -50,6 +50,7 @@ kotlin {
       implementation("io.ktor:ktor-client-core:_")
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")
+      implementation("io.github.pdvrieze.xmlutil:serialization:0.91.2")
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")

@@ -67,3 +67,18 @@ fun createYahooFinanceInitialLoadApi(baseUrl: String, okHttpClient: OkHttpClient
  */
 fun createYahooFinanceMostActiveApi(baseUrl: String, okHttpClient: OkHttpClient): YahooFinanceMostActiveApi =
     YahooFinanceMostActiveApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
+
+/**
+ * Builds a [GoogleNewsApi] backed by [okHttpClient]. Keeps Ktor types out of the Android app module:
+ * `:app` only needs to know about [GoogleNewsApi] and its existing [OkHttpClient].
+ */
+fun createGoogleNewsApi(baseUrl: String, okHttpClient: OkHttpClient): GoogleNewsApi =
+    GoogleNewsApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
+
+/**
+ * Builds a [YahooFinanceNewsApi] backed by the Yahoo-authenticated [okHttpClient]. Keeps Ktor types
+ * out of the Android app module: `:app` only needs to know about [YahooFinanceNewsApi] and its
+ * existing `@Named("yahoo")` [OkHttpClient].
+ */
+fun createYahooFinanceNewsApi(baseUrl: String, okHttpClient: OkHttpClient): YahooFinanceNewsApi =
+    YahooFinanceNewsApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))

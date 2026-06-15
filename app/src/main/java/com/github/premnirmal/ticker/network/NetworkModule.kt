@@ -14,8 +14,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
-import retrofit2.Retrofit
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
@@ -161,13 +159,10 @@ class NetworkModule {
         @ApplicationContext context: Context,
         okHttpClient: OkHttpClient
     ): GoogleNewsApi {
-        val retrofit =
-            Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl(context.getString(R.string.google_news_endpoint))
-                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .build()
-        return retrofit.create(GoogleNewsApi::class.java)
+        return createGoogleNewsApi(
+            baseUrl = context.getString(R.string.google_news_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton
@@ -175,13 +170,10 @@ class NetworkModule {
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient
     ): YahooFinanceNewsApi {
-        val retrofit =
-            Retrofit.Builder()
-                .client(okHttpClient)
-                .baseUrl(context.getString(R.string.yahoo_news_endpoint))
-                .addConverterFactory(SimpleXmlConverterFactory.create())
-                .build()
-        return retrofit.create(YahooFinanceNewsApi::class.java)
+        return createYahooFinanceNewsApi(
+            baseUrl = context.getString(R.string.yahoo_news_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton

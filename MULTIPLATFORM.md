@@ -104,16 +104,32 @@ shims.
   `changeColour` getter (`androidx.compose.ui.graphics.Color` + `ColourPalette`), was factored out
   into an Android-only `@Composable` extension (`Quote.changeColour`) that stays in `:app`.
 
+### Done — Phase 2 (networking)
+- Migrated the networking layer from Retrofit/OkHttp + Jsoup + SimpleXML to Ktor in
+  `commonMain`. Each endpoint is a shared client (`SuggestionApi`, `ApeWisdom`,
+  `YahooFinanceApi`/`YahooCrumbApi`/`YahooFinanceInitialLoadApi`, `ChartApi`,
+  `YahooFinanceMostActiveApi`, and the `GoogleNewsApi`/`YahooFinanceNewsApi` news feeds).
+  `:app` stays Ktor-free: `androidMain` `createXxxApi(baseUrl, okHttpClient)` factories build the
+  Ktor client over the existing (`@Named("yahoo")`-authenticated) `OkHttpClient`, and `NetworkModule`
+  providers call those factories.
+- Replaced Jsoup most-active HTML scraping with a dependency-free `fin-streamer` symbol parser in
+  `commonMain` (`YahooFinanceMostActiveApi`), removing `jsoup` and the scalars converter from `:app`.
+- Replaced the SimpleXML RSS models with `kotlinx.serialization` + xmlutil in `commonMain`
+  (`NewsArticle`/`NewsRssFeed`), removing the SimpleXML converter from `:app`. HTML sanitization is
+  an `expect`/`actual` (`sanitizeHtml`: `android.text.Html` on Android, a portable stripper on iOS),
+  and `pubDate` parsing/formatting moved to a dependency-free multiplatform `ArticleDate`
+  (RFC-1123 + ISO-8601), replacing `java.time`. `commonTest` covers RSS parsing for both the Yahoo
+  (media:content thumbnails, RFC-1123) and Google (CDATA description) feed shapes.
+
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that still need an
   `expect`/`actual` wrapper or further decoupling: `DataPoint` (MPAndroidChart `CandleEntry`
-  + `Parcelable`) and `NewsArticle` (SimpleXML + `android.text.Html`).
-- **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
-  (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
-  or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or
-  Hilt-on-Android only), logging (Timber → Kermit/Napier), background refresh
+  + `Parcelable`).
+- **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —
+  persistence (Room → Room KMP or SQLDelight), preferences (DataStore multiplatform), DI
+  (Hilt → Koin or Hilt-on-Android only), logging (Timber → Kermit/Napier), background refresh
   (WorkManager + a common scheduler interface).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
