@@ -5,7 +5,7 @@ package com.github.premnirmal.ticker.components
  * Android-only `Timber`. The `actual` implementations delegate to the natural platform sink:
  * `Timber` on Android and `NSLog` on iOS.
  *
- * Only the error level used by the migrated networking layer is exposed for now; more levels can be
+ * Only the levels used by the migrated networking layer are exposed for now; more levels can be
  * added as further logic moves into `commonMain`.
  */
 object AppLogger {
@@ -16,9 +16,29 @@ object AppLogger {
     /** Logs an error [throwable] with an optional [message]. */
     fun e(throwable: Throwable, message: String? = null) =
         logError(throwable = throwable, message = message)
+
+    /** Logs a warning [message]. */
+    fun w(message: String) = logWarning(throwable = null, message = message)
+
+    /** Logs a warning [throwable] with an optional [message]. */
+    fun w(throwable: Throwable, message: String? = null) =
+        logWarning(throwable = throwable, message = message)
+
+    /** Logs a debug [message]. */
+    fun d(message: String) = logDebug(message = message)
 }
 
 /**
- * Platform sink for [AppLogger]. Android delegates to `Timber.e`; iOS uses `NSLog`.
+ * Platform sink for [AppLogger] errors. Android delegates to `Timber.e`; iOS uses `NSLog`.
  */
 internal expect fun logError(throwable: Throwable?, message: String?)
+
+/**
+ * Platform sink for [AppLogger] warnings. Android delegates to `Timber.w`; iOS uses `NSLog`.
+ */
+internal expect fun logWarning(throwable: Throwable?, message: String?)
+
+/**
+ * Platform sink for [AppLogger] debug logs. Android delegates to `Timber.d`; iOS uses `NSLog`.
+ */
+internal expect fun logDebug(message: String?)

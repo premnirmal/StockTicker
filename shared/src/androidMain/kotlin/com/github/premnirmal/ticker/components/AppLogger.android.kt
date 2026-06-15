@@ -9,3 +9,15 @@ internal actual fun logError(throwable: Throwable?, message: String?) {
         message != null -> Timber.e(message)
     }
 }
+
+internal actual fun logWarning(throwable: Throwable?, message: String?) {
+    when {
+        throwable != null && message != null -> Timber.w(throwable, message)
+        throwable != null -> Timber.w(throwable)
+        message != null -> Timber.w(message)
+    }
+}
+
+internal actual fun logDebug(message: String?) {
+    if (message != null) Timber.d(message)
+}

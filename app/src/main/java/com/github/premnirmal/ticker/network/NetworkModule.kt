@@ -194,6 +194,25 @@ class NetworkModule {
     }
 
     @Provides @Singleton
+    internal fun provideNewsProvider(
+        coroutineScope: kotlinx.coroutines.CoroutineScope,
+        googleNewsApi: GoogleNewsApi,
+        yahooNewsApi: YahooFinanceNewsApi,
+        apeWisdom: ApeWisdom,
+        yahooFinanceMostActive: YahooFinanceMostActiveApi,
+        stocksApi: StocksApi
+    ): NewsProvider {
+        return NewsProvider(
+            coroutineScope = coroutineScope,
+            googleNewsApi = googleNewsApi,
+            yahooNewsApi = yahooNewsApi,
+            apeWisdom = apeWisdom,
+            yahooFinanceMostActive = yahooFinanceMostActive,
+            stocksApi = stocksApi
+        )
+    }
+
+    @Provides @Singleton
     internal fun provideHistoricalDataApi(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient

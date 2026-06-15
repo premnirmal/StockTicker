@@ -138,6 +138,15 @@ shims.
   public contract is unchanged. `commonTest` (`StocksApiTest`, via Ktor `MockEngine`) covers the
   success, ordering, failure and the 401 → crumb-refresh → retry paths, so the orchestration is
   verified on iOS as well as Android.
+- Moved the `NewsProvider` aggregator (Google News + Yahoo Finance news feeds, plus the Yahoo
+  "most active"/ApeWisdom trending-stocks flow → shared `NewsArticle`/`Quote`/`FetchResult` model)
+  from `:app` into `commonMain`. Like `StocksApi` it no longer depends on `Timber` (now the
+  multiplatform `AppLogger`, extended with `w`/`d` levels), `Dispatchers.IO` (now `ioDispatcher`)
+  or Hilt/`javax.inject` (it is now plain and constructed by `NetworkModule.provideNewsProvider`).
+  The public contract is unchanged so the `:app` view models keep working. `commonTest`
+  (`NewsProviderTest`, via Ktor `MockEngine`) covers the merged market-news feeds, the
+  trending-stocks ApeWisdom fallback and the news-query failure path, so the aggregation is verified
+  on iOS as well as Android.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
