@@ -6,6 +6,11 @@ name: "Copilot Setup Steps"
 # Warming the Gradle caches here lets the agent build the project afterwards
 # even though the Google Maven repository is not reachable during the session.
 #
+# Note: jitpack.io (used for the MPAndroidChart dependency) is now on the
+# firewall allowlist, so it stays reachable during the agent session. The
+# Google Maven repository remains blocked, so the cache warming below is still
+# required.
+#
 # Automatically run the setup steps when they are changed to allow for easy
 # validation, and allow manual testing through the repository's "Actions" tab.
 on:
