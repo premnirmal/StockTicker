@@ -83,6 +83,9 @@ shims.
 - Migrated `Position`/`Holding`/`HoldingSum` into `commonMain` using that abstraction —
   these are genuinely parceled (e.g. `Position` is passed through an `Intent` between
   `HoldingsActivity` and `QuoteDetailActivity`), so they keep their `Parcelable` on Android.
+- Migrated `Properties` into `commonMain` using that abstraction. It only depended on
+  `Parcelable` + `kotlinx.serialization` (no Compose / `AppPreferences`), so it moves as-is
+  and keeps its `Parcelable` on Android via `CommonParcelable`/`@CommonParcelize`.
 - Migrated `AppClock` into `commonMain` on the Kotlin stdlib multiplatform time API
   (`kotlin.time.Clock`/`Instant`). `elapsedRealtime()` is backed by an `expect`/`actual`
   (`SystemClock.elapsedRealtime()` on Android, `NSProcessInfo.systemUptime` on iOS). Android
@@ -95,9 +98,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that still need an
   `expect`/`actual` wrapper or further decoupling: `DataPoint` (MPAndroidChart `CandleEntry`
   + `Parcelable`), `NewsArticle` (SimpleXML + `android.text.Html`), and
-  `PriceFormat`/`Properties`/`Quote` (`Parcelable`/`AppPreferences`/Compose `Color`). `Quote`
-  and `Properties` can now reuse the shared `Parcelable` abstraction once their Compose and
-  `AppPreferences` dependencies are factored out.
+  `PriceFormat`/`Quote` (`Parcelable`/`AppPreferences`/Compose `Color`). `Quote` can reuse
+  the shared `Parcelable` abstraction once its Compose and `AppPreferences` dependencies are
+  factored out (`Properties` has already been migrated).
 - **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
   (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or

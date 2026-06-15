@@ -1,10 +1,10 @@
 package com.github.premnirmal.ticker.network.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.github.premnirmal.shared.CommonParcelable
+import com.github.premnirmal.shared.CommonParcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
+@CommonParcelize
 @Serializable
 data class Properties(
     val symbol: String,
@@ -13,6 +13,6 @@ data class Properties(
     var alertAbove: Float = 0.0f,
     var alertBelow: Float = 0.0f,
     var id: Long? = null
-) : Parcelable {
+) : CommonParcelable {
     fun isEmpty(): Boolean = this.notes.isNotEmpty() || this.alertAbove > 0.0f || this.alertBelow > 0.0f
 }
