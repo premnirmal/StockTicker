@@ -6,7 +6,6 @@ import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
-import com.github.premnirmal.ticker.network.data.YahooResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -21,7 +20,7 @@ import javax.inject.Singleton
 class StocksApi @Inject constructor(
     private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
     private val yahooFinanceCrumb: YahooFinanceCrumb,
-    private val yahooFinance: YahooFinance,
+    private val yahooFinance: YahooFinanceApi,
     private val appPreferences: AppPreferences,
     private val suggestionApi: SuggestionApi
 ) {
@@ -113,13 +112,13 @@ class StocksApi @Inject constructor(
     ): List<YahooQuoteNet>? =
         withContext(Dispatchers.IO) {
             val query = tickerList.joinToString(",")
-            var quotesResponse: retrofit2.Response<YahooResponse>? = null
+            var quotesResponse: YahooQuoteResult? = null
             try {
                 quotesResponse = yahooFinance.getStocks(query)
                 if (!quotesResponse.isSuccessful) {
-                    Timber.e("Yahoo quote fetch failed with code ${quotesResponse.code()}")
+                    Timber.e("Yahoo quote fetch failed with code ${quotesResponse.statusCode}")
                 }
-                if (quotesResponse.code() == 401) {
+                if (quotesResponse.statusCode == 401) {
                     appPreferences.setCrumb(null)
                     loadCrumb()
                     if (invocationCount == 1) {
@@ -130,7 +129,7 @@ class StocksApi @Inject constructor(
                 Timber.e(ex)
                 throw ex
             }
-            val quoteNets = quotesResponse.body()?.quoteResponse?.result
+            val quoteNets = quotesResponse.response?.quoteResponse?.result
             quoteNets
         }
 

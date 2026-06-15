@@ -13,7 +13,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
 
 @HiltAndroidTest
 class StocksApiTest : BaseUnitTest() {
@@ -22,7 +21,7 @@ class StocksApiTest : BaseUnitTest() {
         val TEST_TICKER_LIST = arrayListOf("SPY", "GOOG", "MSFT", "DIA", "AAPL")
     }
 
-    internal lateinit var yahooFinance: YahooFinance
+    internal lateinit var yahooFinance: YahooFinanceApi
     internal lateinit var yahooFinanceCrumb: YahooFinanceCrumb
     internal lateinit var yahooFinanceInitialLoad: YahooFinanceInitialLoad
     internal lateinit var mockPrefs: AppPreferences
@@ -31,14 +30,16 @@ class StocksApiTest : BaseUnitTest() {
 
     @Before fun initMocks() {
         runBlocking {
-            yahooFinance = Mocker.provide(YahooFinance::class)
+            yahooFinance = Mocker.provide(YahooFinanceApi::class)
             mockPrefs = Mocker.provide(AppPreferences::class)
             yahooFinanceCrumb = Mocker.provide(YahooFinanceCrumb::class)
             yahooFinanceInitialLoad = Mocker.provide(YahooFinanceInitialLoad::class)
             val suggestionApi = Mocker.provide(SuggestionApi::class)
             stocksApi = StocksApi(yahooFinanceInitialLoad, yahooFinanceCrumb, yahooFinance, mockPrefs, suggestionApi)
             val yahooStockList = parseJsonFile<YahooResponse>("YahooQuotes.json")
-            whenever(yahooFinance.getStocks(any())).thenReturn(Response.success(200, yahooStockList))
+            whenever(yahooFinance.getStocks(any())).thenReturn(
+                YahooQuoteResult(statusCode = 200, response = yahooStockList)
+            )
         }
     }
 

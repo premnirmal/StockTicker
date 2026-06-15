@@ -109,16 +109,12 @@ class NetworkModule {
     @Provides @Singleton
     internal fun provideYahooFinance(
         @ApplicationContext context: Context,
-        @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
-    ): YahooFinance {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.yahoo_endpoint))
-            .addConverterFactory(converterFactory)
-            .build()
-        val yahooFinance = retrofit.create(YahooFinance::class.java)
-        return yahooFinance
+        @Named("yahoo") okHttpClient: OkHttpClient
+    ): YahooFinanceApi {
+        return createYahooFinanceApi(
+            baseUrl = context.getString(R.string.yahoo_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton

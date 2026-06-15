@@ -36,3 +36,11 @@ fun createSuggestionApi(baseUrl: String, okHttpClient: OkHttpClient): Suggestion
 fun createChartApi(baseUrl: String, okHttpClient: OkHttpClient): ChartApi =
     ChartApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
 
+/**
+ * Builds a [YahooFinanceApi] backed by the Yahoo-authenticated [okHttpClient]. Keeps Ktor types out
+ * of the Android app module: `:app` only needs to know about [YahooFinanceApi] and its existing
+ * `@Named("yahoo")` [OkHttpClient].
+ */
+fun createYahooFinanceApi(baseUrl: String, okHttpClient: OkHttpClient): YahooFinanceApi =
+    YahooFinanceApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
+
