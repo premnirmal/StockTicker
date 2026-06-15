@@ -149,13 +149,11 @@ class NetworkModule {
     internal fun provideYahooFinanceMostActive(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient,
-    ): YahooFinanceMostActive {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.yahoo_finance_endpoint))
-            .addConverterFactory(JsoupConverterFactory())
-            .build()
-        return retrofit.create(YahooFinanceMostActive::class.java)
+    ): YahooFinanceMostActiveApi {
+        return createYahooFinanceMostActiveApi(
+            baseUrl = context.getString(R.string.yahoo_finance_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton

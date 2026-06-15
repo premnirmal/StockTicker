@@ -1,8 +1,6 @@
 package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.network.data.NewsRssFeed
-import org.jsoup.nodes.Document
-import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -24,9 +22,4 @@ interface GoogleNewsApi {
 interface YahooFinanceNewsApi {
     @GET("rssindex")
     suspend fun getNewsFeed(): NewsRssFeed
-}
-
-interface YahooFinanceMostActive {
-    @GET("most-active")
-    suspend fun getMostActive(): Response<Document>
 }

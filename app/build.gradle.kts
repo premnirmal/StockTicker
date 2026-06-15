@@ -224,7 +224,6 @@ dependencies {
   implementation(Square.retrofit2.converter.simpleXml)
   implementation(Square.retrofit2.converter.scalars)
   implementation(libs.retrofit.kotlin.serialization)
-  implementation(libs.jsoup)
   implementation(KotlinX.serialization.json)
 
   implementation(KotlinX.coroutines.android)

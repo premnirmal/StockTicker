@@ -18,7 +18,7 @@ class NewsProvider @Inject constructor(
     private val googleNewsApi: GoogleNewsApi,
     private val yahooNewsApi: YahooFinanceNewsApi,
     private val apeWisdom: ApeWisdom,
-    private val yahooFinanceMostActive: YahooFinanceMostActive,
+    private val yahooFinanceMostActive: YahooFinanceMostActiveApi,
     private val stocksApi: StocksApi
 ) {
 
@@ -78,20 +78,12 @@ class NewsProvider @Inject constructor(
 
                 // adding this extra try/catch because html format can change and parsing will fail
                 try {
-                    val mostActiveHtml = yahooFinanceMostActive.getMostActive()
-                    if (mostActiveHtml.isSuccessful) {
-                        val doc = mostActiveHtml.body()!!
-                        val elements = doc.select("fin-streamer")
-                        val symbols = ArrayList<String>()
-                        for (element in elements) {
-                            if (element.hasAttr("data-symbol") && element.attr("class").equals("fw(600)", ignoreCase = true)) {
-                                val symbol = element.attr("data-symbol")
-                                if (!symbols.contains(symbol)) symbols.add(symbol)
-                            }
-                        }
+                    val mostActive = yahooFinanceMostActive.getMostActive()
+                    if (mostActive.isSuccessful) {
+                        val symbols = mostActive.symbols
                         if (symbols.isNotEmpty()) {
                             Timber.d("symbols: ${symbols.joinToString(",")}")
-                            val mostActiveStocks = stocksApi.getStocks(symbols.toList())
+                            val mostActiveStocks = stocksApi.getStocks(symbols)
                             if (mostActiveStocks.wasSuccessful) {
                                 cachedTrendingStocks = mostActiveStocks.data
                             }
