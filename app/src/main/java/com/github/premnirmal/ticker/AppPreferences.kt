@@ -143,11 +143,7 @@ class AppPreferences @Inject constructor(
 
     fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
-    fun roundToTwoDecimalPlaces(): Boolean {
-        val round = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
-        AppNumberFormat.roundToTwoDecimalPlaces = round
-        return round
-    }
+    fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
 
     fun setRoundToTwoDecimalPlaces(round: Boolean) {
         AppNumberFormat.roundToTwoDecimalPlaces = round
