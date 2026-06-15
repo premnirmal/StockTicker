@@ -173,7 +173,11 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   Android by `StocksProvider`; the platform wiring (`Context`/`SharedPreferences`, `AlarmScheduler`,
   `WidgetDataProvider`, the Room-backed `StocksStorage`) and the platform-typed `fetchState` flow
   (whose `FetchState` carries a `java.time`-formatted display string) stay on the concrete
-  implementation, and iOS will provide its own implementation once it exists. Wiring an iOS-backed
+  implementation, and iOS will provide its own implementation once it exists. The diagnostic
+  fetch-event logging also has a shared `FetchLogger` interface (the common `log(source, event,
+  detail)` contract, in `commonMain`) implemented on Android by `FetchEventLogger`; the Room-backed
+  persistence (`StocksStorage.addFetchLog`) and the `Timber` failure reporting stay on the concrete
+  implementation, and iOS will provide its own sink once it exists. Wiring an iOS-backed
   `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).

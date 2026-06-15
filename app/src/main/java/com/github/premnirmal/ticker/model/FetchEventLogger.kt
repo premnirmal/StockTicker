@@ -14,13 +14,13 @@ class FetchEventLogger @Inject constructor(
     private val storage: StocksStorage,
     private val clock: AppClock,
     private val coroutineScope: CoroutineScope
-) {
+) : FetchLogger {
 
     companion object {
         private const val MAX_LOG_DETAIL_CHARS = 400
     }
 
-    fun log(
+    override fun log(
         source: String,
         event: String,
         detail: String
