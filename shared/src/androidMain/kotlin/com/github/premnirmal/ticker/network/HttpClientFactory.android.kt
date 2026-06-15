@@ -28,3 +28,11 @@ fun createHttpClient(okHttpClient: OkHttpClient): HttpClient = HttpClient(OkHttp
 fun createSuggestionApi(baseUrl: String, okHttpClient: OkHttpClient): SuggestionApi =
     SuggestionApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
 
+/**
+ * Builds a [ChartApi] backed by the Yahoo-authenticated [okHttpClient]. Keeps Ktor types out of the
+ * Android app module: `:app` only needs to know about [ChartApi] and its existing `@Named("yahoo")`
+ * [OkHttpClient].
+ */
+fun createChartApi(baseUrl: String, okHttpClient: OkHttpClient): ChartApi =
+    ChartApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
+

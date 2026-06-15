@@ -200,16 +200,12 @@ class NetworkModule {
     @Provides @Singleton
     internal fun provideHistoricalDataApi(
         @ApplicationContext context: Context,
-        @Named("yahoo") okHttpClient: OkHttpClient,
-        converterFactory: Converter.Factory
+        @Named("yahoo") okHttpClient: OkHttpClient
     ): ChartApi {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(context.getString(R.string.historical_data_endpoint))
-            .addConverterFactory(converterFactory)
-            .build()
-        val api = retrofit.create(ChartApi::class.java)
-        return api
+        return createChartApi(
+            baseUrl = context.getString(R.string.historical_data_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     // @Provides @Singleton
