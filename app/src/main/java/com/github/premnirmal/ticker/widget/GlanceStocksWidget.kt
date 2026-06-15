@@ -31,7 +31,7 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.GridCells
 import androidx.glance.appwidget.lazy.LazyVerticalGrid
-import androidx.glance.appwidget.lazy.items
+import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
@@ -194,24 +194,11 @@ private fun QuotesGrid(
     val fontSize = widgetData.fontSize
     val layoutType = remember(widgetData) { widgetData.layoutType }
     val isBold = widgetData.boldText
-    val keyedQuotes = remember(quotes) {
-        val symbolOccurrences = mutableMapOf<String, Int>()
-        val stableIds = mutableMapOf<String, Long>()
-        var nextId = 0L
-        quotes.map { quote ->
-            val currentCount = symbolOccurrences.getOrDefault(quote.symbol, 0)
-            symbolOccurrences[quote.symbol] = currentCount + 1
-            val stableKey = "${quote.symbol}#${currentCount + 1}"
-            val itemId = stableIds.getOrPut(stableKey) { nextId++ }
-            itemId to quote
-        }
-    }
     LazyVerticalGrid(
         modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
     ) {
-        items(items = keyedQuotes, itemId = { it.first }) { keyedQuote ->
-            val stock = keyedQuote.second
+        itemsIndexed(items = quotes, itemId = { index, _ -> index.toLong() }) { _, stock ->
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()
             val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
