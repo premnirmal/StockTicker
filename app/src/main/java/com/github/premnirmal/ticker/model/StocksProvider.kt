@@ -43,7 +43,7 @@ class StocksProvider constructor(
     private val fetchEventLogger: FetchEventLogger,
     private val storage: StocksStorage,
     private val coroutineScope: CoroutineScope
-) {
+) : IStocksProvider {
 
     companion object {
         private const val LAST_FETCHED = "LAST_FETCHED"
@@ -55,16 +55,16 @@ class StocksProvider constructor(
         const val DEFAULT_INTERVAL_MS: Long = 15_000L
     }
 
-    val tickers: StateFlow<List<String>>
+    override val tickers: StateFlow<List<String>>
         get() = _tickers
 
-    val portfolio: StateFlow<List<Quote>>
+    override val portfolio: StateFlow<List<Quote>>
         get() = _portfolio // quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
 
     val fetchState: StateFlow<FetchState>
         get() = _fetchState
 
-    val nextFetchMs: StateFlow<Long>
+    override val nextFetchMs: StateFlow<Long>
         get() = _nextFetch
 
     private val tickerSet: MutableSet<String> = HashSet()
@@ -117,7 +117,7 @@ class StocksProvider constructor(
         storage.saveTickers(tickerSet)
     }
 
-    fun scheduleUpdate(reason: String = "regular") {
+    override fun scheduleUpdate(reason: String) {
         val msToNextAlarm = alarmScheduler.msToNextAlarm(lastFetched)
         scheduleUpdateWithMs(msToNextAlarm, reason)
     }
@@ -225,11 +225,11 @@ class StocksProvider constructor(
     // public api
     // ///////////////////
 
-    fun hasTicker(ticker: String): Boolean {
+    override fun hasTicker(ticker: String): Boolean {
         return tickerSet.contains(ticker)
     }
 
-    suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
+    override suspend fun fetch(allowScheduling: Boolean): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
         if (tickerSet.isEmpty()) {
             Timber.d("No tickers/symbols to fetch")
             FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
@@ -305,7 +305,7 @@ class StocksProvider constructor(
         }
     }
 
-    fun schedule() {
+    override fun schedule() {
         coroutineScope.launch {
             scheduleUpdate()
             alarmScheduler.enqueuePeriodicRefresh()
@@ -313,7 +313,7 @@ class StocksProvider constructor(
         }
     }
 
-    fun addStock(ticker: String): Collection<String> {
+    override fun addStock(ticker: String): Collection<String> {
         synchronized(quoteMap) {
             if (!tickerSet.contains(ticker)) {
                 tickerSet.add(ticker)
@@ -336,13 +336,13 @@ class StocksProvider constructor(
         return tickerSet
     }
 
-    fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
+    override fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
 
-    fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
+    override fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
 
-    fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
+    override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-    suspend fun addHolding(
+    override suspend fun addHolding(
         ticker: String,
         shares: Float,
         price: Float
@@ -367,7 +367,7 @@ class StocksProvider constructor(
         return holding
     }
 
-    suspend fun removePosition(
+    override suspend fun removePosition(
         ticker: String,
         holding: Holding
     ): Boolean {
@@ -383,7 +383,7 @@ class StocksProvider constructor(
         return removed
     }
 
-    fun addStocks(symbols: Collection<String>): Collection<String> {
+    override fun addStocks(symbols: Collection<String>): Collection<String> {
         synchronized(this.tickerSet) {
             val filterNot = symbols.filterNot { this.tickerSet.contains(it) }
             filterNot.forEach { this.tickerSet.add(it) }
@@ -399,7 +399,7 @@ class StocksProvider constructor(
         return this.tickerSet
     }
 
-    suspend fun removeStock(ticker: String): Collection<String> {
+    override suspend fun removeStock(ticker: String): Collection<String> {
         synchronized(quoteMap) {
             tickerSet.remove(ticker)
             saveTickers()
@@ -411,7 +411,7 @@ class StocksProvider constructor(
         return tickerSet
     }
 
-    suspend fun removeStocks(symbols: Collection<String>) {
+    override suspend fun removeStocks(symbols: Collection<String>) {
         synchronized(quoteMap) {
             symbols.forEach {
                 tickerSet.remove(it)
@@ -424,7 +424,7 @@ class StocksProvider constructor(
         saveTickers()
     }
 
-    suspend fun cleanup() {
+    override suspend fun cleanup() {
         val quotes = storage.readQuotes().map { it.symbol }
         val toRemove = quotes.filterNot {
             tickerSet.contains(it)
@@ -432,13 +432,13 @@ class StocksProvider constructor(
         storage.removeQuotesBySymbol(toRemove)
     }
 
-    suspend fun fetchStock(ticker: String, allowCache: Boolean = true): FetchResult<Quote> {
+    override suspend fun fetchStock(ticker: String, allowCache: Boolean): FetchResult<Quote> {
         return fetchStockInternal(ticker, allowCache)
     }
 
-    fun getStock(ticker: String): Quote? = quoteMap[ticker]
+    override fun getStock(ticker: String): Quote? = quoteMap[ticker]
 
-    fun addPortfolio(portfolio: List<Quote>) {
+    override fun addPortfolio(portfolio: List<Quote>) {
         synchronized(quoteMap) {
             portfolio.forEach {
                 val symbol = it.symbol

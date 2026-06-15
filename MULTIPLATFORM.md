@@ -166,7 +166,14 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `AppPreferences`; the `SharedPreferences` store and the platform-typed settings (the
   `java.time`-based update window, the `@NightMode`/`SelectedTheme` mapping and the `Parcelable`
   `Time` value) stay on the concrete implementation, and iOS will provide its own
-  (`NSUserDefaults`/DataStore Multiplatform) implementation once it exists. Wiring an iOS-backed
+  (`NSUserDefaults`/DataStore Multiplatform) implementation once it exists. The central data provider
+  likewise has a shared `IStocksProvider` interface (the common contract for the observable
+  watchlist/portfolio state and the add/remove/fetch/schedule operations, expressed in the
+  already-shared `Quote`/`Position`/`Holding`/`FetchResult` models, in `commonMain`) implemented on
+  Android by `StocksProvider`; the platform wiring (`Context`/`SharedPreferences`, `AlarmScheduler`,
+  `WidgetDataProvider`, the Room-backed `StocksStorage`) and the platform-typed `fetchState` flow
+  (whose `FetchState` carries a `java.time`-formatted display string) stay on the concrete
+  implementation, and iOS will provide its own implementation once it exists. Wiring an iOS-backed
   `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
