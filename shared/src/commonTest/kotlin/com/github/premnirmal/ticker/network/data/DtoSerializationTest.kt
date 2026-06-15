@@ -45,4 +45,20 @@ class DtoSerializationTest {
 
         assertEquals(original, decoded)
     }
+
+    @Test
+    fun roundTripsSuggestionsNet() {
+        val suggestion = SuggestionsNet.SuggestionNet(symbol = "GOOG").apply {
+            name = "Alphabet"
+            longName = "Alphabet Inc."
+            exch = "NMS"
+            type = "EQUITY"
+        }
+        val original = SuggestionsNet(count = 1, result = listOf(suggestion))
+
+        val decoded = json.decodeFromString<SuggestionsNet>(json.encodeToString(original))
+
+        assertEquals("GOOG", decoded.result?.first()?.symbol)
+        assertEquals("Alphabet", decoded.result?.first()?.name)
+    }
 }
