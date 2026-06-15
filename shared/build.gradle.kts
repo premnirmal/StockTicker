@@ -60,6 +60,8 @@ kotlin {
     }
     commonTest.dependencies {
       implementation(kotlin("test"))
+      implementation("io.ktor:ktor-client-mock:_")
+      implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:_")
     }
   }
 }

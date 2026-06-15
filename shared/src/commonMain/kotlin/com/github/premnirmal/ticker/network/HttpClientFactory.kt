@@ -38,3 +38,68 @@ internal fun HttpClientConfig<*>.installDefaults() {
 fun createHttpClient(): HttpClient = HttpClient {
     installDefaults()
 }
+
+/**
+ * Creates a Ktor [HttpClient] configured with the shared lenient JSON content negotiation **and**
+ * the shared Yahoo Finance authentication ([installYahooAuth]: browser `User-Agent`/`Accept`
+ * headers, crumb query parameter and an in-memory cookie store). The HTTP engine is picked up from
+ * the classpath of the consuming platform (OkHttp on Android, Darwin on iOS), so this works on every
+ * target without depending on the Android-only OkHttp interceptor stack.
+ *
+ * @param crumbProvider supplies the current Yahoo crumb token (see [CrumbProvider]).
+ */
+fun createYahooHttpClient(crumbProvider: CrumbProvider): HttpClient = HttpClient {
+    installDefaults()
+    installYahooAuth(crumbProvider)
+}
+
+/**
+ * Builds a [SuggestionApi] authenticated for Yahoo Finance via the shared, engine-agnostic
+ * [createYahooHttpClient]. Unlike the Android `createSuggestionApi(baseUrl, okHttpClient)` factory,
+ * this overload works on any platform (notably iOS) because it does not require a preconfigured
+ * OkHttp client.
+ */
+fun createSuggestionApi(baseUrl: String, crumbProvider: CrumbProvider): SuggestionApi =
+    SuggestionApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))
+
+/**
+ * Builds a [ChartApi] authenticated for Yahoo Finance via the shared, engine-agnostic
+ * [createYahooHttpClient]. Works on any platform (notably iOS).
+ */
+fun createChartApi(baseUrl: String, crumbProvider: CrumbProvider): ChartApi =
+    ChartApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))
+
+/**
+ * Builds a [YahooFinanceApi] authenticated for Yahoo Finance via the shared, engine-agnostic
+ * [createYahooHttpClient]. Works on any platform (notably iOS).
+ */
+fun createYahooFinanceApi(baseUrl: String, crumbProvider: CrumbProvider): YahooFinanceApi =
+    YahooFinanceApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))
+
+/**
+ * Builds a [YahooCrumbApi] authenticated for Yahoo Finance via the shared, engine-agnostic
+ * [createYahooHttpClient]. Works on any platform (notably iOS).
+ */
+fun createYahooCrumbApi(baseUrl: String, crumbProvider: CrumbProvider): YahooCrumbApi =
+    YahooCrumbApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))
+
+/**
+ * Builds a [YahooFinanceInitialLoadApi] authenticated for Yahoo Finance via the shared,
+ * engine-agnostic [createYahooHttpClient]. Works on any platform (notably iOS).
+ */
+fun createYahooFinanceInitialLoadApi(baseUrl: String, crumbProvider: CrumbProvider): YahooFinanceInitialLoadApi =
+    YahooFinanceInitialLoadApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))
+
+/**
+ * Builds a [YahooFinanceMostActiveApi] authenticated for Yahoo Finance via the shared,
+ * engine-agnostic [createYahooHttpClient]. Works on any platform (notably iOS).
+ */
+fun createYahooFinanceMostActiveApi(baseUrl: String, crumbProvider: CrumbProvider): YahooFinanceMostActiveApi =
+    YahooFinanceMostActiveApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))
+
+/**
+ * Builds a [YahooFinanceNewsApi] authenticated for Yahoo Finance via the shared, engine-agnostic
+ * [createYahooHttpClient]. Works on any platform (notably iOS).
+ */
+fun createYahooFinanceNewsApi(baseUrl: String, crumbProvider: CrumbProvider): YahooFinanceNewsApi =
+    YahooFinanceNewsApi(baseUrl = baseUrl, httpClient = createYahooHttpClient(crumbProvider))

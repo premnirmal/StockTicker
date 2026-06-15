@@ -120,6 +120,15 @@ shims.
   and `pubDate` parsing/formatting moved to a dependency-free multiplatform `ArticleDate`
   (RFC-1123 + ISO-8601), replacing `java.time`. `commonTest` covers RSS parsing for both the Yahoo
   (media:content thumbnails, RFC-1123) and Google (CDATA description) feed shapes.
+- Ported the Yahoo Finance authentication (previously Android-only OkHttp interceptors: browser
+  `User-Agent`/`Accept` headers, the `crumb` query parameter and the `YahooFinanceCookies` cookie
+  jar) into an engine-agnostic Ktor configuration in `commonMain` (`YahooAuth`, `CrumbProvider`,
+  `createYahooHttpClient`/`createXxxApi(baseUrl, crumbProvider)`). Cookies use the multiplatform
+  `HttpCookies` plugin, and the crumb is supplied through the platform-neutral `CrumbProvider`
+  abstraction, so Yahoo's authenticated endpoints now work on iOS (Darwin engine) as well as
+  Android. `commonTest` (`YahooAuthTest`, via Ktor `MockEngine`) covers the forced headers, crumb
+  query parameter and cookie persistence. Android still authenticates through its existing
+  `@Named("yahoo")` OkHttp stack; the iOS app will provide a `CrumbProvider` once it exists.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
@@ -130,7 +139,8 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 - **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —
   persistence (Room → Room KMP or SQLDelight), preferences (DataStore multiplatform), DI
   (Hilt → Koin or Hilt-on-Android only), logging (Timber → Kermit/Napier), background refresh
-  (WorkManager + a common scheduler interface).
+  (WorkManager + a common scheduler interface). The shared Yahoo auth layer is in place
+  (`YahooAuth`/`CrumbProvider`); wiring an iOS-backed `CrumbProvider` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
