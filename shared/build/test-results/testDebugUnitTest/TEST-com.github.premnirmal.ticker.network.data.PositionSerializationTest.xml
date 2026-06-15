@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.github.premnirmal.ticker.network.data.PositionSerializationTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-15T14:24:01.056Z" hostname="runnervm1li68" time="0.007">
+  <properties/>
+  <testcase name="roundTripsPosition" classname="com.github.premnirmal.ticker.network.data.PositionSerializationTest" time="0.007"/>
+  <testcase name="roundTripsHolding" classname="com.github.premnirmal.ticker.network.data.PositionSerializationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
