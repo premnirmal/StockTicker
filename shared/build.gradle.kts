@@ -47,6 +47,7 @@ kotlin {
   sourceSets {
     commonMain.dependencies {
       implementation(KotlinX.serialization.json)
+      implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:_")
       implementation("io.ktor:ktor-client-core:_")
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")
@@ -54,6 +55,7 @@ kotlin {
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
+      implementation(JakeWharton.timber)
     }
     iosMain.dependencies {
       implementation("io.ktor:ktor-client-darwin:_")

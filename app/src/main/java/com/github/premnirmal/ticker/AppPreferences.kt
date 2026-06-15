@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import com.github.premnirmal.ticker.components.AppNumberFormat
+import com.github.premnirmal.ticker.network.CrumbStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,7 @@ import kotlin.random.Random
 @Singleton
 class AppPreferences @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-) {
+) : CrumbStore {
 
     init {
         INSTANCE = this
@@ -123,11 +124,11 @@ class AppPreferences @Inject constructor(
         }
     }
 
-    fun setCrumb(crumb: String?) {
+    override fun setCrumb(crumb: String?) {
         sharedPreferences.edit { putString(CRUMB, crumb) }
     }
 
-    fun getCrumb(): String? {
+    override fun getCrumb(): String? {
         return sharedPreferences.getString(CRUMB, null)
     }
 

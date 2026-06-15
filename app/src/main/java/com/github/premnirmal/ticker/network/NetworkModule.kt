@@ -137,6 +137,23 @@ class NetworkModule {
     }
 
     @Provides @Singleton
+    internal fun provideStocksApi(
+        yahooFinanceInitialLoad: YahooFinanceInitialLoadApi,
+        yahooFinanceCrumb: YahooCrumbApi,
+        yahooFinance: YahooFinanceApi,
+        appPreferences: com.github.premnirmal.ticker.AppPreferences,
+        suggestionApi: SuggestionApi
+    ): StocksApi {
+        return StocksApi(
+            yahooFinanceInitialLoad = yahooFinanceInitialLoad,
+            yahooFinanceCrumb = yahooFinanceCrumb,
+            yahooFinance = yahooFinance,
+            crumbStore = appPreferences,
+            suggestionApi = suggestionApi
+        )
+    }
+
+    @Provides @Singleton
     internal fun provideApeWisdom(
         @ApplicationContext context: Context
     ): ApeWisdom {

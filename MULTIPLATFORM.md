@@ -129,6 +129,15 @@ shims.
   Android. `commonTest` (`YahooAuthTest`, via Ktor `MockEngine`) covers the forced headers, crumb
   query parameter and cookie persistence. Android still authenticates through its existing
   `@Named("yahoo")` OkHttp stack; the iOS app will provide a `CrumbProvider` once it exists.
+- Moved the `StocksApi` orchestrator (Yahoo quotes/crumb-bootstrap/suggestions → shared
+  `Quote`/`FetchResult` model) from `:app` into `commonMain`. It no longer depends on `Timber`
+  (now the multiplatform `AppLogger`, `expect`/`actual`: Timber on Android, `NSLog` on iOS),
+  `Dispatchers.IO` (now the `expect`/`actual` `ioDispatcher`), `AppPreferences` (now the
+  `CrumbStore : CrumbProvider` read/write abstraction implemented by `AppPreferences`) or
+  Hilt/`javax.inject` (it is now plain and constructed by `NetworkModule.provideStocksApi`). The
+  public contract is unchanged. `commonTest` (`StocksApiTest`, via Ktor `MockEngine`) covers the
+  success, ordering, failure and the 401 → crumb-refresh → retry paths, so the orchestration is
+  verified on iOS as well as Android.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
@@ -138,9 +147,10 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   + `Parcelable`).
 - **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —
   persistence (Room → Room KMP or SQLDelight), preferences (DataStore multiplatform), DI
-  (Hilt → Koin or Hilt-on-Android only), logging (Timber → Kermit/Napier), background refresh
-  (WorkManager + a common scheduler interface). The shared Yahoo auth layer is in place
-  (`YahooAuth`/`CrumbProvider`); wiring an iOS-backed `CrumbProvider` remains for the iOS app.
+  (Hilt → Koin or Hilt-on-Android only), background refresh (WorkManager + a common scheduler
+  interface). Done so far: the shared Yahoo auth layer (`YahooAuth`/`CrumbProvider`), a
+  multiplatform logger (`AppLogger`) and IO dispatcher (`ioDispatcher`), and the shared `StocksApi`
+  orchestrator. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
