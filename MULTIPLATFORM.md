@@ -37,6 +37,8 @@ Source sets:
   (same package names, so `:app` imports are unchanged):
   `HistoricalData`, `RepoCommit`, `SuggestionsNet`, `Trending`, `YahooQuoteResponse`.
 - Migrated the pure-Kotlin `FetchResult` wrapper into `commonMain`.
+- Migrated `FetchException` into `commonMain` via an `expect`/`actual` wrapper; the
+  Android `actual` extends `java.io.IOException` so existing handling is unchanged.
 - Added an `expect`/`actual` `Platform` abstraction and a `commonTest` serialization test.
 
 ### Remaining (high level)
@@ -44,9 +46,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that need an
   `expect`/`actual` wrapper first: `AppClock` (uses `android.os.SystemClock` +
-  `java.time`), `FetchException` (`java.io.IOException`), `DataPoint` (MPAndroidChart
-  `CandleEntry` + `Parcelable`), `PriceFormat`/`Properties`/`Quote`/`Position`/
-  `Suggestion`/`NewsArticle` (`Parcelable`/`AppPreferences`).
+  `java.time`), `DataPoint` (MPAndroidChart `CandleEntry` + `Parcelable`),
+  `PriceFormat`/`Properties`/`Quote`/`Position`/`Suggestion`/`NewsArticle`
+  (`Parcelable`/`AppPreferences`).
 - **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
   (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or
