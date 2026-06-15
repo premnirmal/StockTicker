@@ -1,17 +1,14 @@
 package com.github.premnirmal.ticker.network.data
 
-import android.os.Parcelable
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
-import kotlinx.parcelize.Parcelize
+import com.github.premnirmal.shared.CommonParcelable
+import com.github.premnirmal.shared.CommonParcelize
+import com.github.premnirmal.ticker.components.AppNumberFormat
 import kotlinx.serialization.Serializable
 
 /**
  * Created by premnirmal on 3/30/17.
  */
-@Parcelize
+@CommonParcelize
 @Serializable
 data class Quote constructor(
     var symbol: String = "",
@@ -21,7 +18,7 @@ data class Quote constructor(
     var change: Float = 0.toFloat(),
     var position: Position? = null,
     var properties: Properties? = null,
-) : Parcelable, Comparable<Quote> {
+) : CommonParcelable, Comparable<Quote> {
 
     var isPostMarket: Boolean = false
     var stockExchange: String = ""
@@ -75,10 +72,10 @@ data class Quote constructor(
 
     fun hasPositions(): Boolean = position?.holdings?.isNotEmpty() ?: false
 
-    fun changeString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
+    fun changeString(): String = AppNumberFormat.selected.format(change)
 
     fun changeStringWithSign(): String {
-        val changeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(change)
+        val changeString = AppNumberFormat.selected.format(change)
         if (change >= 0) {
             return "+$changeString"
         }
@@ -86,10 +83,10 @@ data class Quote constructor(
     }
 
     fun changePercentString(): String =
-        "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
+        "${AppNumberFormat.TWO_DP.format(changeInPercent)}%"
 
     fun changePercentStringWithSign(): String {
-        val changeString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(changeInPercent)}%"
+        val changeString = "${AppNumberFormat.TWO_DP.format(changeInPercent)}%"
         if (changeInPercent >= 0) {
             return "+$changeString"
         }
@@ -100,7 +97,7 @@ data class Quote constructor(
         return if (annualDividendRate <= 0f || annualDividendYield <= 0f) {
             "--"
         } else {
-            AppPreferences.DECIMAL_FORMAT_2DP.format(annualDividendRate)
+            AppNumberFormat.TWO_DP.format(annualDividendRate)
         }
     }
 
@@ -110,35 +107,32 @@ data class Quote constructor(
     val isDown: Boolean
         get() = change < 0f
 
-    val changeColour: Color
-        @Composable get() = if (isUp) ColourPalette.ChangePositive else ColourPalette.ChangeNegative
-
     private fun positionPrice(): Float = position?.averagePrice() ?: 0f
 
     private fun totalPositionShares(): Float = position?.totalShares() ?: 0f
 
     private fun totalPositionPrice(): Float = position?.totalPaidPrice() ?: 0f
 
-    fun priceString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(lastTradePrice)
+    fun priceString(): String = AppNumberFormat.selected.format(lastTradePrice)
 
     fun averagePositionPrice(): String =
-        AppPreferences.SELECTED_DECIMAL_FORMAT.format(positionPrice())
+        AppNumberFormat.selected.format(positionPrice())
 
     fun numSharesString(): String =
-        AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionShares())
+        AppNumberFormat.selected.format(totalPositionShares())
 
     fun totalSpentString(): String =
-        AppPreferences.SELECTED_DECIMAL_FORMAT.format(totalPositionPrice())
+        AppNumberFormat.selected.format(totalPositionPrice())
 
     fun holdings(): Float = lastTradePrice * totalPositionShares()
 
-    fun holdingsString(): String = AppPreferences.SELECTED_DECIMAL_FORMAT.format(holdings())
+    fun holdingsString(): String = AppNumberFormat.selected.format(holdings())
 
     fun gainLoss(): Float = holdings() - totalPositionShares() * positionPrice()
 
     fun gainLossString(): String {
         val gainLoss = gainLoss()
-        val gainLossString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(gainLoss)
+        val gainLossString = AppNumberFormat.selected.format(gainLoss)
         if (gainLoss >= 0) {
             return "+$gainLossString"
         }
@@ -152,7 +146,7 @@ data class Quote constructor(
 
     fun gainLossPercentString(): String {
         val gainLossPercent = gainLossPercent()
-        val gainLossString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(gainLossPercent)}%"
+        val gainLossString = "${AppNumberFormat.TWO_DP.format(gainLossPercent)}%"
         if (gainLossPercent >= 0) {
             return "+$gainLossString"
         }
@@ -161,7 +155,7 @@ data class Quote constructor(
 
     fun gainLossPercentStringNoPercentSign(): String {
         val gainLossPercent = gainLossPercent()
-        val gainLossString = "${AppPreferences.DECIMAL_FORMAT_2DP.format(gainLossPercent)}"
+        val gainLossString = "${AppNumberFormat.TWO_DP.format(gainLossPercent)}"
         if (gainLossPercent >= 0) {
             return "+$gainLossString"
         }
@@ -172,7 +166,7 @@ data class Quote constructor(
 
     fun dayChangeString(): String {
         val dayChange = dayChange()
-        val dayChangeString = AppPreferences.SELECTED_DECIMAL_FORMAT.format(dayChange)
+        val dayChangeString = AppNumberFormat.selected.format(dayChange)
         if (dayChange > 0) {
             return "+$dayChangeString"
         }

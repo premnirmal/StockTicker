@@ -97,16 +97,19 @@ shims.
   `NSNumberFormatter`) and a shared `AppNumberFormat` holding the two formats and the
   `roundToTwoDecimalPlaces` selection flag (kept in sync from `:app`'s `AppPreferences`). This
   also lays the groundwork for `Quote`, whose `…String()` helpers use the same formats.
+- Migrated `Quote` into `commonMain`. It now uses the shared `CommonParcelable`/`@CommonParcelize`
+  abstraction (it is genuinely parceled — e.g. passed through an `Intent` to `QuoteDetailActivity`)
+  and the shared `AppNumberFormat` for its `…String()` helpers (replacing
+  `AppPreferences.SELECTED_DECIMAL_FORMAT`/`DECIMAL_FORMAT_2DP`). Its only Compose dependency, the
+  `changeColour` getter (`androidx.compose.ui.graphics.Color` + `ColourPalette`), was factored out
+  into an Android-only `@Composable` extension (`Quote.changeColour`) that stays in `:app`.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that still need an
   `expect`/`actual` wrapper or further decoupling: `DataPoint` (MPAndroidChart `CandleEntry`
-  + `Parcelable`), `NewsArticle` (SimpleXML + `android.text.Html`), and `Quote`
-  (`Parcelable`/`AppPreferences`/Compose `Color`). `Quote` can reuse the shared `Parcelable`
-  abstraction and the shared `AppNumberFormat` once its remaining Compose `Color` dependency is
-  factored out (`Properties` and `PriceFormat` have already been migrated).
+  + `Parcelable`) and `NewsArticle` (SimpleXML + `android.text.Html`).
 - **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
   (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or
