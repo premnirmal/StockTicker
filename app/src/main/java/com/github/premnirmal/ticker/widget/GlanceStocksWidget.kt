@@ -31,7 +31,7 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.GridCells
 import androidx.glance.appwidget.lazy.LazyVerticalGrid
-import androidx.glance.appwidget.lazy.items
+import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.appwidget.provideContent
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.background
@@ -198,7 +198,7 @@ private fun QuotesGrid(
         modifier = GlanceModifier,
         gridCells = GridCells.Fixed(columns),
     ) {
-        items(items = quotes, itemId = { it.symbol.hashCode().toLong() }) { stock ->
+        itemsIndexed(items = quotes, itemId = { index, _ -> index.toLong() }) { _, stock ->
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()
             val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
