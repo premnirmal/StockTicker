@@ -34,6 +34,8 @@ class PropertiesSerializationTest {
 
     @Test
     fun isEmptyReflectsContent() {
+        // NB: isEmpty() is counter-intuitively named — it returns true when the
+        // Properties has content (notes set, or an alert configured), false otherwise.
         assertFalse(Properties(symbol = "AAPL").isEmpty())
         assertTrue(Properties(symbol = "AAPL", notes = "note").isEmpty())
         assertTrue(Properties(symbol = "AAPL", alertAbove = 1.0f).isEmpty())
