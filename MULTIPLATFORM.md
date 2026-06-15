@@ -160,7 +160,14 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   properties, in already-shared `commonMain` models) implemented on Android by `StocksStorage`; the
   Room-backed engine (`QuotesDB`/`QuoteDao`/`*Row`) and the platform-typed fetch-log operations stay
   on the concrete implementation, and iOS will provide a Room KMP / SQLDelight-backed implementation
-  once it exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app.
+  once it exists. The settings layer likewise has a shared `UserPreferences` interface (the common
+  contract for the platform-neutral user settings — update interval, the boolean toggles, the theme
+  preference and the refresh/tooltip flows, in `commonMain`) implemented on Android by
+  `AppPreferences`; the `SharedPreferences` store and the platform-typed settings (the
+  `java.time`-based update window, the `@NightMode`/`SelectedTheme` mapping and the `Parcelable`
+  `Time` value) stay on the concrete implementation, and iOS will provide its own
+  (`NSUserDefaults`/DataStore Multiplatform) implementation once it exists. Wiring an iOS-backed
+  `CrumbProvider`/`CrumbStore` remains for the iOS app.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app

@@ -28,7 +28,7 @@ import kotlin.random.Random
 @Singleton
 class AppPreferences @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-) : CrumbStore {
+) : CrumbStore, UserPreferences {
 
     init {
         INSTANCE = this
@@ -42,7 +42,7 @@ class AppPreferences @Inject constructor(
         }
     }
 
-    val updateIntervalMs: Long
+    override val updateIntervalMs: Long
         get() {
             return when (sharedPreferences.getInt(UPDATE_INTERVAL, 1)) {
                 0 -> 5 * 60 * 1000L
@@ -112,12 +112,12 @@ class AppPreferences @Inject constructor(
             .toSet()
     }
 
-    val isRefreshing: StateFlow<Boolean>
+    override val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
 
     private val _isRefreshing = MutableStateFlow(sharedPreferences.getBoolean(WIDGET_REFRESHING, false))
 
-    fun setRefreshing(refreshing: Boolean) {
+    override fun setRefreshing(refreshing: Boolean) {
         _isRefreshing.value = refreshing
         sharedPreferences.edit {
             putBoolean(WIDGET_REFRESHING, refreshing)
@@ -132,30 +132,30 @@ class AppPreferences @Inject constructor(
         return sharedPreferences.getString(CRUMB, null)
     }
 
-    fun tutorialShown(): Boolean {
+    override fun tutorialShown(): Boolean {
         return sharedPreferences.getBoolean(TUTORIAL_SHOWN, false)
     }
 
-    fun setTutorialShown(shown: Boolean) {
+    override fun setTutorialShown(shown: Boolean) {
         sharedPreferences.edit {
             putBoolean(TUTORIAL_SHOWN, shown)
         }
     }
 
-    fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
+    override fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
-    fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
+    override fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
 
-    fun setRoundToTwoDecimalPlaces(round: Boolean) {
+    override fun setRoundToTwoDecimalPlaces(round: Boolean) {
         AppNumberFormat.roundToTwoDecimalPlaces = round
         sharedPreferences.edit {
             putBoolean(SETTING_ROUND_TWO_DP, round)
         }
     }
 
-    fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
+    override fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
 
-    fun setNotificationAlerts(set: Boolean) {
+    override fun setNotificationAlerts(set: Boolean) {
         sharedPreferences.edit {
             putBoolean(SETTING_NOTIFICATION_ALERTS, set)
         }
@@ -163,7 +163,7 @@ class AppPreferences @Inject constructor(
 
     private val _themePref = MutableStateFlow(sharedPreferences.getInt(APP_THEME, FOLLOW_SYSTEM_THEME))
 
-    val themePrefFlow: Flow<Int> = _themePref
+    override val themePrefFlow: Flow<Int> = _themePref
 
     val selectedTheme: SelectedTheme
         get() = when (_themePref.value) {
@@ -172,14 +172,14 @@ class AppPreferences @Inject constructor(
             else -> SelectedTheme.SYSTEM
         }
 
-    var themePref: Int
+    override var themePref: Int
         get() = _themePref.value.coerceIn(0, 2)
         set(value) {
             _themePref.value = value
             sharedPreferences.edit { putInt(APP_THEME, value) }
         }
 
-    var updateIntervalPref: Int
+    override var updateIntervalPref: Int
         get() = sharedPreferences.getInt(UPDATE_INTERVAL, 1).coerceIn(0, 4)
         set(value) {
             sharedPreferences.edit {
@@ -214,9 +214,9 @@ class AppPreferences @Inject constructor(
         sharedPreferences.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) > 5
     )
 
-    val showAddRemoveTooltip: Flow<Boolean> = _showAddRemoveTooltip
+    override val showAddRemoveTooltip: Flow<Boolean> = _showAddRemoveTooltip
 
-    fun setAddRemoveTooltipShown() {
+    override fun setAddRemoveTooltipShown() {
         val count = sharedPreferences.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) + 1
         sharedPreferences.edit { putInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, count) }
         _showAddRemoveTooltip.value = count > 5
