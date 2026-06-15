@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.components
 
 import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 /**
@@ -17,14 +16,12 @@ import kotlin.time.Instant
  */
 interface AppClock {
 
-    @OptIn(ExperimentalTime::class)
     fun now(): Instant
 
     fun currentTimeMillis(): Long
 
     fun elapsedRealtime(): Long
 
-    @OptIn(ExperimentalTime::class)
     object AppClockImpl : AppClock {
 
         override fun now(): Instant = Clock.System.now()
