@@ -75,17 +75,29 @@ shims.
   shared `SuggestionNet`). Its `Parcelable`/`@Parcelize` was dropped because it was
   never used as a `Parcelable` (never put in a `Bundle`/`Intent`/nav argument).
 - Added an `expect`/`actual` `Platform` abstraction and a `commonTest` serialization test.
+- Added a reusable `expect`/`actual` `Parcelable` abstraction (`CommonParcelable` +
+  `CommonParcelize`, in `com.github.premnirmal.shared`). On Android these `typealias` to
+  `android.os.Parcelable` / `kotlinx.parcelize.Parcelize` (the `kotlin-parcelize` plugin is
+  applied to `:shared`); on iOS `CommonParcelable` is an empty marker and `CommonParcelize`
+  is an `@OptionalExpectation` with no actual.
+- Migrated `Position`/`Holding`/`HoldingSum` into `commonMain` using that abstraction —
+  these are genuinely parceled (e.g. `Position` is passed through an `Intent` between
+  `HoldingsActivity` and `QuoteDetailActivity`), so they keep their `Parcelable` on Android.
+- Migrated `AppClock` into `commonMain` on the Kotlin stdlib multiplatform time API
+  (`kotlin.time.Clock`/`Instant`). `elapsedRealtime()` is backed by an `expect`/`actual`
+  (`SystemClock.elapsedRealtime()` on Android, `NSProcessInfo.systemUptime` on iOS). Android
+  scheduling/notification code keeps its `java.time` arithmetic via `todayZoned()` /
+  `todayLocal()` extensions (in `:app`) that derive `java.time` values from the clock.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
-- **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that need an
-  `expect`/`actual` wrapper first: `AppClock` (uses `android.os.SystemClock` +
-  `java.time`; needs a `kotlinx-datetime` migration that also touches `AlarmScheduler`),
-  `DataPoint` (MPAndroidChart `CandleEntry` + `Parcelable`), `NewsArticle` (SimpleXML +
-  `android.text.Html`), and `PriceFormat`/`Properties`/`Quote`/`Position`
-  (`Parcelable`/`AppPreferences`). A reusable `expect`/`actual` `Parcelable` abstraction
-  should be introduced when the first model that genuinely needs parceling is migrated.
+- **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that still need an
+  `expect`/`actual` wrapper or further decoupling: `DataPoint` (MPAndroidChart `CandleEntry`
+  + `Parcelable`), `NewsArticle` (SimpleXML + `android.text.Html`), and
+  `PriceFormat`/`Properties`/`Quote` (`Parcelable`/`AppPreferences`/Compose `Color`). `Quote`
+  and `Properties` can now reuse the shared `Parcelable` abstraction once their Compose and
+  `AppPreferences` dependencies are factored out.
 - **Phase 2:** Replace Android-only infrastructure with KMP equivalents — networking
   (Retrofit/OkHttp → Ktor; Jsoup → a KMP HTML parser), persistence (Room → Room KMP
   or SQLDelight), preferences (DataStore multiplatform), DI (Hilt → Koin or

@@ -17,6 +17,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.todayLocal
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.home.HomeActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler

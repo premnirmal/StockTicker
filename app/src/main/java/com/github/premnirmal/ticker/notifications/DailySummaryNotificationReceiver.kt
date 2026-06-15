@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.todayLocal
 import com.github.premnirmal.ticker.components.Injector
 import timber.log.Timber
 import javax.inject.Inject

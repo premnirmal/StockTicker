@@ -7,9 +7,11 @@ import androidx.test.core.app.ApplicationProvider
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.todayZoned
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.time.DayOfWeek
@@ -20,10 +22,7 @@ import java.time.DayOfWeek.SUNDAY
 import java.time.DayOfWeek.THURSDAY
 import java.time.DayOfWeek.TUESDAY
 import java.time.DayOfWeek.WEDNESDAY
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
+import java.util.TimeZone
 
 @HiltAndroidTest
 class AlarmSchedulerTest : BaseUnitTest() {
@@ -51,14 +50,22 @@ class AlarmSchedulerTest : BaseUnitTest() {
     private lateinit var appPreferences: AppPreferences
     private lateinit var alarmScheduler: AlarmScheduler
     private lateinit var context: Context
+    private val defaultTimeZone: TimeZone = TimeZone.getDefault()
 
     @Before fun init() {
+        // todayZoned()/todayLocal() now derive from currentTimeMillis() in the default zone;
+        // pin it to UTC so the fixed test timestamps map to the same wall-clock times as before.
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         clock = mock()
         context = mock()
         sharedPreferences = ApplicationProvider.getApplicationContext<Context>().getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
         appPreferences = AppPreferences(sharedPreferences)
         alarmScheduler = AlarmScheduler(context, appPreferences, clock, sharedPreferences, mock())
         setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY))
+    }
+
+    @After fun tearDown() {
+        TimeZone.setDefault(defaultTimeZone)
     }
 
     private fun setSelectDays(selectedDays: Set<DayOfWeek>) {
@@ -77,13 +84,8 @@ class AlarmSchedulerTest : BaseUnitTest() {
     }
 
     private fun setNow(now: Long) {
-        val instant = Instant.ofEpochMilli(now)
-        val zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC)
-        val localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC)
         whenever(clock.currentTimeMillis()).thenReturn(now)
         whenever(clock.elapsedRealtime()).thenReturn(now)
-        whenever(clock.todayLocal()).thenReturn(localDateTime)
-        whenever(clock.todayZoned()).thenReturn(zonedDateTime)
     }
 
     @Test fun testAlarmTime_pastEndTime_withLastFetched_beforeEndTime() {

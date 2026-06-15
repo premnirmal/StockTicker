@@ -18,6 +18,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.todayLocal
+import com.github.premnirmal.ticker.components.todayZoned
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.widget.RefreshReceiver

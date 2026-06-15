@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
+import com.github.premnirmal.ticker.components.todayZoned
 import com.github.premnirmal.tickerwidget.R
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
