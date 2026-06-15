@@ -60,7 +60,6 @@ import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.internal.toImmutableList
 import java.text.NumberFormat
 import kotlin.getValue
 
@@ -98,7 +97,7 @@ class HoldingsActivity : BaseActivity() {
 
         val position by viewModel.position.collectAsStateWithLifecycle()
         var holdings by remember(position.holdings) {
-            mutableStateOf(position.holdings.toImmutableList())
+            mutableStateOf(position.holdings.toList())
         }
         val holdingsSum by remember(holdings) {
             derivedStateOf {

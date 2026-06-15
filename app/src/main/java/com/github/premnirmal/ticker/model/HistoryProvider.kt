@@ -41,22 +41,24 @@ class HistoryProvider @Inject constructor(
             with(historicalData.chart.result.first()) {
                 val chartPreviousClose = meta.chartPreviousClose.toFloat()
                 val regularMarketPrice = meta.regularMarketPrice.toFloat()
+                val dataQuote = indicators?.quote?.firstOrNull()
+                val highs = dataQuote?.high
+                val lows = dataQuote?.low
+                val opens = dataQuote?.open
+                val closes = dataQuote?.close
                 val dataPoints = timestamp?.mapIndexed { i, stamp ->
-                    val dataQuote = indicators?.quote?.firstOrNull()
-                    if (dataQuote == null ||
-                        dataQuote.low == null || dataQuote.high == null ||
-                        dataQuote.open == null || dataQuote.close == null ||
-                        dataQuote.high[i] === null || dataQuote.low[i] === null ||
-                        dataQuote.open[i] === null || dataQuote.close[i] === null
+                    if (highs == null || lows == null || opens == null || closes == null ||
+                        highs[i] === null || lows[i] === null ||
+                        opens[i] === null || closes[i] === null
                     ) {
                         null
                     } else {
                         DataPoint(
                             stamp.toFloat(),
-                            dataQuote.high[i]!!.toFloat(),
-                            dataQuote.low[i]!!.toFloat(),
-                            dataQuote.open[i]!!.toFloat(),
-                            dataQuote.close[i]!!.toFloat()
+                            highs[i]!!.toFloat(),
+                            lows[i]!!.toFloat(),
+                            opens[i]!!.toFloat(),
+                            closes[i]!!.toFloat()
                         )
                     }
                 }?.filterNotNull()?.sorted().orEmpty()
