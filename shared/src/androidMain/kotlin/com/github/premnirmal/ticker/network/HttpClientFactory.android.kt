@@ -51,3 +51,11 @@ fun createYahooFinanceApi(baseUrl: String, okHttpClient: OkHttpClient): YahooFin
  */
 fun createYahooCrumbApi(baseUrl: String, okHttpClient: OkHttpClient): YahooCrumbApi =
     YahooCrumbApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))
+
+/**
+ * Builds a [YahooFinanceInitialLoadApi] backed by the Yahoo-authenticated [okHttpClient]. Keeps Ktor
+ * types out of the Android app module: `:app` only needs to know about [YahooFinanceInitialLoadApi]
+ * and its existing `@Named("yahoo")` [OkHttpClient].
+ */
+fun createYahooFinanceInitialLoadApi(baseUrl: String, okHttpClient: OkHttpClient): YahooFinanceInitialLoadApi =
+    YahooFinanceInitialLoadApi(baseUrl = baseUrl, httpClient = createHttpClient(okHttpClient))

@@ -15,7 +15,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.converter.simplexml.SimpleXmlConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Named
@@ -121,14 +120,11 @@ class NetworkModule {
     internal fun provideYahooFinanceInitialLoad(
         @ApplicationContext context: Context,
         @Named("yahoo") okHttpClient: OkHttpClient
-    ): YahooFinanceInitialLoad {
-        val retrofit = Retrofit.Builder()
-            .client(okHttpClient)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .baseUrl(context.getString(R.string.yahoo_initial_load_endpoint))
-            .build()
-        val yahooFinance = retrofit.create(YahooFinanceInitialLoad::class.java)
-        return yahooFinance
+    ): YahooFinanceInitialLoadApi {
+        return createYahooFinanceInitialLoadApi(
+            baseUrl = context.getString(R.string.yahoo_initial_load_endpoint),
+            okHttpClient = okHttpClient
+        )
     }
 
     @Provides @Singleton

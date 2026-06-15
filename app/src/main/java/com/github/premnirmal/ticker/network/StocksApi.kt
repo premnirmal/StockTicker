@@ -8,7 +8,6 @@ import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.FormBody
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,7 +17,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class StocksApi @Inject constructor(
-    private val yahooFinanceInitialLoad: YahooFinanceInitialLoad,
+    private val yahooFinanceInitialLoad: YahooFinanceInitialLoadApi,
     private val yahooFinanceCrumb: YahooCrumbApi,
     private val yahooFinance: YahooFinanceApi,
     private val appPreferences: AppPreferences,
@@ -33,24 +32,20 @@ class StocksApi @Inject constructor(
         withContext(Dispatchers.IO) {
             try {
                 val initialLoad = yahooFinanceInitialLoad.initialLoad()
-                val html = initialLoad.body() ?: ""
-                val url = initialLoad.raw().request.url.toString()
+                val html = initialLoad.html
+                val url = initialLoad.url
                 val match = csrfTokenMatchPattern.find(html)
                 if (!match?.groupValues.isNullOrEmpty()) {
                     val csrfToken = match?.groupValues?.last().toString()
                     val sessionId = url.split("=").last()
 
-                    val requestBody = FormBody.Builder()
-                        .add("csrfToken", csrfToken)
-                        .add("sessionId", sessionId)
-                        .addEncoded("originalDoneUrl", "https://finance.yahoo.com/?guccounter=1")
-                        .add("namespace", "yahoo")
-                        .add("agree", "agree")
-                        .build()
-
-                    val cookieConsent = yahooFinanceInitialLoad.cookieConsent(url, requestBody)
+                    val cookieConsent = yahooFinanceInitialLoad.cookieConsent(
+                        url = url,
+                        csrfToken = csrfToken,
+                        sessionId = sessionId
+                    )
                     if (!cookieConsent.isSuccessful) {
-                        Timber.e("Failed cookie consent with code: ${cookieConsent.code()}")
+                        Timber.e("Failed cookie consent with code: ${cookieConsent.statusCode}")
                         return@withContext
                     }
                 }
