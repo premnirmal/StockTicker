@@ -4,6 +4,7 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.SuggestionsProvider
 import org.koin.dsl.module
 
 /**
@@ -36,4 +37,5 @@ val sharedModule = module {
         )
     }
     single { HistoryProvider(chartApi = get()) }
+    single { SuggestionsProvider(stocksApi = get()) }
 }

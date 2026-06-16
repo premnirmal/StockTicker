@@ -158,6 +158,16 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   `FetchResult<List<String>>`, filtering the version-bump/F-droid bot commits) is unchanged, and
   `commonTest` (`CommitsProviderTest`) covers the line splitting, bot-commit filtering and the shared
   default, so it is verified on iOS as well as Android.
+- Moved the symbol-search **suggestions** orchestration into `commonMain` as a new plain
+  `SuggestionsProvider` over the shared `StocksApi`. It turns the raw Yahoo `SuggestionNet` results
+  into the UI `Suggestion` model and always appends the upper-cased raw query as a selectable symbol
+  (when not already present), logic that previously lived inline in Android's `SearchViewModel`. The
+  view model now delegates to it (keeping only the UI concerns — the debounce delay and the error
+  snackbar), and it is declared in the shared Koin `sharedModule` alongside the other orchestrators,
+  so the future iOS / shared presentation layer binds to the same flow. `commonTest`
+  (`SuggestionsProviderTest`, via Ktor `MockEngine`) covers the append-when-missing, the
+  no-duplicate-when-present, the empty-query short-circuit and the request-failure paths, so it is
+  verified on iOS as well as Android.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:

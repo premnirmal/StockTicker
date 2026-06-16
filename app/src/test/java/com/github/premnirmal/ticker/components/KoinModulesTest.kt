@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.SuggestionsProvider
 import com.github.premnirmal.ticker.network.networkModule
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.ThemeViewModel
@@ -55,6 +56,7 @@ class KoinModulesTest {
         koin.get<NewsProvider>()
         koin.get<HistoryProvider>()
         koin.get<CommitsProvider>()
+        koin.get<SuggestionsProvider>()
 
         // Android singletons.
         koin.get<AppPreferences>()

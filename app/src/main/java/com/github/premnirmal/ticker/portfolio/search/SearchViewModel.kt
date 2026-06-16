@@ -4,10 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.SuggestionsProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.network.data.SuggestionsNet.SuggestionNet
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -15,7 +14,6 @@ import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +21,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SearchViewModel constructor(
-    private val stocksApi: StocksApi,
+    private val suggestionsProvider: SuggestionsProvider,
     private val widgetDataProvider: WidgetDataProvider,
     private val newsProvider: NewsProvider,
     private val appMessaging: AppMessaging,
@@ -65,21 +63,12 @@ class SearchViewModel constructor(
         searchJob?.cancel()
         searchJob = viewModelScope.launch(Dispatchers.Default) {
             delay(500L)
-            val suggestions = stocksApi.getSuggestions(query)
-            if (suggestions.wasSuccessful) {
-                val suggestionList = suggestions.data.toMutableList()
-                val querySuggestion = SuggestionNet(query.uppercase())
-                if (!suggestionList.contains(querySuggestion)) {
-                    suggestionList.add(querySuggestion)
-                }
-                val data = suggestionList.map {
-                    ensureActive()
-                    Suggestion.fromSuggestionNet(it)
-                }
-                _searchResult.emit(FetchResult.success(data))
+            val result = suggestionsProvider.fetchSuggestions(query)
+            if (result.wasSuccessful) {
+                _searchResult.emit(result)
             } else {
-                Timber.w(suggestions.error)
-                _searchResult.emit(FetchResult.failure(suggestions.error))
+                Timber.w(result.error)
+                _searchResult.emit(FetchResult.failure(result.error))
                 appMessaging.sendSnackbar(R.string.error_fetching_suggestions)
             }
         }
