@@ -26,7 +26,7 @@ class AnalyticsTest {
     @Test
     fun forwardsEventsToSink() {
         val sink = RecordingSink()
-        val analytics = Analytics(sink)
+        val analytics = AnalyticsImpl(sink)
 
         analytics.trackScreenView("Home")
         analytics.trackClickEvent(ClickEvent("add_stock").addProperty("symbol", "AAPL"))
@@ -43,7 +43,7 @@ class AnalyticsTest {
 
     @Test
     fun defaultSinkIsNoopAndDoesNotThrow() {
-        val analytics = Analytics()
+        val analytics = AnalyticsImpl()
         analytics.trackScreenView("Home")
         analytics.trackClickEvent(ClickEvent("noop"))
         analytics.trackGeneralEvent(GeneralEvent("noop"))

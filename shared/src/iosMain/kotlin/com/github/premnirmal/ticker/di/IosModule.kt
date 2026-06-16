@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.di
 import com.github.premnirmal.ticker.UserDefaultsPreferences
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
+import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.analytics.AnalyticsSink
 import com.github.premnirmal.ticker.analytics.NoopAnalyticsSink
 import com.github.premnirmal.ticker.components.AppClock
@@ -124,7 +125,7 @@ fun iosModule(
 
     // Analytics
     single<AnalyticsSink> { analyticsSink }
-    single { Analytics(get()) }
+    single<Analytics> { AnalyticsImpl(get()) }
 }
 
 private const val SUGGESTIONS_ENDPOINT = "https://query2.finance.yahoo.com/v1/finance/"

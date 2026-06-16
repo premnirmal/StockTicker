@@ -1,9 +1,7 @@
 package com.github.premnirmal.ticker.analytics
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import com.github.premnirmal.ticker.home.HomeActivity
 import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
@@ -18,12 +16,12 @@ class AnalyticsImpl(
     FirebaseAnalytics.getInstance(context)
   }
 
-  override fun trackScreenView(screenName: String, activity: Activity) {
-    if (activity is HomeActivity) {
+  override fun trackScreenView(screenName: String) {
+    if (screenName == HOME_SCREEN_NAME) {
       firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
     }
-    firebaseAnalytics.setCurrentScreen(activity, screenName, null)
     val bundle = Bundle().apply {
+      putString(FirebaseAnalytics.Param.SCREEN_NAME, screenName)
       putString(FirebaseAnalytics.Param.ITEM_NAME, screenName)
       putInt("WidgetCount", generalProperties.value.widgetCount)
       putInt("TickerCount", generalProperties.value.tickerCount)
@@ -48,5 +46,9 @@ class AnalyticsImpl(
       putInt("WidgetCount", generalProperties.value.widgetCount)
       putInt("TickerCount", generalProperties.value.tickerCount)
     }
+  }
+
+  private companion object {
+    const val HOME_SCREEN_NAME = "HomeActivity"
   }
 }

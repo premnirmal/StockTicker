@@ -18,30 +18,30 @@ interface AnalyticsSink {
 object NoopAnalyticsSink : AnalyticsSink
 
 /**
- * iOS analytics implementation over the shared [AnalyticsEvent] model.
+ * iOS analytics implementation of the shared [Analytics] contract over the shared [AnalyticsEvent]
+ * model.
  *
- * It is the iOS counterpart of Android's `Analytics`/`AnalyticsImpl`: the platform-neutral
- * `GeneralEvent`/`ClickEvent` value types are shared, while the platform reporting is delegated to
- * an [AnalyticsSink] (the iOS app forwards to Firebase, or no-ops for FOSS). Every event is also
- * mirrored through the multiplatform [AppLogger] for diagnostics, mirroring the debug logging the
- * Android implementation performs. Unlike Android, `trackScreenView` takes a plain screen name
- * (there is no `android.app.Activity` on iOS).
+ * It is the iOS counterpart of Android's per-flavor `AnalyticsImpl`: the platform-neutral
+ * `GeneralEvent`/`ClickEvent` value types and the [Analytics] interface are shared, while the
+ * platform reporting is delegated to an [AnalyticsSink] (the iOS app forwards to Firebase, or no-ops
+ * for FOSS). Every event is also mirrored through the multiplatform [AppLogger] for diagnostics,
+ * mirroring the debug logging the Android implementation performs.
  */
-class Analytics(
+class AnalyticsImpl(
     private val sink: AnalyticsSink = NoopAnalyticsSink
-) {
+) : Analytics {
 
-    fun trackScreenView(screenName: String) {
+    override fun trackScreenView(screenName: String) {
         AppLogger.d("Analytics screen_view: $screenName")
         sink.trackScreenView(screenName)
     }
 
-    fun trackClickEvent(event: ClickEvent) {
+    override fun trackClickEvent(event: ClickEvent) {
         AppLogger.d("Analytics click: ${event.name} ${event.properties}")
         sink.trackClickEvent(event)
     }
 
-    fun trackGeneralEvent(event: GeneralEvent) {
+    override fun trackGeneralEvent(event: GeneralEvent) {
         AppLogger.d("Analytics event: ${event.name} ${event.properties}")
         sink.trackGeneralEvent(event)
     }

@@ -97,7 +97,7 @@ abstract class BaseActivity : ComponentActivity() {
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        analytics.trackScreenView(simpleName, this)
+        analytics.trackScreenView(simpleName)
     }
 
     override fun onResume() {
