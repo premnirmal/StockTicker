@@ -180,6 +180,16 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   the other. `commonTest` (`PortfolioSerializerTest`) covers the tickers round-trip, the
   trailing-separator handling and the portfolio (with positions/holdings) JSON round-trip, so it is
   verified on iOS as well as Android.
+- Fixed the iOS/Kotlin-Native build of the shared persistence + IO layers, which previously only
+  compiled on Android. The Room KSP processor failed on every iOS target
+  (`:shared:kspKotlinIos*` → `[MissingType]: Element 'QuoteDao' references a type that is not
+  present`) because the `commonMain` `QuoteDao` carried the JVM-only `@JvmSuppressWildcards`
+  annotation, which Native KSP cannot resolve; the annotation was unnecessary because Room KMP
+  generates Kotlin (no Java wildcards to suppress), so it was removed. With KSP unblocked, the
+  Native compile then surfaced `Dispatchers.IO` being non-public on Kotlin/Native — the
+  `ioDispatcher` iOS `actual` now uses `Dispatchers.Default` (a multi-threaded worker pool on
+  Native) instead. All iOS targets (`iosX64`/`iosArm64`/`iosSimulatorArm64`) now run KSP, compile
+  `commonMain`/`commonTest` and link the `Shared` framework.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
@@ -280,10 +290,12 @@ Android (unchanged):
 Shared module checks:
 
 ```bash
-./gradlew :shared:compileKotlinMetadata        # common code
-./gradlew :shared:testDebugUnitTest            # android unit tests for shared
-./gradlew :shared:iosSimulatorArm64Test        # iOS tests (requires macOS + Xcode)
+./gradlew :shared:compileKotlinMetadata             # common code
+./gradlew :shared:testDebugUnitTest                 # android unit tests for shared
+./gradlew :shared:compileKotlinIosSimulatorArm64    # iOS compile (Kotlin/Native, runs Room KSP)
+./gradlew :shared:iosSimulatorArm64Test             # run iOS tests (requires macOS + Xcode)
 ```
 
-> Note: the iOS targets require a macOS host with Xcode and the Kotlin/Native
-> toolchain. They cannot be compiled on Linux CI; build them on a macOS runner.
+> Note: the iOS targets use the Kotlin/Native toolchain. Compiling them (and running Room's KSP
+> processor) works on Linux, but *running* the iOS tests and linking a device `iosArm64` binary
+> require a macOS host with Xcode, so do that on a macOS runner.
