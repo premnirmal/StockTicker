@@ -128,7 +128,8 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   abstraction, so Yahoo's authenticated endpoints now work on iOS (Darwin engine) as well as
   Android. `commonTest` (`YahooAuthTest`, via Ktor `MockEngine`) covers the forced headers, crumb
   query parameter and cookie persistence. Android still authenticates through its existing
-  `@Named("yahoo")` OkHttp stack; the iOS app will provide a `CrumbProvider` once it exists.
+  `@Named("yahoo")` OkHttp stack; iOS provides a `CrumbProvider` via `UserDefaultsPreferences`
+  (see "Done — Phase 2 (iOS implementations)").
 - Moved the `StocksApi` orchestrator (Yahoo quotes/crumb-bootstrap/suggestions → shared
   `Quote`/`FetchResult` model) from `:app` into `commonMain`. It no longer depends on `Timber`
   (now the multiplatform `AppLogger`, `expect`/`actual`: Timber on Android, `NSLog` on iOS),
@@ -240,8 +241,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   contract — `canScheduleExactAlarm`/`isCurrentTimeWithinScheduledUpdateTime`/`msToNextAlarm` and
   the periodic refresh/cleanup enqueue operations — implemented on Android by `AlarmScheduler`; the
   platform-specific `AlarmManager`/`WorkManager` enqueueing and the exact-alarm/daily-summary
-  scheduling stay on the concrete implementation, and the iOS app will provide a
-  `BGTaskScheduler`/`WidgetKit` implementation once it exists). The persistence layer also has a
+  scheduling stay on the concrete implementation, and iOS provides a
+  `BGTaskScheduler`/`WidgetKit` implementation via `BackgroundRefreshScheduler` +
+  `BackgroundTaskScheduler`). The persistence layer also has a
   shared `QuoteStorage` interface (the common contract for persisting tickers/quotes/holdings/
   properties, in already-shared `commonMain` models); the **Room engine itself now lives in
   `commonMain`** via **Room KMP** — `QuotesDB`/`QuoteDao`/`*Row`/`QuoteWithHoldings` and the 8
@@ -254,15 +256,17 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   preference and the refresh/tooltip flows, in `commonMain`) implemented on Android by
   `AppPreferences`; the `SharedPreferences` store and the platform-typed settings (the
   `java.time`-based update window, the `@NightMode`/`SelectedTheme` mapping and the `Parcelable`
-  `Time` value) stay on the concrete implementation, and iOS will provide its own
-  (`NSUserDefaults`/DataStore Multiplatform) implementation once it exists. The central data provider
+  `Time` value) stay on the concrete implementation, and iOS provides its own
+  `NSUserDefaults`-backed `UserDefaultsPreferences` implementation (a future DataStore Multiplatform
+  store could unify the two). The central data provider
   likewise has a shared `IStocksProvider` interface (the common contract for the observable
   watchlist/portfolio state and the add/remove/fetch/schedule operations, expressed in the
   already-shared `Quote`/`Position`/`Holding`/`FetchResult` models, in `commonMain`) implemented on
   Android by `StocksProvider`; the platform wiring (`Context`/`SharedPreferences`, `AlarmScheduler`,
   `WidgetDataProvider`, the Room-backed `StocksStorage`) and the platform-typed `fetchState` flow
   (whose `FetchState` carries a `java.time`-formatted display string) stay on the concrete
-  implementation, and iOS will provide its own implementation once it exists. The diagnostic
+  implementation, and iOS provides its own `StocksProvider` implementation (with an
+  `onQuotesUpdated` WidgetKit hook in place of the Android `WidgetDataProvider` coupling). The diagnostic
   fetch-event logging is fully shared: the `FetchLogger` interface (the common `log(source, event,
   detail)` contract) and its `FetchEventLogger` implementation now both live in `commonMain`. Like
   `StocksApi`/`NewsProvider`/`HistoryProvider` it is a plain class (no `Timber`/`Dispatchers.IO`/Hilt
@@ -276,8 +280,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   accumulating string property map) in `commonMain`; the `Analytics` interface (whose
   `trackScreenView` takes an `android.app.Activity`) and `GeneralProperties` (which reads the Android
   `WidgetDataProvider`/`StocksProvider`) stay on Android, and the per-flavor `AnalyticsImpl` reports
-  the events through Firebase (prod) or no-ops (purefoss/dev), with iOS providing its own sink once it
-  exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app. The news-feed
+  the events through Firebase (prod) or no-ops (purefoss/dev); iOS provides its own `Analytics`
+  over an `AnalyticsSink` (Firebase when linked, else `NSLog`). The iOS-backed
+  `CrumbProvider`/`CrumbStore` is provided by `UserDefaultsPreferences`. The news-feed
   list model (`NewsFeedItem` — the article vs trending-stocks carousel entry, depending only on the
   already-shared `NewsArticle`/`Quote`) also moved into `commonMain` (same `ticker.news` package), so
   the shared news view models / Compose Multiplatform UI in later phases can bind to it directly. The
@@ -303,6 +308,15 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `by inject()`, and `@Named("yahoo")` became a Koin `named("yahoo")` qualifier). `StocksApp` now
   calls `startKoin { … }`; Hilt, its Gradle plugin and KSP compiler are removed. A Robolectric
   `KoinModulesTest` resolves the graph at runtime to replace Hilt's compile-time graph validation.
+
+  *Still open in Phase 2:* (1) preferences are still backed by two platform-native stores
+  (`SharedPreferences` on Android, `NSUserDefaults` on iOS) behind the shared `UserPreferences`
+  interface — a unified **DataStore Multiplatform** store has not been adopted; (2) a few
+  platform-typed surfaces remain on the Android concrete classes and are not yet in `commonMain` —
+  the `java.time`-based update window and `@NightMode`/`SelectedTheme`/`Parcelable Time` settings on
+  `AppPreferences`, the `fetchState`/`FetchState` flow (with its `java.time`-formatted display
+  string) on `StocksProvider`, and the `Analytics` interface (`trackScreenView(Activity)`) +
+  `GeneralProperties`.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
