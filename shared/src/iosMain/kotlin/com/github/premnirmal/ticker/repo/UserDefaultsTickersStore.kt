@@ -1,15 +1,15 @@
 package com.github.premnirmal.ticker.repo
 
-import com.github.premnirmal.ticker.settings.SettingsStore
+import com.github.premnirmal.ticker.settings.PreferenceStore
 
 /**
- * iOS [TickersStore] backed by [SettingsStore] (`NSUserDefaults`). The counterpart of Android's
+ * iOS [TickersStore] backed by a [PreferenceStore] (DataStore Multiplatform). The counterpart of Android's
  * `SharedPreferencesTickersStore`, it persists the watchlist symbol set as a comma-separated string
  * under the same `TICKERS` key so the [StocksStorage] watchlist handling is identical across
  * platforms.
  */
 class UserDefaultsTickersStore(
-    private val store: SettingsStore
+    private val store: PreferenceStore
 ) : TickersStore {
 
     override fun saveTickers(tickers: Set<String>) {

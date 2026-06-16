@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.network.CrumbStore
+import com.github.premnirmal.ticker.settings.PreferenceStore
 import com.github.premnirmal.ticker.settings.SettingsStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,7 @@ import kotlin.random.Random
  * [com.github.premnirmal.ticker.model.BackgroundRefreshScheduler].
  */
 class UserDefaultsPreferences(
-    private val store: SettingsStore = SettingsStore()
+    private val store: PreferenceStore = SettingsStore()
 ) : UserPreferences, CrumbStore {
 
     private val _isRefreshing = MutableStateFlow(store.getBoolean(WIDGET_REFRESHING, false))

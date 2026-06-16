@@ -107,6 +107,8 @@ kotlin {
       api(libs.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.koin.core)
+      implementation("androidx.datastore:datastore-preferences-core:_")
+      implementation("com.squareup.okio:okio:3.9.1")
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")

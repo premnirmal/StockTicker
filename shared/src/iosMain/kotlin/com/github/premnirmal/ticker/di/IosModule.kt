@@ -31,7 +31,10 @@ import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.TickersStore
 import com.github.premnirmal.ticker.repo.buildQuotesDB
 import com.github.premnirmal.ticker.repo.getQuotesDBBuilder
-import com.github.premnirmal.ticker.settings.SettingsStore
+import com.github.premnirmal.ticker.settings.DataStorePreferenceStore
+import com.github.premnirmal.ticker.settings.PreferenceStore
+import com.github.premnirmal.ticker.settings.createPreferenceDataStore
+import com.github.premnirmal.ticker.settings.iosPreferencesDataStorePath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -73,8 +76,10 @@ fun iosModule(
         }
     }
 
-    // Settings + crumb store (NSUserDefaults-backed)
-    single { SettingsStore() }
+    // Settings + crumb store (unified DataStore Multiplatform key/value store)
+    single<PreferenceStore> {
+        DataStorePreferenceStore(createPreferenceDataStore { iosPreferencesDataStorePath() })
+    }
     single { UserDefaultsPreferences(get()) }
     single<UserPreferences> { get<UserDefaultsPreferences>() }
     single<CrumbStore> { get<UserDefaultsPreferences>() }

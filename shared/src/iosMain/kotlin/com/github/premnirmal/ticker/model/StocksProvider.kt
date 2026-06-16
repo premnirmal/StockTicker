@@ -9,7 +9,7 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
-import com.github.premnirmal.ticker.settings.SettingsStore
+import com.github.premnirmal.ticker.settings.PreferenceStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +25,7 @@ import platform.Foundation.NSRecursiveLock
  * It is the iOS counterpart of Android's `StocksProvider`, wired to the multiplatform infrastructure
  * instead of Android types: the shared [StocksApi] for network, the Room-backed [StocksStorage] for
  * persistence, [BackgroundRefreshScheduler] for background scheduling, the shared [FetchEventLogger] for
- * diagnostics and [SettingsStore]/[UserDefaultsPreferences] for settings. Where Android broadcasts to
+ * diagnostics and [PreferenceStore]/[UserDefaultsPreferences] for settings. Where Android broadcasts to
  * its app widgets, iOS invokes the [onQuotesUpdated] hook so the app can reload its WidgetKit
  * timelines.
  *
@@ -39,7 +39,7 @@ class StocksProvider(
     private val appPreferences: UserDefaultsPreferences,
     private val fetchEventLogger: FetchEventLogger,
     private val clock: AppClock,
-    private val store: SettingsStore,
+    private val store: PreferenceStore,
     private val coroutineScope: CoroutineScope,
     private val onQuotesUpdated: () -> Unit = {}
 ) : IStocksProvider {
