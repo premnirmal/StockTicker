@@ -199,10 +199,11 @@ shell under `iosApp/`. This closes the "iOS will provide its own implementation 
 items above:
 
 - **Preferences + Crumb store (`UserDefaultsPreferences`).** Implements the shared `UserPreferences` and
-  `CrumbStore`/`CrumbProvider` over an `NSUserDefaults`-backed `SettingsStore` (suite
-  `com.github.premnirmal.ticker`), mirroring Android `AppPreferences` keys/defaults. The
-  platform-typed update window is exposed as an iOS-native `Time(hour, minute)` + day-set the
-  scheduler consumes.
+  `CrumbStore`/`CrumbProvider`, mirroring Android `AppPreferences` keys/defaults, over a shared
+  `PreferenceStore` now backed by the **DataStore Multiplatform** store (`DataStorePreferenceStore`,
+  replacing the bespoke `NSUserDefaults` `SettingsStore` as the iOS preferences backend). The
+  update window is exposed through the shared `UserPreferences` contract as a platform-neutral
+  `Time(hour, minute)` + ISO day-set the scheduler consumes.
 - **Background refresh + scheduler (`BackgroundRefreshScheduler`).** Implements the shared
   `RefreshScheduler`; a faithful port of `AlarmScheduler`'s update-window math using
   `kotlinx-datetime`. The actual OS submission is delegated to an `BackgroundTaskScheduler`
@@ -233,7 +234,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
 - **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —
-  persistence (Room → **Room KMP**), preferences (DataStore multiplatform), DI
+  persistence (Room → **Room KMP**), preferences (**DataStore Multiplatform** — adopted on iOS via
+  the shared `PreferenceStore`/`DataStorePreferenceStore`; Android `AppPreferences` migration off
+  `SharedPreferences` remains), DI
   (Hilt → **Koin**), background refresh (WorkManager + a common scheduler
   interface). Done so far: the shared Yahoo auth layer (`YahooAuth`/`CrumbProvider`), a
   multiplatform logger (`AppLogger`) and IO dispatcher (`ioDispatcher`), the shared `StocksApi`
@@ -253,12 +256,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   implementation of `QuoteStorage` is also shared; iOS now gets a real Room-backed implementation
   rather than a stub. The settings layer likewise has a shared `UserPreferences` interface (the common
   contract for the platform-neutral user settings — update interval, the boolean toggles, the theme
-  preference and the refresh/tooltip flows, in `commonMain`) implemented on Android by
-  `AppPreferences`; the `SharedPreferences` store and the platform-typed settings (the
-  `java.time`-based update window, the `@NightMode`/`SelectedTheme` mapping and the `Parcelable`
-  `Time` value) stay on the concrete implementation, and iOS provides its own
-  `NSUserDefaults`-backed `UserDefaultsPreferences` implementation (a future DataStore Multiplatform
-  store could unify the two). The central data provider
+  preference, the refresh/tooltip flows and the configured update window, in `commonMain`)
+  implemented on Android by `AppPreferences`; the configured update window is now part of that shared
+  contract, expressed with the platform-neutral `Time` value and ISO day-of-week numbers (replacing
+  the former `java.time`/`Parcelable Time` boundary), while the `SharedPreferences` store and the
+  remaining platform-typed settings (the `@NightMode`/`SelectedTheme` mapping) stay on the concrete
+  Android implementation. The two platform key/value stores have been unified behind a shared
+  `PreferenceStore` contract, implemented by a **DataStore Multiplatform** store
+  (`DataStorePreferenceStore`, in `commonMain`) that iOS now uses as its preferences backend (in
+  place of the bespoke `NSUserDefaults` `SettingsStore`); migrating Android `AppPreferences` off
+  `SharedPreferences` onto the same shared store is the remaining unification step. The central data provider
   likewise has a shared `IStocksProvider` interface (the common contract for the observable
   watchlist/portfolio state and the add/remove/fetch/schedule operations, expressed in the
   already-shared `Quote`/`Position`/`Holding`/`FetchResult` models, in `commonMain`) implemented on
@@ -309,14 +316,15 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   calls `startKoin { … }`; Hilt, its Gradle plugin and KSP compiler are removed. A Robolectric
   `KoinModulesTest` resolves the graph at runtime to replace Hilt's compile-time graph validation.
 
-  *Still open in Phase 2:* (1) preferences are still backed by two platform-native stores
-  (`SharedPreferences` on Android, `NSUserDefaults` on iOS) behind the shared `UserPreferences`
-  interface — a unified **DataStore Multiplatform** store has not been adopted; (2) a few
-  platform-typed surfaces remain on the Android concrete classes and are not yet in `commonMain` —
-  the `java.time`-based update window and `@NightMode`/`SelectedTheme`/`Parcelable Time` settings on
-  `AppPreferences`, the `fetchState`/`FetchState` flow (with its `java.time`-formatted display
-  string) on `StocksProvider`, and the `Analytics` interface (`trackScreenView(Activity)`) +
-  `GeneralProperties`.
+  *Still open in Phase 2:* (1) Android preferences are still backed by `SharedPreferences` behind the
+  shared `UserPreferences` interface — iOS now uses the unified **DataStore Multiplatform** store
+  (`DataStorePreferenceStore` behind the shared `PreferenceStore` contract), but migrating Android
+  `AppPreferences` onto the same store remains; (2) a few platform-typed surfaces remain on the
+  Android concrete classes and are not yet in `commonMain` — the `@NightMode`/`SelectedTheme`
+  settings on `AppPreferences`, the `fetchState`/`FetchState` flow (with its `java.time`-formatted
+  display string) on `StocksProvider`, and the `Analytics` interface (`trackScreenView(Activity)`) +
+  `GeneralProperties`. The `java.time`-based update window has been decoupled and now lives in
+  `commonMain` (shared `Time` value + ISO day-of-week numbers on `UserPreferences`).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
