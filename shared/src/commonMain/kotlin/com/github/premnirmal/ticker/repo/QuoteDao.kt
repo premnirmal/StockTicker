@@ -105,6 +105,25 @@ interface QuoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFetchLog(log: FetchLogRow): Long
 
+    @Transaction
+    suspend fun insertAndTrimFetchLog(log: FetchLogRow, maxRows: Int) {
+        insertFetchLog(log)
+        trimFetchLogs(maxRows)
+    }
+
+    @Transaction
+    suspend fun upsertQuotesWithHoldingsAndProperties(
+        quotes: List<QuoteRow>,
+        holdingsBySymbol: Map<String, List<HoldingRow>>,
+        properties: List<PropertiesRow>
+    ) {
+        upsertQuotes(quotes)
+        holdingsBySymbol.forEach { (symbol, holdings) ->
+            upsertHoldings(symbol, holdings)
+        }
+        properties.forEach { upsertProperties(it) }
+    }
+
     @Query("SELECT * FROM FetchLogRow ORDER BY created_at_ms DESC LIMIT :limit")
     suspend fun getFetchLogs(limit: Int): List<FetchLogRow>
 

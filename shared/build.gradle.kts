@@ -7,7 +7,13 @@ plugins {
   alias(libs.plugins.kotlin.multiplatform)
   alias(libs.plugins.android.library)
   alias(libs.plugins.kotlinx.serialization)
+  alias(libs.plugins.com.google.devtools.ksp)
+  alias(libs.plugins.androidx.room)
   id("kotlin-parcelize")
+}
+
+room {
+  schemaDirectory("$projectDir/schemas")
 }
 
 repositories {
@@ -98,6 +104,9 @@ kotlin {
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")
       implementation("io.github.pdvrieze.xmlutil:serialization:0.91.2")
+      api(libs.room.runtime)
+      implementation(libs.androidx.sqlite.bundled)
+      implementation(libs.koin.core)
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
@@ -129,4 +138,13 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
+}
+
+// Room KSP processor for every Kotlin target that contains the shared persistence engine
+// (the @Database/@Dao/@Entity declarations live in commonMain).
+dependencies {
+  add("kspAndroid", libs.room.compiler)
+  add("kspIosX64", libs.room.compiler)
+  add("kspIosArm64", libs.room.compiler)
+  add("kspIosSimulatorArm64", libs.room.compiler)
 }

@@ -4,7 +4,6 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
-import androidx.room.Room
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
@@ -19,15 +18,11 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.QuotesDB
+import com.github.premnirmal.ticker.repo.SharedPreferencesTickersStore
 import com.github.premnirmal.ticker.repo.StocksStorage
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_1_2
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_2_3
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_3_4
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_4_5
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_5_6
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_6_7
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_7_8
-import com.github.premnirmal.ticker.repo.migrations.MIGRATION_8_9
+import com.github.premnirmal.ticker.repo.TickersStore
+import com.github.premnirmal.ticker.repo.buildQuotesDB
+import com.github.premnirmal.ticker.repo.getQuotesDBBuilder
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import dagger.Module
 import dagger.Provides
@@ -98,24 +93,21 @@ class AppModule {
 
     @Provides @Singleton
     fun provideQuotesDB(@ApplicationContext context: Context): QuotesDB {
-        return Room.databaseBuilder(
-            context.applicationContext,
-            QuotesDB::class.java,
-            "quotes-db"
-        )
-            .addMigrations(MIGRATION_1_2)
-            .addMigrations(MIGRATION_2_3)
-            .addMigrations(MIGRATION_3_4)
-            .addMigrations(MIGRATION_4_5)
-            .addMigrations(MIGRATION_5_6)
-            .addMigrations(MIGRATION_6_7)
-            .addMigrations(MIGRATION_7_8)
-            .addMigrations(MIGRATION_8_9)
-            .build()
+        return buildQuotesDB(getQuotesDBBuilder(context))
     }
 
     @Provides @Singleton
     fun provideQuoteDao(db: QuotesDB): QuoteDao = db.quoteDao()
+
+    @Provides @Singleton
+    fun provideTickersStore(preferences: SharedPreferences): TickersStore =
+        SharedPreferencesTickersStore(preferences)
+
+    @Provides @Singleton
+    fun provideStocksStorage(
+        tickersStore: TickersStore,
+        quoteDao: QuoteDao
+    ): StocksStorage = StocksStorage(tickersStore, quoteDao)
 
     @Provides @Singleton
     fun providesAppReviewManager(@ApplicationContext context: Context): IAppReviewManager {

@@ -1,8 +1,6 @@
 package com.github.premnirmal.ticker.repo
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import androidx.room.withTransaction
+import com.github.premnirmal.ticker.components.ioDispatcher
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Properties
@@ -11,43 +9,37 @@ import com.github.premnirmal.ticker.repo.data.FetchLogRow
 import com.github.premnirmal.ticker.repo.data.HoldingRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
+ * Multiplatform [QuoteStorage] implementation backed by the shared Room KMP engine ([QuoteDao]) plus
+ * a small [TickersStore] for the watchlist symbol set. The Room transactions are expressed via
+ * `@Transaction` DAO methods (multiplatform) rather than the Android-only `withTransaction`
+ * extension, so the same implementation runs on Android and iOS.
+ *
  * Created by premnirmal on 2/28/16.
  */
-@Singleton
-class StocksStorage @Inject constructor(
-    private val preferences: SharedPreferences,
-    private val db: QuotesDB,
+class StocksStorage(
+    private val tickersStore: TickersStore,
     private val quoteDao: QuoteDao
 ) : QuoteStorage {
 
     companion object {
-        private const val KEY_TICKERS = "TICKERS"
         private const val MAX_FETCH_LOG_ROWS = 500
     }
 
     override fun saveTickers(tickers: Set<String>) {
-        preferences.edit {
-            putStringSet(KEY_TICKERS, tickers)
-        }
+        tickersStore.saveTickers(tickers)
     }
 
     override fun readTickers(): Set<String> {
-        return preferences.getStringSet(
-            KEY_TICKERS,
-            emptySet()
-        )!!
+        return tickersStore.readTickers()
     }
 
     override suspend fun readQuotes(): List<Quote> {
-        val quotesWithHoldings = db.withTransaction { quoteDao.getQuotesWithHoldings() }
-        return withContext(Dispatchers.IO) {
-            return@withContext quotesWithHoldings.map { quoteWithHoldings ->
+        val quotesWithHoldings = quoteDao.getQuotesWithHoldings()
+        return withContext(ioDispatcher) {
+            quotesWithHoldings.map { quoteWithHoldings ->
                 val quote = quoteWithHoldings.quote.toQuote()
                 val holdings = quoteWithHoldings.holdings.map { holdingTable ->
                     Holding(
@@ -65,8 +57,8 @@ class StocksStorage @Inject constructor(
     }
 
     override suspend fun readQuote(symbol: String): Quote? {
-        val quoteWithHolding = db.withTransaction { quoteDao.getQuoteWithHoldings(symbol) }
-        return withContext(Dispatchers.IO) {
+        val quoteWithHolding = quoteDao.getQuoteWithHoldings(symbol)
+        return withContext(ioDispatcher) {
             quoteWithHolding?.let {
                 val quote = quoteWithHolding.quote.toQuote()
                 val holdings = quoteWithHolding.holdings.map { holdingTable ->
@@ -84,47 +76,44 @@ class StocksStorage @Inject constructor(
         }
     }
 
-    override suspend fun saveQuote(quote: Quote) = db.withTransaction {
+    override suspend fun saveQuote(quote: Quote) {
         quoteDao.upsertQuoteAndHolding(quote.toQuoteRow(), quote.position?.toHoldingRows())
     }
 
-    override suspend fun saveQuotes(quotes: List<Quote>) = withContext(Dispatchers.IO) {
+    override suspend fun saveQuotes(quotes: List<Quote>) {
         val quoteRows = quotes.map { it.toQuoteRow() }
         val positions = quotes.mapNotNull { it.position }
         val properties = quotes.mapNotNull { it.properties }
-        db.withTransaction {
-            quoteDao.upsertQuotes(quoteRows)
-            positions.forEach {
-                quoteDao.upsertHoldings(it.symbol, it.toHoldingRows())
-            }
-            properties.forEach {
-                quoteDao.upsertProperties(it.toPropertiesRow())
-            }
-        }
+        val holdingsBySymbol = positions.associate { it.symbol to it.toHoldingRows() }
+        quoteDao.upsertQuotesWithHoldingsAndProperties(
+            quoteRows,
+            holdingsBySymbol,
+            properties.map { it.toPropertiesRow() }
+        )
     }
 
-    override suspend fun removeQuoteBySymbol(symbol: String) = db.withTransaction {
+    override suspend fun removeQuoteBySymbol(symbol: String) {
         quoteDao.deleteQuoteAndHoldings(symbol)
     }
 
-    override suspend fun removeQuotesBySymbol(tickers: List<String>) = db.withTransaction {
+    override suspend fun removeQuotesBySymbol(tickers: List<String>) {
         quoteDao.deleteQuotesAndHoldings(tickers)
     }
 
-    override suspend fun addHolding(holding: Holding) = db.withTransaction {
-        quoteDao.insertHolding(holding.toHoldingRow())
+    override suspend fun addHolding(holding: Holding): Long {
+        return quoteDao.insertHolding(holding.toHoldingRow())
     }
 
     override suspend fun removeHolding(
         ticker: String,
         holding: Holding
-    ) = db.withTransaction {
+    ) {
         quoteDao.deleteHolding(HoldingRow(holding.id, ticker, holding.shares, holding.price))
     }
 
     override suspend fun saveQuoteProperties(
         properties: Properties
-    ) = db.withTransaction {
+    ) {
         quoteDao.upsertProperties(properties.toPropertiesRow())
     }
 
@@ -133,21 +122,19 @@ class StocksStorage @Inject constructor(
         source: String,
         event: String,
         detail: String
-    ) = db.withTransaction {
-        quoteDao.insertFetchLog(
+    ) {
+        quoteDao.insertAndTrimFetchLog(
             FetchLogRow(
                 createdAtMs = createdAtMs,
                 source = source,
                 event = event,
                 detail = detail
-            )
+            ),
+            MAX_FETCH_LOG_ROWS
         )
-        quoteDao.trimFetchLogs(MAX_FETCH_LOG_ROWS)
     }
 
-    suspend fun readFetchLogs(limit: Int): List<FetchLogRow> = db.withTransaction {
-        quoteDao.getFetchLogs(limit)
-    }
+    suspend fun readFetchLogs(limit: Int): List<FetchLogRow> = quoteDao.getFetchLogs(limit)
 
     private fun Quote.toQuoteRow(): QuoteRow {
         return QuoteRow(

@@ -232,13 +232,8 @@ dependencies {
   implementation(JakeWharton.timber)
   implementation(libs.mpandroidchart)
 
-  implementation(libs.room.runtime)
-  implementation(libs.room.ktx)
-
   detektPlugins(libs.detekt.formatting)
   detektPlugins(libs.detekt.compose)
-
-  ksp(libs.room.compiler)
 
   "prodImplementation"(Google.android.play.review)
   "prodImplementation"(Google.android.play.reviewKtx)
@@ -262,7 +257,6 @@ dependencies {
   testImplementation(Testing.mockito.core)
   testImplementation(Testing.mockito.kotlin)
   testImplementation(KotlinX.coroutines.test)
-  testImplementation(libs.room.testing)
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation(libs.opengl.api)

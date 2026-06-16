@@ -1,0 +1,310 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 9,
+    "identityHash": "31d19791f8d1805f45248a5131ade017",
+    "entities": [
+      {
+        "tableName": "QuoteRow",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`symbol` TEXT NOT NULL, `name` TEXT NOT NULL, `last_trade_price` REAL NOT NULL, `change_percent` REAL NOT NULL, `change` REAL NOT NULL, `exchange` TEXT NOT NULL, `currency` TEXT NOT NULL, `is_post_market` INTEGER NOT NULL, `annual_dividend_rate` REAL NOT NULL, `annual_dividend_yield` REAL NOT NULL, `dayHigh` REAL, `dayLow` REAL, `previousClose` REAL NOT NULL, `open` REAL, `regularMarketVolume` REAL, `peRatio` REAL, `fiftyTwoWeekLowChange` REAL, `fiftyTwoWeekLowChangePercent` REAL, `fiftyTwoWeekHighChange` REAL, `fiftyTwoWeekHighChangePercent` REAL, `fiftyTwoWeekLow` REAL, `fiftyTwoWeekHigh` REAL, `dividendDate` REAL, `earningsDate` REAL, `marketCap` REAL, `isTradeable` INTEGER, `isTriggerable` INTEGER, `marketState` TEXT, `fiftyDayAverage` REAL, `twoHundredDayAverage` REAL, PRIMARY KEY(`symbol`))",
+        "fields": [
+          {
+            "fieldPath": "symbol",
+            "columnName": "symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastTradePrice",
+            "columnName": "last_trade_price",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "changeInPercent",
+            "columnName": "change_percent",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "change",
+            "columnName": "change",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stockExchange",
+            "columnName": "exchange",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "currency",
+            "columnName": "currency",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPostMarket",
+            "columnName": "is_post_market",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "annualDividendRate",
+            "columnName": "annual_dividend_rate",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "annualDividendYield",
+            "columnName": "annual_dividend_yield",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dayHigh",
+            "columnName": "dayHigh",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "dayLow",
+            "columnName": "dayLow",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "previousClose",
+            "columnName": "previousClose",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "open",
+            "columnName": "open",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "regularMarketVolume",
+            "columnName": "regularMarketVolume",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "peRatio",
+            "columnName": "peRatio",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiftyTwoWeekLowChange",
+            "columnName": "fiftyTwoWeekLowChange",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiftyTwoWeekLowChangePercent",
+            "columnName": "fiftyTwoWeekLowChangePercent",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiftyTwoWeekHighChange",
+            "columnName": "fiftyTwoWeekHighChange",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiftyTwoWeekHighChangePercent",
+            "columnName": "fiftyTwoWeekHighChangePercent",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiftyTwoWeekLow",
+            "columnName": "fiftyTwoWeekLow",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "fiftyTwoWeekHigh",
+            "columnName": "fiftyTwoWeekHigh",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "dividendDate",
+            "columnName": "dividendDate",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "earningsDate",
+            "columnName": "earningsDate",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "marketCap",
+            "columnName": "marketCap",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "isTradeable",
+            "columnName": "isTradeable",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "isTriggerable",
+            "columnName": "isTriggerable",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "marketState",
+            "columnName": "marketState",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fiftyDayAverage",
+            "columnName": "fiftyDayAverage",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "twoHundredDayAverage",
+            "columnName": "twoHundredDayAverage",
+            "affinity": "REAL"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "symbol"
+          ]
+        }
+      },
+      {
+        "tableName": "HoldingRow",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `quote_symbol` TEXT NOT NULL, `shares` REAL NOT NULL, `price` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "quoteSymbol",
+            "columnName": "quote_symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shares",
+            "columnName": "shares",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "price",
+            "columnName": "price",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "PropertiesRow",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `properties_quote_symbol` TEXT NOT NULL, `notes` TEXT NOT NULL, `displayname` TEXT NOT NULL, `alert_above` REAL NOT NULL, `alert_below` REAL NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "quoteSymbol",
+            "columnName": "properties_quote_symbol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notes",
+            "columnName": "notes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "displayname",
+            "columnName": "displayname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alertAbove",
+            "columnName": "alert_above",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alertBelow",
+            "columnName": "alert_below",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "FetchLogRow",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `created_at_ms` INTEGER NOT NULL, `source` TEXT NOT NULL, `event` TEXT NOT NULL, `detail` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtMs",
+            "columnName": "created_at_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "event",
+            "columnName": "event",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "detail",
+            "columnName": "detail",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '31d19791f8d1805f45248a5131ade017')"
+    ]
+  }
+}

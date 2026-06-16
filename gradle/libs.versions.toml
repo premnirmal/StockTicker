@@ -11,6 +11,7 @@ hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 
 [versions]
 
@@ -22,6 +23,7 @@ google-hilt = "2.58"
 com-google-devtools-ksp = "2.3.7"
 androidx-room = "2.8.4"
 detekt = "1.23.8"
+koin = "4.1.1"
 detektCompose = "0.5.8"
 reorderable = "3.1.0"
 material3 = "1.4.0"
@@ -48,6 +50,13 @@ room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx-room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidx-room" }
+androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.6.2" }
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-androidx-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose"}
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
