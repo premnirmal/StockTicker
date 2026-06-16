@@ -195,10 +195,15 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `WidgetDataProvider`, the Room-backed `StocksStorage`) and the platform-typed `fetchState` flow
   (whose `FetchState` carries a `java.time`-formatted display string) stay on the concrete
   implementation, and iOS will provide its own implementation once it exists. The diagnostic
-  fetch-event logging also has a shared `FetchLogger` interface (the common `log(source, event,
-  detail)` contract, in `commonMain`) implemented on Android by `FetchEventLogger`; the Room-backed
-  persistence (`StocksStorage.addFetchLog`) and the `Timber` failure reporting stay on the concrete
-  implementation, and iOS will provide its own sink once it exists. The analytics layer has its
+  fetch-event logging is fully shared: the `FetchLogger` interface (the common `log(source, event,
+  detail)` contract) and its `FetchEventLogger` implementation now both live in `commonMain`. Like
+  `StocksApi`/`NewsProvider`/`HistoryProvider` it is a plain class (no `Timber`/`Dispatchers.IO`/Hilt
+  — the multiplatform `AppLogger` and `ioDispatcher`, declared in the Koin graph) that persists each
+  entry through the now-shared Room-backed `StocksStorage.addFetchLog`, so Android and iOS share the
+  same sink; the app-provided `CoroutineScope` is the only platform input (supplied by the Koin
+  binding in `:app`'s `appModule`). `commonTest` (`FetchEventLoggerTest`) covers the persisted
+  fields, the clock timestamp and the detail truncation, so it is verified on iOS as well as Android.
+  The analytics layer has its
   platform-neutral event model (`AnalyticsEvent`/`GeneralEvent`/`ClickEvent` — an event name plus an
   accumulating string property map) in `commonMain`; the `Analytics` interface (whose
   `trackScreenView` takes an `android.app.Activity`) and `GeneralProperties` (which reads the Android

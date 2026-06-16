@@ -1,13 +1,24 @@
 package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.AppLogger
+import com.github.premnirmal.ticker.components.ioDispatcher
 import com.github.premnirmal.ticker.repo.StocksStorage
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
-class FetchEventLogger constructor(
+/**
+ * Multiplatform implementation of [FetchLogger]: it persists each diagnostic fetch event through the
+ * Room-backed [StocksStorage.addFetchLog] (now shared via Room KMP) and reports persistence failures
+ * through the multiplatform [AppLogger].
+ *
+ * Like [com.github.premnirmal.ticker.network.StocksApi] and
+ * [com.github.premnirmal.ticker.network.NewsProvider] this is a plain class declared in the Koin
+ * graph (no `Timber`/`Dispatchers.IO`/Hilt — the multiplatform `AppLogger` and `ioDispatcher`); its
+ * public contract is unchanged, so the existing `:app` callers keep working and iOS shares the same
+ * logger.
+ */
+class FetchEventLogger(
     private val storage: StocksStorage,
     private val clock: AppClock,
     private val coroutineScope: CoroutineScope
@@ -23,7 +34,7 @@ class FetchEventLogger constructor(
         detail: String
     ) {
         val safeDetail = detail.take(MAX_LOG_DETAIL_CHARS)
-        coroutineScope.launch(Dispatchers.IO) {
+        coroutineScope.launch(ioDispatcher) {
             runCatching {
                 storage.addFetchLog(
                     createdAtMs = clock.currentTimeMillis(),
@@ -32,7 +43,7 @@ class FetchEventLogger constructor(
                     detail = safeDetail
                 )
             }.onFailure {
-                Timber.w(it, "Failed to persist fetch log source=%s event=%s", source, event)
+                AppLogger.w(it, "Failed to persist fetch log source=$source event=$event")
             }
         }
     }
