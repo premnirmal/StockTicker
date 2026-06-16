@@ -3,18 +3,13 @@ package com.github.premnirmal.ticker.portfolio.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@HiltViewModel(assistedFactory = SuggestionViewModel.Factory::class)
-class SuggestionViewModel @AssistedInject constructor(
-    @Assisted private val symbol: String,
+class SuggestionViewModel constructor(
+    private val symbol: String,
     private val widgetDataProvider: WidgetDataProvider,
 ) : ViewModel() {
 
@@ -67,10 +62,6 @@ class SuggestionViewModel @AssistedInject constructor(
         }
     }
 
-    @AssistedFactory
-    interface Factory {
-        fun create(symbol: String): SuggestionViewModel
-    }
 }
 
 data class SuggestionState(

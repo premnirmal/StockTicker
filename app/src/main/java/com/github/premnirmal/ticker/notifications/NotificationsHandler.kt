@@ -27,7 +27,6 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -36,14 +35,11 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicInteger
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
-@Singleton
-class NotificationsHandler @Inject constructor(
-    @ApplicationContext private val context: Context,
+class NotificationsHandler constructor(
+    private val context: Context,
     private val stocksProvider: StocksProvider,
     private val stocksStorage: StocksStorage,
     private val alarmScheduler: AlarmScheduler,

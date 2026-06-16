@@ -10,7 +10,6 @@ import com.github.premnirmal.ticker.model.RefreshWorker
 import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,10 +21,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
-import javax.inject.Inject
 
-@HiltViewModel
-class DbViewerViewModel @Inject constructor(
+class DbViewerViewModel constructor(
     application: Application,
     private val dao: QuoteDao,
     private val workManager: WorkManager,

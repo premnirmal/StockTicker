@@ -6,16 +6,13 @@ import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.NewsFeedItem.TrendingStockNewsFeed
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class NewsFeedViewModel @Inject constructor(
+class NewsFeedViewModel constructor(
     private val newsProvider: NewsProvider
 ) : ViewModel() {
 

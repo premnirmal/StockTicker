@@ -10,16 +10,18 @@ import com.github.premnirmal.ticker.network.data.Quote
  * ([Quote], [Holding], [Properties]), so presentation/state code can depend on this abstraction
  * rather than a platform persistence implementation.
  *
- * This is the shared "storage interface" of the multiplatform persistence story: the concrete
- * implementation is platform-specific (Android backs it with Room + `SharedPreferences`; iOS will
- * use Room KMP / SQLDelight once the iOS app exists). It mirrors the existing
+ * This is the shared "storage interface" of the multiplatform persistence story. The concrete
+ * implementation ([StocksStorage]) now lives in `commonMain` too, backed by the shared **Room KMP**
+ * engine ([QuoteDao]/[QuotesDB]); only the platform database builder (and the bundled-SQLite driver)
+ * is provided per target via `expect`/`actual`, so both Android and iOS share the same storage code.
+ * It mirrors the existing
  * [com.github.premnirmal.ticker.model.RefreshScheduler] and
  * [com.github.premnirmal.ticker.network.CrumbProvider] splits (shared contract in `commonMain`,
- * platform implementation per target).
+ * platform glue per target).
  *
- * On Android this is implemented by `StocksStorage`. Operations that take/return platform-only
- * persistence types (e.g. the Room-backed fetch-log rows) intentionally stay on the concrete
- * implementation and are not part of this contract.
+ * Implemented by the shared [StocksStorage]. Operations that take/return platform-only types
+ * (e.g. the `java.time`-formatted fetch-log rows) intentionally stay off this contract and are
+ * handled as platform extensions on the concrete implementation.
  */
 interface QuoteStorage {
 

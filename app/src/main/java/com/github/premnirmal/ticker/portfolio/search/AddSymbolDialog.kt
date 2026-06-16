@@ -28,7 +28,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.R.string
 import com.github.premnirmal.tickerwidget.ui.Divider
@@ -38,9 +39,7 @@ fun AddSymbolDialog(
     symbol: String,
     onDismissRequest: () -> Unit = {},
 ) {
-    val viewModel = hiltViewModel<SuggestionViewModel, SuggestionViewModel.Factory>(key = symbol) { factory ->
-        factory.create(symbol)
-    }
+    val viewModel = koinViewModel<SuggestionViewModel>(key = symbol) { parametersOf(symbol) }
     val suggestionState by viewModel.suggestionState.collectAsState(SuggestionState(symbol, emptyList()))
     AddSymbolDialogInternal(
         suggestionState = suggestionState,

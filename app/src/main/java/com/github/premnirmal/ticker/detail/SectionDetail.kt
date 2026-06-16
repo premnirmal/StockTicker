@@ -17,7 +17,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.AppPreferences
+import org.koin.compose.koinInject
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R.drawable
@@ -136,7 +137,7 @@ fun AlertsCard(
     onClick: () -> Unit,
 ) {
     if (alertAbove > 0f || alertBelow > 0f) {
-        val appPreferences = Injector.appComponent().appPreferences()
+        val appPreferences = koinInject<AppPreferences>()
         AppCard(
             modifier = modifier,
             onClick = onClick,

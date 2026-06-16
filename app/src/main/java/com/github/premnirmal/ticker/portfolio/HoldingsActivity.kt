@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -59,17 +59,15 @@ import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
 import com.google.accompanist.adaptive.calculateDisplayFeatures
-import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import kotlin.getValue
 
-@AndroidEntryPoint
 class HoldingsActivity : BaseActivity() {
     override val simpleName: String
         get() = "HoldingsActivity"
 
     internal lateinit var ticker: String
-    private val viewModel: AddPositionViewModel by viewModels()
+    private val viewModel: AddPositionViewModel by viewModel()
 
     override fun create(savedInstanceState: Bundle?) {
         super.create(savedInstanceState)

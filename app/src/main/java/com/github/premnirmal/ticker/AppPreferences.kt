@@ -18,15 +18,12 @@ import java.text.Format
 import java.time.DayOfWeek
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle.MEDIUM
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.random.Random
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-@Singleton
-class AppPreferences @Inject constructor(
+class AppPreferences constructor(
     private val sharedPreferences: SharedPreferences,
 ) : CrumbStore, UserPreferences {
 

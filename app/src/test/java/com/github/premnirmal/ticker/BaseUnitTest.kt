@@ -8,14 +8,11 @@ import com.github.premnirmal.ticker.tools.Parser
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.whenever
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltTestApplication
 import junit.framework.TestCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.JsonElement
 import org.junit.Before
-import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -24,11 +21,8 @@ import org.robolectric.annotation.Config
  * Created by premnirmal on 3/22/17.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(application = HiltTestApplication::class)
+@Config(application = TestApplication::class)
 abstract class BaseUnitTest : TestCase() {
-
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
 
     private val parser = Parser()
 

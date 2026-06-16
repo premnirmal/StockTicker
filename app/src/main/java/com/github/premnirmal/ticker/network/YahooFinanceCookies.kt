@@ -4,11 +4,8 @@ import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import java.util.concurrent.ConcurrentHashMap
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class YahooFinanceCookies @Inject constructor() : CookieJar {
+class YahooFinanceCookies constructor() : CookieJar {
 
     private var _cookies = ConcurrentHashMap<String, Cookie>()
 

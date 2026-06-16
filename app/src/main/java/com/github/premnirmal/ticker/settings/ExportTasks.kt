@@ -2,7 +2,9 @@ package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.net.Uri
-import com.github.premnirmal.ticker.components.Injector
+import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,9 +36,9 @@ internal object TickersExporter {
     }
 }
 
-internal object PortfolioExporter {
+internal object PortfolioExporter : KoinComponent {
 
-    private val json = Injector.appComponent().json()
+    private val json: Json by inject()
 
     suspend fun exportQuotes(context: Context, uri: Uri, vararg quoteLists: List<Quote>): String? =
         withContext(Dispatchers.IO) {

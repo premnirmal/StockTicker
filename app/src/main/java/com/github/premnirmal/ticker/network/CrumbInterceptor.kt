@@ -4,11 +4,8 @@ import com.github.premnirmal.ticker.AppPreferences
 import okhttp3.Interceptor
 import okhttp3.Interceptor.Chain
 import okhttp3.Response
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class CrumbInterceptor @Inject constructor(
+class CrumbInterceptor constructor(
     private val appPreferences: AppPreferences
 ) : Interceptor {
 

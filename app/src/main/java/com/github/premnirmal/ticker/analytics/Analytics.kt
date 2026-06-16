@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.analytics
 import android.app.Activity
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import javax.inject.Inject
 
 interface Analytics {
     fun trackScreenView(screenName: String, activity: Activity) {}
@@ -11,7 +10,7 @@ interface Analytics {
     fun trackGeneralEvent(event: GeneralEvent) {}
 }
 
-class GeneralProperties @Inject constructor(
+class GeneralProperties constructor(
     private val widgetDataProvider: WidgetDataProvider,
     private val stocksProvider: StocksProvider
 ) {

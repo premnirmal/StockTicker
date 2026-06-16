@@ -14,14 +14,14 @@ import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
-import com.github.premnirmal.ticker.components.Injector
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,9 +31,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
 
-class WidgetData : IWidgetData {
+class WidgetData : IWidgetData, KoinComponent {
 
     companion object {
         private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
@@ -59,20 +58,19 @@ class WidgetData : IWidgetData {
         private const val LIGHT = AppPreferences.LIGHT
     }
 
-    @Inject internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject @ApplicationContext
-    internal lateinit var context: Context
+    private val context: Context by inject()
 
-    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+    private val widgetDataProvider: WidgetDataProvider by inject()
 
-    @Inject internal lateinit var appPreferences: AppPreferences
+    private val appPreferences: AppPreferences by inject()
 
-    @Inject internal lateinit var coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope by inject()
 
-    @Inject internal lateinit var appMessaging: AppMessaging
+    private val appMessaging: AppMessaging by inject()
 
-    @Inject internal lateinit var alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler by inject()
 
     private val position: Int
     override val widgetId: Int
@@ -98,7 +96,6 @@ class WidgetData : IWidgetData {
     ) {
         this.position = position
         this.widgetId = widgetId
-        Injector.appComponent().inject(this)
         val prefsName = "$PREFS_NAME_PREFIX$widgetId"
         preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")

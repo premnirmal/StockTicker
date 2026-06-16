@@ -46,7 +46,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.CustomTabs
@@ -78,7 +78,7 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel,
 ) {
-    val viewModel = hiltViewModel<SettingsViewModel>()
+    val viewModel = koinViewModel<SettingsViewModel>()
     val settingsData = viewModel.settings.collectAsStateWithLifecycle()
     val state = rememberLazyListState()
     rememberScrollToTopAction(HomeRoute.Settings) {

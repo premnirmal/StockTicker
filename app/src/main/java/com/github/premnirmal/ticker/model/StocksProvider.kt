@@ -12,7 +12,6 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,14 +25,12 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.MINUTES
-import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-@Singleton
 class StocksProvider constructor(
-    @ApplicationContext private val context: Context,
+    private val context: Context,
     private val api: StocksApi,
     private val preferences: SharedPreferences,
     private val clock: AppClock,

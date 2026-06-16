@@ -17,9 +17,7 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.news.QuoteDetailActivity
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.google.accompanist.adaptive.calculateDisplayFeatures
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class SearchActivity : BaseActivity() {
     override val simpleName: String = "SearchActivity"
 

@@ -5,7 +5,7 @@ import android.os.Build.VERSION
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -27,18 +27,16 @@ import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.navigation.RootNavigationGraph
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.calculateDisplayFeatures
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
 class HomeActivity : BaseActivity() {
     override val simpleName = "HomeActivity"
 
-    @Inject internal lateinit var appReviewManager: IAppReviewManager
+    private val appReviewManager: IAppReviewManager by inject()
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

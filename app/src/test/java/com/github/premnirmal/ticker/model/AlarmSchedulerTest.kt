@@ -10,7 +10,6 @@ import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.todayZoned
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -24,7 +23,6 @@ import java.time.DayOfWeek.TUESDAY
 import java.time.DayOfWeek.WEDNESDAY
 import java.util.TimeZone
 
-@HiltAndroidTest
 class AlarmSchedulerTest : BaseUnitTest() {
 
     companion object {
@@ -64,7 +62,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
         setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY))
     }
 
-    @After fun tearDown() {
+    @After fun resetTimeZone() {
         TimeZone.setDefault(defaultTimeZone)
     }
 

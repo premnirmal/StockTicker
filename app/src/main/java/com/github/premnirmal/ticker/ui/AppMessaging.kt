@@ -4,18 +4,14 @@ import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.github.premnirmal.ticker.ui.AppMessage.BottomSheetMessage
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class AppMessaging @Inject constructor(
-    @ApplicationContext private val context: Context,
+class AppMessaging constructor(
+    private val context: Context,
     private val coroutineScope: CoroutineScope,
 ) {
 

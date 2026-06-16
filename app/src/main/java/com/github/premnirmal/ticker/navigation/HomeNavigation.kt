@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -72,7 +72,7 @@ fun HomeNavHost(
         startDestination = HomeRoute.Watchlist.route,
     ) {
         composable(HomeRoute.Watchlist.route) { backStackEntry ->
-            val homeViewModel = hiltViewModel<HomeViewModel>(viewModelStoreOwner)
+            val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
             WatchlistScreen(
                 rootNavController = rootNavController,
                 modifier = Modifier
@@ -124,7 +124,7 @@ fun HomeNavHost(
             )
         }
         composable(HomeRoute.Settings.route) { backStackEntry ->
-            val homeViewModel = hiltViewModel<HomeViewModel>(viewModelStoreOwner)
+            val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
             SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()

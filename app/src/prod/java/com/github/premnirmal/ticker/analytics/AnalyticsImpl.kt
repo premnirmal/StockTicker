@@ -5,14 +5,13 @@ import android.content.Context
 import android.os.Bundle
 import com.github.premnirmal.ticker.home.HomeActivity
 import com.google.firebase.analytics.FirebaseAnalytics
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 /**
  * Created by premnirmal on 2/26/16.
  */
 class AnalyticsImpl(
-  @ApplicationContext private val context: Context,
-  private val generalProperties: dagger.Lazy<GeneralProperties>
+  private val context: Context,
+  private val generalProperties: Lazy<GeneralProperties>
 ) : Analytics {
 
   private val firebaseAnalytics: FirebaseAnalytics by lazy {
@@ -26,8 +25,8 @@ class AnalyticsImpl(
     firebaseAnalytics.setCurrentScreen(activity, screenName, null)
     val bundle = Bundle().apply {
       putString(FirebaseAnalytics.Param.ITEM_NAME, screenName)
-      putInt("WidgetCount", generalProperties.get().widgetCount)
-      putInt("TickerCount", generalProperties.get().tickerCount)
+      putInt("WidgetCount", generalProperties.value.widgetCount)
+      putInt("TickerCount", generalProperties.value.tickerCount)
     }
     firebaseAnalytics.logEvent("ScreenView", bundle)
   }
@@ -46,8 +45,8 @@ class AnalyticsImpl(
       event.properties.forEach { entry ->
         putString(entry.key, entry.value)
       }
-      putInt("WidgetCount", generalProperties.get().widgetCount)
-      putInt("TickerCount", generalProperties.get().tickerCount)
+      putInt("WidgetCount", generalProperties.value.widgetCount)
+      putInt("TickerCount", generalProperties.value.tickerCount)
     }
   }
 }

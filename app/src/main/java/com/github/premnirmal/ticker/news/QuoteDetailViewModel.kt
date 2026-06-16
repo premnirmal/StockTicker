@@ -19,7 +19,6 @@ import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -34,10 +33,8 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class QuoteDetailViewModel @Inject constructor(
+class QuoteDetailViewModel constructor(
     application: Application,
     private val stocksProvider: StocksProvider,
     private val appMessaging: AppMessaging,

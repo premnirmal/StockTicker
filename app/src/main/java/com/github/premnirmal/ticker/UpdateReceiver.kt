@@ -3,27 +3,26 @@ package com.github.premnirmal.ticker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.components.Injector
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.model.StocksProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class UpdateReceiver : BroadcastReceiver() {
+class UpdateReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject internal lateinit var coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope by inject()
 
     override fun onReceive(
         context: Context,
         intent: Intent
     ) {
-        Injector.appComponent().inject(this)
         if (intent.action == "android.intent.action.MY_PACKAGE_REPLACED") {
             val pendingResult = goAsync()
             coroutineScope.launch(Dispatchers.IO) {

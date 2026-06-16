@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,10 +38,8 @@ import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.AndroidEntryPoint
 import kotlin.getValue
 
-@AndroidEntryPoint
 class DisplaynameActivity : BaseActivity() {
 
     companion object {
@@ -52,7 +50,7 @@ class DisplaynameActivity : BaseActivity() {
     override val simpleName: String
         get() = "DisplaynameActivity"
 
-    private val viewModel: DisplaynameViewModel by viewModels()
+    private val viewModel: DisplaynameViewModel by viewModel()
     internal lateinit var ticker: String
 
     override fun create(savedInstanceState: Bundle?) {

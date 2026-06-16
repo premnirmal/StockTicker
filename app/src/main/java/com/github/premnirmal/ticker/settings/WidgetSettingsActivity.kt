@@ -20,9 +20,7 @@ import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.widget.WidgetsScreen
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.calculateDisplayFeatures
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class WidgetSettingsActivity : BaseActivity() {
 
     companion object {

@@ -39,7 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteCard
@@ -71,8 +71,8 @@ fun SearchScreen(
     displayFeatures: List<DisplayFeature>,
     onQuoteClick: (Quote) -> Unit,
     selectedWidgetId: Int? = null,
-    searchViewModel: SearchViewModel = hiltViewModel(),
-    newsViewModel: NewsFeedViewModel = hiltViewModel(),
+    searchViewModel: SearchViewModel = koinViewModel(),
+    newsViewModel: NewsFeedViewModel = koinViewModel(),
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     val searchResults by searchViewModel.searchResult.collectAsStateWithLifecycle()

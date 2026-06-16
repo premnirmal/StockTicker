@@ -23,9 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class WebViewActivity : BaseActivity() {
     override var simpleName = "WebViewActivity"
     private lateinit var url: String

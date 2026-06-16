@@ -6,12 +6,9 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class DisplaynameViewModel @Inject constructor(
+class DisplaynameViewModel constructor(
     private val stocksProvider: StocksProvider,
     private val stocksStorage: StocksStorage
 ) : ViewModel() {

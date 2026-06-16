@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +30,7 @@ import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : ComponentActivity() {
 
@@ -38,15 +38,15 @@ abstract class BaseActivity : ComponentActivity() {
     open val subscribeToErrorEvents = true
     private var isErrorDialogShowing = false
 
-    private val themeViewModel by viewModels<ThemeViewModel>()
+    private val themeViewModel by viewModel<ThemeViewModel>()
 
-    @Inject lateinit var analytics: Analytics
+    val analytics: Analytics by inject()
 
-    @Inject lateinit var stocksProvider: StocksProvider
+    val stocksProvider: StocksProvider by inject()
 
-    @Inject lateinit var appPreferences: AppPreferences
+    val appPreferences: AppPreferences by inject()
 
-    @Inject lateinit var appMessaging: AppMessaging
+    val appMessaging: AppMessaging by inject()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(

@@ -3,7 +3,8 @@ package com.github.premnirmal.ticker.widget
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.components.Injector
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.FetchEventLogger
@@ -13,26 +14,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-class RefreshReceiver : BroadcastReceiver() {
+class RefreshReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject internal lateinit var alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler by inject()
 
-    @Inject internal lateinit var fetchEventLogger: FetchEventLogger
+    private val fetchEventLogger: FetchEventLogger by inject()
 
-    @Inject internal lateinit var coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope by inject()
 
     override fun onReceive(
         context: Context,
         intent: Intent
     ) {
-        Injector.appComponent().inject(this)
         val pendingResult = goAsync()
         Timber.d(
             "RefreshReceiver triggered action=%s hasExtras=%s",

@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.portfolio
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,17 +36,15 @@ import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import kotlin.getValue
 
-@AndroidEntryPoint
 class AlertsActivity : BaseActivity() {
     override val simpleName: String
         get() = "AlertsActivity"
 
     internal lateinit var ticker: String
-    private val viewModel: AlertsViewModel by viewModels()
+    private val viewModel: AlertsViewModel by viewModel()
 
     override fun create(savedInstanceState: Bundle?) {
         super.create(savedInstanceState)

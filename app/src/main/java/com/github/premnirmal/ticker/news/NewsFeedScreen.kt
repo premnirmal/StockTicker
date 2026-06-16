@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.navigation.HomeRoute
@@ -40,7 +40,7 @@ import com.github.premnirmal.tickerwidget.R.string
 fun NewsFeedScreen(
     modifier: Modifier = Modifier,
     onQuoteClick: (Quote) -> Unit,
-    viewModel: NewsFeedViewModel = hiltViewModel()
+    viewModel: NewsFeedViewModel = koinViewModel()
 ) {
     val newsList by viewModel.newsFeedFlow.collectAsStateWithLifecycle()
     val newsFeed by viewModel.newsFeed.collectAsStateWithLifecycle()

@@ -6,11 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class FetchEventLogger @Inject constructor(
+class FetchEventLogger constructor(
     private val storage: StocksStorage,
     private val clock: AppClock,
     private val coroutineScope: CoroutineScope

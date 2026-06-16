@@ -71,7 +71,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
 import com.github.mikephil.charting.charts.LineChart
@@ -124,7 +124,7 @@ fun QuoteDetailScreen(
     contentType: ContentType?,
     displayFeatures: List<DisplayFeature>,
     quote: Quote,
-    viewModel: QuoteDetailViewModel = hiltViewModel()
+    viewModel: QuoteDetailViewModel = koinViewModel()
 ) {
     val details by viewModel.details.collectAsState(initial = emptyList())
     val articles by viewModel.newsData.collectAsStateWithLifecycle()

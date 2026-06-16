@@ -23,7 +23,6 @@ import com.github.premnirmal.ticker.components.todayZoned
 import com.github.premnirmal.ticker.notifications.DailySummaryNotificationReceiver
 import com.github.premnirmal.ticker.portfolio.CleanupWorker
 import com.github.premnirmal.ticker.widget.RefreshReceiver
-import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import java.time.DayOfWeek
 import java.time.Duration
@@ -34,16 +33,12 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import java.util.concurrent.TimeUnit.MINUTES
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-@Singleton
-class AlarmScheduler @Inject constructor(
-    @param:ApplicationContext @field:ApplicationContext
-    private val context: Context,
+class AlarmScheduler constructor(
+        private val context: Context,
     private val appPreferences: AppPreferences,
     private val clock: AppClock,
     private val preferences: SharedPreferences,

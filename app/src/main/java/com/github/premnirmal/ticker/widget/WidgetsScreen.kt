@@ -42,7 +42,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.navigation.HomeRoute
@@ -73,7 +73,7 @@ fun WidgetsScreen(
     showSpinner: Boolean = true,
     topAppBarActions: @Composable RowScope.() -> Unit = {},
 ) {
-    val viewModel = hiltViewModel<WidgetsViewModel>()
+    val viewModel = koinViewModel<WidgetsViewModel>()
     WidgetsScreen(modifier, widthSizeClass, displayFeatures, viewModel, selectedWidgetId, showSpinner, topAppBarActions)
 }
 

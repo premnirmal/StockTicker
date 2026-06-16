@@ -3,26 +3,25 @@ package com.github.premnirmal.ticker.model
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.github.premnirmal.ticker.components.Injector
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.isNetworkOnline
 import timber.log.Timber
-import javax.inject.Inject
 
-class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+class RefreshWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params), KoinComponent {
 
     companion object {
         const val TAG = "RefreshWorker"
         const val TAG_PERIODIC = "RefreshWorker_Periodic"
     }
 
-    @Inject internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject internal lateinit var alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler by inject()
 
-    @Inject internal lateinit var fetchEventLogger: FetchEventLogger
+    private val fetchEventLogger: FetchEventLogger by inject()
 
     override suspend fun doWork(): Result {
-        Injector.appComponent().inject(this)
         return if (applicationContext.isNetworkOnline()) {
             if (!alarmScheduler.isCurrentTimeWithinScheduledUpdateTime()) {
                 Timber.d("RefreshWorker skipped: outside configured update window")

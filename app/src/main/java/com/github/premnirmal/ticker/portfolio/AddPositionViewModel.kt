@@ -6,16 +6,13 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class AddPositionViewModel @Inject constructor(private val stocksProvider: StocksProvider) : ViewModel() {
+class AddPositionViewModel constructor(private val stocksProvider: StocksProvider) : ViewModel() {
 
     val position: StateFlow<Position>
         get() = _position

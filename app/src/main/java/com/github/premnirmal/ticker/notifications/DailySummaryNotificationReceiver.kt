@@ -6,21 +6,20 @@ import android.content.Intent
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.todayLocal
-import com.github.premnirmal.ticker.components.Injector
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
-import javax.inject.Inject
 
-class DailySummaryNotificationReceiver : BroadcastReceiver() {
+class DailySummaryNotificationReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject lateinit var notificationsHandler: NotificationsHandler
+    private val notificationsHandler: NotificationsHandler by inject()
 
-    @Inject lateinit var appPreferences: AppPreferences
+    private val appPreferences: AppPreferences by inject()
 
-    @Inject lateinit var clock: AppClock
+    private val clock: AppClock by inject()
 
     override fun onReceive(context: Context, intent: Intent?) {
         Timber.d("DailySummaryNotificationReceiver onReceive")
-        Injector.appComponent().inject(this)
         val today = clock.todayLocal().toLocalDate()
         if (appPreferences.updateDays().contains(today.dayOfWeek)) {
             notificationsHandler.notifyDailySummary()

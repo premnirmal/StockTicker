@@ -14,7 +14,6 @@ plugins {
   id("com.google.gms.google-services")
   id("com.google.firebase.crashlytics")
   alias(libs.plugins.com.google.devtools.ksp)
-  alias(libs.plugins.hilt)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.detekt.plugin)
   alias(libs.plugins.kotlinx.serialization)
@@ -196,7 +195,6 @@ dependencies {
   implementation(Google.accompanist.adaptive)
   implementation(libs.accompanist.permissions)
   implementation(AndroidX.compose.runtime.liveData)
-  implementation(AndroidX.hilt.navigationCompose)
   implementation(AndroidX.dataStore.preferences)
   implementation(libs.reorderable)
 
@@ -210,9 +208,9 @@ dependencies {
   implementation(libs.javax.annotation.api)
 
   implementation(AndroidX.compose.ui.toolingPreview)
-  implementation(libs.hilt)
-  implementation(libs.androidx.hilt)
-  ksp(libs.hilt.android.compiler)
+  implementation(libs.koin.android)
+  implementation(libs.koin.androidx.compose)
+  implementation(libs.koin.androidx.workmanager)
 
   implementation(Square.okHttp3)
   implementation(Square.okHttp3.loggingInterceptor)
@@ -244,12 +242,13 @@ dependencies {
 
   //  debugImplementation(Square.leakCanary.android)
 
-  testImplementation(Google.dagger.hilt.android.testing)
-  kspTest(libs.hilt.android.compiler)
+  testImplementation(libs.koin.test)
+  testImplementation(libs.koin.test.junit4)
 
   testImplementation(Testing.junit4)
   testImplementation(Testing.assertj.core)
   testImplementation(Testing.robolectric)
+  testImplementation(AndroidX.test.core)
   testImplementation(AndroidX.test.runner)
   testImplementation(AndroidX.test.rules)
   testImplementation(AndroidX.annotation)
@@ -257,6 +256,7 @@ dependencies {
   testImplementation(Testing.mockito.core)
   testImplementation(Testing.mockito.kotlin)
   testImplementation(KotlinX.coroutines.test)
+  testImplementation(AndroidX.work.testing)
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation(libs.opengl.api)

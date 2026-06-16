@@ -3,7 +3,9 @@ package com.github.premnirmal.ticker.settings
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.net.Uri
-import com.github.premnirmal.ticker.components.Injector
+import kotlinx.serialization.json.Json
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
@@ -57,9 +59,9 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
 }
 
 internal open class PortfolioImportTask(private val stocksProvider: StocksProvider) :
-    ImportTask {
+    ImportTask, KoinComponent {
 
-    private val json = Injector.appComponent().json()
+    private val json: Json by inject()
 
     override suspend fun import(context: Context, fileUri: Uri): Boolean {
         val contentResolver = context.applicationContext.contentResolver

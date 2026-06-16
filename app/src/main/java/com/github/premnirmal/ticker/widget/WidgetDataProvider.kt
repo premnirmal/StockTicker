@@ -4,20 +4,15 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class WidgetDataProvider @Inject constructor(
-    @param:ApplicationContext
-    private val context: Context,
+class WidgetDataProvider constructor(
+        private val context: Context,
 ) {
 
     private val glanceAppWidgetManager: GlanceAppWidgetManager by lazy {

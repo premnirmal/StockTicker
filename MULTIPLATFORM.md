@@ -6,7 +6,7 @@ Multiplatform UI, plus a thin native iOS shell and a native iOS widget.
 
 The migration is deliberately **incremental**: the Android app must keep building and
 all existing tests must keep passing at every step. Large rewrites (Glance widget →
-WidgetKit, Retrofit → Ktor, Room → Room KMP/SQLDelight, and adopting Compose
+WidgetKit, Retrofit → Ktor, Room → Room KMP, and adopting Compose
 Multiplatform for the shared screens) are broken into separate, independently
 reviewable changes.
 
@@ -56,10 +56,10 @@ What stays platform-native (cannot be shared):
   background scheduling) wired per platform.
 
 Android-only UI libraries are replaced with multiplatform equivalents as part of this
-work: Coil → Coil 3 (multiplatform), Hilt → Koin (or Hilt kept as Android-only wiring),
-and Android-only Compose artifacts (`activity.compose`, `runtime.liveData`,
-`windowSizeClass`, Glance previews) swapped for CMP equivalents or `expect`/`actual`
-shims.
+work: Coil → Coil 3 (multiplatform), and Android-only Compose artifacts
+(`activity.compose`, `runtime.liveData`, `windowSizeClass`, Glance previews) swapped for
+CMP equivalents or `expect`/`actual` shims. DI has already moved off Hilt to **Koin** in
+Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here.
 
 ## Status
 
@@ -134,7 +134,7 @@ shims.
   (now the multiplatform `AppLogger`, `expect`/`actual`: Timber on Android, `NSLog` on iOS),
   `Dispatchers.IO` (now the `expect`/`actual` `ioDispatcher`), `AppPreferences` (now the
   `CrumbStore : CrumbProvider` read/write abstraction implemented by `AppPreferences`) or
-  Hilt/`javax.inject` (it is now plain and constructed by `NetworkModule.provideStocksApi`). The
+  Hilt/`javax.inject` (it is now plain and declared in the shared Koin `sharedModule`). The
   public contract is unchanged. `commonTest` (`StocksApiTest`, via Ktor `MockEngine`) covers the
   success, ordering, failure and the 401 → crumb-refresh → retry paths, so the orchestration is
   verified on iOS as well as Android.
@@ -142,7 +142,7 @@ shims.
   "most active"/ApeWisdom trending-stocks flow → shared `NewsArticle`/`Quote`/`FetchResult` model)
   from `:app` into `commonMain`. Like `StocksApi` it no longer depends on `Timber` (now the
   multiplatform `AppLogger`, extended with `w`/`d` levels), `Dispatchers.IO` (now `ioDispatcher`)
-  or Hilt/`javax.inject` (it is now plain and constructed by `NetworkModule.provideNewsProvider`).
+  or Hilt/`javax.inject` (it is now plain and declared in the shared Koin `sharedModule`).
   The public contract is unchanged so the `:app` view models keep working. `commonTest`
   (`NewsProviderTest`, via Ktor `MockEngine`) covers the merged market-news feeds, the
   trending-stocks ApeWisdom fallback and the news-query failure path, so the aggregation is verified
@@ -164,8 +164,8 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
 - **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —
-  persistence (Room → Room KMP or SQLDelight), preferences (DataStore multiplatform), DI
-  (Hilt → Koin or Hilt-on-Android only), background refresh (WorkManager + a common scheduler
+  persistence (Room → **Room KMP**), preferences (DataStore multiplatform), DI
+  (Hilt → **Koin**), background refresh (WorkManager + a common scheduler
   interface). Done so far: the shared Yahoo auth layer (`YahooAuth`/`CrumbProvider`), a
   multiplatform logger (`AppLogger`) and IO dispatcher (`ioDispatcher`), the shared `StocksApi`
   orchestrator, and the shared `RefreshScheduler` interface (the common background-refresh
@@ -175,10 +175,13 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   scheduling stay on the concrete implementation, and the iOS app will provide a
   `BGTaskScheduler`/`WidgetKit` implementation once it exists). The persistence layer also has a
   shared `QuoteStorage` interface (the common contract for persisting tickers/quotes/holdings/
-  properties, in already-shared `commonMain` models) implemented on Android by `StocksStorage`; the
-  Room-backed engine (`QuotesDB`/`QuoteDao`/`*Row`) and the platform-typed fetch-log operations stay
-  on the concrete implementation, and iOS will provide a Room KMP / SQLDelight-backed implementation
-  once it exists. The settings layer likewise has a shared `UserPreferences` interface (the common
+  properties, in already-shared `commonMain` models); the **Room engine itself now lives in
+  `commonMain`** via **Room KMP** — `QuotesDB`/`QuoteDao`/`*Row`/`QuoteWithHoldings` and the 8
+  schema migrations moved into `:shared` (exported schema v9 unchanged, so installed Android
+  databases migrate transparently), behind a `getQuotesDBBuilder()` `expect`/`actual` (Android
+  `Context`, iOS `NSDocumentDirectory`) plus the bundled-SQLite driver. The `StocksStorage`
+  implementation of `QuoteStorage` is also shared; iOS now gets a real Room-backed implementation
+  rather than a stub. The settings layer likewise has a shared `UserPreferences` interface (the common
   contract for the platform-neutral user settings — update interval, the boolean toggles, the theme
   preference and the refresh/tooltip flows, in `commonMain`) implemented on Android by
   `AppPreferences`; the `SharedPreferences` store and the platform-typed settings (the
@@ -210,7 +213,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `java.time` by storing a plain `durationDays`), so iOS shares the same range options and param
   mapping. Building on that, the **chart fetch** itself (`HistoryProvider` → `ChartData`) also moved
   into `commonMain` (`ticker.model`): it is now a plain class (no `Timber`/`Dispatchers.IO`/Hilt —
-  `AppLogger`/`ioDispatcher`, constructed by `:app`'s `NetworkModule.provideHistoryProvider`) over the
+  `AppLogger`/`ioDispatcher`, declared in the shared Koin `sharedModule`) over the
   already-shared `ChartApi`, and `ChartData`'s `…String()` helpers use the shared `AppNumberFormat`
   (its Compose `changeColour` is an Android-only extension in `:app`, like `Quote.changeColour`). The
   `DataPoint` candle that blocked this is now `expect`/`actual`: `commonMain`/iOS see a plain,
@@ -219,12 +222,19 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   (`LineDataSet`/`TextMarkerView`) renders it unchanged; MPAndroidChart is therefore a `:shared`
   `androidMain`-only dependency. `commonTest` (`HistoryProviderTest`, via Ktor `MockEngine`) covers
   the mapping, timestamp sorting, the missing-value filtering and the failure path, so the chart fetch
-  is verified on iOS as well as Android.
+  is verified on iOS as well as Android. **DI has moved off Hilt to Koin:** the shared services are
+  declared in a `commonMain` `sharedModule` (reused by every platform), while `:app` provides the
+  Android leaf bindings in `appModule`/`networkModule`/`viewModelModule` (the former Hilt `@Provides`
+  functions became Koin `single { … }`, `@HiltViewModel` became `viewModel { … }`, the legacy
+  `EntryPoint`/`Injector` field-injection of widgets/receivers/workers became `KoinComponent` +
+  `by inject()`, and `@Named("yahoo")` became a Koin `named("yahoo")` qualifier). `StocksApp` now
+  calls `startKoin { … }`; Hilt, its Gradle plugin and KSP compiler are removed. A Robolectric
+  `KoinModulesTest` resolves the graph at runtime to replace Hilt's compile-time graph validation.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
-  multiplatform equivalents (Coil 3, CMP navigation, Koin), and repoint `:app` to host
+  multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
 - **Phase 5:** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
   shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget

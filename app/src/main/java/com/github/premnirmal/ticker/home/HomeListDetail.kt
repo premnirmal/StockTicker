@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -80,7 +80,7 @@ fun HomeListDetail(
         val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
             "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
         }
-        val viewModel: HomeViewModel = hiltViewModel(viewModelStoreOwner)
+        val viewModel: HomeViewModel = koinViewModel(viewModelStoreOwner = viewModelStoreOwner)
         val hasWidget = viewModel.hasWidget.collectAsState(initial = false)
         val destinations = ArrayList<HomeBottomNavDestination>().apply {
             add(

@@ -56,28 +56,24 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.components.Injector
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import com.github.premnirmal.ticker.home.HomeActivity
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
-import javax.inject.Inject
 import kotlin.random.Random
 
-class GlanceStocksWidget : GlanceAppWidget() {
+class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
 
-    @Inject
-    internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
+    private val widgetDataProvider: WidgetDataProvider by inject()
 
-    @Inject
-    internal lateinit var appPreferences: AppPreferences
+    private val appPreferences: AppPreferences by inject()
 
-    var injected = false
 
     override val sizeMode = SizeMode.Exact
 
@@ -87,10 +83,6 @@ class GlanceStocksWidget : GlanceAppWidget() {
         context: Context,
         id: GlanceId,
     ) {
-        if (!injected) {
-            Injector.appComponent().inject(this)
-            injected = true
-        }
         val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
 
         // Update the Glance state with current widget data and quotes
@@ -684,26 +676,18 @@ private fun previewDataState(
     fetchState = SerializableFetchState.Success(System.currentTimeMillis()),
 )
 
-class RefreshCallback : ActionCallback {
-    @Inject
-    internal lateinit var stocksProvider: StocksProvider
+class RefreshCallback : ActionCallback, KoinComponent {
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject
-    internal lateinit var appPreferences: AppPreferences
+    private val appPreferences: AppPreferences by inject()
 
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
-    var injected = false
+    private val widgetDataProvider: WidgetDataProvider by inject()
 
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        if (!injected) {
-            Injector.appComponent().inject(this)
-            injected = true
-        }
         val glanceAppWidgetManager = GlanceAppWidgetManager(context)
         val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
         appPreferences.setRefreshing(true)
@@ -738,23 +722,16 @@ class RefreshCallback : ActionCallback {
     }
 }
 
-class FlipTextCallback : ActionCallback {
-    @Inject
-    internal lateinit var stocksProvider: StocksProvider
+class FlipTextCallback : ActionCallback, KoinComponent {
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject
-    internal lateinit var widgetDataProvider: WidgetDataProvider
-    var injected = false
+    private val widgetDataProvider: WidgetDataProvider by inject()
 
     override suspend fun onAction(
         context: Context,
         glanceId: GlanceId,
         parameters: ActionParameters
     ) {
-        if (!injected) {
-            Injector.appComponent().inject(this)
-            injected = true
-        }
         val glanceAppWidgetManager = GlanceAppWidgetManager(context)
         val appWidgetId = glanceAppWidgetManager.getAppWidgetId(glanceId)
         val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
