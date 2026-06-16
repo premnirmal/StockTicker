@@ -191,6 +191,42 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   Native) instead. All iOS targets (`iosX64`/`iosArm64`/`iosSimulatorArm64`) now run KSP, compile
   `commonMain`/`commonTest` and link the `Shared` framework.
 
+### Done — Phase 2 (iOS implementations)
+The deferred iOS concrete implementations of the shared Phase 2 interfaces are now implemented in
+`:shared` `iosMain` (Kotlin/Native), wired through a Koin `iosModule`, and hosted by a thin SwiftUI
+shell under `iosApp/`. This closes the "iOS will provide its own implementation once it exists"
+items above:
+
+- **Preferences + Crumb store (`IosUserPreferences`).** Implements the shared `UserPreferences` and
+  `CrumbStore`/`CrumbProvider` over an `NSUserDefaults`-backed `IosSettingsStore` (suite
+  `com.github.premnirmal.ticker`), mirroring Android `AppPreferences` keys/defaults. The
+  platform-typed update window is exposed as an iOS-native `Time(hour, minute)` + day-set the
+  scheduler consumes.
+- **Background refresh + scheduler (`IosRefreshScheduler`).** Implements the shared
+  `RefreshScheduler`; a faithful port of `AlarmScheduler`'s update-window math using
+  `kotlinx-datetime`. The actual OS submission is delegated to an `IosBackgroundTaskScheduler`
+  interface, implemented by the Swift `StockTickerBackgroundScheduler` via `BGTaskScheduler`
+  (`BGAppRefreshTaskRequest`/`BGProcessingTaskRequest`).
+- **Stocks provider (`IosStocksProvider`).** Implements the shared `IStocksProvider` over the shared
+  `StocksApi`/`StocksStorage`/`IosRefreshScheduler`/`FetchEventLogger`, replacing the Android
+  `WidgetDataProvider` coupling with an `onQuotesUpdated` hook (wired to WidgetKit timeline reloads).
+- **Analytics (`IosAnalytics`).** Logs the shared `AnalyticsEvent`/`ClickEvent`/`GeneralEvent`
+  through `AppLogger` and forwards them to an `IosAnalyticsSink` (the Swift
+  `StockTickerAnalyticsSink` forwards to Firebase when linked, else `NSLog`).
+- **DI + entry point (`iosModule` / `initKoinIos` / `KoinHelper`).** The iOS counterpart of `:app`'s
+  `networkModule`/`appModule` — contributes the Darwin-engine Ktor clients, the Room-backed
+  `StocksStorage`, the `Json` instance and the app `CoroutineScope`, plus the iOS implementations
+  above. `initKoinIos(...)` starts Koin from `StockTickerApp.swift`; `KoinHelper` exposes the
+  provider/scheduler and a `observePortfolio` flow bridge to Swift.
+- **iOS app shell (`iosApp/`).** A minimal SwiftUI host (`StockTickerApp`, `ContentView`,
+  `StockTickerBackgroundScheduler`, `StockTickerAnalyticsSink`, `WidgetCenterReloader`) that wires
+  the above into a running app. The Xcode project itself is generated on macOS (see
+  `iosApp/README.md`) since iOS builds cannot run in the Linux CI.
+
+`iosTest` covers the pure logic (`IosRefreshSchedulerTest`, `IosUserPreferencesTest`,
+`IosTickersStoreTest`, `IosAnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
+`Shared` framework.
+
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 

@@ -14,6 +14,7 @@ import com.github.premnirmal.ticker.model.IosStocksProvider
 import com.github.premnirmal.ticker.model.NoopIosBackgroundTaskScheduler
 import com.github.premnirmal.ticker.model.RefreshScheduler
 import com.github.premnirmal.ticker.network.ApeWisdom
+import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.CrumbProvider
 import com.github.premnirmal.ticker.network.CrumbStore
 import com.github.premnirmal.ticker.network.GoogleNewsApi
@@ -34,8 +35,11 @@ import com.github.premnirmal.ticker.settings.IosSettingsStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import org.koin.core.KoinApplication
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -139,4 +143,37 @@ fun initKoinIos(
     onQuotesUpdated: () -> Unit = {}
 ): KoinApplication = startKoin {
     modules(sharedModule, iosModule(backgroundTaskScheduler, analyticsSink, onQuotesUpdated))
+}
+
+/**
+ * Swift-friendly accessor over the Koin graph started by [initKoinIos]. Kotlin/Native does not bridge
+ * top-level `by inject()` cleanly into Swift, so the iOS app resolves shared singletons through this
+ * object (e.g. `KoinHelper.shared.stocksProvider()` from the `BGTaskScheduler` handlers).
+ */
+object KoinHelper : KoinComponent {
+    private val stocksProvider: IosStocksProvider by inject()
+    private val refreshScheduler: IosRefreshScheduler by inject()
+    private val analytics: IosAnalytics by inject()
+    private val scope: CoroutineScope by inject()
+
+    fun stocksProvider(): IosStocksProvider = stocksProvider
+    fun refreshScheduler(): IosRefreshScheduler = refreshScheduler
+    fun analytics(): IosAnalytics = analytics
+
+    /**
+     * Observes the shared portfolio [kotlinx.coroutines.flow.StateFlow] from Swift, invoking [onEach]
+     * on every emission. Returns a [Closeable] the caller closes to cancel the subscription (Swift
+     * cannot collect a Kotlin `Flow` directly).
+     */
+    fun observePortfolio(onEach: (List<Quote>) -> Unit): Closeable {
+        val job = scope.launch {
+            stocksProvider.portfolio.collect { onEach(it) }
+        }
+        return Closeable { job.cancel() }
+    }
+}
+
+/** Minimal cancellation handle bridged to Swift (mirrors `java.io.Closeable`). */
+fun interface Closeable {
+    fun close()
 }
