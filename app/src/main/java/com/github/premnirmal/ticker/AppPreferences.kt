@@ -1,10 +1,9 @@
 package com.github.premnirmal.ticker
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import com.github.premnirmal.ticker.components.AppNumberFormat
 import com.github.premnirmal.ticker.network.CrumbStore
+import com.github.premnirmal.ticker.settings.PreferenceStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +17,7 @@ import kotlin.random.Random
  * Created by premnirmal on 2/26/16.
  */
 class AppPreferences constructor(
-    private val sharedPreferences: SharedPreferences,
+    private val store: PreferenceStore,
 ) : CrumbStore, UserPreferences {
 
     init {
@@ -26,16 +25,14 @@ class AppPreferences constructor(
         AppNumberFormat.roundToTwoDecimalPlaces = roundToTwoDecimalPlaces()
     }
 
-    fun getLastSavedVersionCode(): Int = sharedPreferences.getInt(APP_VERSION_CODE, -1)
+    fun getLastSavedVersionCode(): Int = store.getInt(APP_VERSION_CODE, -1)
     fun saveVersionCode(code: Int) {
-        sharedPreferences.edit {
-            putInt(APP_VERSION_CODE, code)
-        }
+        store.setInt(APP_VERSION_CODE, code)
     }
 
     override val updateIntervalMs: Long
         get() {
-            return when (sharedPreferences.getInt(UPDATE_INTERVAL, 1)) {
+            return when (store.getInt(UPDATE_INTERVAL, 1)) {
                 0 -> 5 * 60 * 1000L
                 1 -> 15 * 60 * 1000L
                 2 -> 30 * 60 * 1000L
@@ -55,40 +52,35 @@ class AppPreferences constructor(
     fun parseTime(time: String): Time = Time.parse(time)
 
     override fun setStartTime(time: String) {
-        sharedPreferences.edit {
-            putString(START_TIME, time)
-        }
+        store.setString(START_TIME, time)
     }
 
     override fun setEndTime(time: String) {
-        sharedPreferences.edit {
-            putString(END_TIME, time)
-        }
+        store.setString(END_TIME, time)
     }
 
     override fun startTime(): Time {
-        val startTimeString = sharedPreferences.getString(START_TIME, "09:30")!!
+        val startTimeString = store.getString(START_TIME, "09:30")!!
         return parseTime(startTimeString)
     }
 
     override fun endTime(): Time {
-        val endTimeString = sharedPreferences.getString(END_TIME, "16:00")!!
+        val endTimeString = store.getString(END_TIME, "16:00")!!
         return parseTime(endTimeString)
     }
 
     fun updateDaysRaw(): Set<String> {
-        val defaultSet = setOf("1", "2", "3", "4", "5")
-        var selectedDays = sharedPreferences.getStringSet(UPDATE_DAYS, defaultSet)!!
-        if (selectedDays.isEmpty()) {
-            selectedDays = defaultSet
-        }
-        return selectedDays
+        val raw = store.getString(UPDATE_DAYS, null)
+        val selectedDays = raw?.split(",")
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() }
+            ?.toSet()
+            .orEmpty()
+        return selectedDays.ifEmpty { DEFAULT_UPDATE_DAYS_RAW }
     }
 
     override fun setUpdateDays(days: Set<Int>) {
-        sharedPreferences.edit {
-            putStringSet(UPDATE_DAYS, days.map { it.toString() }.toSet())
-        }
+        store.setString(UPDATE_DAYS, days.sorted().joinToString(","))
     }
 
     /** The configured update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7). */
@@ -100,53 +92,45 @@ class AppPreferences constructor(
     override val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
 
-    private val _isRefreshing = MutableStateFlow(sharedPreferences.getBoolean(WIDGET_REFRESHING, false))
+    private val _isRefreshing = MutableStateFlow(store.getBoolean(WIDGET_REFRESHING, false))
 
     override fun setRefreshing(refreshing: Boolean) {
         _isRefreshing.value = refreshing
-        sharedPreferences.edit {
-            putBoolean(WIDGET_REFRESHING, refreshing)
-        }
+        store.setBoolean(WIDGET_REFRESHING, refreshing)
     }
 
     override fun setCrumb(crumb: String?) {
-        sharedPreferences.edit { putString(CRUMB, crumb) }
+        store.setString(CRUMB, crumb)
     }
 
     override fun getCrumb(): String? {
-        return sharedPreferences.getString(CRUMB, null)
+        return store.getString(CRUMB, null)
     }
 
     override fun tutorialShown(): Boolean {
-        return sharedPreferences.getBoolean(TUTORIAL_SHOWN, false)
+        return store.getBoolean(TUTORIAL_SHOWN, false)
     }
 
     override fun setTutorialShown(shown: Boolean) {
-        sharedPreferences.edit {
-            putBoolean(TUTORIAL_SHOWN, shown)
-        }
+        store.setBoolean(TUTORIAL_SHOWN, shown)
     }
 
     override fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
-    override fun roundToTwoDecimalPlaces(): Boolean = sharedPreferences.getBoolean(SETTING_ROUND_TWO_DP, true)
+    override fun roundToTwoDecimalPlaces(): Boolean = store.getBoolean(SETTING_ROUND_TWO_DP, true)
 
     override fun setRoundToTwoDecimalPlaces(round: Boolean) {
         AppNumberFormat.roundToTwoDecimalPlaces = round
-        sharedPreferences.edit {
-            putBoolean(SETTING_ROUND_TWO_DP, round)
-        }
+        store.setBoolean(SETTING_ROUND_TWO_DP, round)
     }
 
-    override fun notificationAlerts(): Boolean = sharedPreferences.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
+    override fun notificationAlerts(): Boolean = store.getBoolean(SETTING_NOTIFICATION_ALERTS, true)
 
     override fun setNotificationAlerts(set: Boolean) {
-        sharedPreferences.edit {
-            putBoolean(SETTING_NOTIFICATION_ALERTS, set)
-        }
+        store.setBoolean(SETTING_NOTIFICATION_ALERTS, set)
     }
 
-    private val _themePref = MutableStateFlow(sharedPreferences.getInt(APP_THEME, FOLLOW_SYSTEM_THEME))
+    private val _themePref = MutableStateFlow(store.getInt(APP_THEME, FOLLOW_SYSTEM_THEME))
 
     override val themePrefFlow: Flow<Int> = _themePref
 
@@ -154,32 +138,32 @@ class AppPreferences constructor(
         get() = _themePref.value.coerceIn(0, 2)
         set(value) {
             _themePref.value = value
-            sharedPreferences.edit { putInt(APP_THEME, value) }
+            store.setInt(APP_THEME, value)
         }
 
     override var updateIntervalPref: Int
-        get() = sharedPreferences.getInt(UPDATE_INTERVAL, 1).coerceIn(0, 4)
+        get() = store.getInt(UPDATE_INTERVAL, 1).coerceIn(0, 4)
         set(value) {
-            sharedPreferences.edit {
-                putInt(UPDATE_INTERVAL, value)
-            }
+            store.setInt(UPDATE_INTERVAL, value)
         }
 
     private val _showAddRemoveTooltip = MutableStateFlow(
-        sharedPreferences.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) > 5
+        store.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) > 5
     )
 
     override val showAddRemoveTooltip: Flow<Boolean> = _showAddRemoveTooltip
 
     override fun setAddRemoveTooltipShown() {
-        val count = sharedPreferences.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) + 1
-        sharedPreferences.edit { putInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, count) }
+        val count = store.getInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, 0) + 1
+        store.setInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, count)
         _showAddRemoveTooltip.value = count > 5
     }
 
     companion object {
 
         private lateinit var INSTANCE: AppPreferences
+
+        private val DEFAULT_UPDATE_DAYS_RAW = setOf("1", "2", "3", "4", "5")
 
         fun List<String>.toCommaSeparatedString(): String {
             val builder = StringBuilder()

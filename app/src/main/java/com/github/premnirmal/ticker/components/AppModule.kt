@@ -5,6 +5,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.AppPreferencesDataMigration
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.analytics.GeneralProperties
@@ -22,6 +23,9 @@ import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.TickersStore
 import com.github.premnirmal.ticker.repo.buildQuotesDB
 import com.github.premnirmal.ticker.repo.getQuotesDBBuilder
+import com.github.premnirmal.ticker.settings.DataStorePreferenceStore
+import com.github.premnirmal.ticker.settings.PreferenceStore
+import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +33,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+
+private const val PREFERENCES_FILE_NAME = "ticker.preferences_pb"
 
 /**
  * Android application graph. Replaces the former Hilt `AppModule` plus every
@@ -43,6 +49,13 @@ val appModule = module {
     single<AppClock> { AppClockImpl }
     single<SharedPreferences> {
         androidContext().getSharedPreferences(AppPreferences.PREFS_NAME, MODE_PRIVATE)
+    }
+    single<PreferenceStore> {
+        DataStorePreferenceStore(
+            createPreferenceDataStore(
+                migrations = listOf(AppPreferencesDataMigration(get()))
+            ) { "${androidContext().filesDir.path}/$PREFERENCES_FILE_NAME" }
+        )
     }
     single { AppWidgetManager.getInstance(androidContext()) }
     single { WorkManager.getInstance(androidContext()) }

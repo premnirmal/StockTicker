@@ -212,7 +212,8 @@ items above:
 - **Stocks provider (`StocksProvider`).** Implements the shared `IStocksProvider` over the shared
   `StocksApi`/`StocksStorage`/`BackgroundRefreshScheduler`/`FetchEventLogger`, replacing the Android
   `WidgetDataProvider` coupling with an `onQuotesUpdated` hook (wired to WidgetKit timeline reloads).
-- **Analytics (`Analytics`).** Logs the shared `AnalyticsEvent`/`ClickEvent`/`GeneralEvent`
+- **Analytics (`AnalyticsImpl`).** Implements the shared `Analytics` interface, logging the shared
+  `AnalyticsEvent`/`ClickEvent`/`GeneralEvent`
   through `AppLogger` and forwards them to an `AnalyticsSink` (the Swift
   `StockTickerAnalyticsSink` forwards to Firebase when linked, else `NSLog`).
 - **DI + entry point (`iosModule` / `initKoinIos` / `KoinHelper`).** The iOS counterpart of `:app`'s
@@ -259,20 +260,24 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   preference, the refresh/tooltip flows and the configured update window, in `commonMain`)
   implemented on Android by `AppPreferences`; the configured update window is now part of that shared
   contract, expressed with the platform-neutral `Time` value and ISO day-of-week numbers (replacing
-  the former `java.time`/`Parcelable Time` boundary), while the `SharedPreferences` store and the
-  remaining platform-typed settings (the `@NightMode`/`SelectedTheme` mapping) stay on the concrete
-  Android implementation. The two platform key/value stores have been unified behind a shared
+  the former `java.time`/`Parcelable Time` boundary), and the theme settings are now shared too — the
+  `NightMode` mapping and the `SelectedTheme` selection live in `commonMain` (with a
+  `supportsSystemNightMode()` `expect`/`actual`; Android maps `NightMode` to `AppCompatDelegate`). The
+  two platform key/value stores have been unified behind a shared
   `PreferenceStore` contract, implemented by a **DataStore Multiplatform** store
-  (`DataStorePreferenceStore`, in `commonMain`) that iOS now uses as its preferences backend (in
-  place of the bespoke `NSUserDefaults` `SettingsStore`); migrating Android `AppPreferences` off
-  `SharedPreferences` onto the same shared store is the remaining unification step. The central data provider
+  (`DataStorePreferenceStore`, in `commonMain`) that **both platforms** now use as their preferences
+  backend: iOS in place of the bespoke `NSUserDefaults` `SettingsStore`, and Android `AppPreferences`
+  in place of `SharedPreferences` (a one-shot `AppPreferencesDataMigration` imports the legacy
+  `SharedPreferences` values on first run). The central data provider
   likewise has a shared `IStocksProvider` interface (the common contract for the observable
   watchlist/portfolio state and the add/remove/fetch/schedule operations, expressed in the
   already-shared `Quote`/`Position`/`Holding`/`FetchResult` models, in `commonMain`) implemented on
   Android by `StocksProvider`; the platform wiring (`Context`/`SharedPreferences`, `AlarmScheduler`,
-  `WidgetDataProvider`, the Room-backed `StocksStorage`) and the platform-typed `fetchState` flow
-  (whose `FetchState` carries a `java.time`-formatted display string) stay on the concrete
-  implementation, and iOS provides its own `StocksProvider` implementation (with an
+  `WidgetDataProvider`, the Room-backed `StocksStorage`) stays on the concrete
+  implementation, while the observable `fetchState`/`FetchState` flow is now part of the shared
+  `IStocksProvider` contract — its `java.time`-formatted display string was decoupled into a
+  `formatFetchTime()` `expect`/`actual` (Android `java.time`, iOS `kotlinx-datetime`). iOS provides
+  its own `StocksProvider` implementation (with an
   `onQuotesUpdated` WidgetKit hook in place of the Android `WidgetDataProvider` coupling). The diagnostic
   fetch-event logging is fully shared: the `FetchLogger` interface (the common `log(source, event,
   detail)` contract) and its `FetchEventLogger` implementation now both live in `commonMain`. Like
@@ -282,12 +287,13 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   same sink; the app-provided `CoroutineScope` is the only platform input (supplied by the Koin
   binding in `:app`'s `appModule`). `commonTest` (`FetchEventLoggerTest`) covers the persisted
   fields, the clock timestamp and the detail truncation, so it is verified on iOS as well as Android.
-  The analytics layer has its
+  The analytics layer is now fully shared: the
   platform-neutral event model (`AnalyticsEvent`/`GeneralEvent`/`ClickEvent` — an event name plus an
-  accumulating string property map) in `commonMain`; the `Analytics` interface (whose
-  `trackScreenView` takes an `android.app.Activity`) and `GeneralProperties` (which reads the Android
-  `WidgetDataProvider`/`StocksProvider`) stay on Android, and the per-flavor `AnalyticsImpl` reports
-  the events through Firebase (prod) or no-ops (purefoss/dev); iOS provides its own `Analytics`
+  accumulating string property map), the `Analytics` interface (its `trackScreenView` now takes a
+  screen-name `String` rather than an `android.app.Activity`) and `GeneralProperties` (which takes the
+  shared `IStocksProvider` plus a widget-count lambda) all live in `commonMain`; the per-flavor
+  Android `AnalyticsImpl` reports the events through Firebase (prod) or no-ops (purefoss/dev), and iOS
+  provides its own `AnalyticsImpl`
   over an `AnalyticsSink` (Firebase when linked, else `NSLog`). The iOS-backed
   `CrumbProvider`/`CrumbStore` is provided by `UserDefaultsPreferences`. The news-feed
   list model (`NewsFeedItem` — the article vs trending-stocks carousel entry, depending only on the
@@ -316,15 +322,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   calls `startKoin { … }`; Hilt, its Gradle plugin and KSP compiler are removed. A Robolectric
   `KoinModulesTest` resolves the graph at runtime to replace Hilt's compile-time graph validation.
 
-  *Still open in Phase 2:* (1) Android preferences are still backed by `SharedPreferences` behind the
-  shared `UserPreferences` interface — iOS now uses the unified **DataStore Multiplatform** store
-  (`DataStorePreferenceStore` behind the shared `PreferenceStore` contract), but migrating Android
-  `AppPreferences` onto the same store remains; (2) a few platform-typed surfaces remain on the
-  Android concrete classes and are not yet in `commonMain` — the `@NightMode`/`SelectedTheme`
-  settings on `AppPreferences`, the `fetchState`/`FetchState` flow (with its `java.time`-formatted
-  display string) on `StocksProvider`, and the `Analytics` interface (`trackScreenView(Activity)`) +
-  `GeneralProperties`. The `java.time`-based update window has been decoupled and now lives in
-  `commonMain` (shared `Time` value + ISO day-of-week numbers on `UserPreferences`).
+  *Phase 2 settings/provider unification — now complete:* Android preferences are now backed by the
+  unified **DataStore Multiplatform** store (`DataStorePreferenceStore` behind the shared
+  `PreferenceStore` contract) just like iOS, with a one-shot `AppPreferencesDataMigration` importing
+  the legacy `SharedPreferences` values; and the previously platform-typed surfaces have moved into
+  `commonMain` — the `NightMode`/`SelectedTheme` theme settings on `UserPreferences`, the
+  `fetchState`/`FetchState` flow on `IStocksProvider` (its display string decoupled via a
+  `formatFetchTime()` `expect`/`actual`), and the `Analytics` interface
+  (`trackScreenView(String)`) + `GeneralProperties`. The `java.time`-based update window had already
+  been decoupled into `commonMain` (shared `Time` value + ISO day-of-week numbers on
+  `UserPreferences`).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app

@@ -226,6 +226,7 @@ dependencies {
   implementation(AndroidX.work.runtime)
   implementation(AndroidX.work.runtimeKtx)
   implementation(AndroidX.dataStore)
+  implementation(AndroidX.dataStore.preferences)
 
   implementation(JakeWharton.timber)
   implementation(libs.mpandroidchart)

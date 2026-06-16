@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.settings
 
+import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
@@ -15,10 +16,17 @@ import kotlin.concurrent.Volatile
 /**
  * Builds a multiplatform DataStore Preferences instance persisted at [producePath] (a fully
  * qualified file path ending in `*.preferences_pb`). The platform Koin modules supply the path
- * (`context.filesDir` on Android, `NSDocumentDirectory` on iOS).
+ * (`context.filesDir` on Android, `NSDocumentDirectory` on iOS). Optional [migrations] run once when
+ * the store is first read — Android uses this to import the legacy `SharedPreferences` values.
  */
-fun createPreferenceDataStore(producePath: () -> String): DataStore<Preferences> =
-    PreferenceDataStoreFactory.createWithPath(produceFile = { producePath().toPath() })
+fun createPreferenceDataStore(
+    migrations: List<DataMigration<Preferences>> = emptyList(),
+    producePath: () -> String
+): DataStore<Preferences> =
+    PreferenceDataStoreFactory.createWithPath(
+        migrations = migrations,
+        produceFile = { producePath().toPath() }
+    )
 
 /**
  * [PreferenceStore] backed by **DataStore Multiplatform** — the unified replacement for the

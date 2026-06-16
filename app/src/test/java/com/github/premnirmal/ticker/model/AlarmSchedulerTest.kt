@@ -2,10 +2,10 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
 import androidx.test.core.app.ApplicationProvider
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
+import com.github.premnirmal.ticker.FakePreferenceStore
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.todayZoned
 import com.nhaarman.mockitokotlin2.mock
@@ -44,6 +44,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     }
 
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var preferenceStore: FakePreferenceStore
     private lateinit var clock: AppClock
     private lateinit var appPreferences: AppPreferences
     private lateinit var alarmScheduler: AlarmScheduler
@@ -57,7 +58,8 @@ class AlarmSchedulerTest : BaseUnitTest() {
         clock = mock()
         context = mock()
         sharedPreferences = ApplicationProvider.getApplicationContext<Context>().getSharedPreferences(AppPreferences.PREFS_NAME, Context.MODE_PRIVATE)
-        appPreferences = AppPreferences(sharedPreferences)
+        preferenceStore = FakePreferenceStore()
+        appPreferences = AppPreferences(preferenceStore)
         alarmScheduler = AlarmScheduler(context, appPreferences, clock, sharedPreferences, mock())
         setSelectDays(setOf(MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY))
     }
@@ -75,10 +77,8 @@ class AlarmSchedulerTest : BaseUnitTest() {
     }
 
     private fun setStartAndEndTime(startTime: String, endTime: String) {
-        sharedPreferences.edit {
-            putString(AppPreferences.START_TIME, startTime)
-            putString(AppPreferences.END_TIME, endTime)
-        }
+        appPreferences.setStartTime(startTime)
+        appPreferences.setEndTime(endTime)
     }
 
     private fun setNow(now: Long) {

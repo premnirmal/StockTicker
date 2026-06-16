@@ -3,7 +3,7 @@ package com.github.premnirmal.ticker
 import com.github.premnirmal.ticker.mock.Mocker
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.model.StocksProvider.FetchState
+import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.tools.Parser
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
