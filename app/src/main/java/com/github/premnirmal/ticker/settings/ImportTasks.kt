@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.settings
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.net.Uri
-import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.github.premnirmal.ticker.model.StocksProvider
@@ -20,7 +19,9 @@ internal interface ImportTask {
 }
 
 internal open class TickersImportTask(private val widgetDataProvider: WidgetDataProvider) :
-    ImportTask {
+    ImportTask, KoinComponent {
+
+    private val portfolioSerializer: PortfolioSerializer by inject()
 
     override suspend fun import(context: Context, fileUri: Uri): Boolean {
         var result = false
@@ -30,11 +31,7 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
                 ?.use { inputStream ->
                     BufferedReader(InputStreamReader(inputStream)).use { reader ->
                         val text: String = reader.readText()
-                        val tickers = text
-                            .replace(" ".toRegex(), "")
-                            .split(",".toRegex())
-                            .dropLastWhile(String::isEmpty)
-                            .toTypedArray()
+                        val tickers = portfolioSerializer.parseTickers(text).toTypedArray()
                         if (widgetDataProvider.hasWidget()) {
                             widgetDataProvider.getAppWidgetIds()
                                 .forEach { widgetId ->
@@ -61,7 +58,7 @@ internal open class TickersImportTask(private val widgetDataProvider: WidgetData
 internal open class PortfolioImportTask(private val stocksProvider: StocksProvider) :
     ImportTask, KoinComponent {
 
-    private val json: Json by inject()
+    private val portfolioSerializer: PortfolioSerializer by inject()
 
     override suspend fun import(context: Context, fileUri: Uri): Boolean {
         val contentResolver = context.applicationContext.contentResolver
@@ -69,7 +66,7 @@ internal open class PortfolioImportTask(private val stocksProvider: StocksProvid
             contentResolver.openInputStream(fileUri)?.use { inputStream ->
                 BufferedReader(InputStreamReader(inputStream)).use { reader ->
                     val jsonText: String = reader.readText()
-                    val portfolio: List<Quote> = json.decodeFromString(jsonText)
+                    val portfolio: List<Quote> = portfolioSerializer.deserializePortfolio(jsonText)
                     stocksProvider.addPortfolio(portfolio)
                     true
                 }

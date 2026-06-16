@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.net.Uri
-import kotlinx.serialization.json.Json
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.github.premnirmal.ticker.network.data.Quote
@@ -12,7 +11,9 @@ import timber.log.Timber
 import java.io.FileOutputStream
 import java.io.IOException
 
-internal object TickersExporter {
+internal object TickersExporter : KoinComponent {
+
+    private val portfolioSerializer: PortfolioSerializer by inject()
 
     suspend fun exportTickers(context: Context, uri: Uri, vararg tickers: List<String>): String? = withContext(
         Dispatchers.IO
@@ -22,9 +23,7 @@ internal object TickersExporter {
         try {
             contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { fileOutputStream ->
-                    for (ticker in tickerList) {
-                        fileOutputStream.write(("$ticker, ").toByteArray())
-                    }
+                    fileOutputStream.write(portfolioSerializer.serializeTickers(tickerList).toByteArray())
                 }
             }
         } catch (e: IOException) {
@@ -38,12 +37,12 @@ internal object TickersExporter {
 
 internal object PortfolioExporter : KoinComponent {
 
-    private val json: Json by inject()
+    private val portfolioSerializer: PortfolioSerializer by inject()
 
     suspend fun exportQuotes(context: Context, uri: Uri, vararg quoteLists: List<Quote>): String? =
         withContext(Dispatchers.IO) {
             val quoteList: List<Quote> = quoteLists[0]
-            val jsonString = json.encodeToString(quoteList)
+            val jsonString = portfolioSerializer.serializePortfolio(quoteList)
             val contentResolver = context.applicationContext.contentResolver
             try {
                 contentResolver.openFileDescriptor(uri, "rwt")

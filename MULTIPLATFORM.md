@@ -168,6 +168,18 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   (`SuggestionsProviderTest`, via Ktor `MockEngine`) covers the append-when-missing, the
   no-duplicate-when-present, the empty-query short-circuit and the request-failure paths, so it is
   verified on iOS as well as Android.
+- Moved the **portfolio/tickers import & export** serialization into `commonMain` as a new plain
+  `PortfolioSerializer`. It owns the pure, shared transformations between the in-memory models and
+  their on-disk text — the comma+space separated tickers list (`serializeTickers`/`parseTickers`)
+  and the `kotlinx.serialization` JSON of a `Quote` portfolio
+  (`serializePortfolio`/`deserializePortfolio`) — that previously lived inline in Android's
+  `TickersExporter`/`PortfolioExporter` and `TickersImportTask`/`PortfolioImportTask`. Those Android
+  tasks now keep only the platform IO (`ContentResolver`/`Uri`/`FileOutputStream`) and delegate the
+  format to the shared serializer, which is declared in the Koin `sharedModule` (taking the
+  app-provided `Json` as a leaf dependency), so a file exported on one platform imports cleanly on
+  the other. `commonTest` (`PortfolioSerializerTest`) covers the tickers round-trip, the
+  trailing-separator handling and the portfolio (with positions/holdings) JSON round-trip, so it is
+  verified on iOS as well as Android.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
