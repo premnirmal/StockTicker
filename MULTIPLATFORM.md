@@ -206,7 +206,12 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app. The news-feed
   list model (`NewsFeedItem` — the article vs trending-stocks carousel entry, depending only on the
   already-shared `NewsArticle`/`Quote`) also moved into `commonMain` (same `ticker.news` package), so
-  the shared news view models / Compose Multiplatform UI in later phases can bind to it directly.
+  the shared news view models / Compose Multiplatform UI in later phases can bind to it directly. The
+  chart **range selection** (`Range` — the One Day…Max options plus their Yahoo Finance
+  `interval`/`range` query-param mapping) also moved into `commonMain` (`ticker.model`, decoupled from
+  `java.time` by storing a plain `durationDays`), so iOS shares the same range options and param
+  mapping; the Android-only chart rendering (`HistoryProvider`, `ChartData`, `DataPoint`/MPAndroidChart
+  `CandleEntry`) stays on the platform side, and `commonTest` (`RangeTest`) covers the param mapping.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app

@@ -10,7 +10,7 @@ import com.github.premnirmal.ticker.formatBigNumbers
 import com.github.premnirmal.ticker.formatDate
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.HistoryProvider
-import com.github.premnirmal.ticker.model.HistoryProvider.Range
+import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.Quote

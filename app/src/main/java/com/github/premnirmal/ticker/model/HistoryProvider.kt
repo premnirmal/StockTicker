@@ -3,22 +3,12 @@ package com.github.premnirmal.ticker.model
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.FIVE_YEARS
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.MAX
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_DAY
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_MONTH
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.ONE_YEAR
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.THREE_MONTH
-import com.github.premnirmal.ticker.model.HistoryProvider.Range.Companion.TWO_WEEKS
 import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.Serializable
-import java.time.Duration
-import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -77,26 +67,6 @@ class HistoryProvider @Inject constructor(
         return@withContext FetchResult.success(chartData)
     }
 
-    private fun Range.intervalParam(): String {
-        return when (this) {
-            ONE_DAY -> "1h"
-            else -> "1d"
-        }
-    }
-
-    private fun Range.rangeParam(): String {
-        return when (this) {
-            ONE_DAY -> "1d"
-            TWO_WEEKS -> "14d"
-            ONE_MONTH -> "1mo"
-            THREE_MONTH -> "3mo"
-            ONE_YEAR -> "1y"
-            FIVE_YEARS -> "5y"
-            MAX -> "max"
-            else -> "max"
-        }
-    }
-
     data class ChartData(
         val chartPreviousClose: Float,
         val regularMarketPrice: Float,
@@ -136,20 +106,6 @@ class HistoryProvider @Inject constructor(
                 return "+$changeString"
             }
             return changeString
-        }
-    }
-
-    sealed class Range(val duration: Duration) : Serializable {
-        val end = LocalDate.now().minusDays(duration.toDays())
-        class DateRange(duration: Duration) : Range(duration)
-        companion object {
-            val ONE_DAY = DateRange(Duration.ofDays(1))
-            val TWO_WEEKS = DateRange(Duration.ofDays(14))
-            val ONE_MONTH = DateRange(Duration.ofDays(30))
-            val THREE_MONTH = DateRange(Duration.ofDays(90))
-            val ONE_YEAR = DateRange(Duration.ofDays(365))
-            val FIVE_YEARS = DateRange(Duration.ofDays(5 * 365))
-            val MAX = DateRange(Duration.ofDays(20 * 365))
         }
     }
 }
