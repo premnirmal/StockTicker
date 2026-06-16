@@ -5,30 +5,30 @@ import com.github.premnirmal.ticker.components.AppLogger
 /**
  * Platform sink the iOS app implements to forward analytics events to a backend (e.g. the Firebase
  * iOS SDK), or a no-op for the FOSS build. This is the iOS analogue of the per-flavor Android
- * `AnalyticsImpl`. Defaults to [NoopIosAnalyticsSink] so the dependency graph resolves before the
+ * `AnalyticsImpl`. Defaults to [NoopAnalyticsSink] so the dependency graph resolves before the
  * app wires a real sink.
  */
-interface IosAnalyticsSink {
+interface AnalyticsSink {
     fun trackScreenView(screenName: String) {}
     fun trackClickEvent(event: ClickEvent) {}
     fun trackGeneralEvent(event: GeneralEvent) {}
 }
 
-/** No-op [IosAnalyticsSink] used until the iOS app provides a real (e.g. Firebase) sink. */
-object NoopIosAnalyticsSink : IosAnalyticsSink
+/** No-op [AnalyticsSink] used until the iOS app provides a real (e.g. Firebase) sink. */
+object NoopAnalyticsSink : AnalyticsSink
 
 /**
  * iOS analytics implementation over the shared [AnalyticsEvent] model.
  *
  * It is the iOS counterpart of Android's `Analytics`/`AnalyticsImpl`: the platform-neutral
  * `GeneralEvent`/`ClickEvent` value types are shared, while the platform reporting is delegated to
- * an [IosAnalyticsSink] (the iOS app forwards to Firebase, or no-ops for FOSS). Every event is also
+ * an [AnalyticsSink] (the iOS app forwards to Firebase, or no-ops for FOSS). Every event is also
  * mirrored through the multiplatform [AppLogger] for diagnostics, mirroring the debug logging the
  * Android implementation performs. Unlike Android, `trackScreenView` takes a plain screen name
  * (there is no `android.app.Activity` on iOS).
  */
-class IosAnalytics(
-    private val sink: IosAnalyticsSink = NoopIosAnalyticsSink
+class Analytics(
+    private val sink: AnalyticsSink = NoopAnalyticsSink
 ) {
 
     fun trackScreenView(screenName: String) {

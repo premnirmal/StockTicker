@@ -1,7 +1,7 @@
 import WidgetKit
 
 /// Reloads all WidgetKit timelines after a quotes refresh. This is the iOS counterpart of Android's
-/// `WidgetDataProvider`/app-widget broadcast: the shared `IosStocksProvider` invokes the
+/// `WidgetDataProvider`/app-widget broadcast: the shared `StocksProvider` invokes the
 /// `onQuotesUpdated` hook (wired in `StockTickerApp`) which calls this.
 enum WidgetCenterReloader {
     static func reloadAll() {

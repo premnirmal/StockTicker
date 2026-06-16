@@ -6,11 +6,11 @@ import platform.Foundation.NSUserDefaults
  * Thin key/value store over [NSUserDefaults], the iOS counterpart of Android's `SharedPreferences`.
  *
  * This backs the iOS implementations of the shared Phase 2 settings/persistence interfaces
- * ([com.github.premnirmal.ticker.IosUserPreferences], [com.github.premnirmal.ticker.model.IosStocksProvider]),
+ * ([com.github.premnirmal.ticker.UserDefaultsPreferences], [com.github.premnirmal.ticker.model.StocksProvider]),
  * mirroring how `AppPreferences`/`StocksProvider` are backed by `SharedPreferences` on Android. A
  * dedicated suite name keeps the keys namespaced to the app, matching the Android `PREFS_NAME`.
  */
-class IosSettingsStore(
+class SettingsStore(
     private val defaults: NSUserDefaults = NSUserDefaults(suiteName = SUITE_NAME)
 ) {
 

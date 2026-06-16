@@ -4,13 +4,13 @@ import Shared
 import FirebaseAnalytics
 #endif
 
-/// Platform implementation of the shared `IosAnalyticsSink`. The shared `IosAnalytics` builds the
+/// Platform implementation of the shared `AnalyticsSink`. The shared `Analytics` builds the
 /// platform-neutral `AnalyticsEvent`s (the same model Android logs to Firebase) and forwards them
 /// here; this maps them onto the iOS analytics backend.
 ///
 /// Firebase is optional — when the FirebaseAnalytics SDK is not linked the events are simply logged,
 /// mirroring the Android `dev` flavour's no-op analytics.
-final class StockTickerAnalyticsSink: IosAnalyticsSink {
+final class StockTickerAnalyticsSink: AnalyticsSink {
 
     func trackScreenView(screenName: String) {
         #if canImport(FirebaseAnalytics)

@@ -1,17 +1,17 @@
 package com.github.premnirmal.ticker.repo
 
-import com.github.premnirmal.ticker.settings.IosSettingsStore
+import com.github.premnirmal.ticker.settings.SettingsStore
 import platform.Foundation.NSUserDefaults
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class IosTickersStoreTest {
+class UserDefaultsTickersStoreTest {
 
     private val suiteName = "test-tickers-${kotlin.random.Random.nextInt()}"
     private val defaults = NSUserDefaults(suiteName = suiteName)
-    private val tickersStore = IosTickersStore(IosSettingsStore(defaults))
+    private val tickersStore = UserDefaultsTickersStore(SettingsStore(defaults))
 
     @AfterTest
     fun tearDown() {

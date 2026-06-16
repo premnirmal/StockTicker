@@ -1,7 +1,7 @@
 package com.github.premnirmal.ticker
 
 import com.github.premnirmal.ticker.network.CrumbStore
-import com.github.premnirmal.ticker.settings.IosSettingsStore
+import com.github.premnirmal.ticker.settings.SettingsStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,7 +10,7 @@ import kotlin.random.Random
 /**
  * iOS implementation of the shared [UserPreferences] settings contract and the [CrumbStore]
  * read/write access to the Yahoo Finance crumb token, backed by [NSUserDefaults] via
- * [IosSettingsStore].
+ * [SettingsStore].
  *
  * This is the iOS counterpart of Android's `AppPreferences` (which is backed by
  * `SharedPreferences`): the platform-neutral settings members come from [UserPreferences], and the
@@ -20,10 +20,10 @@ import kotlin.random.Random
  * The configured update window (start/end time and selected days) is not part of the
  * platform-neutral [UserPreferences] contract — on Android it returns `java.time` types from
  * `AppPreferences`. Here it is exposed through the plain [startTime]/[endTime]/[updateDays]
- * accessors that the iOS [com.github.premnirmal.ticker.model.IosRefreshScheduler] reads.
+ * accessors that the iOS [com.github.premnirmal.ticker.model.BackgroundRefreshScheduler] reads.
  */
-class IosUserPreferences(
-    private val store: IosSettingsStore = IosSettingsStore()
+class UserDefaultsPreferences(
+    private val store: SettingsStore = SettingsStore()
 ) : UserPreferences, CrumbStore {
 
     private val _isRefreshing = MutableStateFlow(store.getBoolean(WIDGET_REFRESHING, false))
@@ -95,7 +95,7 @@ class IosUserPreferences(
 
     override fun setCrumb(crumb: String?) = store.setString(CRUMB, crumb)
 
-    // --- iOS-only update-window settings (consumed by IosRefreshScheduler) ---
+    // --- iOS-only update-window settings (consumed by BackgroundRefreshScheduler) ---
 
     /** A wall-clock time of day, the iOS analogue of `AppPreferences.Time`. */
     data class Time(val hour: Int, val minute: Int)

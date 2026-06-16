@@ -1,8 +1,8 @@
 package com.github.premnirmal.ticker.model
 
 import com.github.premnirmal.ticker.FakeAppClock
-import com.github.premnirmal.ticker.IosUserPreferences
-import com.github.premnirmal.ticker.settings.IosSettingsStore
+import com.github.premnirmal.ticker.UserDefaultsPreferences
+import com.github.premnirmal.ticker.settings.SettingsStore
 import kotlinx.datetime.TimeZone
 import platform.Foundation.NSUserDefaults
 import kotlin.test.AfterTest
@@ -11,12 +11,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class IosRefreshSchedulerTest {
+class BackgroundRefreshSchedulerTest {
 
     private val suiteName = "test-scheduler-${kotlin.random.Random.nextInt()}"
     private val defaults = NSUserDefaults(suiteName = suiteName)
-    private val store = IosSettingsStore(defaults)
-    private val preferences = IosUserPreferences(store)
+    private val store = SettingsStore(defaults)
+    private val preferences = UserDefaultsPreferences(store)
 
     @AfterTest
     fun tearDown() {
@@ -26,7 +26,7 @@ class IosRefreshSchedulerTest {
     private fun scheduler(
         nowMillis: Long,
         recorder: RecordingBackgroundTaskScheduler = RecordingBackgroundTaskScheduler()
-    ) = IosRefreshScheduler(
+    ) = BackgroundRefreshScheduler(
         preferences = preferences,
         clock = FakeAppClock(nowMillis),
         backgroundTaskScheduler = recorder,
@@ -100,7 +100,7 @@ class IosRefreshSchedulerTest {
     }
 }
 
-class RecordingBackgroundTaskScheduler : IosBackgroundTaskScheduler {
+class RecordingBackgroundTaskScheduler : BackgroundTaskScheduler {
     var periodicRefreshCount = 0
     var periodicCleanupCount = 0
     var cleanupCount = 0

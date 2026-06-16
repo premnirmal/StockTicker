@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.model
 
-import com.github.premnirmal.ticker.IosUserPreferences
+import com.github.premnirmal.ticker.UserDefaultsPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.Instant
@@ -18,15 +18,15 @@ import kotlinx.datetime.toLocalDateTime
  * It is the iOS counterpart of Android's `AlarmScheduler`: it owns the same platform-neutral
  * update-window decisions ([isCurrentTimeWithinScheduledUpdateTime], [msToNextAlarm]) — a faithful
  * port of the Android calendar arithmetic, expressed with `kotlinx-datetime` instead of `java.time`
- * — while delegating the actual background submission to the platform [IosBackgroundTaskScheduler]
+ * — while delegating the actual background submission to the platform [BackgroundTaskScheduler]
  * (a `BGTaskScheduler`/WidgetKit bridge the iOS app provides).
  *
  * iOS has no "exact alarm" permission concept, so [canScheduleExactAlarm] always returns `true`.
  */
-class IosRefreshScheduler(
-    private val preferences: IosUserPreferences,
+class BackgroundRefreshScheduler(
+    private val preferences: UserDefaultsPreferences,
     private val clock: AppClock,
-    private val backgroundTaskScheduler: IosBackgroundTaskScheduler = NoopIosBackgroundTaskScheduler,
+    private val backgroundTaskScheduler: BackgroundTaskScheduler = NoopBackgroundTaskScheduler,
     private val timeZone: TimeZone = TimeZone.currentSystemDefault()
 ) : RefreshScheduler {
 
@@ -127,7 +127,7 @@ class IosRefreshScheduler(
 
     private fun nowInstant(): Instant = Instant.fromEpochMilliseconds(clock.currentTimeMillis())
 
-    private fun isInverse(start: IosUserPreferences.Time, end: IosUserPreferences.Time): Boolean =
+    private fun isInverse(start: UserDefaultsPreferences.Time, end: UserDefaultsPreferences.Time): Boolean =
         start.hour > end.hour || (start.hour == end.hour && start.minute > end.minute)
 
     private fun Instant.local(): LocalDateTime = toLocalDateTime(timeZone)

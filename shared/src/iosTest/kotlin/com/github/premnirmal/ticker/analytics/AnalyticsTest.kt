@@ -3,9 +3,9 @@ package com.github.premnirmal.ticker.analytics
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class IosAnalyticsTest {
+class AnalyticsTest {
 
-    private class RecordingSink : IosAnalyticsSink {
+    private class RecordingSink : AnalyticsSink {
         val screenViews = mutableListOf<String>()
         val clicks = mutableListOf<ClickEvent>()
         val events = mutableListOf<GeneralEvent>()
@@ -26,7 +26,7 @@ class IosAnalyticsTest {
     @Test
     fun forwardsEventsToSink() {
         val sink = RecordingSink()
-        val analytics = IosAnalytics(sink)
+        val analytics = Analytics(sink)
 
         analytics.trackScreenView("Home")
         analytics.trackClickEvent(ClickEvent("add_stock").addProperty("symbol", "AAPL"))
@@ -43,7 +43,7 @@ class IosAnalyticsTest {
 
     @Test
     fun defaultSinkIsNoopAndDoesNotThrow() {
-        val analytics = IosAnalytics()
+        val analytics = Analytics()
         analytics.trackScreenView("Home")
         analytics.trackClickEvent(ClickEvent("noop"))
         analytics.trackGeneralEvent(GeneralEvent("noop"))

@@ -1,17 +1,17 @@
 package com.github.premnirmal.ticker.di
 
-import com.github.premnirmal.ticker.IosUserPreferences
+import com.github.premnirmal.ticker.UserDefaultsPreferences
 import com.github.premnirmal.ticker.UserPreferences
-import com.github.premnirmal.ticker.analytics.IosAnalytics
-import com.github.premnirmal.ticker.analytics.IosAnalyticsSink
-import com.github.premnirmal.ticker.analytics.NoopIosAnalyticsSink
+import com.github.premnirmal.ticker.analytics.Analytics
+import com.github.premnirmal.ticker.analytics.AnalyticsSink
+import com.github.premnirmal.ticker.analytics.NoopAnalyticsSink
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.FetchEventLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.model.IosBackgroundTaskScheduler
-import com.github.premnirmal.ticker.model.IosRefreshScheduler
-import com.github.premnirmal.ticker.model.IosStocksProvider
-import com.github.premnirmal.ticker.model.NoopIosBackgroundTaskScheduler
+import com.github.premnirmal.ticker.model.BackgroundTaskScheduler
+import com.github.premnirmal.ticker.model.BackgroundRefreshScheduler
+import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.NoopBackgroundTaskScheduler
 import com.github.premnirmal.ticker.model.RefreshScheduler
 import com.github.premnirmal.ticker.network.ApeWisdom
 import com.github.premnirmal.ticker.network.data.Quote
@@ -25,13 +25,13 @@ import com.github.premnirmal.ticker.network.createYahooFinanceApi
 import com.github.premnirmal.ticker.network.createYahooFinanceInitialLoadApi
 import com.github.premnirmal.ticker.network.createYahooFinanceMostActiveApi
 import com.github.premnirmal.ticker.network.createYahooFinanceNewsApi
-import com.github.premnirmal.ticker.repo.IosTickersStore
+import com.github.premnirmal.ticker.repo.UserDefaultsTickersStore
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.TickersStore
 import com.github.premnirmal.ticker.repo.buildQuotesDB
 import com.github.premnirmal.ticker.repo.getQuotesDBBuilder
-import com.github.premnirmal.ticker.settings.IosSettingsStore
+import com.github.premnirmal.ticker.settings.SettingsStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -48,16 +48,16 @@ import org.koin.dsl.module
  * `viewModelModule`. It contributes the leaf bindings the shared [sharedModule] consumes (the Ktor
  * API clients built with the Darwin engine, the Room-backed [StocksStorage], the [Json] instance and
  * the application [CoroutineScope]) plus the iOS concrete implementations of the Phase 2 interfaces:
- * [IosUserPreferences] ([UserPreferences]/[CrumbStore]), [IosRefreshScheduler] ([RefreshScheduler]),
- * [IosStocksProvider] ([IStocksProvider]) and [IosAnalytics].
+ * [UserDefaultsPreferences] ([UserPreferences]/[CrumbStore]), [BackgroundRefreshScheduler] ([RefreshScheduler]),
+ * [StocksProvider] ([IStocksProvider]) and [Analytics].
  *
  * The [backgroundTaskScheduler], [analyticsSink] and [onQuotesUpdated] platform hooks are supplied
  * by the iOS app (`BGTaskScheduler`, Firebase, WidgetKit timeline reloads); they default to no-ops
  * so the graph resolves in tests and previews.
  */
 fun iosModule(
-    backgroundTaskScheduler: IosBackgroundTaskScheduler = NoopIosBackgroundTaskScheduler,
-    analyticsSink: IosAnalyticsSink = NoopIosAnalyticsSink,
+    backgroundTaskScheduler: BackgroundTaskScheduler = NoopBackgroundTaskScheduler,
+    analyticsSink: AnalyticsSink = NoopAnalyticsSink,
     onQuotesUpdated: () -> Unit = {}
 ) = module {
     // Core infrastructure
@@ -74,16 +74,16 @@ fun iosModule(
     }
 
     // Settings + crumb store (NSUserDefaults-backed)
-    single { IosSettingsStore() }
-    single { IosUserPreferences(get()) }
-    single<UserPreferences> { get<IosUserPreferences>() }
-    single<CrumbStore> { get<IosUserPreferences>() }
-    single<CrumbProvider> { get<IosUserPreferences>() }
+    single { SettingsStore() }
+    single { UserDefaultsPreferences(get()) }
+    single<UserPreferences> { get<UserDefaultsPreferences>() }
+    single<CrumbStore> { get<UserDefaultsPreferences>() }
+    single<CrumbProvider> { get<UserDefaultsPreferences>() }
 
     // Persistence (Room KMP)
     single { buildQuotesDB(getQuotesDBBuilder()) }
     single { get<QuotesDB>().quoteDao() }
-    single<TickersStore> { IosTickersStore(get()) }
+    single<TickersStore> { UserDefaultsTickersStore(get()) }
     single { StocksStorage(get(), get()) }
 
     // Network (Yahoo-authenticated via the shared CrumbProvider, Darwin engine)
@@ -99,11 +99,11 @@ fun iosModule(
 
     // Diagnostics + scheduling + provider
     single { FetchEventLogger(get(), get(), get()) }
-    single<IosBackgroundTaskScheduler> { backgroundTaskScheduler }
-    single { IosRefreshScheduler(get(), get(), get()) }
-    single<RefreshScheduler> { get<IosRefreshScheduler>() }
+    single<BackgroundTaskScheduler> { backgroundTaskScheduler }
+    single { BackgroundRefreshScheduler(get(), get(), get()) }
+    single<RefreshScheduler> { get<BackgroundRefreshScheduler>() }
     single {
-        IosStocksProvider(
+        StocksProvider(
             api = get(),
             storage = get(),
             scheduler = get(),
@@ -115,11 +115,11 @@ fun iosModule(
             onQuotesUpdated = onQuotesUpdated
         )
     }
-    single<IStocksProvider> { get<IosStocksProvider>() }
+    single<IStocksProvider> { get<StocksProvider>() }
 
     // Analytics
-    single<IosAnalyticsSink> { analyticsSink }
-    single { IosAnalytics(get()) }
+    single<AnalyticsSink> { analyticsSink }
+    single { Analytics(get()) }
 }
 
 private const val SUGGESTIONS_ENDPOINT = "https://query2.finance.yahoo.com/v1/finance/"
@@ -138,8 +138,8 @@ private const val APEWISDOM_ENDPOINT = "https://apewisdom.io/api/v1.0/"
  * [onQuotesUpdated] hook (to reload WidgetKit timelines after a refresh).
  */
 fun initKoinIos(
-    backgroundTaskScheduler: IosBackgroundTaskScheduler = NoopIosBackgroundTaskScheduler,
-    analyticsSink: IosAnalyticsSink = NoopIosAnalyticsSink,
+    backgroundTaskScheduler: BackgroundTaskScheduler = NoopBackgroundTaskScheduler,
+    analyticsSink: AnalyticsSink = NoopAnalyticsSink,
     onQuotesUpdated: () -> Unit = {}
 ): KoinApplication = startKoin {
     modules(sharedModule, iosModule(backgroundTaskScheduler, analyticsSink, onQuotesUpdated))
@@ -151,14 +151,14 @@ fun initKoinIos(
  * object (e.g. `KoinHelper.shared.stocksProvider()` from the `BGTaskScheduler` handlers).
  */
 object KoinHelper : KoinComponent {
-    private val stocksProvider: IosStocksProvider by inject()
-    private val refreshScheduler: IosRefreshScheduler by inject()
-    private val analytics: IosAnalytics by inject()
+    private val stocksProvider: StocksProvider by inject()
+    private val refreshScheduler: BackgroundRefreshScheduler by inject()
+    private val analytics: Analytics by inject()
     private val scope: CoroutineScope by inject()
 
-    fun stocksProvider(): IosStocksProvider = stocksProvider
-    fun refreshScheduler(): IosRefreshScheduler = refreshScheduler
-    fun analytics(): IosAnalytics = analytics
+    fun stocksProvider(): StocksProvider = stocksProvider
+    fun refreshScheduler(): BackgroundRefreshScheduler = refreshScheduler
+    fun analytics(): Analytics = analytics
 
     /**
      * Observes the shared portfolio [kotlinx.coroutines.flow.StateFlow] from Swift, invoking [onEach]

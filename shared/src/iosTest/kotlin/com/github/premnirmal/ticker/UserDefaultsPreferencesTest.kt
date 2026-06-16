@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker
 
-import com.github.premnirmal.ticker.settings.IosSettingsStore
+import com.github.premnirmal.ticker.settings.SettingsStore
 import platform.Foundation.NSUserDefaults
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -9,11 +9,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class IosUserPreferencesTest {
+class UserDefaultsPreferencesTest {
 
     private val suiteName = "test-prefs-${kotlin.random.Random.nextInt()}"
     private val defaults = NSUserDefaults(suiteName = suiteName)
-    private val preferences = IosUserPreferences(IosSettingsStore(defaults))
+    private val preferences = UserDefaultsPreferences(SettingsStore(defaults))
 
     @AfterTest
     fun tearDown() {
@@ -27,10 +27,10 @@ class IosUserPreferencesTest {
         assertTrue(preferences.roundToTwoDecimalPlaces())
         assertTrue(preferences.notificationAlerts())
         assertFalse(preferences.tutorialShown())
-        assertEquals(IosUserPreferences.FOLLOW_SYSTEM_THEME, preferences.themePref)
+        assertEquals(UserDefaultsPreferences.FOLLOW_SYSTEM_THEME, preferences.themePref)
         assertEquals(setOf(1, 2, 3, 4, 5), preferences.updateDays())
-        assertEquals(IosUserPreferences.Time(9, 30), preferences.startTime())
-        assertEquals(IosUserPreferences.Time(16, 0), preferences.endTime())
+        assertEquals(UserDefaultsPreferences.Time(9, 30), preferences.startTime())
+        assertEquals(UserDefaultsPreferences.Time(16, 0), preferences.endTime())
     }
 
     @Test

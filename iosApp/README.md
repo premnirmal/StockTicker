@@ -5,11 +5,11 @@ the shared **iOS Phase 2 implementations** into a running iOS app:
 
 | Shared (Kotlin/Native, `shared/src/iosMain`) | iOS app (Swift, this folder) |
 | --- | --- |
-| `IosUserPreferences` (`UserPreferences` + `CrumbStore`, `NSUserDefaults`) | — |
-| `IosRefreshScheduler` (`RefreshScheduler`, update-window math) | `StockTickerBackgroundScheduler` (`BGTaskScheduler` submission) |
-| `IosStocksProvider` (`IStocksProvider`) | `ContentView` / `WatchlistModel` |
-| `IosAnalytics` (over shared `AnalyticsEvent`) | `StockTickerAnalyticsSink` (Firebase or `NSLog`) |
-| `IosBackgroundTaskScheduler` (interface) | `StockTickerBackgroundScheduler` |
+| `UserDefaultsPreferences` (`UserPreferences` + `CrumbStore`, `NSUserDefaults`) | — |
+| `BackgroundRefreshScheduler` (`RefreshScheduler`, update-window math) | `StockTickerBackgroundScheduler` (`BGTaskScheduler` submission) |
+| `StocksProvider` (`IStocksProvider`) | `ContentView` / `WatchlistModel` |
+| `Analytics` (over shared `AnalyticsEvent`) | `StockTickerAnalyticsSink` (Firebase or `NSLog`) |
+| `BackgroundTaskScheduler` (interface) | `StockTickerBackgroundScheduler` |
 | `onQuotesUpdated` hook | `WidgetCenterReloader` (WidgetKit) |
 | `initKoinIos(...)` / `KoinHelper` | `StockTickerApp` calls it at launch |
 
@@ -18,10 +18,10 @@ the shared **iOS Phase 2 implementations** into a running iOS app:
 - `StockTickerApp.swift` — `@main` entry point. Starts Koin (`IosModuleKt.doInitKoinIos`) with the
   platform background scheduler, analytics sink and the WidgetKit reload hook, and registers the
   `BGTaskScheduler` handlers.
-- `StockTickerBackgroundScheduler.swift` — implements the shared `IosBackgroundTaskScheduler` by
+- `StockTickerBackgroundScheduler.swift` — implements the shared `BackgroundTaskScheduler` by
   submitting `BGAppRefreshTaskRequest` / `BGProcessingTaskRequest`, and runs the shared
   `IStocksProvider.fetch` / `cleanup` from the task handlers.
-- `StockTickerAnalyticsSink.swift` — implements the shared `IosAnalyticsSink`; forwards to Firebase
+- `StockTickerAnalyticsSink.swift` — implements the shared `AnalyticsSink`; forwards to Firebase
   when the SDK is linked, otherwise logs.
 - `WidgetCenterReloader.swift` — reloads WidgetKit timelines after a refresh.
 - `ContentView.swift` — minimal watchlist view that observes the shared portfolio flow via

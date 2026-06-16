@@ -197,21 +197,21 @@ The deferred iOS concrete implementations of the shared Phase 2 interfaces are n
 shell under `iosApp/`. This closes the "iOS will provide its own implementation once it exists"
 items above:
 
-- **Preferences + Crumb store (`IosUserPreferences`).** Implements the shared `UserPreferences` and
-  `CrumbStore`/`CrumbProvider` over an `NSUserDefaults`-backed `IosSettingsStore` (suite
+- **Preferences + Crumb store (`UserDefaultsPreferences`).** Implements the shared `UserPreferences` and
+  `CrumbStore`/`CrumbProvider` over an `NSUserDefaults`-backed `SettingsStore` (suite
   `com.github.premnirmal.ticker`), mirroring Android `AppPreferences` keys/defaults. The
   platform-typed update window is exposed as an iOS-native `Time(hour, minute)` + day-set the
   scheduler consumes.
-- **Background refresh + scheduler (`IosRefreshScheduler`).** Implements the shared
+- **Background refresh + scheduler (`BackgroundRefreshScheduler`).** Implements the shared
   `RefreshScheduler`; a faithful port of `AlarmScheduler`'s update-window math using
-  `kotlinx-datetime`. The actual OS submission is delegated to an `IosBackgroundTaskScheduler`
+  `kotlinx-datetime`. The actual OS submission is delegated to an `BackgroundTaskScheduler`
   interface, implemented by the Swift `StockTickerBackgroundScheduler` via `BGTaskScheduler`
   (`BGAppRefreshTaskRequest`/`BGProcessingTaskRequest`).
-- **Stocks provider (`IosStocksProvider`).** Implements the shared `IStocksProvider` over the shared
-  `StocksApi`/`StocksStorage`/`IosRefreshScheduler`/`FetchEventLogger`, replacing the Android
+- **Stocks provider (`StocksProvider`).** Implements the shared `IStocksProvider` over the shared
+  `StocksApi`/`StocksStorage`/`BackgroundRefreshScheduler`/`FetchEventLogger`, replacing the Android
   `WidgetDataProvider` coupling with an `onQuotesUpdated` hook (wired to WidgetKit timeline reloads).
-- **Analytics (`IosAnalytics`).** Logs the shared `AnalyticsEvent`/`ClickEvent`/`GeneralEvent`
-  through `AppLogger` and forwards them to an `IosAnalyticsSink` (the Swift
+- **Analytics (`Analytics`).** Logs the shared `AnalyticsEvent`/`ClickEvent`/`GeneralEvent`
+  through `AppLogger` and forwards them to an `AnalyticsSink` (the Swift
   `StockTickerAnalyticsSink` forwards to Firebase when linked, else `NSLog`).
 - **DI + entry point (`iosModule` / `initKoinIos` / `KoinHelper`).** The iOS counterpart of `:app`'s
   `networkModule`/`appModule` — contributes the Darwin-engine Ktor clients, the Room-backed
@@ -223,8 +223,8 @@ items above:
   the above into a running app. The Xcode project itself is generated on macOS (see
   `iosApp/README.md`) since iOS builds cannot run in the Linux CI.
 
-`iosTest` covers the pure logic (`IosRefreshSchedulerTest`, `IosUserPreferencesTest`,
-`IosTickersStoreTest`, `IosAnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
+`iosTest` covers the pure logic (`BackgroundRefreshSchedulerTest`, `UserDefaultsPreferencesTest`,
+`UserDefaultsTickersStoreTest`, `AnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
 `Shared` framework.
 
 ### Remaining (high level)

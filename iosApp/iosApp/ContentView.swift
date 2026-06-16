@@ -36,7 +36,7 @@ final class WatchlistModel: ObservableObject {
 
     @Published var quotes: [Quote] = []
 
-    private let provider: IosStocksProvider = KoinHelper.shared.stocksProvider()
+    private let provider: StocksProvider = KoinHelper.shared.stocksProvider()
     private var subscription: Closeable?
 
     func start() {

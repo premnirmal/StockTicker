@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.model
 
 /**
  * Platform bridge that the iOS app implements to perform the actual background scheduling that the
- * shared [IosRefreshScheduler] requests.
+ * shared [BackgroundRefreshScheduler] requests.
  *
  * The shared scheduler owns the platform-neutral *decisions* (the update-window math: when the next
  * refresh should run, whether now is inside the window). The concrete enqueueing is platform code:
@@ -13,9 +13,9 @@ package com.github.premnirmal.ticker.model
  * interface so the `:shared` Kotlin compiles and is testable without them.
  *
  * The iOS app provides an implementation (see `iosApp/StockTickerBackgroundScheduler.swift`); when
- * none is supplied, [NoopIosBackgroundTaskScheduler] is used so the dependency graph still resolves.
+ * none is supplied, [NoopBackgroundTaskScheduler] is used so the dependency graph still resolves.
  */
-interface IosBackgroundTaskScheduler {
+interface BackgroundTaskScheduler {
 
     /** Submit a one-off background refresh to run roughly [delayMs] from now. */
     fun scheduleRefresh(delayMs: Long)
@@ -31,10 +31,10 @@ interface IosBackgroundTaskScheduler {
 }
 
 /**
- * Default no-op [IosBackgroundTaskScheduler] used until the iOS app wires a real `BGTaskScheduler`
+ * Default no-op [BackgroundTaskScheduler] used until the iOS app wires a real `BGTaskScheduler`
  * implementation. The shared scheduling math still runs; only the platform submission is skipped.
  */
-object NoopIosBackgroundTaskScheduler : IosBackgroundTaskScheduler {
+object NoopBackgroundTaskScheduler : BackgroundTaskScheduler {
     override fun scheduleRefresh(delayMs: Long) = Unit
     override fun enqueuePeriodicRefresh(intervalMs: Long) = Unit
     override fun enqueuePeriodicCleanup() = Unit

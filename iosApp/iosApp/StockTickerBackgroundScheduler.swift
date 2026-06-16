@@ -2,11 +2,11 @@ import Foundation
 import BackgroundTasks
 import Shared
 
-/// Platform implementation of the shared `IosBackgroundTaskScheduler` (the iOS side of the
+/// Platform implementation of the shared `BackgroundTaskScheduler` (the iOS side of the
 /// multiplatform `RefreshScheduler`). It submits `BGTaskScheduler` requests for the background
-/// refresh/cleanup that the shared `IosRefreshScheduler` decides on (it owns the update-window math;
+/// refresh/cleanup that the shared `BackgroundRefreshScheduler` decides on (it owns the update-window math;
 /// this owns the actual OS submission, the analogue of Android's `AlarmManager`/`WorkManager`).
-final class StockTickerBackgroundScheduler: IosBackgroundTaskScheduler {
+final class StockTickerBackgroundScheduler: BackgroundTaskScheduler {
 
     private let refreshTaskId: String
     private let cleanupTaskId: String
@@ -45,7 +45,7 @@ final class StockTickerBackgroundScheduler: IosBackgroundTaskScheduler {
 
     func handleRefresh(task: BGAppRefreshTask) {
         // Re-arm the next refresh, then run the shared fetch.
-        let provider: IosStocksProvider = KoinHelper.shared.stocksProvider()
+        let provider: StocksProvider = KoinHelper.shared.stocksProvider()
         let operation = Task {
             _ = try? await provider.fetch(allowScheduling: true)
             task.setTaskCompleted(success: true)
@@ -54,7 +54,7 @@ final class StockTickerBackgroundScheduler: IosBackgroundTaskScheduler {
     }
 
     func handleCleanup(task: BGProcessingTask) {
-        let provider: IosStocksProvider = KoinHelper.shared.stocksProvider()
+        let provider: StocksProvider = KoinHelper.shared.stocksProvider()
         let operation = Task {
             try? await provider.cleanup()
             task.setTaskCompleted(success: true)

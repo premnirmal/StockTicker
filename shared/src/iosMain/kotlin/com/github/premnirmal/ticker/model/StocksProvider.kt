@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.model
 
-import com.github.premnirmal.ticker.IosUserPreferences
+import com.github.premnirmal.ticker.UserDefaultsPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AppLogger
 import com.github.premnirmal.ticker.components.ioDispatcher
@@ -9,7 +9,7 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
-import com.github.premnirmal.ticker.settings.IosSettingsStore
+import com.github.premnirmal.ticker.settings.SettingsStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,22 +24,22 @@ import platform.Foundation.NSRecursiveLock
  *
  * It is the iOS counterpart of Android's `StocksProvider`, wired to the multiplatform infrastructure
  * instead of Android types: the shared [StocksApi] for network, the Room-backed [StocksStorage] for
- * persistence, [IosRefreshScheduler] for background scheduling, the shared [FetchEventLogger] for
- * diagnostics and [IosSettingsStore]/[IosUserPreferences] for settings. Where Android broadcasts to
+ * persistence, [BackgroundRefreshScheduler] for background scheduling, the shared [FetchEventLogger] for
+ * diagnostics and [SettingsStore]/[UserDefaultsPreferences] for settings. Where Android broadcasts to
  * its app widgets, iOS invokes the [onQuotesUpdated] hook so the app can reload its WidgetKit
  * timelines.
  *
  * The Android-only `fetchState` flow (whose `FetchState` carries a `java.time`-formatted display
  * string) is intentionally not part of the shared contract and is omitted here.
  */
-class IosStocksProvider(
+class StocksProvider(
     private val api: StocksApi,
     private val storage: StocksStorage,
-    private val scheduler: IosRefreshScheduler,
-    private val appPreferences: IosUserPreferences,
+    private val scheduler: BackgroundRefreshScheduler,
+    private val appPreferences: UserDefaultsPreferences,
     private val fetchEventLogger: FetchEventLogger,
     private val clock: AppClock,
-    private val store: IosSettingsStore,
+    private val store: SettingsStore,
     private val coroutineScope: CoroutineScope,
     private val onQuotesUpdated: () -> Unit = {}
 ) : IStocksProvider {
@@ -96,7 +96,7 @@ class IosStocksProvider(
     private fun saveTickers() = storage.saveTickers(tickerSet)
 
     private fun logFetchEvent(event: String, detail: String) =
-        fetchEventLogger.log(source = "IosStocksProvider", event = event, detail = detail)
+        fetchEventLogger.log(source = "StocksProvider", event = event, detail = detail)
 
     override fun scheduleUpdate(reason: String) {
         val msToNextAlarm = scheduler.msToNextAlarm(lastFetched)
