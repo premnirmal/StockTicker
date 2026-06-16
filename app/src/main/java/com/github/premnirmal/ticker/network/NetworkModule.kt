@@ -228,6 +228,13 @@ class NetworkModule {
         )
     }
 
+    @Provides @Singleton
+    internal fun provideHistoryProvider(
+        chartApi: ChartApi
+    ): com.github.premnirmal.ticker.model.HistoryProvider {
+        return com.github.premnirmal.ticker.model.HistoryProvider(chartApi = chartApi)
+    }
+
     // @Provides @Singleton
     // internal fun provideGithubApi(
     //     @ApplicationContext context: Context,

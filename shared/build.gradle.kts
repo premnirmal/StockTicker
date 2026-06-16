@@ -13,6 +13,7 @@ plugins {
 repositories {
   google()
   mavenCentral()
+  maven("https://jitpack.io")
 }
 
 // Generates the "what's new" changelog from the local git history into a commonMain constant, so the
@@ -101,6 +102,9 @@ kotlin {
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
       implementation(JakeWharton.timber)
+      // The Android DataPoint actual extends MPAndroidChart's CandleEntry so the existing chart UI
+      // can render it directly; commonMain/iOS stay MPAndroidChart-free.
+      implementation(libs.mpandroidchart)
     }
     iosMain.dependencies {
       implementation("io.ktor:ktor-client-darwin:_")

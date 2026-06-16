@@ -84,7 +84,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineDataSet.Mode.CUBIC_BEZIER
 import com.github.premnirmal.ticker.model.FetchResult
-import com.github.premnirmal.ticker.model.HistoryProvider
+import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.DataPoint
@@ -357,7 +357,7 @@ private fun LazyGridScope.quoteBackground(quoteDetail: FetchResult<QuoteWithSumm
 
 private fun LazyGridScope.quoteInfo(
     quote: Quote,
-    chartData: HistoryProvider.ChartData?,
+    chartData: ChartData?,
     viewModel: QuoteDetailViewModel
 ) {
     val lastTradePrice = quote.priceFormat.format(chartData?.regularMarketPrice ?: quote.lastTradePrice)
@@ -414,7 +414,7 @@ private fun LazyGridScope.quoteInfo(
 @Composable
 private fun GraphItem(
     quote: Quote,
-    graphData: HistoryProvider.ChartData?,
+    graphData: ChartData?,
     viewModel: QuoteDetailViewModel
 ) {
     Column {

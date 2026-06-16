@@ -8,6 +8,7 @@ import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.format
 import com.github.premnirmal.ticker.formatBigNumbers
 import com.github.premnirmal.ticker.formatDate
+import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.Range
@@ -51,8 +52,8 @@ class QuoteDetailViewModel @Inject constructor(
     val quote: SharedFlow<FetchResult<QuoteWithSummary>>
         get() = _quote
     private val _quote = MutableSharedFlow<FetchResult<QuoteWithSummary>>(1)
-    private val _data = MutableStateFlow<HistoryProvider.ChartData?>(null)
-    val data: StateFlow<HistoryProvider.ChartData?>
+    private val _data = MutableStateFlow<ChartData?>(null)
+    val data: StateFlow<ChartData?>
         get() = _data
     private val _dataFetchError = MutableStateFlow<Throwable?>(null)
     val dataFetchError: StateFlow<Throwable?>

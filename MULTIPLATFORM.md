@@ -162,9 +162,7 @@ shims.
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
-- **Phase 1 (cont.):** Move more pure logic into `commonMain`. Items that still need an
-  `expect`/`actual` wrapper or further decoupling: `DataPoint` (MPAndroidChart `CandleEntry`
-  + `Parcelable`).
+- **Phase 1 (cont.):** Move more pure logic into `commonMain`.
 - **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —
   persistence (Room → Room KMP or SQLDelight), preferences (DataStore multiplatform), DI
   (Hilt → Koin or Hilt-on-Android only), background refresh (WorkManager + a common scheduler
@@ -210,8 +208,18 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   chart **range selection** (`Range` — the One Day…Max options plus their Yahoo Finance
   `interval`/`range` query-param mapping) also moved into `commonMain` (`ticker.model`, decoupled from
   `java.time` by storing a plain `durationDays`), so iOS shares the same range options and param
-  mapping; the Android-only chart rendering (`HistoryProvider`, `ChartData`, `DataPoint`/MPAndroidChart
-  `CandleEntry`) stays on the platform side, and `commonTest` (`RangeTest`) covers the param mapping.
+  mapping. Building on that, the **chart fetch** itself (`HistoryProvider` → `ChartData`) also moved
+  into `commonMain` (`ticker.model`): it is now a plain class (no `Timber`/`Dispatchers.IO`/Hilt —
+  `AppLogger`/`ioDispatcher`, constructed by `:app`'s `NetworkModule.provideHistoryProvider`) over the
+  already-shared `ChartApi`, and `ChartData`'s `…String()` helpers use the shared `AppNumberFormat`
+  (its Compose `changeColour` is an Android-only extension in `:app`, like `Quote.changeColour`). The
+  `DataPoint` candle that blocked this is now `expect`/`actual`: `commonMain`/iOS see a plain,
+  MPAndroidChart-free value ordered by its timestamp, while the Android `actual` still extends
+  MPAndroidChart's `CandleEntry` (and stays `Parcelable`/`Serializable`) so the Android chart UI
+  (`LineDataSet`/`TextMarkerView`) renders it unchanged; MPAndroidChart is therefore a `:shared`
+  `androidMain`-only dependency. `commonTest` (`HistoryProviderTest`, via Ktor `MockEngine`) covers
+  the mapping, timestamp sorting, the missing-value filtering and the failure path, so the chart fetch
+  is verified on iOS as well as Android.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app

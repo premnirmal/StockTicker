@@ -8,21 +8,25 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+/**
+ * Android [DataPoint]: a MPAndroidChart [CandleEntry] (so it can be fed straight into the chart
+ * `LineDataSet`/`MarkerView`) that is also `Serializable`/`Parcelable` and orders by its timestamp.
+ */
 @Parcelize
-class DataPoint(
-    val xVal: Float,
-    val shadowH: Float,
-    val shadowL: Float,
-    val openVal: Float,
-    val closeVal: Float
+actual class DataPoint actual constructor(
+    actual val xVal: Float,
+    actual val shadowH: Float,
+    actual val shadowL: Float,
+    actual val openVal: Float,
+    actual val closeVal: Float
 ) : CandleEntry(xVal, shadowH, shadowL, openVal, closeVal), Serializable, Comparable<DataPoint> {
 
     fun getDate(): LocalDate = LocalDateTime.ofInstant(
-        Instant.ofEpochSecond(x.toLong()),
+        Instant.ofEpochSecond(xVal.toLong()),
         ZoneId.systemDefault()
     ).toLocalDate()
 
-    override fun compareTo(other: DataPoint): Int = x.compareTo(other.x)
+    actual override fun compareTo(other: DataPoint): Int = xVal.compareTo(other.xVal)
 
     companion object {
         private const val serialVersionUID = 42L
