@@ -203,7 +203,10 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `trackScreenView` takes an `android.app.Activity`) and `GeneralProperties` (which reads the Android
   `WidgetDataProvider`/`StocksProvider`) stay on Android, and the per-flavor `AnalyticsImpl` reports
   the events through Firebase (prod) or no-ops (purefoss/dev), with iOS providing its own sink once it
-  exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app.
+  exists. Wiring an iOS-backed `CrumbProvider`/`CrumbStore` remains for the iOS app. The news-feed
+  list model (`NewsFeedItem` — the article vs trending-stocks carousel entry, depending only on the
+  already-shared `NewsArticle`/`Quote`) also moved into `commonMain` (same `ticker.news` package), so
+  the shared news view models / Compose Multiplatform UI in later phases can bind to it directly.
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
