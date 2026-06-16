@@ -33,4 +33,13 @@ class CommitsProviderTest {
         assertTrue(result.wasSuccessful)
         assertEquals(listOf(""), result.data)
     }
+
+    @Test
+    fun loadWhatsNew_defaultConstructorUsesSharedGeneratedChangelog() {
+        // The default changelog is generated from git at build time, so its content is
+        // environment-dependent; just assert the shared default is wired up and succeeds.
+        val result = CommitsProvider().loadWhatsNew()
+
+        assertTrue(result.wasSuccessful)
+    }
 }

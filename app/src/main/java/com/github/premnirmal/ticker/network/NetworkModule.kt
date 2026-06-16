@@ -214,7 +214,7 @@ class NetworkModule {
 
     @Provides @Singleton
     internal fun provideCommitsProvider(): CommitsProvider {
-        return CommitsProvider(changeLog = BuildConfig.CHANGE_LOG)
+        return CommitsProvider()
     }
 
     @Provides @Singleton

@@ -1,4 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import com.github.premnirmal.gradle.getCommitsBetween
+import com.github.premnirmal.gradle.getOldGitVersionFromGit
+import com.github.premnirmal.gradle.getVersionNameFromGit
 
 plugins {
   alias(libs.plugins.kotlin.multiplatform)
@@ -10,6 +13,45 @@ plugins {
 repositories {
   google()
   mavenCentral()
+}
+
+// Generates the "what's new" changelog from the local git history into a commonMain constant, so the
+// changelog is shared by every platform (Android and iOS) instead of living only in :app's Android
+// BuildConfig. CommitsProvider defaults to this constant.
+val generatedChangelogDir: Provider<Directory> =
+    layout.buildDirectory.dir("generated/changelog/commonMain/kotlin")
+
+val generateChangelog by tasks.registering {
+  val outputDir = generatedChangelogDir
+  outputs.dir(outputDir)
+  val versionName = project.getVersionNameFromGit()
+  val oldVersion = project.getOldGitVersionFromGit()
+  // git log subjects already have their newlines escaped to the literal "\n" sequence.
+  val changeLog = project.getCommitsBetween(old = oldVersion, new = versionName)
+  inputs.property("changeLog", changeLog)
+  doLast {
+    // Escape the characters that would break a Kotlin string literal. Backslashes are intentionally
+    // preserved so the embedded "\n" line separators survive as real newlines at runtime.
+    val escaped = changeLog
+        .replace("\"", "\\\"")
+        .replace("\$", "\\\$")
+    val pkgDir = outputDir.get().asFile.resolve("com/github/premnirmal/shared")
+    pkgDir.mkdirs()
+    pkgDir.resolve("ChangelogBuildConfig.kt").writeText(
+        """
+        |package com.github.premnirmal.shared
+        |
+        |/**
+        | * Generated at build time from the local git history (see :shared `generateChangelog`).
+        | * Shared by every platform so Android and iOS show the same "what's new" changelog.
+        | */
+        |internal object ChangelogBuildConfig {
+        |    const val CHANGE_LOG: String = "$escaped"
+        |}
+        |
+        """.trimMargin()
+    )
+  }
 }
 
 kotlin {
@@ -45,6 +87,9 @@ kotlin {
   }
 
   sourceSets {
+    commonMain {
+      kotlin.srcDir(generateChangelog)
+    }
     commonMain.dependencies {
       implementation(KotlinX.serialization.json)
       implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:_")

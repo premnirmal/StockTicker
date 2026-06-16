@@ -1,5 +1,4 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import com.github.premnirmal.gradle.getCommitsBetween
 import com.github.premnirmal.gradle.getOldGitVersionFromGit
 import com.github.premnirmal.gradle.getVersionNameFromGit
 import java.io.FileInputStream
@@ -62,10 +61,8 @@ android {
   val patch = name.split(".")[2].toInt()
   val code = (major * 100000000) + (minor * 100000) + patch
   val oldGitVersion = project.getOldGitVersionFromGit()
-  val changeLog = project.getCommitsBetween(old = oldGitVersion, new = name)
   println("get version name $name")
   println("Old git version $oldGitVersion")
-  println("Change log:\n $changeLog")
   val appIdBase = "com.github.premnirmal.tickerwidget"
 
   defaultConfig {
@@ -77,7 +74,6 @@ android {
     versionName = name
 
     buildConfigField("String", "PREVIOUS_VERSION", "\"$oldGitVersion\"")
-    buildConfigField("String", "CHANGE_LOG", "\"$changeLog\"")
   }
 
   signingConfigs {
