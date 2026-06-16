@@ -117,6 +117,7 @@ kotlin {
     }
     iosMain.dependencies {
       implementation("io.ktor:ktor-client-darwin:_")
+      implementation(libs.kotlinx.datetime)
     }
     commonTest.dependencies {
       implementation(kotlin("test"))

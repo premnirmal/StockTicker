@@ -24,6 +24,7 @@ com-google-devtools-ksp = "2.3.7"
 androidx-room = "2.8.4"
 detekt = "1.23.8"
 koin = "4.1.1"
+kotlinx-datetime = "0.6.2"
 detektCompose = "0.5.8"
 reorderable = "3.1.0"
 material3 = "1.4.0"
@@ -57,6 +58,7 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 koin-androidx-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager", version.ref = "koin" }
 koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
 koin-test-junit4 = { group = "io.insert-koin", name = "koin-test-junit4", version.ref = "koin" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose"}
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
