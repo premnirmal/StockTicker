@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
@@ -21,9 +20,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.time.Instant
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit.MINUTES
 
 /**
@@ -58,7 +54,7 @@ class StocksProvider constructor(
     override val portfolio: StateFlow<List<Quote>>
         get() = _portfolio // quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
 
-    val fetchState: StateFlow<FetchState>
+    override val fetchState: StateFlow<FetchState>
         get() = _fetchState
 
     override val nextFetchMs: StateFlow<Long>
@@ -449,28 +445,6 @@ class StocksProvider constructor(
             storage.saveQuotes(portfolio)
             fetchLocal()
             fetch()
-        }
-    }
-
-    sealed class FetchState {
-        abstract val displayString: String
-
-        object NotFetched : FetchState() {
-            override val displayString: String = "--"
-        }
-
-        class Success(val fetchTime: Long) : FetchState() {
-            override val displayString: String by lazy {
-                val instant = Instant.ofEpochMilli(fetchTime)
-                val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-                time.createTimeString()
-            }
-        }
-
-        class Failure(val exception: Throwable) : FetchState() {
-            override val displayString: String by lazy {
-                exception.message.orEmpty()
-            }
         }
     }
 }

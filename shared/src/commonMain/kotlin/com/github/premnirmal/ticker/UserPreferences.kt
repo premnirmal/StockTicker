@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker
 
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -16,10 +17,9 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * The configured update window is part of this contract: it is expressed with the platform-neutral
  * [Time] value and ISO day-of-week numbers (Monday = 1 … Sunday = 7) instead of `java.time` types,
- * so it can be shared. Members that still take or return platform/JVM-only types — the
- * `@NightMode`/`SelectedTheme` mapping of [themePref] — stay on the concrete implementation, just as
- * the Room engine stays on `StocksStorage` and the `AlarmManager`/`WorkManager` enqueueing stays on
- * `AlarmScheduler`.
+ * so it can be shared. The theme preference is fully shared too: [themePref] plus its derived
+ * [selectedTheme] ([SelectedTheme]) and [nightMode] ([NightMode]) mappings live here, with the
+ * Android-only `AppCompatDelegate` translation left to the `:app` module.
  */
 interface UserPreferences {
 
@@ -62,6 +62,25 @@ interface UserPreferences {
   /** The selected theme preference as an observable flow. */
   val themePrefFlow: Flow<Int>
 
+  /** The selected theme, derived from [themePref]. */
+  val selectedTheme: SelectedTheme
+    get() = when (themePref) {
+      LIGHT_THEME -> SelectedTheme.LIGHT
+      DARK_THEME -> SelectedTheme.DARK
+      else -> SelectedTheme.SYSTEM
+    }
+
+  /**
+   * The effective night mode, derived from [themePref]. Android maps this onto
+   * `AppCompatDelegate`'s `MODE_NIGHT_*` constants.
+   */
+  val nightMode: NightMode
+    get() = when (themePref) {
+      LIGHT_THEME -> NightMode.LIGHT
+      DARK_THEME -> NightMode.DARK
+      else -> if (supportsSystemNightMode()) NightMode.FOLLOW_SYSTEM else NightMode.AUTO_BATTERY
+    }
+
   /** Whether the add/remove tooltip should be shown, as an observable flow. */
   val showAddRemoveTooltip: Flow<Boolean>
 
@@ -90,4 +109,15 @@ interface UserPreferences {
 
   /** Persists the selected update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7). */
   fun setUpdateDays(days: Set<Int>)
+
+  companion object {
+    /** [themePref] value for the always-light theme. */
+    const val LIGHT_THEME = 0
+
+    /** [themePref] value for the always-dark theme. */
+    const val DARK_THEME = 1
+
+    /** [themePref] value for following the system theme. */
+    const val FOLLOW_SYSTEM_THEME = 2
+  }
 }

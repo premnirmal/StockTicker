@@ -2,8 +2,8 @@ package com.github.premnirmal.ticker.widget
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

@@ -16,16 +16,19 @@ import kotlinx.coroutines.flow.StateFlow
  * (in terms of the already-shared `Quote`/`Position`/`Holding`/`FetchResult` models), while the
  * Android implementation wires it to platform infrastructure (`Context`/`SharedPreferences`,
  * `AlarmScheduler`, `WidgetDataProvider`, the Room-backed `StocksStorage`). On Android this is
- * implemented by `StocksProvider`; the iOS app will provide its own implementation once it exists.
+ * implemented by `StocksProvider`; the iOS app provides its own implementation.
  *
- * Members that take or return platform/JVM-only types stay on the concrete implementation and are
- * intentionally not part of this contract — notably the `fetchState` flow, whose `FetchState`
- * carries a `java.time`-formatted display string.
+ * The state of the most recent refresh is exposed through [fetchState]; its [FetchState] display
+ * string is formatted behind the multiplatform [formatFetchTime] boundary, so it is part of this
+ * shared contract rather than the concrete implementations.
  */
 interface IStocksProvider {
 
   /** The current watchlist symbols, as an observable flow. */
   val tickers: StateFlow<List<String>>
+
+  /** The state of the most recent refresh (not fetched / success / failure), as an observable flow. */
+  val fetchState: StateFlow<FetchState>
 
   /** The current portfolio quotes, as an observable flow. */
   val portfolio: StateFlow<List<Quote>>

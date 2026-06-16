@@ -8,12 +8,12 @@ import android.util.TypedValue
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.Keep
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
+import com.github.premnirmal.ticker.NightMode
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import com.github.premnirmal.ticker.model.AlarmScheduler
@@ -125,7 +125,7 @@ class WidgetData : IWidgetData, KoinComponent {
     }
 
     private val nightMode: Boolean
-        get() = appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
+        get() = appPreferences.nightMode == NightMode.DARK
 
     @get:ColorRes
     val positiveTextColor: Int

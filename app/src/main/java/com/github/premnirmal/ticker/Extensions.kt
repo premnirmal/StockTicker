@@ -11,6 +11,7 @@ import android.net.NetworkCapabilities
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
 import com.github.premnirmal.ticker.components.todayZoned
 import com.github.premnirmal.tickerwidget.R
@@ -93,6 +94,17 @@ fun ZonedDateTime.createTimeString(): String {
         "$timeStr $day"
     }
     return fetched
+}
+
+/**
+ * Maps the shared [NightMode] onto AndroidX `AppCompatDelegate`'s `MODE_NIGHT_*` constants.
+ */
+@AppCompatDelegate.NightMode
+fun NightMode.toAppCompatNightMode(): Int = when (this) {
+    NightMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+    NightMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+    NightMode.FOLLOW_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    NightMode.AUTO_BATTERY -> AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
 }
 
 fun Float.format(fractionDigits: Int = 2): String {

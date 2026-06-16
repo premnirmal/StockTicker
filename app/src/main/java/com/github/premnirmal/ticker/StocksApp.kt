@@ -34,7 +34,7 @@ open class StocksApp : Application(), KoinComponent {
             modules(sharedModule, networkModule, appModule, viewModelModule)
         }
         super.onCreate()
-        AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
+        AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode.toAppCompatNightMode())
         initNotificationHandler()
         runBlocking { widgetDataProvider.refreshWidgetDataList() }
     }

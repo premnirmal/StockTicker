@@ -1,9 +1,6 @@
 package com.github.premnirmal.ticker
 
 import android.content.SharedPreferences
-import android.os.Build
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import com.github.premnirmal.ticker.components.AppNumberFormat
@@ -153,13 +150,6 @@ class AppPreferences constructor(
 
     override val themePrefFlow: Flow<Int> = _themePref
 
-    val selectedTheme: SelectedTheme
-        get() = when (_themePref.value) {
-            LIGHT_THEME -> SelectedTheme.LIGHT
-            DARK_THEME -> SelectedTheme.DARK
-            else -> SelectedTheme.SYSTEM
-        }
-
     override var themePref: Int
         get() = _themePref.value.coerceIn(0, 2)
         set(value) {
@@ -173,29 +163,6 @@ class AppPreferences constructor(
             sharedPreferences.edit {
                 putInt(UPDATE_INTERVAL, value)
             }
-        }
-
-    @NightMode val nightMode: Int
-        get() = when (themePref) {
-            LIGHT_THEME -> AppCompatDelegate.MODE_NIGHT_NO
-            DARK_THEME -> AppCompatDelegate.MODE_NIGHT_YES
-            FOLLOW_SYSTEM_THEME -> {
-                if (supportSystemNightMode) {
-                    AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                } else {
-                    AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                }
-            }
-            else -> AppCompatDelegate.MODE_NIGHT_YES
-        }
-
-    private val supportSystemNightMode: Boolean
-        get() {
-            return (
-                Build.VERSION.SDK_INT > Build.VERSION_CODES.P ||
-                    Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "xiaomi".equals(Build.MANUFACTURER, ignoreCase = true) ||
-                    Build.VERSION.SDK_INT == Build.VERSION_CODES.P && "samsung".equals(Build.MANUFACTURER, ignoreCase = true)
-                )
         }
 
     private val _showAddRemoveTooltip = MutableStateFlow(

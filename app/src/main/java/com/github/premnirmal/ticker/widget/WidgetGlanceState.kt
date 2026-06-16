@@ -8,7 +8,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.glance.state.GlanceStateDefinition
 import com.github.premnirmal.ticker.createTimeString
-import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
@@ -80,7 +80,7 @@ data class SerializableWidgetState(
          */
         fun from(
             state: WidgetData.Data,
-            fetchState: StocksProvider.FetchState = StocksProvider.FetchState.NotFetched,
+            fetchState: FetchState = FetchState.NotFetched,
             isRefreshing: Boolean = false,
         ): SerializableWidgetState {
             return SerializableWidgetState(
@@ -164,11 +164,11 @@ sealed class SerializableFetchState {
     }
 
     companion object {
-        fun from(fetchState: StocksProvider.FetchState): SerializableFetchState {
+        fun from(fetchState: FetchState): SerializableFetchState {
             return when (fetchState) {
-                is StocksProvider.FetchState.NotFetched -> NotFetched
-                is StocksProvider.FetchState.Success -> Success(fetchState.fetchTime)
-                is StocksProvider.FetchState.Failure -> Failure(fetchState.exception.message.orEmpty())
+                is FetchState.NotFetched -> NotFetched
+                is FetchState.Success -> Success(fetchState.fetchTime)
+                is FetchState.Failure -> Failure(fetchState.exception.message.orEmpty())
             }
         }
     }

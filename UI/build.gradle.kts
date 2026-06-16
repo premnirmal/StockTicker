@@ -72,6 +72,8 @@ kotlin {
 dependencies {
   implementation(kotlin("stdlib"))
 
+  implementation(project(":shared"))
+
   implementation(AndroidX.core.ktx)
   implementation(AndroidX.appCompat)
   implementation(libs.androidx.compose.runtime)

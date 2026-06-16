@@ -29,8 +29,8 @@ import platform.Foundation.NSRecursiveLock
  * its app widgets, iOS invokes the [onQuotesUpdated] hook so the app can reload its WidgetKit
  * timelines.
  *
- * The Android-only `fetchState` flow (whose `FetchState` carries a `java.time`-formatted display
- * string) is intentionally not part of the shared contract and is omitted here.
+ * The refresh state is exposed through the shared [fetchState] flow; its [FetchState] display string
+ * is formatted behind the multiplatform [formatFetchTime] boundary (`kotlinx-datetime` on iOS).
  */
 class StocksProvider(
     private val api: StocksApi,
@@ -52,10 +52,12 @@ class StocksProvider(
     private val _tickers = MutableStateFlow<List<String>>(emptyList())
     private val _portfolio = MutableStateFlow<List<Quote>>(emptyList())
     private val _nextFetch = MutableStateFlow(0L)
+    private val _fetchState = MutableStateFlow<FetchState>(FetchState.NotFetched)
 
     override val tickers: StateFlow<List<String>> get() = _tickers
     override val portfolio: StateFlow<List<Quote>> get() = _portfolio
     override val nextFetchMs: StateFlow<Long> get() = _nextFetch
+    override val fetchState: StateFlow<FetchState> get() = _fetchState
 
     init {
         val saved = storage.readTickers()
@@ -66,6 +68,7 @@ class StocksProvider(
             tickerSet.addAll(DEFAULT_STOCKS)
         }
         _tickers.value = tickerSet.toList()
+        _fetchState.value = FetchState.Success(lastFetched)
         coroutineScope.launch {
             fetchLocal()
             val nextFetch = _nextFetch.value
@@ -189,6 +192,7 @@ class StocksProvider(
             if (allowScheduling) {
                 lastFetched = clock.currentTimeMillis()
                 store.setLong(LAST_FETCHED, lastFetched)
+                _fetchState.value = FetchState.Success(lastFetched)
                 resetConsecutiveFailures()
                 scheduleUpdate(reason = "fetch_success")
                 shouldScheduleInFinally = false

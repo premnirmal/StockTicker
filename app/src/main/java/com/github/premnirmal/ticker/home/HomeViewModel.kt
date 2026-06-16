@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.AlarmScheduler
+import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -41,7 +42,7 @@ class HomeViewModel constructor(
     private val commitsProvider: CommitsProvider,
 ) : AndroidViewModel(application) {
 
-    val fetchState: StateFlow<StocksProvider.FetchState>
+    val fetchState: StateFlow<FetchState>
         get() = stocksProvider.fetchState
     val nextFetch: Flow<String>
         get() = stocksProvider.nextFetchMs.map {

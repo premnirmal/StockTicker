@@ -50,9 +50,3 @@ import androidx.compose.ui.platform.LocalContext
     content()
   }
 }
-
-enum class SelectedTheme {
-  SYSTEM,
-  LIGHT,
-  DARK,
-}
