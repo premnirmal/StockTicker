@@ -69,7 +69,7 @@ class AlarmSchedulerTest : BaseUnitTest() {
     private fun setSelectDays(selectedDays: Set<DayOfWeek>) {
         appPreferences.setUpdateDays(
             selectedDays.map {
-                it.value.toString()
+                it.value
             }.toSet()
         )
     }

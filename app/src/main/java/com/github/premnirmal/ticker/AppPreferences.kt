@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker
 
 import android.content.SharedPreferences
 import android.os.Build
-import android.os.Parcelable
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.NightMode
 import androidx.core.content.edit
@@ -12,10 +11,8 @@ import com.github.premnirmal.ticker.network.CrumbStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.parcelize.Parcelize
 import java.text.DecimalFormat
 import java.text.Format
-import java.time.DayOfWeek
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle.MEDIUM
 import kotlin.random.Random
@@ -58,32 +55,26 @@ class AppPreferences constructor(
             DECIMAL_FORMAT
         }
 
-    fun parseTime(time: String): Time {
-        val split = time.split(":".toRegex())
-            .dropLastWhile { it.isEmpty() }
-            .toTypedArray()
-        val times = intArrayOf(split[0].toInt(), split[1].toInt())
-        return Time(times[0], times[1])
-    }
+    fun parseTime(time: String): Time = Time.parse(time)
 
-    fun setStartTime(time: String) {
+    override fun setStartTime(time: String) {
         sharedPreferences.edit {
             putString(START_TIME, time)
         }
     }
 
-    fun setEndTime(time: String) {
+    override fun setEndTime(time: String) {
         sharedPreferences.edit {
             putString(END_TIME, time)
         }
     }
 
-    fun startTime(): Time {
+    override fun startTime(): Time {
         val startTimeString = sharedPreferences.getString(START_TIME, "09:30")!!
         return parseTime(startTimeString)
     }
 
-    fun endTime(): Time {
+    override fun endTime(): Time {
         val endTimeString = sharedPreferences.getString(END_TIME, "16:00")!!
         return parseTime(endTimeString)
     }
@@ -97,15 +88,15 @@ class AppPreferences constructor(
         return selectedDays
     }
 
-    fun setUpdateDays(selected: Set<String>) {
+    override fun setUpdateDays(days: Set<Int>) {
         sharedPreferences.edit {
-            putStringSet(UPDATE_DAYS, selected)
+            putStringSet(UPDATE_DAYS, days.map { it.toString() }.toSet())
         }
     }
 
-    fun updateDays(): Set<DayOfWeek> {
-        val selectedDays = updateDaysRaw()
-        return selectedDays.map { DayOfWeek.of(it.toInt()) }
+    /** The configured update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7). */
+    override fun updateDays(): Set<Int> {
+        return updateDaysRaw().map { it.toInt() }
             .toSet()
     }
 
@@ -218,12 +209,6 @@ class AppPreferences constructor(
         sharedPreferences.edit { putInt(PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP, count) }
         _showAddRemoveTooltip.value = count > 5
     }
-
-    @Parcelize
-    data class Time(
-        val hour: Int,
-        val minute: Int
-    ) : Parcelable
 
     companion object {
 

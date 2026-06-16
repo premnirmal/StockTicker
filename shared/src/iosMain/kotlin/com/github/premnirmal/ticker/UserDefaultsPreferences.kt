@@ -17,10 +17,10 @@ import kotlin.random.Random
  * crumb persistence comes from [CrumbStore]. It uses the same preference keys and default values as
  * Android so the two platforms behave identically.
  *
- * The configured update window (start/end time and selected days) is not part of the
- * platform-neutral [UserPreferences] contract — on Android it returns `java.time` types from
- * `AppPreferences`. Here it is exposed through the plain [startTime]/[endTime]/[updateDays]
- * accessors that the iOS [com.github.premnirmal.ticker.model.BackgroundRefreshScheduler] reads.
+ * The configured update window (start/end time and selected days) is part of the shared
+ * [UserPreferences] contract — expressed with the platform-neutral [Time] value and ISO
+ * day-of-week numbers — and is consumed by the iOS
+ * [com.github.premnirmal.ticker.model.BackgroundRefreshScheduler].
  */
 class UserDefaultsPreferences(
     private val store: SettingsStore = SettingsStore()
@@ -95,26 +95,23 @@ class UserDefaultsPreferences(
 
     override fun setCrumb(crumb: String?) = store.setString(CRUMB, crumb)
 
-    // --- iOS-only update-window settings (consumed by BackgroundRefreshScheduler) ---
-
-    /** A wall-clock time of day, the iOS analogue of `AppPreferences.Time`. */
-    data class Time(val hour: Int, val minute: Int)
+    // --- Configured update window (shared UserPreferences contract) ---
 
     /** The configured start of the daily update window (default 09:30). */
-    fun startTime(): Time = parseTime(store.getString(START_TIME, "09:30") ?: "09:30")
+    override fun startTime(): Time = Time.parse(store.getString(START_TIME, "09:30") ?: "09:30")
 
-    fun setStartTime(time: String) = store.setString(START_TIME, time)
+    override fun setStartTime(time: String) = store.setString(START_TIME, time)
 
     /** The configured end of the daily update window (default 16:00). */
-    fun endTime(): Time = parseTime(store.getString(END_TIME, "16:00") ?: "16:00")
+    override fun endTime(): Time = Time.parse(store.getString(END_TIME, "16:00") ?: "16:00")
 
-    fun setEndTime(time: String) = store.setString(END_TIME, time)
+    override fun setEndTime(time: String) = store.setString(END_TIME, time)
 
     /**
      * The selected update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7), matching the
      * Android `AppPreferences.updateDays()` numbering. Defaults to the weekdays.
      */
-    fun updateDays(): Set<Int> {
+    override fun updateDays(): Set<Int> {
         val raw = store.getString(UPDATE_DAYS, null)
         if (raw.isNullOrEmpty()) return DEFAULT_UPDATE_DAYS
         val parsed = raw.split(",")
@@ -124,15 +121,8 @@ class UserDefaultsPreferences(
         return parsed.ifEmpty { DEFAULT_UPDATE_DAYS }
     }
 
-    fun setUpdateDays(days: Set<Int>) =
+    override fun setUpdateDays(days: Set<Int>) =
         store.setString(UPDATE_DAYS, days.sorted().joinToString(","))
-
-    private fun parseTime(time: String): Time {
-        val split = time.split(":")
-        val hour = split.getOrNull(0)?.toIntOrNull() ?: 0
-        val minute = split.getOrNull(1)?.toIntOrNull() ?: 0
-        return Time(hour, minute)
-    }
 
     companion object {
         const val UPDATE_INTERVAL = "UPDATE_INTERVAL"

@@ -86,7 +86,7 @@ class AlarmScheduler constructor(
             dayOfWeek = DayOfWeek.of(dayOfWeekInt)
         }
         return now.isBefore(endTime) && (now.isAfter(startTime) || now.isEqual(startTime)) &&
-            selectedDaysOfWeek.contains(dayOfWeek)
+            selectedDaysOfWeek.contains(dayOfWeek.value)
     }
 
     /**
@@ -119,7 +119,7 @@ class AlarmScheduler constructor(
                 now.isAfter(startTime) || now.isEqual(
                     startTime
                 )
-                ) && selectedDaysOfWeek.contains(dayOfWeek)
+                ) && selectedDaysOfWeek.contains(dayOfWeek.value)
         ) {
             nextAlarmDate = if (lastFetchedMs > 0 &&
                 Duration.between(lastFetchedTime, now)
@@ -129,7 +129,7 @@ class AlarmScheduler constructor(
             } else {
                 nextAlarmDate.plus(appPreferences.updateIntervalMs, ChronoUnit.MILLIS)
             }
-        } else if (!inverse && now.isBefore(startTime) && selectedDaysOfWeek.contains(dayOfWeek)) {
+        } else if (!inverse && now.isBefore(startTime) && selectedDaysOfWeek.contains(dayOfWeek.value)) {
             nextAlarmDate = if (lastFetchedMs > 0 && lastFetchedTime.isBefore(endTime.minusDays(1))) {
                 nextAlarmDate.plusMinutes(1)
             } else {
@@ -137,7 +137,7 @@ class AlarmScheduler constructor(
                     .withMinute(startTimez.minute)
             }
         } else {
-            if (selectedDaysOfWeek.contains(dayOfWeek) && lastFetchedMs > 0 && lastFetchedTime.isBefore(
+            if (selectedDaysOfWeek.contains(dayOfWeek.value) && lastFetchedMs > 0 && lastFetchedTime.isBefore(
                     endTime
                 )
             ) {
@@ -148,7 +148,7 @@ class AlarmScheduler constructor(
 
                 var count = 0
                 if (inverse) {
-                    while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek) && count <= 7) {
+                    while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek.value) && count <= 7) {
                         count++
                         nextAlarmDate = nextAlarmDate.plusDays(1)
                     }
@@ -156,7 +156,7 @@ class AlarmScheduler constructor(
                     do {
                         count++
                         nextAlarmDate = nextAlarmDate.plusDays(1)
-                    } while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek) && count <= 7)
+                    } while (!selectedDaysOfWeek.contains(nextAlarmDate.dayOfWeek.value) && count <= 7)
                 }
 
                 if (count >= 7) {

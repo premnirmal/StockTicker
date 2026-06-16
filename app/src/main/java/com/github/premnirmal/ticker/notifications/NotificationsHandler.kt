@@ -154,7 +154,7 @@ class NotificationsHandler constructor(
         if (VERSION.SDK_INT >= 33 && !context.hasNotificationPermission()) return
         if (!notificationManager.areNotificationsEnabled()) return
         if (Random.nextBoolean()) enqueueDailySummaryNotification()
-        if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
+        if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek.value)) return
 
         val portfolio: List<Quote> = stocksProvider.portfolio.value
         for (quote in portfolio) {

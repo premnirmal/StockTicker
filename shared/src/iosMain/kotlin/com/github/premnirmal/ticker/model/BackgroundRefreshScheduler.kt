@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.model
 
+import com.github.premnirmal.ticker.Time
 import com.github.premnirmal.ticker.UserDefaultsPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import kotlinx.datetime.DatePeriod
@@ -127,7 +128,7 @@ class BackgroundRefreshScheduler(
 
     private fun nowInstant(): Instant = Instant.fromEpochMilliseconds(clock.currentTimeMillis())
 
-    private fun isInverse(start: UserDefaultsPreferences.Time, end: UserDefaultsPreferences.Time): Boolean =
+    private fun isInverse(start: Time, end: Time): Boolean =
         start.hour > end.hour || (start.hour == end.hour && start.minute > end.minute)
 
     private fun Instant.local(): LocalDateTime = toLocalDateTime(timeZone)

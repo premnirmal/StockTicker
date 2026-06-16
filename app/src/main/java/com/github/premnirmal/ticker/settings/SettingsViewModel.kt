@@ -8,6 +8,7 @@ import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.Time
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.showDialog
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import timber.log.Timber
-import java.time.DayOfWeek
 
 class SettingsViewModel constructor(
     private val widgetDataProvider: WidgetDataProvider,
@@ -96,7 +96,7 @@ class SettingsViewModel constructor(
                 _error.emit(R.string.days_updated_error_message)
                 return@launch
             }
-            appPreferences.setUpdateDays(days.map { it.toString() }.toSet())
+            appPreferences.setUpdateDays(days)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
             broadcastUpdateWidget()
         }
@@ -201,10 +201,10 @@ class SettingsViewModel constructor(
         val hasWidgets: Boolean,
         val themePref: Int,
         val updateIntervalPref: Int,
-        val updateDays: Set<DayOfWeek>,
+        val updateDays: Set<Int>,
         val notificationAlerts: Boolean,
-        val startTime: AppPreferences.Time,
-        val endTime: AppPreferences.Time,
+        val startTime: Time,
+        val endTime: Time,
         val autoSort: Boolean?,
         val roundToTwoDp: Boolean,
     ) : Parcelable

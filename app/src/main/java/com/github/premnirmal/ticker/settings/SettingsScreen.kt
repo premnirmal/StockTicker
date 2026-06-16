@@ -235,7 +235,7 @@ private fun LazyListScope.settingsItems(
         MultiSelectListPreference(
             title = stringResource(id = R.string.update_days),
             items = stringArrayResource(id = R.array.days),
-            selected = settingsData.updateDays.map { it.value - 1 }.toSet(),
+            selected = settingsData.updateDays.map { it - 1 }.toSet(),
             onSelected = { selected ->
                 viewModel.setUpdateDaysPref(selected.map { it + 1 }.toSet())
             }

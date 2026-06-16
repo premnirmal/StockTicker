@@ -11,15 +11,15 @@ import kotlinx.coroutines.flow.StateFlow
  * This is the shared "preferences interface" of the multiplatform persistence story: it mirrors the
  * existing [com.github.premnirmal.ticker.repo.QuoteStorage] / [com.github.premnirmal.ticker.model.RefreshScheduler]
  * split — the common contract lives in `commonMain`, the concrete key/value store is platform
- * specific. On Android this is implemented by `AppPreferences` (backed by `SharedPreferences`); the
- * iOS app will provide its own implementation (e.g. `NSUserDefaults` or DataStore Multiplatform)
- * once it exists.
+ * specific. On Android this is implemented by `AppPreferences` (backed by `SharedPreferences`); on
+ * iOS by `UserDefaultsPreferences` (backed by a shared, DataStore-ready key/value store).
  *
- * Only the platform-neutral settings belong here. Members that take or return platform/JVM-only
- * types — the configured update window ([java.time]-based `startTime`/`endTime`/`updateDays`), the
- * `@NightMode`/`SelectedTheme` mapping of [themePref] and the `Parcelable` `Time` value — stay on
- * the concrete implementation, just as the Room engine stays on `StocksStorage` and the
- * `AlarmManager`/`WorkManager` enqueueing stays on `AlarmScheduler`.
+ * The configured update window is part of this contract: it is expressed with the platform-neutral
+ * [Time] value and ISO day-of-week numbers (Monday = 1 … Sunday = 7) instead of `java.time` types,
+ * so it can be shared. Members that still take or return platform/JVM-only types — the
+ * `@NightMode`/`SelectedTheme` mapping of [themePref] — stay on the concrete implementation, just as
+ * the Room engine stays on `StocksStorage` and the `AlarmManager`/`WorkManager` enqueueing stays on
+ * `AlarmScheduler`.
  */
 interface UserPreferences {
 
@@ -67,4 +67,27 @@ interface UserPreferences {
 
   /** Records that the add/remove tooltip was shown once more. */
   fun setAddRemoveTooltipShown()
+
+  // --- Configured update window (platform-neutral) ---
+
+  /** The configured start of the daily update window (default 09:30). */
+  fun startTime(): Time
+
+  /** Persists the start of the daily update window from an `"HH:mm"` string. */
+  fun setStartTime(time: String)
+
+  /** The configured end of the daily update window (default 16:00). */
+  fun endTime(): Time
+
+  /** Persists the end of the daily update window from an `"HH:mm"` string. */
+  fun setEndTime(time: String)
+
+  /**
+   * The selected update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7). Defaults to the
+   * weekdays when nothing is selected.
+   */
+  fun updateDays(): Set<Int>
+
+  /** Persists the selected update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7). */
+  fun setUpdateDays(days: Set<Int>)
 }

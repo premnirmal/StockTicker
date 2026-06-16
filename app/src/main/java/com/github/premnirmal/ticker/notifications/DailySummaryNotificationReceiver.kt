@@ -21,7 +21,7 @@ class DailySummaryNotificationReceiver : BroadcastReceiver(), KoinComponent {
     override fun onReceive(context: Context, intent: Intent?) {
         Timber.d("DailySummaryNotificationReceiver onReceive")
         val today = clock.todayLocal().toLocalDate()
-        if (appPreferences.updateDays().contains(today.dayOfWeek)) {
+        if (appPreferences.updateDays().contains(today.dayOfWeek.value)) {
             notificationsHandler.notifyDailySummary()
         }
     }

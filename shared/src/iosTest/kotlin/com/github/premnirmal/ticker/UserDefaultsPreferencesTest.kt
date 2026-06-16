@@ -29,8 +29,8 @@ class UserDefaultsPreferencesTest {
         assertFalse(preferences.tutorialShown())
         assertEquals(UserDefaultsPreferences.FOLLOW_SYSTEM_THEME, preferences.themePref)
         assertEquals(setOf(1, 2, 3, 4, 5), preferences.updateDays())
-        assertEquals(UserDefaultsPreferences.Time(9, 30), preferences.startTime())
-        assertEquals(UserDefaultsPreferences.Time(16, 0), preferences.endTime())
+        assertEquals(Time(9, 30), preferences.startTime())
+        assertEquals(Time(16, 0), preferences.endTime())
     }
 
     @Test
