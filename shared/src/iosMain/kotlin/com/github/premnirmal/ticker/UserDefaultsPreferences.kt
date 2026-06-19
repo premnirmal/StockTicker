@@ -59,6 +59,10 @@ class UserDefaultsPreferences(
 
     override fun setTutorialShown(shown: Boolean) = store.setBoolean(TUTORIAL_SHOWN, shown)
 
+    override fun getLastSavedVersionCode(): Int = store.getInt(APP_VERSION_CODE, -1)
+
+    override fun saveVersionCode(code: Int) = store.setInt(APP_VERSION_CODE, code)
+
     override fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
     override fun roundToTwoDecimalPlaces(): Boolean = store.getBoolean(SETTING_ROUND_TWO_DP, true)
@@ -137,6 +141,7 @@ class UserDefaultsPreferences(
         const val START_TIME = "START_TIME"
         const val END_TIME = "END_TIME"
         const val UPDATE_DAYS = "UPDATE_DAYS"
+        const val APP_VERSION_CODE = "APP_VERSION_CODE"
 
         const val FOLLOW_SYSTEM_THEME = 2
         private const val TOOLTIP_THRESHOLD = 5

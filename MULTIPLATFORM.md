@@ -279,8 +279,53 @@ and is bound to the shared contract in `appModule`
 sites keep using the concrete `ComposeAppMessaging`, while shared presentation logic can depend on the
 `AppMessaging` interface.
 
-ViewModels still coupled to other Android-only infrastructure (e.g. `WidgetDataProvider`, `Context`)
-stay in `:app` for now and follow once those surfaces are shared.
+The remaining ViewModels were coupled to other Android-only infrastructure (e.g.
+`WidgetDataProvider`, `Context`); they moved once those surfaces were shared, as described below.
+
+The **widget-data surface** is now shared, which was the keystone that unblocked the last four
+ViewModels. The platform-neutral `IWidgetData` (a single widget's stock list plus the data
+operations shared logic performs on it — `stocks`, `changeType`/`layoutType`, `addTicker(s)`,
+`removeStock`, `rearrange`, `autoSortEnabled`/`setAutoSort`, `addAllFromStocksProvider`, and the
+`ChangeType`/`LayoutType`/`BackgroundType`/`TextColorType` enums) and `IWidgetDataProvider` (the
+observable `widgetData` list plus `hasWidget`, `dataForWidgetId`, `refreshWidgetDataList`,
+`containsTicker`, `updateWidgets`) now live in `:shared` `commonMain` (`ticker.widget`). The Android
+`WidgetData`/`WidgetDataProvider` keep all the Glance/`AppWidgetManager`/`SharedPreferences`-state/
+`Parcelable` rendering and broadcasts and now implement the shared interfaces (covariant overrides
+keep returning the concrete `WidgetData` to the Glance code); `appModule` binds
+`single<IWidgetDataProvider> { get<WidgetDataProvider>() }`. iOS provides its own implementation
+later (no Glance).
+
+With that in place, the final four ViewModels moved into `:shared` `commonMain`:
+
+- `SuggestionViewModel` (`ticker.portfolio.search`) — depends only on `IWidgetDataProvider`.
+- `SearchViewModel` (`ticker.portfolio.search`) — uses the shared `AppMessaging`,
+  `IWidgetDataProvider` and `SuggestionsProvider`; the Android string-resource snackbar is emitted as
+  a neutral `suggestionsError` event that `:app`'s `SearchScreen` collects and resolves via
+  `LocalAppMessaging`.
+- `SettingsViewModel` (`ticker.settings`) — the settings-state logic (theme/interval/time/days/
+  auto-sort/round/notifications toggles + `buildData`) over `IWidgetDataProvider`/`UserPreferences`/
+  `IStocksProvider`/`INotificationsHandler`, with a `@CommonParcelize SettingsData` and a shared
+  `SettingsMessage`. The pure-Android share/export/import (`Context`/`Intent`/`Uri`/`contentResolver`
+  over the shared `PortfolioSerializer`) is factored into a thin `:app` `PortfolioExportImporter`
+  injected directly into `SettingsScreen`.
+- `HomeViewModel` (`ticker.home`) — converted from `AndroidViewModel(Application)` to a plain shared
+  `ViewModel` depending on `IStocksProvider`/`UserPreferences`/`NewsProvider`/`IWidgetDataProvider`/
+  `INotificationsHandler`/`AppMessaging`/`RefreshScheduler`/`CommitsProvider`. The tutorial /
+  "what's new" copy is resolved behind a shared `HomeStrings` seam (`AndroidHomeStrings` resolves the
+  `R.string`s in `:app`); `BuildConfig.VERSION_CODE`/`VERSION_NAME` are injected as constructor
+  params at the Koin registration; the total-holdings/gain-loss formatting uses the shared
+  `AppNumberFormat`; `nextFetch` reuses the shared `formatFetchTime`; and
+  `showAlarmPermissionRequest` simplifies to `!refreshScheduler.canScheduleExactAlarm()` (the old
+  `SDK_INT >= S` guard was redundant because `canScheduleExactAlarm()` already returns `true` below
+  S). `HomeEvent` moved to `commonMain` alongside it.
+
+`NotificationsHandler` is now reached through a minimal `commonMain` `INotificationsHandler`
+interface (just `initialize()`, the only method the ViewModels call); the full Android
+`NotificationsHandler` implements it and is bound via `single<INotificationsHandler> { … }`.
+`CommitsProvider` (`loadWhatsNew()`) was already shared. `UserPreferences` gained
+`getLastSavedVersionCode()`/`saveVersionCode()` (implemented by Android `AppPreferences` and iOS
+`UserDefaultsPreferences`). All Koin `viewModel { … }` registrations and the Android Activities/
+Compose screens stay on the same packages, so the Android app behaves identically.
 
 The debug **DB viewer** is now shareable so iOS can surface the same diagnostics. The platform-neutral
 `DatabaseHtmlGenerator` (`ticker.debug`, declared in `sharedModule`) renders the shared Room database
@@ -396,13 +441,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   been decoupled into `commonMain` (shared `Time` value + ISO day-of-week numbers on
   `UserPreferences`).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
-  the shared Compose UI binds to). *Started* — `AlertsViewModel`/`NotesViewModel`/`DisplaynameViewModel`/
-  `AddPositionViewModel`/`NewsFeedViewModel`/`ThemeViewModel`/`NavigationViewModel`/`QuoteDetailViewModel`
-  moved into `:shared` `commonMain` (see "In progress — Phase 3"); the remaining ViewModels follow as
-  their Android-only
-  dependencies are shared — the messaging surface has now been shared too (the `AppMessaging`
-  interface + `AppMessage` model in `commonMain`, with the Compose/Android `ComposeAppMessaging`
-  implementation in `:app`).
+  the shared Compose UI binds to). *All app ViewModels now shared* —
+  `AlertsViewModel`/`NotesViewModel`/`DisplaynameViewModel`/
+  `AddPositionViewModel`/`NewsFeedViewModel`/`ThemeViewModel`/`NavigationViewModel`/`QuoteDetailViewModel`,
+  and (after sharing the widget-data surface) `SuggestionViewModel`/`SearchViewModel`/
+  `SettingsViewModel`/`HomeViewModel`, are in `:shared` `commonMain` (see "In progress — Phase 3").
+  The Android-only collaborators they needed were shared along the way: the messaging surface (the
+  `AppMessaging` interface + `AppMessage` model in `commonMain`, Compose/Android `ComposeAppMessaging`
+  in `:app`), the widget-data surface (`IWidgetData`/`IWidgetDataProvider`), notifications
+  (`INotificationsHandler`), and the `HomeStrings` string seam; the Android share/export/import stays
+  in `:app` as `PortfolioExportImporter`.
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
