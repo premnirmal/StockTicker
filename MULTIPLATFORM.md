@@ -245,10 +245,18 @@ The ViewModels that only depend on already-shared services have moved into `:sha
   `IStocksProvider`.
 - `NewsFeedViewModel` (`ticker.news`) — the market-news + trending feed, depending only on the
   already-shared `NewsProvider`/`NewsFeedItem`.
+- `ThemeViewModel` (`ticker.ui`) — exposes the selected theme as a `Flow<SelectedTheme>`, depending
+  only on the shared `UserPreferences` contract (its `themePrefFlow` plus the `LIGHT_THEME`/
+  `DARK_THEME`/`FOLLOW_SYSTEM_THEME` constants) and the already-shared `SelectedTheme` enum.
+- `NavigationViewModel` (`ticker.navigation`) — the bottom-nav "scroll to top" action bus; it is pure
+  presentation state with no platform dependencies. Its `HomeRoute` destination enum moved into
+  `commonMain` alongside it (the Compose navigation in `:app` references it unchanged via the same
+  package).
 
 `:app` binds the contracts the shared ViewModels need to the concrete Android singletons in
 `appModule` (`single<IStocksProvider> { get<StocksProvider>() }`,
-`single<QuoteStorage> { get<StocksStorage>() }`). The Koin `viewModel { … }` registrations and the
+`single<QuoteStorage> { get<StocksStorage>() }`, `single<UserPreferences> { get<AppPreferences>() }`).
+The Koin `viewModel { … }` registrations and the
 Android Activities/Compose screens that host them are unchanged (same package), so the Android app
 behaves identically. ViewModels still coupled to Android-only infrastructure (e.g. `WidgetDataProvider`,
 `AppMessaging`, `Context`) stay in `:app` for now and follow once those surfaces are shared.
@@ -357,8 +365,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `UserPreferences`).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to). *Started* — `AlertsViewModel`/`NotesViewModel`/`DisplaynameViewModel`/
-  `AddPositionViewModel`/`NewsFeedViewModel` moved into `:shared` `commonMain` (see "In progress —
-  Phase 3"); the remaining ViewModels follow as their Android-only dependencies are shared.
+  `AddPositionViewModel`/`NewsFeedViewModel`/`ThemeViewModel`/`NavigationViewModel` moved into `:shared`
+  `commonMain` (see "In progress — Phase 3"); the remaining ViewModels follow as their Android-only
+  dependencies are shared.
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host

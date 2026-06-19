@@ -295,14 +295,6 @@ class HomeNavigationActions(
     }
 }
 
-enum class HomeRoute(val route: String) {
-    Watchlist("Watchlist"),
-    Trending("Trending"),
-    Search("Search"),
-    Widgets("Widgets"),
-    Settings("Settings")
-}
-
 data class HomeBottomNavDestination(
     val route: HomeRoute,
     val selectedIcon: ImageVector,
