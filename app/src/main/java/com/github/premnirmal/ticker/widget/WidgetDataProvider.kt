@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class WidgetDataProvider constructor(
         private val context: Context,
-) {
+) : IWidgetDataProvider {
 
     private val glanceAppWidgetManager: GlanceAppWidgetManager by lazy {
         GlanceAppWidgetManager(context)
@@ -23,7 +23,7 @@ class WidgetDataProvider constructor(
         HashMap()
     }
 
-    val widgetData: StateFlow<List<WidgetData>>
+    override val widgetData: StateFlow<List<WidgetData>>
         get() = _widgetData
 
     private val _widgetData = MutableStateFlow<List<WidgetData>>(emptyList())
@@ -36,7 +36,7 @@ class WidgetDataProvider constructor(
         }
     }
 
-    suspend fun refreshWidgetDataList(): List<WidgetData> {
+    override suspend fun refreshWidgetDataList(): List<WidgetData> {
         val appWidgetIds = getAppWidgetIds().toMutableSet()
         if (appWidgetIds.isEmpty()) {
             appWidgetIds.add(AppWidgetManager.INVALID_APPWIDGET_ID)
@@ -48,7 +48,7 @@ class WidgetDataProvider constructor(
         return widgetDataList
     }
 
-    fun dataForWidgetId(widgetId: Int): WidgetData {
+    override fun dataForWidgetId(widgetId: Int): WidgetData {
         val widgetData = synchronized(widgets) {
             if (widgets.containsKey(widgetId)) {
                 val widgetData = widgets[widgetId]!!
@@ -88,7 +88,7 @@ class WidgetDataProvider constructor(
         }
     }
 
-    suspend fun broadcastUpdateAllWidgets() {
+    override suspend fun broadcastUpdateAllWidgets() {
         refreshWidgetDataList()
         _widgetData.value.forEach {
             it.emitWidgetChanges()
@@ -96,20 +96,20 @@ class WidgetDataProvider constructor(
         GlanceStocksWidget().updateAll(context)
     }
 
-    fun hasWidget(): Boolean = getAppWidgetIds().isNotEmpty()
+    override fun hasWidget(): Boolean = getAppWidgetIds().isNotEmpty()
 
-    val hasWidget: Flow<Boolean> by lazy {
+    override val hasWidget: Flow<Boolean> by lazy {
         widgetData.map {
             hasWidget()
         }
     }
 
-    suspend fun containsTicker(ticker: String): Boolean {
+    override suspend fun containsTicker(ticker: String): Boolean {
         refreshWidgetDataList()
         return widgets.any { it.value.getTickers().contains(ticker) }
     }
 
-    fun updateWidgets(tickerList: List<String>) {
+    override fun updateWidgets(tickerList: List<String>) {
         if (hasWidget()) {
             dataForWidgetId(getAppWidgetIds()[0])
                 .addTickers(tickerList)

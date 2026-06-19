@@ -55,6 +55,7 @@ import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.fadingEdges
@@ -78,6 +79,12 @@ fun SearchScreen(
     val searchResults by searchViewModel.searchResult.collectAsStateWithLifecycle()
     val trendingStocks by searchViewModel.trendingStocks.collectAsStateWithLifecycle(emptyList())
     val isRefreshing by searchViewModel.isRefreshing.collectAsStateWithLifecycle()
+    val appMessaging = LocalAppMessaging.current
+    LaunchedEffect(searchViewModel) {
+        searchViewModel.suggestionsError.collect {
+            appMessaging.sendSnackbar(R.string.error_fetching_suggestions)
+        }
+    }
     LaunchedEffect(trendingStocks.isEmpty()) {
         if (trendingStocks.isEmpty()) {
             searchViewModel.fetchTrending()

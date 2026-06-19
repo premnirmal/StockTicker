@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import com.github.premnirmal.ticker.widget.IWidgetDataProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class SuggestionViewModel constructor(
     private val symbol: String,
-    private val widgetDataProvider: WidgetDataProvider,
+    private val widgetDataProvider: IWidgetDataProvider,
 ) : ViewModel() {
 
     val suggestionState: Flow<SuggestionState>

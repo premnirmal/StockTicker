@@ -2,29 +2,29 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.premnirmal.ticker.components.AppLogger
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.SuggestionsProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.ui.ComposeAppMessaging
-import com.github.premnirmal.ticker.widget.WidgetData
-import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.github.premnirmal.tickerwidget.R
+import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.widget.IWidgetData
+import com.github.premnirmal.ticker.widget.IWidgetDataProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class SearchViewModel constructor(
     private val suggestionsProvider: SuggestionsProvider,
-    private val widgetDataProvider: WidgetDataProvider,
+    private val widgetDataProvider: IWidgetDataProvider,
     private val newsProvider: NewsProvider,
-    private val appMessaging: ComposeAppMessaging,
+    private val appMessaging: AppMessaging,
 ) : ViewModel() {
 
     val searchResult: StateFlow<FetchResult<List<Suggestion>>?>
@@ -40,8 +40,17 @@ class SearchViewModel constructor(
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
     private val _isRefreshing = MutableStateFlow(false)
-    val widgetData: Flow<List<WidgetData>>
+    val widgetData: Flow<List<IWidgetData>>
         get() = widgetDataProvider.widgetData
+
+    /**
+     * One-shot signal emitted when a suggestion fetch fails. The Android screen resolves the
+     * localized message and surfaces it via the [AppMessaging] snackbar host, keeping the
+     * string-resource resolution in `:app`.
+     */
+    val suggestionsError: Flow<Unit>
+        get() = _suggestionsError
+    private val _suggestionsError = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     fun fetchTrending() {
         fetchTrendingJob?.cancel()
@@ -67,9 +76,9 @@ class SearchViewModel constructor(
             if (result.wasSuccessful) {
                 _searchResult.emit(result)
             } else {
-                Timber.w(result.error)
+                AppLogger.w(result.error)
                 _searchResult.emit(FetchResult.failure(result.error))
-                appMessaging.sendSnackbar(R.string.error_fetching_suggestions)
+                _suggestionsError.tryEmit(Unit)
             }
         }
     }

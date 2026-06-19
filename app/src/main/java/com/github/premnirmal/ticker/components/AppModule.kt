@@ -32,6 +32,7 @@ import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.ComposeAppMessaging
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import com.github.premnirmal.ticker.widget.IWidgetDataProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -70,6 +71,8 @@ val appModule = module {
     single<UserPreferences> { get<AppPreferences>() }
 
     single { WidgetDataProvider(androidContext()) }
+    // Phase 3: shared ViewModels depend on the platform-neutral IWidgetDataProvider contract.
+    single<IWidgetDataProvider> { get<WidgetDataProvider>() }
     single { ComposeAppMessaging(androidContext(), get()) }
     single<AppMessaging> { get<ComposeAppMessaging>() }
     single { FetchEventLogger(get(), get(), get()) }

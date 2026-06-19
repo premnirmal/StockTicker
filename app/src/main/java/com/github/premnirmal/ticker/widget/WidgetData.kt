@@ -86,7 +86,7 @@ class WidgetData : IWidgetData, KoinComponent {
         get() = _prefsFlow
     private val _prefsFlow by lazy { MutableStateFlow(toPrefs()) }
 
-    override val data: StateFlow<Data>
+    val data: StateFlow<Data>
         get() = _data
     private val _data by lazy { MutableStateFlow(toState()) }
 
@@ -344,9 +344,9 @@ class WidgetData : IWidgetData, KoinComponent {
         emitWidgetChanges()
     }
 
-    fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
+    override fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
 
-    fun setAutoSort(autoSort: Boolean) {
+    override fun setAutoSort(autoSort: Boolean) {
         preferences.edit {
             putBoolean(AUTOSORT, autoSort)
         }
@@ -389,7 +389,7 @@ class WidgetData : IWidgetData, KoinComponent {
 
     fun getTickers(): List<String> = tickerList
 
-    fun hasTicker(symbol: String): Boolean {
+    override fun hasTicker(symbol: String): Boolean {
         synchronized(tickerList) {
             var found = false
             val toRemove: MutableList<String> = ArrayList()
@@ -415,7 +415,7 @@ class WidgetData : IWidgetData, KoinComponent {
         save()
     }
 
-    fun addTicker(ticker: String) {
+    override fun addTicker(ticker: String) {
         synchronized(tickerList) {
             if (!tickerList.contains(ticker)) {
                 tickerList.add(ticker)
@@ -425,7 +425,7 @@ class WidgetData : IWidgetData, KoinComponent {
         save()
     }
 
-    fun addTickers(tickers: List<String>) {
+    override fun addTickers(tickers: List<String>) {
         synchronized(tickerList) {
             val filtered = tickers.filter { !tickerList.contains(it) }
             tickerList.addAll(filtered)
@@ -434,7 +434,7 @@ class WidgetData : IWidgetData, KoinComponent {
         save()
     }
 
-    fun removeStock(ticker: String) {
+    override fun removeStock(ticker: String) {
         synchronized(tickerList) {
             tickerList.remove(ticker)
         }
@@ -442,7 +442,7 @@ class WidgetData : IWidgetData, KoinComponent {
         alarmScheduler.enqueueCleanup()
     }
 
-    fun addAllFromStocksProvider() {
+    override fun addAllFromStocksProvider() {
         addTickers(stocksProvider.tickers.value)
     }
 
