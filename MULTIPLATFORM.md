@@ -273,6 +273,17 @@ sites keep using the concrete `ComposeAppMessaging`, while shared presentation l
 ViewModels still coupled to other Android-only infrastructure (e.g. `WidgetDataProvider`, `Context`)
 stay in `:app` for now and follow once those surfaces are shared.
 
+The debug **DB viewer** is now shareable so iOS can surface the same diagnostics. The platform-neutral
+`DatabaseHtmlGenerator` (`ticker.debug`, declared in `sharedModule`) renders the shared Room database
+(`QuoteDao`) — quotes, holdings, properties and fetch logs — into a self-contained HTML document; the
+fetch-log timestamp formatting is behind a `formatLogTime()` `expect`/`actual` (Android `java.time`,
+iOS `kotlinx-datetime`), mirroring `formatFetchTime()`. The Android-only sections that have no
+cross-platform equivalent — the `WorkManager` scheduled-work table and the home-screen widget info —
+are passed in as pre-rendered HTML fragments, so `:app`'s `DbViewerViewModel` keeps only those
+platform pieces plus the `cacheDir` file write and `WebView` host; iOS can reuse the generator
+directly. `commonTest` (`DatabaseHtmlGeneratorTest`) covers the rendered sections, the section
+ordering and the HTML escaping, so it is verified on iOS as well as Android.
+
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 

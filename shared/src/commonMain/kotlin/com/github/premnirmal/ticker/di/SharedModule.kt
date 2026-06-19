@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.di
 
+import com.github.premnirmal.ticker.debug.DatabaseHtmlGenerator
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -40,4 +41,5 @@ val sharedModule = module {
     single { HistoryProvider(chartApi = get()) }
     single { SuggestionsProvider(stocksApi = get()) }
     single { PortfolioSerializer(json = get()) }
+    single { DatabaseHtmlGenerator(dao = get()) }
 }
