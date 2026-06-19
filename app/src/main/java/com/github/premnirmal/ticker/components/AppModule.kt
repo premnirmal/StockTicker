@@ -14,9 +14,11 @@ import com.github.premnirmal.ticker.home.AppReviewManager
 import com.github.premnirmal.ticker.home.IAppReviewManager
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.FetchEventLogger
+import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CrumbStore
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
+import com.github.premnirmal.ticker.repo.QuoteStorage
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.SharedPreferencesTickersStore
 import com.github.premnirmal.ticker.repo.StocksStorage
@@ -82,12 +84,16 @@ val appModule = module {
             get()
         )
     }
+    // Phase 3: shared ViewModels depend on the platform-neutral IStocksProvider contract.
+    single<IStocksProvider> { get<StocksProvider>() }
     single { NotificationsHandler(androidContext(), get(), get(), get(), get(), get(), get()) }
 
     single { buildQuotesDB(getQuotesDBBuilder(androidContext())) }
     single { get<QuotesDB>().quoteDao() }
     single<TickersStore> { SharedPreferencesTickersStore(get()) }
     single { StocksStorage(get(), get()) }
+    // Phase 3: shared ViewModels persist via the platform-neutral QuoteStorage contract.
+    single<QuoteStorage> { get<StocksStorage>() }
 
     single<Analytics> { AnalyticsImpl(androidContext(), lazy { get<GeneralProperties>() }) }
     single<IAppReviewManager> { AppReviewManager(androidContext()) }

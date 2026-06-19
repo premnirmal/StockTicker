@@ -100,6 +100,9 @@ kotlin {
     commonMain.dependencies {
       implementation(KotlinX.serialization.json)
       implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:_")
+      // Phase 3: shared ViewModels live in commonMain. AndroidX Lifecycle's ViewModel/viewModelScope
+      // are multiplatform (2.8+), so the same ViewModel runs on Android and iOS.
+      api("androidx.lifecycle:lifecycle-viewmodel:_")
       implementation("io.ktor:ktor-client-core:_")
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")

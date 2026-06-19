@@ -230,6 +230,29 @@ items above:
 `UserDefaultsTickersStoreTest`, `AnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
 `Shared` framework.
 
+### In progress — Phase 3 (shared ViewModels)
+Phase 3 has started: presentation logic is moving into `commonMain` so the future Compose
+Multiplatform UI (Phase 4) and the iOS app can bind to the same ViewModels. AndroidX Lifecycle's
+`ViewModel`/`viewModelScope` are multiplatform (2.8+), so the shared ViewModels run unchanged on
+Android and iOS; `:shared` `commonMain` now depends on `androidx.lifecycle:lifecycle-viewmodel`.
+
+The ViewModels that only depend on already-shared services have moved into `:shared` `commonMain`:
+
+- The three single-property editors — `AlertsViewModel`, `NotesViewModel`, `DisplaynameViewModel`
+  (`ticker.portfolio`) — each read a `Quote` via the provider and persist a `Properties` change. They
+  depend only on the shared `IStocksProvider` and `QuoteStorage` contracts.
+- `AddPositionViewModel` (`ticker.portfolio`) — the add/remove-holding flow, depending only on
+  `IStocksProvider`.
+- `NewsFeedViewModel` (`ticker.news`) — the market-news + trending feed, depending only on the
+  already-shared `NewsProvider`/`NewsFeedItem`.
+
+`:app` binds the contracts the shared ViewModels need to the concrete Android singletons in
+`appModule` (`single<IStocksProvider> { get<StocksProvider>() }`,
+`single<QuoteStorage> { get<StocksStorage>() }`). The Koin `viewModel { … }` registrations and the
+Android Activities/Compose screens that host them are unchanged (same package), so the Android app
+behaves identically. ViewModels still coupled to Android-only infrastructure (e.g. `WidgetDataProvider`,
+`AppMessaging`, `Context`) stay in `:app` for now and follow once those surfaces are shared.
+
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
@@ -333,7 +356,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   been decoupled into `commonMain` (shared `Time` value + ISO day-of-week numbers on
   `UserPreferences`).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
-  the shared Compose UI binds to).
+  the shared Compose UI binds to). *Started* — `AlertsViewModel`/`NotesViewModel`/`DisplaynameViewModel`/
+  `AddPositionViewModel`/`NewsFeedViewModel` moved into `:shared` `commonMain` (see "In progress —
+  Phase 3"); the remaining ViewModels follow as their Android-only dependencies are shared.
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
