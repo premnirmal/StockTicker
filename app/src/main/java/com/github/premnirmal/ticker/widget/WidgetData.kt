@@ -407,7 +407,7 @@ class WidgetData : IWidgetData, KoinComponent {
         }
     }
 
-    fun rearrange(tickers: List<String>) {
+    override fun rearrange(tickers: List<String>) {
         synchronized(tickerList) {
             tickerList.clear()
             tickerList.addAll(tickers)

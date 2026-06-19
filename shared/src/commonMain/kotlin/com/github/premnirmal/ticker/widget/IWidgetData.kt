@@ -28,6 +28,8 @@ interface IWidgetData {
 
     fun removeStock(ticker: String)
 
+    fun rearrange(tickers: List<String>)
+
     fun autoSortEnabled(): Boolean
 
     fun setAutoSort(autoSort: Boolean)

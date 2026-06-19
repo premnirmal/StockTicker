@@ -25,8 +25,8 @@ class AppPreferences constructor(
         AppNumberFormat.roundToTwoDecimalPlaces = roundToTwoDecimalPlaces()
     }
 
-    fun getLastSavedVersionCode(): Int = store.getInt(APP_VERSION_CODE, -1)
-    fun saveVersionCode(code: Int) {
+    override fun getLastSavedVersionCode(): Int = store.getInt(APP_VERSION_CODE, -1)
+    override fun saveVersionCode(code: Int) {
         store.setInt(APP_VERSION_CODE, code)
     }
 

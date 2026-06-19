@@ -20,6 +20,8 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CrumbStore
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.notifications.INotificationsHandler
+import com.github.premnirmal.ticker.home.AndroidHomeStrings
+import com.github.premnirmal.ticker.home.HomeStrings
 import com.github.premnirmal.ticker.repo.QuoteStorage
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.SharedPreferencesTickersStore
@@ -100,7 +102,8 @@ val appModule = module {
     single { NotificationsHandler(androidContext(), get(), get(), get(), get(), get(), get()) }
     // Phase 3: shared ViewModels trigger notifications via the platform-neutral contract.
     single<INotificationsHandler> { get<NotificationsHandler>() }
-
+    // Phase 3: shared HomeViewModel resolves tutorial / "what's new" copy via this seam.
+    single<HomeStrings> { AndroidHomeStrings(androidContext()) }
     single { buildQuotesDB(getQuotesDBBuilder(androidContext())) }
     single { get<QuotesDB>().quoteDao() }
     single<TickersStore> { SharedPreferencesTickersStore(get()) }

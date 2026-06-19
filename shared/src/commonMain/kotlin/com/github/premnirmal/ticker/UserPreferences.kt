@@ -110,6 +110,12 @@ interface UserPreferences {
   /** Persists the selected update days as ISO day-of-week numbers (Monday = 1 … Sunday = 7). */
   fun setUpdateDays(days: Set<Int>)
 
+  /** The app version code persisted on the last "what's new" prompt, or -1 if never saved. */
+  fun getLastSavedVersionCode(): Int
+
+  /** Persists [code] as the last app version code shown in the "what's new" prompt. */
+  fun saveVersionCode(code: Int)
+
   companion object {
     /** [themePref] value for the always-light theme. */
     const val LIGHT_THEME = 0

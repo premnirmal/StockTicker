@@ -13,6 +13,7 @@ import com.github.premnirmal.ticker.portfolio.search.SuggestionViewModel
 import com.github.premnirmal.ticker.settings.SettingsViewModel
 import com.github.premnirmal.ticker.ui.ThemeViewModel
 import com.github.premnirmal.ticker.widget.WidgetsViewModel
+import com.github.premnirmal.tickerwidget.BuildConfig
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -26,7 +27,6 @@ val viewModelModule = module {
     viewModel { WidgetsViewModel(get(), get()) }
     viewModel {
         HomeViewModel(
-            androidApplication(),
             get(),
             get(),
             get(),
@@ -34,7 +34,10 @@ val viewModelModule = module {
             get(),
             get(),
             get(),
-            get()
+            get(),
+            get(),
+            BuildConfig.VERSION_CODE,
+            BuildConfig.VERSION_NAME
         )
     }
     viewModel { SettingsViewModel(get(), get(), get(), get()) }

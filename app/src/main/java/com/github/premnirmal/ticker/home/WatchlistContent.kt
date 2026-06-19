@@ -85,7 +85,7 @@ import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.fadingEdges
-import com.github.premnirmal.ticker.widget.WidgetData
+import com.github.premnirmal.ticker.widget.IWidgetData
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.CoroutineScope
@@ -262,7 +262,7 @@ private fun TopAppBar(
 @Composable
 private fun Content(
     viewModel: HomeViewModel,
-    widgets: List<WidgetData>,
+    widgets: List<IWidgetData>,
     gridSize: DpSize,
     rowState: LazyListState,
     hapticFeedback: HapticFeedback,
@@ -358,7 +358,7 @@ private fun Header(
     modifier: Modifier = Modifier,
     hasWidgets: Boolean,
     subtitle: String,
-    widgets: List<WidgetData>,
+    widgets: List<IWidgetData>,
     selectedItemIndex: Int,
     coroutineScope: CoroutineScope,
     rowState: LazyListState
@@ -430,7 +430,7 @@ private fun Header(
                         val selected by remember(selectedItemIndex) { derivedStateOf { selectedItemIndex == index } }
                         TabText(
                             selected = selected,
-                            text = widget.widgetName().uppercase(Locale.getDefault()),
+                            text = widget.widgetName.uppercase(Locale.getDefault()),
                             onClick = {
                                 coroutineScope.launch {
                                     rowState.animateScrollToItem(index)
