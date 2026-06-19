@@ -359,6 +359,14 @@ it from `:shared` unchanged, and iOS can reuse it directly. Subsequent leaf comp
 screens) follow the same pattern; Android-resource-coupled pieces (e.g. `painterResource(R.…)`, string
 resources) stay in `:app` or move behind a shared seam, mirroring the Phase 3 approach.
 
+The next shared composable is the generic `Spinner<T>` dropdown (`ticker.ui`) — a `material3`
+`DropdownMenu`-backed selector used by the widget-settings screen. It moved into `:shared`
+`commonMain` (same `com.github.premnirmal.ticker.ui` package) following the seam pattern: its only
+Android coupling was the trailing chevron drawable (`painterResource(R.drawable.ic_arrow_down)`),
+which is now passed in as a multiplatform `Painter` parameter (`trailingIcon`) so the Android
+`R.drawable` lookup stays in `:app` (`WidgetsScreen` call sites) while the layout/behaviour is shared
+and reusable from iOS.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 

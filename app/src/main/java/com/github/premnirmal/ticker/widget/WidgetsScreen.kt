@@ -126,6 +126,7 @@ private fun WidgetsScreen(
                 if (showSpinner) {
                     item {
                         Spinner(
+                            trailingIcon = painterResource(id = R.drawable.ic_arrow_down),
                             items = widgetDataList,
                             textAlign = TextAlign.Center,
                             selectedItemIndex = widgetDataSelectedIndex,
@@ -166,6 +167,7 @@ private fun WidgetsScreen(
                         if (showSpinner) {
                             item {
                                 Spinner(
+                                    trailingIcon = painterResource(id = R.drawable.ic_arrow_down),
                                     items = widgetDataList,
                                     textAlign = TextAlign.Center,
                                     selectedItemIndex = widgetDataSelectedIndex,
