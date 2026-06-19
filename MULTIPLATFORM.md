@@ -401,6 +401,14 @@ for dropping its Android-only `@Preview`. Its only caller, `CollectBottomSheetMe
 `:app` and resolves `BottomSheetWithMessage` from `:shared` via the unchanged
 `com.github.premnirmal.ticker.ui` import.
 
+The collapsing-top-bar scroll driver `CollapsingTopBarScrollConnection` (`ticker.home`) is shared now
+too: it is the `NestedScrollConnection` that tracks the watchlist app-bar's vertical offset (clamped to
+`[-appBarMaxHeight, 0]`) plus a `Saver` to persist that offset across configuration changes. It depends
+only on the multiplatform `compose.ui`/`runtime` APIs (`NestedScrollConnection`/`Offset`/
+`mutableIntStateOf`/`Saver`) with no Android coupling, so it moved into `:shared` `commonMain` unchanged
+(same `com.github.premnirmal.ticker.home` package); its only caller, `WatchlistContent`, stays in `:app`
+and resolves it from `:shared` via the unchanged package import.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
