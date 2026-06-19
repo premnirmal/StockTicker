@@ -367,6 +367,13 @@ which is now passed in as a multiplatform `Painter` parameter (`trailingIcon`) s
 `R.drawable` lookup stays in `:app` (`WidgetsScreen` call sites) while the layout/behaviour is shared
 and reusable from iOS.
 
+The `TopBar` app-bar composable (`ticker.ui`) is also shared now: a thin wrapper over the
+multiplatform `material3` `TopAppBar` (title text + optional navigation icon/actions/colors/scroll
+behaviour). It has no Android coupling, so it moved into `:shared` `commonMain` unchanged except for
+dropping its Android-only `@Preview` (the `androidx.compose.ui.tooling.preview` API is not on the
+shared classpath); all 11 `:app` call sites resolve it from `:shared` via the unchanged
+`com.github.premnirmal.ticker.ui.TopBar` import.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
