@@ -392,6 +392,15 @@ dialog-backed preferences in the same file — `ListPreference`/`MultiSelectList
 `SettingsText`. All `:app` call sites (`SettingsScreen`/`WidgetsScreen`) resolve both composables from
 `:shared` via the unchanged `com.github.premnirmal.ticker.ui` imports.
 
+The bottom-sheet message UI `BottomSheetWithMessage` (`ModalBottomSheetWithMessage.kt`, `ticker.ui`) — a
+`material3` `ModalBottomSheet` that renders an already-shared `AppMessage.BottomSheetMessage` (title +
+body) with a custom drag handle — is shared now too: it depends only on the multiplatform `material3`/
+`foundation` APIs plus the shared `AppMessage`, so it moved into `:shared` `commonMain` unchanged except
+for dropping its Android-only `@Preview`. Its only caller, `CollectBottomSheetMessage` (the
+`LifecycleOwner`-scoped queue that drains `AppMessaging.bottomSheets` via `repeatOnLifecycle`), stays in
+`:app` and resolves `BottomSheetWithMessage` from `:shared` via the unchanged
+`com.github.premnirmal.ticker.ui` import.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
