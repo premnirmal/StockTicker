@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CrumbStore
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
+import com.github.premnirmal.ticker.notifications.INotificationsHandler
 import com.github.premnirmal.ticker.repo.QuoteStorage
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.SharedPreferencesTickersStore
@@ -27,6 +28,7 @@ import com.github.premnirmal.ticker.repo.TickersStore
 import com.github.premnirmal.ticker.repo.buildQuotesDB
 import com.github.premnirmal.ticker.repo.getQuotesDBBuilder
 import com.github.premnirmal.ticker.settings.DataStorePreferenceStore
+import com.github.premnirmal.ticker.settings.PortfolioExportImporter
 import com.github.premnirmal.ticker.settings.PreferenceStore
 import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.ui.AppMessaging
@@ -71,6 +73,7 @@ val appModule = module {
     single<UserPreferences> { get<AppPreferences>() }
 
     single { WidgetDataProvider(androidContext()) }
+    single { PortfolioExportImporter(get<StocksProvider>(), get<WidgetDataProvider>(), get()) }
     // Phase 3: shared ViewModels depend on the platform-neutral IWidgetDataProvider contract.
     single<IWidgetDataProvider> { get<WidgetDataProvider>() }
     single { ComposeAppMessaging(androidContext(), get()) }
@@ -95,6 +98,8 @@ val appModule = module {
     // Phase 3: shared ViewModels depend on the platform-neutral IStocksProvider contract.
     single<IStocksProvider> { get<StocksProvider>() }
     single { NotificationsHandler(androidContext(), get(), get(), get(), get(), get(), get()) }
+    // Phase 3: shared ViewModels trigger notifications via the platform-neutral contract.
+    single<INotificationsHandler> { get<NotificationsHandler>() }
 
     single { buildQuotesDB(getQuotesDBBuilder(androidContext())) }
     single { get<QuotesDB>().quoteDao() }

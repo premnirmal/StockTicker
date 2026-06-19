@@ -46,7 +46,7 @@ class NotificationsHandler constructor(
     private val appPreferences: AppPreferences,
     private val clock: AppClock,
     private val coroutineScope: CoroutineScope
-) {
+) : INotificationsHandler {
 
     companion object {
         @Deprecated("Use the group channel for alerts")
@@ -69,7 +69,7 @@ class NotificationsHandler constructor(
         context.getSharedPreferences(PREFS_NOTIFICATIONS, Context.MODE_PRIVATE)
     }
 
-    fun initialize() {
+    override fun initialize() {
         createChannels()
         coroutineScope.launch {
             val flow = stocksProvider.fetchState

@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.CustomTabs
@@ -79,6 +80,7 @@ fun SettingsScreen(
     homeViewModel: HomeViewModel,
 ) {
     val viewModel = koinViewModel<SettingsViewModel>()
+    val exportImporter = koinInject<PortfolioExportImporter>()
     val settingsData = viewModel.settings.collectAsStateWithLifecycle()
     val state = rememberLazyListState()
     rememberScrollToTopAction(HomeRoute.Settings) {
@@ -109,7 +111,7 @@ fun SettingsScreen(
                     AlarmPermissionBanner()
                 }
             }
-            settingsItems(viewModel, homeViewModel, settingsData.value)
+            settingsItems(viewModel, exportImporter, homeViewModel, settingsData.value)
         }
     }
 }
@@ -160,6 +162,7 @@ private fun AlarmPermissionBanner() {
 @Suppress("LongMethod")
 private fun LazyListScope.settingsItems(
     viewModel: SettingsViewModel,
+    exportImporter: PortfolioExportImporter,
     homeViewModel: HomeViewModel,
     settingsData: SettingsData
 ) {
@@ -292,7 +295,7 @@ private fun LazyListScope.settingsItems(
         val context = LocalContext.current
         val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) {
             if (it != null) {
-                viewModel.sharePortfolio(context, it)
+                exportImporter.sharePortfolio(context, it)
             } else {
                 context.showDialog(R.string.error_sharing)
             }
@@ -311,7 +314,7 @@ private fun LazyListScope.settingsItems(
         val context = LocalContext.current
         val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) {
             if (it != null) {
-                viewModel.importPortfolio(context, it)
+                exportImporter.importPortfolio(context, it)
             } else {
                 context.showDialog(R.string.error_exporting)
             }
@@ -331,7 +334,7 @@ private fun LazyListScope.settingsItems(
         val context = LocalContext.current
         val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) {
             if (it != null) {
-                viewModel.exportPortfolio(context, it)
+                exportImporter.exportPortfolio(context, it)
             } else {
                 context.showDialog(R.string.error_exporting)
             }
