@@ -154,7 +154,7 @@ private fun HomeListDetailNavigationWrapper(
         "No ViewModelStoreOwner was provided via LocalNavGraphViewModelStoreOwner"
     }
     val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner)
-    val homeViewModel = viewModel<HomeViewModel>(viewModelStoreOwner)
+    val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
     val navController = rememberNavController()
     val homeNavigationActions = remember(navController) {
         HomeNavigationActions(navController, navigationViewModel, homeViewModel)
