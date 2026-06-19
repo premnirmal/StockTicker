@@ -374,6 +374,15 @@ dropping its Android-only `@Preview` (the `androidx.compose.ui.tooling.preview` 
 shared classpath); all 11 `:app` call sites resolve it from `:shared` via the unchanged
 `com.github.premnirmal.ticker.ui.TopBar` import.
 
+The list/loading placeholders (`UIStates` — `EmptyState`, `ErrorState` and `ProgressState`, in
+`ticker.ui`) are shared now too: they take their copy as a plain `text: String` and depend only on the
+multiplatform `material3`/`foundation` APIs, so they moved into `:shared` `commonMain` unchanged except
+for dropping the Android-only `ErrorStatePreview` `@Preview` (it used `stringResource`/the
+`androidx.compose.ui.tooling.preview` API, neither of which is on the shared classpath). The `:app` call
+sites (`WatchlistScreen`/`SearchScreen`/`NewsFeedScreen`/`QuoteDetailScreen`) keep supplying the
+`stringResource(…)` text and resolve the composables from `:shared` via the unchanged
+`com.github.premnirmal.ticker.ui` imports.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
