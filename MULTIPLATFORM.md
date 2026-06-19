@@ -383,6 +383,15 @@ sites (`WatchlistScreen`/`SearchScreen`/`NewsFeedScreen`/`QuoteDetailScreen`) ke
 `stringResource(…)` text and resolve the composables from `:shared` via the unchanged
 `com.github.premnirmal.ticker.ui` imports.
 
+The settings building blocks `SettingsText` (the title/subtitle list-row label) and `CheckboxPreference`
+(the row + trailing `material3` `Checkbox`) are shared now too (`ticker.ui`): they depend only on the
+multiplatform `material3`/`foundation` APIs, so they moved into `:shared` `commonMain` unchanged. The
+dialog-backed preferences in the same file — `ListPreference`/`MultiSelectListPreference`
+(Android `AlertDialog`) and `TimeSelectorPreference` (Android `TimePickerDialog`) — stay in `:app`'s
+`Preferences.kt` because they rely on Android dialog APIs + `LocalContext`; they keep calling the now-shared
+`SettingsText`. All `:app` call sites (`SettingsScreen`/`WidgetsScreen`) resolve both composables from
+`:shared` via the unchanged `com.github.premnirmal.ticker.ui` imports.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
