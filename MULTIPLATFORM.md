@@ -258,8 +258,20 @@ The ViewModels that only depend on already-shared services have moved into `:sha
 `single<QuoteStorage> { get<StocksStorage>() }`, `single<UserPreferences> { get<AppPreferences>() }`).
 The Koin `viewModel { … }` registrations and the
 Android Activities/Compose screens that host them are unchanged (same package), so the Android app
-behaves identically. ViewModels still coupled to Android-only infrastructure (e.g. `WidgetDataProvider`,
-`AppMessaging`, `Context`) stay in `:app` for now and follow once those surfaces are shared.
+behaves identically.
+
+The user-messaging surface is the next one being shared so the remaining ViewModels can follow: the
+platform-neutral `AppMessaging` interface (the snackbar/banner/bottom-sheet sender, plus the
+string-only `AppMessage` model) now lives in `:shared` `commonMain` (`ticker.ui`). The Compose/Android
+implementation stays in `:app` as `ComposeAppMessaging` — it owns the `SnackbarHostState`, resolves
+the Android string-resource (`Int`) overloads and backs the `LocalAppMessaging` composition local —
+and is bound to the shared contract in `appModule`
+(`single<AppMessaging> { get<ComposeAppMessaging>() }`). The Compose UI and the resource-based call
+sites keep using the concrete `ComposeAppMessaging`, while shared presentation logic can depend on the
+`AppMessaging` interface.
+
+ViewModels still coupled to other Android-only infrastructure (e.g. `WidgetDataProvider`, `Context`)
+stay in `:app` for now and follow once those surfaces are shared.
 
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
@@ -367,7 +379,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   the shared Compose UI binds to). *Started* — `AlertsViewModel`/`NotesViewModel`/`DisplaynameViewModel`/
   `AddPositionViewModel`/`NewsFeedViewModel`/`ThemeViewModel`/`NavigationViewModel` moved into `:shared`
   `commonMain` (see "In progress — Phase 3"); the remaining ViewModels follow as their Android-only
-  dependencies are shared.
+  dependencies are shared — the messaging surface has now been shared too (the `AppMessaging`
+  interface + `AppMessage` model in `commonMain`, with the Compose/Android `ComposeAppMessaging`
+  implementation in `:app`).
 - **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host

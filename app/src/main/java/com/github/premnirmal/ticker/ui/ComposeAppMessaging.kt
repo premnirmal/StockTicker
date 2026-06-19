@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.ui
 import android.content.Context
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.staticCompositionLocalOf
+import com.github.premnirmal.ticker.ui.AppMessage.BannerMessage
 import com.github.premnirmal.ticker.ui.AppMessage.BottomSheetMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -10,20 +11,35 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
-class AppMessaging constructor(
+/**
+ * Compose/Android backed implementation of the shared [AppMessaging] contract. It owns the
+ * [SnackbarHostState] consumed by the Compose UI and resolves Android string resources, while
+ * delegating the platform-neutral messaging to the shared interface.
+ */
+class ComposeAppMessaging constructor(
     private val context: Context,
     private val coroutineScope: CoroutineScope,
-) {
+) : AppMessaging {
 
     val snackbarHostState = SnackbarHostState()
 
-    val bottomSheets: Flow<BottomSheetMessage>
+    override val bottomSheets: Flow<BottomSheetMessage>
         get() = _messageQueue.filterIsInstance(BottomSheetMessage::class)
 
-    val banners: Flow<AppMessage.BannerMessage>
-        get() = _messageQueue.filterIsInstance(AppMessage.BannerMessage::class)
+    override val banners: Flow<BannerMessage>
+        get() = _messageQueue.filterIsInstance(BannerMessage::class)
 
     private val _messageQueue = MutableSharedFlow<AppMessage>(replay = 0, extraBufferCapacity = 100)
+
+    override fun sendSnackbar(
+        message: String,
+    ) {
+        coroutineScope.launch {
+            snackbarHostState.showSnackbar(
+                message
+            )
+        }
+    }
 
     fun sendSnackbar(
         message: Int,
@@ -35,12 +51,18 @@ class AppMessaging constructor(
         }
     }
 
-    fun sendSnackbar(
+    override fun sendBanner(
+        title: String,
         message: String,
+        onClick: (() -> Unit)?,
     ) {
         coroutineScope.launch {
-            snackbarHostState.showSnackbar(
-                message
+            _messageQueue.emit(
+                BannerMessage(
+                    title = title,
+                    message = message,
+                    onClick = onClick,
+                )
             )
         }
     }
@@ -50,32 +72,14 @@ class AppMessaging constructor(
         message: Int,
         onClick: (() -> Unit)? = null,
     ) {
-        coroutineScope.launch {
-            _messageQueue.emit(
-                AppMessage.BannerMessage(
-                    title = context.getString(title),
-                    message = context.getString(message),
-                    onClick = onClick,
-                )
-            )
-        }
+        sendBanner(
+            title = context.getString(title),
+            message = context.getString(message),
+            onClick = onClick,
+        )
     }
 
-    fun sendBottomSheet(
-        title: Int,
-        message: String,
-    ) {
-        coroutineScope.launch {
-            _messageQueue.emit(
-                BottomSheetMessage(
-                    title = context.getString(title),
-                    message = message,
-                )
-            )
-        }
-    }
-
-    fun sendBottomSheet(
+    override fun sendBottomSheet(
         title: String,
         message: String,
     ) {
@@ -83,24 +87,18 @@ class AppMessaging constructor(
             _messageQueue.emit(BottomSheetMessage(title = title, message = message))
         }
     }
+
+    fun sendBottomSheet(
+        title: Int,
+        message: String,
+    ) {
+        sendBottomSheet(
+            title = context.getString(title),
+            message = message,
+        )
+    }
 }
 
-sealed class AppMessage(
-    val title: String,
-    val message: String,
-) {
-    class BottomSheetMessage(
-        title: String,
-        message: String,
-    ) : AppMessage(title, message)
-
-    class BannerMessage(
-        title: String,
-        message: String,
-        onClick: (() -> Unit)? = null,
-    ) : AppMessage(title, message)
-}
-
-val LocalAppMessaging = staticCompositionLocalOf<AppMessaging> {
+val LocalAppMessaging = staticCompositionLocalOf<ComposeAppMessaging> {
     error("No AppMessaging sender provided")
 }

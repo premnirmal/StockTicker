@@ -7,7 +7,7 @@ import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.SuggestionsProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.ui.ComposeAppMessaging
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
@@ -24,7 +24,7 @@ class SearchViewModel constructor(
     private val suggestionsProvider: SuggestionsProvider,
     private val widgetDataProvider: WidgetDataProvider,
     private val newsProvider: NewsProvider,
-    private val appMessaging: AppMessaging,
+    private val appMessaging: ComposeAppMessaging,
 ) : ViewModel() {
 
     val searchResult: StateFlow<FetchResult<List<Suggestion>>?>

@@ -21,7 +21,7 @@ import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.ui.ComposeAppMessaging
 import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.ThemeViewModel
@@ -46,7 +46,7 @@ abstract class BaseActivity : ComponentActivity() {
 
     val appPreferences: AppPreferences by inject()
 
-    val appMessaging: AppMessaging by inject()
+    val appMessaging: ComposeAppMessaging by inject()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(
