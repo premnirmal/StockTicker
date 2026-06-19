@@ -26,8 +26,10 @@ by both `:app` (Android) and `iosApp` (inside a `UIViewController`).
 `:shared` declares the following Kotlin targets:
 
 - `androidTarget()` — consumed by `:app` as a normal project dependency.
-- `iosX64()`, `iosArm64()`, `iosSimulatorArm64()` — packaged as a static `Shared`
-  framework for the (planned) iOS app.
+- `iosArm64()`, `iosSimulatorArm64()` — packaged as a static `Shared`
+  framework for the (planned) iOS app. (`iosX64()` — the Intel-Mac simulator — was
+  dropped in Phase 4 because Compose Multiplatform no longer publishes artifacts for it;
+  Apple-Silicon simulators use `iosSimulatorArm64`.)
 
 Source sets:
 
@@ -189,7 +191,7 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   generates Kotlin (no Java wildcards to suppress), so it was removed. With KSP unblocked, the
   Native compile then surfaced `Dispatchers.IO` being non-public on Kotlin/Native — the
   `ioDispatcher` iOS `actual` now uses `Dispatchers.Default` (a multi-threaded worker pool on
-  Native) instead. All iOS targets (`iosX64`/`iosArm64`/`iosSimulatorArm64`) now run KSP, compile
+  Native) instead. The iOS targets (`iosArm64`/`iosSimulatorArm64`) now run KSP, compile
   `commonMain`/`commonTest` and link the `Shared` framework.
 
 ### Done — Phase 2 (iOS implementations)
@@ -230,8 +232,8 @@ items above:
 `UserDefaultsTickersStoreTest`, `AnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
 `Shared` framework.
 
-### In progress — Phase 3 (shared ViewModels)
-Phase 3 has started: presentation logic is moving into `commonMain` so the future Compose
+### Done — Phase 3 (shared ViewModels)
+Phase 3 is complete: all of the app's presentation logic now lives in `commonMain` so the Compose
 Multiplatform UI (Phase 4) and the iOS app can bind to the same ViewModels. AndroidX Lifecycle's
 `ViewModel`/`viewModelScope` are multiplatform (2.8+), so the shared ViewModels run unchanged on
 Android and iOS; `:shared` `commonMain` now depends on `androidx.lifecycle:lifecycle-viewmodel`.
@@ -338,7 +340,26 @@ platform pieces plus the `cacheDir` file write and `WebView` host; iOS can reuse
 directly. `commonTest` (`DatabaseHtmlGeneratorTest`) covers the rendered sections, the section
 ordering and the HTML escaping, so it is verified on iOS as well as Android.
 
-### Remaining (high level)
+### In progress — Phase 4 (shared UI: Compose Multiplatform)
+Phase 4 has started: the in-app Compose UI is moving into `:shared` `commonMain` as Compose
+Multiplatform so Android and the (planned) iOS app render from the same `@Composable` source.
+
+The build is bootstrapped: `:shared` now applies the JetBrains Compose Multiplatform Gradle plugin
+(`org.jetbrains.compose`) alongside the Kotlin Compose compiler plugin
+(`org.jetbrains.kotlin.plugin.compose`), and `commonMain` depends on the multiplatform Compose
+artifacts (`compose.runtime`/`compose.foundation`/`compose.material3`/`compose.ui`). Because Compose
+Multiplatform no longer publishes `iosX64` (Intel-simulator) artifacts, the `:shared` `iosX64()`
+target was dropped — Apple-Silicon simulators build against `iosSimulatorArm64`, and devices against
+`iosArm64`.
+
+The first shared composable is `AppTextField` (`ticker.ui`) — the app-wide text-field colors/shape,
+which depend only on the multiplatform `material3`/`foundation` APIs. It moved into `:shared`
+`commonMain` (same `com.github.premnirmal.ticker.ui` package), so the Android `:app` call sites resolve
+it from `:shared` unchanged, and iOS can reuse it directly. Subsequent leaf composables (and then whole
+screens) follow the same pattern; Android-resource-coupled pieces (e.g. `painterResource(R.…)`, string
+resources) stay in `:app` or move behind a shared seam, mirroring the Phase 3 approach.
+
+
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
@@ -451,7 +472,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   in `:app`), the widget-data surface (`IWidgetData`/`IWidgetDataProvider`), notifications
   (`INotificationsHandler`), and the `HomeStrings` string seam; the Android share/export/import stays
   in `:app` as `PortfolioExportImporter`.
-- **Phase 4 (shared UI):** Adopt Compose Multiplatform in `:shared`. Move the in-app
+- **Phase 4 (shared UI) — started:** Adopt Compose Multiplatform in `:shared` (the
+  `org.jetbrains.compose` plugin + Compose deps in `commonMain` are now wired, and the first
+  composable `AppTextField` is shared — see "In progress — Phase 4"). Move the remaining in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
