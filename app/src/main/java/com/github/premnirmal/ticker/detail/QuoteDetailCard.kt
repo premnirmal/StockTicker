@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteDetail
+import com.github.premnirmal.ticker.news.QuoteDetail
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.tickerwidget.ui.AppCard
 

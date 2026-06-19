@@ -1,24 +1,18 @@
 package com.github.premnirmal.ticker.news
 
-import android.app.Application
-import androidx.annotation.StringRes
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.format
-import com.github.premnirmal.ticker.formatBigNumbers
-import com.github.premnirmal.ticker.formatDate
+import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.HistoryProvider
+import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.Range
-import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.ui.AppMessaging
-import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -27,21 +21,26 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+/**
+ * Shared (Phase 3) ViewModel backing the quote-detail screen: it owns the observable quote/summary,
+ * chart and news-feed state plus the real-time refresh loop. It depends only on already-shared
+ * contracts ([IStocksProvider], [AppMessaging], [NewsProvider], [HistoryProvider],
+ * [UserPreferences]), so it runs unchanged on Android and iOS.
+ *
+ * The platform-specific, string-resource-formatted "details" grid (which mixes translated date
+ * patterns and Android number formatting) is built by `:app` from the [quote] flow rather than here.
+ */
 class QuoteDetailViewModel constructor(
-    application: Application,
-    private val stocksProvider: StocksProvider,
+    private val stocksProvider: IStocksProvider,
     private val appMessaging: AppMessaging,
     private val newsProvider: NewsProvider,
     private val historyProvider: HistoryProvider,
-    private val appPreferences: AppPreferences,
-) : AndroidViewModel(application) {
+    private val userPreferences: UserPreferences,
+) : ViewModel() {
 
     val isRefreshing: StateFlow<Boolean>
         get() = _isRefreshing
@@ -60,146 +59,11 @@ class QuoteDetailViewModel constructor(
         get() = _newsData
 
     val showAddRemoveTooltip: Flow<Boolean>
-        get() = appPreferences.showAddRemoveTooltip
+        get() = userPreferences.showAddRemoveTooltip
 
     private var fetchQuoteJob: Job? = null
     private var quoteSummary: QuoteSummary? = null
     val range = MutableStateFlow<Range>(Range.ONE_DAY)
-
-    val details: Flow<List<QuoteDetail>> = _quote.transform { summary ->
-        if (summary.wasSuccessful) {
-            val quote = summary.data.quote
-            val quoteSummary = summary.data.quoteSummary
-            val details = mutableListOf<QuoteDetail>()
-            quote.open?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_open,
-                        quote.priceFormat.format(it)
-                    )
-                )
-            }
-            if (quote.dayLow != null && quote.dayHigh != null) {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_day_range,
-                        "${quote.dayLow!!.format()} - ${quote.dayHigh!!.format()}"
-                    )
-                )
-            }
-            quote.fiftyDayAverage?.let {
-                if (it > 0f) {
-                    details.add(
-                        QuoteDetail(
-                            R.string.quote_details_fifty_day_average,
-                            it.format()
-                        )
-                    )
-                }
-            }
-            quote.twoHundredDayAverage?.let {
-                if (it > 0f) {
-                    details.add(
-                        QuoteDetail(
-                            R.string.quote_details_two_hundred_day_average,
-                            it.format()
-                        )
-                    )
-                }
-            }
-            if (quote.fiftyTwoWeekLow != null && quote.fiftyTwoWeekHigh != null) {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_ftw_range,
-                        "${quote.fiftyTwoWeekLow!!.format()} - ${quote.fiftyTwoWeekHigh!!.format()}"
-                    )
-                )
-            }
-            quote.regularMarketVolume?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_volume,
-                        it.format()
-                    )
-                )
-            }
-            quote.marketCap?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_market_cap,
-                        it.formatBigNumbers(application)
-                    )
-                )
-            }
-            quote.trailingPE?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_pe_ratio,
-                        it.format()
-                    )
-                )
-            }
-            quote.earningsTimestamp?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_earnings_date,
-                        it.formatDate(application.getString(R.string.date_format_long))
-                    )
-                )
-            }
-            if (quote.annualDividendRate > 0f && quote.annualDividendYield > 0f) {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_dividend_rate,
-                        quote.dividendInfo()
-                    )
-                )
-            }
-            quote.dividendDate?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_dividend_date,
-                        it.formatDate(application.getString(R.string.date_format_long))
-                    )
-                )
-            }
-            quoteSummary?.financialData?.earningsGrowth?.fmt?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_earnings_growth,
-                        it
-                    )
-                )
-            }
-            quoteSummary?.financialData?.revenueGrowth?.fmt?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_revenue_growth,
-                        it
-                    )
-                )
-            }
-            quoteSummary?.financialData?.profitMargins?.fmt?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_profit_margins,
-                        it
-                    )
-                )
-            }
-            quoteSummary?.financialData?.grossMargins?.fmt?.let {
-                details.add(
-                    QuoteDetail(
-                        R.string.quote_details_gross_margins,
-                        it
-                    )
-                )
-            }
-            emit(details)
-        } else {
-            emit(emptyList())
-        }
-    }.shareIn(viewModelScope, SharingStarted.WhileSubscribed(), 1)
 
     fun loadQuote(ticker: String) = viewModelScope.launch {
         quoteSummary = null
@@ -255,7 +119,7 @@ class QuoteDetailViewModel constructor(
                     isMarketOpen = result.data.isMarketOpen
                     _quote.emit(FetchResult.success(QuoteWithSummary(result.data, quoteSummary)))
                 }
-                delay(StocksProvider.DEFAULT_INTERVAL_MS)
+                delay(IStocksProvider.DEFAULT_INTERVAL_MS)
             } while (isActive && result.wasSuccessful && isMarketOpen)
         }
     }
@@ -307,7 +171,7 @@ class QuoteDetailViewModel constructor(
     }
 
     fun addRemoveTooltipShown() {
-        appPreferences.setAddRemoveTooltipShown()
+        userPreferences.setAddRemoveTooltipShown()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -318,13 +182,6 @@ class QuoteDetailViewModel constructor(
         _quote.resetReplayCache()
         _dataFetchError.value = null
     }
-
-    data class QuoteDetail(
-        @StringRes
-        val title: Int,
-
-        val data: String
-    )
 
     data class QuoteWithSummary(
         val quote: Quote,

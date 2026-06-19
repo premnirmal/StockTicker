@@ -45,7 +45,7 @@ class StocksProvider constructor(
         private const val MIN_SCHEDULE_MS = 15_000L
         private const val MAX_FAILURE_BACKOFF_MS = 30 * 60 * 1000L
         private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
-        const val DEFAULT_INTERVAL_MS: Long = 15_000L
+        const val DEFAULT_INTERVAL_MS: Long = IStocksProvider.DEFAULT_INTERVAL_MS
     }
 
     override val tickers: StateFlow<List<String>>

@@ -24,6 +24,15 @@ import kotlinx.coroutines.flow.StateFlow
  */
 interface IStocksProvider {
 
+  companion object {
+    /**
+     * Default polling interval (in millis) for the real-time refresh loops while a screen is in the
+     * foreground and the market is open. Shared so the common ViewModels can drive the same cadence
+     * on Android and iOS.
+     */
+    const val DEFAULT_INTERVAL_MS: Long = 15_000L
+  }
+
   /** The current watchlist symbols, as an observable flow. */
   val tickers: StateFlow<List<String>>
 

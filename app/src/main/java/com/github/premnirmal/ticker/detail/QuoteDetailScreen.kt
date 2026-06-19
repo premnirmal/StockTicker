@@ -54,7 +54,6 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -92,9 +91,10 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.changeColour
 import com.github.premnirmal.ticker.news.NewsCard
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
+import com.github.premnirmal.ticker.news.QuoteDetail
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
-import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteDetail
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel.QuoteWithSummary
+import com.github.premnirmal.ticker.news.toQuoteDetails
 import com.github.premnirmal.ticker.portfolio.AlertsActivity
 import com.github.premnirmal.ticker.portfolio.DisplaynameActivity
 import com.github.premnirmal.ticker.portfolio.HoldingsActivity
@@ -126,9 +126,12 @@ fun QuoteDetailScreen(
     quote: Quote,
     viewModel: QuoteDetailViewModel = koinViewModel()
 ) {
-    val details by viewModel.details.collectAsState(initial = emptyList())
     val articles by viewModel.newsData.collectAsStateWithLifecycle()
     val quoteDetail by viewModel.quote.collectAsStateWithLifecycle(null)
+    val context = LocalContext.current
+    val details = remember(quoteDetail) {
+        quoteDetail?.takeIf { it.wasSuccessful }?.dataSafe?.toQuoteDetails(context) ?: emptyList()
+    }
     val quote = quoteDetail?.dataSafe?.quote ?: quote
     QuoteDetailContent(
         modifier, widthSizeClass, contentType, displayFeatures, quote, viewModel, details, articles, quoteDetail

@@ -252,11 +252,20 @@ The ViewModels that only depend on already-shared services have moved into `:sha
   presentation state with no platform dependencies. Its `HomeRoute` destination enum moved into
   `commonMain` alongside it (the Compose navigation in `:app` references it unchanged via the same
   package).
+- `QuoteDetailViewModel` (`ticker.news`) — the quote-detail screen's observable quote/summary, chart
+  and news-feed state plus the real-time refresh loop, depending only on the shared `IStocksProvider`,
+  `AppMessaging`, `NewsProvider`, `HistoryProvider` and `UserPreferences` contracts. The real-time poll
+  cadence is the shared `IStocksProvider.DEFAULT_INTERVAL_MS` constant (the Android `StocksProvider`
+  now aliases it). Its Android-only "details" grid — which mixes the translated `date_format_long`
+  pattern and Android-resource number formatting (`formatBigNumbers`) — is **not** part of the shared
+  ViewModel: `:app` derives the `List<QuoteDetail>` from the ViewModel's `quote` flow via the
+  `QuoteWithSummary.toQuoteDetails(Context)` builder, mirroring how `ComposeAppMessaging` keeps the
+  Android string-resource resolution in `:app`.
 
 `:app` binds the contracts the shared ViewModels need to the concrete Android singletons in
 `appModule` (`single<IStocksProvider> { get<StocksProvider>() }`,
-`single<QuoteStorage> { get<StocksStorage>() }`, `single<UserPreferences> { get<AppPreferences>() }`).
-The Koin `viewModel { … }` registrations and the
+`single<QuoteStorage> { get<StocksStorage>() }`, `single<UserPreferences> { get<AppPreferences>() }`,
+`single<AppMessaging> { get<ComposeAppMessaging>() }`). The Koin `viewModel { … }` registrations and the
 Android Activities/Compose screens that host them are unchanged (same package), so the Android app
 behaves identically.
 
@@ -388,8 +397,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `UserPreferences`).
 - **Phase 3:** Share ViewModels / presentation logic in `commonMain` (state + logic
   the shared Compose UI binds to). *Started* — `AlertsViewModel`/`NotesViewModel`/`DisplaynameViewModel`/
-  `AddPositionViewModel`/`NewsFeedViewModel`/`ThemeViewModel`/`NavigationViewModel` moved into `:shared`
-  `commonMain` (see "In progress — Phase 3"); the remaining ViewModels follow as their Android-only
+  `AddPositionViewModel`/`NewsFeedViewModel`/`ThemeViewModel`/`NavigationViewModel`/`QuoteDetailViewModel`
+  moved into `:shared` `commonMain` (see "In progress — Phase 3"); the remaining ViewModels follow as
+  their Android-only
   dependencies are shared — the messaging surface has now been shared too (the `AppMessaging`
   interface + `AppMessage` model in `commonMain`, with the Compose/Android `ComposeAppMessaging`
   implementation in `:app`).

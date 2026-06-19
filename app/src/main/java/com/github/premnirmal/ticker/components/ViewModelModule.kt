@@ -46,7 +46,7 @@ val viewModelModule = module {
     viewModel { NotesViewModel(get(), get()) }
     viewModel { AddPositionViewModel(get()) }
     viewModel {
-        QuoteDetailViewModel(androidApplication(), get(), get(), get(), get(), get())
+        QuoteDetailViewModel(get(), get(), get(), get(), get())
     }
     viewModel { NewsFeedViewModel(get()) }
     viewModel { (symbol: String) -> SuggestionViewModel(symbol, get()) }
