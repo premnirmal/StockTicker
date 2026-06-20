@@ -626,6 +626,19 @@ same-package reference (only `WatchlistContent` enables the overflow menu via `s
 `commonMain` (only `:app`'s `EditSectionHeader` — Android `painterResource`/`R.string` — and the screen
 composables remain).
 
+The next shared pieces are the adaptive-layout type primitives `NavigationType`/`NavigationContentPosition`/
+`ContentType` (the enums describing the navigation style + content panes chosen for a window size class) plus
+the `LocalContentType` `staticCompositionLocalOf` (`ticker.ui`, formerly in `WindowStateUtils.kt`). They depend
+only on the multiplatform `compose.runtime` API (`staticCompositionLocalOf`) with no Android coupling, so they
+moved into `:shared` `commonMain` (new `WindowStateTypes.kt`, same `com.github.premnirmal.ticker.ui` package).
+Their Android-coupled siblings stay in `:app`'s `WindowStateUtils.kt`: `DevicePosture` (which carries an
+`android.graphics.Rect` hinge bounds + `FoldingFeature.Orientation`) and the `isBookPosture`/`isSeparating`
+fold helpers (which inspect a `FoldingFeature`). All `:app` consumers (`HomeListDetail`/`HomeNavigation`/
+`NavigationHelpers`/`WatchlistScreen`/`WatchlistContent`/`SearchScreen`/`WidgetsScreen`/`QuoteDetailScreen`/
+`HoldingsActivity`) resolve the enums + `LocalContentType` from `:shared` via the unchanged
+`com.github.premnirmal.ticker.ui` package imports. The shared file is named `WindowStateTypes.kt` (not the
+`:app` `WindowStateUtils.kt`) so the two top-level facade classes do not clash.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
