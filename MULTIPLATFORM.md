@@ -501,6 +501,15 @@ title is now passed in as a `holdingsLabel: String` parameter and the composable
 keeps the `stringResource` lookup in `:app` and resolves the composable from `:shared` via the unchanged
 package reference.
 
+The next shared leaf composables are the quote text primitives `QuoteValueText`/`QuoteChangeText`/
+`SmallQuoteChangeText` (`ticker.detail`) — the small `material3` `Text` wrappers that render a quote
+value (plain `bodySmall`) or a gain/loss change (coloured up/down via the already-shared `ColourPalette`,
+with `SmallQuoteChangeText` shrinking the font to 10sp). They depend only on the multiplatform `material3`/
+`compose.ui` APIs (`Text`/`TextAlign`/`Color`/`sp`) plus the shared `ColourPalette`, with no Android
+coupling, so they moved into `:shared` `commonMain` (new `QuoteText.kt`, same `com.github.premnirmal.ticker.detail`
+package) together with their shared `private` `extractColour` helper. Their call sites (`QuoteCard`/
+`SectionDetail` in `:app`) resolve them from `:shared` via the unchanged same-package references.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 

@@ -23,7 +23,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +36,6 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.AppCard
-import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 
 private const val QUOTE_MAX_LINES = 1
 
@@ -251,54 +249,6 @@ fun QuoteNameText(
     )
 }
 
-@Composable
-fun QuoteValueText(
-    modifier: Modifier = Modifier,
-    text: String,
-    textAlign: TextAlign? = null
-) {
-    Text(
-        modifier = modifier,
-        text = text,
-        textAlign = textAlign,
-        style = MaterialTheme.typography.bodySmall,
-    )
-}
-
-@Composable
-fun QuoteChangeText(
-    modifier: Modifier = Modifier,
-    text: String,
-    textAlign: TextAlign? = null,
-    up: Boolean,
-    down: Boolean
-) {
-    Text(
-        modifier = modifier,
-        text = text,
-        textAlign = textAlign,
-        style = MaterialTheme.typography.bodySmall,
-        color = extractColour(up, down)
-    )
-}
-
-@Composable
-fun SmallQuoteChangeText(
-    modifier: Modifier = Modifier,
-    text: String,
-    textAlign: TextAlign? = null,
-    up: Boolean,
-    down: Boolean
-) {
-    Text(
-        modifier = modifier,
-        text = text,
-        textAlign = textAlign,
-        style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-        color = extractColour(up, down)
-    )
-}
-
 @Preview
 @Composable
 fun QuoteCardPreview() {
@@ -396,16 +346,3 @@ private fun MoreIcon(
     }
 }
 
-@Composable
-private fun extractColour(
-    up: Boolean,
-    down: Boolean
-): Color {
-    return if (up) {
-        ColourPalette.PositiveGreen
-    } else if (down) {
-        ColourPalette.NegativeRed
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-}
