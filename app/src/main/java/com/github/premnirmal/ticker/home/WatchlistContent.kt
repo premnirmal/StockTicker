@@ -202,6 +202,7 @@ fun WatchlistContent(
         if (showTotalHoldingsPopup && totalHoldings != null) {
             totalHoldings?.let { totalHoldings ->
                 TotalHoldingsPopup(
+                    holdingsLabel = stringResource(R.string.total_holdings, totalHoldings.holdings),
                     totalHoldings = totalHoldings,
                     onDismiss = {
                         showTotalHoldingsPopup = false

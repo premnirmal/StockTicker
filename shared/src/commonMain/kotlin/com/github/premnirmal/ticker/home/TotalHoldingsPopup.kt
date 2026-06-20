@@ -12,15 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
-import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 
 @Composable
 fun TotalHoldingsPopup(
+    holdingsLabel: String,
     totalHoldings: HomeViewModel.TotalGainLoss,
     onDismiss: () -> Unit,
 ) {
@@ -44,7 +43,7 @@ fun TotalHoldingsPopup(
             ) {
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    text = stringResource(R.string.total_holdings, totalHoldings.holdings),
+                    text = holdingsLabel,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Row(

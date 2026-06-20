@@ -490,6 +490,17 @@ established `Spinner` seam pattern: the icon is now passed in as a multiplatform
 reference; the Android-only `@Preview` was dropped (the `androidx.compose.ui.tooling.preview` API is not on
 the shared classpath).
 
+The next shared leaf composable is `TotalHoldingsPopup` (`ticker.home`) — the watchlist's total-holdings
+`androidx.compose.ui.window.Popup` (a `material3` `Surface` showing the total-holdings label plus the
+positive/negative gain/loss totals coloured via the already-shared `ColourPalette`). It renders the
+already-shared `HomeViewModel.TotalGainLoss` and depends only on the multiplatform `material3`/`foundation`/
+`compose.ui` APIs (`Popup`/`PopupProperties`). Its only Android coupling was the title
+`stringResource(R.string.total_holdings, …)`, so it followed the established seam pattern: the formatted
+title is now passed in as a `holdingsLabel: String` parameter and the composable moved into `:shared`
+`commonMain` (same `com.github.premnirmal.ticker.home` package). Its sole call site (`WatchlistContent`)
+keeps the `stringResource` lookup in `:app` and resolves the composable from `:shared` via the unchanged
+package reference.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
