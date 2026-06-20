@@ -3,50 +3,20 @@ package com.github.premnirmal.ticker.ui
 import android.graphics.RuntimeShader
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import org.intellij.lang.annotations.Language
 
 /**
- * Credit to https://github.com/nikonovmi/compose-fading-edges
- *
  * This is the plot of y = ((1 - x)^3 + 3(1 - x)^2 * x)^2, where x is in the interval [0, 1].
  * We use this function to create truly beautiful non-linear fade-out gradients.
- * ****
- *     **
- *       **
- *         **
- *           *
- *            **
- *              *
- *               *
- *                **
- *                  *
- *                   *
- *                    **
- *                      *
- *                       **
- *                         *
- *                          **
- *                            ***
- *                               **
- *                                 *****
- *                                      *************
  */
 @Language(value = "AGSL")
 private val bottomFadingEdgeShader = """
@@ -88,36 +58,25 @@ private val topFadingEdgeShader = """
     }
 """
 
-fun Modifier.fadingEdges(
-    state: ScrollableState,
-    topEdgeHeight: Dp = 28.dp,
-    bottomEdgeHeight: Dp = 28.dp,
-) = composed {
-    val animatedTopEdgeHeight = animateDpAsState(
-        targetValue = if (state.canScrollBackward) topEdgeHeight else 0.dp,
-        animationSpec = tween(360),
-        label = "TopFadeDpAnimation"
+internal actual fun Modifier.platformFadingEdges(
+    topEdgeMaxHeight: Dp,
+    topEdgeHeight: State<Dp>,
+    bottomEdgeMaxHeight: Dp,
+    bottomEdgeHeight: State<Dp>,
+): Modifier = if (Build.VERSION.SDK_INT >= 33) {
+    drawFadingEdgesApi33(
+        topEdgeMaxHeight = topEdgeMaxHeight,
+        topEdgeHeight = topEdgeHeight,
+        bottomEdgeMaxHeight = bottomEdgeMaxHeight,
+        bottomEdgeHeight = bottomEdgeHeight,
     )
-    val animatedBottomEdgeHeight = animateDpAsState(
-        targetValue = if (state.canScrollForward) bottomEdgeHeight else 0.dp,
-        animationSpec = tween(360),
-        label = "BottomFadeDpAnimation"
+} else {
+    drawFadingEdgesGradient(
+        topEdgeMaxHeight = topEdgeMaxHeight,
+        topEdgeHeight = topEdgeHeight,
+        bottomEdgeMaxHeight = bottomEdgeMaxHeight,
+        bottomEdgeHeight = bottomEdgeHeight,
     )
-    if (Build.VERSION.SDK_INT >= 33) {
-        this.drawFadingEdgesApi33(
-            topEdgeMaxHeight = topEdgeHeight,
-            topEdgeHeight = animatedTopEdgeHeight,
-            bottomEdgeMaxHeight = bottomEdgeHeight,
-            bottomEdgeHeight = animatedBottomEdgeHeight,
-        )
-    } else {
-        this.drawFadingEdgesOldApi(
-            topEdgeMaxHeight = topEdgeHeight,
-            topEdgeHeight = animatedTopEdgeHeight,
-            bottomEdgeMaxHeight = bottomEdgeHeight,
-            bottomEdgeHeight = animatedBottomEdgeHeight,
-        )
-    }
 }
 
 @Stable
@@ -156,44 +115,6 @@ private fun Modifier.drawFadingEdgesApi33(
                         blendMode = BlendMode.DstIn,
                     )
                 }
-            }
-        }
-)
-
-@Stable
-private fun Modifier.drawFadingEdgesOldApi(
-    topEdgeMaxHeight: Dp,
-    topEdgeHeight: State<Dp>,
-    bottomEdgeMaxHeight: Dp,
-    bottomEdgeHeight: State<Dp>,
-) = then(
-    Modifier
-        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-        .drawWithContent {
-            drawContent()
-
-            val topEdgeHeightPx = topEdgeHeight.value.toPx()
-            if (topEdgeMaxHeight.toPx() < size.height && topEdgeHeightPx > 1f) {
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black),
-                        startY = 0f,
-                        endY = topEdgeHeightPx,
-                    ),
-                    blendMode = BlendMode.DstIn,
-                )
-            }
-
-            val bottomEdgeHeightPx = bottomEdgeHeight.value.toPx()
-            if (bottomEdgeMaxHeight.toPx() < size.height && bottomEdgeHeightPx > 1f) {
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(Color.Black, Color.Transparent),
-                        startY = size.height - bottomEdgeHeightPx,
-                        endY = size.height,
-                    ),
-                    blendMode = BlendMode.DstIn,
-                )
             }
         }
 )

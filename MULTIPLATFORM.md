@@ -699,6 +699,22 @@ a multiplatform `clearIcon: Painter` parameter, and the composable moved into `:
 (`SearchScreen` in `:app`) keeps the `stringResource`/`painterResource` lookups and resolves the composable
 from `:shared` via the unchanged same-package reference.
 
+The next shared UI primitive is the `fadingEdges` `Modifier` extension (`ticker.ui`) — the animated
+top/bottom fade-out edges applied to a scrollable container (the edges fade in/out as the
+`ScrollableState` can scroll backward/forward). The animated edge-height computation and the public
+`Modifier.fadingEdges(state, …)` modifier are built entirely from multiplatform `animation`/
+`foundation`/`compose.ui` APIs (`animateDpAsState`/`tween`/`drawWithContent`/`graphicsLayer`/
+`Brush.verticalGradient`/`BlendMode.DstIn`), so they moved into `:shared` `commonMain` (new
+`FadingEdge.kt`, same `com.github.premnirmal.ticker.ui` package). Its only Android coupling was the
+API-33 AGSL `RuntimeShader` fast path (`android.graphics.RuntimeShader` + `Build.VERSION`), so it
+followed the established expect/actual seam pattern: the edge rendering is delegated to an
+`internal expect fun Modifier.platformFadingEdges(…)`, whose Android `actual` uses the
+`RuntimeShader` shader on API 33+ (falling back to the shared pure-Compose gradient draw
+`drawFadingEdgesGradient` otherwise) and whose iOS `actual` uses the gradient draw directly. The six
+`:app` call sites (`WatchlistContent`/`WidgetsScreen`/`SettingsScreen`/`SearchScreen`/`NewsFeedScreen`/
+`QuoteDetailScreen`) resolve it from `:shared` via the unchanged
+`com.github.premnirmal.ticker.ui.fadingEdges` import.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
