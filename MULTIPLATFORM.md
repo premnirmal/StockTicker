@@ -424,6 +424,14 @@ The next `:UI` primitive shared is `Divider` (`com.github.premnirmal.tickerwidge
 `commonMain` (same `com.github.premnirmal.tickerwidget.ui` package) and its five call sites resolve it
 from `:shared` via the unchanged package import.
 
+The next `:UI` theme primitive shared is `AppShapes` (`com.github.premnirmal.tickerwidget.ui.theme`) —
+the app-wide `material3` `Shapes` set (small/medium/large `RoundedCornerShape`s). It depends only on the
+multiplatform `material3`/`foundation`/`ui` APIs (`Shapes`/`RoundedCornerShape`/`dp`) with no Android
+coupling, so it moved into `:shared` `commonMain` (same `com.github.premnirmal.tickerwidget.ui.theme`
+package that already hosts the shared `SelectedTheme`). Its only consumer, `AppTheme` in `:UI` (which
+depends on `:shared`), resolves it from `:shared` via the unchanged package import. This continues
+migrating the foundational `:UI` theme primitives into `commonMain`.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
