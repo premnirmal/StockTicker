@@ -362,6 +362,12 @@ private fun TrendingStocks(
             val quote = trendingStocks[i]
             QuoteCard(
                 quote = quote,
+                holdingsLabel = stringResource(R.string.holdings),
+                dayChangeLabel = stringResource(R.string.day_change_amount),
+                changePercentLabel = stringResource(R.string.change_percent),
+                gainLabel = stringResource(R.string.gain),
+                lossLabel = stringResource(R.string.loss),
+                changeAmountLabel = stringResource(R.string.change_amount),
                 onClick = onQuoteClick,
                 quoteNameMaxLines = 1,
             )

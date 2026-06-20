@@ -606,6 +606,26 @@ fetcher reuses the existing Ktor client stack, so remote images load on every pl
 the Android host; iOS will configure its own loader in Phase 5. Coil 2 (`io.coil-kt:coil`) is removed from
 `:app`.
 
+The next shared leaf composable is `QuoteCard` (`ticker.detail`) — the watchlist/news/search quote card (an
+`AppCard` rendering either an `InstrumentCard` or, for held tickers, a `PositionCard` of holdings/day-change/
+gain-loss figures, with an optional overflow "more" menu). All of its numbers come from the already-shared
+`Quote` model and it builds on the already-shared `AppCard` + quote-text primitives (`QuoteSymbolText`/
+`QuoteNameText`/`QuoteValueText`/`QuoteChangeText`/`AnnotatedQuoteValue`), so its only Android coupling was the
+position row labels (`stringResource(R.string.…)` + a `LocalContext.getString` for the gain/loss-percent
+annotation) and the overflow menu's two drawables/remove label. It therefore followed the established seam
+pattern: the row labels are now plain `String` parameters (`holdingsLabel`/`dayChangeLabel`/
+`changePercentLabel`/`gainLabel`/`lossLabel`/`changeAmountLabel`, with the shared code picking `gainLabel`/
+`lossLabel` from `quote.gainLoss()` and composing the `"$label %"` annotation), and the overflow menu's icons
+are optional multiplatform `Painter` parameters (`moreIcon`/`removeIcon`) plus a `removeLabel: String`. The
+composable (with its private `InstrumentCard`/`PositionCard`/`MoreIcon`) moved into `:shared` `commonMain`
+(new `QuoteCard.kt`, same `com.github.premnirmal.ticker.detail` package); the Android-only `@Preview` was
+dropped. Its three call sites (`WatchlistContent`/`SearchScreen`/`NewsFeedScreen` in `:app`) keep the
+`stringResource`/`painterResource` lookups and resolve the composable from `:shared` via the unchanged
+same-package reference (only `WatchlistContent` enables the overflow menu via `showMore`/`moreIcon`/
+`removeIcon`/`removeLabel`). With `QuoteCard` shared, the `ticker.detail` package's leaf composables are all in
+`commonMain` (only `:app`'s `EditSectionHeader` — Android `painterResource`/`R.string` — and the screen
+composables remain).
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the

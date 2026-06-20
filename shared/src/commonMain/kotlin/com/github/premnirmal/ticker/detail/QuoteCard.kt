@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
@@ -22,29 +21,40 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.network.data.Holding
-import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.AppCard
 
 private const val QUOTE_MAX_LINES = 1
 
+/**
+ * The watchlist quote card.
+ *
+ * Android-resource coupling is hoisted behind the established seam pattern: the position row
+ * labels are plain [String] parameters and the optional overflow ("more") menu icons are
+ * multiplatform [Painter] parameters, so the `R.string`/`R.drawable` lookups stay at the `:app`
+ * call sites while the layout/behaviour is shared and reusable from iOS.
+ */
 @Composable
 fun QuoteCard(
     quote: Quote,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
     modifier: Modifier = Modifier,
     quoteNameMaxLines: Int = QUOTE_MAX_LINES,
     interactionSource: MutableInteractionSource? = null,
     onClick: (Quote) -> Unit,
     onRemoveClick: (Quote) -> Unit = {},
     showMore: Boolean = false,
+    moreIcon: Painter? = null,
+    removeIcon: Painter? = null,
+    removeLabel: String = "",
 ) {
     AppCard(
         modifier = modifier,
@@ -52,9 +62,30 @@ fun QuoteCard(
         onClick = { onClick(quote) }
     ) {
         if (quote.hasPositions()) {
-            PositionCard(quote, onRemoveClick, showMore)
+            PositionCard(
+                quote = quote,
+                holdingsLabel = holdingsLabel,
+                dayChangeLabel = dayChangeLabel,
+                changePercentLabel = changePercentLabel,
+                gainLabel = gainLabel,
+                lossLabel = lossLabel,
+                changeAmountLabel = changeAmountLabel,
+                onMoreClick = onRemoveClick,
+                showMore = showMore,
+                moreIcon = moreIcon,
+                removeIcon = removeIcon,
+                removeLabel = removeLabel,
+            )
         } else {
-            InstrumentCard(quote, quoteNameMaxLines, onRemoveClick, showMore)
+            InstrumentCard(
+                quote = quote,
+                quoteNameMaxLines = quoteNameMaxLines,
+                onRemoveClick = onRemoveClick,
+                showMore = showMore,
+                moreIcon = moreIcon,
+                removeIcon = removeIcon,
+                removeLabel = removeLabel,
+            )
         }
     }
 }
@@ -65,6 +96,9 @@ private fun InstrumentCard(
     quoteNameMaxLines: Int,
     onRemoveClick: (Quote) -> Unit = {},
     showMore: Boolean = false,
+    moreIcon: Painter? = null,
+    removeIcon: Painter? = null,
+    removeLabel: String = "",
 ) {
     Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         Row(
@@ -74,8 +108,11 @@ private fun InstrumentCard(
                 modifier = Modifier.weight(1f),
                 text = quote.symbol
             )
-            if (showMore) {
+            if (showMore && moreIcon != null) {
                 MoreIcon(
+                    moreIcon = moreIcon,
+                    removeIcon = removeIcon,
+                    removeLabel = removeLabel,
                     onClick = {
                         onRemoveClick(quote)
                     },
@@ -112,8 +149,17 @@ private fun InstrumentCard(
 @Composable
 private fun PositionCard(
     quote: Quote,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
     onMoreClick: (Quote) -> Unit = {},
     showMore: Boolean = false,
+    moreIcon: Painter? = null,
+    removeIcon: Painter? = null,
+    removeLabel: String = "",
 ) {
     Column(modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -123,8 +169,11 @@ private fun PositionCard(
                 text = quote.priceFormat.format(quote.lastTradePrice),
                 textAlign = TextAlign.End
             )
-            if (showMore) {
+            if (showMore && moreIcon != null) {
                 MoreIcon(
+                    moreIcon = moreIcon,
+                    removeIcon = removeIcon,
+                    removeLabel = removeLabel,
                     onClick = {
                         onMoreClick(quote)
                     }
@@ -141,7 +190,7 @@ private fun PositionCard(
                 text = quote.priceFormat.format(quote.holdings()),
                 up = quote.holdings() > 0,
                 down = quote.holdings() < 0,
-                annotation = stringResource(id = R.string.holdings)
+                annotation = holdingsLabel
             )
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
@@ -149,7 +198,7 @@ private fun PositionCard(
                 text = quote.dayChangeString(),
                 up = quote.isUp,
                 down = quote.isDown,
-                annotation = stringResource(id = R.string.day_change_amount)
+                annotation = dayChangeLabel
             )
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
@@ -157,10 +206,10 @@ private fun PositionCard(
                 text = quote.changePercentStringWithSign(),
                 up = quote.isUp,
                 down = quote.isDown,
-                annotation = stringResource(id = R.string.change_percent)
+                annotation = changePercentLabel
             )
         }
-        val gainOrLoss = if (quote.gainLoss() >= 0) R.string.gain else R.string.loss
+        val gainOrLossLabel = if (quote.gainLoss() >= 0) gainLabel else lossLabel
         Row(
             verticalAlignment = Alignment.Bottom,
         ) {
@@ -169,16 +218,15 @@ private fun PositionCard(
                 text = quote.gainLossString(),
                 up = quote.gainLoss() > 0,
                 down = quote.gainLoss() < 0,
-                annotation = stringResource(id = gainOrLoss)
+                annotation = gainOrLossLabel
             )
-            val gainPercentAnnotation = LocalContext.current.getString(gainOrLoss) + " %"
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
                 textAlign = TextAlign.Center,
                 text = quote.gainLossPercentStringNoPercentSign(),
                 up = quote.gainLoss() > 0,
                 down = quote.gainLoss() < 0,
-                annotation = gainPercentAnnotation
+                annotation = "$gainOrLossLabel %"
             )
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
@@ -186,61 +234,7 @@ private fun PositionCard(
                 text = quote.changeStringWithSign(),
                 up = quote.isUp,
                 down = quote.isDown,
-                annotation = stringResource(id = R.string.change_amount)
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun QuoteCardPreview() {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .padding(bottom = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            QuoteCard(
-                quote = Quote("VBIAX", "Vanguard balanced admiral mutual funds"),
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                onClick = {},
-                showMore = true,
-            )
-            QuoteCard(
-                quote = Quote("MSFT", "Microsoft Corporation"),
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                onClick = {}
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(130.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            QuoteCard(
-                quote = Quote("AAPL", "Apple Inc"),
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                onClick = {}
-            )
-            QuoteCard(
-                quote = Quote("VBIAX", "Vanguard balanced admiral mutual funds").apply {
-                    position = Position("VBIAX", holdings = arrayListOf(Holding("VBIAX", 5.0f, 100.0f)))
-                },
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                showMore = true,
-                onClick = {}
+                annotation = changeAmountLabel
             )
         }
     }
@@ -248,7 +242,10 @@ fun QuoteCardPreview() {
 
 @Composable
 private fun MoreIcon(
+    moreIcon: Painter,
     modifier: Modifier = Modifier,
+    removeIcon: Painter? = null,
+    removeLabel: String = "",
     onClick: () -> Unit,
 ) {
     var showPopup by rememberSaveable { mutableStateOf(false) }
@@ -260,7 +257,7 @@ private fun MoreIcon(
             },
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_more),
+                painter = moreIcon,
                 contentDescription = null,
             )
         }
@@ -276,16 +273,17 @@ private fun MoreIcon(
                     onClick()
                 }
             ) {
-                Icon(
-                    modifier = Modifier.size(18.dp).padding(end = 4.dp),
-                    painter = painterResource(R.drawable.ic_remove_circle),
-                    contentDescription = null,
-                )
+                if (removeIcon != null) {
+                    Icon(
+                        modifier = Modifier.size(18.dp).padding(end = 4.dp),
+                        painter = removeIcon,
+                        contentDescription = null,
+                    )
+                }
                 Text(
-                    text = stringResource(id = R.string.remove),
+                    text = removeLabel,
                 )
             }
         }
     }
 }
-

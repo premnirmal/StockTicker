@@ -121,6 +121,12 @@ private fun NewsFeedItems(
                             group.forEach { quote ->
                                 QuoteCard(
                                     quote = quote,
+                                    holdingsLabel = stringResource(R.string.holdings),
+                                    dayChangeLabel = stringResource(R.string.day_change_amount),
+                                    changePercentLabel = stringResource(R.string.change_percent),
+                                    gainLabel = stringResource(R.string.gain),
+                                    lossLabel = stringResource(R.string.loss),
+                                    changeAmountLabel = stringResource(R.string.change_amount),
                                     modifier = Modifier
                                         .weight(1f, true)
                                         .fillMaxHeight(),
