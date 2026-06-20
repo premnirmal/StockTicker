@@ -49,7 +49,7 @@ import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.news.NewsCard
+import com.github.premnirmal.ticker.news.NewsArticleCard
 import com.github.premnirmal.ticker.news.NewsFeedItem
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
@@ -195,7 +195,7 @@ fun SearchScreen(
                                         count = news.size,
                                         key = { i -> news[i].article.url }
                                     ) { i ->
-                                        NewsCard(item = news[i].article)
+                                        NewsArticleCard(item = news[i].article)
                                     }
                                 }
                             }

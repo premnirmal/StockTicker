@@ -592,8 +592,21 @@ package). Its sole call site (`QuoteDetailScreen` in `:app`) now passes an `onLi
 `CustomTabs.openTab(LocalContext.current, url, MaterialTheme.colorScheme.primary.toArgb())`, keeping the
 Android Custom-Tabs integration in `:app`.
 
-The remaining Phase 4 work is larger and architectural rather than further leaf moves: swapping the
-Android-only image loader for **Coil 3** multiplatform (so `NewsCard` can move), replacing
+The Android-only image loader has been swapped for **Coil 3** multiplatform so the news-article card can
+move: `:shared` `commonMain` now depends on `coil-compose` + `coil-network-ktor3` (the Coil 3 network
+fetcher reuses the existing Ktor client stack, so remote images load on every platform), and `NewsCard`
+(`ticker.news`) moved into `:shared` `commonMain` unchanged except for swapping the Coil 2
+`coil.compose.AsyncImage` import for the Coil 3 `coil3.compose.AsyncImage` and dropping its Android-only
+`@Preview`. Its only Android coupling was opening the article in a Chrome **Custom Tab**
+(`CustomTabs.openTab`), so it followed the established `LinkText` seam pattern: the tap is hoisted to an
+`onClick: () -> Unit` parameter. A thin Android `NewsArticleCard` wrapper stays in `:app` (it supplies the
+`onClick` that calls `CustomTabs.openTab(LocalContext.current, item.url, …)`), and the three call sites
+(`NewsFeedScreen`/`SearchScreen`/`QuoteDetailScreen`) resolve it from `:app`. The Coil 3
+`SingletonImageLoader` (with the Ktor `KtorNetworkFetcherFactory`) is configured in `:app`'s `StocksApp` as
+the Android host; iOS will configure its own loader in Phase 5. Coil 2 (`io.coil-kt:coil`) is removed from
+`:app`.
+
+The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
 remaining screen composables (`NewsFeedScreen`/`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/
@@ -719,7 +732,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `org.jetbrains.compose` plugin + Compose deps in `commonMain` are now wired, and the first
   composable `AppTextField` is shared — see "In progress — Phase 4"). Move the remaining in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
-  multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
+  multiplatform equivalents (Coil 3 is now adopted; CMP navigation next; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
 - **Phase 5:** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
   shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget

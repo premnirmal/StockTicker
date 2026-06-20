@@ -119,6 +119,11 @@ kotlin {
       implementation(compose.foundation)
       implementation(compose.material3)
       implementation(compose.ui)
+      // Phase 4: Coil 3 multiplatform image loading (NewsCard). coil-network-ktor3 reuses the
+      // existing Ktor client stack for fetching remote images on every platform. Exposed as `api`
+      // so :app can configure the SingletonImageLoader's network fetcher.
+      api(libs.coil.compose)
+      api(libs.coil.network.ktor3)
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")

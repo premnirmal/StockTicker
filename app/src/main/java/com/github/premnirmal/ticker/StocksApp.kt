@@ -2,6 +2,10 @@ package com.github.premnirmal.ticker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.appModule
 import com.github.premnirmal.ticker.components.viewModelModule
@@ -34,9 +38,19 @@ open class StocksApp : Application(), KoinComponent {
             modules(sharedModule, networkModule, appModule, viewModelModule)
         }
         super.onCreate()
+        initImageLoader()
         AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode.toAppCompatNightMode())
         initNotificationHandler()
         runBlocking { widgetDataProvider.refreshWidgetDataList() }
+    }
+
+    // Coil 3 loads the shared NewsCard's remote images over the existing Ktor stack.
+    protected open fun initImageLoader() {
+        SingletonImageLoader.setSafe { context: PlatformContext ->
+            ImageLoader.Builder(context)
+                .components { add(KtorNetworkFetcherFactory()) }
+                .build()
+        }
     }
 
     protected open fun initNotificationHandler() {

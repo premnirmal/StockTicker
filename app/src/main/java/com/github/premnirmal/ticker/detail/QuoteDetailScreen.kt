@@ -92,7 +92,7 @@ import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.changeColour
-import com.github.premnirmal.ticker.news.NewsCard
+import com.github.premnirmal.ticker.news.NewsArticleCard
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.QuoteDetail
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
@@ -721,7 +721,7 @@ private fun LazyGridScope.newsItems(articles: List<ArticleNewsFeed>?) {
         }
     ) { i ->
         val item = articles!![i].article
-        NewsCard(item)
+        NewsArticleCard(item)
     }
 }
 

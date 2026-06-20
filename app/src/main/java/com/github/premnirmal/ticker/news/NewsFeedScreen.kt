@@ -132,7 +132,7 @@ private fun NewsFeedItems(
                     }
                 }
             } else if (data is ArticleNewsFeed) {
-                NewsCard(data.article)
+                NewsArticleCard(data.article)
             }
         }
     }
