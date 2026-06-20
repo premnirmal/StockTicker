@@ -1,6 +1,5 @@
 package com.github.premnirmal.ticker.detail
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,70 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.AppPreferences
-import org.koin.compose.koinInject
 import com.github.premnirmal.tickerwidget.R.drawable
-import com.github.premnirmal.tickerwidget.R.string
-import com.github.premnirmal.tickerwidget.ui.AppCard
-
-@Composable
-fun AlertsCard(
-    modifier: Modifier = Modifier,
-    alertAbove: Float,
-    alertBelow: Float,
-    onClick: () -> Unit,
-) {
-    if (alertAbove > 0f || alertBelow > 0f) {
-        val appPreferences = koinInject<AppPreferences>()
-        AppCard(
-            modifier = modifier,
-            onClick = onClick,
-        ) {
-            Column {
-                if (alertAbove > 0f) {
-                    Row(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(0.5f),
-                            text = stringResource(id = string.alert_above),
-                            style = MaterialTheme.typography.labelMedium,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            modifier = Modifier.weight(0.5f),
-                            text = appPreferences.selectedDecimalFormat.format(alertAbove),
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-                if (alertBelow > 0f) {
-                    Row(
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(0.5f),
-                            text = stringResource(id = string.alert_below),
-                            style = MaterialTheme.typography.labelMedium,
-                            textAlign = TextAlign.Center
-                        )
-                        Text(
-                            modifier = Modifier.weight(0.5f),
-                            text = appPreferences.selectedDecimalFormat.format(alertBelow),
-                            style = MaterialTheme.typography.bodyMedium,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun EditSectionHeader(title: Int) {

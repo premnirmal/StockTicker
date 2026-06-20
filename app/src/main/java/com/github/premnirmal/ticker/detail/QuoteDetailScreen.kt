@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
 import com.github.mikephil.charting.charts.LineChart
@@ -83,6 +84,7 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.LineDataSet.Mode.CUBIC_BEZIER
 import com.github.premnirmal.ticker.model.FetchResult
+import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
@@ -604,12 +606,17 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                 }
             ) {
                 EditSectionHeader(title = R.string.alerts)
+                val appPreferences = koinInject<AppPreferences>()
                 AlertsCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
                     alertAbove = alertAbove,
                     alertBelow = alertBelow,
+                    alertAboveLabel = stringResource(id = R.string.alert_above),
+                    alertBelowLabel = stringResource(id = R.string.alert_below),
+                    alertAboveValue = appPreferences.selectedDecimalFormat.format(alertAbove),
+                    alertBelowValue = appPreferences.selectedDecimalFormat.format(alertBelow),
                     onClick = {
                         launcher.launch(intent)
                     }

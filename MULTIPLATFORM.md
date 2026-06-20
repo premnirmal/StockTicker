@@ -550,9 +550,21 @@ established seam pattern: those labels are now plain `String` parameters (`share
 `averagePriceLabel`/`gainLossLabel`/`dayChangeLabel`) and the composable moved into `:shared` `commonMain`
 (new `PositionDetailCard.kt`, same `com.github.premnirmal.ticker.detail` package). Its sole call site
 (`QuoteDetailScreen` in `:app`) keeps the `stringResource` lookups and resolves the composable from
-`:shared` via the unchanged same-package reference; the sibling `AlertsCard`/`EditSectionHeader`
-composables stay in `:app`'s `SectionDetail.kt` (they rely on `AppPreferences.selectedDecimalFormat` /
-`painterResource(R.…)` + Android `R.string` ids respectively).
+`:shared` via the unchanged same-package reference; the sibling `EditSectionHeader` composable stays in
+`:app`'s `SectionDetail.kt` (it relies on `painterResource(R.…)` + an Android `R.string` id).
+
+The next shared leaf composable is `AlertsCard` (`ticker.detail`) — the quote-detail price-alert `AppCard`
+that renders the above/below alert threshold rows (over the already-shared `AppCard`). It depends only on
+the multiplatform `material3`/`foundation` APIs, but its threshold values were formatted via
+`AppPreferences.selectedDecimalFormat` and its row labels came from `stringResource(R.string.…)`. It
+therefore followed the established seam pattern: the formatted threshold values and the row labels are now
+plain `String` parameters (`alertAboveValue`/`alertBelowValue`/`alertAboveLabel`/`alertBelowLabel`), while
+the visibility/`>0f` logic keeps the raw `alertAbove`/`alertBelow` `Float`s. The composable moved into
+`:shared` `commonMain` (new `AlertsCard.kt`, same `com.github.premnirmal.ticker.detail` package). Its sole
+call site (`QuoteDetailScreen` in `:app`) now `koinInject`s `AppPreferences`, keeps the
+`selectedDecimalFormat.format(…)` + `stringResource` lookups, and resolves the composable from `:shared`
+via the unchanged same-package reference. Only `EditSectionHeader` (Android `painterResource`/`R.string`)
+remains in `:app`'s `SectionDetail.kt`.
 
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: swapping the
 Android-only image loader for **Coil 3** multiplatform (so `NewsCard` can move), replacing
