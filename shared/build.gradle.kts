@@ -109,6 +109,11 @@ kotlin {
       // JetBrains' Compose Multiplatform lifecycle artifact (the Google `androidx.lifecycle`
       // `-compose` artifact is JVM/Android-only); version tracks the lifecycle the graph resolves to.
       api("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
+      // Phase 4: the multiplatform `collectAsStateWithLifecycle()` and Koin's multiplatform
+      // `koinViewModel()` composable, so whole screen composables can move into commonMain and still
+      // observe lifecycle-aware state / resolve their shared ViewModels from the Koin graph on iOS.
+      api("org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
+      api(libs.koin.compose.viewmodel)
       implementation("io.ktor:ktor-client-core:_")
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")

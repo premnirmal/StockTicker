@@ -7,6 +7,8 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -18,6 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
+import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.home.HomeEvent
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
@@ -62,10 +65,23 @@ fun HomeNavHost(
             )
         }
         composable(HomeRoute.Trending.route) {
+            val context = LocalContext.current
+            val primaryColor = MaterialTheme.colorScheme.primary
             NewsFeedScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
+                title = stringResource(string.news_feed),
+                errorText = stringResource(string.error_fetching_news),
+                holdingsLabel = stringResource(string.holdings),
+                dayChangeLabel = stringResource(string.day_change_amount),
+                changePercentLabel = stringResource(string.change_percent),
+                gainLabel = stringResource(string.gain),
+                lossLabel = stringResource(string.loss),
+                changeAmountLabel = stringResource(string.change_amount),
+                onArticleClick = { article ->
+                    CustomTabs.openTab(context, article.url, primaryColor.toArgb())
+                },
                 onQuoteClick = {
                     rootNavController.navigate("${Graph.QUOTE_DETAIL}/${URLEncoder.encode(it.symbol)}") {
                         popUpTo(HomeRoute.Trending.route) {

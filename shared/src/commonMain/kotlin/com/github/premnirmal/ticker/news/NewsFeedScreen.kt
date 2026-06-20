@@ -17,14 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
+import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.NewsFeedItem.TrendingStockNewsFeed
@@ -32,14 +30,32 @@ import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.ProgressState
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.fadingEdges
-import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.string
+import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * The trending news feed screen.
+ *
+ * Android-resource coupling is hoisted behind the established seam pattern: the title, the
+ * error-state copy and the [QuoteCard] position-row labels are plain [String] parameters, and the
+ * news-article tap is hoisted to [onArticleClick] (Android opens a Chrome Custom Tab at the `:app`
+ * call site), so the `R.string` lookups and the Custom-Tab integration stay in `:app` while the
+ * layout/behaviour is shared and reusable from iOS. The shared [NewsFeedViewModel] is resolved from
+ * the Koin graph via the multiplatform [koinViewModel].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewsFeedScreen(
-    modifier: Modifier = Modifier,
+    title: String,
+    errorText: String,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
     onQuoteClick: (Quote) -> Unit,
+    onArticleClick: (NewsArticle) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: NewsFeedViewModel = koinViewModel()
 ) {
     val newsList by viewModel.newsFeedFlow.collectAsStateWithLifecycle()
@@ -51,7 +67,7 @@ fun NewsFeedScreen(
         }
     }
     Column {
-        TopBar(text = stringResource(id = R.string.news_feed))
+        TopBar(text = title)
         PullToRefreshBox(
             modifier = modifier.fillMaxSize(),
             isRefreshing = isRefreshing,
@@ -61,11 +77,22 @@ fun NewsFeedScreen(
         ) {
             when (newsFeed?.wasSuccessful) {
                 true -> {
-                    NewsFeedItems(modifier, newsList, onQuoteClick)
+                    NewsFeedItems(
+                        modifier = modifier,
+                        newsFeedItems = newsList,
+                        holdingsLabel = holdingsLabel,
+                        dayChangeLabel = dayChangeLabel,
+                        changePercentLabel = changePercentLabel,
+                        gainLabel = gainLabel,
+                        lossLabel = lossLabel,
+                        changeAmountLabel = changeAmountLabel,
+                        onQuoteClick = onQuoteClick,
+                        onArticleClick = onArticleClick,
+                    )
                 }
 
                 false -> {
-                    ErrorState(modifier = modifier, text = stringResource(id = string.error_fetching_news))
+                    ErrorState(modifier = modifier, text = errorText)
                 }
 
                 else -> {
@@ -79,9 +106,16 @@ fun NewsFeedScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NewsFeedItems(
-    modifier: Modifier = Modifier,
     newsFeedItems: List<NewsFeedItem>,
-    onQuoteClick: (Quote) -> Unit
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
+    onQuoteClick: (Quote) -> Unit,
+    onArticleClick: (NewsArticle) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val state = rememberLazyListState()
     rememberScrollToTopAction(HomeRoute.Trending) {
@@ -121,12 +155,12 @@ private fun NewsFeedItems(
                             group.forEach { quote ->
                                 QuoteCard(
                                     quote = quote,
-                                    holdingsLabel = stringResource(R.string.holdings),
-                                    dayChangeLabel = stringResource(R.string.day_change_amount),
-                                    changePercentLabel = stringResource(R.string.change_percent),
-                                    gainLabel = stringResource(R.string.gain),
-                                    lossLabel = stringResource(R.string.loss),
-                                    changeAmountLabel = stringResource(R.string.change_amount),
+                                    holdingsLabel = holdingsLabel,
+                                    dayChangeLabel = dayChangeLabel,
+                                    changePercentLabel = changePercentLabel,
+                                    gainLabel = gainLabel,
+                                    lossLabel = lossLabel,
+                                    changeAmountLabel = changeAmountLabel,
                                     modifier = Modifier
                                         .weight(1f, true)
                                         .fillMaxHeight(),
@@ -138,28 +172,8 @@ private fun NewsFeedItems(
                     }
                 }
             } else if (data is ArticleNewsFeed) {
-                NewsArticleCard(data.article)
+                NewsCard(data.article, onClick = { onArticleClick(data.article) })
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun NewsFeedPreview() {
-    NewsFeedItems(
-        newsFeedItems = listOf(
-            TrendingStockNewsFeed(
-                listOf(
-                    Quote("Goog", "Alphabet Inc"),
-                    Quote("MSFT", "Microsoft Corporation"),
-                    Quote("TWTR", "Twitter Inc"),
-                    Quote("TSLA", "Tesla Inc"),
-                    Quote("MSFT", "Microsoft Corporation"),
-                    Quote("TWTR", "Twitter Inc")
-                )
-            )
-        ),
-        onQuoteClick = {}
-    )
 }

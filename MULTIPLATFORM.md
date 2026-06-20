@@ -782,11 +782,28 @@ Both the helper and the `CompositionLocal` moved into `:shared` `commonMain` (ne
 (`WatchlistContent`/`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/`NewsFeedScreen`) plus `HomeListDetail`
 resolve both from `:shared` via the unchanged same-package references.
 
+The first whole screen to move into `commonMain` is `NewsFeedScreen` (`ticker.news`) — the trending
+news feed. This is the first use of a multiplatform `koinViewModel`: it resolves the already-shared
+`NewsFeedViewModel` from the Koin graph via Koin's multiplatform Compose artifact
+(`io.insert-koin:koin-compose-viewmodel`, `org.koin.compose.viewmodel.koinViewModel`), and observes the
+view-model's flows with the multiplatform `collectAsStateWithLifecycle` from JetBrains'
+`org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose` — both added to `:shared` `commonMain` for
+this move. Its building blocks were all already shared (`TopBar`/`QuoteCard`/`ErrorState`/`ProgressState`/
+`fadingEdges`/`NewsCard`/`rememberScrollToTopAction`); the remaining Android coupling is hoisted behind the
+established seam pattern: the title, the error-state copy and the `QuoteCard` position-row labels are plain
+`String` parameters, and the news-article tap is hoisted to an `onArticleClick: (NewsArticle) -> Unit`
+parameter (Android opens a Chrome Custom Tab via `CustomTabs` at the `:app` call site). The `:app`
+`HomeNavHost` `Trending` route supplies those `stringResource(R.string.…)` values + the Custom-Tab click and
+resolves the screen from `:shared` via the unchanged `com.github.premnirmal.ticker.news.NewsFeedScreen`
+import; its Android-only `@Preview` (which exercised the now-private `NewsFeedItems`) was dropped, mirroring
+the earlier leaf moves. The `:app` `NewsArticleCard` Custom-Tab wrapper stays in `:app` (still used by
+`SearchScreen`/`QuoteDetailScreen`).
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
-`WatchlistScreen` graph), and adopting a multiplatform `koinViewModel` so the
-remaining screen composables (`NewsFeedScreen`/`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/
-`QuoteDetailScreen`) can move together with their `:app`-coupled dependency chains
+`WatchlistScreen` graph), and moving the remaining screen composables
+(`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/`QuoteDetailScreen`) into `commonMain` with the now-adopted
+multiplatform `koinViewModel`, together with their `:app`-coupled dependency chains
 (`QuoteDetail`/`ComposeAppMessaging`/`AppPreferences` seams). The Android `Activity` hosts (11 of them), the
 Glance app-widget trio (`GlanceStocksWidget`/`WidgetColors`/`WidgetPreview`) and `WebViewActivity` stay in
 `:app` by design as the Android host.
