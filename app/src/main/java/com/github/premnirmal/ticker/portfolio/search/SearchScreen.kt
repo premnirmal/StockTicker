@@ -313,6 +313,7 @@ private fun SearchResults(
             ) { i ->
                 val suggestion = suggestions[i]
                 SuggestionItem(
+                    addRemoveIcon = painterResource(id = R.drawable.ic_add_to_list),
                     suggestion = suggestion,
                     onSuggestionClick = onSuggestionClick,
                     onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,

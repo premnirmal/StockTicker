@@ -478,6 +478,18 @@ stay in `:UI`. `AppTheme` (still in `:UI`) keeps referencing `AppTypography` unc
 its own `Typography` from the same shared scale with platform fonts. Only `AppTheme` (Android
 dynamic-colour coupling) and the `R.font` `FontFamily` definitions remain in `:UI`'s `theme` package.
 
+With the `:UI` library module now reduced to its genuinely Android-coupled remnants (`AppTheme`'s dynamic
+colour + the `R.font` families), the next shared pieces are leaf composables from `:app`. The first is
+`SuggestionItem` (`ticker.portfolio.search`) — the search-results row (symbol/name text + an add/remove
+`IconButton`, over the already-shared `Divider`) that renders the already-shared `Suggestion`. Its only
+Android coupling was the add icon (`painterResource(R.drawable.ic_add_to_list)`), so it followed the
+established `Spinner` seam pattern: the icon is now passed in as a multiplatform `Painter` parameter
+(`addRemoveIcon`) and the composable moved into `:shared` `commonMain` (same
+`com.github.premnirmal.ticker.portfolio.search` package). Its sole call site (`SearchScreen`) keeps the
+`R.drawable` lookup in `:app` and resolves the composable from `:shared` via the unchanged package
+reference; the Android-only `@Preview` was dropped (the `androidx.compose.ui.tooling.preview` API is not on
+the shared classpath).
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
