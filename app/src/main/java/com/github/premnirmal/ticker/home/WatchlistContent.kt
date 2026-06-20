@@ -1,9 +1,6 @@
 package com.github.premnirmal.ticker.home
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -23,7 +20,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -38,7 +34,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -54,7 +49,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -67,7 +61,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,6 +77,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.ticker.ui.customTabIndicatorOffset
 import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.ticker.widget.IWidgetData
 import com.github.premnirmal.tickerwidget.R
@@ -482,27 +476,4 @@ private fun TabText(
             )
         }
     )
-}
-
-private fun Modifier.customTabIndicatorOffset(
-    currentTabPosition: TabPosition
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo {
-        name = "customTabIndicatorOffset"
-        value = currentTabPosition
-    }
-) {
-    val currentTabWidth by animateDpAsState(
-        targetValue = currentTabPosition.width * 0.33f,
-        animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
-        label = ""
-    )
-    val indicatorOffset by animateDpAsState(
-        targetValue = currentTabPosition.left,
-        animationSpec = tween(durationMillis = 150, easing = FastOutLinearInEasing),
-        label = ""
-    )
-    wrapContentSize(Alignment.BottomStart)
-        .offset(x = indicatorOffset + currentTabPosition.width * 0.33f)
-        .width(currentTabWidth)
 }
