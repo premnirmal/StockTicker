@@ -3,7 +3,7 @@ package com.github.premnirmal.tickerwidget.ui.theme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.ui.graphics.Color
 
-internal data class AppColours(
+data class AppColours(
   val primary: Color,
   val onPrimary: Color,
   val primaryContainer: Color,
@@ -35,7 +35,7 @@ internal data class AppColours(
   val scrim: Color,
 )
 
-internal fun AppColours.toColorScheme(): ColorScheme {
+fun AppColours.toColorScheme(): ColorScheme {
   return ColorScheme(
       primary = this.primary,
       onPrimary = this.onPrimary,
