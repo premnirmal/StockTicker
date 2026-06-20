@@ -677,6 +677,16 @@ out of `:app`'s `WatchlistContent.kt` (where it was a `private` helper) into `:s
 `com.github.premnirmal.ticker.ui.customTabIndicatorOffset` import, so the shared watchlist UI (and iOS) can
 reuse the same tab indicator.
 
+The next shared UI primitive is the `TabText` composable (`ticker.ui`) — the watchlist widget tab-row
+label: a `material3` `Tab` whose text renders as a centered `labelMedium` that becomes extra-bold (and
+switches to the on-primary-container colour) when selected. It is built entirely from the multiplatform
+`material3` APIs (`Tab`/`Text`/`MaterialTheme`/`FontWeight`/`TextAlign`) with no Android coupling, so it
+moved out of `:app`'s `WatchlistContent.kt` (where it was a `private` helper) into `:shared` `commonMain`
+(new `TabText.kt`, `com.github.premnirmal.ticker.ui` package) as a public composable. Its sole call site
+(`WatchlistContent`'s `Header`) resolves it from `:shared` via the added
+`com.github.premnirmal.ticker.ui.TabText` import, so the shared watchlist UI (and iOS) can reuse the same
+tab label styling.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the

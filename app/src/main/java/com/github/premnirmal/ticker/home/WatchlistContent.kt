@@ -33,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -63,8 +62,6 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -76,6 +73,7 @@ import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.LocalContentType
+import com.github.premnirmal.ticker.ui.TabText
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.customTabIndicatorOffset
 import com.github.premnirmal.ticker.ui.fadingEdges
@@ -446,34 +444,4 @@ private fun Header(
             }
         }
     }
-}
-
-@Composable
-private fun TabText(
-    selected: Boolean,
-    text: String,
-    onClick: () -> Unit,
-) {
-    Tab(
-        selected = selected,
-        onClick = onClick,
-        text = {
-            Text(
-                text = text,
-                style = if (selected) {
-                    MaterialTheme.typography.labelMedium.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                    )
-                } else {
-                    MaterialTheme.typography.labelMedium
-                },
-                textAlign = TextAlign.Center,
-                color = if (selected) {
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                } else {
-                    MaterialTheme.colorScheme.onSecondaryContainer
-                },
-            )
-        }
-    )
 }
