@@ -32,6 +32,7 @@ detektCompose = "0.5.8"
 reorderable = "3.1.0"
 material3 = "1.4.0"
 glanceAppwidget = "1.1.1"
+vico = "2.5.1"
 
 [libraries]
 
@@ -68,9 +69,9 @@ detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.r
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-ktor3 = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
+vico-multiplatform = { group = "com.patrykandpatrick.vico", name = "multiplatform", version.ref = "vico" }
 
 javax-inject = "javax.inject:javax.inject:1"
 javax-annotation-api = "javax.annotation:javax.annotation-api:1.3.2"
-mpandroidchart = "com.github.PhilJay:MPAndroidChart:v3.1.0"
 retrofit-kotlin-serialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0"
 opengl-api = "org.khronos:opengl-api:gl1.1-android-2.1_r1"

@@ -226,7 +226,6 @@ dependencies {
   implementation(AndroidX.dataStore.preferences)
 
   implementation(JakeWharton.timber)
-  implementation(libs.mpandroidchart)
 
   detektPlugins(libs.detekt.formatting)
   detektPlugins(libs.detekt.compose)

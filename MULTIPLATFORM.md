@@ -819,6 +819,28 @@ sites (`HomeNavHost`'s `Search` route and `SearchActivity`) supply those `string
 Accompanist `TwoPane`, and resolve the screen from `:shared` via the unchanged
 `com.github.premnirmal.ticker.portfolio.search.SearchScreen` import.
 
+The quote-detail **price chart** has been re-platformed off MPAndroidChart onto **Vico**
+(`com.patrykandpatrick.vico:multiplatform`), a Compose Multiplatform charting library — the last
+hard Android-only blocker for moving `QuoteDetailScreen` itself into `commonMain`. The MPAndroidChart
+`LineChart` was rendered through an `AndroidView` (`createGraphView`/`updateGraphView`) and could only
+ever run on Android; the new `PriceChartView` (`ticker.detail`, new `PriceChart.kt` in `:shared`
+`commonMain`) is a pure Compose composable that renders identically on Android and iOS. It draws a
+cubic-smoothed line of each `DataPoint`'s close value with a translucent area fill, a trailing (end)
+value axis and a bottom date/time axis, and a touch marker — mirroring the old chart. Following the
+established seam pattern, the platform-specific date/number formatting stays in `:app`: the axis and
+marker labels are hoisted to `(Float) -> String` / `(Float, Float) -> String` lambdas
+(`xAxisLabel`/`yAxisLabel`/`markerLabel`), and the line colour is passed as a multiplatform `Color`.
+`:app`'s `GraphItem` (in `QuoteDetailScreen`) supplies those formatters — the former MPAndroidChart
+`ValueFormatter`s are now plain functions in `AxisFormatters.kt` (`formatAxisDate`/`formatAxisHour`/
+`formatAxisValue`/`formatChartMarker`) — and resolves the chart from `:shared` via the unchanged
+same-package reference. With this, MPAndroidChart is removed entirely: the dependency, the proguard
+keep rule, the `MultilineXAxisRenderer`/`TextMarkerView` helpers and the `CandleEntry` superclass on
+`DataPoint`'s Android `actual` are all gone. Vico 2.5.1 is built with the project's exact Kotlin
+(2.3.21) and resolves Compose Multiplatform to 1.11.0, so its iOS `klib`s are ABI-compatible
+(`:shared:compileKotlinIosSimulatorArm64` is green). `QuoteDetailScreen`'s remaining `:app` coupling
+(the four edit `Activity` launchers, the Accompanist two-pane and `CustomTabs`) is unrelated to the
+chart and is decoupled separately when the whole screen moves.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables
@@ -905,11 +927,12 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `AppLogger`/`ioDispatcher`, declared in the shared Koin `sharedModule`) over the
   already-shared `ChartApi`, and `ChartData`'s `…String()` helpers use the shared `AppNumberFormat`
   (its Compose `changeColour` is an Android-only extension in `:app`, like `Quote.changeColour`). The
-  `DataPoint` candle that blocked this is now `expect`/`actual`: `commonMain`/iOS see a plain,
-  MPAndroidChart-free value ordered by its timestamp, while the Android `actual` still extends
-  MPAndroidChart's `CandleEntry` (and stays `Parcelable`/`Serializable`) so the Android chart UI
-  (`LineDataSet`/`TextMarkerView`) renders it unchanged; MPAndroidChart is therefore a `:shared`
-  `androidMain`-only dependency. `commonTest` (`HistoryProviderTest`, via Ktor `MockEngine`) covers
+  `DataPoint` candle that blocked this is now `expect`/`actual`: `commonMain`/iOS see a plain value
+  ordered by its timestamp, and the Android `actual` is now an equally plain value (it only stays
+  `expect`/`actual` so it can remain `Parcelable`/`Serializable` for `Bundle`/`Intent` transport).
+  The chart is now rendered with **Vico** (Compose Multiplatform), so MPAndroidChart has been removed
+  entirely (see the Vico paragraph in Phase 4). `commonTest` (`HistoryProviderTest`, via Ktor
+  `MockEngine`) covers
   the mapping, timestamp sorting, the missing-value filtering and the failure path, so the chart fetch
   is verified on iOS as well as Android. **DI has moved off Hilt to Koin:** the shared services are
   declared in a `commonMain` `sharedModule` (reused by every platform), while `:app` provides the

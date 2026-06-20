@@ -1,6 +1,6 @@
 package com.github.premnirmal.ticker.network.data
 
-import com.github.mikephil.charting.data.CandleEntry
+import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.io.Serializable
 import java.time.Instant
@@ -9,8 +9,10 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 /**
- * Android [DataPoint]: a MPAndroidChart [CandleEntry] (so it can be fed straight into the chart
- * `LineDataSet`/`MarkerView`) that is also `Serializable`/`Parcelable` and orders by its timestamp.
+ * Android [DataPoint]: a plain candle (high/low/open/close ordered by timestamp) that is also
+ * `Serializable`/`Parcelable` so it can travel through `Bundle`/`Intent` extras. The chart is now
+ * rendered with Vico (Compose Multiplatform) straight from the shared [closeVal]/[xVal] values, so
+ * the previous MPAndroidChart `CandleEntry` superclass is no longer needed.
  */
 @Parcelize
 actual class DataPoint actual constructor(
@@ -19,7 +21,7 @@ actual class DataPoint actual constructor(
     actual val shadowL: Float,
     actual val openVal: Float,
     actual val closeVal: Float
-) : CandleEntry(xVal, shadowH, shadowL, openVal, closeVal), Serializable, Comparable<DataPoint> {
+) : Parcelable, Serializable, Comparable<DataPoint> {
 
     fun getDate(): LocalDate = LocalDateTime.ofInstant(
         Instant.ofEpochSecond(xVal.toLong()),
