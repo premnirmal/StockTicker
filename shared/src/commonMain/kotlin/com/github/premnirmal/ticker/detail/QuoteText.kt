@@ -6,8 +6,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
+
+@Composable
+fun QuoteSymbolText(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.titleSmall
+    )
+}
+
+@Composable
+fun QuoteNameText(
+    modifier: Modifier = Modifier,
+    text: String,
+    maxLines: Int = 2
+) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.labelMedium,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis
+    )
+}
 
 @Composable
 fun QuoteValueText(

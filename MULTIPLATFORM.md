@@ -511,6 +511,16 @@ package) together with their shared `private` `extractColour` helper. Their call
 `SectionDetail` in `:app`) resolve them from `:shared` via the unchanged same-package references.
 
 
+The next shared leaf composables are the quote name/symbol text primitives `QuoteSymbolText`/
+`QuoteNameText` (`ticker.detail`) — the small `material3` `Text` wrappers that render a quote symbol
+(`titleSmall`) or a quote name (`labelMedium`, ellipsized via `TextOverflow.Ellipsis` with a caller-
+supplied `maxLines`). They depend only on the multiplatform `material3`/`compose.ui` APIs
+(`Text`/`MaterialTheme`/`TextOverflow`) with no Android coupling, so they joined the already-shared quote
+text primitives in `:shared` `commonMain` (`QuoteText.kt`, same `com.github.premnirmal.ticker.detail`
+package). Their call sites (`QuoteCard` in `:app`) resolve them from `:shared` via the unchanged same-package
+references.
+
+
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
