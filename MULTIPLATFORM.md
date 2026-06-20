@@ -715,6 +715,20 @@ followed the established expect/actual seam pattern: the edge rendering is deleg
 `QuoteDetailScreen`) resolve it from `:shared` via the unchanged
 `com.github.premnirmal.ticker.ui.fadingEdges` import.
 
+The next shared piece is the Compose `AppMessaging` implementation core — `DefaultAppMessaging`
+(`ticker.ui`) — which owns the multiplatform `material3` `SnackbarHostState` consumed by the Compose UI
+plus the in-memory `MutableSharedFlow<AppMessage>` queue that drives banners/bottom sheets. It is built
+entirely from multiplatform `material3`/coroutines APIs (`SnackbarHostState`/`MutableSharedFlow`/
+`filterIsInstance`) over the already-shared `AppMessaging` contract + `AppMessage` model, so it moved into
+`:shared` `commonMain` (new `DefaultAppMessaging.kt`, same `com.github.premnirmal.ticker.ui` package) as an
+`open class`. Its only Android coupling was the `Context`-backed string-resource overloads
+(`sendSnackbar(Int)`/`sendBanner(Int, Int)`/`sendBottomSheet(Int, String)`), so it followed the established
+seam pattern: those overloads stay in `:app`'s `ComposeAppMessaging`, which is now a thin subclass of the
+shared `DefaultAppMessaging` that adds only the `Context.getString` resolution. All `:app` consumers (the
+Activities' `SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)` plus the
+`sendSnackbar`/`sendBanner`/`sendBottomSheet` call sites) are unchanged; the `LocalAppMessaging`
+`staticCompositionLocalOf` stays typed to the Android `ComposeAppMessaging` subclass in `:app`.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
