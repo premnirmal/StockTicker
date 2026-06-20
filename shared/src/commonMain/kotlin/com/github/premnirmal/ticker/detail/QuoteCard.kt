@@ -209,23 +209,24 @@ private fun PositionCard(
                 annotation = changePercentLabel
             )
         }
-        val gainOrLossLabel = if (quote.gainLoss() >= 0) gainLabel else lossLabel
+        val gainLoss = quote.gainLoss()
+        val gainOrLossLabel = if (gainLoss >= 0) gainLabel else lossLabel
         Row(
             verticalAlignment = Alignment.Bottom,
         ) {
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
                 text = quote.gainLossString(),
-                up = quote.gainLoss() > 0,
-                down = quote.gainLoss() < 0,
+                up = gainLoss > 0,
+                down = gainLoss < 0,
                 annotation = gainOrLossLabel
             )
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
                 textAlign = TextAlign.Center,
                 text = quote.gainLossPercentStringNoPercentSign(),
-                up = quote.gainLoss() > 0,
-                down = quote.gainLoss() < 0,
+                up = gainLoss > 0,
+                down = gainLoss < 0,
                 annotation = "$gainOrLossLabel %"
             )
             AnnotatedQuoteValue(
