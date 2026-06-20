@@ -561,6 +561,11 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     modifier = Modifier.padding(top = 8.dp),
                     quote = quote,
                     position = holdings,
+                    sharesLabel = stringResource(id = R.string.shares),
+                    equityValueLabel = stringResource(id = R.string.equity_value),
+                    averagePriceLabel = stringResource(id = R.string.average_price),
+                    gainLossLabel = stringResource(id = R.string.gain_loss),
+                    dayChangeLabel = stringResource(id = R.string.day_change_amount),
                     onClick = {
                         launcher.launch(intent)
                     },

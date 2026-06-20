@@ -541,6 +541,19 @@ remaining Android coupling and moved into `:shared` `commonMain` unchanged (new 
 resolve them from `:shared` via the unchanged `com.github.premnirmal.ticker.network.data.changeColour`
 import.
 
+The next shared leaf composable is `PositionDetailCard` (`ticker.detail`) — the quote-detail position
+`AppCard` that renders a holding's shares/equity-value/average-price/gain-loss/day-change figures (over
+the already-shared `AppCard`/`QuoteValueText`/`QuoteChangeText`). All of its numeric values come from the
+already-shared `Quote` model (`numSharesString`/`holdingsString`/`gainLoss`/`averagePositionPrice`/…), so
+its only Android coupling was the five `stringResource(R.string.…)` row labels. It therefore followed the
+established seam pattern: those labels are now plain `String` parameters (`sharesLabel`/`equityValueLabel`/
+`averagePriceLabel`/`gainLossLabel`/`dayChangeLabel`) and the composable moved into `:shared` `commonMain`
+(new `PositionDetailCard.kt`, same `com.github.premnirmal.ticker.detail` package). Its sole call site
+(`QuoteDetailScreen` in `:app`) keeps the `stringResource` lookups and resolves the composable from
+`:shared` via the unchanged same-package reference; the sibling `AlertsCard`/`EditSectionHeader`
+composables stay in `:app`'s `SectionDetail.kt` (they rely on `AppPreferences.selectedDecimalFormat` /
+`painterResource(R.…)` + Android `R.string` ids respectively).
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: swapping the
 Android-only image loader for **Coil 3** multiplatform (so `NewsCard` can move), replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
