@@ -47,6 +47,9 @@ fun RangeSelector(
         ranges.forEach { (range, label) ->
             FilterChip(
                 onClick = { onRangeSelected(range) },
+                // Preserves the original `:app` behaviour: the chip is styled "selected" for every
+                // range except the currently-selected one (i.e. the tappable alternatives are
+                // highlighted). Kept identical to avoid a behaviour change during this leaf move.
                 selected = selectedRange != range,
                 label = { Text(text = label) }
             )
