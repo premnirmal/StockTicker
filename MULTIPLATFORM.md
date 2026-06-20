@@ -639,6 +639,17 @@ fold helpers (which inspect a `FoldingFeature`). All `:app` consumers (`HomeList
 `com.github.premnirmal.ticker.ui` package imports. The shared file is named `WindowStateTypes.kt` (not the
 `:app` `WindowStateUtils.kt`) so the two top-level facade classes do not clash.
 
+The next shared leaf composable is `EditSectionHeader` (`ticker.detail`) — the quote-detail edit-section
+header row (a `material3` `Text` title plus a trailing edit `Icon`) used by the positions/alerts/notes/
+display-name sections. It depends only on the multiplatform `material3`/`foundation` APIs, but its title came
+from an Android `@StringRes` `Int` (`stringResource`) and its icon from `painterResource(R.drawable.ic_edit)`.
+It therefore followed the established seam pattern: the title is now a plain `title: String` parameter and the
+icon a multiplatform `editIcon: Painter` parameter, so the composable moved into `:shared` `commonMain` (new
+`SectionHeader.kt`, same `com.github.premnirmal.ticker.detail` package, replacing `:app`'s `SectionDetail.kt`).
+Its four call sites (`QuoteDetailScreen` in `:app`) keep the `stringResource`/`painterResource` lookups and
+resolve the composable from `:shared` via the unchanged same-package reference. With `EditSectionHeader` shared,
+**all** `ticker.detail` leaf composables are now in `commonMain` — only the screen composables remain in `:app`.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the

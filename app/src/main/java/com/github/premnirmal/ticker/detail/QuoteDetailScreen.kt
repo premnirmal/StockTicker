@@ -573,7 +573,10 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = R.string.positions)
+                EditSectionHeader(
+                    title = stringResource(id = R.string.positions),
+                    editIcon = painterResource(id = R.drawable.ic_edit)
+                )
                 PositionDetailCard(
                     modifier = Modifier.padding(top = 8.dp),
                     quote = quote,
@@ -620,7 +623,10 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = R.string.alerts)
+                EditSectionHeader(
+                    title = stringResource(id = R.string.alerts),
+                    editIcon = painterResource(id = R.drawable.ic_edit)
+                )
                 val appPreferences = koinInject<AppPreferences>()
                 AlertsCard(
                     modifier = Modifier
@@ -659,7 +665,10 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = R.string.notes)
+                EditSectionHeader(
+                    title = stringResource(id = R.string.notes),
+                    editIcon = painterResource(id = R.drawable.ic_edit)
+                )
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -695,7 +704,10 @@ private fun LazyGridScope.quotePositionsNotesAlerts(
                     launcher.launch(intent)
                 }
             ) {
-                EditSectionHeader(title = R.string.displayname)
+                EditSectionHeader(
+                    title = stringResource(id = R.string.displayname),
+                    editIcon = painterResource(id = R.drawable.ic_edit)
+                )
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
