@@ -650,6 +650,22 @@ Its four call sites (`QuoteDetailScreen` in `:app`) keep the `stringResource`/`p
 resolve the composable from `:shared` via the unchanged same-package reference. With `EditSectionHeader` shared,
 **all** `ticker.detail` leaf composables are now in `commonMain` — only the screen composables remain in `:app`.
 
+The next shared leaf composable is the `AddSymbolDialog` content (`ticker.portfolio.search`) — the
+`compose.ui.window.Dialog` that lists the configured widgets (over the already-shared `Divider`) with an
+add/remove `IconButton` per row so a searched symbol can be added to a widget. It renders the already-shared
+`SuggestionState`/`SuggestionWidgetDataState` and depends only on the multiplatform `material3`/`foundation`/
+`compose.ui` APIs (`Dialog`/`DialogProperties`/`LazyColumn`). Its only Android couplings were the per-row
+add/remove icons (`painterResource(R.drawable.…)`) and the title/save labels (`stringResource(R.string.…)`),
+so it followed the established seam pattern: the icons are now multiplatform `Painter` parameters
+(`addIcon`/`removeIcon`) and the labels plain `String` parameters (`selectWidgetLabel`/`saveLabel`). The dialog
+body moved into `:shared` `commonMain` as the public `AddSymbolDialogContent` (new
+`AddSymbolDialogContent.kt`, same `com.github.premnirmal.ticker.portfolio.search` package; the file is named
+differently from the `:app` `AddSymbolDialog.kt` so the two top-level facade classes do not clash), and the
+Android-only `@Preview` was dropped. The thin Koin-backed `AddSymbolDialog` wrapper (which `koinViewModel`s the
+`SuggestionViewModel` and feeds its `suggestionState`) stays in `:app`'s `AddSymbolDialog.kt`, keeps the
+`painterResource`/`stringResource` lookups, and resolves the content from `:shared` via the unchanged
+same-package reference. Its two call sites (`SearchScreen`/`QuoteDetailScreen`) are unchanged.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
