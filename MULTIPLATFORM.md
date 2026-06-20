@@ -418,6 +418,12 @@ Both `:app` and `:UI` depend on `:shared`, and `AppCard` was only consumed from 
 sites resolve it from `:shared` via the unchanged package import. This starts migrating the foundational
 `:UI` primitives (used by the shared Compose screens in later slices) into `commonMain`.
 
+The next `:UI` primitive shared is `Divider` (`com.github.premnirmal.tickerwidget.ui`) — the thin
+(0.2dp) `material3` `HorizontalDivider` wrapper. Like `AppCard` it depends only on the multiplatform
+`material3` APIs with no Android coupling and was only consumed from `:app`, so it moved into `:shared`
+`commonMain` (same `com.github.premnirmal.tickerwidget.ui` package) and its five call sites resolve it
+from `:shared` via the unchanged package import.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
