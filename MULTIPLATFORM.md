@@ -729,6 +729,16 @@ Activities' `SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostStat
 `sendSnackbar`/`sendBanner`/`sendBottomSheet` call sites) are unchanged; the `LocalAppMessaging`
 `staticCompositionLocalOf` stays typed to the Android `ComposeAppMessaging` subclass in `:app`.
 
+With the shared Compose UI now broad enough to host whole screens, the shared module's `iosSimulatorArm64`
+target compiles end-to-end again: the watchlist's `TotalHoldingsPopup` (`ticker.home`) had set
+`PopupProperties(excludeFromSystemGesture = true)`, but `excludeFromSystemGesture` is an **Android-only**
+parameter that is absent from the Compose Multiplatform `commonMain` `PopupProperties` constructor, so
+`:shared:compileKotlinIosSimulatorArm64` failed with "No parameter with name 'excludeFromSystemGesture'
+found". Because the Android default for `excludeFromSystemGesture` is already `true`, the explicit argument
+was dropped in favour of the default `PopupProperties()` — this preserves the Android behaviour exactly while
+letting the popup (and therefore the whole shared Compose UI) compile for iOS. The shared module now compiles
+cleanly for both `androidTarget` (`:app:compileDevDebugKotlin`) and `iosSimulatorArm64`.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the

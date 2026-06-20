@@ -25,9 +25,10 @@ fun TotalHoldingsPopup(
 ) {
     Popup(
         alignment = Alignment.TopEnd,
-        properties = PopupProperties(
-            excludeFromSystemGesture = true,
-        ),
+        // PopupProperties' `excludeFromSystemGesture` is an Android-only parameter that is absent from
+        // the Compose Multiplatform `commonMain` constructor. Its Android default is already `true`, so
+        // the default `PopupProperties()` preserves the Android behaviour while compiling for iOS.
+        properties = PopupProperties(),
         onDismissRequest = onDismiss,
     ) {
         Surface(
