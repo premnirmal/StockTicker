@@ -409,6 +409,15 @@ only on the multiplatform `compose.ui`/`runtime` APIs (`NestedScrollConnection`/
 (same `com.github.premnirmal.ticker.home` package); its only caller, `WatchlistContent`, stays in `:app`
 and resolves it from `:shared` via the unchanged package import.
 
+The first shared piece from the Android `:UI` library module is `AppCard`
+(`com.github.premnirmal.tickerwidget.ui`) — the app-wide `material3` `Card` wrapper (large shape,
+`surfaceContainerLow` container colour, 1dp elevation, optional `onClick`). It depends only on the
+multiplatform `material3` APIs with no Android coupling, so it moved into `:shared` `commonMain` (same
+`com.github.premnirmal.tickerwidget.ui` package that already hosts the shared `theme.SelectedTheme`).
+Both `:app` and `:UI` depend on `:shared`, and `AppCard` was only consumed from `:app`, so its four call
+sites resolve it from `:shared` via the unchanged package import. This starts migrating the foundational
+`:UI` primitives (used by the shared Compose screens in later slices) into `commonMain`.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
