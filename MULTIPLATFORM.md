@@ -687,6 +687,18 @@ moved out of `:app`'s `WatchlistContent.kt` (where it was a `private` helper) in
 `com.github.premnirmal.ticker.ui.TabText` import, so the shared watchlist UI (and iOS) can reuse the same
 tab label styling.
 
+The next shared leaf composable is `SearchInputField` (`ticker.portfolio.search`) — the portfolio-search
+input row (an `AppTextFieldShape`/`AppTextFieldDefaultColors`-styled `material3` `TextField` that
+upper-cases input and exposes a trailing clear `IconButton`). It depends only on the multiplatform
+`material3`/`foundation`/`compose.ui` APIs (`TextField`/`KeyboardOptions`/`KeyboardCapitalization`/
+`LocalFocusManager`) plus the already-shared text-field styling. Its only Android couplings were the field
+label (`stringResource(R.string.enter_a_symbol)`) and the clear icon (`painterResource(R.drawable.ic_close)`),
+so it followed the established seam pattern: the label is now a plain `label: String` parameter and the icon
+a multiplatform `clearIcon: Painter` parameter, and the composable moved into `:shared` `commonMain` (new
+`SearchInputField.kt`, same `com.github.premnirmal.ticker.portfolio.search` package). Its sole call site
+(`SearchScreen` in `:app`) keeps the `stringResource`/`painterResource` lookups and resolves the composable
+from `:shared` via the unchanged same-package reference.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the

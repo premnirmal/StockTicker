@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -15,15 +14,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -34,10 +28,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,7 +44,6 @@ import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.news.NewsArticleCard
 import com.github.premnirmal.ticker.news.NewsFeedItem
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
-import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
@@ -107,7 +98,11 @@ fun SearchScreen(
         topBar = {
             Column {
                 TopBar(text = stringResource(id = R.string.action_search))
-                SearchInputField(searchQuery = searchQuery) {
+                SearchInputField(
+                    searchQuery = searchQuery,
+                    label = stringResource(id = R.string.enter_a_symbol),
+                    clearIcon = painterResource(id = R.drawable.ic_close),
+                ) {
                     searchQuery = it
                     searchViewModel.fetchResults(searchQuery)
                 }
@@ -237,56 +232,6 @@ private fun SearchAndTrending(
             trendingStocks = trendingStocks,
             onQuoteClick = onQuoteClick,
             selectedWidgetId = selectedWidgetId,
-        )
-    }
-}
-
-@Composable
-private fun SearchInputField(
-    searchQuery: String,
-    onQueryChange: (String) -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
-    ) {
-        val focusManager = LocalFocusManager.current
-        var text by remember {
-            mutableStateOf(searchQuery)
-        }
-        TextField(
-            shape = com.github.premnirmal.ticker.ui.AppTextFieldShape,
-            modifier = Modifier.fillMaxWidth(),
-            colors = AppTextFieldDefaultColors,
-            value = text,
-            onValueChange = {
-                text = it
-                onQueryChange(it)
-            },
-            label = {
-                Text(stringResource(id = R.string.enter_a_symbol))
-            },
-            singleLine = true,
-            keyboardActions = KeyboardActions {
-                focusManager.clearFocus(force = true)
-            },
-            keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Characters),
-            trailingIcon = {
-                IconButton(
-                    enabled = text.isNotEmpty(),
-                    onClick = {
-                        text = ""
-                        onQueryChange("")
-                        focusManager.clearFocus(force = true)
-                    },
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
-                        contentDescription = null
-                    )
-                }
-            }
         )
     }
 }
