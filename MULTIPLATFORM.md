@@ -531,6 +531,27 @@ shared `SmallQuoteChangeText`. Its annotation was already a plain `annotation: S
 `:app`) resolves it from `:shared` via the unchanged same-package reference.
 
 
+The next shared piece is the `Quote.changeColour`/`ChartData.changeColour` Compose colour extensions
+(`ticker.network.data`) — the `@Composable`-aware up/down colours (`ColourPalette.ChangePositive`/
+`ChangeNegative`) for a quote's or chart datum's change. They were previously kept in `:app` on the
+assumption that the Compose `Color` + `ColourPalette` theming was Android-coupled, but both are now in
+`:shared` `commonMain` (alongside the shared `Quote`/`ChartData` models), so the extensions have zero
+remaining Android coupling and moved into `:shared` `commonMain` unchanged (new `QuoteExtensions.kt`, same
+`com.github.premnirmal.ticker.network.data` package). Their call sites (`QuoteDetailScreen` in `:app`)
+resolve them from `:shared` via the unchanged `com.github.premnirmal.ticker.network.data.changeColour`
+import.
+
+The remaining Phase 4 work is larger and architectural rather than further leaf moves: swapping the
+Android-only image loader for **Coil 3** multiplatform (so `NewsCard` can move), replacing
+`androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
+`WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
+remaining screen composables (`NewsFeedScreen`/`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/
+`QuoteDetailScreen`) can move together with their `:app`-coupled dependency chains
+(`QuoteDetail`/`ComposeAppMessaging`/`AppPreferences` seams). The Android `Activity` hosts (11 of them), the
+Glance app-widget trio (`GlanceStocksWidget`/`WidgetColors`/`WidgetPreview`) and `WebViewActivity` stay in
+`:app` by design as the Android host.
+
+
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
