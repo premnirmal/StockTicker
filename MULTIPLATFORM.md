@@ -466,6 +466,18 @@ package import resolves them from `:shared`. Only `AppTheme` (Android dynamic-co
 `Build.VERSION`/`dynamic*ColorScheme`/`LocalContext`) and `AppTypography` (Android `R.font` resources)
 remain in `:UI`'s `theme` package.
 
+The next `:UI` theme primitive shared is the `AppTypography` type-scale
+(`com.github.premnirmal.tickerwidget.ui.theme`) — the app-wide `material3` `Typography` (the
+sizes/weights/line-heights/letter-spacing for every text role). The scale itself has no Android coupling
+(only `material3`/`ui.text` APIs), but it is built from font families that resolve from Android `R.font`
+resources, so it followed the established seam pattern: the type-scale moved into `:shared` `commonMain`
+as an `appTypography(regular, bold, light, italic): Typography` builder that takes the `FontFamily`
+values as parameters, while the `R.font`-backed `FontFamily` definitions (`Regular`/`Bold`/`Light`/
+`Italic`/… still used by `:app`'s `SettingsScreen`) and the `val AppTypography = appTypography(…)` wrapper
+stay in `:UI`. `AppTheme` (still in `:UI`) keeps referencing `AppTypography` unchanged, and iOS can build
+its own `Typography` from the same shared scale with platform fonts. Only `AppTheme` (Android
+dynamic-colour coupling) and the `R.font` `FontFamily` definitions remain in `:UI`'s `theme` package.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
