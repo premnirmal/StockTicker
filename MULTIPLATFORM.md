@@ -580,6 +580,18 @@ resolves the composable from `:shared` via the unchanged same-package reference.
 model + `toQuoteDetails(Context)` builder stay in `:app` by design (they mix translated date patterns and
 Android-resource number formatting).
 
+The next shared leaf composable is `LinkText` (`ticker.ui`) — the underlined, tappable hyperlink text
+(used by the quote-detail business-summary section to render a company's website link). It is built
+entirely from multiplatform `foundation`/`ui` text APIs (`buildAnnotatedString`/`SpanStyle`/
+`ClickableText`), but its tap previously opened an Android Chrome **Custom Tab** (`CustomTabs.openTab`)
+and its `LinkTextData` model carried an Android `Context` in a per-item `onClick`. It therefore followed
+the established seam pattern: the link-open action is hoisted to an `onLinkClick: (url: String) -> Unit`
+parameter (and the unused `Context`-bearing per-item `onClick` is dropped), so the composable +
+`LinkTextData` moved into `:shared` `commonMain` (new `LinkText.kt`, same `com.github.premnirmal.ticker.ui`
+package). Its sole call site (`QuoteDetailScreen` in `:app`) now passes an `onLinkClick` lambda that calls
+`CustomTabs.openTab(LocalContext.current, url, MaterialTheme.colorScheme.primary.toArgb())`, keeping the
+Android Custom-Tabs integration in `:app`.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: swapping the
 Android-only image loader for **Coil 3** multiplatform (so `NewsCard` can move), replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/

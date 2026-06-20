@@ -87,6 +87,7 @@ import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.Range
+import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
@@ -337,6 +338,8 @@ private fun LazyGridScope.quoteBackground(quoteDetail: FetchResult<QuoteWithSumm
         }) {
             Column {
                 if (!website.isNullOrEmpty()) {
+                    val context = LocalContext.current
+                    val primaryColor = MaterialTheme.colorScheme.primary
                     LinkText(
                         modifier = Modifier.padding(top = 8.dp),
                         linkTextData = listOf(
@@ -345,7 +348,10 @@ private fun LazyGridScope.quoteBackground(quoteDetail: FetchResult<QuoteWithSumm
                                 tag = website,
                                 annotation = website
                             )
-                        )
+                        ),
+                        onLinkClick = { url ->
+                            CustomTabs.openTab(context, url, primaryColor.toArgb())
+                        }
                     )
                 }
                 if (!longBusinessSummary.isNullOrEmpty()) {
