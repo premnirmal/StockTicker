@@ -768,9 +768,23 @@ stringResource(R.string.…)`, resolving the bars + model from `:shared` via the
 This leaves only the `androidx.navigation`-coupled graph (`HomeNavHost`/`HomeNavigationActions`) in `:app`'s
 `HomeNavigation.kt`, narrowing the remaining navigation migration to the `NavHost` itself.
 
+The scroll-to-top navigation helper `rememberScrollToTopAction` (`ticker.navigation`) is shared now too,
+together with the `LocalNavGraphViewModelStoreOwner` `CompositionLocal` it reads. The helper resolves the
+shared `NavigationViewModel` from the nav-graph-scoped `ViewModelStoreOwner` and re-runs the caller's
+`scrollToTop()` whenever the matching `HomeRoute` action is emitted, so it depends only on the multiplatform
+`compose.runtime` APIs plus the multiplatform `viewModel()` composable. The `viewModel()` composable comes
+from JetBrains' Compose Multiplatform lifecycle artifact
+(`org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose`) — the Google `androidx.lifecycle`
+`-compose` artifact is JVM/Android-only and has no iOS `klib` — added to `:shared` `commonMain` for this move.
+Both the helper and the `CompositionLocal` moved into `:shared` `commonMain` (new `ScrollToTop.kt`, same
+`com.github.premnirmal.ticker.navigation` package); the `CompositionLocal` declaration left `:app`'s
+`RootGraph.kt` (which still *provides* it via `CompositionLocalProvider`) and all five call sites
+(`WatchlistContent`/`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/`NewsFeedScreen`) plus `HomeListDetail`
+resolve both from `:shared` via the unchanged same-package references.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
-`WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
+`WatchlistScreen` graph), and adopting a multiplatform `koinViewModel` so the
 remaining screen composables (`NewsFeedScreen`/`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/
 `QuoteDetailScreen`) can move together with their `:app`-coupled dependency chains
 (`QuoteDetail`/`ComposeAppMessaging`/`AppPreferences` seams). The Android `Activity` hosts (11 of them), the

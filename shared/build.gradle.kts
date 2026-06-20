@@ -104,6 +104,11 @@ kotlin {
       // Phase 3: shared ViewModels live in commonMain. AndroidX Lifecycle's ViewModel/viewModelScope
       // are multiplatform (2.8+), so the same ViewModel runs on Android and iOS.
       api("androidx.lifecycle:lifecycle-viewmodel:_")
+      // Phase 4: the multiplatform `viewModel()` composable used by shared navigation helpers
+      // (e.g. rememberScrollToTopAction) so they can resolve a ViewModel from commonMain. This is
+      // JetBrains' Compose Multiplatform lifecycle artifact (the Google `androidx.lifecycle`
+      // `-compose` artifact is JVM/Android-only); version tracks the lifecycle the graph resolves to.
+      api("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
       implementation("io.ktor:ktor-client-core:_")
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")

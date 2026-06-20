@@ -5,7 +5,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+
+/**
+ * The [ViewModelStoreOwner] scoped to the root navigation graph, so the shared
+ * [NavigationViewModel] (which drives the scroll-to-top action) is the same instance across the
+ * home destinations. Provided by the platform navigation host (Android `RootNavigationGraph`).
+ */
+val LocalNavGraphViewModelStoreOwner = staticCompositionLocalOf<ViewModelStoreOwner> {
+    error("No LocalNavGraphViewModelStoreOwner provided")
+}
 
 @Composable
 fun rememberScrollToTopAction(
