@@ -566,6 +566,20 @@ call site (`QuoteDetailScreen` in `:app`) now `koinInject`s `AppPreferences`, ke
 via the unchanged same-package reference. Only `EditSectionHeader` (Android `painterResource`/`R.string`)
 remains in `:app`'s `SectionDetail.kt`.
 
+The next shared leaf composable is `QuoteDetailCard` (`ticker.detail`) — the quote-detail grid `AppCard`
+that renders one fundamentals row (a label over a pre-formatted value, e.g. open/day-range/market-cap).
+It depends only on the multiplatform `material3`/`foundation` APIs over the already-shared `AppCard`, but
+it previously took the `:app` `QuoteDetail` row model directly (whose `title` is an Android `@StringRes`
+`Int`) and resolved its tap via the `:app`-typed `LocalAppMessaging` (`ComposeAppMessaging`). It therefore
+followed the established seam pattern: the resolved `title`/`data` strings are now plain `String`
+parameters and the bottom-sheet tap is hoisted to an `onClick: () -> Unit`, so the composable moved into
+`:shared` `commonMain` (new `QuoteDetailCard.kt`, same `com.github.premnirmal.ticker.detail` package). Its
+sole call site (`QuoteDetailScreen` in `:app`) keeps the `:app` `QuoteDetail` model, resolves
+`stringResource(it.title)` and wires `LocalAppMessaging.current.sendBottomSheet(it.title, it.data)`, and
+resolves the composable from `:shared` via the unchanged same-package reference. The `QuoteDetail` row
+model + `toQuoteDetails(Context)` builder stay in `:app` by design (they mix translated date patterns and
+Android-resource number formatting).
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: swapping the
 Android-only image loader for **Coil 3** multiplatform (so `NewsCard` can move), replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/

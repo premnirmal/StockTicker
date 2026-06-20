@@ -497,6 +497,7 @@ private fun LazyGridScope.quoteDetailsGrid(details: List<QuoteDetail>) {
     item(span = {
         GridItemSpan(maxLineSpan)
     }) {
+        val appMessaging = LocalAppMessaging.current
         val list = details
         if (list.isNotEmpty()) {
             val first = list.filterIndexed { index, _ ->
@@ -509,7 +510,11 @@ private fun LazyGridScope.quoteDetailsGrid(details: List<QuoteDetail>) {
                 Column(modifier = Modifier.weight(0.5f)) {
                     first.forEach {
                         Box(Modifier.padding(top = 4.dp, bottom = 4.dp, end = 4.dp)) {
-                            QuoteDetailCard(item = it)
+                            QuoteDetailCard(
+                                title = stringResource(it.title),
+                                data = it.data,
+                                onClick = { appMessaging.sendBottomSheet(it.title, it.data) }
+                            )
                         }
                     }
                 }
@@ -520,7 +525,11 @@ private fun LazyGridScope.quoteDetailsGrid(details: List<QuoteDetail>) {
                                 .fillMaxSize()
                                 .padding(top = 4.dp, bottom = 4.dp, start = 4.dp)
                         ) {
-                            QuoteDetailCard(item = it)
+                            QuoteDetailCard(
+                                title = stringResource(it.title),
+                                data = it.data,
+                                onClick = { appMessaging.sendBottomSheet(it.title, it.data) }
+                            )
                         }
                     }
                 }
