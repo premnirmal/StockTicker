@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
@@ -25,13 +26,18 @@ import com.github.premnirmal.ticker.home.HomeEvent
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
 import com.github.premnirmal.ticker.news.NewsFeedScreen
+import com.github.premnirmal.ticker.portfolio.search.AddSymbolDialog
 import com.github.premnirmal.ticker.portfolio.search.SearchScreen
 import com.github.premnirmal.ticker.settings.SettingsScreen
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.LocalContentType
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
 import com.github.premnirmal.ticker.widget.WidgetsScreen
 import com.github.premnirmal.tickerwidget.R.drawable
 import com.github.premnirmal.tickerwidget.R.string
+import com.google.accompanist.adaptive.FoldAwareConfiguration
+import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
+import com.google.accompanist.adaptive.TwoPane
 import java.net.URLEncoder
 
 @Composable
@@ -92,12 +98,50 @@ fun HomeNavHost(
             )
         }
         composable(HomeRoute.Search.route) {
+            val context = LocalContext.current
+            val primaryColor = MaterialTheme.colorScheme.primary
+            val appMessaging = LocalAppMessaging.current
+            val suggestionsErrorText = stringResource(string.error_fetching_suggestions)
             SearchScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface),
-                widthSizeClass = widthSizeClass,
-                displayFeatures = displayFeatures,
+                contentType = contentType,
+                titleText = stringResource(string.action_search),
+                searchLabel = stringResource(string.enter_a_symbol),
+                noDataText = stringResource(string.no_data),
+                suggestionsErrorText = suggestionsErrorText,
+                holdingsLabel = stringResource(string.holdings),
+                dayChangeLabel = stringResource(string.day_change_amount),
+                changePercentLabel = stringResource(string.change_percent),
+                gainLabel = stringResource(string.gain),
+                lossLabel = stringResource(string.loss),
+                changeAmountLabel = stringResource(string.change_amount),
+                clearIcon = painterResource(drawable.ic_close),
+                suggestionAddIcon = painterResource(drawable.ic_add_to_list),
+                onArticleClick = { article ->
+                    CustomTabs.openTab(context, article.url, primaryColor.toArgb())
+                },
+                onSuggestionsError = {
+                    appMessaging.sendSnackbar(suggestionsErrorText)
+                },
+                twoPane = { first, second ->
+                    TwoPane(
+                        strategy = HorizontalTwoPaneStrategy(
+                            splitFraction = 1f / 2f,
+                        ),
+                        displayFeatures = displayFeatures,
+                        foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
+                        first = first,
+                        second = second,
+                    )
+                },
+                addSymbolDialog = { symbol, onDismissRequest ->
+                    AddSymbolDialog(
+                        symbol = symbol,
+                        onDismissRequest = onDismissRequest,
+                    )
+                },
                 onQuoteClick = {
                     rootNavController.navigate("${Graph.QUOTE_DETAIL}/${URLEncoder.encode(it.symbol)}") {
                         popUpTo(HomeRoute.Search.route) {

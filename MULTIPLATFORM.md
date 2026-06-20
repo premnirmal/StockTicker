@@ -799,10 +799,30 @@ import; its Android-only `@Preview` (which exercised the now-private `NewsFeedIt
 the earlier leaf moves. The `:app` `NewsArticleCard` Custom-Tab wrapper stays in `:app` (still used by
 `SearchScreen`/`QuoteDetailScreen`).
 
+The second whole screen to move into `commonMain` is `SearchScreen` (`ticker.portfolio.search`) — the
+search + trending feed. Like `NewsFeedScreen` it resolves its already-shared `SearchViewModel`/
+`NewsFeedViewModel` via the multiplatform `koinViewModel`, and its building blocks were all already
+shared (`TopBar`/`SearchInputField`/`SuggestionItem`/`QuoteCard`/`NewsCard`/`ErrorState`/`fadingEdges`/
+`rememberScrollToTopAction`). Its Android coupling is hoisted behind the established seam pattern: the
+title, the search-field label, the empty/error copy and the `QuoteCard`/`SuggestionItem` labels are
+plain `String`/`Painter` parameters; the quote and news-article taps are hoisted to
+`onQuoteClick`/`onArticleClick` (Android opens a Chrome Custom Tab at the `:app` call site); the
+suggestions-fetch-error snackbar is hoisted to an `onSuggestionsError` callback (the `:app` call site
+sends it through `ComposeAppMessaging`); and the add/remove dialog is hoisted to an `addSymbolDialog`
+slot (so `AddSymbolDialog` — still used by `QuoteDetailScreen` — stays in `:app`). The Android-only
+adaptive two-pane (Accompanist `TwoPane` over the `androidx.window` `DisplayFeature`s, keyed off the
+`WindowWidthSizeClass`) is hoisted to a `twoPane` slot, with the `ContentType` (single- vs dual-pane)
+computed at the `:app` call site via `calculateContentAndNavigationType` and passed as a `contentType`
+parameter; the shared screen only depends on the multiplatform `ContentType` enum. The two `:app` call
+sites (`HomeNavHost`'s `Search` route and `SearchActivity`) supply those `stringResource`/
+`painterResource` values, the Custom-Tab click, the snackbar, the `AddSymbolDialog` slot and an
+Accompanist `TwoPane`, and resolve the screen from `:shared` via the unchanged
+`com.github.premnirmal.ticker.portfolio.search.SearchScreen` import.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables
-(`SearchScreen`/`SettingsScreen`/`WidgetsScreen`/`QuoteDetailScreen`) into `commonMain` with the now-adopted
+(`SettingsScreen`/`WidgetsScreen`/`QuoteDetailScreen`) into `commonMain` with the now-adopted
 multiplatform `koinViewModel`, together with their `:app`-coupled dependency chains
 (`QuoteDetail`/`ComposeAppMessaging`/`AppPreferences` seams). The Android `Activity` hosts (11 of them), the
 Glance app-widget trio (`GlanceStocksWidget`/`WidgetColors`/`WidgetPreview`) and `WebViewActivity` stay in

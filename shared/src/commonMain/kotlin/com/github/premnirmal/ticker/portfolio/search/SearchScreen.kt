@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -17,9 +16,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridS
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -28,40 +25,60 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.navigation.HomeRoute
-import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
+import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
-import com.github.premnirmal.ticker.news.NewsArticleCard
+import com.github.premnirmal.ticker.news.NewsCard
 import com.github.premnirmal.ticker.news.NewsFeedItem
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
-import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.ErrorState
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.fadingEdges
-import com.github.premnirmal.tickerwidget.R
-import com.google.accompanist.adaptive.FoldAwareConfiguration
-import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
-import com.google.accompanist.adaptive.TwoPane
+import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * The search + trending screen.
+ *
+ * Android coupling is hoisted behind the established seam pattern so the layout/behaviour is shared
+ * and reusable from iOS: the title, the search field label, the error/empty copy and the
+ * [QuoteCard]/[SuggestionItem] labels are plain [String]/[Painter] parameters; the quote and
+ * news-article taps are hoisted to [onQuoteClick]/[onArticleClick]; the adaptive two-pane layout is
+ * hoisted to a [twoPane] slot (Android supplies an Accompanist `TwoPane` over the window
+ * `DisplayFeature`s at the `:app` call site, with [contentType] computed there); and the add/remove
+ * dialog is hoisted to the [addSymbolDialog] slot. The shared [SearchViewModel]/[NewsFeedViewModel]
+ * are resolved from the Koin graph via the multiplatform [koinViewModel].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    modifier: Modifier = Modifier,
-    widthSizeClass: WindowWidthSizeClass,
-    displayFeatures: List<DisplayFeature>,
+    contentType: ContentType,
+    titleText: String,
+    searchLabel: String,
+    noDataText: String,
+    suggestionsErrorText: String,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
+    clearIcon: Painter,
+    suggestionAddIcon: Painter,
     onQuoteClick: (Quote) -> Unit,
+    onArticleClick: (NewsArticle) -> Unit,
+    onSuggestionsError: () -> Unit,
+    twoPane: @Composable (first: @Composable () -> Unit, second: @Composable () -> Unit) -> Unit,
+    addSymbolDialog: @Composable (symbol: String, onDismissRequest: () -> Unit) -> Unit,
+    modifier: Modifier = Modifier,
     selectedWidgetId: Int? = null,
     searchViewModel: SearchViewModel = koinViewModel(),
     newsViewModel: NewsFeedViewModel = koinViewModel(),
@@ -70,10 +87,9 @@ fun SearchScreen(
     val searchResults by searchViewModel.searchResult.collectAsStateWithLifecycle()
     val trendingStocks by searchViewModel.trendingStocks.collectAsStateWithLifecycle(emptyList())
     val isRefreshing by searchViewModel.isRefreshing.collectAsStateWithLifecycle()
-    val appMessaging = LocalAppMessaging.current
     LaunchedEffect(searchViewModel) {
         searchViewModel.suggestionsError.collect {
-            appMessaging.sendSnackbar(R.string.error_fetching_suggestions)
+            onSuggestionsError()
         }
     }
     LaunchedEffect(trendingStocks.isEmpty()) {
@@ -88,20 +104,16 @@ fun SearchScreen(
     val onSuggestionAddRemoveClick: (Suggestion) -> Unit = { suggestion ->
         showAddRemoveForSuggestion = suggestion
     }
-    val contentType: ContentType = calculateContentAndNavigationType(
-        widthSizeClass = widthSizeClass,
-        displayFeatures = displayFeatures
-    ).second
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
         modifier = modifier.background(MaterialTheme.colorScheme.surface),
         topBar = {
             Column {
-                TopBar(text = stringResource(id = R.string.action_search))
+                TopBar(text = titleText)
                 SearchInputField(
                     searchQuery = searchQuery,
-                    label = stringResource(id = R.string.enter_a_symbol),
-                    clearIcon = painterResource(id = R.drawable.ic_close),
+                    label = searchLabel,
+                    clearIcon = clearIcon,
                 ) {
                     searchQuery = it
                     searchViewModel.fetchResults(searchQuery)
@@ -109,6 +121,25 @@ fun SearchScreen(
             }
         }
     ) { padding ->
+        val searchAndTrending: @Composable (StaggeredGridCells) -> Unit = { columns ->
+            SearchAndTrending(
+                columns = columns,
+                trendingStocks = trendingStocks,
+                onQuoteClick = onQuoteClick,
+                searchResults = searchResults,
+                onSuggestionClick = onSuggestionClick,
+                onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+                selectedWidgetId = selectedWidgetId,
+                suggestionAddIcon = suggestionAddIcon,
+                suggestionsErrorText = suggestionsErrorText,
+                holdingsLabel = holdingsLabel,
+                dayChangeLabel = dayChangeLabel,
+                changePercentLabel = changePercentLabel,
+                gainLabel = gainLabel,
+                lossLabel = lossLabel,
+                changeAmountLabel = changeAmountLabel,
+            )
+        }
         if (contentType == SINGLE_PANE) {
             PullToRefreshBox(
                 modifier = Modifier
@@ -119,15 +150,7 @@ fun SearchScreen(
                     searchViewModel.fetchTrending()
                 },
             ) {
-                SearchAndTrending(
-                    columns = StaggeredGridCells.Adaptive(minSize = 120.dp),
-                    trendingStocks = trendingStocks,
-                    onQuoteClick = onQuoteClick,
-                    searchResults = searchResults,
-                    onSuggestionClick = onSuggestionClick,
-                    onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
-                    selectedWidgetId = selectedWidgetId,
-                )
+                searchAndTrending(StaggeredGridCells.Adaptive(minSize = 120.dp))
             }
         } else {
             PullToRefreshBox(
@@ -139,25 +162,11 @@ fun SearchScreen(
                     searchViewModel.fetchTrending()
                 },
             ) {
-                TwoPane(
-                    modifier = Modifier,
-                    strategy = HorizontalTwoPaneStrategy(
-                        splitFraction = 1f / 2f,
-                    ),
-                    displayFeatures = displayFeatures,
-                    foldAwareConfiguration = FoldAwareConfiguration.VerticalFoldsOnly,
-                    first = {
-                        SearchAndTrending(
-                            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-                            trendingStocks = trendingStocks,
-                            onQuoteClick = onQuoteClick,
-                            searchResults = searchResults,
-                            onSuggestionClick = onSuggestionClick,
-                            onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
-                            selectedWidgetId = selectedWidgetId,
-                        )
+                twoPane(
+                    {
+                        searchAndTrending(StaggeredGridCells.Adaptive(minSize = 150.dp))
                     },
-                    second = {
+                    {
                         val fetchResult by newsViewModel.newsFeed.collectAsStateWithLifecycle()
                         LaunchedEffect(fetchResult?.dataSafe.isNullOrEmpty()) {
                             if (fetchResult?.dataSafe.isNullOrEmpty()) {
@@ -171,7 +180,7 @@ fun SearchScreen(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .padding(horizontal = 8.dp),
-                                    text = stringResource(id = R.string.no_data)
+                                    text = noDataText
                                 )
                             } else {
                                 val news = data.filterIsInstance<NewsFeedItem.ArticleNewsFeed>()
@@ -190,7 +199,8 @@ fun SearchScreen(
                                         count = news.size,
                                         key = { i -> news[i].article.url }
                                     ) { i ->
-                                        NewsArticleCard(item = news[i].article)
+                                        val article = news[i].article
+                                        NewsCard(article, onClick = { onArticleClick(article) })
                                     }
                                 }
                             }
@@ -201,12 +211,9 @@ fun SearchScreen(
         }
     }
     showAddRemoveForSuggestion?.let { suggestion ->
-        AddSymbolDialog(
-            symbol = suggestion.symbol,
-            onDismissRequest = {
-                showAddRemoveForSuggestion = null
-            },
-        )
+        addSymbolDialog(suggestion.symbol) {
+            showAddRemoveForSuggestion = null
+        }
     }
 }
 
@@ -219,12 +226,22 @@ private fun SearchAndTrending(
     onSuggestionClick: (Suggestion) -> Unit,
     onSuggestionAddRemoveClick: (Suggestion) -> Unit,
     selectedWidgetId: Int?,
+    suggestionAddIcon: Painter,
+    suggestionsErrorText: String,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
 ) {
     if (searchResults != null && searchResults.wasSuccessful && !searchResults.dataSafe.isNullOrEmpty()) {
         SearchResults(
             searchResults = searchResults,
             onSuggestionClick = onSuggestionClick,
             onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
+            suggestionAddIcon = suggestionAddIcon,
+            suggestionsErrorText = suggestionsErrorText,
         )
     } else {
         TrendingStocks(
@@ -232,6 +249,12 @@ private fun SearchAndTrending(
             trendingStocks = trendingStocks,
             onQuoteClick = onQuoteClick,
             selectedWidgetId = selectedWidgetId,
+            holdingsLabel = holdingsLabel,
+            dayChangeLabel = dayChangeLabel,
+            changePercentLabel = changePercentLabel,
+            gainLabel = gainLabel,
+            lossLabel = lossLabel,
+            changeAmountLabel = changeAmountLabel,
         )
     }
 }
@@ -241,6 +264,8 @@ private fun SearchResults(
     searchResults: FetchResult<List<Suggestion>>,
     onSuggestionClick: (Suggestion) -> Unit,
     onSuggestionAddRemoveClick: (Suggestion) -> Unit,
+    suggestionAddIcon: Painter,
+    suggestionsErrorText: String,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -258,7 +283,7 @@ private fun SearchResults(
             ) { i ->
                 val suggestion = suggestions[i]
                 SuggestionItem(
-                    addRemoveIcon = painterResource(id = R.drawable.ic_add_to_list),
+                    addRemoveIcon = suggestionAddIcon,
                     suggestion = suggestion,
                     onSuggestionClick = onSuggestionClick,
                     onSuggestionAddRemoveClick = onSuggestionAddRemoveClick,
@@ -267,7 +292,7 @@ private fun SearchResults(
         } else {
             item {
                 ErrorState(
-                    text = stringResource(R.string.error_fetching_suggestions),
+                    text = suggestionsErrorText,
                 )
             }
         }
@@ -280,6 +305,12 @@ private fun TrendingStocks(
     trendingStocks: List<Quote>,
     onQuoteClick: (Quote) -> Unit,
     selectedWidgetId: Int?,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
 ) {
     val gridState = rememberLazyStaggeredGridState()
     if (selectedWidgetId == null) {
@@ -307,12 +338,12 @@ private fun TrendingStocks(
             val quote = trendingStocks[i]
             QuoteCard(
                 quote = quote,
-                holdingsLabel = stringResource(R.string.holdings),
-                dayChangeLabel = stringResource(R.string.day_change_amount),
-                changePercentLabel = stringResource(R.string.change_percent),
-                gainLabel = stringResource(R.string.gain),
-                lossLabel = stringResource(R.string.loss),
-                changeAmountLabel = stringResource(R.string.change_amount),
+                holdingsLabel = holdingsLabel,
+                dayChangeLabel = dayChangeLabel,
+                changePercentLabel = changePercentLabel,
+                gainLabel = gainLabel,
+                lossLabel = lossLabel,
+                changeAmountLabel = changeAmountLabel,
                 onClick = onQuoteClick,
                 quoteNameMaxLines = 1,
             )
