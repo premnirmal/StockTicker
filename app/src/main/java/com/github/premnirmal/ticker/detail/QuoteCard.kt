@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +28,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
@@ -191,33 +189,6 @@ private fun PositionCard(
                 annotation = stringResource(id = R.string.change_amount)
             )
         }
-    }
-}
-
-@Composable
-fun AnnotatedQuoteValue(
-    modifier: Modifier = Modifier,
-    text: String,
-    up: Boolean,
-    down: Boolean,
-    textAlign: TextAlign? = null,
-    annotation: String
-) {
-    Column(modifier = modifier) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = annotation,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-            textAlign = textAlign,
-            maxLines = 1
-        )
-        SmallQuoteChangeText(
-            modifier = Modifier.fillMaxWidth(),
-            text = text,
-            textAlign = textAlign,
-            up = up,
-            down = down
-        )
     }
 }
 

@@ -521,6 +521,16 @@ package). Their call sites (`QuoteCard` in `:app`) resolve them from `:shared` v
 references.
 
 
+The next shared leaf composable is `AnnotatedQuoteValue` (`ticker.detail`) — the small annotation-over-value
+`Column` used by the position card to render a labelled gain/loss figure (a `bodySmall` 10sp annotation
+`Text` above the already-shared `SmallQuoteChangeText` coloured up/down). It depends only on the
+multiplatform `material3`/`foundation`/`compose.ui` APIs (`Column`/`Text`/`fillMaxWidth`/`sp`) plus the
+shared `SmallQuoteChangeText`. Its annotation was already a plain `annotation: String` seam (the
+`stringResource` lookups stay at the `:app` call sites), so it moved into `:shared` `commonMain`
+(`QuoteText.kt`, same `com.github.premnirmal.ticker.detail` package). Its sole call site (`QuoteCard` in
+`:app`) resolves it from `:shared` via the unchanged same-package reference.
+
+
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
