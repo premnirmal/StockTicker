@@ -10,11 +10,6 @@ import com.github.premnirmal.ticker.ui.NavigationType
 import com.github.premnirmal.ticker.ui.isBookPosture
 import com.github.premnirmal.ticker.ui.isSeparating
 
-enum class LayoutType {
-    HEADER,
-    CONTENT
-}
-
 @Composable
 fun calculateContentAndNavigationType(
     widthSizeClass: WindowWidthSizeClass,

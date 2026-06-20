@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,7 +89,7 @@ fun HomeListDetail(
                     HomeRoute.Watchlist,
                     ImageVector.vectorResource(id = drawable.ic_trending_up),
                     ImageVector.vectorResource(id = drawable.ic_trending_up),
-                    string.action_portfolio
+                    label = stringResource(string.action_portfolio)
                 )
             )
             if (widthSizeClass != WindowWidthSizeClass.Expanded) {
@@ -97,7 +98,7 @@ fun HomeListDetail(
                         HomeRoute.Trending,
                         ImageVector.vectorResource(id = drawable.ic_news),
                         ImageVector.vectorResource(id = drawable.ic_news),
-                        string.action_feed
+                        label = stringResource(string.action_feed)
                     )
                 )
             }
@@ -106,7 +107,7 @@ fun HomeListDetail(
                     HomeRoute.Search,
                     ImageVector.vectorResource(id = drawable.ic_search),
                     ImageVector.vectorResource(id = drawable.ic_search),
-                    string.action_search
+                    label = stringResource(string.action_search)
                 )
             )
             add(
@@ -114,7 +115,7 @@ fun HomeListDetail(
                     HomeRoute.Widgets,
                     ImageVector.vectorResource(id = drawable.ic_widget),
                     ImageVector.vectorResource(id = drawable.ic_widget),
-                    string.action_widgets,
+                    label = stringResource(string.action_widgets),
                     enabled = hasWidget.value
                 )
             )
@@ -123,7 +124,7 @@ fun HomeListDetail(
                     HomeRoute.Settings,
                     ImageVector.vectorResource(id = drawable.ic_settings),
                     ImageVector.vectorResource(id = drawable.ic_settings),
-                    string.action_settings
+                    label = stringResource(string.action_settings)
                 )
             )
         }

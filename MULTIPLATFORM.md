@@ -751,6 +751,23 @@ seven short chip labels came from Android `R.string` resources and are now plain
 range.value = it }`, resolving the composable from `:shared` via the unchanged same-package reference (the
 chips' existing inverted `selected = selectedRange != range` styling is preserved).
 
+The next shared pieces are the home top-level navigation bars — `BottomNavigationBar` and `HomeNavigationRail`
+(`ticker.navigation`) — plus their `HomeBottomNavDestination` model and the `LayoutType` (`HEADER`/`CONTENT`)
+enum the rail's custom `Layout` keys off. The bars are built entirely from the multiplatform `material3`
+(`NavigationBar`/`NavigationBarItem`/`NavigationRail`/`NavigationRailItem`) + `compose.ui` layout APIs
+(`Layout`/`Measurable`/`layoutId`/`Constraints.offset`) over the already-shared `HomeRoute` and
+`NavigationContentPosition`, so they followed the established seam pattern: `HomeBottomNavDestination` carried an
+Android `@StringRes` `iconTextId: Int`, which is now a plain `label: String` (its `ImageVector` icons are already
+multiplatform — only the `R.string`/`R.drawable` lookups stayed Android). The bars, the destination model and the
+`LayoutType` enum moved into `:shared` `commonMain` (new `HomeBottomNavigation.kt`, same
+`com.github.premnirmal.ticker.navigation` package; `LayoutType` left its Android-coupled sibling
+`calculateContentAndNavigationType` behind in `:app`'s `NavigationHelpers.kt`), and the Android-only `@Preview`s
+that exercised them stay in `:app`'s `HomeNavigation.kt`. The real construction site (`HomeListDetail`) and those
+previews keep resolving the icons/labels via `vectorResource`/`stringResource` and now pass `label =
+stringResource(R.string.…)`, resolving the bars + model from `:shared` via the unchanged same-package references.
+This leaves only the `androidx.navigation`-coupled graph (`HomeNavHost`/`HomeNavigationActions`) in `:app`'s
+`HomeNavigation.kt`, narrowing the remaining navigation migration to the `NavHost` itself.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
