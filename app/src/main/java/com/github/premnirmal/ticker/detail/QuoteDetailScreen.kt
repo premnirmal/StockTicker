@@ -37,7 +37,6 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -456,46 +455,17 @@ private fun GraphItem(
                 )
             }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            FilterChip(onClick = {
-                viewModel.range.value = Range.ONE_DAY
-            }, selected = range != Range.ONE_DAY, label = {
-                Text(text = stringResource(id = R.string.one_day_short))
-            })
-            FilterChip(onClick = {
-                viewModel.range.value = Range.TWO_WEEKS
-            }, selected = range != Range.TWO_WEEKS, label = {
-                Text(text = stringResource(id = R.string.two_weeks_short))
-            })
-            FilterChip(onClick = {
-                viewModel.range.value = Range.ONE_MONTH
-            }, selected = range != Range.ONE_MONTH, label = {
-                Text(text = stringResource(id = R.string.one_month_short))
-            })
-            FilterChip(onClick = {
-                viewModel.range.value = Range.THREE_MONTH
-            }, selected = range != Range.THREE_MONTH, label = {
-                Text(text = stringResource(id = R.string.three_month_short))
-            })
-            FilterChip(onClick = {
-                viewModel.range.value = Range.ONE_YEAR
-            }, selected = range != Range.ONE_YEAR, label = {
-                Text(text = stringResource(id = R.string.one_year_short))
-            })
-            FilterChip(onClick = {
-                viewModel.range.value = Range.FIVE_YEARS
-            }, selected = range != Range.FIVE_YEARS, label = {
-                Text(text = stringResource(id = R.string.five_years_short))
-            })
-            FilterChip(onClick = {
-                viewModel.range.value = Range.MAX
-            }, selected = range != Range.MAX, label = {
-                Text(text = stringResource(id = R.string.max))
-            })
-        }
+        RangeSelector(
+            selectedRange = range,
+            oneDayLabel = stringResource(id = R.string.one_day_short),
+            twoWeeksLabel = stringResource(id = R.string.two_weeks_short),
+            oneMonthLabel = stringResource(id = R.string.one_month_short),
+            threeMonthLabel = stringResource(id = R.string.three_month_short),
+            oneYearLabel = stringResource(id = R.string.one_year_short),
+            fiveYearsLabel = stringResource(id = R.string.five_years_short),
+            maxLabel = stringResource(id = R.string.max),
+            onRangeSelected = { viewModel.range.value = it }
+        )
     }
 }
 

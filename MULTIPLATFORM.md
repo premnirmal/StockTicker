@@ -739,6 +739,18 @@ was dropped in favour of the default `PopupProperties()` — this preserves the 
 letting the popup (and therefore the whole shared Compose UI) compile for iOS. The shared module now compiles
 cleanly for both `androidTarget` (`:app:compileDevDebugKotlin`) and `iosSimulatorArm64`.
 
+The next shared leaf composable is `RangeSelector` (`ticker.detail`) — the quote-detail chart time-range
+selector: a `Row` of `material3` `FilterChip`s, one per shared `Range` option (`ONE_DAY`/`TWO_WEEKS`/
+`ONE_MONTH`/`THREE_MONTH`/`ONE_YEAR`/`FIVE_YEARS`/`MAX`). It depends only on the multiplatform `material3`/
+`foundation` APIs plus the already-shared `Range` model, so it followed the established seam pattern: the
+seven short chip labels came from Android `R.string` resources and are now plain `String` parameters
+(`oneDayLabel`/`twoWeeksLabel`/…/`maxLabel`), and the selection change is hoisted into an
+`onRangeSelected: (Range) -> Unit`. The composable moved into `:shared` `commonMain` (new
+`RangeSelector.kt`, same `com.github.premnirmal.ticker.detail` package). Its sole call site (`GraphItem` in
+`:app`'s `QuoteDetailScreen`) keeps the `stringResource` lookups and wires `onRangeSelected = { viewModel.
+range.value = it }`, resolving the composable from `:shared` via the unchanged same-package reference (the
+chips' existing inverted `selected = selectedRange != range` styling is preserved).
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph + `rememberScrollToTopAction`), and adopting a multiplatform `koinViewModel` so the
