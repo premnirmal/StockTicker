@@ -442,6 +442,18 @@ class and the `toColorScheme()` extension were widened from `internal` to public
 imports resolve them from `:shared`. The concrete colour values (`BaseAppColours`) and the
 `ThemePref` builders stay in `:UI` for now.
 
+The next `:UI` theme primitive shared is `Colours` (`com.github.premnirmal.tickerwidget.ui.theme`) — the
+raw colour palettes: `BaseAppColours` (the light/dark Material role hex values), `ColourPaletteLight`/
+`ColourPaletteDark` (the app-specific positive/negative/etc. colours) and the public `ColourPalette`
+accessor that picks light/dark via `isSystemInDarkTheme()`. It depends only on the multiplatform
+`foundation`/`ui.graphics`/`runtime` APIs (`Color`/`isSystemInDarkTheme`/`@Composable`) with no Android
+coupling, so it moved into `:shared` `commonMain` (same `com.github.premnirmal.tickerwidget.ui.theme`
+package). `ColourPalette` was already public and is consumed from `:app` (e.g. `QuoteCard`/`NewsCard`),
+which resolves it from `:shared` via the unchanged import. `BaseAppColours`/`ColourPaletteLight`/
+`ColourPaletteDark` were `internal` to `:UI` but are consumed across the module boundary by the
+`ThemePref` builders (still in `:UI`), so they were widened from `internal` to public. Only `ThemePref`
+and `AppTheme` (Android dynamic-colour coupling) remain in `:UI`'s `theme` package.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 

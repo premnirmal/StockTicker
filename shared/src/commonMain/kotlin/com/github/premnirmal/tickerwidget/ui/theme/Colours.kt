@@ -4,7 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-internal object BaseAppColours {
+object BaseAppColours {
   val light_primary = Color(0xFF006E08)
   val light_onPrimary = Color(0xFFFFFFFF)
   val light_primaryContainer = Color(0xFF79FF6A)
@@ -71,7 +71,7 @@ internal object BaseAppColours {
   val translucent = Color(0x98000000)
 }
 
-internal object ColourPaletteLight {
+object ColourPaletteLight {
   val disabled_grey = Color(0xffbdbdbd)
   val unselected_grey = Color(0x98545454)
   val accent_fallback = Color(0xFFbe6663)
@@ -88,7 +88,7 @@ internal object ColourPaletteLight {
   val text_2 = Color(0xFF6e6e6e)
 }
 
-internal object ColourPaletteDark {
+object ColourPaletteDark {
   val disabled_grey = Color(0x50aaaaaa)
   val unselected_grey = Color(0xFFaaaaaa)
   val accent_fallback = Color(0xFFbe6663)
