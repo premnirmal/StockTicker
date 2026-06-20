@@ -3,7 +3,7 @@ package com.github.premnirmal.tickerwidget.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 
-internal data class ThemePref(val colours: AppColours) {
+data class ThemePref(val colours: AppColours) {
   companion object {
     val Light: ThemePref
       @Composable
@@ -14,7 +14,7 @@ internal data class ThemePref(val colours: AppColours) {
   }
 }
 
-internal val LightThemeColours: AppColours
+val LightThemeColours: AppColours
   @Composable
   get() = AppColours(
       primary = BaseAppColours.light_primary,
@@ -48,7 +48,7 @@ internal val LightThemeColours: AppColours
       surfaceTint = MaterialTheme.colorScheme.surfaceTint,
   )
 
-internal val DarkThemeColours: AppColours
+val DarkThemeColours: AppColours
   @Composable
   get() = AppColours(
       primary = BaseAppColours.dark_primary,
@@ -81,4 +81,3 @@ internal val DarkThemeColours: AppColours
       outlineVariant = MaterialTheme.colorScheme.outlineVariant,
       surfaceTint = MaterialTheme.colorScheme.surfaceTint,
   )
-

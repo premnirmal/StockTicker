@@ -454,6 +454,18 @@ which resolves it from `:shared` via the unchanged import. `BaseAppColours`/`Col
 `ThemePref` builders (still in `:UI`), so they were widened from `internal` to public. Only `ThemePref`
 and `AppTheme` (Android dynamic-colour coupling) remain in `:UI`'s `theme` package.
 
+The next `:UI` theme primitive shared is `ThemePref` (`com.github.premnirmal.tickerwidget.ui.theme`) — the
+`ThemePref` data class wrapping an `AppColours`, plus the `LightThemeColours`/`DarkThemeColours` builders
+that map the now-shared `BaseAppColours` palette into an `AppColours`. It depends only on the multiplatform
+`material3`/`runtime` APIs (`MaterialTheme`/`@Composable`) plus the already-shared `AppColours`/`BaseAppColours`,
+with no Android coupling, so it moved into `:shared` `commonMain` (same
+`com.github.premnirmal.tickerwidget.ui.theme` package). Because it was `internal` to `:UI` but is consumed
+across the module boundary by `AppTheme` (still in `:UI`, which depends on `:shared`), `ThemePref` and the
+`LightThemeColours`/`DarkThemeColours` builders were widened from `internal` to public so the unchanged
+package import resolves them from `:shared`. Only `AppTheme` (Android dynamic-colour coupling via
+`Build.VERSION`/`dynamic*ColorScheme`/`LocalContext`) and `AppTypography` (Android `R.font` resources)
+remain in `:UI`'s `theme` package.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
