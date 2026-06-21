@@ -100,7 +100,10 @@ capability (`group.com.github.premnirmal.ticker`) is applied to both targets fro
 
 ### Continuous integration
 
-`.github/workflows/ios.yml` runs this on a pinned `macos-14` runner on every PR/`master` push: it
+`.github/workflows/ios.yml` runs this on a pinned `macos-14` runner on every PR/`master` push
+(and can be triggered manually from any branch via `workflow_dispatch` — the Actions tab or
+`gh workflow run ios.yml --ref <branch>` — so the macOS pipeline can be exercised before merging to
+`master`): it
 links the shared framework, runs the shared `commonTest` suite on the iOS simulator, then generates
 the project with XcodeGen and builds the app for the simulator (`CODE_SIGNING_ALLOWED=NO`, so no
 signing secrets are needed). Producing a signed `.ipa` for TestFlight/App Store is intentionally
