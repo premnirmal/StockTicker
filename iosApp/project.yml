@@ -1,0 +1,91 @@
+# XcodeGen spec for the StockTicker iOS app.
+#
+# The `.xcodeproj` is intentionally NOT committed — it is generated on demand
+# (locally or in CI) from this declarative spec, which avoids the fragile,
+# merge-conflict-prone `project.pbxproj`. Generate it with:
+#
+#   brew install xcodegen          # one-time
+#   cd iosApp && xcodegen generate # produces iosApp/StockTicker.xcodeproj
+#
+# The shared Kotlin/Native `Shared.framework` is built by Gradle via the
+# standard KMP `embedAndSignAppleFrameworkForXcode` run-script phase below, so
+# no framework binary needs to be committed either.
+name: StockTicker
+
+options:
+  bundleIdPrefix: com.github.premnirmal
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    # The shared framework is a static Kotlin/Native framework, so it only has
+    # to be on the linker search path — it is not embedded.
+    FRAMEWORK_SEARCH_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+    # Allow the Gradle run-script phase to write the framework into the build
+    # directory (script sandboxing would otherwise block it).
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.ticker
+        INFOPLIST_FILE: iosApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: iosApp/StockTicker.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
+    dependencies:
+      - target: StockTickerWidget
+    preBuildScripts:
+      - name: Compile Kotlin/Native framework
+        # Always run so the framework is rebuilt when the shared code changes.
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+
+  StockTickerWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: StockTickerWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.ticker.StockTickerWidget
+        INFOPLIST_FILE: StockTickerWidget/Info.plist
+        CODE_SIGN_ENTITLEMENTS: StockTickerWidget/StockTickerWidget.entitlements
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
+    preBuildScripts:
+      - name: Compile Kotlin/Native framework
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+
+schemes:
+  iosApp:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release

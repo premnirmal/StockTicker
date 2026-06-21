@@ -679,14 +679,22 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   on the simulator. The Android build/test/detekt jobs already run on ubuntu
   (`.github/workflows/build.yml`, `unit-tests.yml`, `detekt.yml`); `unit-tests.yml` now also runs
   the shared module's Android-target unit tests (`:shared:testDebugUnitTest`, which executes
-  `commonTest` against the JVM/Android target). A new `.github/workflows/ios.yml` runs on a
-  `macos-latest` runner: it compiles the shared common code (`:shared:compileKotlinMetadata`),
-  links the iOS `Shared` framework for both the simulator and device targets
-  (`:shared:linkDebugFrameworkIosSimulatorArm64` / `linkDebugFrameworkIosArm64`), and runs the
-  shared `commonTest` suite on the iOS simulator (`:shared:iosSimulatorArm64Test`), uploading the
-  results as an artifact. (The `iosApp` Xcode project is intentionally not committed — see
-  `iosApp/README.md` — so the app itself is not built with `xcodebuild` in CI; CI builds the
-  Kotlin/Native framework it consumes.)
+  `commonTest` against the JVM/Android target). A new `.github/workflows/ios.yml` runs on a pinned
+  `macos-14` runner (with the Xcode version pinned via `maxim-lobanov/setup-xcode`): it compiles the
+  shared common code (`:shared:compileKotlinMetadata`), links the iOS `Shared` framework for both the
+  simulator and device targets (`:shared:linkDebugFrameworkIosSimulatorArm64` /
+  `linkDebugFrameworkIosArm64`), runs the shared `commonTest` suite on the iOS simulator
+  (`:shared:iosSimulatorArm64Test`, uploading the results as an artifact), and then **builds the iOS
+  app itself**. The `iosApp` Xcode project is still not committed — instead it is generated
+  reproducibly from a declarative `iosApp/project.yml` ([XcodeGen](https://github.com/yonaskolb/XcodeGen))
+  spec: CI installs XcodeGen, runs `xcodegen generate`, and `xcodebuild build`s the `iosApp` scheme
+  for the iOS simulator with `CODE_SIGNING_ALLOWED=NO` (so no signing secrets are required). The
+  generated project wires a Gradle run-script phase
+  (`:shared:embedAndSignAppleFrameworkForXcode`) that builds the shared Kotlin/Native framework the
+  app + widget link against, and the previously-missing app `Info.plist` / `Assets.xcassets` are now
+  committed under `iosApp/iosApp/`. Producing a signed `.ipa` for TestFlight/App Store is
+  intentionally out of scope (it needs code-signing secrets + an `xcodebuild archive`/`-exportArchive`
+  or fastlane step); see `iosApp/README.md`.
 
 ## Building
 

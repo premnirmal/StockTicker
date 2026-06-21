@@ -40,6 +40,11 @@ top of the shared **iOS Phase 2 implementations** it already wires into a runnin
   Compose screens drive the whole UI.
 - `StockTicker.entitlements` — enables the `group.com.github.premnirmal.ticker` App Group so the app
   can hand the portfolio snapshot to the widget extension.
+- `Info.plist` — the app's property list (bundle metadata, `BGTaskSchedulerPermittedIdentifiers` /
+  `UIBackgroundModes` for background refresh, launch screen). Referenced by `project.yml`.
+- `Assets.xcassets` — the app's asset catalog (`AppIcon` / `AccentColor` placeholders).
+- `../project.yml` — the [XcodeGen](https://github.com/yonaskolb/XcodeGen) spec the `.xcodeproj` is
+  generated from (see *Generating the Xcode project* below).
 
 ### Widget extension — `StockTickerWidget/`
 
@@ -60,23 +65,47 @@ A native WidgetKit home-screen widget (the iOS counterpart of the Android Glance
 
 ## Generating the Xcode project
 
-The Xcode project is intentionally **not committed** — iOS builds require macOS/Xcode and cannot run
-in the (Linux) CI that builds the Android app and compiles the shared Kotlin/Native framework. On a
-Mac:
+The Xcode project is intentionally **not committed** — it is generated on demand from the
+declarative [`iosApp/project.yml`](project.yml) spec with [XcodeGen](https://github.com/yonaskolb/XcodeGen),
+which avoids the fragile, merge-conflict-prone `project.pbxproj`. The spec already describes both
+targets (the `iosApp` application and the `StockTickerWidget` widget extension), their `Info.plist`
+files, the App Group entitlements, the iOS 17 deployment target, and a Gradle run-script phase that
+builds the shared `Shared.framework` the targets link against.
 
-1. Build the shared framework:
+On a Mac:
+
+1. Install XcodeGen (one-time):
    ```sh
-   ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+   brew install xcodegen
    ```
-   (or add the `:shared` framework via SPM/CocoaPods — see `shared/build.gradle.kts`).
-2. Create an iOS App target in Xcode, add the Swift files in `iosApp/iosApp/` to it, and link the
-   `Shared.framework` produced above.
-3. Add a **Widget Extension** target, add the Swift files in `iosApp/StockTickerWidget/` to it, and
-   link the same `Shared.framework`.
-4. Enable the **App Groups** capability (`group.com.github.premnirmal.ticker`) on **both** targets —
-   the `*.entitlements` files in each folder already declare it — so the app and the widget share the
-   `WidgetSnapshotStore` `NSUserDefaults` suite.
-5. Configure `Info.plist` (see below) and run.
+2. Generate the project:
+   ```sh
+   cd iosApp
+   xcodegen generate        # produces iosApp/StockTicker.xcodeproj
+   ```
+3. Open `iosApp/StockTicker.xcodeproj` and run, or build from the command line:
+   ```sh
+   xcodebuild build \
+     -project iosApp/StockTicker.xcodeproj \
+     -scheme iosApp \
+     -destination 'platform=iOS Simulator,name=iPhone 15' \
+     CODE_SIGNING_ALLOWED=NO
+   ```
+
+You do **not** need to build the shared framework separately or wire it up by hand: the generated
+project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a build phase, which compiles
+and links the Kotlin/Native `Shared.framework` for the active configuration/SDK. The App Groups
+capability (`group.com.github.premnirmal.ticker`) is applied to both targets from the committed
+`*.entitlements` files, so the app and widget share the `WidgetSnapshotStore` `NSUserDefaults` suite.
+
+### Continuous integration
+
+`.github/workflows/ios.yml` runs this on a pinned `macos-14` runner on every PR/`master` push: it
+links the shared framework, runs the shared `commonTest` suite on the iOS simulator, then generates
+the project with XcodeGen and builds the app for the simulator (`CODE_SIGNING_ALLOWED=NO`, so no
+signing secrets are needed). Producing a signed `.ipa` for TestFlight/App Store is intentionally
+out of scope for this gate — that requires code-signing certificates/profiles supplied as encrypted
+secrets (or fastlane match) and an `xcodebuild archive`/`-exportArchive` (or `fastlane`) step.
 
 ### Firebase (optional, prod only)
 
@@ -87,7 +116,9 @@ to `NSLog`, mirroring the Android FOSS/dev flavours.
 
 ## Required `Info.plist` entries
 
-Background refresh uses `BGTaskScheduler`, which requires the task identifiers to be declared:
+These are already declared in the committed [`iosApp/iosApp/Info.plist`](iosApp/Info.plist) that the
+generated project uses. Background refresh uses `BGTaskScheduler`, which requires the task
+identifiers to be declared:
 
 ```xml
 <key>BGTaskSchedulerPermittedIdentifiers</key>
