@@ -21,7 +21,14 @@ import com.github.premnirmal.ticker.navigation.HomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.HomeScaffold
 import com.github.premnirmal.ticker.navigation.RootNavigationGraph
+import com.github.premnirmal.ticker.model.IStocksProvider
 import org.jetbrains.compose.resources.painterResource
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+private object HomeKoin : KoinComponent {
+    val stocksProvider: IStocksProvider by inject()
+}
 
 /**
  * iOS entry screen hosting the full shared multiplatform [RootNavigationGraph].
@@ -38,6 +45,10 @@ fun HomeScreen() {
     val rootNavController = rememberNavController()
     val onboardingController = rememberOnboardingController()
     LaunchedEffect(Unit) {
+        // Mirror Android's HomeActivity, which calls stocksProvider.schedule() on first launch to
+        // enqueue the periodic background refresh + cleanup (the iOS BGTaskScheduler requests) and
+        // arm the next update.
+        HomeKoin.stocksProvider.schedule()
         onboardingController.showIfFirstRun()
     }
     RootNavigationGraph(

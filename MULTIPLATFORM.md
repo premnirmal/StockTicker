@@ -640,13 +640,25 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     `HomeScreen.kt` shows it once on first launch (`showIfFirstRun()`), the Settings "Tutorial" row
     re-opens it (`onTutorial` → `controller.show()`), and dismissing it persists the preference. The
     iOS pages are tailored to iOS (watchlist, search, quote detail, Home Screen WidgetKit widget).
-  - **In-app review / version-tap.** Android triggers the Play in-app review flow
-    (`androidApp/.../home/IAppReviewManager.kt`) and a functional version-tap handler
-    (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `SettingsScreen.kt` `onVersionTap`
-    is a no-op. Wire up `SKStoreReviewController` / the version-tap action on iOS.
-  - **Debug database viewer.** Android exposes a DB viewer from settings
-    (`androidApp/.../debug/DbViewerActivity.kt`); there is no iOS equivalent. Add one (or
-    explicitly drop it from the iOS scope).
+  - **In-app review / version-tap.** *(Version-tap done; in-app review pending.)* Android triggers
+    the Play in-app review flow (`androidApp/.../home/IAppReviewManager.kt`) and a functional
+    version-tap handler (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `onVersionTap` is
+    now wired (five quick taps open the debug DB viewer — see below). Still to do: wire up
+    `SKStoreReviewController` for the in-app review prompt.
+  - **Debug database viewer.** *(Done.)* Android exposes a DB viewer from settings
+    (`androidApp/.../debug/DbViewerActivity.kt`). The iOS app now has an equivalent:
+    `DbViewerScreen.kt` (`shared/src/iosMain/.../ui`) with an `IosDbViewerViewModel` that reads the
+    shared Room-backed `QuoteDao` and renders the quotes/holdings/properties tables plus recent fetch
+    logs as HTML in a native `WKWebView` (JavaScript disabled), hosted via Compose Multiplatform's
+    `UIKitView` interop. It is reached the same way as Android — tapping the Settings version label
+    five times (`onVersionTap` → `VersionTapCounter`) opens it. iOS has no Glance widgets or
+    `WorkManager`, so the widget/scheduled-work sections are omitted.
+  - **Background fetch scheduling.** *(Done.)* The iOS `BGTaskScheduler` bridge
+    (`StockTickerBackgroundScheduler.swift`) and the shared `BackgroundRefreshScheduler` update-window
+    math already existed, but nothing enqueued the periodic refresh/cleanup on launch. The iOS
+    `HomeScreen.kt` now calls `stocksProvider.schedule()` once on first composition (mirroring
+    Android's `HomeActivity.onCreate`), which arms the next update and submits the recurring
+    `BGAppRefreshTaskRequest`/`BGProcessingTaskRequest` work.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

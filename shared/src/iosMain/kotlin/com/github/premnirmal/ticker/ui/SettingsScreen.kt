@@ -4,7 +4,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
@@ -12,10 +14,40 @@ import com.github.premnirmal.ticker.settings.SettingsData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import platform.Foundation.NSBundle
+import platform.Foundation.NSDate
 import platform.Foundation.NSURL
+import platform.Foundation.timeIntervalSince1970
 import platform.UIKit.UIApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+
+/**
+ * Counts rapid taps on the Settings version label and reports when the Android-style "discover the
+ * DB" gesture (five quick taps) has completed, so iOS can open the debug [DbViewerScreen]. Taps more
+ * than [DOUBLE_TAP_TIMEOUT_MS] apart reset the counter, mirroring Android's double-tap-timeout logic.
+ */
+private class VersionTapCounter {
+    private var taps = 0
+    private var lastTapMs = 0.0
+
+    fun onTap(): Boolean {
+        val nowMs = NSDate().timeIntervalSince1970 * 1000.0
+        taps = if (nowMs - lastTapMs < DOUBLE_TAP_TIMEOUT_MS) taps + 1 else 1
+        lastTapMs = nowMs
+        return if (taps >= REQUIRED_TAPS) {
+            taps = 0
+            lastTapMs = 0.0
+            true
+        } else {
+            false
+        }
+    }
+
+    private companion object {
+        const val DOUBLE_TAP_TIMEOUT_MS = 300.0
+        const val REQUIRED_TAPS = 5
+    }
+}
 
 private object SettingsKoin : KoinComponent {
     val userPreferences: UserPreferences by inject()
@@ -117,6 +149,14 @@ fun SettingsScreen(
     onWhatsNew: () -> Unit = {},
     onTutorial: () -> Unit = {},
 ) {
+    var showDbViewer by remember { mutableStateOf(false) }
+    val versionTapCounter = remember { VersionTapCounter() }
+
+    if (showDbViewer) {
+        DbViewerScreen(onBack = { showDbViewer = false })
+        return
+    }
+
     val viewModel = remember {
         IosSettingsViewModel(
             prefs = SettingsKoin.userPreferences,
@@ -178,7 +218,7 @@ fun SettingsScreen(
         onFeatureRequest = { openUrl(FEATURE_REQUEST_URL) },
         onPrivacyPolicy = { openUrl(PRIVACY_POLICY_URL) },
         onOpenSource = { openUrl(OPEN_SOURCE_URL) },
-        onVersionTap = { },
+        onVersionTap = { if (versionTapCounter.onTap()) showDbViewer = true },
         divider = { HorizontalDivider() },
     )
 }
