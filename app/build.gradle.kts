@@ -200,6 +200,7 @@ dependencies {
 
   implementation(project(":UI"))
   implementation(project(":shared"))
+  implementation(project(":ui-shared"))
 
   implementation(libs.javax.inject)
   implementation(libs.javax.annotation.api)

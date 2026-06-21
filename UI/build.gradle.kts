@@ -73,6 +73,7 @@ dependencies {
   implementation(kotlin("stdlib"))
 
   implementation(project(":shared"))
+  implementation(project(":ui-shared"))
 
   implementation(AndroidX.core.ktx)
   implementation(AndroidX.appCompat)

@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/layout-watch-v20/abc_alert_dialog_title_material.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/layout-watch-v20/abc_alert_dialog_title_material.xml"
+    },
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/layout-watch-v20/abc_alert_dialog_button_bar_material.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/layout-watch-v20/abc_alert_dialog_button_bar_material.xml"
+    }
+]

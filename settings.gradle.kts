@@ -13,3 +13,4 @@ plugins {
 include(":app")
 include(":UI")
 include(":shared")
+include(":ui-shared")

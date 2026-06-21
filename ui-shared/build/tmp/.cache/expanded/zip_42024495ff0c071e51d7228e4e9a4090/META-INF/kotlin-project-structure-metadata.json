@@ -1,0 +1,316 @@
+{
+  "projectStructure": {
+    "formatVersion": "0.3.3",
+    "isPublishedAsRoot": "true",
+    "variants": [
+      {
+        "name": "androidApiElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "androidRuntimeElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "desktopApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nonAndroidMain"
+        ]
+      },
+      {
+        "name": "desktopRuntimeElements",
+        "sourceSet": [
+          "commonMain",
+          "nonAndroidMain"
+        ]
+      },
+      {
+        "name": "iosArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "iosSimulatorArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "iosX64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "jsApiElements",
+        "sourceSet": [
+          "webMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "jsRuntimeElements",
+        "sourceSet": [
+          "webMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "linuxArm64ApiElements",
+        "sourceSet": [
+          "linuxMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "linuxX64ApiElements",
+        "sourceSet": [
+          "linuxMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "macosArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "macosX64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "mingwX64ApiElements",
+        "sourceSet": [
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "tvosArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "tvosSimulatorArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "tvosX64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "wasmJsApiElements",
+        "sourceSet": [
+          "webMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "wasmJsRuntimeElements",
+        "sourceSet": [
+          "webMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "watchosArm32ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "watchosArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "watchosDeviceArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "watchosSimulatorArm64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "watchosX64ApiElements",
+        "sourceSet": [
+          "darwinMain",
+          "unixMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain"
+        ]
+      }
+    ],
+    "sourceSets": [
+      {
+        "name": "commonMain",
+        "dependsOn": [],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "darwinMain",
+        "dependsOn": [
+          "unixMain"
+        ],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "darwinMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "linuxMain",
+        "dependsOn": [
+          "unixMain"
+        ],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "linuxMain-cinterop",
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nativeMain",
+        "dependsOn": [
+          "nonAndroidMain"
+        ],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "nativeMain-cinterop",
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nonAndroidMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "unixMain",
+        "dependsOn": [
+          "nativeMain"
+        ],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "unixMain-cinterop",
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "webMain",
+        "dependsOn": [
+          "nonAndroidMain"
+        ],
+        "moduleDependency": [
+          "androidx.annotation:annotation",
+          "androidx.compose.runtime:runtime-annotation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core"
+        ],
+        "binaryLayout": "klib"
+      }
+    ]
+  }
+}

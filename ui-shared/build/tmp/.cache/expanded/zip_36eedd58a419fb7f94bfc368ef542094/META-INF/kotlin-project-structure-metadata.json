@@ -1,0 +1,319 @@
+{
+  "projectStructure": {
+    "formatVersion": "0.3.3",
+    "isPublishedAsRoot": "true",
+    "variants": [
+      {
+        "name": "androidApiElements",
+        "sourceSet": [
+          "jvmCommonMain",
+          "nonJsCommonMain",
+          "nonNativeMain",
+          "nonAppleMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "androidRuntimeElements",
+        "sourceSet": [
+          "jvmCommonMain",
+          "nonJsCommonMain",
+          "nonNativeMain",
+          "nonAppleMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "iosArm64ApiElements",
+        "sourceSet": [
+          "iosMain",
+          "appleMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJsCommonMain",
+          "nonJvmCommonMain"
+        ]
+      },
+      {
+        "name": "iosSimulatorArm64ApiElements",
+        "sourceSet": [
+          "iosMain",
+          "appleMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJsCommonMain",
+          "nonJvmCommonMain"
+        ]
+      },
+      {
+        "name": "iosX64ApiElements",
+        "sourceSet": [
+          "iosMain",
+          "appleMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJsCommonMain",
+          "nonJvmCommonMain"
+        ]
+      },
+      {
+        "name": "jsApiElements",
+        "sourceSet": [
+          "jsCommonMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJvmCommonMain",
+          "nonNativeMain",
+          "nonAppleMain"
+        ]
+      },
+      {
+        "name": "jsRuntimeElements",
+        "sourceSet": [
+          "jsCommonMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJvmCommonMain",
+          "nonNativeMain",
+          "nonAppleMain"
+        ]
+      },
+      {
+        "name": "jvmApiElements",
+        "sourceSet": [
+          "nonAndroidMain",
+          "jvmCommonMain",
+          "nonJsCommonMain",
+          "nonNativeMain",
+          "nonAppleMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "jvmRuntimeElements",
+        "sourceSet": [
+          "nonAndroidMain",
+          "jvmCommonMain",
+          "nonJsCommonMain",
+          "nonNativeMain",
+          "nonAppleMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "macosArm64ApiElements",
+        "sourceSet": [
+          "macosMain",
+          "appleMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJsCommonMain",
+          "nonJvmCommonMain"
+        ]
+      },
+      {
+        "name": "macosX64ApiElements",
+        "sourceSet": [
+          "macosMain",
+          "appleMain",
+          "nativeMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJsCommonMain",
+          "nonJvmCommonMain"
+        ]
+      },
+      {
+        "name": "wasmJsApiElements",
+        "sourceSet": [
+          "jsCommonMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJvmCommonMain",
+          "nonNativeMain",
+          "nonAppleMain"
+        ]
+      },
+      {
+        "name": "wasmJsRuntimeElements",
+        "sourceSet": [
+          "jsCommonMain",
+          "nonAndroidMain",
+          "commonMain",
+          "nonJvmCommonMain",
+          "nonNativeMain",
+          "nonAppleMain"
+        ]
+      }
+    ],
+    "sourceSets": [
+      {
+        "name": "appleMain",
+        "dependsOn": [
+          "nativeMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "sourceSetCInteropMetadataDirectory": "appleMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "commonMain",
+        "dependsOn": [],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "iosMain",
+        "dependsOn": [
+          "appleMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "sourceSetCInteropMetadataDirectory": "iosMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "jsCommonMain",
+        "dependsOn": [
+          "nonAndroidMain",
+          "nonJvmCommonMain",
+          "nonNativeMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "jvmCommonMain",
+        "dependsOn": [
+          "nonJsCommonMain",
+          "nonNativeMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "macosMain",
+        "dependsOn": [
+          "appleMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "sourceSetCInteropMetadataDirectory": "macosMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "nativeMain",
+        "dependsOn": [
+          "nonAndroidMain",
+          "nonJsCommonMain",
+          "nonJvmCommonMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "sourceSetCInteropMetadataDirectory": "nativeMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "nonAndroidMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nonAppleMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nonJsCommonMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nonJvmCommonMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nonNativeMain",
+        "dependsOn": [
+          "nonAppleMain"
+        ],
+        "moduleDependency": [
+          "io.coil-kt.coil3:coil-core",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:atomicfu"
+        ],
+        "binaryLayout": "klib"
+      }
+    ]
+  }
+}

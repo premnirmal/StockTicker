@@ -1,0 +1,34 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/933cf5e1013bc6027ad25e42a6911bca/transformed/appcompat-1.7.1/res/values-port/values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        },
+        {
+            "outputFile": "com.github.premnirmal.tickerwidget.uishared.ui-shared-mergeReleaseResources-46:/values-port/values-port.xml",
+            "map": [
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/933cf5e1013bc6027ad25e42a6911bca/transformed/appcompat-1.7.1/res/values-port/values-port.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "55",
+                        "endOffsets": "106"
+                    }
+                }
+            ]
+        }
+    ]
+}

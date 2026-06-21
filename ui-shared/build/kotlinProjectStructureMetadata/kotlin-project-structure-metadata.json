@@ -1,0 +1,145 @@
+{
+  "projectStructure": {
+    "formatVersion": "0.3.3",
+    "isPublishedAsRoot": "true",
+    "variants": [
+      {
+        "name": "debugApiElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "debugRuntimeElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "releaseApiElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "releaseRuntimeElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "iosArm64ApiElements",
+        "sourceSet": [
+          "iosMain",
+          "appleMain",
+          "nativeMain",
+          "commonMain"
+        ]
+      },
+      {
+        "name": "iosSimulatorArm64ApiElements",
+        "sourceSet": [
+          "iosMain",
+          "appleMain",
+          "nativeMain",
+          "commonMain"
+        ]
+      }
+    ],
+    "sourceSets": [
+      {
+        "name": "appleMain",
+        "dependsOn": [
+          "nativeMain"
+        ],
+        "moduleDependency": [
+          "StockTicker:shared",
+          "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose",
+          "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose",
+          "io.insert-koin:koin-compose-viewmodel",
+          "io.coil-kt.coil3:coil-compose",
+          "io.coil-kt.coil3:coil-network-ktor3",
+          "com.patrykandpatrick.vico:multiplatform",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+          "org.jetbrains.compose.runtime:runtime",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.compose.material3:material3",
+          "org.jetbrains.compose.ui:ui",
+          "io.insert-koin:koin-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "appleMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "commonMain",
+        "dependsOn": [],
+        "moduleDependency": [
+          "StockTicker:shared",
+          "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose",
+          "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose",
+          "io.insert-koin:koin-compose-viewmodel",
+          "io.coil-kt.coil3:coil-compose",
+          "io.coil-kt.coil3:coil-network-ktor3",
+          "com.patrykandpatrick.vico:multiplatform",
+          "org.jetbrains.kotlin:kotlin-stdlib",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+          "org.jetbrains.compose.runtime:runtime",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.compose.material3:material3",
+          "org.jetbrains.compose.ui:ui",
+          "io.insert-koin:koin-core"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "iosMain",
+        "dependsOn": [
+          "appleMain"
+        ],
+        "moduleDependency": [
+          "StockTicker:shared",
+          "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose",
+          "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose",
+          "io.insert-koin:koin-compose-viewmodel",
+          "io.coil-kt.coil3:coil-compose",
+          "io.coil-kt.coil3:coil-network-ktor3",
+          "com.patrykandpatrick.vico:multiplatform",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+          "org.jetbrains.compose.runtime:runtime",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.compose.material3:material3",
+          "org.jetbrains.compose.ui:ui",
+          "io.insert-koin:koin-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "iosMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      },
+      {
+        "name": "nativeMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "StockTicker:shared",
+          "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose",
+          "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose",
+          "io.insert-koin:koin-compose-viewmodel",
+          "io.coil-kt.coil3:coil-compose",
+          "io.coil-kt.coil3:coil-network-ktor3",
+          "com.patrykandpatrick.vico:multiplatform",
+          "org.jetbrains.kotlinx:kotlinx-coroutines-core",
+          "org.jetbrains.compose.runtime:runtime",
+          "org.jetbrains.compose.foundation:foundation",
+          "org.jetbrains.compose.material3:material3",
+          "org.jetbrains.compose.ui:ui",
+          "io.insert-koin:koin-core"
+        ],
+        "sourceSetCInteropMetadataDirectory": "nativeMain-cinterop",
+        "binaryLayout": "klib",
+        "hostSpecific": "true"
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/drawable-v21/abc_edit_text_material.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/drawable-v21/abc_edit_text_material.xml"
+    },
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/drawable-v21/abc_list_divider_material.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/drawable-v21/abc_list_divider_material.xml"
+    },
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/drawable-v21/abc_btn_colored_material.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/drawable-v21/abc_btn_colored_material.xml"
+    },
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/drawable-v21/abc_action_bar_item_background_material.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/drawable-v21/abc_action_bar_item_background_material.xml"
+    },
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/drawable-v21/abc_dialog_material_background.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-appcompat-1.7.1-25:/drawable-v21/abc_dialog_material_background.xml"
+    },
+    {
+        "merged": "com.github.premnirmal.tickerwidget.uishared.ui-shared-release-48:/drawable-v21/notification_action_background.xml",
+        "source": "com.github.premnirmal.tickerwidget.uishared.ui-shared-core-1.16.0-1:/drawable-v21/notification_action_background.xml"
+    }
+]

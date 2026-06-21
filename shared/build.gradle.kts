@@ -9,8 +9,6 @@ plugins {
   alias(libs.plugins.kotlinx.serialization)
   alias(libs.plugins.com.google.devtools.ksp)
   alias(libs.plugins.androidx.room)
-  alias(libs.plugins.compose.multiplatform)
-  alias(libs.plugins.compose.compiler)
   id("kotlin-parcelize")
 }
 
@@ -104,16 +102,6 @@ kotlin {
       // Phase 3: shared ViewModels live in commonMain. AndroidX Lifecycle's ViewModel/viewModelScope
       // are multiplatform (2.8+), so the same ViewModel runs on Android and iOS.
       api("androidx.lifecycle:lifecycle-viewmodel:_")
-      // Phase 4: the multiplatform `viewModel()` composable used by shared navigation helpers
-      // (e.g. rememberScrollToTopAction) so they can resolve a ViewModel from commonMain. This is
-      // JetBrains' Compose Multiplatform lifecycle artifact (the Google `androidx.lifecycle`
-      // `-compose` artifact is JVM/Android-only); version tracks the lifecycle the graph resolves to.
-      api("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
-      // Phase 4: the multiplatform `collectAsStateWithLifecycle()` and Koin's multiplatform
-      // `koinViewModel()` composable, so whole screen composables can move into commonMain and still
-      // observe lifecycle-aware state / resolve their shared ViewModels from the Koin graph on iOS.
-      api("org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.9.4")
-      api(libs.koin.compose.viewmodel)
       implementation("io.ktor:ktor-client-core:_")
       implementation("io.ktor:ktor-client-content-negotiation:_")
       implementation("io.ktor:ktor-serialization-kotlinx-json:_")
@@ -123,20 +111,6 @@ kotlin {
       implementation(libs.koin.core)
       implementation("androidx.datastore:datastore-preferences-core:_")
       implementation("com.squareup.okio:okio:3.9.1")
-      // Phase 4: shared UI via Compose Multiplatform. Self-contained, platform-neutral composables
-      // move into commonMain so the future shared Compose UI (and the iOS app) can reuse them.
-      implementation(compose.runtime)
-      implementation(compose.foundation)
-      implementation(compose.material3)
-      implementation(compose.ui)
-      // Phase 4: Coil 3 multiplatform image loading (NewsCard). coil-network-ktor3 reuses the
-      // existing Ktor client stack for fetching remote images on every platform. Exposed as `api`
-      // so :app can configure the SingletonImageLoader's network fetcher.
-      api(libs.coil.compose)
-      api(libs.coil.network.ktor3)
-      // Phase 4: Vico multiplatform charting replaces MPAndroidChart so the price chart
-      // (PriceChartView) is a pure Compose Multiplatform composable that renders on Android and iOS.
-      api(libs.vico.multiplatform)
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
