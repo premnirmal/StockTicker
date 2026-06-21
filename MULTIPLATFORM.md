@@ -939,9 +939,28 @@ thin `AlertsActivity` host keeps `NumberFormat`/`setResult`/`finish()` and the `
 snackbar host in `:app`. Verified with `:app:compileDevDebugKotlin` and
 `:ui-shared:compileKotlinIosSimulatorArm64` both green.
 
-The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
-`androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
-`WatchlistScreen` graph), and moving the remaining screen composables
+The first architectural slice of the navigation migration is done: the app has adopted **Compose
+Multiplatform navigation**. `:ui-shared` `commonMain` now `api`s
+`org.jetbrains.androidx.navigation:navigation-compose` (the JetBrains multiplatform port of
+`androidx.navigation:navigation-compose`, published under the **same `androidx.navigation` package**),
+and the Android-only Google `navigation-compose` (`AndroidX.navigation.compose`) was dropped from `:app`
+to avoid duplicate `androidx.navigation` classes on the classpath. Because the packages are identical,
+the existing `:app` NavHosts (`RootGraph`/`HomeActivity`) keep their unchanged `androidx.navigation.*`
+imports and now resolve from the multiplatform artifact (its iOS klibs resolve via the `ios_simulator_arm64`/
+`ios_arm64` konan-target attributes, like the already-adopted JetBrains `lifecycle` artifacts). On top of
+that, the home bottom-navigation graph `HomeNavHost` plus its `HomeNavigationActions` moved into
+`:ui-shared` `commonMain` (`ticker.navigation`): the graph wiring (the shared `HomeRoute` routes + the
+`Watchlist` start destination) is shared, while each route's Android-resource-coupled screen content
+(`stringResource`/`painterResource`, `CustomTabs`, the root-graph `QUOTE_DETAIL` navigation) is hoisted to
+a `@Composable` slot per route. A thin `:app` `AppHomeNavHost` wrapper supplies those slots (resolving the
+`HomeViewModel`/resources/`CustomTabs`) and `HomeListDetail` calls it in place of the old `HomeNavHost`;
+the Android-only navigation-bar `@Preview`s stay in `:app`. Verified with `:app:compileDevDebugKotlin`,
+`:ui-shared:compileDebugKotlinAndroid` and `:ui-shared:compileKotlinIosSimulatorArm64` all green.
+
+The remaining Phase 4 work is larger and architectural rather than further leaf moves: completing the
+navigation migration (the `RootGraph`/`WatchlistScreen` graph and the `HomeListDetail` shell still build
+their destinations from Android `vectorResource`/`stringResource` in `:app`), and moving the remaining
+screen composables
 (`SettingsScreen`/`WidgetsScreen`/`QuoteDetailScreen`) into `commonMain` with the now-adopted
 multiplatform `koinViewModel`, together with their `:app`-coupled dependency chains
 (`QuoteDetail`/`ComposeAppMessaging`/`AppPreferences` seams). The Android `Activity` hosts (11 of them), the
@@ -1084,7 +1103,8 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `org.jetbrains.compose` plugin + Compose deps in `commonMain` are now wired, and the first
   composable `AppTextField` is shared — see "In progress — Phase 4"). Move the remaining in-app
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
-  multiplatform equivalents (Coil 3 is now adopted; CMP navigation next; Koin DI is already adopted in Phase 2), and repoint `:app` to host
+  multiplatform equivalents (Coil 3 is now adopted; Compose Multiplatform navigation is now adopted —
+  the `HomeNavHost` graph is shared; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
 - **Phase 5:** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
   shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget

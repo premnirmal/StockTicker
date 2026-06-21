@@ -31,7 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.navigation.BottomNavigationBar
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
-import com.github.premnirmal.ticker.navigation.HomeNavHost
+import com.github.premnirmal.ticker.navigation.AppHomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeNavigationActions
 import com.github.premnirmal.ticker.navigation.HomeNavigationRail
 import com.github.premnirmal.ticker.navigation.HomeRoute
@@ -181,7 +181,7 @@ private fun HomeListDetailNavigationWrapper(
                 SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
             }
         ) { padding ->
-            HomeNavHost(
+            AppHomeNavHost(
                 rootNavController = rootNavController,
                 navController = navController,
                 widthSizeClass = widthSizeClass,
@@ -212,7 +212,7 @@ private fun HomeListDetailNavigationWrapper(
                     },
                     destinations = destinations
                 )
-                HomeNavHost(
+                AppHomeNavHost(
                     rootNavController = rootNavController,
                     navController = navController,
                     widthSizeClass = widthSizeClass,

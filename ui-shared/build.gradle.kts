@@ -55,6 +55,13 @@ kotlin {
       api(libs.koin.compose.viewmodel)
       implementation(libs.koin.core)
 
+      // Compose Multiplatform navigation (JetBrains' multiplatform port of
+      // androidx.navigation:navigation-compose; same `androidx.navigation` package). Exposed as
+      // `api` so :app resolves the shared `HomeNavHost`/`HomeNavigationActions` and its own
+      // NavHosts (RootGraph/HomeActivity) from a single multiplatform artifact instead of the
+      // Android-only Google one.
+      api("org.jetbrains.androidx.navigation:navigation-compose:2.9.2")
+
       // Coil 3 multiplatform image loading (NewsCard). Exposed as `api` so :app can configure the
       // SingletonImageLoader's network fetcher.
       api(libs.coil.compose)

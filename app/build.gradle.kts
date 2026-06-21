@@ -178,7 +178,10 @@ dependencies {
   implementation(AndroidX.browser)
   implementation(AndroidX.core.splashscreen)
   implementation(AndroidX.activity.compose)
-  implementation(AndroidX.navigation.compose)
+  // Compose Multiplatform navigation is provided transitively via :ui-shared
+  // (org.jetbrains.androidx.navigation:navigation-compose, same `androidx.navigation` package);
+  // the Android-only Google navigation-compose is intentionally not declared here to avoid
+  // duplicate `androidx.navigation` classes on the classpath.
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.ui.ui)

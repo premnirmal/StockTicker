@@ -16,13 +16,9 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.CustomTabs
-import com.github.premnirmal.ticker.home.HomeEvent
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
 import com.github.premnirmal.ticker.news.NewsFeedScreen
@@ -40,8 +36,13 @@ import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
 import java.net.URLEncoder
 
+/**
+ * The Android host for the shared [HomeNavHost] graph. It supplies each route's screen content as a
+ * `@Composable` slot, keeping the Android resource lookups (`stringResource`/`painterResource`),
+ * `CustomTabs` and the root-graph navigation in `:app` while the navigation wiring is shared.
+ */
 @Composable
-fun HomeNavHost(
+fun AppHomeNavHost(
     rootNavController: NavHostController,
     widthSizeClass: WindowWidthSizeClass,
     navController: NavHostController,
@@ -52,12 +53,10 @@ fun HomeNavHost(
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
-    NavHost(
+    HomeNavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = HomeRoute.Watchlist.route,
-    ) {
-        composable(HomeRoute.Watchlist.route) { backStackEntry ->
+        watchlistContent = {
             val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
             WatchlistScreen(
                 rootNavController = rootNavController,
@@ -69,8 +68,8 @@ fun HomeNavHost(
                 contentType = contentType,
                 viewModel = homeViewModel,
             )
-        }
-        composable(HomeRoute.Trending.route) {
+        },
+        trendingContent = {
             val context = LocalContext.current
             val primaryColor = MaterialTheme.colorScheme.primary
             NewsFeedScreen(
@@ -96,8 +95,8 @@ fun HomeNavHost(
                     }
                 }
             )
-        }
-        composable(HomeRoute.Search.route) {
+        },
+        searchContent = {
             val context = LocalContext.current
             val primaryColor = MaterialTheme.colorScheme.primary
             val appMessaging = LocalAppMessaging.current
@@ -150,8 +149,8 @@ fun HomeNavHost(
                     }
                 }
             )
-        }
-        composable(HomeRoute.Widgets.route) {
+        },
+        widgetsContent = {
             WidgetsScreen(
                 modifier = Modifier
                     .fillMaxSize()
@@ -159,8 +158,8 @@ fun HomeNavHost(
                 widthSizeClass = widthSizeClass,
                 displayFeatures = displayFeatures
             )
-        }
-        composable(HomeRoute.Settings.route) { backStackEntry ->
+        },
+        settingsContent = {
             val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
             SettingsScreen(
                 modifier = Modifier
@@ -168,38 +167,8 @@ fun HomeNavHost(
                     .background(MaterialTheme.colorScheme.surface),
                 homeViewModel = homeViewModel,
             )
-        }
-    }
-}
-
-
-class HomeNavigationActions(
-    private val navController: NavHostController,
-    private val viewModel: NavigationViewModel,
-    private val homeViewModel: HomeViewModel,
-) {
-
-    fun navigateTo(destination: HomeBottomNavDestination) {
-        navController.navigate(destination.route.route) {
-            // Pop up to the start destination of the graph to
-            // avoid building up a large stack of destinations
-            // on the back stack as users select items
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            // Avoid multiple copies of the same destination when
-            // reselecting the same item
-            launchSingleTop = true
-            // Restore state when reselecting a previously selected item
-            restoreState = true
-        }
-        navController.currentBackStackEntry?.let {
-            if (it.destination.route == destination.route.route) {
-                viewModel.scrollToTop(destination.route)
-            }
-        }
-        homeViewModel.sendHomeEvent(HomeEvent.PromptRate)
-    }
+        },
+    )
 }
 
 
