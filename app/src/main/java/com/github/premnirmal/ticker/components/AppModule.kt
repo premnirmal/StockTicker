@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import androidx.work.WorkManager
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferencesDataMigration
+import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
 import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.analytics.GeneralProperties
@@ -64,6 +65,7 @@ val appModule = module {
 
     single { AppPreferences(get()) }
     single<CrumbStore> { get<AppPreferences>() }
+    single<UserPreferences> { get<AppPreferences>() }
 
     single { WidgetDataProvider(androidContext()) }
     single { AppMessaging(androidContext(), get()) }

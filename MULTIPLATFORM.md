@@ -329,12 +329,27 @@ Migrated into `commonMain` so far:
   permission, the `AlarmPermissionBanner`, the `OnVersionTap` easter egg, and supplies the
   resources/slots. The `SettingsViewModel` stays in `:app` (it depends on `WidgetDataProvider`,
   `NotificationsHandler`, and Android file I/O).
+- The **quote-detail price chart** — `PriceChartView` (`ticker.detail`, in `PriceChart.kt`) — moved into
+  `commonMain` by swapping the Android-only MPAndroidChart `LineChart` (`AndroidView`) for the
+  multiplatform **Vico** chart (`com.patrykandpatrick.vico:multiplatform`). The date/number axis and
+  marker formatting is hoisted to `:app` via plain functions (`ui/AxisFormatters.kt`) and passed in as
+  `xAxisFormatter`/`yAxisFormatter`/`markerFormatter` parameters.
+- The **quote-detail ViewModel** — `QuoteDetailViewModel` (`ticker.news`) — moved into `commonMain`
+  using the multiplatform `androidx.lifecycle` `ViewModel`. It now depends on the shared
+  `IStocksProvider`/`UserPreferences` contracts (rather than the Android `StocksProvider`/
+  `AppPreferences` concretes) plus the already-shared `NewsProvider`/`HistoryProvider`; `:app` binds
+  `UserPreferences` to `AppPreferences` in `appModule`. The genuinely Android-coupled, localised
+  "quote details" list (the `@StringRes` labels + `Context`-based number/date formatting) is hoisted
+  out of the ViewModel into a `:app` helper (`detail/QuoteDetails.kt`, `buildQuoteDetails`), and the
+  news-fetch error snackbar is exposed as a shared `messages` flow the host collects instead of
+  coupling to the Android `AppMessaging`.
 
 Remaining Phase 4 screens still in `:app` (they retain genuinely Android-only pieces and need more
-decoupling — or new multiplatform dependencies — before moving): the `QuoteDetailScreen` price chart
-(still MPAndroidChart `LineChart` via `AndroidView`; needs swapping for a multiplatform chart such as
-Vico) and the `WidgetsScreen` (Glance `WidgetPreview`s and the `WidgetData`/`SharedPreferences`
-model). Coil → Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
+decoupling — or new multiplatform dependencies — before moving): the `QuoteDetailScreen` composable
+itself (its localised `QuoteDetail` grid, `NewsCard`/`AddSymbolDialog` slots and the per-section
+`Activity` intents) and the `WidgetsScreen` (Glance `WidgetPreview`s and the
+`WidgetData`/`SharedPreferences` model). Coil → Coil 3 and Compose Multiplatform navigation are also
+part of the remaining work.
 
 
 ### Remaining (high level)
