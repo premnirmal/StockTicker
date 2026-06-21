@@ -545,12 +545,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `UIViewControllerRepresentable` (`ComposeView`/`ContentView`), replacing the Phase 2 SwiftUI
   watchlist placeholder. An iOS Material 3 theme (`IosAppTheme`, mirroring the Android brand
   palette/shapes without `android.os.Build` dynamic colour) wraps the iOS host. The host has since
-  grown from the single `WatchlistScreen` into the shared home navigation chrome: an iOS `HomeScreen`
-  (`shared/src/iosMain`, rendered by `MainViewController`) hosts the shared `HomeScaffold` +
-  `BottomNavigationBar` + `HomeNavHost` over a Compose Multiplatform `NavHostController`, so the
-  five home tabs (Watchlist/Trending/Search/Widgets/Settings) switch via bottom navigation on the
-  simulator. The Watchlist tab renders the shared `WatchlistScreen`; the other tabs are lightweight
-  placeholders until their view models can be resolved on iOS. The tab icons come from new **shared
+  grown from the single `WatchlistScreen` into the full shared navigation graph: an iOS `HomeScreen`
+  (`shared/src/iosMain`, rendered by `MainViewController`) now hosts the shared **`RootNavigationGraph`**
+  over a root Compose Multiplatform `NavHostController`. The graph's `homeContent` slot is the home
+  navigation chrome (`HomeScaffold` + `BottomNavigationBar` + `HomeNavHost` over a nested
+  `NavHostController`), so the five home tabs (Watchlist/Trending/Search/Widgets/Settings) switch via
+  bottom navigation on the simulator; its `quoteDetailContent` slot is an iOS `QuoteDetailScreen`
+  (`shared/src/iosMain`) reached by tapping a watchlist row, which navigates the root controller to
+  the shared `quote_detail_graph/{symbol}` destination. The Watchlist tab renders the shared
+  `WatchlistScreen`; the other tabs are lightweight placeholders until their view models can be
+  resolved on iOS. The tab icons come from new **shared
   Compose Multiplatform drawable resources** (`shared/src/commonMain/composeResources/drawable`,
   generated into `com.github.premnirmal.shared.resources.Res`), the first shared resources in the
   project. The **typography is now shared too**: the brand Ubuntu / Alegreya / Raleway fonts moved
@@ -558,10 +562,10 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `appTypography()` (`commonMain` `tickerwidget.ui.theme`) builds the Material 3 type scale from
   them, so the Android `AppTheme` and the iOS `IosAppTheme` render the same fonts (the duplicate
   Android `AppTypography.kt` was removed; the `androidApp/res/font` files remain only for the legacy
-  XML themes). *Remaining:* host the full shared `RootNavigationGraph` and the real per-tab screens
-  (port the Android-only host slots — window-size-class, `DisplayFeature`, the remaining resource
-  strings, `koinViewModel`), unify the colour scheme into a single cross-platform `AppTheme`, and add
-  the native WidgetKit widget + Firebase iOS.
+  XML themes). *Remaining:* swap the placeholder tabs and the lightweight iOS `QuoteDetailScreen` for
+  the real shared per-tab screens (port the Android-only host slots — window-size-class,
+  `DisplayFeature`, the remaining resource strings, `koinViewModel`), unify the colour scheme into a
+  single cross-platform `AppTheme`, and add the native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

@@ -11,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.github.premnirmal.shared.resources.Res
@@ -19,25 +20,41 @@ import com.github.premnirmal.shared.resources.ic_search
 import com.github.premnirmal.shared.resources.ic_settings
 import com.github.premnirmal.shared.resources.ic_trending_up
 import com.github.premnirmal.shared.resources.ic_widget
-import com.github.premnirmal.ticker.navigation.BottomNavigationBar
+import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
 import com.github.premnirmal.ticker.navigation.HomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.HomeScaffold
+import com.github.premnirmal.ticker.navigation.RootNavigationGraph
 import org.jetbrains.compose.resources.painterResource
 
 /**
- * iOS home screen hosting the shared multiplatform navigation chrome.
+ * iOS entry screen hosting the full shared multiplatform [RootNavigationGraph].
  *
- * It binds the shared [HomeScaffold] + [BottomNavigationBar] + [HomeNavHost] to a Compose
- * Multiplatform [androidx.navigation.NavHostController], using the shared drawable resources for the
- * tab icons. The Watchlist tab renders the existing shared [WatchlistScreen]; the remaining tabs are
- * lightweight placeholders for now. Later Phase 5 steps swap these placeholders for the full shared
- * screens once their view models can be resolved on iOS, and eventually host the complete
- * `RootNavigationGraph`.
+ * A root [NavHostController] drives the shared [RootNavigationGraph], whose `homeContent` slot is the
+ * home navigation chrome ([HomeContent]) and whose `quoteDetailContent` slot is the iOS
+ * [QuoteDetailScreen]. The home tabs navigate to the quote-detail destination through the same root
+ * controller, so the iOS app shares the Android navigation structure. The Watchlist tab renders the
+ * shared [WatchlistScreen]; the remaining tabs are lightweight placeholders until their view models
+ * can be resolved on iOS.
  */
 @Composable
 fun HomeScreen() {
+    val rootNavController = rememberNavController()
+    RootNavigationGraph(
+        navHostController = rootNavController,
+        homeContent = { HomeContent(rootNavController) },
+        quoteDetailContent = { symbol ->
+            QuoteDetailScreen(
+                symbol = symbol,
+                onBack = { rootNavController.popBackStack() }
+            )
+        }
+    )
+}
+
+@Composable
+private fun HomeContent(rootNavController: NavHostController) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -96,7 +113,13 @@ fun HomeScreen() {
             HomeNavHost(
                 navController = navController,
                 modifier = modifier,
-                watchlist = { WatchlistScreen() },
+                watchlist = {
+                    WatchlistScreen(
+                        onQuoteClick = { quote ->
+                            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                        }
+                    )
+                },
                 trending = { PlaceholderTab("Trending") },
                 search = { PlaceholderTab("Search") },
                 widgets = { PlaceholderTab("Widgets") },

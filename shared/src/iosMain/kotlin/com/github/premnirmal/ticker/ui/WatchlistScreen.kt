@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,13 +39,14 @@ private object WatchlistKoin : KoinComponent {
 /**
  * First shared Compose Multiplatform screen rendered by the iOS host. It binds directly to the
  * shared [IStocksProvider] portfolio [kotlinx.coroutines.flow.StateFlow] and lets the user trigger a
- * refresh, proving the Phase 4 Compose UI runs inside the iOS app. Subsequent Phase 5 steps replace
- * this with the full shared navigation graph (`RootNavigationGraph`) once its Android-only host slots
- * are ported to iOS.
+ * refresh, proving the Phase 4 Compose UI runs inside the iOS app. Tapping a row navigates to the
+ * shared quote-detail destination via [onQuoteClick], wired through the shared `RootNavigationGraph`.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WatchlistScreen() {
+fun WatchlistScreen(
+    onQuoteClick: (Quote) -> Unit = {}
+) {
     val provider = remember { WatchlistKoin.stocksProvider }
     val quotes by provider.portfolio.collectAsState()
     val scope = rememberCoroutineScope()
@@ -62,7 +64,7 @@ fun WatchlistScreen() {
     ) { padding ->
         LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
             items(quotes, key = { it.symbol }) { quote ->
-                QuoteRow(quote)
+                QuoteRow(quote, onClick = { onQuoteClick(quote) })
                 HorizontalDivider()
             }
         }
@@ -70,9 +72,10 @@ fun WatchlistScreen() {
 }
 
 @Composable
-private fun QuoteRow(quote: Quote) {
+private fun QuoteRow(quote: Quote, onClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
