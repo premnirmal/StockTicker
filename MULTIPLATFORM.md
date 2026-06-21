@@ -866,6 +866,20 @@ overload, so the `WatchlistScreen` call sites are unchanged. The drag-to-reorder
 `:ui-shared` `commonMain` and links cleanly for iOS. Verified with `:app:compileDevDebugKotlin` and
 `:ui-shared:compileKotlinIosSimulatorArm64` both green.
 
+The next shared settings primitive is `ListPreference` (`ticker.ui`) — the single-select settings/widget
+row (a `SettingsText` over the current value that opens a list picker), used five times in `WidgetsScreen`
+and twice in `SettingsScreen`. Its only Android coupling was the picker itself: the original tapped to
+build and `show()` an `androidx.appcompat` `AlertDialog` via `setItems`. The shared version (now in
+`:ui-shared` `commonMain`, alongside the already-shared `CheckboxPreference`/`SettingsText` in
+`Preferences.kt`) replaces that with a pure Compose Multiplatform `material3` `AlertDialog` whose body is a
+scrollable `Column` of clickable item rows — selecting one invokes `onSelected(index)` and dismisses,
+mirroring the old behaviour. The public signature (`title: String`, `items: Array<String>`,
+`selected: Int`, `onSelected: (Int) -> Unit`) is unchanged, so the call sites — which still resolve their
+`stringResource`/`stringArrayResource` values in `:app` — are untouched. The two remaining Android-dialog
+preferences (`MultiSelectListPreference`, `TimeSelectorPreference`, which wrap a multi-choice `AlertDialog`
+and the native `TimePickerDialog`) stay in `:app`. Verified with `:app:compileDevDebugKotlin` and
+`:ui-shared:compileKotlinIosSimulatorArm64` both green.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables

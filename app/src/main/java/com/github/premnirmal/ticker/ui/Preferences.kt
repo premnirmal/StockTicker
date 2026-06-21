@@ -15,37 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.github.premnirmal.tickerwidget.R
 
 @Composable
-fun ListPreference(
-    modifier: Modifier = Modifier,
-    title: String,
-    items: Array<String>,
-    selected: Int,
-    onSelected: (Int) -> Unit
-) {
-    val context = LocalContext.current
-    Row(
-        modifier
-            .clickable {
-                AlertDialog
-                    .Builder(context)
-                    .setTitle(title)
-                    .setItems(items) { _, item ->
-                        onSelected(item)
-                    }
-                    .create()
-                    .show()
-            }
-    ) {
-        SettingsText(
-            modifier = Modifier
-                .fillMaxWidth(),
-            title = title,
-            subtitle = items[selected]
-        )
-    }
-}
-
-@Composable
 fun MultiSelectListPreference(
     modifier: Modifier = Modifier,
     title: String,
