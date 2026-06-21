@@ -12,26 +12,32 @@ reviewable changes.
 
 ## Module layout
 
-| Module    | Type                         | Contents                                            |
-|-----------|------------------------------|-----------------------------------------------------|
-| `:shared` | Kotlin Multiplatform library | Platform-agnostic code shared by Android and iOS    |
-| `:app`    | Android application          | Android entry point, Glance widget, Firebase, WorkManager |
-| `:UI`     | Android library              | Shared Android theming/resources                    |
-| `iosApp`  | Xcode project (planned)      | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
+| Module       | Type                         | Contents                                            |
+|--------------|------------------------------|-----------------------------------------------------|
+| `:shared`    | Kotlin Multiplatform library | Platform-agnostic **non-UI** core shared by Android and iOS (DTOs, Ktor networking, Room, Koin `sharedModule`, ViewModels) |
+| `:ui-shared` | Kotlin Multiplatform library | Shared **Compose Multiplatform UI** (screens, components, theme); depends on `:shared` |
+| `:app`       | Android application          | Android entry point, Glance widget, Firebase, WorkManager |
+| `:UI`        | Android library              | Remaining Android-coupled theming (`AppTheme` dynamic colour, `R.font` families) |
+| `iosApp`     | Xcode project (planned)      | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
 
 The in-app screens are shared via **Compose Multiplatform** (see "UI strategy"
-below), so the bulk of the Compose UI lives in `:shared` (`commonMain`) and is hosted
-by both `:app` (Android) and `iosApp` (inside a `UIViewController`).
+below). The Compose UI lives in its own dedicated multiplatform module **`:ui-shared`**
+(`commonMain`) which depends on `:shared`, and is hosted by both `:app` (Android) and
+`iosApp` (inside a `UIViewController`). Keeping the UI in a separate module that depends
+on `:shared` cleanly separates the platform-agnostic core (which has no Compose / UI
+dependencies) from the shared presentation layer.
 
-`:shared` declares the following Kotlin targets:
+Both `:shared` and `:ui-shared` declare the following Kotlin targets:
 
-- `androidTarget()` — consumed by `:app` as a normal project dependency.
-- `iosArm64()`, `iosSimulatorArm64()` — packaged as a static `Shared`
-  framework for the (planned) iOS app. (`iosX64()` — the Intel-Mac simulator — was
+- `androidTarget()` — consumed by `:app` as normal project dependencies.
+- `iosArm64()`, `iosSimulatorArm64()` — `:shared` is packaged as a static `Shared`
+  framework and `:ui-shared` as a static `SharedUI` framework (the latter
+  `export`s `:shared`, so the iOS app can link one framework that exposes both the
+  shared core and the shared Compose UI). (`iosX64()` — the Intel-Mac simulator — was
   dropped in Phase 4 because Compose Multiplatform no longer publishes artifacts for it;
   Apple-Silicon simulators use `iosSimulatorArm64`.)
 
-Source sets:
+Source sets (in both `:shared` and `:ui-shared`):
 
 - `commonMain` — code that runs on every target (no Android/JVM-only APIs).
 - `androidMain` / `iosMain` — `actual` implementations of `expect` declarations.
@@ -41,7 +47,8 @@ Source sets:
 
 The app is already written entirely in Jetpack Compose, so the **in-app screens are
 shared using Compose Multiplatform (CMP)** rather than rewritten natively per platform.
-The shared `@Composable` screens live in `:shared` `commonMain` and are hosted by the
+The shared `@Composable` screens live in the dedicated **`:ui-shared`** multiplatform
+module (`commonMain`) — which depends on `:shared` — and are hosted by the
 Android app and by the iOS app (inside a `UIViewController`).
 
 What is shared via CMP:
@@ -850,6 +857,24 @@ multiplatform `koinViewModel`, together with their `:app`-coupled dependency cha
 Glance app-widget trio (`GlanceStocksWidget`/`WidgetColors`/`WidgetPreview`) and `WebViewActivity` stay in
 `:app` by design as the Android host.
 
+**Shared UI extracted into a dedicated `:ui-shared` module.** All of the shared Compose Multiplatform
+UI was moved out of `:shared` `commonMain` into a new, dedicated Kotlin Multiplatform module,
+**`:ui-shared`**, that depends on `:shared`. `:shared` is now strictly the platform-agnostic **non-UI**
+core (DTOs, Ktor networking, Room, the Koin `sharedModule`, and the shared ViewModels) and no longer
+applies the Compose Multiplatform / Compose-compiler plugins or depends on any Compose / Coil / Vico /
+Compose-lifecycle artifacts — those moved to `:ui-shared`. The ~38 shared `@Composable` files (across
+`ticker.ui`, `ticker.detail`, `ticker.home`, `ticker.navigation`, `ticker.news`,
+`ticker.portfolio.search`, `ticker.network.data` (the `changeColour` extensions) and
+`tickerwidget.ui[.theme]`) moved to `:ui-shared` `commonMain` with **unchanged package names**, plus the
+`FadingEdge` `expect`/`actual` (`androidMain`/`iosMain`). Because the packages are unchanged, the `:app`
+call sites resolve them from `:ui-shared` without import churn; `:app` and `:UI` now also depend on
+`:ui-shared`. The shared core had no inbound references to the UI (the `AppMessaging` interface stays in
+`:shared`; only `:app`'s `ComposeAppMessaging` extends the moved `DefaultAppMessaging`), so there is no
+`:shared` ⇄ `:ui-shared` cycle. For iOS, `:ui-shared` produces a static **`SharedUI`** framework that
+`export`s `:shared`, so the iOS app can link a single framework exposing both the shared core and the
+shared Compose UI. Verified with `:app:compileDevDebugKotlin`, `:shared:compileKotlinIosSimulatorArm64`
+and `:ui-shared:compileKotlinIosSimulatorArm64` (+ `SharedUI` framework link) all green.
+
 
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
@@ -991,6 +1016,14 @@ Shared module checks:
 ./gradlew :shared:testDebugUnitTest                 # android unit tests for shared
 ./gradlew :shared:compileKotlinIosSimulatorArm64    # iOS compile (Kotlin/Native, runs Room KSP)
 ./gradlew :shared:iosSimulatorArm64Test             # run iOS tests (requires macOS + Xcode)
+```
+
+Shared UI module checks (`:ui-shared` — the Compose Multiplatform UI):
+
+```bash
+./gradlew :ui-shared:compileDebugKotlinAndroid           # android compile
+./gradlew :ui-shared:compileKotlinIosSimulatorArm64      # iOS compile (Kotlin/Native)
+./gradlew :ui-shared:linkDebugFrameworkIosSimulatorArm64 # link the SharedUI framework (re-exports :shared)
 ```
 
 > Note: the iOS targets use the Kotlin/Native toolchain. Compiling them (and running Room's KSP

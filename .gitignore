@@ -11,6 +11,7 @@ app/full-r8-config.txt
 app/prod/
 ui/build
 shared/build
+ui-shared/build
 buildSrc/build
 /.vs/
 .kotlin/
