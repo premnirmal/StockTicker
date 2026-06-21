@@ -120,7 +120,13 @@ private fun HomeContent(rootNavController: NavHostController) {
                         }
                     )
                 },
-                trending = { PlaceholderTab("Trending") },
+                trending = {
+                    TrendingScreen(
+                        onQuoteClick = { quote ->
+                            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                        }
+                    )
+                },
                 search = { PlaceholderTab("Search") },
                 widgets = { PlaceholderTab("Widgets") },
                 settings = { PlaceholderTab("Settings") }

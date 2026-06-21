@@ -577,11 +577,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   renders the shared multiplatform `PriceChartView` (Vico) historical price chart with a range
   selector (1D/2W/1M/3M/1Y/5Y/Max), the same presentation logic the Android app uses; the axis/marker
   date labels are formatted with `NSDateFormatter` and the prices with the shared `AppNumberFormat`.
-  *Remaining:* swap the remaining placeholder tabs (Trending/Search/Widgets/Settings) for the real
-  shared per-tab screens (port the Android-only host slots — window-size-class, `DisplayFeature`, the
-  remaining resource strings, `koinViewModel`, and move the still-Android `SearchViewModel`/widget
-  view models into `commonMain`), wire the quote-detail extras (holdings/news/alerts), and add the
-  native WidgetKit widget + Firebase iOS.
+  The iOS **Trending tab is now real too**: an iOS `TrendingScreen` (`shared/src/iosMain`) drives the
+  shared `NewsFeedViewModel` (built from the iOS Koin graph's `NewsProvider`) through the shared
+  `NewsFeedScreen`, supplying iOS-native Material 3 card slots — a lightweight quote card and the
+  shared Coil-backed `NewsCard` (its `card` slot a Material 3 `Card`); tapping a news article opens
+  its URL via `UIApplication.openURL`, and tapping a trending quote navigates to the shared
+  quote-detail destination. *Remaining:* swap the remaining placeholder tabs (Search/Widgets/Settings)
+  for the real shared per-tab screens (port the Android-only host slots — window-size-class,
+  `DisplayFeature`, the remaining resource strings, `koinViewModel`, and move the still-Android
+  `SearchViewModel`/widget view models into `commonMain`), wire the quote-detail extras
+  (holdings/news/alerts), and add the native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 
