@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="app_themes">
+    <item>ライト</item>
+    <item>ダーク</item>
+    <item>システムに合わせる</item>
+  </string-array>
+    <string-array name="backgrounds">
+    <item>システム</item>
+    <item>透明</item>
+    <item>半透明</item>
+  </string-array>
+    <string-array name="days">
+    <item>月曜日</item>
+    <item>火曜日</item>
+    <item>水曜日</item>
+    <item>木曜日</item>
+    <item>金曜日</item>
+    <item>土曜日</item>
+    <item>日曜日</item>
+  </string-array>
+    <string-array name="font_sizes">
+    <item>ナノ</item>
+    <item>ミニ</item>
+    <item>小</item>
+    <item>中</item>
+    <item>大</item>
+    <item>特大</item>
+    <item>超大</item>
+  </string-array>
+    <string-array name="layout_types">
+    <item>アニメーション</item>
+    <item>タブ</item>
+    <item>固定</item>
+    <item>マイポートフォリオ</item>
+  </string-array>
+    <string-array name="sync_periods">
+    <item>5分</item>
+    <item>15分</item>
+    <item>30分</item>
+    <item>45分</item>
+    <item>1時間</item>
+  </string-array>
+    <string-array name="text_colors">
+    <item>システム</item>
+    <item>ライト</item>
+    <item>ダーク</item>
+  </string-array>
+    <string-array name="widget_width_types">
+    <item>自動</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"ホームに戻る"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"前に戻る"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"その他のオプション"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"完了"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"すべて表示"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"アプリの選択"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"OFF"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"ON"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"Delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"Enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"Space"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"検索…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"検索キーワードを削除"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"検索キーワード"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"検索"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"検索キーワードを送信"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"音声検索"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"共有"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"<ns1:g id="APPLICATION_NAME">%s</ns1:g>と共有"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"折りたたむ"</string>
+    <string name="action_Settings">ウィジェット設定</string>
+    <string name="action_add">追加</string>
+    <string name="action_export">銘柄リストをエクスポート</string>
+    <string name="action_feed">トレンド</string>
+    <string name="action_import">銘柄リストをインポート</string>
+    <string name="action_portfolio">ウォッチリスト</string>
+    <string name="action_rearrage">銘柄を並び替え</string>
+    <string name="action_search">検索</string>
+    <string name="action_settings">設定</string>
+    <string name="action_share">ポートフォリオを共有</string>
+    <string name="action_update">今すぐ更新</string>
+    <string name="action_widgets">ウィジェット</string>
+    <string name="adblock">候補の取得中にエラーが発生しました。広告ブロッカーを使用していませんか？使用している場合は、d.yimg.com をホワイトリストに追加してください。</string>
+    <string name="add">追加</string>
+    <string name="add_alerts">アラート</string>
+    <string name="add_displayname">表示名を追加</string>
+    <string name="add_notes">メモを追加</string>
+    <string name="add_position">ポジション</string>
+    <string name="add_positions_prompt">%1$s のポジションを追加しますか？</string>
+    <string name="add_stock">銘柄を追加</string>
+    <string name="add_ticker">ティッカーを追加</string>
+    <string name="add_to_portfolio">ポートフォリオへの追加・削除</string>
+    <string name="added_to_list">%1$s をポートフォリオに追加しました</string>
+    <string name="alert_above">上限アラート</string>
+    <string name="alert_above_error">下限アラートは上限アラートより低い値にしてください</string>
+    <string name="alert_above_notification">%1$s は %3$s 時点で %2$s を上回っています</string>
+    <string name="alert_above_notification_title">%1$s > %2$s（%3$s 時点）</string>
+    <string name="alert_below">下限アラート</string>
+    <string name="alert_below_error">上限アラートは下限アラートより高い値にしてください</string>
+    <string name="alert_below_notification">%1$s は %3$s 時点で %2$s を下回っています</string>
+    <string name="alert_below_notification_title">%1$s &lt; %2$s（%3$s 時点）</string>
+    <string name="alert_dismiss">閉じる</string>
+    <string name="alerts">アラート</string>
+    <string name="alerts_disabled">アラートが無効です。設定を確認してください</string>
+    <string name="already_in_portfolio">%1$s はすでにポートフォリオに追加されています</string>
+    <string msgid="8719607706653693137" name="androidx_compose_foundation_autofill">"自動入力"</string>
+    <string msgid="1150566100598813236" name="androidx_compose_ui_autofill">"自動入力"</string>
+    <string name="app_settings">設定</string>
+    <string name="app_theme">アプリとウィジェットのテーマ</string>
+    <string name="are_you_sure">よろしいですか？</string>
+    <string name="auto_sort">自動並び替え</string>
+    <string name="auto_sort_desc">変動率の順に銘柄を並び替えます。</string>
+    <string name="autosort_disabled">自動並び替えが無効になりました。ドラッグ＆ドロップで並び替えできます。</string>
+    <string name="average_price">平均取得価格</string>
+    <string name="bg">ウィジェットの背景</string>
+    <string name="bg_updated_message">背景を更新しました</string>
+    <string name="bold_change">太字テキスト</string>
+    <string name="bold_change_desc">変動と時価を太字で表示します</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"応答"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"ビデオ"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"拒否"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"通話終了"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"着信"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"通話中"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"着信をスクリーニング中"</string>
+    <string name="cancel">キャンセル</string>
+    <string name="cannot_export_msg">外部ストレージへの書き込み許可がないため、銘柄リストをエクスポートできません</string>
+    <string name="cannot_import_msg">外部ストレージへの読み取り許可がないため、銘柄リストをインポートできません</string>
+    <string name="cannot_share_msg">外部ストレージへの書き込み許可がないため、銘柄リストを共有できません</string>
+    <string name="change_amount">変動額</string>
+    <string name="change_instructions">ウィジェットの変動をタップすると、変動率と変動額を切り替えられます</string>
+    <string name="change_percent">% 変動率</string>
+    <string name="choose_text_size">ウィジェットのテキストサイズ（削除予定）</string>
+    <string msgid="406453423630273620" name="close_drawer">"ナビゲーションメニューを閉じる"</string>
+    <string msgid="7573152094250666567" name="close_sheet">"シートを閉じる"</string>
+    <string msgid="3260749812566568062" name="copy_toast_msg">"リンクをクリップボードにコピーしました"</string>
+    <string name="current_positions">現在のポジション</string>
+    <string name="date_format_long">yyyy年MM月dd日</string>
+    <string name="day_change_amount">日次変動額</string>
+    <string name="day_change_percent">% 日次変動率</string>
+    <string name="days_updated_error_message">エラー：曜日を選択してください</string>
+    <string name="days_updated_message">更新する曜日を変更しました</string>
+    <string name="db_tap_count">DB ビューアーのロック解除まであと %1$d 回タップしてください</string>
+    <string name="db_viewer">アプリデータベース</string>
+    <string msgid="8038256446254964252" name="default_error_message">"入力値が無効です"</string>
+    <string msgid="6312721426453364202" name="default_popup_window_title">"ポップアップウィンドウ"</string>
+    <string name="desc_channel_alerts">銘柄アラート</string>
+    <string name="desc_channel_summary">デイリーサマリー</string>
+    <string name="discovered_db">DB ビューアーへの秘密の入口を発見しました</string>
+    <string name="displayname">表示名</string>
+    <string name="dividend">配当</string>
+    <string name="done">完了</string>
+    <string msgid="1890207353314751437" name="dropdown_menu">"プルダウン メニュー"</string>
+    <string name="edit_position">ポジション</string>
+    <string name="edit_positions">ポジションを編集</string>
+    <string name="enable_google_finance">代替ファイナンス API を有効にしますか？</string>
+    <string name="enable_google_finance_desc">ベータ版です。正確な相場が得られない場合は無効にしてください。</string>
+    <string name="end_time">終了時間</string>
+    <string name="end_time_updated">終了時間を更新しました</string>
+    <string name="enter_a_symbol">シンボルを入力</string>
+    <string name="equity_value">株式評価額</string>
+    <string name="error">エラー</string>
+    <string name="error_exporting">ファイルのエクスポート中にエラーが発生しました</string>
+    <string name="error_fetching_news">¯\\_(ツ)_/¯\nニュースの取得中にエラーが発生しました</string>
+    <string name="error_fetching_stock">銘柄の取得中にエラーが発生しました</string>
+    <string name="error_fetching_suggestions">候補の取得中にエラーが発生しました</string>
+    <string name="error_fetching_whats_new">新機能の取得中にエラーが発生しました</string>
+    <string name="error_loading_graph">グラフの読み込み中にエラーが発生しました</string>
+    <string name="error_sharing">銘柄の共有中にエラーが発生しました</string>
+    <string name="error_symbol">無効なシンボル</string>
+    <string name="exact_alarm_permission_required_message">ウィジェットを適切なタイミングで更新するには、正確なアラームの権限が必要です。</string>
+    <string name="expand">展開</string>
+    <string name="export_desc">ポートフォリオを .json ファイルにエクスポート</string>
+    <string name="exported_to">エクスポートに成功しました</string>
+    <string msgid="4566929209979330987" name="fallback_menu_item_copy_link">"リンクをコピー"</string>
+    <string msgid="3413186855122069269" name="fallback_menu_item_open_in_browser">"ブラウザで開く"</string>
+    <string msgid="7145444925855055364" name="fallback_menu_item_share_link">"リンクの共有"</string>
+    <string name="feature_request">機能をリクエスト</string>
+    <string name="feature_request_desc">新機能のリクエストを送信</string>
+    <string name="five_years">5年</string>
+    <string name="five_years_short">5年</string>
+    <string name="gain">利益</string>
+    <string name="gain_loss">損益</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text"><b><tt>"adb logcat"</tt></b>" を使用して "<b><tt>"GlanceAppWidget"</tt></b>" を検索し、エラーを詳しくご確認ください"</string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"コンテンツを表示できません"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"Google Pixel のスナップショット アプリ ウィジェット エラー"</b></string>
+    <string name="go_to_settings">許可</string>
+    <string name="graph_fetch_failed">データの取得に失敗しました</string>
+    <string name="hide_header">ウィジェットヘッダーを非表示</string>
+    <string name="hide_header_desc">取得時刻と更新ボタンを非表示にします。</string>
+    <string name="holdings">保有株</string>
+    <string name="how_to">- ホーム画面の空きスペースを長押しして、メニューを表示します\n- 「ウィジェット」オプションを選択します。\n- ウィジェット一覧から「Stocks Widget」を選択します。\n- 開いた設定画面でウィジェットを編集します。\n- 複数のウィジェットを追加でき、それぞれ独自のポートフォリオを持てます。</string>
+    <string name="how_to_title">ウィジェットの追加方法</string>
+    <string name="import_desc">カンマ区切りの .txt ファイルまたは .json ファイルから銘柄をインポート</string>
+    <string msgid="6827826412747255547" name="in_progress">"処理しています"</string>
+    <string name="incorrect_time_update_error">開始時間と終了時間は同じにできません</string>
+    <string msgid="7933458017204019916" name="indeterminate">"一部 ON"</string>
+    <string name="invalid_number">無効な数値</string>
+    <string name="invalid_time">無効な時刻</string>
+    <string name="last_and_next_fetch">前回の取得: %1$s\n次回の取得: %2$s</string>
+    <string name="last_fetch">前回の取得: %1$s</string>
+    <string name="later">後で</string>
+    <string name="layout_type">ウィジェットの種類</string>
+    <string name="layout_updated_message">レイアウトの種類を更新しました</string>
+    <string name="like_our_app">このアプリはいかがですか？</string>
+    <string name="loading">読み込み中</string>
+    <string name="loss">損失</string>
+    <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"ボトムシートを折りたたみます"</string>
+    <string msgid="1555567894577437024" name="m3c_bottom_sheet_dismiss_description">"ボトムシートを閉じます"</string>
+    <string msgid="8403354765404029791" name="m3c_bottom_sheet_drag_handle_description">"ドラッグ ハンドル"</string>
+    <string msgid="6670819569745899763" name="m3c_bottom_sheet_expand_description">"ボトムシートを開きます"</string>
+    <string msgid="3010635850035863127" name="m3c_bottom_sheet_pane_title">"ボトムシート"</string>
+    <string msgid="8166741421776570875" name="m3c_date_input_headline">"入力された日付"</string>
+    <string msgid="229313757840775812" name="m3c_date_input_headline_description">"入力された日付: %1$s"</string>
+    <string msgid="6116910750161463197" name="m3c_date_input_invalid_for_pattern">"想定パターンと一致しない日付: %1$s"</string>
+    <string msgid="2521768508935305279" name="m3c_date_input_invalid_not_allowed">"許可されない日付: %1$s"</string>
+    <string msgid="7052898923934555305" name="m3c_date_input_invalid_year_range">"想定される年の範囲（%1$s～%2$s）から日付が外れています"</string>
+    <string msgid="2895559812010326913" name="m3c_date_input_label">"日付"</string>
+    <string msgid="1237013946323089826" name="m3c_date_input_no_input_description">"なし"</string>
+    <string msgid="7306227249789210568" name="m3c_date_input_title">"日付の選択"</string>
+    <string msgid="7605002211875882969" name="m3c_date_picker_headline">"選択した日付"</string>
+    <string msgid="3664277305226978227" name="m3c_date_picker_headline_description">"現在の選択: %1$s"</string>
+    <string msgid="8436650776581492840" name="m3c_date_picker_navigate_to_year_description">"年に移動 %1$s"</string>
+    <string msgid="5811000998184572395" name="m3c_date_picker_no_selection_description">"なし"</string>
+    <string msgid="7813882352367152251" name="m3c_date_picker_scroll_to_earlier_years">"これより前の年を表示するにはスクロールしてください"</string>
+    <string msgid="5727367015496556177" name="m3c_date_picker_scroll_to_later_years">"これより後の年を表示するにはスクロールしてください"</string>
+    <string msgid="1804346892470238807" name="m3c_date_picker_switch_to_calendar_mode">"カレンダー入力モードに切り替え"</string>
+    <string msgid="395627960681594326" name="m3c_date_picker_switch_to_day_selection">"スワイプして年を選択するか、タップして日付の選択に戻ります"</string>
+    <string msgid="2219746470065162704" name="m3c_date_picker_switch_to_input_mode">"テキスト入力モードに切り替え"</string>
+    <string msgid="7142101321095356500" name="m3c_date_picker_switch_to_next_month">"翌月に変更"</string>
+    <string msgid="228438865139394590" name="m3c_date_picker_switch_to_previous_month">"前月に変更"</string>
+    <string msgid="791651718641787594" name="m3c_date_picker_switch_to_year_selection">"年の選択に切り替え"</string>
+    <string msgid="7430790972741451689" name="m3c_date_picker_title">"日付の選択"</string>
+    <string msgid="3199387177749801575" name="m3c_date_picker_today_description">"今日"</string>
+    <string msgid="2068382232816991922" name="m3c_date_picker_year_picker_pane_title">"年の選択ツールの表示"</string>
+    <string msgid="3190049423327661366" name="m3c_date_range_input_invalid_range_input">"入力された期間は無効です"</string>
+    <string msgid="3148384720560189467" name="m3c_date_range_input_title">"日付の入力"</string>
+    <string msgid="2138321128465719402" name="m3c_date_range_picker_day_in_range">"範囲内"</string>
+    <string msgid="4947636797751277713" name="m3c_date_range_picker_end_headline">"終了日"</string>
+    <string msgid="602077859540990149" name="m3c_date_range_picker_scroll_to_next_month">"翌月を表示するにはスクロールしてください"</string>
+    <string msgid="4592174524846109496" name="m3c_date_range_picker_scroll_to_previous_month">"前月を表示するにはスクロールしてください"</string>
+    <string msgid="4665981448952749820" name="m3c_date_range_picker_start_headline">"開始日"</string>
+    <string msgid="3134165431120340385" name="m3c_date_range_picker_title">"日付の選択"</string>
+    <string msgid="7617233117134790350" name="m3c_dialog">"ダイアログ"</string>
+    <string msgid="3177828188723359358" name="m3c_dropdown_menu_collapsed">"閉じています"</string>
+    <string msgid="2360841780724299882" name="m3c_dropdown_menu_expanded">"開いています"</string>
+    <string msgid="8687821690726149911" name="m3c_dropdown_menu_toggle">"プルダウン メニューを切り替えます"</string>
+    <string msgid="6072492480528318635" name="m3c_floating_toolbar_collapse">"ツールバーを閉じます"</string>
+    <string msgid="6880757017246780255" name="m3c_floating_toolbar_expand">"ツールバーを開きます"</string>
+    <string msgid="6152806324422087846" name="m3c_search_bar_search">"検索"</string>
+    <string msgid="6152755701819882931" name="m3c_snackbar_dismiss">"閉じる"</string>
+    <string msgid="3868801555855510515" name="m3c_snackbar_pane_title">"アラート"</string>
+    <string msgid="7655536806087401899" name="m3c_suggestions_available">"検索候補は次のとおりです"</string>
+    <string msgid="409352516511718051" name="m3c_time_input_dialog_title">"時刻の入力"</string>
+    <string msgid="2786685010796619560" name="m3c_time_picker_am">"AM"</string>
+    <string msgid="7412665527536641863" name="m3c_time_picker_dialog_title">"時刻の選択"</string>
+    <string msgid="2349193472625211372" name="m3c_time_picker_hour">"時間"</string>
+    <string msgid="9179527532316922345" name="m3c_time_picker_hour_24h_suffix">"%1$d 時間"</string>
+    <string msgid="8876759303332837035" name="m3c_time_picker_hour_selection">"時刻を選択"</string>
+    <string msgid="3458167507790628988" name="m3c_time_picker_hour_suffix">"%1$d 時"</string>
+    <string msgid="6973808109666874069" name="m3c_time_picker_hour_text_field">"（時間単位）"</string>
+    <string msgid="4313071914266462005" name="m3c_time_picker_minute">"分"</string>
+    <string msgid="4699133535056739733" name="m3c_time_picker_minute_selection">"分を選択"</string>
+    <string msgid="5064177921781937179" name="m3c_time_picker_minute_suffix">"%1$d 分"</string>
+    <string msgid="7661234488295443182" name="m3c_time_picker_minute_text_field">"（分単位）"</string>
+    <string msgid="5865171949528594571" name="m3c_time_picker_period_toggle_description">"午前または午後を選択"</string>
+    <string msgid="6616362054113087709" name="m3c_time_picker_pm">"PM"</string>
+    <string msgid="4145073906612931838" name="m3c_time_picker_toggle_keyboard">"時刻をテキストで入力するモードに切り替えます"</string>
+    <string msgid="8841786098195101324" name="m3c_time_picker_toggle_touch">"時刻を時計で入力するモードに切り替えます"</string>
+    <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"ツールチップを表示"</string>
+    <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"ツールチップ"</string>
+    <string msgid="6564222473543418073" name="m3c_wide_navigation_rail_close_rail">"レールを閉じる"</string>
+    <string msgid="8350283435461615411" name="m3c_wide_navigation_rail_pane_title">"ナビゲーション レール"</string>
+    <string name="max">∞</string>
+    <string name="move_to_different_widget">別のウィジェットに移動</string>
+    <string name="my_stock_portfolio">株式ポートフォリオ</string>
+    <string msgid="542007171693138492" name="navigation_menu">"ナビゲーションメニュー"</string>
+    <string name="news_feed">ニュース</string>
+    <string name="news_fetch_failed">ニュースの取得に失敗しました</string>
+    <string name="next_fetch">次回の取得: %1$s</string>
+    <string name="no">いいえ</string>
+    <string name="no_data">¯\\_(ツ)_/¯\nデータがありません</string>
+    <string name="no_network_message">ネットワーク接続がありません</string>
+    <string name="no_such_stock_in_portfolio">その銘柄はポートフォリオにありません。</string>
+    <string name="no_symbols">¯\\_(ツ)_/¯\n銘柄がありません</string>
+    <string name="no_symbols_in_portfolio">ポートフォリオに銘柄がありません。</string>
+    <string msgid="6610465462668679431" name="not_selected">"未選択"</string>
+    <string name="notes">メモ</string>
+    <string name="notification_alerts">通知アラート</string>
+    <string name="notification_alerts_desc">通知アラートを受け取る</string>
+    <string name="notification_alerts_required_message">通知アラートを受け取るには、通知の許可が必要です。</string>
+    <string name="notification_summary_title">今日のウォッチリストはいかがでしたか？</string>
+    <string name="number_of_shares">株数</string>
+    <string name="ok">OK</string>
+    <string name="one_day">1日</string>
+    <string name="one_day_short">1日</string>
+    <string name="one_month">1ヶ月</string>
+    <string name="one_month_short">1月</string>
+    <string name="one_year">1年</string>
+    <string name="one_year_short">1年</string>
+    <string name="only_updates_on_weekdays">平日のみ更新</string>
+    <string name="please_rate">PlayStore でレビューをお待ちしています！ぜひご意見をお聞かせください！</string>
+    <string name="portfolio">ポートフォリオ</string>
+    <string name="positions">ポジション</string>
+    <string name="price">価格</string>
+    <string name="privacy_policy">プライバシーポリシー</string>
+    <string name="quote_details_day_range">日中レンジ</string>
+    <string name="quote_details_dividend_date">配当日</string>
+    <string name="quote_details_dividend_rate">配当利回り</string>
+    <string name="quote_details_earnings_date">決算日</string>
+    <string name="quote_details_earnings_growth">利益成長率</string>
+    <string name="quote_details_fifty_day_average">50日移動平均</string>
+    <string name="quote_details_ftw_range">52週レンジ</string>
+    <string name="quote_details_gross_margins">売上総利益率</string>
+    <string name="quote_details_market_cap">時価総額</string>
+    <string name="quote_details_open">始値</string>
+    <string name="quote_details_pe_ratio">PER</string>
+    <string name="quote_details_profit_margins">純利益率</string>
+    <string name="quote_details_revenue_growth">売上高成長率</string>
+    <string name="quote_details_two_hundred_day_average">200日移動平均</string>
+    <string name="quote_details_volume">出来高</string>
+    <string msgid="5941395253238309765" name="range_end">"範囲の末尾"</string>
+    <string msgid="7097486360902471446" name="range_start">"範囲の先頭"</string>
+    <string name="recent_news">最新ニュース</string>
+    <string name="refresh_failed">更新に失敗しました</string>
+    <string name="refresh_on_screen_unlock">画面ロック解除時に更新</string>
+    <string name="refresh_on_screen_unlock_desc">画面のロック解除時に更新します（設定した時間帯のみ）。</string>
+    <string name="refresh_updated_message">更新間隔を変更しました</string>
+    <string name="remove">削除</string>
+    <string name="remove_holding">ポートフォリオからエントリー %1$s を削除してもよいですか？</string>
+    <string name="remove_prompt">%1$s をポートフォリオから削除してもよいですか？</string>
+    <string name="report_bug">バグを報告</string>
+    <string name="report_bug_desc">バグレポートを送信</string>
+    <string name="round_two_dp">小数点第2位で四捨五入</string>
+    <string name="round_two_dp_desc">変動と価格を小数点第2位に丸めます</string>
+    <string name="save">保存</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"検索"</string>
+    <string name="select_widget">ウィジェットを選択</string>
+    <string msgid="6043586758067023" name="selected">"選択済み"</string>
+    <string name="set">設定</string>
+    <string name="setting_currency">通貨を表示</string>
+    <string name="setting_currency_desc">ウィジェットに通貨を表示します</string>
+    <string name="share_email_subject">StocksWidget で作成したティッカーリストです - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget \n\nアプリの設定から「インポート」を選ぶと、このティッカーをインポートできます</string>
+    <string name="shares">株</string>
+    <string name="show_refresh">更新アイコンを表示</string>
+    <string name="show_refresh_desc">ウィジェットに更新アイコンを表示します（Androidのバッテリー節約機能の影響で動作が不安定な場合があります）</string>
+    <string name="skip">スキップ</string>
+    <string msgid="2792228137354697160" name="snackbar_pane_title">"アラート"</string>
+    <string name="start_time">開始時間</string>
+    <string name="start_time_updated">開始時間を更新しました</string>
+    <string msgid="4139871816613051306" name="state_empty">"なし"</string>
+    <string msgid="5834637030682409883" name="state_off">"OFF"</string>
+    <string msgid="1490883874751719580" name="state_on">"ON"</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string msgid="2561197295334830845" name="switch_role">"切り替える"</string>
+    <string msgid="1672349317127674378" name="tab">"タブ"</string>
+    <string msgid="5946805113151406391" name="template_percent">"<ns1:g id="PERCENTAGE">%1$d</ns1:g>パーセント。"</string>
+    <string name="text_color">テキストの色</string>
+    <string name="text_color_updated_message">テキストの色を更新しました</string>
+    <string name="text_size_updated_message">テキストサイズを更新しました</string>
+    <string name="theme_updated_message">アプリのテーマを更新しました</string>
+    <string name="three_month">3ヶ月</string>
+    <string name="three_month_short">3月</string>
+    <string name="ticker_import_fail">銘柄のインポート中にエラーが発生しました</string>
+    <string name="ticker_import_success">銘柄を正常にインポートしました</string>
+    <string msgid="3765533235322692011" name="tooltip_description">"ツールチップ"</string>
+    <string msgid="3124740595719787496" name="tooltip_label">"ツールチップを表示"</string>
+    <string name="total">合計</string>
+    <string name="total_holdings">保有株の合計: %1$s</string>
+    <string name="trending_stocks">注目の銘柄</string>
+    <string name="tutorial">チュートリアル</string>
+    <string name="two_weeks">14日</string>
+    <string name="two_weeks_short">2週</string>
+    <string name="update_days">更新する日</string>
+    <string name="update_days_desc">選択した曜日に更新されます</string>
+    <string name="update_interval">更新間隔</string>
+    <string name="value">評価額</string>
+    <string name="whats_new">新機能</string>
+    <string name="whats_new_in">v%1$s の新機能</string>
+    <string name="widget_name">ウィジェット名</string>
+    <string name="widget_name_updated">ウィジェット名を更新しました</string>
+    <string name="widget_width">列数</string>
+    <string name="widget_width_updated_message">ウィジェットのサイズを更新しました</string>
+    <string name="widgets">ウィジェット</string>
+    <string name="yes">はい</string>
+</resources>

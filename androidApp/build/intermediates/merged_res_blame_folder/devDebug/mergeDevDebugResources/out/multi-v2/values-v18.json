@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v18/values-v18.xml",
+            "map": [
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/98712d2652c68a6a8eabd593916c4897/transformed/appcompat-1.7.1/res/values-v18/values-v18.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "48",
+                        "endOffsets": "99"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="glance_colorBackground">@android:color/system_neutral1_10</color>
+    <color name="glance_colorError">#ffb3261e</color>
+    <color name="glance_colorErrorContainer">#fff9dedc</color>
+    <color name="glance_colorOnBackground">@android:color/system_neutral1_900</color>
+    <color name="glance_colorOnError">#ffffffff</color>
+    <color name="glance_colorOnErrorContainer">#ff410e0b</color>
+    <color name="glance_colorOnPrimary">@android:color/system_accent1_0</color>
+    <color name="glance_colorOnPrimaryContainer">@android:color/system_accent1_900</color>
+    <color name="glance_colorOnSecondary">@android:color/system_accent2_0</color>
+    <color name="glance_colorOnSecondaryContainer">@android:color/system_accent2_900</color>
+    <color name="glance_colorOnSurface">@android:color/system_neutral1_900</color>
+    <color name="glance_colorOnSurfaceInverse">@android:color/system_neutral1_50</color>
+    <color name="glance_colorOnSurfaceVariant">@android:color/system_neutral2_700</color>
+    <color name="glance_colorOnTertiary">@android:color/system_accent3_0</color>
+    <color name="glance_colorOnTertiaryContainer">@android:color/system_accent3_900</color>
+    <color name="glance_colorOutline">@android:color/system_neutral2_500</color>
+    <color name="glance_colorPrimary">@android:color/system_accent1_600</color>
+    <color name="glance_colorPrimaryContainer">@android:color/system_accent1_100</color>
+    <color name="glance_colorPrimaryInverse">@android:color/system_accent1_200</color>
+    <color name="glance_colorSecondary">@android:color/system_accent2_600</color>
+    <color name="glance_colorSecondaryContainer">@android:color/system_accent2_100</color>
+    <color name="glance_colorSurface">@android:color/system_neutral1_10</color>
+    <color name="glance_colorSurfaceInverse">@android:color/system_neutral1_800</color>
+    <color name="glance_colorSurfaceVariant">@android:color/system_neutral2_100</color>
+    <color name="glance_colorTertiary">@android:color/system_accent3_600</color>
+    <color name="glance_colorTertiaryContainer">@android:color/system_accent3_100</color>
+    <color name="glance_colorWidgetBackground">@android:color/system_accent2_50</color>
+    <style name="AppThemeV31" parent="AppThemeV27"/>
+    <style name="Glance.AppWidget.Background" parent="Base.Glance.AppWidget.Background">
+        <item name="android:clipToOutline">true</item>
+        <item name="android:padding">16dp</item>
+    </style>
+    <style name="StocksWidget.App.Theme" parent="AppThemeV31"/>
+    <style name="Theme.SplashScreen" parent="Base.Theme.SplashScreen.DayNight">
+        <item name="android:windowSplashScreenAnimatedIcon">?windowSplashScreenAnimatedIcon</item>
+        <item name="android:windowSplashScreenBackground">?windowSplashScreenBackground</item>
+        <item name="android:windowSplashScreenAnimationDuration">
+            ?windowSplashScreenAnimationDuration
+        </item>
+    </style>
+    <style name="Theme.SplashScreen.IconBackground" parent="Theme.SplashScreen">
+        <item name="android:windowSplashScreenIconBackgroundColor">
+            ?windowSplashScreenIconBackgroundColor
+        </item>
+    </style>
+</resources>

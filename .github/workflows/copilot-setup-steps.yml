@@ -53,6 +53,6 @@ jobs:
       - name: Warm Gradle dependency cache
         run: |
           ./gradlew --no-daemon \
-            :app:assembleDevDebug \
-            :app:compileDevDebugUnitTestSources \
+            :androidApp:assembleDevDebug \
+            :androidApp:compileDevDebugUnitTestSources \
             :shared:assemble

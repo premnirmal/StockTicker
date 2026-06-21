@@ -1,0 +1,39 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v29/values-v29.xml",
+            "map": [
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/fcf25fade6cc6012d45597c396279f2d/transformed/jetified-glance-appwidget-1.1.1/res/values-v29/values-v29.xml",
+                    "from": {
+                        "startLines": "2,5,19,22,25,26,27",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "55,244,1048,1239,1430,1519,1585",
+                        "endLines": "4,18,21,24,25,26,27",
+                        "endColumns": "12,12,12,12,88,65,65",
+                        "endOffsets": "239,1043,1234,1425,1514,1580,1646"
+                    },
+                    "to": {
+                        "startLines": "9,12,26,29,32,33,34",
+                        "startColumns": "4,4,4,4,4,4,4",
+                        "startOffsets": "469,658,1462,1653,1844,1933,1999",
+                        "endLines": "11,25,28,31,32,33,34",
+                        "endColumns": "12,12,12,12,88,65,65",
+                        "endOffsets": "653,1457,1648,1839,1928,1994,2060"
+                    }
+                },
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/3575e62d4b7c7a0fa5bb70ba9275d250/transformed/jetified-core-splashscreen-1.0.1/res/values-v29/values-v29.xml",
+                    "from": {
+                        "startLines": "2,7",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,374",
+                        "endLines": "6,8",
+                        "endColumns": "12,12",
+                        "endOffsets": "369,464"
+                    }
+                }
+            ]
+        }
+    ]
+}

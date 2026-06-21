@@ -28,5 +28,5 @@ jobs:
         with:
           name: test-results
           path: |
-            app/build/test-results/testDevDebugUnitTest/
-            app/build/reports/tests
+            androidApp/build/test-results/testDevDebugUnitTest/
+            androidApp/build/reports/tests

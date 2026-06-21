@@ -15,8 +15,7 @@ reviewable changes.
 | Module    | Type                         | Contents                                            |
 |-----------|------------------------------|-----------------------------------------------------|
 | `:shared` | Kotlin Multiplatform library | Platform-agnostic code shared by Android and iOS    |
-| `:app`    | Android application          | Android entry point, Glance widget, Firebase, WorkManager |
-| `:UI`     | Android library              | Shared Android theming/resources                    |
+| `:androidApp` | Android application      | Android entry point, Glance widget, Firebase, WorkManager, Android theming/resources |
 | `iosApp`  | Xcode project (planned)      | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
 
 The in-app screens are shared via **Compose Multiplatform** (see "UI strategy"
@@ -319,7 +318,7 @@ Migrated into `commonMain` so far:
   `material3.TimePicker`/`TimePickerState`, removing the Android `AlertDialog`/`TimePickerDialog`/
   `LocalContext` dependencies. The Android-coupled inputs are hoisted as parameters: the localised
   labels/string-arrays as `String`/`Array<String>` values, the three dialog confirm/dismiss labels,
-  the `Divider` as a composable slot (it lives in `:UI`), the alarm-permission banner as a composable
+  the `Divider` as a composable slot (it lives in `:androidApp`), the alarm-permission banner as a composable
   slot, the `Alegreya`/`Bold` fonts as nullable `FontFamily` params, all user actions as callback
   lambdas (file pickers, Custom Tabs links, notification-permission flow, version-tap easter egg),
   the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, and the
@@ -357,7 +356,7 @@ Migrated into `commonMain` so far:
   formatters as lambdas, the `AppMessaging` bottom-sheet card-tap as an `onCardClick(title, data)`
   lambda, the per-section `Holdings`/`Alerts`/`Notes`/`Displayname` editing as `onEdit*` callbacks plus
   the displayed `position`/`alert`/`notes`/`displayname` state values, the `AppCard` container
-  (it lives in `:UI`), `NewsCard`, `AddSymbolDialog` and the website `LinkText` as composable slots,
+  (it lives in `:androidApp`), `NewsCard`, `AddSymbolDialog` and the website `LinkText` as composable slots,
   the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the
   `SnackbarHostState`, and the adaptive Accompanist `TwoPane`/`WindowWidthSizeClass`/`ContentType`
   layout as an optional `twoPane(first, second)` slot (null = single column). A thin
@@ -395,7 +394,7 @@ Migrated into `commonMain` so far:
   multiplatform `coil3.compose.AsyncImage` for the article thumbnail. The Android-coupled inputs are
   hoisted as parameters: the article tap (the `CustomTabs` Custom Tab open) as an `onClick` callback,
   the `ColourPalette` image placeholder gradient colour as a `placeholderColor: Color`, and the
-  `AppCard` container (it lives in `:UI`) as a `card` composable slot. A thin `:app` `NewsCard.kt`
+  `AppCard` container (it lives in `:androidApp`) as a `card` composable slot. A thin `:app` `NewsCard.kt`
   overload (`NewsCard(item)`, keeping the same signature so `NewsFeedScreenHost`,
   `QuoteDetailScreenHost` and `SearchScreenHost` are unchanged) supplies the Custom Tab open, the
   `ColourPalette` placeholder colour and the `AppCard` slot.
@@ -547,7 +546,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 Android (unchanged):
 
 ```bash
-./gradlew :app:assembleDevDebug
+./gradlew :androidApp:assembleDevDebug
 ```
 
 Shared module checks:

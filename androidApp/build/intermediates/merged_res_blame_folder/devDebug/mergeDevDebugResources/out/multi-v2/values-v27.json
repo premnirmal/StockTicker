@@ -1,0 +1,47 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v27/values-v27.xml",
+            "map": [
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/3575e62d4b7c7a0fa5bb70ba9275d250/transformed/jetified-core-splashscreen-1.0.1/res/values-v27/values-v27.xml",
+                    "from": {
+                        "startLines": "2,3,4,7",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,136,229,405",
+                        "endLines": "2,3,6,9",
+                        "endColumns": "80,92,12,12",
+                        "endOffsets": "131,224,400,588"
+                    },
+                    "to": {
+                        "startLines": "6,7,8,11",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "257,338,431,607",
+                        "endLines": "6,7,10,13",
+                        "endColumns": "80,92,12,12",
+                        "endOffsets": "333,426,602,790"
+                    }
+                },
+                {
+                    "source": "/home/runner/work/StockTicker/StockTicker/androidApp/src/main/res/values-v27/themes.xml",
+                    "from": {
+                        "startLines": "2,6",
+                        "startColumns": "2,2",
+                        "startOffsets": "53,253",
+                        "endLines": "5,6",
+                        "endColumns": "10,61",
+                        "endOffsets": "250,312"
+                    },
+                    "to": {
+                        "startLines": "2,14",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,795",
+                        "endLines": "5,14",
+                        "endColumns": "10,63",
+                        "endOffsets": "252,854"
+                    }
+                }
+            ]
+        }
+    ]
+}

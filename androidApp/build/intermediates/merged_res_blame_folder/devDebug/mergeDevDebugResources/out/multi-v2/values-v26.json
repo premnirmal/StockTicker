@@ -1,0 +1,47 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v26/values-v26.xml",
+            "map": [
+                {
+                    "source": "/home/runner/work/StockTicker/StockTicker/androidApp/src/main/res/values-v26/themes.xml",
+                    "from": {
+                        "startLines": "2,8",
+                        "startColumns": "2,2",
+                        "startOffsets": "53,343",
+                        "endLines": "7,8",
+                        "endColumns": "10,61",
+                        "endOffsets": "340,402"
+                    },
+                    "to": {
+                        "startLines": "2,23",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,1181",
+                        "endLines": "7,23",
+                        "endColumns": "10,63",
+                        "endOffsets": "342,1240"
+                    }
+                },
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/98712d2652c68a6a8eabd593916c4897/transformed/appcompat-1.7.1/res/values-v26/values-v26.xml",
+                    "from": {
+                        "startLines": "2,3,4,8,12,16",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "55,130,217,381,557,796",
+                        "endLines": "2,3,7,11,15,16",
+                        "endColumns": "74,86,12,12,12,92",
+                        "endOffsets": "125,212,376,552,791,884"
+                    },
+                    "to": {
+                        "startLines": "8,9,10,14,18,22",
+                        "startColumns": "4,4,4,4,4,4",
+                        "startOffsets": "347,422,509,673,849,1088",
+                        "endLines": "8,9,13,17,21,22",
+                        "endColumns": "74,86,12,12,12,92",
+                        "endOffsets": "417,504,668,844,1083,1176"
+                    }
+                }
+            ]
+        }
+    ]
+}
