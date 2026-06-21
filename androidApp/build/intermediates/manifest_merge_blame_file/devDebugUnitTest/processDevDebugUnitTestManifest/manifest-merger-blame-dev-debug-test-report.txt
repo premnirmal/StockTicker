@@ -1,0 +1,485 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.github.premnirmal.tickerwidget.dev" >
+4
+5    <uses-sdk
+5-->/home/runner/work/StockTicker/StockTicker/androidApp/build/intermediates/tmp/manifest/test/dev/debug/tempFile1ProcessTestManifest12521577398004563984.xml:5:5-74
+6        android:minSdkVersion="26"
+6-->/home/runner/work/StockTicker/StockTicker/androidApp/build/intermediates/tmp/manifest/test/dev/debug/tempFile1ProcessTestManifest12521577398004563984.xml:5:15-41
+7        android:targetSdkVersion="36" />
+7-->/home/runner/work/StockTicker/StockTicker/androidApp/build/intermediates/tmp/manifest/test/dev/debug/tempFile1ProcessTestManifest12521577398004563984.xml:5:42-71
+8
+9    <queries>
+9-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:24:5-28:15
+10        <package android:name="androidx.test.orchestrator" />
+10-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:25:9-62
+10-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:25:18-59
+11        <package android:name="androidx.test.services" />
+11-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:26:9-58
+11-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:26:18-55
+12        <package android:name="com.google.android.apps.common.testing.services" />
+12-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:27:9-83
+12-->[androidx.test:runner:1.6.2] /home/runner/.gradle/caches/9.4.1/transforms/18ce3976525ea520363b0b8c9486c866/transformed/runner-1.6.2/AndroidManifest.xml:27:18-80
+13    </queries>
+14
+15    <uses-permission android:name="android.permission.REORDER_TASKS" />
+15-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:24:5-72
+15-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:24:22-69
+16    <uses-permission android:name="android.permission.WAKE_LOCK" />
+16-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:23:5-68
+16-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:23:22-65
+17    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+17-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:24:5-79
+17-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:24:22-76
+18    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+18-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:25:5-81
+18-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:25:22-78
+19    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+19-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:26:5-77
+19-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:26:22-74
+20
+21    <permission
+21-->[androidx.core:core:1.16.0] /home/runner/.gradle/caches/9.4.1/transforms/a702add7cff44cf362bca46f454e9fe4/transformed/core-1.16.0/AndroidManifest.xml:22:5-24:47
+22        android:name="com.github.premnirmal.tickerwidget.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+22-->[androidx.core:core:1.16.0] /home/runner/.gradle/caches/9.4.1/transforms/a702add7cff44cf362bca46f454e9fe4/transformed/core-1.16.0/AndroidManifest.xml:23:9-81
+23        android:protectionLevel="signature" />
+23-->[androidx.core:core:1.16.0] /home/runner/.gradle/caches/9.4.1/transforms/a702add7cff44cf362bca46f454e9fe4/transformed/core-1.16.0/AndroidManifest.xml:24:9-44
+24
+25    <uses-permission android:name="com.github.premnirmal.tickerwidget.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+25-->[androidx.core:core:1.16.0] /home/runner/.gradle/caches/9.4.1/transforms/a702add7cff44cf362bca46f454e9fe4/transformed/core-1.16.0/AndroidManifest.xml:26:5-97
+25-->[androidx.core:core:1.16.0] /home/runner/.gradle/caches/9.4.1/transforms/a702add7cff44cf362bca46f454e9fe4/transformed/core-1.16.0/AndroidManifest.xml:26:22-94
+26    <uses-permission android:name="android.permission.INTERNET" />
+26-->[com.squareup.okhttp3:okhttp-android:5.2.1] /home/runner/.gradle/caches/9.4.1/transforms/a224a65ec05fc0d51b08a96fedc12da1/transformed/jetified-okhttp-release/AndroidManifest.xml:8:5-67
+26-->[com.squareup.okhttp3:okhttp-android:5.2.1] /home/runner/.gradle/caches/9.4.1/transforms/a224a65ec05fc0d51b08a96fedc12da1/transformed/jetified-okhttp-release/AndroidManifest.xml:8:22-64
+27
+28    <application
+28-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:22:5-59:19
+29        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+29-->[androidx.core:core:1.16.0] /home/runner/.gradle/caches/9.4.1/transforms/a702add7cff44cf362bca46f454e9fe4/transformed/core-1.16.0/AndroidManifest.xml:28:18-86
+30        android:debuggable="true" >
+31        <activity
+31-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:23:9-28:62
+32            android:name="androidx.glance.appwidget.action.ActionTrampolineActivity"
+32-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:24:13-85
+33            android:enabled="true"
+33-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:25:13-35
+34            android:excludeFromRecents="true"
+34-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:26:13-46
+35            android:exported="false"
+35-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:27:13-37
+36            android:theme="@android:style/Theme.NoDisplay" />
+36-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:28:13-59
+37        <activity
+37-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:29:9-36:81
+38            android:name="androidx.glance.appwidget.action.InvisibleActionTrampolineActivity"
+38-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:30:13-94
+39            android:enabled="true"
+39-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:31:13-35
+40            android:exported="false"
+40-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:32:13-37
+41            android:launchMode="singleInstance"
+41-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:33:13-48
+42            android:noHistory="true"
+42-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:34:13-37
+43            android:taskAffinity="androidx.glance.appwidget.ListAdapterCallbackTrampoline"
+43-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:35:13-91
+44            android:theme="@style/Widget.Glance.AppWidget.CallbackTrampoline" />
+44-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:36:13-78
+45
+46        <receiver
+46-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:38:9-41:40
+47            android:name="androidx.glance.appwidget.action.ActionCallbackBroadcastReceiver"
+47-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:39:13-92
+48            android:enabled="true"
+48-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:40:13-35
+49            android:exported="false" />
+49-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:41:13-37
+50        <receiver
+50-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:42:9-45:40
+51            android:name="androidx.glance.appwidget.UnmanagedSessionReceiver"
+51-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:43:13-78
+52            android:enabled="true"
+52-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:44:13-35
+53            android:exported="false" />
+53-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:45:13-37
+54        <receiver
+54-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:46:9-53:20
+55            android:name="androidx.glance.appwidget.MyPackageReplacedReceiver"
+55-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:47:13-79
+56            android:enabled="true"
+56-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:48:13-35
+57            android:exported="false" >
+57-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:49:13-37
+58            <intent-filter>
+58-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:50:13-52:29
+59                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+59-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:51:17-84
+59-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:51:25-81
+60            </intent-filter>
+61        </receiver>
+62
+63        <service
+63-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:55:9-58:72
+64            android:name="androidx.glance.appwidget.GlanceRemoteViewsService"
+64-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:56:13-78
+65            android:exported="true"
+65-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:57:13-36
+66            android:permission="android.permission.BIND_REMOTEVIEWS" />
+66-->[androidx.glance:glance-appwidget:1.1.1] /home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/AndroidManifest.xml:58:13-69
+67
+68        <activity
+68-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:27:9-34:20
+69            android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
+69-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:28:13-99
+70            android:exported="true"
+70-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:29:13-36
+71            android:theme="@style/WhiteBackgroundTheme" >
+71-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:30:13-56
+72            <intent-filter android:priority="-100" >
+72-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:31:13-33:29
+72-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:31:28-51
+73                <category android:name="android.intent.category.LAUNCHER" />
+73-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:32:17-77
+73-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:32:27-74
+74            </intent-filter>
+75        </activity>
+76        <activity
+76-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:35:9-42:20
+77            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
+77-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:36:13-95
+78            android:exported="true"
+78-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:37:13-36
+79            android:theme="@style/WhiteBackgroundTheme" >
+79-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:38:13-56
+80            <intent-filter android:priority="-100" >
+80-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:31:13-33:29
+80-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:31:28-51
+81                <category android:name="android.intent.category.LAUNCHER" />
+81-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:32:17-77
+81-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:32:27-74
+82            </intent-filter>
+83        </activity>
+84        <activity
+84-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:43:9-50:20
+85            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
+85-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:44:13-103
+86            android:exported="true"
+86-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:45:13-36
+87            android:theme="@style/WhiteBackgroundDialogTheme" >
+87-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:46:13-62
+88            <intent-filter android:priority="-100" >
+88-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:31:13-33:29
+88-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:31:28-51
+89                <category android:name="android.intent.category.LAUNCHER" />
+89-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:32:17-77
+89-->[androidx.test:core:1.7.0] /home/runner/.gradle/caches/9.4.1/transforms/562487eb9f95b0282d0b8c32e2c52de1/transformed/jetified-core-1.7.0/AndroidManifest.xml:32:27-74
+90            </intent-filter>
+91        </activity>
+92
+93        <provider
+93-->[org.jetbrains.compose.components:components-resources-android:1.11.0] /home/runner/.gradle/caches/9.4.1/transforms/1e201f18eecbaa3fd1b325fa1c4e4c29/transformed/jetified-library-release/AndroidManifest.xml:8:9-13:20
+94            android:name="org.jetbrains.compose.resources.AndroidContextProvider"
+94-->[org.jetbrains.compose.components:components-resources-android:1.11.0] /home/runner/.gradle/caches/9.4.1/transforms/1e201f18eecbaa3fd1b325fa1c4e4c29/transformed/jetified-library-release/AndroidManifest.xml:9:13-82
+95            android:authorities="com.github.premnirmal.tickerwidget.dev.resources.AndroidContextProvider"
+95-->[org.jetbrains.compose.components:components-resources-android:1.11.0] /home/runner/.gradle/caches/9.4.1/transforms/1e201f18eecbaa3fd1b325fa1c4e4c29/transformed/jetified-library-release/AndroidManifest.xml:10:13-84
+96            android:enabled="true"
+96-->[org.jetbrains.compose.components:components-resources-android:1.11.0] /home/runner/.gradle/caches/9.4.1/transforms/1e201f18eecbaa3fd1b325fa1c4e4c29/transformed/jetified-library-release/AndroidManifest.xml:11:13-35
+97            android:exported="false" >
+97-->[org.jetbrains.compose.components:components-resources-android:1.11.0] /home/runner/.gradle/caches/9.4.1/transforms/1e201f18eecbaa3fd1b325fa1c4e4c29/transformed/jetified-library-release/AndroidManifest.xml:12:13-37
+98        </provider>
+99        <provider
+99-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:29:9-37:20
+100            android:name="androidx.startup.InitializationProvider"
+100-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:30:13-67
+101            android:authorities="com.github.premnirmal.tickerwidget.dev.androidx-startup"
+101-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:31:13-68
+102            android:exported="false" >
+102-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:32:13-37
+103            <meta-data
+103-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:34:13-36:52
+104                android:name="androidx.work.WorkManagerInitializer"
+104-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:35:17-68
+105                android:value="androidx.startup" />
+105-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:36:17-49
+106            <meta-data
+106-->[androidx.emoji2:emoji2:1.4.0] /home/runner/.gradle/caches/9.4.1/transforms/0a3e578475c646865924450fca95bf17/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:29:13-31:52
+107                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+107-->[androidx.emoji2:emoji2:1.4.0] /home/runner/.gradle/caches/9.4.1/transforms/0a3e578475c646865924450fca95bf17/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:30:17-75
+108                android:value="androidx.startup" />
+108-->[androidx.emoji2:emoji2:1.4.0] /home/runner/.gradle/caches/9.4.1/transforms/0a3e578475c646865924450fca95bf17/transformed/jetified-emoji2-1.4.0/AndroidManifest.xml:31:17-49
+109            <meta-data
+109-->[androidx.lifecycle:lifecycle-process:2.11.0-beta01] /home/runner/.gradle/caches/9.4.1/transforms/7c8e393b7d4698facd77aaee09947c40/transformed/jetified-lifecycle-process-2.11.0-beta01/AndroidManifest.xml:29:13-31:52
+110                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+110-->[androidx.lifecycle:lifecycle-process:2.11.0-beta01] /home/runner/.gradle/caches/9.4.1/transforms/7c8e393b7d4698facd77aaee09947c40/transformed/jetified-lifecycle-process-2.11.0-beta01/AndroidManifest.xml:30:17-78
+111                android:value="androidx.startup" />
+111-->[androidx.lifecycle:lifecycle-process:2.11.0-beta01] /home/runner/.gradle/caches/9.4.1/transforms/7c8e393b7d4698facd77aaee09947c40/transformed/jetified-lifecycle-process-2.11.0-beta01/AndroidManifest.xml:31:17-49
+112            <meta-data
+112-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:29:13-31:52
+113                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+113-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:30:17-85
+114                android:value="androidx.startup" />
+114-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:31:17-49
+115            <meta-data
+115-->[com.squareup.okhttp3:okhttp-android:5.2.1] /home/runner/.gradle/caches/9.4.1/transforms/a224a65ec05fc0d51b08a96fedc12da1/transformed/jetified-okhttp-release/AndroidManifest.xml:16:13-18:52
+116                android:name="okhttp3.internal.platform.PlatformInitializer"
+116-->[com.squareup.okhttp3:okhttp-android:5.2.1] /home/runner/.gradle/caches/9.4.1/transforms/a224a65ec05fc0d51b08a96fedc12da1/transformed/jetified-okhttp-release/AndroidManifest.xml:17:17-77
+117                android:value="androidx.startup" />
+117-->[com.squareup.okhttp3:okhttp-android:5.2.1] /home/runner/.gradle/caches/9.4.1/transforms/a224a65ec05fc0d51b08a96fedc12da1/transformed/jetified-okhttp-release/AndroidManifest.xml:18:17-49
+118        </provider>
+119
+120        <service
+120-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:39:9-45:35
+121            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+121-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:40:13-88
+122            android:directBootAware="false"
+122-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:41:13-44
+123            android:enabled="@bool/enable_system_alarm_service_default"
+123-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:42:13-72
+124            android:exported="false" />
+124-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:43:13-37
+125        <service
+125-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:46:9-52:35
+126            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+126-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:47:13-84
+127            android:directBootAware="false"
+127-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:48:13-44
+128            android:enabled="@bool/enable_system_job_service_default"
+128-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:49:13-70
+129            android:exported="true"
+129-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:50:13-36
+130            android:permission="android.permission.BIND_JOB_SERVICE" />
+130-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:51:13-69
+131        <service
+131-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:53:9-59:35
+132            android:name="androidx.work.impl.foreground.SystemForegroundService"
+132-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:54:13-81
+133            android:directBootAware="false"
+133-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:55:13-44
+134            android:enabled="@bool/enable_system_foreground_service_default"
+134-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:56:13-77
+135            android:exported="false" />
+135-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:57:13-37
+136
+137        <receiver
+137-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:61:9-66:35
+138            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+138-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:62:13-88
+139            android:directBootAware="false"
+139-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:63:13-44
+140            android:enabled="true"
+140-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:64:13-35
+141            android:exported="false" />
+141-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:65:13-37
+142        <receiver
+142-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:67:9-77:20
+143            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+143-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:68:13-106
+144            android:directBootAware="false"
+144-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:69:13-44
+145            android:enabled="false"
+145-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:70:13-36
+146            android:exported="false" >
+146-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:71:13-37
+147            <intent-filter>
+147-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:73:13-76:29
+148                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+148-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:74:17-87
+148-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:74:25-84
+149                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+149-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:75:17-90
+149-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:75:25-87
+150            </intent-filter>
+151        </receiver>
+152        <receiver
+152-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:78:9-88:20
+153            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+153-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:79:13-104
+154            android:directBootAware="false"
+154-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:80:13-44
+155            android:enabled="false"
+155-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:81:13-36
+156            android:exported="false" >
+156-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:82:13-37
+157            <intent-filter>
+157-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:84:13-87:29
+158                <action android:name="android.intent.action.BATTERY_OKAY" />
+158-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:85:17-77
+158-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:85:25-74
+159                <action android:name="android.intent.action.BATTERY_LOW" />
+159-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:86:17-76
+159-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:86:25-73
+160            </intent-filter>
+161        </receiver>
+162        <receiver
+162-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:89:9-99:20
+163            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+163-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:90:13-104
+164            android:directBootAware="false"
+164-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:91:13-44
+165            android:enabled="false"
+165-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:92:13-36
+166            android:exported="false" >
+166-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:93:13-37
+167            <intent-filter>
+167-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:95:13-98:29
+168                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+168-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:96:17-83
+168-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:96:25-80
+169                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+169-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:97:17-82
+169-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:97:25-79
+170            </intent-filter>
+171        </receiver>
+172        <receiver
+172-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:100:9-109:20
+173            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+173-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:101:13-103
+174            android:directBootAware="false"
+174-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:102:13-44
+175            android:enabled="false"
+175-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:103:13-36
+176            android:exported="false" >
+176-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:104:13-37
+177            <intent-filter>
+177-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:106:13-108:29
+178                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+178-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:107:17-79
+178-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:107:25-76
+179            </intent-filter>
+180        </receiver>
+181        <receiver
+181-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:110:9-121:20
+182            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+182-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:111:13-88
+183            android:directBootAware="false"
+183-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:112:13-44
+184            android:enabled="false"
+184-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:113:13-36
+185            android:exported="false" >
+185-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:114:13-37
+186            <intent-filter>
+186-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:116:13-120:29
+187                <action android:name="android.intent.action.BOOT_COMPLETED" />
+187-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:117:17-79
+187-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:117:25-76
+188                <action android:name="android.intent.action.TIME_SET" />
+188-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:118:17-73
+188-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:118:25-70
+189                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+189-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:119:17-81
+189-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:119:25-78
+190            </intent-filter>
+191        </receiver>
+192        <receiver
+192-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:122:9-131:20
+193            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+193-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:123:13-99
+194            android:directBootAware="false"
+194-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:124:13-44
+195            android:enabled="@bool/enable_system_alarm_service_default"
+195-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:125:13-72
+196            android:exported="false" >
+196-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:126:13-37
+197            <intent-filter>
+197-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:128:13-130:29
+198                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+198-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:129:17-98
+198-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:129:25-95
+199            </intent-filter>
+200        </receiver>
+201        <receiver
+201-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:132:9-142:20
+202            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+202-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:133:13-78
+203            android:directBootAware="false"
+203-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:134:13-44
+204            android:enabled="true"
+204-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:135:13-35
+205            android:exported="true"
+205-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:136:13-36
+206            android:permission="android.permission.DUMP" >
+206-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:137:13-57
+207            <intent-filter>
+207-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:139:13-141:29
+208                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+208-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:140:17-88
+208-->[androidx.work:work-runtime:2.10.3] /home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/AndroidManifest.xml:140:25-85
+209            </intent-filter>
+210        </receiver>
+211
+212        <service
+212-->[androidx.core:core-remoteviews:1.1.0] /home/runner/.gradle/caches/9.4.1/transforms/1428385f9694bb43d6d7e705efb5804c/transformed/jetified-core-remoteviews-1.1.0/AndroidManifest.xml:24:9-27:63
+213            android:name="androidx.core.widget.RemoteViewsCompatService"
+213-->[androidx.core:core-remoteviews:1.1.0] /home/runner/.gradle/caches/9.4.1/transforms/1428385f9694bb43d6d7e705efb5804c/transformed/jetified-core-remoteviews-1.1.0/AndroidManifest.xml:25:13-73
+214            android:permission="android.permission.BIND_REMOTEVIEWS" />
+214-->[androidx.core:core-remoteviews:1.1.0] /home/runner/.gradle/caches/9.4.1/transforms/1428385f9694bb43d6d7e705efb5804c/transformed/jetified-core-remoteviews-1.1.0/AndroidManifest.xml:26:13-69
+215
+216        <uses-library
+216-->[androidx.window:window:1.5.0] /home/runner/.gradle/caches/9.4.1/transforms/0cecf405bf9cd49ffe43610f9cc03b11/transformed/jetified-window-1.5.0/AndroidManifest.xml:23:9-25:40
+217            android:name="androidx.window.extensions"
+217-->[androidx.window:window:1.5.0] /home/runner/.gradle/caches/9.4.1/transforms/0cecf405bf9cd49ffe43610f9cc03b11/transformed/jetified-window-1.5.0/AndroidManifest.xml:24:13-54
+218            android:required="false" />
+218-->[androidx.window:window:1.5.0] /home/runner/.gradle/caches/9.4.1/transforms/0cecf405bf9cd49ffe43610f9cc03b11/transformed/jetified-window-1.5.0/AndroidManifest.xml:25:13-37
+219        <uses-library
+219-->[androidx.window:window:1.5.0] /home/runner/.gradle/caches/9.4.1/transforms/0cecf405bf9cd49ffe43610f9cc03b11/transformed/jetified-window-1.5.0/AndroidManifest.xml:26:9-28:40
+220            android:name="androidx.window.sidecar"
+220-->[androidx.window:window:1.5.0] /home/runner/.gradle/caches/9.4.1/transforms/0cecf405bf9cd49ffe43610f9cc03b11/transformed/jetified-window-1.5.0/AndroidManifest.xml:27:13-51
+221            android:required="false" />
+221-->[androidx.window:window:1.5.0] /home/runner/.gradle/caches/9.4.1/transforms/0cecf405bf9cd49ffe43610f9cc03b11/transformed/jetified-window-1.5.0/AndroidManifest.xml:28:13-37
+222
+223        <activity
+223-->[androidx.compose.ui:ui-tooling-android:1.11.1] /home/runner/.gradle/caches/9.4.1/transforms/73451eee384f9ddfcfb75ecdc0d768e2/transformed/jetified-ui-tooling/AndroidManifest.xml:23:9-25:39
+224            android:name="androidx.compose.ui.tooling.PreviewActivity"
+224-->[androidx.compose.ui:ui-tooling-android:1.11.1] /home/runner/.gradle/caches/9.4.1/transforms/73451eee384f9ddfcfb75ecdc0d768e2/transformed/jetified-ui-tooling/AndroidManifest.xml:24:13-71
+225            android:exported="true" />
+225-->[androidx.compose.ui:ui-tooling-android:1.11.1] /home/runner/.gradle/caches/9.4.1/transforms/73451eee384f9ddfcfb75ecdc0d768e2/transformed/jetified-ui-tooling/AndroidManifest.xml:25:13-36
+226
+227        <receiver
+227-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:34:9-52:20
+228            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+228-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:35:13-76
+229            android:directBootAware="false"
+229-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:36:13-44
+230            android:enabled="true"
+230-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:37:13-35
+231            android:exported="true"
+231-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:38:13-36
+232            android:permission="android.permission.DUMP" >
+232-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:39:13-57
+233            <intent-filter>
+233-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:40:13-42:29
+234                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+234-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:41:17-91
+234-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:41:25-88
+235            </intent-filter>
+236            <intent-filter>
+236-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:43:13-45:29
+237                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+237-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:44:17-85
+237-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:44:25-82
+238            </intent-filter>
+239            <intent-filter>
+239-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:46:13-48:29
+240                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+240-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:47:17-88
+240-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:47:25-85
+241            </intent-filter>
+242            <intent-filter>
+242-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:49:13-51:29
+243                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+243-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:50:17-95
+243-->[androidx.profileinstaller:profileinstaller:1.4.1] /home/runner/.gradle/caches/9.4.1/transforms/d3eee92c89e7562f6df5fed410a222d4/transformed/jetified-profileinstaller-1.4.1/AndroidManifest.xml:50:25-92
+244            </intent-filter>
+245        </receiver>
+246
+247        <service
+247-->[androidx.room:room-runtime-android:2.8.4] /home/runner/.gradle/caches/9.4.1/transforms/5a7c0117d8ed8cfc339222d997f2c5fb/transformed/jetified-room-runtime/AndroidManifest.xml:24:9-28:63
+248            android:name="androidx.room.MultiInstanceInvalidationService"
+248-->[androidx.room:room-runtime-android:2.8.4] /home/runner/.gradle/caches/9.4.1/transforms/5a7c0117d8ed8cfc339222d997f2c5fb/transformed/jetified-room-runtime/AndroidManifest.xml:25:13-74
+249            android:directBootAware="true"
+249-->[androidx.room:room-runtime-android:2.8.4] /home/runner/.gradle/caches/9.4.1/transforms/5a7c0117d8ed8cfc339222d997f2c5fb/transformed/jetified-room-runtime/AndroidManifest.xml:26:13-43
+250            android:exported="false" />
+250-->[androidx.room:room-runtime-android:2.8.4] /home/runner/.gradle/caches/9.4.1/transforms/5a7c0117d8ed8cfc339222d997f2c5fb/transformed/jetified-room-runtime/AndroidManifest.xml:27:13-37
+251    </application>
+252
+253</manifest>

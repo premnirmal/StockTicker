@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.github.premnirmal.ticker.model.AlarmSchedulerTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-06-21T13:41:15.802Z" hostname="runnervm7b5n9" time="2.363">
+  <properties/>
+  <testcase name="flip_testNextAlarmTime_whenBetweenStartAndEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="1.631"/>
+  <testcase name="testNextAlarmTime_onSunday" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.104"/>
+  <testcase name="testNextAlarmTime_whenBetweenStartAndEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.055"/>
+  <testcase name="flip_testNextAlarmTime_whenPastEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.045"/>
+  <testcase name="testNextAlarmTime_saturdaySelected" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.046"/>
+  <testcase name="flip_testNextAlarmTime_onSunday" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.068"/>
+  <testcase name="testNextAlarmTime_sundaySelected" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.079"/>
+  <testcase name="testAlarmTime_pastEndTime_withLastFetched_beforeEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.04"/>
+  <testcase name="flip_testNextAlarmTime_onFriday_pastEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.038"/>
+  <testcase name="testIsCurrentTimeWithinScheduledUpdateTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.044"/>
+  <testcase name="testNextAlarmTime_onFriday_pastEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.034"/>
+  <testcase name="flip_testNextAlarmTime_onSaturday" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.036"/>
+  <testcase name="testNextAlarmTime_whenPastEndTime" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.037"/>
+  <testcase name="flip_testNextAlarmTime_sundaySelected" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.036"/>
+  <testcase name="testNextAlarmTime_onSaturday" classname="com.github.premnirmal.ticker.model.AlarmSchedulerTest" time="0.066"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
