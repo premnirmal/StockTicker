@@ -3,7 +3,6 @@
 
   <color name="disabled_grey">#ffbdbdbd</color>
   <color name="unselected_grey">#98545454</color>
-  <color name="accent_fallback">#be6663</color>
   <color name="card_bg">#fbfcfa</color>
   <color name="card_shadow">#10000000</color>
   <color name="tab_background">@color/transparent</color>

@@ -9,12 +9,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.tickerwidget.R.string
 
+/**
+ * Shared empty/error/loading state composables, used by both Android and iOS. The displayed text is
+ * passed in as a [String] so the screens stay free of any platform string-resource lookup.
+ */
 @Composable
 fun EmptyState(
     modifier: Modifier = Modifier,
@@ -62,15 +63,4 @@ fun ProgressState(modifier: Modifier = Modifier) {
     ) {
         CircularProgressIndicator()
     }
-}
-
-@Preview
-@Composable
-fun ErrorStatePreview() {
-    ErrorState(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp),
-        text = stringResource(id = string.no_data)
-    )
 }

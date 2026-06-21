@@ -196,13 +196,12 @@ dependencies {
   implementation(libs.accompanist.permissions)
   implementation(AndroidX.compose.runtime.liveData)
   implementation(AndroidX.dataStore.preferences)
-  implementation(libs.reorderable)
 
   implementation(project(":UI"))
   implementation(project(":shared"))
 
-  implementation(COIL)
-  implementation(COIL.compose)
+  implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
 
   implementation(libs.javax.inject)
   implementation(libs.javax.annotation.api)
@@ -229,7 +228,6 @@ dependencies {
   implementation(AndroidX.dataStore.preferences)
 
   implementation(JakeWharton.timber)
-  implementation(libs.mpandroidchart)
 
   detektPlugins(libs.detekt.formatting)
   detektPlugins(libs.detekt.compose)

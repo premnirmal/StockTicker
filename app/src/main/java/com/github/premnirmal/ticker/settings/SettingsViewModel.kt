@@ -4,11 +4,9 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Parcelable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.Time
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.showDialog
@@ -20,7 +18,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import timber.log.Timber
 
 class SettingsViewModel constructor(
@@ -195,17 +192,4 @@ class SettingsViewModel constructor(
     private suspend fun broadcastUpdateWidget() {
         widgetDataProvider.broadcastUpdateAllWidgets()
     }
-
-    @Parcelize
-    data class SettingsData(
-        val hasWidgets: Boolean,
-        val themePref: Int,
-        val updateIntervalPref: Int,
-        val updateDays: Set<Int>,
-        val notificationAlerts: Boolean,
-        val startTime: Time,
-        val endTime: Time,
-        val autoSort: Boolean?,
-        val roundToTwoDp: Boolean,
-    ) : Parcelable
 }

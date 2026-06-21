@@ -185,10 +185,4 @@ class HomeViewModel constructor(
     fun stopRealTimeFetch() {
         fetchJob?.cancel()
     }
-
-    data class TotalGainLoss(
-        val holdings: String,
-        val gain: String,
-        val loss: String
-    )
 }

@@ -17,21 +17,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.tickerwidget.R
 
 @Composable fun <T> Spinner(
-    modifier: Modifier = Modifier,
-    dropDownModifier: Modifier = Modifier,
-    textAlign: TextAlign = TextAlign.Start,
+    dropDownArrow: Painter,
     items: List<T>,
     selectedItemIndex: Int,
     selectedItemText: String,
     itemText: (T) -> String,
-    onItemSelected: (Int) -> Unit
+    onItemSelected: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    dropDownModifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Start,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     var selectedItem by rememberSaveable { mutableStateOf(selectedItemIndex) }
@@ -59,7 +59,7 @@ import com.github.premnirmal.tickerwidget.R
                 Spacer(modifier = (modifier.weight(1f)))
                 Icon(
                     modifier = modifier.padding(4.dp),
-                    painter = painterResource(id = R.drawable.ic_arrow_down),
+                    painter = dropDownArrow,
                     contentDescription = null
                 )
             }

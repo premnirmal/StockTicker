@@ -9,6 +9,8 @@ plugins {
   alias(libs.plugins.kotlinx.serialization)
   alias(libs.plugins.com.google.devtools.ksp)
   alias(libs.plugins.androidx.room)
+  alias(libs.plugins.compose.multiplatform)
+  alias(libs.plugins.compose.compiler)
   id("kotlin-parcelize")
 }
 
@@ -83,7 +85,6 @@ kotlin {
   }
 
   listOf(
-      iosX64(),
       iosArm64(),
       iosSimulatorArm64()
   ).forEach { iosTarget ->
@@ -107,15 +108,20 @@ kotlin {
       api(libs.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.koin.core)
+      api("androidx.lifecycle:lifecycle-viewmodel:_")
       implementation("androidx.datastore:datastore-preferences-core:_")
       implementation("com.squareup.okio:okio:3.9.1")
+      implementation(compose.runtime)
+      implementation(compose.foundation)
+      implementation(compose.material3)
+      implementation(compose.ui)
+      implementation(compose.components.resources)
+      implementation(libs.reorderable)
+      api(libs.vico.multiplatform)
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
       implementation(JakeWharton.timber)
-      // The Android DataPoint actual extends MPAndroidChart's CandleEntry so the existing chart UI
-      // can render it directly; commonMain/iOS stay MPAndroidChart-free.
-      implementation(libs.mpandroidchart)
     }
     iosMain.dependencies {
       implementation("io.ktor:ktor-client-darwin:_")
@@ -147,7 +153,6 @@ android {
 // (the @Database/@Dao/@Entity declarations live in commonMain).
 dependencies {
   add("kspAndroid", libs.room.compiler)
-  add("kspIosX64", libs.room.compiler)
   add("kspIosArm64", libs.room.compiler)
   add("kspIosSimulatorArm64", libs.room.compiler)
 }

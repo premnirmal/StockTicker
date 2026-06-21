@@ -10,6 +10,7 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "google-hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 
@@ -17,6 +18,7 @@ androidx-room = { id = "androidx.room", version.ref = "androidx-room" }
 
 agp = "8.12.3"
 kotlin = "2.3.21"
+compose-multiplatform = "1.11.0"
 androidx-compose-base = '1.11.1'
 google-accompanist = "0.37.3"
 google-hilt = "2.58"
@@ -29,6 +31,8 @@ detektCompose = "0.5.8"
 reorderable = "3.1.0"
 material3 = "1.4.0"
 glanceAppwidget = "1.1.1"
+vico = "2.5.1"
+coil = "3.5.0"
 
 [libraries]
 
@@ -62,9 +66,11 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
 detekt-compose = { group = "io.nlopez.compose.rules", name = "detekt", version.ref = "detektCompose"}
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version.ref = "vico" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 javax-inject = "javax.inject:javax.inject:1"
 javax-annotation-api = "javax.annotation:javax.annotation-api:1.3.2"
-mpandroidchart = "com.github.PhilJay:MPAndroidChart:v3.1.0"
 retrofit-kotlin-serialization = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0"
 opengl-api = "org.khronos:opengl-api:gl1.1-android-2.1_r1"

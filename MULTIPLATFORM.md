@@ -230,6 +230,170 @@ items above:
 `UserDefaultsTickersStoreTest`, `AnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
 `Shared` framework.
 
+### In progress — Phase 4 (shared Compose UI)
+Compose Multiplatform (`org.jetbrains.compose` 1.11.0, paired with the Kotlin compose-compiler
+plugin) is now applied to `:shared`, so `commonMain` can host `@Composable` UI shared by Android and
+iOS. `commonMain` gains the `compose.runtime`/`foundation`/`material3`/`ui` (+ `components.resources`)
+dependencies, and the `iosX64` target was dropped because Compose Multiplatform no longer publishes
+Intel-simulator artifacts (the iOS targets are `iosArm64()` + `iosSimulatorArm64()`).
+
+Migrated into `commonMain` so far:
+
+- The small shared building blocks: `AppTextField` (the rounded text-field colours/shape) and the
+  `TopBar` wrapper (its Android `@Preview` dropped), both in `ticker.ui`.
+- The **per-ticker editor ViewModels** — `NotesViewModel`, `DisplaynameViewModel` and
+  `AlertsViewModel` (`ticker.portfolio`) — using the multiplatform `androidx.lifecycle` `ViewModel`
+  (`lifecycle-viewmodel` KMP). They now depend on the shared `IStocksProvider` + `QuoteStorage`
+  interfaces rather than the Android `StocksProvider`/`StocksStorage` concretes; `:app` binds those
+  interfaces to the Android implementations in `appModule` (`single<IStocksProvider> { get<StocksProvider>() }`
+  / `single<QuoteStorage> { get<StocksStorage>() }`).
+- The **per-ticker editor screens** — `NotesScreen`, `DisplaynameScreen` and `AlertsScreen`
+  (`ticker.portfolio`, in `PortfolioEditScreens.kt`) — bound to those shared ViewModels. The
+  Android-only inputs are hoisted as parameters: the localised strings as `String`s, the back/done
+  icons as `Painter`s, the snackbar as a `SnackbarHostState`, and the `finish()`/`setResult()`
+  navigation side effects as `onBack`/`onDone` callbacks. The alerts editor's locale-aware
+  number parsing stays on the host via an `onSave` callback that returns the above/below error flags.
+  The decimal-input helpers it relies on (`DecimalFormatter`/`DecimalInputVisualTransformation`) also
+  moved into `commonMain`, with the locale separator behind an `expect`/`actual`
+  `localeDecimalSeparator()` (Android `android.icu.text.DecimalFormatSymbols`, iOS
+  `NSNumberFormatter`). `NotesActivity`/`DisplaynameActivity`/`AlertsActivity` are now thin hosts that
+  supply the resources/callbacks and call the shared screen.
+- The **add-position / holdings editor** — its `AddPositionViewModel` (`ticker.portfolio`, now on the
+  shared `IStocksProvider` like the other editor ViewModels) and the `AddPositionScreen`
+  (`PortfolioEditScreens.kt`). As with the other editors the localised strings are hoisted as
+  `String`s, the back/remove icons as `Painter`s, the snackbar as a `SnackbarHostState`, and the
+  navigation side effects as `onBack` callbacks; the holdings number formatting is delegated to a
+  `formatNumber` lambda and the locale-aware parse/validate/persist of the entered shares/price to an
+  `onAdd` callback (returning the price/shares error flags), so the platform `NumberFormat`/snackbar
+  stays on the host. The Android-only adaptive two-pane layout (Accompanist `TwoPane`) is hoisted as
+  an optional `twoPane` slot (`null` renders the single-column layout). `HoldingsActivity` is now a
+  thin host that collects the ViewModel flows, owns the activity-result wiring and supplies the
+  resources/callbacks/two-pane slot.
+- The **trending/news-feed ViewModel** — `NewsFeedViewModel` (`ticker.news`) — moved into
+  `commonMain` alongside its already-shared dependencies (`NewsProvider`, `FetchResult`,
+  `NewsFeedItem`). It uses the multiplatform `androidx.lifecycle` `ViewModel`; the package and public
+  contract are unchanged, so the `:app` `NewsFeedScreen` and Koin registration are untouched.
+- The **trending/news-feed screen** — `NewsFeedScreen` (`ticker.news`) — and the shared UI-state
+  helpers (`EmptyState`/`ErrorState`/`ProgressState`, `ticker.ui`). The Android-coupled inputs are
+  hoisted as parameters: the localised labels as `String`s, the `QuoteCard`/`NewsCard` as composable
+  slots (they still pull in the not-yet-shared image loading + theme), the `RuntimeShader`-based
+  `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the navigation `rememberScrollToTopAction`
+  registration as a `registerScrollToTop` slot, and the quote tap as `onQuoteClick`. A thin
+  `NewsFeedScreenHost.kt` in `:app` resolves the Koin ViewModel + the above and delegates to the
+  shared screen.
+- The **search/trending screen** — `SearchScreen` (`ticker.portfolio.search`) — moved into
+  `commonMain` using a fully **stateless** (state-hoisting) design: rather than taking a ViewModel, it
+  receives the state it renders (`searchResults`/`trendingStocks`/`isRefreshing`) and the events it
+  raises (`onQueryChange`/`onRefresh`/`onQuoteClick`) as plain parameters. The Android-coupled inputs
+  are hoisted too: the localised labels as `String`s, the `ic_close` clear icon as a `Painter`, the
+  `QuoteCard`/`SuggestionItem`/`AddSymbolDialog` as composable slots, the `RuntimeShader`-based
+  `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the navigation `rememberScrollToTopAction`
+  registration as a `registerScrollToTop` slot, and the adaptive Accompanist `TwoPane` layout as an
+  optional `twoPane` slot (null = single column; the news second pane stays in `:app`). A thin
+  `SearchScreenHost.kt` in `:app` resolves the Koin `SearchViewModel`/`NewsFeedViewModel` + the above
+  and delegates to the shared screen. `SearchViewModel` stays in `:app` for now (it still depends on
+  the not-yet-shared `WidgetDataProvider`/`AppMessaging`).
+- The **home watchlist screen** — `WatchlistContent` (`ticker.home`) — and the pure
+  `CollapsingTopBarScrollConnection` (the collapsing-header nested-scroll connection) moved into
+  `commonMain` using a fully **stateless** (state-hoisting) design. Rather than taking the
+  `HomeViewModel`, the shared screen receives the state it renders (`hasWidgets`/`subtitle`/
+  `isRefreshing`/`hasHoldings`/`totalGainLoss`) and the events it raises (`onRefresh`/`onQuoteClick`)
+  as parameters. The Glance/`SharedPreferences`-backed `WidgetData` is abstracted behind a small shared
+  `WatchlistWidget` interface (name + reactive `stocks` + `rearrange`/`setAutoSort`/`removeStock`),
+  and the `HomeViewModel.TotalGainLoss` data class became the shared `TotalGainLoss`. The remaining
+  Android-coupled inputs are hoisted too: the localised app name as a `String`, the `ic_money` icon as
+  a `Painter`, the theme-aware header background as a nullable `Painter` (null = no image, e.g. in the
+  dual-pane list), the `QuoteCard` and `TotalHoldingsPopup` as composable slots, the `RuntimeShader`-
+  based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, and the two navigation
+  `rememberScrollToTopAction` registrations as `registerResetScroll`/`registerWidgetScroll` slots. The
+  reorderable drag (`sh.calvin.reorderable`, a Compose-Multiplatform library) moved from `:app` into
+  `:shared`. A thin `WatchlistContentHost.kt` in `:app` collects the ViewModel flows, adapts each
+  `WidgetData` to `WatchlistWidget` and supplies the resources/slots.
+- The **settings screen** — `SettingsScreen` (`ticker.settings`) — and the preference UI components
+  (`SettingsText`, `CheckboxPreference`, `ListPreference`, `MultiSelectListPreference`,
+  `TimeSelectorPreference`, in `ticker.ui.Preferences.kt`) moved into `commonMain` using a fully
+  **stateless** (state-hoisting) design. The `SettingsData` data class (the snapshot of preferences)
+  moved to `commonMain` (Parceling dropped — it is only held in-memory by the ViewModel's
+  `StateFlow`). The preference dialogs (`ListPreference`, `MultiSelectListPreference`,
+  `TimeSelectorPreference`) were reimplemented with Compose Multiplatform `material3.AlertDialog` and
+  `material3.TimePicker`/`TimePickerState`, removing the Android `AlertDialog`/`TimePickerDialog`/
+  `LocalContext` dependencies. The Android-coupled inputs are hoisted as parameters: the localised
+  labels/string-arrays as `String`/`Array<String>` values, the three dialog confirm/dismiss labels,
+  the `Divider` as a composable slot (it lives in `:UI`), the alarm-permission banner as a composable
+  slot, the `Alegreya`/`Bold` fonts as nullable `FontFamily` params, all user actions as callback
+  lambdas (file pickers, Custom Tabs links, notification-permission flow, version-tap easter egg),
+  the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, and the
+  navigation `rememberScrollToTopAction` registration as a `registerScrollToTop` slot. A thin
+  `SettingsScreenHost.kt` in `:app` resolves the Koin `SettingsViewModel`, collects the settings
+  flow, owns the `rememberLauncherForActivityResult` file pickers, the accompanist notification
+  permission, the `AlarmPermissionBanner`, the `OnVersionTap` easter egg, and supplies the
+  resources/slots. The `SettingsViewModel` stays in `:app` (it depends on `WidgetDataProvider`,
+  `NotificationsHandler`, and Android file I/O).
+- The **quote-detail price chart** — `PriceChartView` (`ticker.detail`, in `PriceChart.kt`) — moved into
+  `commonMain` by swapping the Android-only MPAndroidChart `LineChart` (`AndroidView`) for the
+  multiplatform **Vico** chart (`com.patrykandpatrick.vico:multiplatform`). The date/number axis and
+  marker formatting is hoisted to `:app` via plain functions (`ui/AxisFormatters.kt`) and passed in as
+  `xAxisFormatter`/`yAxisFormatter`/`markerFormatter` parameters.
+- The **quote-detail ViewModel** — `QuoteDetailViewModel` (`ticker.news`) — moved into `commonMain`
+  using the multiplatform `androidx.lifecycle` `ViewModel`. It now depends on the shared
+  `IStocksProvider`/`UserPreferences` contracts (rather than the Android `StocksProvider`/
+  `AppPreferences` concretes) plus the already-shared `NewsProvider`/`HistoryProvider`; `:app` binds
+  `UserPreferences` to `AppPreferences` in `appModule`. The genuinely Android-coupled, localised
+  "quote details" list (the `@StringRes` labels + `Context`-based number/date formatting) is hoisted
+  out of the ViewModel into a `:app` helper (`detail/QuoteDetails.kt`, `buildQuoteDetails`), and the
+  news-fetch error snackbar is exposed as a shared `messages` flow the host collects instead of
+  coupling to the Android `AppMessaging`.
+- The **quote-detail screen** — `QuoteDetailScreen` (`ticker.detail`) — and its cards
+  (`QuoteDetailCard`, `PositionDetailCard`, `AlertsCard`, `EditSectionHeader`) moved into `commonMain`
+  using a fully **stateless** (state-hoisting) design building on the already-shared
+  `QuoteDetailViewModel`/`PriceChartView`. The localised `QuoteDetail` row model became a shared
+  `QuoteDetailItem` (resolved `title: String` + `data: String`); the Android-only `buildQuoteDetails`
+  (`detail/QuoteDetails.kt`) now resolves the `@StringRes` titles to `String`s and returns
+  `List<QuoteDetailItem>`, so the shared grid has no `@StringRes`/`Context`. Every Android-coupled
+  input is hoisted as a parameter: the localised labels as a `QuoteDetailStrings` holder and the
+  pre-formatted alert values as `String`s, the `ic_refresh`/`ic_add_to_list`/`ic_edit` icons as
+  `Painter`s, the resolved change/up/down `ColourPalette` colours as `Color`s (the
+  `Quote.changeColour`/`ChartData.changeColour` Compose theming stays in `:app`), the chart axis/marker
+  formatters as lambdas, the `AppMessaging` bottom-sheet card-tap as an `onCardClick(title, data)`
+  lambda, the per-section `Holdings`/`Alerts`/`Notes`/`Displayname` editing as `onEdit*` callbacks plus
+  the displayed `position`/`alert`/`notes`/`displayname` state values, the `AppCard` container
+  (it lives in `:UI`), `NewsCard`, `AddSymbolDialog` and the website `LinkText` as composable slots,
+  the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the
+  `SnackbarHostState`, and the adaptive Accompanist `TwoPane`/`WindowWidthSizeClass`/`ContentType`
+  layout as an optional `twoPane(first, second)` slot (null = single column). A thin
+  `QuoteDetailScreenHost.kt` in `:app` (named `QuoteDetailScreen`, keeping the same
+  `widthSizeClass`/`contentType`/`displayFeatures`/`quote` signature so `QuoteDetailActivity`,
+  `WatchlistScreen` and `RootGraph` are unchanged) resolves the Koin `QuoteDetailViewModel`/
+  `AppPreferences`, collects the ViewModel state, owns the `rememberLauncherForActivityResult`
+  activity-result wiring, the `loadQuote`/`fetchAll`/`fetchQuoteInRealTime`/`reset` `DisposableEffect`
+  lifecycle, the range-change chart fetch and the `viewModel.messages` snackbar collection, and
+  supplies the resources/colours/slots.
+- The **widgets settings screen** — `WidgetsScreen` (`ticker.widget`) — and the `Spinner`
+  (`ticker.ui`) moved into `commonMain` using a fully **stateless** (state-hoisting) design. The
+  Glance/`SharedPreferences`-backed `WidgetData` is abstracted behind a small shared `WidgetSettings`
+  interface (a reactive `prefs: StateFlow<WidgetPrefs>` snapshot + the `setXxx` mutators), and the
+  preference values rendered by the screen became the shared `WidgetPrefs` data class (the Android-only
+  `@DrawableRes`/`@ColorRes` fields used to actually paint the widget stay on `WidgetData.Prefs`). The
+  Android-coupled inputs are hoisted as parameters: the localised labels + string-arrays as a
+  `WidgetSettingsStrings` holder, the `ic_arrow_down`/`ic_done` icons as `Painter`s, the genuinely
+  Android-only Glance `WidgetPreview` as a `widgetPreview` composable slot, the `Divider` as a slot,
+  the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the navigation
+  `rememberScrollToTopAction` registration as a `registerScrollToTop` slot, the adaptive Accompanist
+  `TwoPane` layout as an optional `twoPane` slot (null = single column), and the widget selection
+  (`widgetNames`/`selectedIndex`/`onWidgetSelected`) + the `AddStocks` tap as parameters. A thin
+  `WidgetsScreenHost.kt` in `:app` (named `WidgetsScreen`, keeping the same
+  `widthSizeClass`/`displayFeatures`/`selectedWidgetId`/`showSpinner` signature so
+  `WidgetSettingsActivity` and `HomeNavigation` are unchanged) resolves the Koin `WidgetsViewModel`,
+  collects the widget list/fetch state, adapts each `WidgetData` to `WidgetSettings` and supplies the
+  resources/slots.
+- **Image loading** was migrated from **Coil 2** to **Coil 3** (`io.coil-kt.coil3`, with the
+  `coil-network-okhttp` fetcher) in `:app` — the multiplatform-capable image loader, so the
+  `QuoteCard`/`NewsCard` image loading can move into shared UI in a follow-up.
+
+Remaining Phase 4 work: Compose Multiplatform navigation (replacing the `:app` `RootGraph`/navigation
+wiring) and moving the Coil-backed image cards into shared UI.
+
+
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
