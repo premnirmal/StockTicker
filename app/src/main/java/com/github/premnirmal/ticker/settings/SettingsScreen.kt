@@ -239,6 +239,8 @@ private fun LazyListScope.settingsItems(
             title = stringResource(id = R.string.update_days),
             items = stringArrayResource(id = R.array.days),
             selected = settingsData.updateDays.map { it - 1 }.toSet(),
+            confirmText = stringResource(id = R.string.ok),
+            dismissText = stringResource(id = R.string.cancel),
             onSelected = { selected ->
                 viewModel.setUpdateDaysPref(selected.map { it + 1 }.toSet())
             }

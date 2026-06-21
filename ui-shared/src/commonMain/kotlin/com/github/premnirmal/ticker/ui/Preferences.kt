@@ -14,8 +14,10 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,6 +71,86 @@ fun ListPreference(
                 }
             },
             confirmButton = {}
+        )
+    }
+}
+
+@Composable
+fun MultiSelectListPreference(
+    modifier: Modifier = Modifier,
+    title: String,
+    items: Array<String>,
+    selected: Set<Int>,
+    confirmText: String,
+    dismissText: String,
+    onSelected: (Set<Int>) -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+    Row(
+        modifier
+            .clickable { showDialog = true }
+    ) {
+        SettingsText(
+            modifier = Modifier
+                .fillMaxWidth(),
+            title = title,
+            subtitle = items.filterIndexed { index, _ -> selected.contains(index) }
+                .joinToString(", ")
+        )
+    }
+    if (showDialog) {
+        val updatedSelection = remember(selected) {
+            mutableStateMapOf<Int, Boolean>().apply {
+                items.indices.forEach { put(it, selected.contains(it)) }
+            }
+        }
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = title) },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    items.forEachIndexed { index, item ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    updatedSelection[index] = !(updatedSelection[index] ?: false)
+                                }
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = updatedSelection[index] ?: false,
+                                onCheckedChange = { updatedSelection[index] = it }
+                            )
+                            Text(
+                                text = item,
+                                style = MaterialTheme.typography.bodyLarge,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onSelected(
+                        updatedSelection.filterValues { it }.keys.toSet()
+                    )
+                    showDialog = false
+                }) {
+                    Text(text = confirmText)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(text = dismissText)
+                }
+            }
         )
     }
 }

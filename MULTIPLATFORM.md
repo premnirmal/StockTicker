@@ -880,6 +880,19 @@ preferences (`MultiSelectListPreference`, `TimeSelectorPreference`, which wrap a
 and the native `TimePickerDialog`) stay in `:app`. Verified with `:app:compileDevDebugKotlin` and
 `:ui-shared:compileKotlinIosSimulatorArm64` both green.
 
+The next shared settings primitive is `MultiSelectListPreference` (`ticker.ui`) — the multi-select
+settings row (a `SettingsText` over a comma-joined summary that opens a multi-choice picker), used once in
+`SettingsScreen` for the update-days set. Its Android coupling was the picker: the original built an
+`androidx.appcompat` `AlertDialog` via `setMultiChoiceItems` with `OK`/`Cancel` buttons. The shared
+version (now in `:ui-shared` `commonMain`, next to the already-shared `ListPreference`) replaces that with
+a pure Compose Multiplatform `material3` `AlertDialog` whose body is a scrollable `Column` of checkbox rows
+backed by a `mutableStateMapOf`, committing the toggled set on the confirm button and discarding on dismiss,
+mirroring the old behaviour. Following the established seam pattern, the two button labels (previously
+`R.string.ok`/`R.string.cancel`) are hoisted to `confirmText`/`dismissText` `String` parameters supplied at
+the `:app` call site; the rest of the signature is unchanged. Only `TimeSelectorPreference` (the native
+`TimePickerDialog` wrapper) now remains in `:app`. Verified with `:app:compileDevDebugKotlin` and
+`:ui-shared:compileKotlinIosSimulatorArm64` both green.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables
