@@ -597,8 +597,18 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   observes the shared `themePrefFlow` and passes the resolved `SelectedTheme` to `IosAppTheme`. The
   iOS `WidgetsScreen` (`shared/src/iosMain`) is an informational WidgetKit-guidance screen, because
   iOS widgets are configured from the home screen rather than in-app like Android's Glance widgets.
-  *Remaining:* wire the iOS portfolio share/import/export document pickers, wire the quote-detail
-  extras (holdings/news/alerts), and add the native WidgetKit widget + Firebase iOS.
+  The iOS **quote-detail extras are now real too**: the `QuoteDetailScreen` (`shared/src/iosMain`)
+  shows the latest **news** articles (the shared `QuoteDetailViewModel.fetchNews` populates them and
+  they render through the shared Coil-backed `NewsCard`, opening in the browser via
+  `UIApplication.openURL`) and, for portfolio symbols, a **holdings summary** (shares / equity value /
+  average price / gain-loss / day-change from the shared `Quote` helpers). Its **editors** are the
+  same shared Compose Multiplatform screens the Android app uses, presented full-screen and persisted
+  through the shared view models: positions via `AddPositionScreen` + `AddPositionViewModel`, price
+  alerts via `AlertsScreen` + `AlertsViewModel`, notes via `NotesScreen` + `NotesViewModel`, and the
+  per-ticker display name via `DisplaynameScreen` + `DisplaynameViewModel` (the editors reuse the
+  shared `ic_close`/`ic_done` Compose resources and the shared `DecimalFormatter` for input parsing).
+  *Remaining:* wire the iOS portfolio share/import/export document pickers, and add the native
+  WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 
