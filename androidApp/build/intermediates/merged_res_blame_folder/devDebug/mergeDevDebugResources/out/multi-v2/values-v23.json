@@ -4,17 +4,7 @@
             "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v23/values-v23.xml",
             "map": [
                 {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/d31d7f1d8bbf078c9a342dadec4b6655/transformed/work-runtime-2.10.3/res/values-v23/values-v23.xml",
-                    "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,121",
-                        "endColumns": "65,62",
-                        "endOffsets": "116,179"
-                    }
-                },
-                {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/fcf25fade6cc6012d45597c396279f2d/transformed/jetified-glance-appwidget-1.1.1/res/values-v23/values-v23.xml",
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -31,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/98712d2652c68a6a8eabd593916c4897/transformed/appcompat-1.7.1/res/values-v23/values-v23.xml",
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/fba890147375702b36eab524782f20a0/transformed/appcompat-1.7.1/res/values-v23/values-v23.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,20,34,35,36,39,43,44,45,46",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -47,6 +37,16 @@
                         "endLines": "5,6,7,8,22,36,37,38,41,45,46,47,48,52",
                         "endColumns": "134,134,74,86,12,12,118,126,12,12,114,106,112,12",
                         "endOffsets": "370,505,580,667,1405,2155,2274,2401,2623,2847,2962,3069,3182,3412"
+                    }
+                },
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/21090b5f01c4748c5872aaeae9cd7729/transformed/work-runtime-2.10.3/res/values-v23/values-v23.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,121",
+                        "endColumns": "65,62",
+                        "endOffsets": "116,179"
                     }
                 }
             ]
