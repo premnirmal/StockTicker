@@ -616,33 +616,65 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 - **Phase 5.1 (feature gaps — to do before Phase 6):** Phase 5 stood the iOS app up end to
   end, but a number of Android features are still missing, stubbed or simplified on iOS. Close
   these gaps before moving on to CI:
-  - **Local notifications (price alerts + daily summary).** Android delivers price-alert
+  - **Local notifications (price alerts + daily summary).** *(Done.)* Android delivers price-alert
     notifications and a scheduled daily-summary notification (`androidApp/.../notifications/
     NotificationsHandler.kt`, `DailySummaryNotificationReceiver.kt`) via `AlarmManager`/
-    `WorkManager`. iOS only runs background refresh through `BGTaskScheduler`
-    (`shared/src/iosMain/.../model/BackgroundRefreshScheduler.kt`) and has no `UNUserNotification`
-    delivery, so the "notification alerts" settings toggle currently has no iOS backend. Add a
-    `UNUserNotificationCenter`-backed implementation for both alert types.
-  - **Home-screen widget configuration & customisation.** Android supports multiple Glance
+    `WorkManager`. The iOS app now has an equivalent `UNUserNotificationCenter`-backed
+    `LocalNotificationsHandler` (`shared/src/iosMain/.../notifications/LocalNotificationsHandler.kt`):
+    it ports Android's `checkAlerts()` (above/below alerts, the generic ≥ 8 % move alert with the
+    same 24 h per-symbol rate limit, and clearing an alert once it fires) and delivers a once-per-
+    update-day movers summary after the configured `endTime()`. It is driven off the shared
+    `IStocksProvider.fetchState` flow (so a check runs after every refresh, including the
+    `BGTaskScheduler` background refresh via `StockTickerBackgroundScheduler.handleRefresh`), gated
+    on the same `notificationAlerts()`/`updateDays()` preferences. The iOS app starts the observer and
+    requests notification permission via `KoinHelper.initializeNotifications()` in
+    `StockTickerApp.swift`.
+  - **Home-screen widget configuration & customisation.** *(Done.)* Android supports multiple Glance
     widgets, each with its own watchlist and per-widget options (auto-sort, layout, size,
     background/text colour, bold text, header visibility, currency display, refresh button),
     configured in-app (`androidApp/.../widget/`). The iOS `StockTickerWidget`
-    (`iosApp/StockTickerWidget/StockTickerWidget.swift`) is a single `StaticConfiguration` that
-    renders the one shared watchlist, and `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) is an
-    informational guidance screen only. Add WidgetKit configuration (e.g. an
-    `AppIntentConfiguration`) for per-widget watchlists and appearance options.
-  - **Onboarding tutorial.** Android shows a first-run tutorial gated on the shared
+    (`iosApp/StockTickerWidget/StockTickerWidget.swift`) is now an `AppIntentConfiguration` driven by
+    a per-widget `StockTickerConfigurationIntent`
+    (`iosApp/StockTickerWidget/StockTickerWidgetIntent.swift`): each placed widget keeps its own
+    watchlist selection — a `WatchlistSymbolEntity`/`WatchlistSymbolQuery` offers the symbols read
+    from the shared App Group `WidgetSnapshotStore` snapshot — plus appearance options (sort by
+    change, show header, show change amount, bold change), applied on the render side. The widget
+    family still chooses the layout/size (the equivalent of Android's layout/size prefs). The iOS
+    `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) explains how to add a widget and edit each one
+    (touch & hold → *Edit Widget*).
+  - **Onboarding tutorial.** *(Done.)* Android shows a first-run tutorial gated on the shared
     `tutorialShown()` preference (`androidApp/.../home/HomeActivity.kt` →
-    `HomeViewModel.checkShowTutorial()`). The iOS `HomeScreen.kt` never presents it even though the
-    preference is already shared (`shared/src/commonMain/.../UserPreferences.kt`). Add an iOS
-    onboarding flow.
-  - **In-app review / version-tap.** Android triggers the Play in-app review flow
-    (`androidApp/.../home/IAppReviewManager.kt`) and a functional version-tap handler
-    (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `SettingsScreen.kt` `onVersionTap`
-    is a no-op. Wire up `SKStoreReviewController` / the version-tap action on iOS.
-  - **Debug database viewer.** Android exposes a DB viewer from settings
-    (`androidApp/.../debug/DbViewerActivity.kt`); there is no iOS equivalent. Add one (or
-    explicitly drop it from the iOS scope).
+    `HomeViewModel.checkShowTutorial()`). The iOS app now presents an equivalent onboarding flow:
+    `OnboardingScreen.kt` (`shared/src/iosMain/.../ui`) is a multi-step Compose Multiplatform modal
+    (`OnboardingController` + `OnboardingTutorial`) driven by the same shared
+    `tutorialShown()`/`setTutorialShown()` preference (`shared/src/commonMain/.../UserPreferences.kt`).
+    `HomeScreen.kt` shows it once on first launch (`showIfFirstRun()`), the Settings "Tutorial" row
+    re-opens it (`onTutorial` → `controller.show()`), and dismissing it persists the preference. The
+    iOS pages are tailored to iOS (watchlist, search, quote detail, Home Screen WidgetKit widget).
+  - **In-app review / version-tap.** *(Done.)* Android triggers
+    the Play in-app review flow (`androidApp/.../home/IAppReviewManager.kt`) and a functional
+    version-tap handler (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `onVersionTap` is
+    wired (five quick taps open the debug DB viewer — see below). The in-app review prompt is now
+    wired too: `AppReviewPrompter` (`shared/src/iosMain/.../review/AppReviewPrompter.kt`) requests an
+    App Store rating via StoreKit's `SKStoreReviewController.requestReviewInScene(...)`. Like
+    Android's `HomeActivity`, it is triggered when the user opens a quote detail (the iOS
+    `HomeScreen.kt` observes the root nav back stack for the `QUOTE_DETAIL` route) and is gated on the
+    same shared `UserPreferences.shouldPromptRate()` plus a once-per-session guard; the system itself
+    decides whether to actually show the rating sheet and rate-limits it.
+  - **Debug database viewer.** *(Done.)* Android exposes a DB viewer from settings
+    (`androidApp/.../debug/DbViewerActivity.kt`). The iOS app now has an equivalent:
+    `DbViewerScreen.kt` (`shared/src/iosMain/.../ui`) with an `IosDbViewerViewModel` that reads the
+    shared Room-backed `QuoteDao` and renders the quotes/holdings/properties tables plus recent fetch
+    logs as HTML in a native `WKWebView` (JavaScript disabled), hosted via Compose Multiplatform's
+    `UIKitView` interop. It is reached the same way as Android — tapping the Settings version label
+    five times (`onVersionTap` → `VersionTapCounter`) opens it. iOS has no Glance widgets or
+    `WorkManager`, so the widget/scheduled-work sections are omitted.
+  - **Background fetch scheduling.** *(Done.)* The iOS `BGTaskScheduler` bridge
+    (`StockTickerBackgroundScheduler.swift`) and the shared `BackgroundRefreshScheduler` update-window
+    math already existed, but nothing enqueued the periodic refresh/cleanup on launch. The iOS
+    `HomeScreen.kt` now calls `stocksProvider.schedule()` once on first composition (mirroring
+    Android's `HomeActivity.onCreate`), which arms the next update and submits the recurring
+    `BGAppRefreshTaskRequest`/`BGProcessingTaskRequest` work.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

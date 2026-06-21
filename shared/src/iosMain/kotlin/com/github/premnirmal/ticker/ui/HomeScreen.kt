@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.ui
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,7 +21,16 @@ import com.github.premnirmal.ticker.navigation.HomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.HomeScaffold
 import com.github.premnirmal.ticker.navigation.RootNavigationGraph
+import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.review.AppReviewPrompter
 import org.jetbrains.compose.resources.painterResource
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+
+private object HomeKoin : KoinComponent {
+    val stocksProvider: IStocksProvider by inject()
+    val appReviewPrompter: AppReviewPrompter by inject()
+}
 
 /**
  * iOS entry screen hosting the full shared multiplatform [RootNavigationGraph].
@@ -35,9 +45,25 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun HomeScreen() {
     val rootNavController = rememberNavController()
+    val onboardingController = rememberOnboardingController()
+    LaunchedEffect(Unit) {
+        // Mirror Android's HomeActivity, which calls stocksProvider.schedule() on first launch to
+        // enqueue the periodic background refresh + cleanup (the iOS BGTaskScheduler requests) and
+        // arm the next update.
+        HomeKoin.stocksProvider.schedule()
+        onboardingController.showIfFirstRun()
+    }
+    // Mirror Android's HomeActivity: when the user opens a quote detail, ask StoreKit for an in-app
+    // review (gated on UserPreferences.shouldPromptRate + a once-per-session guard inside the prompter).
+    val rootBackStackEntry by rootNavController.currentBackStackEntryAsState()
+    LaunchedEffect(rootBackStackEntry?.destination?.route) {
+        if (rootBackStackEntry?.destination?.route?.startsWith(Graph.QUOTE_DETAIL) == true) {
+            HomeKoin.appReviewPrompter.maybeRequestReview()
+        }
+    }
     RootNavigationGraph(
         navHostController = rootNavController,
-        homeContent = { HomeContent(rootNavController) },
+        homeContent = { HomeContent(rootNavController, onboardingController) },
         quoteDetailContent = { symbol ->
             QuoteDetailScreen(
                 symbol = symbol,
@@ -45,10 +71,14 @@ fun HomeScreen() {
             )
         }
     )
+    OnboardingTutorial(onboardingController)
 }
 
 @Composable
-private fun HomeContent(rootNavController: NavHostController) {
+private fun HomeContent(
+    rootNavController: NavHostController,
+    onboardingController: OnboardingController,
+) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -129,7 +159,7 @@ private fun HomeContent(rootNavController: NavHostController) {
                     )
                 },
                 widgets = { WidgetsScreen() },
-                settings = { SettingsScreen() }
+                settings = { SettingsScreen(onTutorial = { onboardingController.show() }) }
             )
         }
     )

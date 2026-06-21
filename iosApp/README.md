@@ -45,10 +45,15 @@ top of the shared **iOS Phase 2 implementations** it already wires into a runnin
 
 A native WidgetKit home-screen widget (the iOS counterpart of the Android Glance widget):
 
-- `StockTickerWidget.swift` — the `Widget`, its `TimelineProvider` and SwiftUI views. The provider
-  reads the shared `WidgetSnapshotStore` (App Group `NSUserDefaults`) the app writes on every refresh
-  and renders the watchlist; the large family adds a Swift Charts bar chart of each symbol's percent
-  change. Supports small / medium / large families.
+- `StockTickerWidget.swift` — the `Widget`, its `AppIntentTimelineProvider` and SwiftUI views. The
+  provider reads the shared `WidgetSnapshotStore` (App Group `NSUserDefaults`) the app writes on every
+  refresh and renders the watchlist; the large family adds a Swift Charts bar chart of each symbol's
+  percent change. Supports small / medium / large families.
+- `StockTickerWidgetIntent.swift` — the per-widget `StockTickerConfigurationIntent`
+  (`WidgetConfigurationIntent`) and its `WatchlistSymbolEntity`/`WatchlistSymbolQuery`. This is the
+  iOS counterpart of Android's per-widget Glance options: each placed widget keeps its own watchlist
+  selection (symbols are offered from the shared snapshot) and appearance (sort by change, header,
+  change amount, bold text). Edit a placed widget (touch & hold → *Edit Widget*) to change it.
 - `StockTickerWidgetBundle.swift` — the `@main` `WidgetBundle`.
 - `Info.plist` — the `com.apple.widgetkit-extension` extension point.
 - `StockTickerWidget.entitlements` — the matching App Group entitlement (must equal the app's).
