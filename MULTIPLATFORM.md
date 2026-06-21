@@ -258,6 +258,17 @@ Migrated into `commonMain` so far:
   `localeDecimalSeparator()` (Android `android.icu.text.DecimalFormatSymbols`, iOS
   `NSNumberFormatter`). `NotesActivity`/`DisplaynameActivity`/`AlertsActivity` are now thin hosts that
   supply the resources/callbacks and call the shared screen.
+- The **add-position / holdings editor** — its `AddPositionViewModel` (`ticker.portfolio`, now on the
+  shared `IStocksProvider` like the other editor ViewModels) and the `AddPositionScreen`
+  (`PortfolioEditScreens.kt`). As with the other editors the localised strings are hoisted as
+  `String`s, the back/remove icons as `Painter`s, the snackbar as a `SnackbarHostState`, and the
+  navigation side effects as `onBack` callbacks; the holdings number formatting is delegated to a
+  `formatNumber` lambda and the locale-aware parse/validate/persist of the entered shares/price to an
+  `onAdd` callback (returning the price/shares error flags), so the platform `NumberFormat`/snackbar
+  stays on the host. The Android-only adaptive two-pane layout (Accompanist `TwoPane`) is hoisted as
+  an optional `twoPane` slot (`null` renders the single-column layout). `HoldingsActivity` is now a
+  thin host that collects the ViewModel flows, owns the activity-result wiring and supplies the
+  resources/callbacks/two-pane slot.
 
 Remaining Phase 4 screens still in `:app` (they need more decoupling before moving): the home
 `WatchlistContent`, `SearchScreen`, `NewsFeedScreen` (these pull in not-yet-shared UI such as
