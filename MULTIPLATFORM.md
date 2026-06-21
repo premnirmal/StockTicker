@@ -272,13 +272,19 @@ Migrated into `commonMain` so far:
 - The **trending/news-feed ViewModel** — `NewsFeedViewModel` (`ticker.news`) — moved into
   `commonMain` alongside its already-shared dependencies (`NewsProvider`, `FetchResult`,
   `NewsFeedItem`). It uses the multiplatform `androidx.lifecycle` `ViewModel`; the package and public
-  contract are unchanged, so the `:app` `NewsFeedScreen` and Koin registration are untouched. The
-  `NewsFeedScreen` itself stays in `:app` for now (it still pulls in `QuoteCard`/`NewsCard` and the
-  Compose navigation graph).
+  contract are unchanged, so the `:app` `NewsFeedScreen` and Koin registration are untouched.
+- The **trending/news-feed screen** — `NewsFeedScreen` (`ticker.news`) — and the shared UI-state
+  helpers (`EmptyState`/`ErrorState`/`ProgressState`, `ticker.ui`). The Android-coupled inputs are
+  hoisted as parameters: the localised labels as `String`s, the `QuoteCard`/`NewsCard` as composable
+  slots (they still pull in the not-yet-shared image loading + theme), the `RuntimeShader`-based
+  `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the navigation `rememberScrollToTopAction`
+  registration as a `registerScrollToTop` slot, and the quote tap as `onQuoteClick`. A thin
+  `NewsFeedScreenHost.kt` in `:app` resolves the Koin ViewModel + the above and delegates to the
+  shared screen.
 
 Remaining Phase 4 screens still in `:app` (they need more decoupling before moving): the home
-`WatchlistContent`, `SearchScreen`, `NewsFeedScreen` (these pull in not-yet-shared UI such as
-`QuoteCard`/`NewsCard`, the app theme, and the Compose navigation graph), the `QuoteDetailScreen`
+`WatchlistContent`, `SearchScreen` (these pull in not-yet-shared UI such as `QuoteCard`, the app
+theme, and the Compose navigation graph), the `QuoteDetailScreen`
 price chart (still MPAndroidChart, to be swapped for a multiplatform chart), and the `WidgetsScreen`
 / `SettingsScreen` (Glance widget previews, runtime permissions, file pickers and Activities). Coil →
 Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
