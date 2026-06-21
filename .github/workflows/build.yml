@@ -49,4 +49,4 @@ jobs:
           title: "${{ env.VERSION }}"
           files: |
             androidApp/build/outputs/apk/dev/debug/androidApp-dev-debug.apk
-            androidApp/build/outputs/bundle/dev/androidApp-dev-debug.aab
+            androidApp/build/outputs/bundle/devDebug/androidApp-dev-debug.aab
