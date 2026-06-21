@@ -537,7 +537,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
-- **Phase 5 (in progress):** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
+- **Phase 5 (complete):** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
   shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget
   (Swift Charts where the widget needs charts); Firebase iOS SDK (or no-op for FOSS).
   *Started:* the Compose Multiplatform UI now runs on iOS. `MainViewController()`
