@@ -9,6 +9,8 @@ plugins {
   alias(libs.plugins.kotlinx.serialization)
   alias(libs.plugins.com.google.devtools.ksp)
   alias(libs.plugins.androidx.room)
+  alias(libs.plugins.compose.multiplatform)
+  alias(libs.plugins.compose.compiler)
   id("kotlin-parcelize")
 }
 
@@ -83,7 +85,6 @@ kotlin {
   }
 
   listOf(
-      iosX64(),
       iosArm64(),
       iosSimulatorArm64()
   ).forEach { iosTarget ->
@@ -109,6 +110,11 @@ kotlin {
       implementation(libs.koin.core)
       implementation("androidx.datastore:datastore-preferences-core:_")
       implementation("com.squareup.okio:okio:3.9.1")
+      implementation(compose.runtime)
+      implementation(compose.foundation)
+      implementation(compose.material3)
+      implementation(compose.ui)
+      implementation(compose.components.resources)
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
@@ -147,7 +153,6 @@ android {
 // (the @Database/@Dao/@Entity declarations live in commonMain).
 dependencies {
   add("kspAndroid", libs.room.compiler)
-  add("kspIosX64", libs.room.compiler)
   add("kspIosArm64", libs.room.compiler)
   add("kspIosSimulatorArm64", libs.room.compiler)
 }
