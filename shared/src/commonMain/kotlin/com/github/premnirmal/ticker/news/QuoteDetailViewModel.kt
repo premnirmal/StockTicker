@@ -131,6 +131,17 @@ class QuoteDetailViewModel constructor(
         return stocksProvider.hasTicker(ticker)
     }
 
+    /**
+     * Fetches the (untruncated) news list for [quote] on its own, populating [newsData]. Lets a host
+     * (e.g. the iOS quote-detail screen) load the article list without re-running the quote/chart
+     * fetches that [fetchAll] performs.
+     */
+    fun fetchNews(quote: Quote) {
+        viewModelScope.launch {
+            fetchNewsInternal(quote = quote, truncate = false)
+        }
+    }
+
     fun fetchChartData(symbol: String, range: Range) {
         viewModelScope.launch {
             fetchChartDataInternal(symbol, range)

@@ -537,9 +537,78 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
-- **Phase 5:** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
+- **Phase 5 (in progress):** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
   shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget
   (Swift Charts where the widget needs charts); Firebase iOS SDK (or no-op for FOSS).
+  *Started:* the Compose Multiplatform UI now runs on iOS. `MainViewController()`
+  (`shared/src/iosMain`) builds a `ComposeUIViewController` that the SwiftUI shell hosts via a
+  `UIViewControllerRepresentable` (`ComposeView`/`ContentView`), replacing the Phase 2 SwiftUI
+  watchlist placeholder. An iOS Material 3 theme (`IosAppTheme`, mirroring the Android brand
+  palette/shapes without `android.os.Build` dynamic colour) wraps the iOS host. The host has since
+  grown from the single `WatchlistScreen` into the full shared navigation graph: an iOS `HomeScreen`
+  (`shared/src/iosMain`, rendered by `MainViewController`) now hosts the shared **`RootNavigationGraph`**
+  over a root Compose Multiplatform `NavHostController`. The graph's `homeContent` slot is the home
+  navigation chrome (`HomeScaffold` + `BottomNavigationBar` + `HomeNavHost` over a nested
+  `NavHostController`), so the five home tabs (Watchlist/Trending/Search/Widgets/Settings) switch via
+  bottom navigation on the simulator; its `quoteDetailContent` slot is an iOS `QuoteDetailScreen`
+  (`shared/src/iosMain`) reached by tapping a watchlist row, which navigates the root controller to
+  the shared `quote_detail_graph/{symbol}` destination. The Watchlist tab renders the shared
+  `WatchlistScreen`; the other tabs are lightweight placeholders until their view models can be
+  resolved on iOS. The tab icons come from new **shared
+  Compose Multiplatform drawable resources** (`shared/src/commonMain/composeResources/drawable`,
+  generated into `com.github.premnirmal.shared.resources.Res`), the first shared resources in the
+  project. The **typography is now shared too**: the brand Ubuntu / Alegreya / Raleway fonts moved
+  into shared Compose resources (`shared/src/commonMain/composeResources/font`) and a shared
+  `appTypography()` (`commonMain` `tickerwidget.ui.theme`) builds the Material 3 type scale from
+  them, so the Android `AppTheme` and the iOS `IosAppTheme` render the same fonts (the duplicate
+  Android `AppTypography.kt` was removed; the `androidApp/res/font` files remain only for the legacy
+  XML themes). The **colour scheme is now shared too**: the brand Material 3 palette and the
+  light/dark `ColorScheme`s (`brandLightColorScheme`/`brandDarkColorScheme`), the `appShapes`, and a
+  single cross-platform `SharedAppTheme` composable all live in `commonMain`
+  (`tickerwidget.ui.theme`). `SharedAppTheme` resolves dark/light from the shared `SelectedTheme` and
+  applies the brand scheme + `appTypography()` + `appShapes`, taking an optional
+  `colorSchemeOverride`. Both platform themes are now thin wrappers over it: the iOS `IosAppTheme`
+  delegates with no override (so it uses the brand scheme), and the Android `AppTheme` supplies a
+  Material You dynamic `ColorScheme` override on Android 12+ (falling back to the same shared brand
+  scheme otherwise); the duplicated Android `AppColours`/`ThemePref`/`AppShapes` and the iOS colour
+  definitions were removed. The iOS **quote-detail screen is now real**: the `quoteDetailContent`
+  `QuoteDetailScreen` (`shared/src/iosMain`) drives the shared `QuoteDetailViewModel` (resolved from
+  the iOS Koin graph: `IStocksProvider`/`NewsProvider`/`HistoryProvider`/`UserPreferences`) and
+  renders the shared multiplatform `PriceChartView` (Vico) historical price chart with a range
+  selector (1D/2W/1M/3M/1Y/5Y/Max), the same presentation logic the Android app uses; the axis/marker
+  date labels are formatted with `NSDateFormatter` and the prices with the shared `AppNumberFormat`.
+  The iOS **Trending tab is now real too**: an iOS `TrendingScreen` (`shared/src/iosMain`) drives the
+  shared `NewsFeedViewModel` (built from the iOS Koin graph's `NewsProvider`) through the shared
+  `NewsFeedScreen`, supplying iOS-native Material 3 card slots — a lightweight quote card and the
+  shared Coil-backed `NewsCard` (its `card` slot a Material 3 `Card`); tapping a news article opens
+  its URL via `UIApplication.openURL`, and tapping a trending quote navigates to the shared
+  quote-detail destination. The iOS **Search, Settings and Widgets tabs are now real too**: an iOS
+  `SearchScreen` (`shared/src/iosMain`) drives an `IosSearchViewModel` (built from the iOS Koin
+  graph's `SuggestionsProvider`/`NewsProvider`/`IStocksProvider`) through the shared `SearchScreen`,
+  debouncing symbol queries, loading the trending stocks and — since iOS has a single watchlist
+  rather than Android's per-Glance-widget lists — toggling a symbol's membership of the shared
+  portfolio directly from the suggestion row's add/remove button (the clear icon is a new shared
+  `ic_close` Compose resource); tapping a result navigates to the shared quote-detail destination. An
+  iOS `SettingsScreen` (`shared/src/iosMain`) drives an `IosSettingsViewModel` over the shared
+  `UserPreferences`/`IStocksProvider` through the shared `SettingsScreen` — the theme, update
+  interval, update window (start/end times and days), round-to-two-decimals and notification-alerts
+  toggles read and write the shared preferences (`hasWidgets` is always `false` on iOS); the external
+  links open via `UIApplication.openURL`. The chosen theme is now applied live: `MainViewController`
+  observes the shared `themePrefFlow` and passes the resolved `SelectedTheme` to `IosAppTheme`. The
+  iOS `WidgetsScreen` (`shared/src/iosMain`) is an informational WidgetKit-guidance screen, because
+  iOS widgets are configured from the home screen rather than in-app like Android's Glance widgets.
+  The iOS **quote-detail extras are now real too**: the `QuoteDetailScreen` (`shared/src/iosMain`)
+  shows the latest **news** articles (the shared `QuoteDetailViewModel.fetchNews` populates them and
+  they render through the shared Coil-backed `NewsCard`, opening in the browser via
+  `UIApplication.openURL`) and, for portfolio symbols, a **holdings summary** (shares / equity value /
+  average price / gain-loss / day-change from the shared `Quote` helpers). Its **editors** are the
+  same shared Compose Multiplatform screens the Android app uses, presented full-screen and persisted
+  through the shared view models: positions via `AddPositionScreen` + `AddPositionViewModel`, price
+  alerts via `AlertsScreen` + `AlertsViewModel`, notes via `NotesScreen` + `NotesViewModel`, and the
+  per-ticker display name via `DisplaynameScreen` + `DisplaynameViewModel` (the editors reuse the
+  shared `ic_close`/`ic_done` Compose resources and the shared `DecimalFormatter` for input parsing).
+  *Remaining:* wire the iOS portfolio share/import/export document pickers, and add the native
+  WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

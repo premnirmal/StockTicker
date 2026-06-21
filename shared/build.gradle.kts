@@ -137,6 +137,14 @@ kotlin {
   }
 }
 
+// Generate the Compose Multiplatform resource accessor (`Res`) into a fixed, public package so the
+// shared Compose UI (and the iOS host) can reference the bundled drawables deterministically.
+compose.resources {
+  publicResClass = true
+  packageOfResClass = "com.github.premnirmal.shared.resources"
+  generateResClass = always
+}
+
 android {
   namespace = "com.github.premnirmal.shared"
   compileSdk = 36

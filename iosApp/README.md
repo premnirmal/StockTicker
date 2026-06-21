@@ -1,7 +1,8 @@
 # iosApp — StockTicker iOS shell
 
-This is the thin SwiftUI host for the Kotlin Multiplatform `:shared` framework. Its job is to wire
-the shared **iOS Phase 2 implementations** into a running iOS app:
+This is the thin SwiftUI host for the Kotlin Multiplatform `:shared` framework. As of **Phase 5**
+it hosts the shared **Compose Multiplatform UI** (built in Phase 4) inside a `UIViewController`, on
+top of the shared **iOS Phase 2 implementations** it already wires into a running iOS app:
 
 | Shared (Kotlin/Native, `shared/src/iosMain`) | iOS app (Swift, this folder) |
 | --- | --- |
@@ -12,6 +13,7 @@ the shared **iOS Phase 2 implementations** into a running iOS app:
 | `BackgroundTaskScheduler` (interface) | `StockTickerBackgroundScheduler` |
 | `onQuotesUpdated` hook | `WidgetCenterReloader` (WidgetKit) |
 | `initKoinIos(...)` / `KoinHelper` | `StockTickerApp` calls it at launch |
+| `MainViewController()` (Compose Multiplatform UI in a `UIViewController`) | `ComposeView` / `ContentView` host it |
 
 ## Files
 
@@ -24,8 +26,10 @@ the shared **iOS Phase 2 implementations** into a running iOS app:
 - `StockTickerAnalyticsSink.swift` — implements the shared `AnalyticsSink`; forwards to Firebase
   when the SDK is linked, otherwise logs.
 - `WidgetCenterReloader.swift` — reloads WidgetKit timelines after a refresh.
-- `ContentView.swift` — minimal watchlist view that observes the shared portfolio flow via
-  `KoinHelper.observePortfolio` and triggers refreshes.
+- `ComposeView.swift` — a `UIViewControllerRepresentable` that hosts the shared Compose
+  Multiplatform UI by bridging `MainViewControllerKt.MainViewController()` into SwiftUI.
+- `ContentView.swift` — root SwiftUI view; renders `ComposeView` edge-to-edge so the shared Kotlin
+  Compose screens drive the whole UI.
 
 ## Generating the Xcode project
 
@@ -67,3 +71,11 @@ The identifiers must match `StockTickerApp.refreshTaskId` / `cleanupTaskId`.
   back to `NSLog` (mirroring the Android FOSS/dev flavours).
 - All business logic (preferences, persistence, networking, refresh scheduling) lives in `:shared`;
   this folder only provides the iOS platform plumbing the shared code delegates to.
+- The UI is also shared: `MainViewController()` (in `shared/src/iosMain`) builds a
+  `ComposeUIViewController` that renders the Compose Multiplatform screens, themed by `IosAppTheme`.
+  The hosted `HomeScreen` drives the shared `HomeScaffold` + bottom navigation; the Watchlist tab
+  binds to the shared `IStocksProvider` portfolio flow. The theme typography is shared — the brand
+  Ubuntu / Alegreya fonts live in shared Compose resources
+  (`shared/src/commonMain/composeResources/font`) and `IosAppTheme` builds its type scale from the
+  shared `appTypography()`. Later Phase 5 steps host the full shared `RootNavigationGraph` and unify
+  the colour scheme into a single cross-platform `AppTheme`.
