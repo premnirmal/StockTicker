@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.premnirmal.tickerwidget.dev" >
+
+    <uses-sdk
+        android:minSdkVersion="26"
+        android:targetSdkVersion="36" />
+
+    <queries>
+        <package android:name="androidx.test.orchestrator" />
+        <package android:name="androidx.test.services" />
+        <package android:name="com.google.android.apps.common.testing.services" />
+    </queries>
+
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
+    <permission
+        android:name="com.github.premnirmal.tickerwidget.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.github.premnirmal.tickerwidget.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true" >
+        <activity
+            android:name="androidx.glance.appwidget.action.ActionTrampolineActivity"
+            android:enabled="true"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
+            android:name="androidx.glance.appwidget.action.InvisibleActionTrampolineActivity"
+            android:enabled="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:noHistory="true"
+            android:taskAffinity="androidx.glance.appwidget.ListAdapterCallbackTrampoline"
+            android:theme="@style/Widget.Glance.AppWidget.CallbackTrampoline" />
+
+        <receiver
+            android:name="androidx.glance.appwidget.action.ActionCallbackBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.glance.appwidget.UnmanagedSessionReceiver"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.glance.appwidget.MyPackageReplacedReceiver"
+            android:enabled="true"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="androidx.glance.appwidget.GlanceRemoteViewsService"
+            android:exported="true"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <activity
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity"
+            android:exported="true"
+            android:theme="@style/WhiteBackgroundTheme" >
+            <intent-filter android:priority="-100" >
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity"
+            android:exported="true"
+            android:theme="@style/WhiteBackgroundTheme" >
+            <intent-filter android:priority="-100" >
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity"
+            android:exported="true"
+            android:theme="@style/WhiteBackgroundDialogTheme" >
+            <intent-filter android:priority="-100" >
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="org.jetbrains.compose.resources.AndroidContextProvider"
+            android:authorities="com.github.premnirmal.tickerwidget.dev.resources.AndroidContextProvider"
+            android:enabled="true"
+            android:exported="false" >
+        </provider>
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.github.premnirmal.tickerwidget.dev.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="okhttp3.internal.platform.PlatformInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="androidx.core.widget.RemoteViewsCompatService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <uses-library
+            android:name="androidx.window.extensions"
+            android:required="false" />
+        <uses-library
+            android:name="androidx.window.sidecar"
+            android:required="false" />
+
+        <activity
+            android:name="androidx.compose.ui.tooling.PreviewActivity"
+            android:exported="true" />
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
+    </application>
+
+</manifest>
