@@ -20,6 +20,7 @@ import org.koin.core.component.inject
 private object SettingsKoin : KoinComponent {
     val userPreferences: UserPreferences by inject()
     val stocksProvider: IStocksProvider by inject()
+    val portfolioExchange: com.github.premnirmal.ticker.settings.IosPortfolioExchange by inject()
 }
 
 private const val REPORT_BUG_URL =
@@ -108,7 +109,8 @@ class IosSettingsViewModel(
  * iOS Settings tab. Renders the shared [com.github.premnirmal.ticker.settings.SettingsScreen] backed
  * by an [IosSettingsViewModel]; the external links (report bug / feature request / privacy policy /
  * open source) open in the system browser via [UIApplication]. The portfolio share/import/export
- * actions, which need a platform document picker, are not yet wired on iOS.
+ * actions are wired to the shared [com.github.premnirmal.ticker.settings.IosPortfolioExchange], which
+ * drives the native iOS document pickers via the [com.github.premnirmal.ticker.settings.PortfolioDocumentBridge].
  */
 @Composable
 fun SettingsScreen(
@@ -169,9 +171,9 @@ fun SettingsScreen(
         onAutoSortChanged = { /* iOS has no Glance widgets to auto-sort */ },
         onRoundToTwoDpChanged = { viewModel.setRoundToTwoDp(it) },
         onNotificationAlertsChanged = { viewModel.setNotificationAlerts(it) },
-        onSharePortfolio = { /* TODO: iOS document picker */ },
-        onImportPortfolio = { /* TODO: iOS document picker */ },
-        onExportPortfolio = { /* TODO: iOS document picker */ },
+        onSharePortfolio = { SettingsKoin.portfolioExchange.share() },
+        onImportPortfolio = { SettingsKoin.portfolioExchange.import() },
+        onExportPortfolio = { SettingsKoin.portfolioExchange.export() },
         onReportBug = { openUrl(REPORT_BUG_URL) },
         onFeatureRequest = { openUrl(FEATURE_REQUEST_URL) },
         onPrivacyPolicy = { openUrl(PRIVACY_POLICY_URL) },

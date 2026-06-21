@@ -537,7 +537,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `@Composable` screens into `commonMain`, swap Android-only UI libraries for
   multiplatform equivalents (Coil 3, CMP navigation; Koin DI is already adopted in Phase 2), and repoint `:app` to host
   the shared Compose UI. Keep Glance widget + Firebase on Android.
-- **Phase 5 (in progress):** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
+- **Phase 5 (complete):** Add the `iosApp` Xcode project — a thin SwiftUI shell that hosts the
   shared Compose UI in a `UIViewController`, plus a native WidgetKit home-screen widget
   (Swift Charts where the widget needs charts); Firebase iOS SDK (or no-op for FOSS).
   *Started:* the Compose Multiplatform UI now runs on iOS. `MainViewController()`
@@ -607,8 +607,42 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   alerts via `AlertsScreen` + `AlertsViewModel`, notes via `NotesScreen` + `NotesViewModel`, and the
   per-ticker display name via `DisplaynameScreen` + `DisplaynameViewModel` (the editors reuse the
   shared `ic_close`/`ic_done` Compose resources and the shared `DecimalFormatter` for input parsing).
-  *Remaining:* wire the iOS portfolio share/import/export document pickers, and add the native
-  WidgetKit widget + Firebase iOS.
+  *Remaining:* none — the iOS portfolio share/import/export now drive native document pickers
+  (`UIDocumentPickerViewController`/`UIActivityViewController`) via the shared
+  `IosPortfolioExchange` + `PortfolioDocumentBridge`, and a native **WidgetKit** home-screen widget
+  (`iosApp/StockTickerWidget`) renders the watchlist from a shared App Group snapshot
+  (`WidgetSnapshotStore`), with a Swift Charts bar chart on the large family; Firebase iOS is wired
+  in `StockTickerApp.configureFirebase()` (no-op without the SDK/`GoogleService-Info.plist`).
+- **Phase 5.1 (feature gaps — to do before Phase 6):** Phase 5 stood the iOS app up end to
+  end, but a number of Android features are still missing, stubbed or simplified on iOS. Close
+  these gaps before moving on to CI:
+  - **Local notifications (price alerts + daily summary).** Android delivers price-alert
+    notifications and a scheduled daily-summary notification (`androidApp/.../notifications/
+    NotificationsHandler.kt`, `DailySummaryNotificationReceiver.kt`) via `AlarmManager`/
+    `WorkManager`. iOS only runs background refresh through `BGTaskScheduler`
+    (`shared/src/iosMain/.../model/BackgroundRefreshScheduler.kt`) and has no `UNUserNotification`
+    delivery, so the "notification alerts" settings toggle currently has no iOS backend. Add a
+    `UNUserNotificationCenter`-backed implementation for both alert types.
+  - **Home-screen widget configuration & customisation.** Android supports multiple Glance
+    widgets, each with its own watchlist and per-widget options (auto-sort, layout, size,
+    background/text colour, bold text, header visibility, currency display, refresh button),
+    configured in-app (`androidApp/.../widget/`). The iOS `StockTickerWidget`
+    (`iosApp/StockTickerWidget/StockTickerWidget.swift`) is a single `StaticConfiguration` that
+    renders the one shared watchlist, and `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) is an
+    informational guidance screen only. Add WidgetKit configuration (e.g. an
+    `AppIntentConfiguration`) for per-widget watchlists and appearance options.
+  - **Onboarding tutorial.** Android shows a first-run tutorial gated on the shared
+    `tutorialShown()` preference (`androidApp/.../home/HomeActivity.kt` →
+    `HomeViewModel.checkShowTutorial()`). The iOS `HomeScreen.kt` never presents it even though the
+    preference is already shared (`shared/src/commonMain/.../UserPreferences.kt`). Add an iOS
+    onboarding flow.
+  - **In-app review / version-tap.** Android triggers the Play in-app review flow
+    (`androidApp/.../home/IAppReviewManager.kt`) and a functional version-tap handler
+    (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `SettingsScreen.kt` `onVersionTap`
+    is a no-op. Wire up `SKStoreReviewController` / the version-tap action on iOS.
+  - **Debug database viewer.** Android exposes a DB viewer from settings
+    (`androidApp/.../debug/DbViewerActivity.kt`); there is no iOS equivalent. Add one (or
+    explicitly drop it from the iOS scope).
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

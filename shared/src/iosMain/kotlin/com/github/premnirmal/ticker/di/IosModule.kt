@@ -33,7 +33,12 @@ import com.github.premnirmal.ticker.repo.TickersStore
 import com.github.premnirmal.ticker.repo.buildQuotesDB
 import com.github.premnirmal.ticker.repo.getQuotesDBBuilder
 import com.github.premnirmal.ticker.settings.DataStorePreferenceStore
+import com.github.premnirmal.ticker.settings.IosPortfolioExchange
+import com.github.premnirmal.ticker.settings.NoopPortfolioDocumentBridge
+import com.github.premnirmal.ticker.settings.PortfolioDocumentBridge
+import com.github.premnirmal.ticker.settings.PortfolioSerializer
 import com.github.premnirmal.ticker.settings.PreferenceStore
+import com.github.premnirmal.ticker.widget.WidgetSnapshotStore
 import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.settings.iosPreferencesDataStorePath
 import kotlinx.coroutines.CoroutineScope
@@ -62,6 +67,7 @@ import org.koin.dsl.module
 fun iosModule(
     backgroundTaskScheduler: BackgroundTaskScheduler = NoopBackgroundTaskScheduler,
     analyticsSink: AnalyticsSink = NoopAnalyticsSink,
+    portfolioDocumentBridge: PortfolioDocumentBridge = NoopPortfolioDocumentBridge,
     onQuotesUpdated: () -> Unit = {}
 ) = module {
     // Core infrastructure
@@ -126,6 +132,13 @@ fun iosModule(
     // Analytics
     single<AnalyticsSink> { analyticsSink }
     single<Analytics> { AnalyticsImpl(get()) }
+
+    // Portfolio share / import / export (iOS document pickers)
+    single<PortfolioDocumentBridge> { portfolioDocumentBridge }
+    single { IosPortfolioExchange(get(), get<PortfolioSerializer>(), get<IStocksProvider>()) }
+
+    // WidgetKit home-screen widget snapshot (App Group, read by the widget extension)
+    single { WidgetSnapshotStore(get()) }
 }
 
 private const val SUGGESTIONS_ENDPOINT = "https://query2.finance.yahoo.com/v1/finance/"
@@ -146,9 +159,13 @@ private const val APEWISDOM_ENDPOINT = "https://apewisdom.io/api/v1.0/"
 fun initKoinIos(
     backgroundTaskScheduler: BackgroundTaskScheduler = NoopBackgroundTaskScheduler,
     analyticsSink: AnalyticsSink = NoopAnalyticsSink,
+    portfolioDocumentBridge: PortfolioDocumentBridge = NoopPortfolioDocumentBridge,
     onQuotesUpdated: () -> Unit = {}
 ): KoinApplication = startKoin {
-    modules(sharedModule, iosModule(backgroundTaskScheduler, analyticsSink, onQuotesUpdated))
+    modules(
+        sharedModule,
+        iosModule(backgroundTaskScheduler, analyticsSink, portfolioDocumentBridge, onQuotesUpdated)
+    )
 }
 
 /**
@@ -161,10 +178,25 @@ object KoinHelper : KoinComponent {
     private val refreshScheduler: BackgroundRefreshScheduler by inject()
     private val analytics: Analytics by inject()
     private val scope: CoroutineScope by inject()
+    private val portfolioExchange: IosPortfolioExchange by inject()
+    private val widgetSnapshotStore: WidgetSnapshotStore by inject()
+    private val clock: AppClock by inject()
 
     fun stocksProvider(): StocksProvider = stocksProvider
     fun refreshScheduler(): BackgroundRefreshScheduler = refreshScheduler
     fun analytics(): Analytics = analytics
+
+    /** The shared coordinator for the iOS Settings share / import / export document-picker actions. */
+    fun portfolioExchange(): IosPortfolioExchange = portfolioExchange
+
+    /**
+     * Write the current portfolio to the shared App Group store so the WidgetKit extension can
+     * render it. Call from the iOS app's `onQuotesUpdated` hook (alongside the WidgetKit timeline
+     * reload), the iOS analogue of Android's `WidgetDataProvider` update.
+     */
+    fun writeWidgetSnapshot() {
+        widgetSnapshotStore.write(stocksProvider.portfolio.value, clock.currentTimeMillis())
+    }
 
     /**
      * Observes the shared portfolio [kotlinx.coroutines.flow.StateFlow] from Swift, invoking [onEach]
