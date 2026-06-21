@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.tickerwidget.ui.AppCard

@@ -200,8 +200,8 @@ dependencies {
   implementation(project(":UI"))
   implementation(project(":shared"))
 
-  implementation(COIL)
-  implementation(COIL.compose)
+  implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
 
   implementation(libs.javax.inject)
   implementation(libs.javax.annotation.api)
