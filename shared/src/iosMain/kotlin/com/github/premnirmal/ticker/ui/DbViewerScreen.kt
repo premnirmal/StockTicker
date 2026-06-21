@@ -25,6 +25,7 @@ import com.github.premnirmal.shared.resources.ic_close
 import com.github.premnirmal.ticker.components.ioDispatcher
 import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.data.QuoteWithHoldings
+import com.github.premnirmal.ticker.repo.data.FetchLogRow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -171,7 +172,7 @@ class IosDbViewerViewModel(
         sb.append("</table>")
     }
 
-    private fun appendFetchLogs(sb: StringBuilder, logs: List<com.github.premnirmal.ticker.repo.data.FetchLogRow>) {
+    private fun appendFetchLogs(sb: StringBuilder, logs: List<FetchLogRow>) {
         sb.append("<h2>Fetch Logs</h2><div class=\"scroll\"><table><tr>")
             .append("<th>id</th><th>time</th><th>source</th><th>event</th><th>detail</th></tr>")
         logs.forEach { log ->
