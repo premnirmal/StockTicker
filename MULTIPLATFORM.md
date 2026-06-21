@@ -230,6 +230,43 @@ items above:
 `UserDefaultsTickersStoreTest`, `AnalyticsTest`); all iOS targets compile `iosMain`/`iosTest` and link the
 `Shared` framework.
 
+### In progress — Phase 4 (shared Compose UI)
+Compose Multiplatform (`org.jetbrains.compose` 1.11.0, paired with the Kotlin compose-compiler
+plugin) is now applied to `:shared`, so `commonMain` can host `@Composable` UI shared by Android and
+iOS. `commonMain` gains the `compose.runtime`/`foundation`/`material3`/`ui` (+ `components.resources`)
+dependencies, and the `iosX64` target was dropped because Compose Multiplatform no longer publishes
+Intel-simulator artifacts (the iOS targets are `iosArm64()` + `iosSimulatorArm64()`).
+
+Migrated into `commonMain` so far:
+
+- The small shared building blocks: `AppTextField` (the rounded text-field colours/shape) and the
+  `TopBar` wrapper (its Android `@Preview` dropped), both in `ticker.ui`.
+- The **per-ticker editor ViewModels** — `NotesViewModel`, `DisplaynameViewModel` and
+  `AlertsViewModel` (`ticker.portfolio`) — using the multiplatform `androidx.lifecycle` `ViewModel`
+  (`lifecycle-viewmodel` KMP). They now depend on the shared `IStocksProvider` + `QuoteStorage`
+  interfaces rather than the Android `StocksProvider`/`StocksStorage` concretes; `:app` binds those
+  interfaces to the Android implementations in `appModule` (`single<IStocksProvider> { get<StocksProvider>() }`
+  / `single<QuoteStorage> { get<StocksStorage>() }`).
+- The **per-ticker editor screens** — `NotesScreen`, `DisplaynameScreen` and `AlertsScreen`
+  (`ticker.portfolio`, in `PortfolioEditScreens.kt`) — bound to those shared ViewModels. The
+  Android-only inputs are hoisted as parameters: the localised strings as `String`s, the back/done
+  icons as `Painter`s, the snackbar as a `SnackbarHostState`, and the `finish()`/`setResult()`
+  navigation side effects as `onBack`/`onDone` callbacks. The alerts editor's locale-aware
+  number parsing stays on the host via an `onSave` callback that returns the above/below error flags.
+  The decimal-input helpers it relies on (`DecimalFormatter`/`DecimalInputVisualTransformation`) also
+  moved into `commonMain`, with the locale separator behind an `expect`/`actual`
+  `localeDecimalSeparator()` (Android `android.icu.text.DecimalFormatSymbols`, iOS
+  `NSNumberFormatter`). `NotesActivity`/`DisplaynameActivity`/`AlertsActivity` are now thin hosts that
+  supply the resources/callbacks and call the shared screen.
+
+Remaining Phase 4 screens still in `:app` (they need more decoupling before moving): the home
+`WatchlistContent`, `SearchScreen`, `NewsFeedScreen` (these pull in not-yet-shared UI such as
+`QuoteCard`/`NewsCard`, the app theme, and the Compose navigation graph), the `QuoteDetailScreen`
+price chart (still MPAndroidChart, to be swapped for a multiplatform chart), and the `WidgetsScreen`
+/ `SettingsScreen` (Glance widget previews, runtime permissions, file pickers and Activities). Coil →
+Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
+
+
 ### Remaining (high level)
 The full plan and rationale live in the PR description / issue. Subsequent phases:
 
