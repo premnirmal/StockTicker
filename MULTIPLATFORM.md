@@ -368,11 +368,30 @@ Migrated into `commonMain` so far:
   activity-result wiring, the `loadQuote`/`fetchAll`/`fetchQuoteInRealTime`/`reset` `DisposableEffect`
   lifecycle, the range-change chart fetch and the `viewModel.messages` snackbar collection, and
   supplies the resources/colours/slots.
+- The **widgets settings screen** — `WidgetsScreen` (`ticker.widget`) — and the `Spinner`
+  (`ticker.ui`) moved into `commonMain` using a fully **stateless** (state-hoisting) design. The
+  Glance/`SharedPreferences`-backed `WidgetData` is abstracted behind a small shared `WidgetSettings`
+  interface (a reactive `prefs: StateFlow<WidgetPrefs>` snapshot + the `setXxx` mutators), and the
+  preference values rendered by the screen became the shared `WidgetPrefs` data class (the Android-only
+  `@DrawableRes`/`@ColorRes` fields used to actually paint the widget stay on `WidgetData.Prefs`). The
+  Android-coupled inputs are hoisted as parameters: the localised labels + string-arrays as a
+  `WidgetSettingsStrings` holder, the `ic_arrow_down`/`ic_done` icons as `Painter`s, the genuinely
+  Android-only Glance `WidgetPreview` as a `widgetPreview` composable slot, the `Divider` as a slot,
+  the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the navigation
+  `rememberScrollToTopAction` registration as a `registerScrollToTop` slot, the adaptive Accompanist
+  `TwoPane` layout as an optional `twoPane` slot (null = single column), and the widget selection
+  (`widgetNames`/`selectedIndex`/`onWidgetSelected`) + the `AddStocks` tap as parameters. A thin
+  `WidgetsScreenHost.kt` in `:app` (named `WidgetsScreen`, keeping the same
+  `widthSizeClass`/`displayFeatures`/`selectedWidgetId`/`showSpinner` signature so
+  `WidgetSettingsActivity` and `HomeNavigation` are unchanged) resolves the Koin `WidgetsViewModel`,
+  collects the widget list/fetch state, adapts each `WidgetData` to `WidgetSettings` and supplies the
+  resources/slots.
+- **Image loading** was migrated from **Coil 2** to **Coil 3** (`io.coil-kt.coil3`, with the
+  `coil-network-okhttp` fetcher) in `:app` — the multiplatform-capable image loader, so the
+  `QuoteCard`/`NewsCard` image loading can move into shared UI in a follow-up.
 
-Remaining Phase 4 screens still in `:app` (they retain genuinely Android-only pieces and need more
-decoupling — or new multiplatform dependencies — before moving): the `WidgetsScreen` (Glance
-`WidgetPreview`s and the `WidgetData`/`SharedPreferences` model). Coil → Coil 3 and Compose
-Multiplatform navigation are also part of the remaining work.
+Remaining Phase 4 work: Compose Multiplatform navigation (replacing the `:app` `RootGraph`/navigation
+wiring) and moving the Coil-backed image cards into shared UI.
 
 
 ### Remaining (high level)
