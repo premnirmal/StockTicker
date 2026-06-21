@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="app_themes">
+    <item>Hell</item>
+    <item>Dunkel</item>
+    <item>Systemstandardeinstellung</item>
+  </string-array>
+    <string-array name="backgrounds">
+    <item>Systemstandardeinstellung</item>
+    <item>Transparent</item>
+    <item>Translucent</item>
+  </string-array>
+    <string-array name="days">
+    <item>Montag</item>
+    <item>Dienstag</item>
+    <item>Mittwoch</item>
+    <item>Donnerstag</item>
+    <item>Freitag</item>
+    <item>Samstag</item>
+    <item>Sonntag</item>
+  </string-array>
+    <string-array name="font_sizes">
+    <item>Winzig</item>
+    <item>Sehr klein</item>
+    <item>Klein</item>
+    <item>Mittel</item>
+    <item>Groß</item>
+    <item>Sehr groß</item>
+    <item>Riesig</item>
+  </string-array>
+    <string-array name="layout_types">
+    <item>Animiert</item>
+    <item>Tabs</item>
+    <item>Fest</item>
+    <item>Mein Portfolio</item>
+  </string-array>
+    <string-array name="sync_periods">
+    <item>5 Minuten</item>
+    <item>15 Minuten</item>
+    <item>30 Minuten</item>
+    <item>45 Minuten</item>
+    <item>1 Stunde</item>
+  </string-array>
+    <string-array name="text_colors">
+    <item>Systemstandardeinstellung</item>
+    <item>Weiß</item>
+    <item>Schwarz</item>
+  </string-array>
+    <string-array name="widget_width_types">
+    <item>Auto</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Zur Startseite"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Nach oben"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Weitere Optionen"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Fertig"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Alle anzeigen"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"App auswählen"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"AUS"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"AN"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt +"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Strg +"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"Löschen"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"Eingabetaste"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Funktionstaste +"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta-Taste +"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Umschalttaste +"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"Leertaste"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym-Taste +"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menütaste +"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Suchen…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Suchanfrage löschen"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Suchanfrage"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Suche"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Anfrage senden"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Sprachsuche"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Teilen mit"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Mit <ns1:g id="APPLICATION_NAME">%s</ns1:g> teilen"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Minimieren"</string>
+    <string name="action_Settings">Widget-Einstellungen</string>
+    <string name="action_add">Hinzufügen</string>
+    <string name="action_export">Aktienliste Exportieren</string>
+    <string name="action_feed">News</string>
+    <string name="action_import">Aktienliste Importieren</string>
+    <string name="action_portfolio">Portfolio</string>
+    <string name="action_rearrage">Aktien umsortieren</string>
+    <string name="action_search">Suchen</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_share">Portfolio teilen</string>
+    <string name="action_update">Jetzt aktualisieren</string>
+    <string name="action_widgets">Widgets</string>
+    <string name="adblock">Fehler beim Abrufen von Vorschlägen. Sind Sie sicher, dass Sie keinen Adblocker verwenden? Wenn Sie einen Adblocker verwenden, fügen Sie bitte d.yimg.com zu Ihrer Whitelist hinzu.</string>
+    <string name="add">Hinzufügen</string>
+    <string name="add_alerts">Benachrichtigungen hinzufügen</string>
+    <string name="add_notes">Anmerkungen hinzufügen</string>
+    <string name="add_position">Bestand hinzufügen</string>
+    <string name="add_positions_prompt">Möchten Sie Bestände für %1$s hinzufügen?</string>
+    <string name="add_stock">Aktien hinzufügen</string>
+    <string name="add_ticker">Ticker hinzufügen</string>
+    <string name="add_to_portfolio">Zum Portfolio hinzufügen oder daraus entfernen</string>
+    <string name="added_to_list">%1$s wurde Ihrem Portfolio hinzugefügt</string>
+    <string name="alert_above">Benachrichtigung wenn überschritten</string>
+    <string name="alert_above_error">Unterschrittener Wert muß kleiner als überschrittener Wert sein.</string>
+    <string name="alert_above_notification">Die Aktie %1$s, ist jetzt über %2$s bei %3$s.</string>
+    <string name="alert_above_notification_title">%1$s ist jetzt über %2$s bei %3$s</string>
+    <string name="alert_below">Benachrichtigung wenn unterschritten</string>
+    <string name="alert_below_error">Überschrittener Wert muß größer als unterschrittener Wert sein.</string>
+    <string name="alert_below_notification">Die Aktie %1$s, ist jetzt unter %2$s bei %3$s.</string>
+    <string name="alert_below_notification_title">%1$s ist jetzt unter %2$s bei %3$s</string>
+    <string name="alert_dismiss">Nicht mehr anzeigen</string>
+    <string name="alerts">Benachrichtigungen</string>
+    <string name="alerts_disabled">Warnungen deaktiviert, Einstellungen überprüfen</string>
+    <string name="already_in_portfolio">%1$s ist bereits in Ihrem Portfolio</string>
+    <string msgid="8719607706653693137" name="androidx_compose_foundation_autofill">"Automatisch ausfüllen"</string>
+    <string msgid="1150566100598813236" name="androidx_compose_ui_autofill">"Automatisch ausfüllen"</string>
+    <string name="app_settings">Einstellungen</string>
+    <string name="app_theme">Farbdesign</string>
+    <string name="are_you_sure">Sind Sie sich sicher?</string>
+    <string name="auto_sort">Automatisches Sortieren</string>
+    <string name="auto_sort_desc">Die Aktien werden nach prozentualer Änderung sortiert.</string>
+    <string name="autosort_disabled">Die automatische Sortierung wurde deaktiviert. Sie können jetzt per Drag&amp;Drop sortieren.</string>
+    <string name="average_price">Kaufpreis</string>
+    <string name="bg">Widget-Hintergrund</string>
+    <string name="bg_updated_message">Hintergrund aktualisiert</string>
+    <string name="bold_change">Fettgedruckter Text</string>
+    <string name="bold_change_desc">Zeigen Sie Änderungen und Marktwert in Fettdruck an.</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Annehmen"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Ablehnen"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Auflegen"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Eingehender Anruf"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Aktueller Anruf"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Filter für eingehenden Anruf"</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="cannot_export_msg">Aktienlisten können nicht ohne Berechtigung zum Schreiben in einen externen Speicher exportiert werden.</string>
+    <string name="cannot_import_msg">Aktienlisten können nicht ohne Berechtigung zum Lesen des externen Speichers importiert werden.</string>
+    <string name="cannot_share_msg">Aktienlisten können nicht ohne Berechtigung zum Schreiben in einen externen Speicher freigegeben werden.</string>
+    <string name="change_amount">Änderung</string>
+    <string name="change_instructions">Klicken Sie in Ihrem Widget auf die Änderung, um zwischen Änderungsprozentsatz und Änderungswert zu wechseln</string>
+    <string name="change_percent">%Änderung</string>
+    <string name="choose_text_size">Widget-Textgröße</string>
+    <string msgid="406453423630273620" name="close_drawer">"Navigationsmenü schließen"</string>
+    <string msgid="7573152094250666567" name="close_sheet">"Tabelle schließen"</string>
+    <string msgid="3260749812566568062" name="copy_toast_msg">"Link in Zwischenablage kopiert"</string>
+    <string name="current_positions">Aktuelle Bestände</string>
+    <string name="day_change_amount">Bestands- änderung</string>
+    <string name="day_change_percent">% Bestandsänderung</string>
+    <string name="days_updated_error_message">Fehler - Sie müssen den Tag auswählen.</string>
+    <string name="days_updated_message">Aktualisierungstage aktualisiert</string>
+    <string name="db_tap_count">Tippen Sie noch %1$d mal, um den DB-Viewer zu entsperren</string>
+    <string name="db_viewer">Anwendungsdatenbank</string>
+    <string msgid="8038256446254964252" name="default_error_message">"Ungültige Eingabe"</string>
+    <string msgid="6312721426453364202" name="default_popup_window_title">"Pop-up-Fenster"</string>
+    <string name="desc_channel_alerts">Lagerwarnungen</string>
+    <string name="desc_channel_summary">Tägliche Zusammenfassung</string>
+    <string name="discovered_db">Sie haben den geheimen Eingang zum DB-Viewer entdeckt</string>
+    <string name="dividend">Dividende</string>
+    <string name="done">Fertig</string>
+    <string msgid="1890207353314751437" name="dropdown_menu">"Drop-down-Menü"</string>
+    <string name="edit_position">Bestand bearbeiten</string>
+    <string name="edit_positions">Bestand bearbeiten</string>
+    <string name="enable_google_finance">Alternative Finanz-API aktivieren?</string>
+    <string name="enable_google_finance_desc">In Beta. Bitte deaktivieren Sie, wenn es keine genauen Aktienwerte gibt.</string>
+    <string name="end_time">Endzeit</string>
+    <string name="end_time_updated">Endzeit aktualisiert</string>
+    <string name="enter_a_symbol">Geben Sie einen Aktiennamen ein</string>
+    <string name="equity_value">Eigenkapitalwert</string>
+    <string name="error">Fehler</string>
+    <string name="error_exporting">Fehler beim Exportieren der Datei</string>
+    <string name="error_fetching_news">¯\\_(ツ)_/¯\nFehler beim Abrufen von Nachrichten</string>
+    <string name="error_fetching_stock">Fehler beim Abrufen der Aktie</string>
+    <string name="error_fetching_suggestions">Fehler beim Abrufen von Vorschlägen</string>
+    <string name="error_fetching_whats_new">Fehler beim Abrufen der neuen Funktionen</string>
+    <string name="error_loading_graph">Fehler beim Laden des Diagramms</string>
+    <string name="error_sharing">Fehler beim Teilen der Aktienliste</string>
+    <string name="error_symbol">Ungültige Aktie</string>
+    <string name="exact_alarm_permission_required_message">Die Berechtigung für exakte Alarme ist erforderlich, um das Widget rechtzeitig zu aktualisieren.</string>
+    <string name="expand">Expandieren</string>
+    <string name="export_desc">Aktienliste ihres Portfolios in eine .json-Datei exportieren.</string>
+    <string name="exported_to">Erfolgreich exportiert</string>
+    <string msgid="4566929209979330987" name="fallback_menu_item_copy_link">"Link kopieren"</string>
+    <string msgid="3413186855122069269" name="fallback_menu_item_open_in_browser">"Im Browser öffnen"</string>
+    <string msgid="7145444925855055364" name="fallback_menu_item_share_link">"Link teilen"</string>
+    <string name="five_years">5 Jahre</string>
+    <string name="five_years_short">5Y</string>
+    <string name="gain">Gewinn</string>
+    <string name="gain_loss">Gewinn/Verlust</string>
+    <string msgid="2863935784364843033" name="glance_error_layout_text">"Prüfe den genauen Fehler mithilfe von "<b><tt>"adb logcat"</tt></b>" und suche dabei nach "<b><tt>"GlanceAppWidget"</tt></b></string>
+    <string msgid="5191168365305634625" name="glance_error_layout_text_v2">"Inhalt kann nicht angezeigt werden"</string>
+    <string msgid="3631961919234443531" name="glance_error_layout_title"><b>"„Glance App Widget“-Fehler"</b></string>
+    <string name="go_to_settings">Gewähren</string>
+    <string name="graph_fetch_failed">Daten konnten nicht abgerufen werden</string>
+    <string name="hide_header">Widget-Kopfzeile ausblenden</string>
+    <string name="hide_header_desc">Schaltfläche zum Abrufen der Zeit und zum Aktualisieren.</string>
+    <string name="holdings">Bestand</string>
+    <string name="how_to">- Drücken Sie lange auf eine leere Stelle auf Ihrem Startbildschirm, um das Menü aufzurufen.\n\n-Wählen Sie nun die Option \'Widgets\'.\n\n- Wählen Sie den Eintrag \'Stocks Widget\' aus der Liste der Widgets.\n\n- Sie können mehrere Widgets mit jeweils eigenem Portfolio hinzufügen.</string>
+    <string name="how_to_title">So fügen Sie ein Widget hinzu.</string>
+    <string name="import_desc">Aktienliste von einer durch Kommas getrennten TXT-Datei oder einer JSON-Datei importieren.</string>
+    <string msgid="6827826412747255547" name="in_progress">"In Bearbeitung"</string>
+    <string name="incorrect_time_update_error">Die Startzeit darf nicht gleich der Endzeit sein.</string>
+    <string msgid="7933458017204019916" name="indeterminate">"Teilweise aktiviert"</string>
+    <string name="invalid_number">Ungültige Eingabe</string>
+    <string name="invalid_time">Ungültige Zeit</string>
+    <string name="last_and_next_fetch">Letzter Abruf: %1$s\nNächster Abruf: %2$s</string>
+    <string name="last_fetch">Letzter Abruf: %1$s</string>
+    <string name="later">Später</string>
+    <string name="layout_type">Widget-Typ</string>
+    <string name="layout_updated_message">Layouttyp aktualisiert</string>
+    <string name="like_our_app">Gefällt dir unsere App?</string>
+    <string name="loading">Wird geladen</string>
+    <string name="loss">Verlust</string>
+    <string msgid="2988463736136100848" name="m3c_bottom_sheet_collapse_description">"Ansicht am unteren Rand minimieren"</string>
+    <string msgid="1555567894577437024" name="m3c_bottom_sheet_dismiss_description">"Ansicht am unteren Rand schließen"</string>
+    <string msgid="8403354765404029791" name="m3c_bottom_sheet_drag_handle_description">"Ziehpunkt"</string>
+    <string msgid="6670819569745899763" name="m3c_bottom_sheet_expand_description">"Ansicht am unteren Rand maximieren"</string>
+    <string msgid="3010635850035863127" name="m3c_bottom_sheet_pane_title">"Ansicht am unteren Rand"</string>
+    <string msgid="8166741421776570875" name="m3c_date_input_headline">"Eingabedatum"</string>
+    <string msgid="229313757840775812" name="m3c_date_input_headline_description">"Eingabedatum: %1$s"</string>
+    <string msgid="6116910750161463197" name="m3c_date_input_invalid_for_pattern">"Datum entspricht nicht dem erwarteten Format: %1$s"</string>
+    <string msgid="2521768508935305279" name="m3c_date_input_invalid_not_allowed">"Unzulässiges Datum: %1$s"</string>
+    <string msgid="7052898923934555305" name="m3c_date_input_invalid_year_range">"Datum liegt außerhalb des erwarteten Jahresbereichs (%1$s–%2$s)"</string>
+    <string msgid="2895559812010326913" name="m3c_date_input_label">"Datum"</string>
+    <string msgid="1237013946323089826" name="m3c_date_input_no_input_description">"Kein Datum"</string>
+    <string msgid="7306227249789210568" name="m3c_date_input_title">"Datum auswählen"</string>
+    <string msgid="7605002211875882969" name="m3c_date_picker_headline">"Ausgewähltes Datum"</string>
+    <string msgid="3664277305226978227" name="m3c_date_picker_headline_description">"Aktuelle Auswahl: %1$s"</string>
+    <string msgid="8436650776581492840" name="m3c_date_picker_navigate_to_year_description">"Zum Jahr %1$s wechseln"</string>
+    <string msgid="5811000998184572395" name="m3c_date_picker_no_selection_description">"Kein Datum"</string>
+    <string msgid="7813882352367152251" name="m3c_date_picker_scroll_to_earlier_years">"Zum Ansehen vorheriger Jahre scrollen"</string>
+    <string msgid="5727367015496556177" name="m3c_date_picker_scroll_to_later_years">"Zum Ansehen nachfolgender Jahre scrollen"</string>
+    <string msgid="1804346892470238807" name="m3c_date_picker_switch_to_calendar_mode">"In den Kalendereingabemodus wechseln"</string>
+    <string msgid="395627960681594326" name="m3c_date_picker_switch_to_day_selection">"Wischen, um ein Jahr auszuwählen, oder tippen, um zur Tagesauswahl zurückzukehren"</string>
+    <string msgid="2219746470065162704" name="m3c_date_picker_switch_to_input_mode">"In den Texteingabemodus wechseln"</string>
+    <string msgid="7142101321095356500" name="m3c_date_picker_switch_to_next_month">"Zum nächsten Monat wechseln"</string>
+    <string msgid="228438865139394590" name="m3c_date_picker_switch_to_previous_month">"Zum vorherigen Monat wechseln"</string>
+    <string msgid="791651718641787594" name="m3c_date_picker_switch_to_year_selection">"Zur Jahresauswahl wechseln"</string>
+    <string msgid="7430790972741451689" name="m3c_date_picker_title">"Datum auswählen"</string>
+    <string msgid="3199387177749801575" name="m3c_date_picker_today_description">"Heute"</string>
+    <string msgid="2068382232816991922" name="m3c_date_picker_year_picker_pane_title">"Jahresauswahl sichtbar"</string>
+    <string msgid="3190049423327661366" name="m3c_date_range_input_invalid_range_input">"Angegebener Zeitraum ungültig"</string>
+    <string msgid="3148384720560189467" name="m3c_date_range_input_title">"Daten eingeben"</string>
+    <string msgid="2138321128465719402" name="m3c_date_range_picker_day_in_range">"Im Zeitraum"</string>
+    <string msgid="4947636797751277713" name="m3c_date_range_picker_end_headline">"Enddatum"</string>
+    <string msgid="602077859540990149" name="m3c_date_range_picker_scroll_to_next_month">"Zum Ansehen des nächsten Monats scrollen"</string>
+    <string msgid="4592174524846109496" name="m3c_date_range_picker_scroll_to_previous_month">"Zum Ansehen des vorherigen Monats scrollen"</string>
+    <string msgid="4665981448952749820" name="m3c_date_range_picker_start_headline">"Startdatum"</string>
+    <string msgid="3134165431120340385" name="m3c_date_range_picker_title">"Daten auswählen"</string>
+    <string msgid="7617233117134790350" name="m3c_dialog">"Dialogfeld"</string>
+    <string msgid="3177828188723359358" name="m3c_dropdown_menu_collapsed">"Minimiert"</string>
+    <string msgid="2360841780724299882" name="m3c_dropdown_menu_expanded">"Maximiert"</string>
+    <string msgid="8687821690726149911" name="m3c_dropdown_menu_toggle">"Drop-down-Menü maximieren/minimieren"</string>
+    <string msgid="6072492480528318635" name="m3c_floating_toolbar_collapse">"Symbolleiste minimieren"</string>
+    <string msgid="6880757017246780255" name="m3c_floating_toolbar_expand">"Symbolleiste maximieren"</string>
+    <string msgid="6152806324422087846" name="m3c_search_bar_search">"Suche"</string>
+    <string msgid="6152755701819882931" name="m3c_snackbar_dismiss">"Schließen"</string>
+    <string msgid="3868801555855510515" name="m3c_snackbar_pane_title">"Warnmeldung"</string>
+    <string msgid="7655536806087401899" name="m3c_suggestions_available">"Vorschläge unten"</string>
+    <string msgid="409352516511718051" name="m3c_time_input_dialog_title">"Uhrzeit eingeben"</string>
+    <string msgid="2786685010796619560" name="m3c_time_picker_am">"AM"</string>
+    <string msgid="7412665527536641863" name="m3c_time_picker_dialog_title">"Uhrzeit auswählen"</string>
+    <string msgid="2349193472625211372" name="m3c_time_picker_hour">"Stunde"</string>
+    <string msgid="9179527532316922345" name="m3c_time_picker_hour_24h_suffix">"%1$d Std."</string>
+    <string msgid="8876759303332837035" name="m3c_time_picker_hour_selection">"Stunde auswählen"</string>
+    <string msgid="3458167507790628988" name="m3c_time_picker_hour_suffix">"%1$d Uhr"</string>
+    <string msgid="6973808109666874069" name="m3c_time_picker_hour_text_field">"für Stunde"</string>
+    <string msgid="4313071914266462005" name="m3c_time_picker_minute">"Minute"</string>
+    <string msgid="4699133535056739733" name="m3c_time_picker_minute_selection">"Minuten auswählen"</string>
+    <string msgid="5064177921781937179" name="m3c_time_picker_minute_suffix">"%1$d Minuten"</string>
+    <string msgid="7661234488295443182" name="m3c_time_picker_minute_text_field">"für Minuten"</string>
+    <string msgid="5865171949528594571" name="m3c_time_picker_period_toggle_description">"Vormittags oder nachmittags auswählen"</string>
+    <string msgid="6616362054113087709" name="m3c_time_picker_pm">"Nachmittags"</string>
+    <string msgid="4145073906612931838" name="m3c_time_picker_toggle_keyboard">"In den Texteingabemodus wechseln, um die Uhrzeit einzugeben"</string>
+    <string msgid="8841786098195101324" name="m3c_time_picker_toggle_touch">"In den Uhrzeitmodus wechseln, um die Uhrzeit einzugeben"</string>
+    <string msgid="1805687647081129904" name="m3c_tooltip_long_press_label">"Kurzinfo anzeigen"</string>
+    <string msgid="5460405025248574620" name="m3c_tooltip_pane_description">"Kurzinfo"</string>
+    <string msgid="6564222473543418073" name="m3c_wide_navigation_rail_close_rail">"Streifen schließen"</string>
+    <string msgid="8350283435461615411" name="m3c_wide_navigation_rail_pane_title">"Navigationsstreifen"</string>
+    <string name="max">∞</string>
+    <string name="move_to_different_widget">Zu einem anderen Widget verschieben</string>
+    <string name="my_stock_portfolio">Mein Aktienportfolio</string>
+    <string msgid="542007171693138492" name="navigation_menu">"Navigationsmenü"</string>
+    <string name="news_feed">Neueste Nachrichten</string>
+    <string name="news_fetch_failed">Nachrichten konnten nicht abgerufen werden</string>
+    <string name="next_fetch">Nächster Abruf: %1$s</string>
+    <string name="no">Nein</string>
+    <string name="no_data">¯\\_(ツ)_/¯\nKeine Daten</string>
+    <string name="no_network_message">Keine Netzwerkverbindung</string>
+    <string name="no_such_stock_in_portfolio">Keine solche Aktie in Ihrem Portfolio.</string>
+    <string name="no_symbols">¯\\_(ツ)_/¯\nKeine Aktien</string>
+    <string name="no_symbols_in_portfolio">Keine Aktien im Portfolio.</string>
+    <string msgid="6610465462668679431" name="not_selected">"Nicht ausgewählt"</string>
+    <string name="notes">Anmerkungen</string>
+    <string name="notification_alerts">Benachrichtigungen erhalten</string>
+    <string name="notification_alerts_desc">Legt fest ob Benachrichtigungen erhalten werden.</string>
+    <string name="notification_summary_title">Wie hat sich Ihr Portfolio heute entwickelt?</string>
+    <string name="number_of_shares">Anzahl der Aktien</string>
+    <string name="ok">OK</string>
+    <string name="one_day">1 Tag</string>
+    <string name="one_day_short">1D</string>
+    <string name="one_month">1 Monat</string>
+    <string name="one_month_short">1M</string>
+    <string name="one_year">1 Jahr</string>
+    <string name="one_year_short">1Y</string>
+    <string name="only_updates_on_weekdays">Nur an Wochentagen aktualisieren</string>
+    <string name="please_rate">Bitte bewerten Sie uns im PlayStore, wir würden gerne hören, was Sie zu sagen haben!</string>
+    <string name="portfolio">Portfolio</string>
+    <string name="positions">Bestände</string>
+    <string name="price">Preis</string>
+    <string name="privacy_policy">Datenschutz-Bestimmungen</string>
+    <string msgid="5941395253238309765" name="range_end">"Bereichsende"</string>
+    <string msgid="7097486360902471446" name="range_start">"Bereichsstart"</string>
+    <string name="recent_news">Neueste Nachrichten</string>
+    <string name="refresh_failed">Aktualisierung fehlgeschlagen</string>
+    <string name="refresh_on_screen_unlock">Beim Entsperren aktualisieren</string>
+    <string name="refresh_on_screen_unlock_desc">Aktualisieren, wenn der Bildschirm entsperrt wird (nur während der festgelegten Zeiten).</string>
+    <string name="refresh_updated_message">Aktualisierungsintervall aktualisiert</string>
+    <string name="remove">Entfernen</string>
+    <string name="remove_holding">Möchten Sie den Eintrag %1$s wirklich aus Ihrem Portfolio entfernen?</string>
+    <string name="remove_prompt">Sind Sie sicher, dass Sie \'%1$s\' aus Ihrem Portfolio entfernen möchten?</string>
+    <string name="round_two_dp">Auf zwei Nachkommastellen runden</string>
+    <string name="round_two_dp_desc">Die Werte und Änderungen werden auf zwei Nachkommastellen gerundet.</string>
+    <string name="save">Speichern</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Suche"</string>
+    <string name="select_widget">Widget auswählen</string>
+    <string msgid="6043586758067023" name="selected">"Ausgewählt"</string>
+    <string name="set">Setzen</string>
+    <string name="setting_currency">Währung anzeigen</string>
+    <string name="setting_currency_desc">Währung im Widget anzeigen</string>
+    <string name="share_email_subject">Hier sind meine Ticker, die ich mit StocksWidget erstellt habe - https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget\n\nSie können diese Ticker mit der App importieren, indem Sie in die Einstellungen gehen und "Importieren" wählen.</string>
+    <string name="shares">Aktien</string>
+    <string name="skip">Überspringen</string>
+    <string msgid="2792228137354697160" name="snackbar_pane_title">"Warnmeldung"</string>
+    <string name="start_time">Startzeit</string>
+    <string name="start_time_updated">Startzeit aktualisiert</string>
+    <string msgid="4139871816613051306" name="state_empty">"Leer"</string>
+    <string msgid="5834637030682409883" name="state_off">"Aus"</string>
+    <string msgid="1490883874751719580" name="state_on">"An"</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string msgid="2561197295334830845" name="switch_role">"Wechseln"</string>
+    <string msgid="1672349317127674378" name="tab">"Tab"</string>
+    <string msgid="5946805113151406391" name="template_percent">"<ns1:g id="PERCENTAGE">%1$d</ns1:g> Prozent."</string>
+    <string name="text_color">Textfarbe</string>
+    <string name="text_color_updated_message">Textfarbe aktualisiert</string>
+    <string name="text_size_updated_message">Textgröße aktualisiert</string>
+    <string name="theme_updated_message">App-Theme aktualisiert</string>
+    <string name="three_month">3 Monate</string>
+    <string name="three_month_short">3M</string>
+    <string name="ticker_import_fail">Fehler beim Importieren der Aktienliste</string>
+    <string name="ticker_import_success">Aktienliste erfolgreich importiert</string>
+    <string msgid="3765533235322692011" name="tooltip_description">"Kurzinfo"</string>
+    <string msgid="3124740595719787496" name="tooltip_label">"Kurzinfo anzeigen"</string>
+    <string name="total">Gesamt</string>
+    <string name="total_holdings">Gesamtbestand: %1$s</string>
+    <string name="tutorial">Lernprogramm</string>
+    <string name="two_weeks">14 Tag</string>
+    <string name="two_weeks_short">14D</string>
+    <string name="update_days">Aktualisierungstage</string>
+    <string name="update_days_desc">Aktualisierungen werden an diesen Tagen durchgeführt.</string>
+    <string name="update_interval">Aktualisierungsintervall</string>
+    <string name="value">Wert</string>
+    <string name="whats_new">Was gibt\'s neues</string>
+    <string name="whats_new_in">Was gibt\'s neues in v%1$s</string>
+    <string name="widget_name">Widget-Name</string>
+    <string name="widget_name_updated">Widget-Name aktualisiert</string>
+    <string name="widget_width">Widget-Größe</string>
+    <string name="widget_width_updated_message">Widget-Größe aktualisiert</string>
+    <string name="widgets">Widgets</string>
+    <string name="yes">Ja</string>
+</resources>
