@@ -1,8 +1,8 @@
 package com.github.premnirmal.ticker
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.github.premnirmal.ticker.ui.HomeScreen
 import com.github.premnirmal.ticker.ui.IosAppTheme
-import com.github.premnirmal.ticker.ui.WatchlistScreen
 import platform.UIKit.UIViewController
 
 /**
@@ -15,6 +15,6 @@ import platform.UIKit.UIViewController
  */
 fun MainViewController(): UIViewController = ComposeUIViewController {
     IosAppTheme {
-        WatchlistScreen()
+        HomeScreen()
     }
 }

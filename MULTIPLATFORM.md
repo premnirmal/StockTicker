@@ -544,11 +544,19 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   (`shared/src/iosMain`) builds a `ComposeUIViewController` that the SwiftUI shell hosts via a
   `UIViewControllerRepresentable` (`ComposeView`/`ContentView`), replacing the Phase 2 SwiftUI
   watchlist placeholder. An iOS Material 3 theme (`IosAppTheme`, mirroring the Android brand
-  palette/shapes without `android.os.Build` dynamic colour) wraps the first shared screen
-  (`WatchlistScreen`, bound to the shared `IStocksProvider` portfolio flow). *Remaining:* host the
-  full shared `RootNavigationGraph` (port its Android-only host slots — window-size-class,
-  `DisplayFeature`, resource painters/strings, `koinViewModel`), unify the theme (move the Ubuntu /
-  Alegreya fonts into shared Compose resources), and add the native WidgetKit widget + Firebase iOS.
+  palette/shapes without `android.os.Build` dynamic colour) wraps the iOS host. The host has since
+  grown from the single `WatchlistScreen` into the shared home navigation chrome: an iOS `HomeScreen`
+  (`shared/src/iosMain`, rendered by `MainViewController`) hosts the shared `HomeScaffold` +
+  `BottomNavigationBar` + `HomeNavHost` over a Compose Multiplatform `NavHostController`, so the
+  five home tabs (Watchlist/Trending/Search/Widgets/Settings) switch via bottom navigation on the
+  simulator. The Watchlist tab renders the shared `WatchlistScreen`; the other tabs are lightweight
+  placeholders until their view models can be resolved on iOS. The tab icons come from new **shared
+  Compose Multiplatform drawable resources** (`shared/src/commonMain/composeResources/drawable`,
+  generated into `com.github.premnirmal.shared.resources.Res`), the first shared resources in the
+  project. *Remaining:* host the full shared `RootNavigationGraph` and the real per-tab screens (port
+  the Android-only host slots — window-size-class, `DisplayFeature`, the remaining resource
+  strings, `koinViewModel`), unify the theme (move the Ubuntu / Alegreya fonts into shared Compose
+  resources), and add the native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 
