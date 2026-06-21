@@ -7,10 +7,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.Time
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
-import com.github.premnirmal.ticker.settings.SettingsData
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
