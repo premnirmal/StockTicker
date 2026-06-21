@@ -88,7 +88,7 @@ On a Mac:
    xcodebuild build \
      -project iosApp/StockTicker.xcodeproj \
      -scheme iosApp \
-     -destination 'platform=iOS Simulator,name=iPhone 15' \
+     -destination 'generic/platform=iOS Simulator' \
      CODE_SIGNING_ALLOWED=NO
    ```
 
@@ -100,7 +100,9 @@ capability (`group.com.github.premnirmal.ticker`) is applied to both targets fro
 
 ### Continuous integration
 
-`.github/workflows/ios.yml` runs this on a pinned `macos-14` runner on every PR/`master` push
+`.github/workflows/ios.yml` runs this on a pinned `macos-15` runner (Xcode 16.4, which provides the
+iOS 18.5 simulator SDK that Compose Multiplatform's Kotlin/Native artifacts are built against) on
+every PR/`master` push
 (and can be triggered manually from any branch via `workflow_dispatch` — the Actions tab or
 `gh workflow run ios.yml --ref <branch>` — so the macOS pipeline can be exercised before merging to
 `master`): it

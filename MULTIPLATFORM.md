@@ -680,7 +680,9 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   (`.github/workflows/build.yml`, `unit-tests.yml`, `detekt.yml`); `unit-tests.yml` now also runs
   the shared module's Android-target unit tests (`:shared:testDebugUnitTest`, which executes
   `commonTest` against the JVM/Android target). A new `.github/workflows/ios.yml` runs on a pinned
-  `macos-14` runner (with the Xcode version pinned via `maxim-lobanov/setup-xcode`): it compiles the
+  `macos-15` runner with Xcode 16.4 (pinned via `maxim-lobanov/setup-xcode`; macos-15/Xcode 16.4 is
+  required because Compose Multiplatform's Kotlin/Native artifacts are built against the iOS 18.5
+  simulator SDK): it compiles the
   shared common code (`:shared:compileKotlinMetadata`), links the iOS `Shared` framework for both the
   simulator and device targets (`:shared:linkDebugFrameworkIosSimulatorArm64` /
   `linkDebugFrameworkIosArm64`), runs the shared `commonTest` suite on the iOS simulator
