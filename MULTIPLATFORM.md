@@ -582,11 +582,23 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `NewsFeedScreen`, supplying iOS-native Material 3 card slots — a lightweight quote card and the
   shared Coil-backed `NewsCard` (its `card` slot a Material 3 `Card`); tapping a news article opens
   its URL via `UIApplication.openURL`, and tapping a trending quote navigates to the shared
-  quote-detail destination. *Remaining:* swap the remaining placeholder tabs (Search/Widgets/Settings)
-  for the real shared per-tab screens (port the Android-only host slots — window-size-class,
-  `DisplayFeature`, the remaining resource strings, `koinViewModel`, and move the still-Android
-  `SearchViewModel`/widget view models into `commonMain`), wire the quote-detail extras
-  (holdings/news/alerts), and add the native WidgetKit widget + Firebase iOS.
+  quote-detail destination. The iOS **Search, Settings and Widgets tabs are now real too**: an iOS
+  `SearchScreen` (`shared/src/iosMain`) drives an `IosSearchViewModel` (built from the iOS Koin
+  graph's `SuggestionsProvider`/`NewsProvider`/`IStocksProvider`) through the shared `SearchScreen`,
+  debouncing symbol queries, loading the trending stocks and — since iOS has a single watchlist
+  rather than Android's per-Glance-widget lists — toggling a symbol's membership of the shared
+  portfolio directly from the suggestion row's add/remove button (the clear icon is a new shared
+  `ic_close` Compose resource); tapping a result navigates to the shared quote-detail destination. An
+  iOS `SettingsScreen` (`shared/src/iosMain`) drives an `IosSettingsViewModel` over the shared
+  `UserPreferences`/`IStocksProvider` through the shared `SettingsScreen` — the theme, update
+  interval, update window (start/end times and days), round-to-two-decimals and notification-alerts
+  toggles read and write the shared preferences (`hasWidgets` is always `false` on iOS); the external
+  links open via `UIApplication.openURL`. The chosen theme is now applied live: `MainViewController`
+  observes the shared `themePrefFlow` and passes the resolved `SelectedTheme` to `IosAppTheme`. The
+  iOS `WidgetsScreen` (`shared/src/iosMain`) is an informational WidgetKit-guidance screen, because
+  iOS widgets are configured from the home screen rather than in-app like Android's Glance widgets.
+  *Remaining:* wire the iOS portfolio share/import/export document pickers, wire the quote-detail
+  extras (holdings/news/alerts), and add the native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

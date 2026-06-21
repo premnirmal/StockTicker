@@ -1,15 +1,9 @@
 package com.github.premnirmal.ticker.ui
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -127,17 +121,16 @@ private fun HomeContent(rootNavController: NavHostController) {
                         }
                     )
                 },
-                search = { PlaceholderTab("Search") },
-                widgets = { PlaceholderTab("Widgets") },
-                settings = { PlaceholderTab("Settings") }
+                search = {
+                    SearchScreen(
+                        onQuoteClick = { quote ->
+                            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                        }
+                    )
+                },
+                widgets = { WidgetsScreen() },
+                settings = { SettingsScreen() }
             )
         }
     )
-}
-
-@Composable
-private fun PlaceholderTab(title: String) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = title, style = MaterialTheme.typography.titleLarge)
-    }
 }
