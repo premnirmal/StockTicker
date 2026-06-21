@@ -95,7 +95,7 @@ fun OnboardingTutorial(controller: OnboardingController) {
         OnboardingPage(
             icon = painterResource(Res.drawable.ic_trending_up),
             title = "Welcome to Stock Ticker",
-            message = "Keep an eye on your favourite stocks with a clean, real-time watchlist.",
+            message = "Keep an eye on your favorite stocks with a clean, real-time watchlist.",
         ),
         OnboardingPage(
             icon = painterResource(Res.drawable.ic_search),
