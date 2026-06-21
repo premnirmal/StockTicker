@@ -26,6 +26,7 @@ import com.github.premnirmal.ticker.network.createYahooFinanceApi
 import com.github.premnirmal.ticker.network.createYahooFinanceInitialLoadApi
 import com.github.premnirmal.ticker.network.createYahooFinanceMostActiveApi
 import com.github.premnirmal.ticker.network.createYahooFinanceNewsApi
+import com.github.premnirmal.ticker.notifications.LocalNotificationsHandler
 import com.github.premnirmal.ticker.repo.UserDefaultsTickersStore
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.StocksStorage
@@ -129,6 +130,18 @@ fun iosModule(
     }
     single<IStocksProvider> { get<StocksProvider>() }
 
+    // Local notifications (price alerts + daily summary) via UNUserNotificationCenter
+    single {
+        LocalNotificationsHandler(
+            stocksProvider = get<IStocksProvider>(),
+            stocksStorage = get(),
+            preferences = get<UserPreferences>(),
+            clock = get(),
+            coroutineScope = get(),
+            store = get()
+        )
+    }
+
     // Analytics
     single<AnalyticsSink> { analyticsSink }
     single<Analytics> { AnalyticsImpl(get()) }
@@ -176,6 +189,7 @@ fun initKoinIos(
 object KoinHelper : KoinComponent {
     private val stocksProvider: StocksProvider by inject()
     private val refreshScheduler: BackgroundRefreshScheduler by inject()
+    private val notificationsHandler: LocalNotificationsHandler by inject()
     private val analytics: Analytics by inject()
     private val scope: CoroutineScope by inject()
     private val portfolioExchange: IosPortfolioExchange by inject()
@@ -185,6 +199,22 @@ object KoinHelper : KoinComponent {
     fun stocksProvider(): StocksProvider = stocksProvider
     fun refreshScheduler(): BackgroundRefreshScheduler = refreshScheduler
     fun analytics(): Analytics = analytics
+
+    /**
+     * The shared local-notifications handler (price alerts + daily summary). The iOS app starts its
+     * refresh-state observer and requests notification authorization through [initializeNotifications].
+     */
+    fun notificationsHandler(): LocalNotificationsHandler = notificationsHandler
+
+    /**
+     * Wires up local notifications: requests notification authorization (once) and starts observing
+     * the shared refresh state so alerts/summaries are delivered after each quotes refresh. Call
+     * once from the iOS app launch (see `iosApp/StockTickerApp.swift`).
+     */
+    fun initializeNotifications() {
+        notificationsHandler.requestAuthorization()
+        notificationsHandler.initialize()
+    }
 
     /** The shared coordinator for the iOS Settings share / import / export document-picker actions. */
     fun portfolioExchange(): IosPortfolioExchange = portfolioExchange

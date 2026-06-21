@@ -616,13 +616,19 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
 - **Phase 5.1 (feature gaps — to do before Phase 6):** Phase 5 stood the iOS app up end to
   end, but a number of Android features are still missing, stubbed or simplified on iOS. Close
   these gaps before moving on to CI:
-  - **Local notifications (price alerts + daily summary).** Android delivers price-alert
+  - **Local notifications (price alerts + daily summary).** *(Done.)* Android delivers price-alert
     notifications and a scheduled daily-summary notification (`androidApp/.../notifications/
     NotificationsHandler.kt`, `DailySummaryNotificationReceiver.kt`) via `AlarmManager`/
-    `WorkManager`. iOS only runs background refresh through `BGTaskScheduler`
-    (`shared/src/iosMain/.../model/BackgroundRefreshScheduler.kt`) and has no `UNUserNotification`
-    delivery, so the "notification alerts" settings toggle currently has no iOS backend. Add a
-    `UNUserNotificationCenter`-backed implementation for both alert types.
+    `WorkManager`. The iOS app now has an equivalent `UNUserNotificationCenter`-backed
+    `LocalNotificationsHandler` (`shared/src/iosMain/.../notifications/LocalNotificationsHandler.kt`):
+    it ports Android's `checkAlerts()` (above/below alerts, the generic ≥ 8 % move alert with the
+    same 24 h per-symbol rate limit, and clearing an alert once it fires) and delivers a once-per-
+    update-day movers summary after the configured `endTime()`. It is driven off the shared
+    `IStocksProvider.fetchState` flow (so a check runs after every refresh, including the
+    `BGTaskScheduler` background refresh via `StockTickerBackgroundScheduler.handleRefresh`), gated
+    on the same `notificationAlerts()`/`updateDays()` preferences. The iOS app starts the observer and
+    requests notification permission via `KoinHelper.initializeNotifications()` in
+    `StockTickerApp.swift`.
   - **Home-screen widget configuration & customisation.** Android supports multiple Glance
     widgets, each with its own watchlist and per-widget options (auto-sort, layout, size,
     background/text colour, bold text, header visibility, currency display, refresh button),

@@ -48,6 +48,8 @@ final class StockTickerBackgroundScheduler: BackgroundTaskScheduler {
         let provider: StocksProvider = KoinHelper.shared.stocksProvider()
         let operation = Task {
             _ = try? await provider.fetch(allowScheduling: true)
+            // Deliver any due price-alert / daily-summary notifications for this refresh.
+            KoinHelper.shared.notificationsHandler().checkAlertsNow()
             task.setTaskCompleted(success: true)
         }
         task.expirationHandler = { operation.cancel() }

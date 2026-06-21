@@ -40,6 +40,9 @@ struct StockTickerApp: App {
                 WidgetCenterReloader.reloadAll()
             }
         )
+        // Request notification permission and start observing refreshes for price-alert /
+        // daily-summary local notifications (the iOS analogue of Android's NotificationsHandler).
+        KoinHelper.shared.initializeNotifications()
         registerBackgroundTasks()
     }
 
