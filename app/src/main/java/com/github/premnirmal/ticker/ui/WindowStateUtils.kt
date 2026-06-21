@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.ui
 
 import android.graphics.Rect
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.window.layout.FoldingFeature
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
@@ -30,29 +29,4 @@ fun isBookPosture(foldFeature: FoldingFeature?): Boolean {
 fun isSeparating(foldFeature: FoldingFeature?): Boolean {
     contract { returns(true) implies (foldFeature != null) }
     return foldFeature?.state == FoldingFeature.State.FLAT && foldFeature.isSeparating
-}
-
-/**
- * Different type of navigation supported by app depending on device size and state.
- */
-enum class NavigationType {
-    BOTTOM_NAVIGATION, NAVIGATION_RAIL
-}
-
-/**
- * Different position of navigation content inside Navigation Rail, Navigation Drawer depending on device size and state.
- */
-enum class NavigationContentPosition {
-    TOP, CENTER
-}
-
-/**
- * App Content shown depending on device size and state.
- */
-enum class ContentType {
-    SINGLE_PANE, DUAL_PANE
-}
-
-val LocalContentType = staticCompositionLocalOf<ContentType> {
-    error("No contentType sender provided")
 }

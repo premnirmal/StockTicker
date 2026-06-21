@@ -24,7 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.navigation.Graph
-import com.github.premnirmal.ticker.navigation.RootNavigationGraph
+import com.github.premnirmal.ticker.navigation.RootNavigationGraphHost
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import kotlinx.coroutines.delay
@@ -82,7 +82,7 @@ class HomeActivity : BaseActivity() {
         var rateDialogShown by rememberSaveable {
             mutableStateOf(false)
         }
-        RootNavigationGraph(
+        RootNavigationGraphHost(
             windowWidthSizeClass = windowSizeClass.widthSizeClass,
             windowHeightSizeClass = windowSizeClass.heightSizeClass,
             displayFeatures = calculateDisplayFeatures(this),

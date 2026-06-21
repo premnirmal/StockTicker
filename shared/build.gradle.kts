@@ -109,6 +109,7 @@ kotlin {
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.koin.core)
       api("androidx.lifecycle:lifecycle-viewmodel:_")
+      implementation(libs.navigation.compose)
       implementation("androidx.datastore:datastore-preferences-core:_")
       implementation("com.squareup.okio:okio:3.9.1")
       implementation(compose.runtime)
@@ -149,6 +150,18 @@ android {
     targetCompatibility = JavaVersion.VERSION_17
   }
 }
+
+// The CMP navigation-compose 2.10.0-alpha02 pulls androidx.navigation:*:2.10.0-alpha05 for
+// Android, which requires compileSdk 37 + AGP 9.x. Force back to the Jetpack 2.8.x line that
+// the project already uses — the CMP wrapper klib is ABI-compatible with this runtime.
+configurations.matching { it.name.contains("Android") || it.name.contains("android") || it.name.startsWith("debug") || it.name.startsWith("release") }
+  .configureEach {
+    resolutionStrategy.eachDependency {
+      if (requested.group == "androidx.navigation" && requested.version?.startsWith("2.10") == true) {
+        useVersion("2.8.5")
+      }
+    }
+  }
 
 // Room KSP processor for every Kotlin target that contains the shared persistence engine
 // (the @Database/@Dao/@Entity declarations live in commonMain).
