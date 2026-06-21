@@ -13,14 +13,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.github.premnirmal.ticker.ui.AppMessage.BottomSheetMessage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import java.util.LinkedList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LifecycleOwner.CollectBottomSheetMessage() {
-    val appMessaging = LocalAppMessaging.current
+fun LifecycleOwner.CollectBottomSheetMessage(appMessaging: AppMessaging) {
     val bottomSheetMessageQueue = remember {
-        LinkedList<BottomSheetMessage>()
+        ArrayDeque<BottomSheetMessage>()
     }
     var bottomSheetMessage: BottomSheetMessage? by remember {
         mutableStateOf(null)
@@ -28,8 +26,8 @@ fun LifecycleOwner.CollectBottomSheetMessage() {
 
     LaunchedEffect(Unit) {
         repeatOnLifecycle(Lifecycle.State.STARTED) {
-            appMessaging.bottomSheets.collect { message ->
-                bottomSheetMessageQueue.add(message)
+            appMessaging.bottomSheets.collect { message: BottomSheetMessage ->
+                bottomSheetMessageQueue.addLast(message)
             }
         }
     }
@@ -39,7 +37,7 @@ fun LifecycleOwner.CollectBottomSheetMessage() {
             while (isActive) {
                 delay(600L)
                 if (bottomSheetMessage == null) {
-                    bottomSheetMessage = bottomSheetMessageQueue.poll()
+                    bottomSheetMessage = bottomSheetMessageQueue.removeFirstOrNull()
                 }
             }
         }

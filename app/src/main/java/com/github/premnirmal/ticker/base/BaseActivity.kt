@@ -83,7 +83,7 @@ abstract class BaseActivity : ComponentActivity() {
                     }
                     Box {
                         ShowContent()
-                        CollectBottomSheetMessage()
+                        CollectBottomSheetMessage(appMessaging)
                     }
                 }
             }

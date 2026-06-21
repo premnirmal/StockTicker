@@ -404,9 +404,9 @@ The bottom-sheet message UI `BottomSheetWithMessage` (`ModalBottomSheetWithMessa
 body) with a custom drag handle — is shared now too: it depends only on the multiplatform `material3`/
 `foundation` APIs plus the shared `AppMessage`, so it moved into `:shared` `commonMain` unchanged except
 for dropping its Android-only `@Preview`. Its only caller, `CollectBottomSheetMessage` (the
-`LifecycleOwner`-scoped queue that drains `AppMessaging.bottomSheets` via `repeatOnLifecycle`), stays in
-`:app` and resolves `BottomSheetWithMessage` from `:shared` via the unchanged
-`com.github.premnirmal.ticker.ui` import.
+`LifecycleOwner`-scoped queue that drains `AppMessaging.bottomSheets` via `repeatOnLifecycle`), is now
+shared too (see the `CollectBottomSheetMessage` paragraph below) and resolves `BottomSheetWithMessage`
+from the shared UI via the unchanged `com.github.premnirmal.ticker.ui` import.
 
 The collapsing-top-bar scroll driver `CollapsingTopBarScrollConnection` (`ticker.home`) is shared now
 too: it is the `NestedScrollConnection` that tracks the watchlist app-bar's vertical offset (clamped to
@@ -906,6 +906,19 @@ are hoisted to `onBack`/`onDone(text)` callbacks. The two thin `Activity` hosts 
 `stringResource`/`painterResource` values and the `LocalAppMessaging` snackbar host in `:app` and
 delegate to the shared screens. Verified with `:app:compileDevDebugKotlin` and
 `:ui-shared:compileKotlinIosSimulatorArm64` both green.
+
+The bottom-sheet message collector `CollectBottomSheetMessage` (`ticker.ui`) is shared now too. It is the
+`LifecycleOwner`-scoped composable that drains `AppMessaging.bottomSheets` (via `repeatOnLifecycle`) into a
+queue and presents one message at a time through the already-shared `BottomSheetWithMessage`. With
+AndroidX Lifecycle now multiplatform (`Lifecycle`/`LifecycleOwner`/`repeatOnLifecycle` resolve from the
+JetBrains `lifecycle-runtime-compose` artifact already on the `:ui-shared` classpath) its only remaining
+JVM coupling was the `java.util.LinkedList` queue, replaced with the multiplatform `ArrayDeque`
+(`addLast`/`removeFirstOrNull`). Following the established seam pattern its one `:app`-typed dependency —
+the `LocalAppMessaging` `CompositionLocal` (typed to `:app`'s `ComposeAppMessaging`) — is hoisted to an
+`appMessaging: AppMessaging` parameter, so the composable moved into `:ui-shared` `commonMain` (same
+`com.github.premnirmal.ticker.ui` package). Its sole call site (`BaseActivity`) passes its injected
+`appMessaging` and resolves the composable from `:ui-shared` via the unchanged same-package reference.
+Verified with `:app:compileDevDebugKotlin` and `:ui-shared:compileKotlinIosSimulatorArm64` both green.
 
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
