@@ -3,41 +3,11 @@ package com.github.premnirmal.ticker.portfolio
 import android.content.Intent
 import android.os.Bundle
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
-import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
 import kotlin.getValue
 
@@ -68,91 +38,27 @@ class NotesActivity : BaseActivity() {
         viewModel.symbol = ticker
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun ShowContent() {
-        var notes by remember(ticker) {
-            val text = viewModel.quote?.properties?.notes ?: ""
-            mutableStateOf(
-                TextFieldValue(
-                    text = text,
-                    selection = TextRange(text.length),
-                )
-            )
-        }
-        Scaffold(
-            modifier = Modifier.imePadding(),
-            topBar = {
-                TopBar(
-                    text = stringResource(R.string.notes),
-                    navigationIcon = {
-                        IconButton(
-                            onClick = {
-                                finish()
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_arrow_back),
-                                contentDescription = null,
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            onClick = {
-                                viewModel.setNotes(notes.text)
-                                setResult(
-                                    RESULT_OK,
-                                    Intent().apply {
-                                        putExtra(NOTES, notes.text)
-                                    }
-                                )
-                                finish()
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_done),
-                                contentDescription = stringResource(R.string.done),
-                            )
-                        }
+        NotesScreen(
+            viewModel = viewModel,
+            ticker = ticker,
+            title = stringResource(R.string.notes),
+            addNotesLabel = stringResource(R.string.add_notes),
+            doneContentDescription = stringResource(R.string.done),
+            backIcon = painterResource(R.drawable.ic_arrow_back),
+            doneIcon = painterResource(R.drawable.ic_done),
+            snackbarHostState = LocalAppMessaging.current.snackbarHostState,
+            onBack = { finish() },
+            onDone = { notesText ->
+                setResult(
+                    RESULT_OK,
+                    Intent().apply {
+                        putExtra(NOTES, notesText)
                     }
                 )
-            },
-            snackbarHost = {
-                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
+                finish()
             }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            ) {
-                val focusRequester = remember { FocusRequester() }
-                Text(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.CenterHorizontally),
-                    text = ticker,
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-                TextField(
-                    shape = com.github.premnirmal.ticker.ui.AppTextFieldShape,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(vertical = 16.dp, horizontal = 8.dp)
-                        .focusRequester(focusRequester)
-                        .verticalScroll(rememberScrollState()),
-                    value = notes,
-                    label = { Text(text = stringResource(R.string.add_notes)) },
-                    onValueChange = { notes = it },
-                    colors = AppTextFieldDefaultColors,
-                )
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
-                }
-            }
-        }
+        )
     }
 }

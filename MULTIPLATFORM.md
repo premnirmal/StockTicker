@@ -893,6 +893,20 @@ the `:app` call site; the rest of the signature is unchanged. Only `TimeSelector
 `TimePickerDialog` wrapper) now remains in `:app`. Verified with `:app:compileDevDebugKotlin` and
 `:ui-shared:compileKotlinIosSimulatorArm64` both green.
 
+The two single-field portfolio editors `NotesScreen` and `DisplaynameScreen` (`ticker.portfolio`,
+new `PortfolioEditScreens.kt`) are shared now too. Each is the `imePadding` `Scaffold` body
+(`TopBar` with back/done actions over an auto-focused `TextField`) that the Android `NotesActivity`/
+`DisplaynameActivity` previously declared inline in their `ShowContent()`. They bind to the
+already-shared `NotesViewModel`/`DisplaynameViewModel` (Phase 3) and depend only on the multiplatform
+`material3`/`foundation`/`compose.ui` APIs plus the already-shared `TopBar`/`AppTextField` styling, so
+they moved into `:ui-shared` `commonMain`. Following the established seam pattern every Android coupling
+is hoisted to a parameter: the labels are plain `String`s, the back/done icons are multiplatform
+`Painter`s, the notes snackbar host is a passed-in `SnackbarHostState`, and `finish()`/`setResult(...)`
+are hoisted to `onBack`/`onDone(text)` callbacks. The two thin `Activity` hosts keep resolving their
+`stringResource`/`painterResource` values and the `LocalAppMessaging` snackbar host in `:app` and
+delegate to the shared screens. Verified with `:app:compileDevDebugKotlin` and
+`:ui-shared:compileKotlinIosSimulatorArm64` both green.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables
