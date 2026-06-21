@@ -920,6 +920,25 @@ the `LocalAppMessaging` `CompositionLocal` (typed to `:app`'s `ComposeAppMessagi
 `appMessaging` and resolves the composable from `:ui-shared` via the unchanged same-package reference.
 Verified with `:app:compileDevDebugKotlin` and `:ui-shared:compileKotlinIosSimulatorArm64` both green.
 
+The per-ticker **price-alerts** editor `AlertsScreen` (`ticker.portfolio`, in `PortfolioEditScreens.kt`)
+is shared now too. It is the `imePadding` `Scaffold` body (`TopBar` with a back action over two decimal
+`TextField`s — alert above/below — and a save `Button`) that the Android `AlertsActivity` previously
+declared inline in its `ShowContent()`. It binds to the already-shared `AlertsViewModel` (Phase 3) and
+depends only on multiplatform `material3`/`foundation`/`compose.ui` APIs plus the already-shared
+`TopBar`/`AppTextField` styling, so it moved into `:ui-shared` `commonMain`. To support it, the decimal
+input helpers `DecimalFormatter`/`DecimalInputVisualTransformation` (used by both `AlertsActivity` and
+`HoldingsActivity`) also moved from `:app` to `:ui-shared` `commonMain` (same `ticker.portfolio`
+package); their only Android coupling — `android.icu.text.DecimalFormatSymbols` for the locale decimal
+separator — is replaced with a tiny `localeDecimalSeparator()` `expect`/`actual` (Android
+`DecimalFormatSymbols`, iOS `NSNumberFormatter`). Following the established seam pattern every Android
+coupling on the screen is hoisted to a parameter: the labels are plain `String`s, the back icon is a
+multiplatform `Painter`, the snackbar host is a passed-in `SnackbarHostState`, navigation is hoisted to
+`onBack`, and the locale-aware `NumberFormat` parse/validation plus `setResult(...)`/snackbar delivery is
+hoisted to an `onSave(aboveText, belowText)` callback that returns the per-field error flags — so the
+thin `AlertsActivity` host keeps `NumberFormat`/`setResult`/`finish()` and the `LocalAppMessaging`
+snackbar host in `:app`. Verified with `:app:compileDevDebugKotlin` and
+`:ui-shared:compileKotlinIosSimulatorArm64` both green.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables

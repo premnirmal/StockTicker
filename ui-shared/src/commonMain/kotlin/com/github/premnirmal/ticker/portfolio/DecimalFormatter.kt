@@ -1,15 +1,20 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.icu.text.DecimalFormatSymbols
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
+/**
+ * Cleans up free-form decimal text input for the alert/holdings editors. It lives in `:ui-shared`
+ * `commonMain` (depends only on multiplatform Compose text APIs) so the shared `AlertsScreen` and the
+ * Android `HoldingsActivity` can both use it. Its only platform coupling is the locale decimal
+ * separator, resolved through the [localeDecimalSeparator] `expect`/`actual` instead of the Android-only
+ * `android.icu.text.DecimalFormatSymbols`.
+ */
 class DecimalFormatter(
-    symbols: DecimalFormatSymbols = DecimalFormatSymbols.getInstance()
+    private val decimalSeparator: Char = localeDecimalSeparator()
 ) {
-    private val decimalSeparator = symbols.decimalSeparator
 
     fun cleanup(input: String): String {
         if (input.isEmpty()) return ""

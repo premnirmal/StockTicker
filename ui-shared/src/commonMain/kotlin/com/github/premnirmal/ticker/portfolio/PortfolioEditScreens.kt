@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.portfolio
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,7 +8,9 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,7 +34,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.AppTextFieldShape
@@ -229,3 +235,139 @@ fun DisplaynameScreen(
         }
     }
 }
+
+/**
+ * The shared per-ticker "price alerts" screen body: an [imePadding] [Scaffold] with a [TopBar]
+ * (back action) over two decimal [TextField]s (alert above/below) and a save [Button], bound to the
+ * already-shared [AlertsViewModel]. It depends only on multiplatform Compose APIs plus the shared
+ * [DecimalFormatter]/[DecimalInputVisualTransformation] text helpers, so it lives in `:ui-shared`
+ * `commonMain` and iOS can reuse it directly. Following the established seam pattern every Android
+ * coupling is hoisted to a parameter: the labels are plain [String]s, the back icon is a multiplatform
+ * [Painter], the snackbar host is a passed-in [SnackbarHostState], navigation is hoisted to [onBack],
+ * and the locale-aware parse/validation plus `setResult(...)`/snackbar delivery is hoisted to [onSave],
+ * which returns whether the above/below fields are in error so the Android `Activity` host keeps
+ * `NumberFormat`/`setResult`/`finish()` in `:app`.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlertsScreen(
+    viewModel: AlertsViewModel,
+    ticker: String,
+    title: String,
+    alertAboveLabel: String,
+    alertBelowLabel: String,
+    saveLabel: String,
+    backIcon: Painter,
+    snackbarHostState: SnackbarHostState,
+    onBack: () -> Unit,
+    onSave: (alertAboveText: String, alertBelowText: String) -> Pair<Boolean, Boolean>,
+) {
+    val quote = viewModel.quote
+    val alertAbove = quote?.getAlertAbove() ?: 0f
+    val alertBelow = quote?.getAlertBelow() ?: 0f
+    Scaffold(
+        modifier = Modifier.imePadding(),
+        topBar = {
+            TopBar(
+                text = title,
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painter = backIcon,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    text = ticker,
+                    style = MaterialTheme.typography.headlineMedium,
+                )
+                val decimalFormatter = remember {
+                    DecimalFormatter()
+                }
+                var isErrorAlertAbove by remember {
+                    mutableStateOf(false)
+                }
+                var isErrorAlertBelow by remember {
+                    mutableStateOf(false)
+                }
+                var alertAboveText by remember(ticker) {
+                    mutableStateOf(
+                        if (alertAbove > 0f) decimalFormatter.cleanup(alertAbove.toString()) else ""
+                    )
+                }
+                var alertBelowText by remember(ticker) {
+                    mutableStateOf(
+                        if (alertBelow > 0f) decimalFormatter.cleanup(alertBelow.toString()) else ""
+                    )
+                }
+                TextField(
+                    shape = AppTextFieldShape,
+                    modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
+                    value = alertAboveText,
+                    maxLines = 1,
+                    singleLine = true,
+                    textStyle = TextStyle.Default.copy(
+                        textAlign = TextAlign.End
+                    ),
+                    isError = isErrorAlertAbove,
+                    label = { Text(text = alertAboveLabel) },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                    visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
+                    onValueChange = {
+                        alertAboveText = decimalFormatter.cleanup(it).take(MAX_ALERT_VALUE_LENGTH)
+                    },
+                    colors = AppTextFieldDefaultColors,
+                )
+                TextField(
+                    shape = AppTextFieldShape,
+                    modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
+                    value = alertBelowText,
+                    maxLines = 1,
+                    singleLine = true,
+                    textStyle = TextStyle.Default.copy(
+                        textAlign = TextAlign.End
+                    ),
+                    isError = isErrorAlertBelow,
+                    label = { Text(text = alertBelowLabel) },
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
+                    visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
+                    onValueChange = {
+                        alertBelowText = decimalFormatter.cleanup(it).take(MAX_ALERT_VALUE_LENGTH)
+                    },
+                    colors = AppTextFieldDefaultColors,
+                )
+
+                Button(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    onClick = {
+                        val pair = onSave(alertAboveText, alertBelowText)
+                        isErrorAlertAbove = pair.first
+                        isErrorAlertBelow = pair.second
+                    },
+                ) {
+                    Text(
+                        text = saveLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+            }
+        }
+    }
+}
+
+private const val MAX_ALERT_VALUE_LENGTH = 12
