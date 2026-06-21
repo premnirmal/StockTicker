@@ -281,9 +281,21 @@ Migrated into `commonMain` so far:
   registration as a `registerScrollToTop` slot, and the quote tap as `onQuoteClick`. A thin
   `NewsFeedScreenHost.kt` in `:app` resolves the Koin ViewModel + the above and delegates to the
   shared screen.
+- The **search/trending screen** — `SearchScreen` (`ticker.portfolio.search`) — moved into
+  `commonMain` using a fully **stateless** (state-hoisting) design: rather than taking a ViewModel, it
+  receives the state it renders (`searchResults`/`trendingStocks`/`isRefreshing`) and the events it
+  raises (`onQueryChange`/`onRefresh`/`onQuoteClick`) as plain parameters. The Android-coupled inputs
+  are hoisted too: the localised labels as `String`s, the `ic_close` clear icon as a `Painter`, the
+  `QuoteCard`/`SuggestionItem`/`AddSymbolDialog` as composable slots, the `RuntimeShader`-based
+  `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the navigation `rememberScrollToTopAction`
+  registration as a `registerScrollToTop` slot, and the adaptive Accompanist `TwoPane` layout as an
+  optional `twoPane` slot (null = single column; the news second pane stays in `:app`). A thin
+  `SearchScreenHost.kt` in `:app` resolves the Koin `SearchViewModel`/`NewsFeedViewModel` + the above
+  and delegates to the shared screen. `SearchViewModel` stays in `:app` for now (it still depends on
+  the not-yet-shared `WidgetDataProvider`/`AppMessaging`).
 
 Remaining Phase 4 screens still in `:app` (they need more decoupling before moving): the home
-`WatchlistContent`, `SearchScreen` (these pull in not-yet-shared UI such as `QuoteCard`, the app
+`WatchlistContent` (pulls in not-yet-shared UI such as `QuoteCard`, the app
 theme, and the Compose navigation graph), the `QuoteDetailScreen`
 price chart (still MPAndroidChart, to be swapped for a multiplatform chart), and the `WidgetsScreen`
 / `SettingsScreen` (Glance widget previews, runtime permissions, file pickers and Activities). Coil →
