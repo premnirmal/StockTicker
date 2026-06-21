@@ -607,8 +607,12 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   alerts via `AlertsScreen` + `AlertsViewModel`, notes via `NotesScreen` + `NotesViewModel`, and the
   per-ticker display name via `DisplaynameScreen` + `DisplaynameViewModel` (the editors reuse the
   shared `ic_close`/`ic_done` Compose resources and the shared `DecimalFormatter` for input parsing).
-  *Remaining:* wire the iOS portfolio share/import/export document pickers, and add the native
-  WidgetKit widget + Firebase iOS.
+  *Remaining:* none — the iOS portfolio share/import/export now drive native document pickers
+  (`UIDocumentPickerViewController`/`UIActivityViewController`) via the shared
+  `IosPortfolioExchange` + `PortfolioDocumentBridge`, and a native **WidgetKit** home-screen widget
+  (`iosApp/StockTickerWidget`) renders the watchlist from a shared App Group snapshot
+  (`WidgetSnapshotStore`), with a Swift Charts bar chart on the large family; Firebase iOS is wired
+  in `StockTickerApp.configureFirebase()` (no-op without the SDK/`GoogleService-Info.plist`).
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

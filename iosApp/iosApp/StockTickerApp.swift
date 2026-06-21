@@ -1,6 +1,9 @@
 import SwiftUI
 import BackgroundTasks
 import Shared
+#if canImport(FirebaseCore)
+import FirebaseCore
+#endif
 
 /// Entry point for the thin iOS shell.
 ///
@@ -22,13 +25,18 @@ struct StockTickerApp: App {
         cleanupTaskId: cleanupTaskId
     )
 
+    private let portfolioDocumentBridge = PortfolioDocumentBridgeImpl()
+
     init() {
+        configureFirebase()
         // Start Koin with the shared graph and the iOS platform implementations.
         IosModuleKt.doInitKoinIos(
             backgroundTaskScheduler: backgroundScheduler,
             analyticsSink: StockTickerAnalyticsSink(),
+            portfolioDocumentBridge: portfolioDocumentBridge,
             onQuotesUpdated: {
-                // Reload WidgetKit timelines after a successful refresh.
+                // Persist the portfolio for the WidgetKit extension, then reload its timelines.
+                KoinHelper.shared.writeWidgetSnapshot()
                 WidgetCenterReloader.reloadAll()
             }
         )
@@ -39,6 +47,19 @@ struct StockTickerApp: App {
         WindowGroup {
             ContentView()
         }
+    }
+
+    /// Configures the Firebase iOS SDK when it is linked and a `GoogleService-Info.plist` is present
+    /// (the prod build). For the FOSS build — no Firebase SDK / no config — this is a no-op and the
+    /// `StockTickerAnalyticsSink` falls back to `NSLog`, mirroring the Android purefoss/dev flavours.
+    private func configureFirebase() {
+        #if canImport(FirebaseCore)
+        guard Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil else {
+            NSLog("[Firebase] GoogleService-Info.plist not found; skipping Firebase configuration")
+            return
+        }
+        FirebaseApp.configure()
+        #endif
     }
 
     private func registerBackgroundTasks() {

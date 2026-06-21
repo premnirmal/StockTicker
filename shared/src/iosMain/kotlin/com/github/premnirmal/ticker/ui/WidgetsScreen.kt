@@ -25,8 +25,7 @@ import org.jetbrains.compose.resources.painterResource
 /**
  * iOS Widgets tab. Android configures Glance home-screen widgets in-app; on iOS widgets are added and
  * configured from the home screen through WidgetKit (a separate extension process), so there is no
- * in-app widget list to edit. This screen explains how to add the WidgetKit widget until the native
- * extension ships.
+ * in-app widget list to edit. This screen explains how to add the native WidgetKit widget.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
