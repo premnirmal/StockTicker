@@ -6,19 +6,21 @@
 .DS_Store
 /build
 /captures
-app/build
+**/build/
 app/full-r8-config.txt
+androidApp/full-r8-config.txt
 app/prod/
-ui/build
-shared/build
-buildSrc/build
+androidApp/prod/
 /.vs/
 .kotlin/
+**/.kotlin/
 
 #ignore keystore and keystore.properties
 *.jks
 keystore.*
 app/keystore.*
+androidApp/keystore.*
 
 #google services
 app/google-services.json
+androidApp/google-services.json
