@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.ui
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -35,9 +36,13 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun HomeScreen() {
     val rootNavController = rememberNavController()
+    val onboardingController = rememberOnboardingController()
+    LaunchedEffect(Unit) {
+        onboardingController.showIfFirstRun()
+    }
     RootNavigationGraph(
         navHostController = rootNavController,
-        homeContent = { HomeContent(rootNavController) },
+        homeContent = { HomeContent(rootNavController, onboardingController) },
         quoteDetailContent = { symbol ->
             QuoteDetailScreen(
                 symbol = symbol,
@@ -45,10 +50,14 @@ fun HomeScreen() {
             )
         }
     )
+    OnboardingTutorial(onboardingController)
 }
 
 @Composable
-private fun HomeContent(rootNavController: NavHostController) {
+private fun HomeContent(
+    rootNavController: NavHostController,
+    onboardingController: OnboardingController,
+) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -129,7 +138,7 @@ private fun HomeContent(rootNavController: NavHostController) {
                     )
                 },
                 widgets = { WidgetsScreen() },
-                settings = { SettingsScreen() }
+                settings = { SettingsScreen(onTutorial = { onboardingController.show() }) }
             )
         }
     )

@@ -631,11 +631,15 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     renders the one shared watchlist, and `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) is an
     informational guidance screen only. Add WidgetKit configuration (e.g. an
     `AppIntentConfiguration`) for per-widget watchlists and appearance options.
-  - **Onboarding tutorial.** Android shows a first-run tutorial gated on the shared
+  - **Onboarding tutorial.** *(Done.)* Android shows a first-run tutorial gated on the shared
     `tutorialShown()` preference (`androidApp/.../home/HomeActivity.kt` →
-    `HomeViewModel.checkShowTutorial()`). The iOS `HomeScreen.kt` never presents it even though the
-    preference is already shared (`shared/src/commonMain/.../UserPreferences.kt`). Add an iOS
-    onboarding flow.
+    `HomeViewModel.checkShowTutorial()`). The iOS app now presents an equivalent onboarding flow:
+    `OnboardingScreen.kt` (`shared/src/iosMain/.../ui`) is a multi-step Compose Multiplatform modal
+    (`OnboardingController` + `OnboardingTutorial`) driven by the same shared
+    `tutorialShown()`/`setTutorialShown()` preference (`shared/src/commonMain/.../UserPreferences.kt`).
+    `HomeScreen.kt` shows it once on first launch (`showIfFirstRun()`), the Settings "Tutorial" row
+    re-opens it (`onTutorial` → `controller.show()`), and dismissing it persists the preference. The
+    iOS pages are tailored to iOS (watchlist, search, quote detail, Home Screen WidgetKit widget).
   - **In-app review / version-tap.** Android triggers the Play in-app review flow
     (`androidApp/.../home/IAppReviewManager.kt`) and a functional version-tap handler
     (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `SettingsScreen.kt` `onVersionTap`
