@@ -32,7 +32,7 @@ reorderable = "3.1.0"
 material3 = "1.4.0"
 glanceAppwidget = "1.1.1"
 vico = "2.5.1"
-coil = "3.5.0"
+coil = "3.4.0"
 
 [libraries]
 

@@ -116,6 +116,7 @@ kotlin {
       implementation(compose.material3)
       implementation(compose.ui)
       implementation(compose.components.resources)
+      implementation(libs.coil.compose)
       implementation(libs.reorderable)
       api(libs.vico.multiplatform)
     }

@@ -387,11 +387,21 @@ Migrated into `commonMain` so far:
   collects the widget list/fetch state, adapts each `WidgetData` to `WidgetSettings` and supplies the
   resources/slots.
 - **Image loading** was migrated from **Coil 2** to **Coil 3** (`io.coil-kt.coil3`, with the
-  `coil-network-okhttp` fetcher) in `:app` — the multiplatform-capable image loader, so the
-  `QuoteCard`/`NewsCard` image loading can move into shared UI in a follow-up.
+  `coil-network-okhttp` fetcher) in `:app` — the multiplatform-capable image loader. Coil 3 is now
+  pinned to `3.4.0` (built with Kotlin `2.3.10` + Compose Multiplatform `1.9.3`) so its Kotlin/Native
+  klibs are ABI-compatible with the project's Kotlin `2.3.21`, letting `coil-compose` be consumed from
+  `:shared` `commonMain`.
+- The **Coil-backed news card** — `NewsCard` (`ticker.news`) — moved into `commonMain`, using the
+  multiplatform `coil3.compose.AsyncImage` for the article thumbnail. The Android-coupled inputs are
+  hoisted as parameters: the article tap (the `CustomTabs` Custom Tab open) as an `onClick` callback,
+  the `ColourPalette` image placeholder gradient colour as a `placeholderColor: Color`, and the
+  `AppCard` container (it lives in `:UI`) as a `card` composable slot. A thin `:app` `NewsCard.kt`
+  overload (`NewsCard(item)`, keeping the same signature so `NewsFeedScreenHost`,
+  `QuoteDetailScreenHost` and `SearchScreenHost` are unchanged) supplies the Custom Tab open, the
+  `ColourPalette` placeholder colour and the `AppCard` slot.
 
 Remaining Phase 4 work: Compose Multiplatform navigation (replacing the `:app` `RootGraph`/navigation
-wiring) and moving the Coil-backed image cards into shared UI.
+wiring).
 
 
 ### Remaining (high level)
