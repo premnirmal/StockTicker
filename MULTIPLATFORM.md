@@ -571,9 +571,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   delegates with no override (so it uses the brand scheme), and the Android `AppTheme` supplies a
   Material You dynamic `ColorScheme` override on Android 12+ (falling back to the same shared brand
   scheme otherwise); the duplicated Android `AppColours`/`ThemePref`/`AppShapes` and the iOS colour
-  definitions were removed. *Remaining:* swap the placeholder tabs and the lightweight iOS
-  `QuoteDetailScreen` for the real shared per-tab screens (port the Android-only host slots —
-  window-size-class, `DisplayFeature`, the remaining resource strings, `koinViewModel`), and add the
+  definitions were removed. The iOS **quote-detail screen is now real**: the `quoteDetailContent`
+  `QuoteDetailScreen` (`shared/src/iosMain`) drives the shared `QuoteDetailViewModel` (resolved from
+  the iOS Koin graph: `IStocksProvider`/`NewsProvider`/`HistoryProvider`/`UserPreferences`) and
+  renders the shared multiplatform `PriceChartView` (Vico) historical price chart with a range
+  selector (1D/2W/1M/3M/1Y/5Y/Max), the same presentation logic the Android app uses; the axis/marker
+  date labels are formatted with `NSDateFormatter` and the prices with the shared `AppNumberFormat`.
+  *Remaining:* swap the remaining placeholder tabs (Trending/Search/Widgets/Settings) for the real
+  shared per-tab screens (port the Android-only host slots — window-size-class, `DisplayFeature`, the
+  remaining resource strings, `koinViewModel`, and move the still-Android `SearchViewModel`/widget
+  view models into `commonMain`), wire the quote-detail extras (holdings/news/alerts), and add the
   native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
