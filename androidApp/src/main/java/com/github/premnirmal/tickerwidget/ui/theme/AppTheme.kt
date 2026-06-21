@@ -44,7 +44,7 @@ import androidx.compose.ui.platform.LocalContext
   }
   MaterialTheme(
       colorScheme = colorScheme,
-      typography = AppTypography,
+      typography = appTypography(),
       shapes = AppShapes
   ) {
     content()

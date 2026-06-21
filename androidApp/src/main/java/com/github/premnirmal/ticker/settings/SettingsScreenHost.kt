@@ -46,8 +46,8 @@ import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.Divider
-import com.github.premnirmal.tickerwidget.ui.theme.Alegreya
-import com.github.premnirmal.tickerwidget.ui.theme.Bold
+import com.github.premnirmal.tickerwidget.ui.theme.alegreyaFontFamily
+import com.github.premnirmal.tickerwidget.ui.theme.boldFontFamily
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -56,7 +56,8 @@ import org.koin.androidx.compose.koinViewModel
 /**
  * Android host for the shared [SettingsScreen]. Resolves the Koin [SettingsViewModel], the localised
  * labels/string-arrays, the file-picker launchers, the notification/alarm-permission flows, the
- * [CustomTabs] link openers, the version-tap easter egg, the [Divider] slot, the [Alegreya]/[Bold]
+ * [CustomTabs] link openers, the version-tap easter egg, the [Divider] slot, the
+ * [alegreyaFontFamily]/[boldFontFamily]
  * fonts, the [fadingEdges] and the navigation [rememberScrollToTopAction] registration, then
  * delegates to the shared screen.
  */
@@ -188,8 +189,8 @@ fun SettingsScreen(
         showAlarmPermissionRequest = showAlarmPermissionRequest,
         alarmPermissionBanner = { AlarmPermissionBanner() },
         divider = { Divider() },
-        versionFontFamily = Alegreya,
-        openSourceFontFamily = Bold,
+        versionFontFamily = alegreyaFontFamily,
+        openSourceFontFamily = boldFontFamily,
         listFadingEdges = { state: ScrollableState -> Modifier.fadingEdges(state) },
         registerScrollToTop = { scrollToTop ->
             rememberScrollToTopAction(HomeRoute.Settings, scrollToTop = scrollToTop)

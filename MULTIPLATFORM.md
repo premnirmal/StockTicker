@@ -553,10 +553,15 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   placeholders until their view models can be resolved on iOS. The tab icons come from new **shared
   Compose Multiplatform drawable resources** (`shared/src/commonMain/composeResources/drawable`,
   generated into `com.github.premnirmal.shared.resources.Res`), the first shared resources in the
-  project. *Remaining:* host the full shared `RootNavigationGraph` and the real per-tab screens (port
-  the Android-only host slots — window-size-class, `DisplayFeature`, the remaining resource
-  strings, `koinViewModel`), unify the theme (move the Ubuntu / Alegreya fonts into shared Compose
-  resources), and add the native WidgetKit widget + Firebase iOS.
+  project. The **typography is now shared too**: the brand Ubuntu / Alegreya / Raleway fonts moved
+  into shared Compose resources (`shared/src/commonMain/composeResources/font`) and a shared
+  `appTypography()` (`commonMain` `tickerwidget.ui.theme`) builds the Material 3 type scale from
+  them, so the Android `AppTheme` and the iOS `IosAppTheme` render the same fonts (the duplicate
+  Android `AppTypography.kt` was removed; the `androidApp/res/font` files remain only for the legacy
+  XML themes). *Remaining:* host the full shared `RootNavigationGraph` and the real per-tab screens
+  (port the Android-only host slots — window-size-class, `DisplayFeature`, the remaining resource
+  strings, `koinViewModel`), unify the colour scheme into a single cross-platform `AppTheme`, and add
+  the native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 

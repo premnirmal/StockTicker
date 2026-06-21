@@ -10,15 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
+import com.github.premnirmal.tickerwidget.ui.theme.appTypography
 
 /**
  * Multiplatform Material 3 theme used by the iOS Compose host.
  *
  * The colour values mirror `:androidApp`'s `BaseAppColours` brand palette, but expressed with the
  * Compose-Multiplatform [lightColorScheme]/[darkColorScheme] builders (no `android.os.Build` dynamic
- * colour, no `LocalContext`). A fully unified, cross-platform `AppTheme` — including the Ubuntu /
- * Alegreya typography moved into shared Compose resources — is a later Phase 5 step; for now the
- * iOS host uses the default Material typography so the shared Compose UI renders on the simulator.
+ * colour, no `LocalContext`). The typography comes from the shared [appTypography] (the brand
+ * Ubuntu / Alegreya fonts bundled as shared Compose resources), so iOS matches the Android type
+ * scale. A fully unified, cross-platform `AppTheme` is a later Phase 5 step.
  */
 @Composable
 fun IosAppTheme(
@@ -33,6 +34,7 @@ fun IosAppTheme(
     MaterialTheme(
         colorScheme = if (isDark) DarkColorScheme else LightColorScheme,
         shapes = IosAppShapes,
+        typography = appTypography(),
         content = content
     )
 }
