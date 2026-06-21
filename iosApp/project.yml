@@ -26,9 +26,6 @@ settings:
     FRAMEWORK_SEARCH_PATHS:
       - $(inherited)
       - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
-    # Allow the Gradle run-script phase to write the framework into the build
-    # directory (script sandboxing would otherwise block it).
-    ENABLE_USER_SCRIPT_SANDBOXING: NO
 
 targets:
   iosApp:
@@ -43,6 +40,9 @@ targets:
         CODE_SIGN_ENTITLEMENTS: iosApp/StockTicker.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # Allow the Gradle run-script phase below to write the framework into
+        # the build directory (script sandboxing would otherwise block it).
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
         OTHER_LDFLAGS:
           - $(inherited)
           - -framework
@@ -67,6 +67,9 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.ticker.StockTickerWidget
         INFOPLIST_FILE: StockTickerWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: StockTickerWidget/StockTickerWidget.entitlements
+        # Allow the Gradle run-script phase below to write the framework into
+        # the build directory (script sandboxing would otherwise block it).
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
         OTHER_LDFLAGS:
           - $(inherited)
           - -framework
