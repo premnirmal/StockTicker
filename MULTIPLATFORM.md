@@ -343,13 +343,36 @@ Migrated into `commonMain` so far:
   out of the ViewModel into a `:app` helper (`detail/QuoteDetails.kt`, `buildQuoteDetails`), and the
   news-fetch error snackbar is exposed as a shared `messages` flow the host collects instead of
   coupling to the Android `AppMessaging`.
+- The **quote-detail screen** — `QuoteDetailScreen` (`ticker.detail`) — and its cards
+  (`QuoteDetailCard`, `PositionDetailCard`, `AlertsCard`, `EditSectionHeader`) moved into `commonMain`
+  using a fully **stateless** (state-hoisting) design building on the already-shared
+  `QuoteDetailViewModel`/`PriceChartView`. The localised `QuoteDetail` row model became a shared
+  `QuoteDetailItem` (resolved `title: String` + `data: String`); the Android-only `buildQuoteDetails`
+  (`detail/QuoteDetails.kt`) now resolves the `@StringRes` titles to `String`s and returns
+  `List<QuoteDetailItem>`, so the shared grid has no `@StringRes`/`Context`. Every Android-coupled
+  input is hoisted as a parameter: the localised labels as a `QuoteDetailStrings` holder and the
+  pre-formatted alert values as `String`s, the `ic_refresh`/`ic_add_to_list`/`ic_edit` icons as
+  `Painter`s, the resolved change/up/down `ColourPalette` colours as `Color`s (the
+  `Quote.changeColour`/`ChartData.changeColour` Compose theming stays in `:app`), the chart axis/marker
+  formatters as lambdas, the `AppMessaging` bottom-sheet card-tap as an `onCardClick(title, data)`
+  lambda, the per-section `Holdings`/`Alerts`/`Notes`/`Displayname` editing as `onEdit*` callbacks plus
+  the displayed `position`/`alert`/`notes`/`displayname` state values, the `AppCard` container
+  (it lives in `:UI`), `NewsCard`, `AddSymbolDialog` and the website `LinkText` as composable slots,
+  the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the
+  `SnackbarHostState`, and the adaptive Accompanist `TwoPane`/`WindowWidthSizeClass`/`ContentType`
+  layout as an optional `twoPane(first, second)` slot (null = single column). A thin
+  `QuoteDetailScreenHost.kt` in `:app` (named `QuoteDetailScreen`, keeping the same
+  `widthSizeClass`/`contentType`/`displayFeatures`/`quote` signature so `QuoteDetailActivity`,
+  `WatchlistScreen` and `RootGraph` are unchanged) resolves the Koin `QuoteDetailViewModel`/
+  `AppPreferences`, collects the ViewModel state, owns the `rememberLauncherForActivityResult`
+  activity-result wiring, the `loadQuote`/`fetchAll`/`fetchQuoteInRealTime`/`reset` `DisposableEffect`
+  lifecycle, the range-change chart fetch and the `viewModel.messages` snackbar collection, and
+  supplies the resources/colours/slots.
 
 Remaining Phase 4 screens still in `:app` (they retain genuinely Android-only pieces and need more
-decoupling — or new multiplatform dependencies — before moving): the `QuoteDetailScreen` composable
-itself (its localised `QuoteDetail` grid, `NewsCard`/`AddSymbolDialog` slots and the per-section
-`Activity` intents) and the `WidgetsScreen` (Glance `WidgetPreview`s and the
-`WidgetData`/`SharedPreferences` model). Coil → Coil 3 and Compose Multiplatform navigation are also
-part of the remaining work.
+decoupling — or new multiplatform dependencies — before moving): the `WidgetsScreen` (Glance
+`WidgetPreview`s and the `WidgetData`/`SharedPreferences` model). Coil → Coil 3 and Compose
+Multiplatform navigation are also part of the remaining work.
 
 
 ### Remaining (high level)
