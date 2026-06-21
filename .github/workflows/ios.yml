@@ -1,0 +1,49 @@
+name: iOS
+
+on:
+  pull_request:
+    branches:
+      - 'master'
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  ios:
+    name: Build iOS framework & run shared tests
+    # The Kotlin/Native iOS targets (and the simulator test run) require a
+    # macOS host with Xcode, so this job runs on a macOS runner — unlike the
+    # Android build/test jobs which run on ubuntu.
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # fetch-depth: 0 brings the git tags so app/build.gradle.kts can
+          # derive the version via `git describe --tags`.
+          fetch-depth: 0
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Compile shared common code
+        run: ./gradlew :shared:compileKotlinMetadata --no-daemon
+      - name: Link iOS framework (simulator)
+        run: ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon
+      - name: Link iOS framework (device)
+        run: ./gradlew :shared:linkDebugFrameworkIosArm64 --no-daemon
+      - name: Run shared tests on iOS simulator
+        run: ./gradlew :shared:iosSimulatorArm64Test --no-daemon
+      - name: Archive iOS test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: shared/build/test-results/iosSimulatorArm64Test/
+
+  # Note: the Xcode project for iosApp/ is intentionally not committed (see
+  # iosApp/README.md), so the iOS app itself cannot be built with xcodebuild in
+  # CI. This job builds and links the shared Kotlin/Native framework the app
+  # consumes, and exercises the shared commonTest suite on the simulator.

@@ -675,8 +675,18 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     `HomeScreen.kt` now calls `stocksProvider.schedule()` once on first composition (mirroring
     Android's `HomeActivity.onCreate`), which arms the next update and submits the recurring
     `BGAppRefreshTaskRequest`/`BGProcessingTaskRequest` work.
-- **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
-  on the simulator.
+- **Phase 6:** *(Done.)* CI for Android + the iOS framework/app (macOS runner) and `commonTest`
+  on the simulator. The Android build/test/detekt jobs already run on ubuntu
+  (`.github/workflows/build.yml`, `unit-tests.yml`, `detekt.yml`); `unit-tests.yml` now also runs
+  the shared module's Android-target unit tests (`:shared:testDebugUnitTest`, which executes
+  `commonTest` against the JVM/Android target). A new `.github/workflows/ios.yml` runs on a
+  `macos-latest` runner: it compiles the shared common code (`:shared:compileKotlinMetadata`),
+  links the iOS `Shared` framework for both the simulator and device targets
+  (`:shared:linkDebugFrameworkIosSimulatorArm64` / `linkDebugFrameworkIosArm64`), and runs the
+  shared `commonTest` suite on the iOS simulator (`:shared:iosSimulatorArm64Test`), uploading the
+  results as an artifact. (The `iosApp` Xcode project is intentionally not committed — see
+  `iosApp/README.md` — so the app itself is not built with `xcodebuild` in CI; CI builds the
+  Kotlin/Native framework it consumes.)
 
 ## Building
 
