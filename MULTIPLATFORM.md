@@ -309,13 +309,32 @@ Migrated into `commonMain` so far:
   reorderable drag (`sh.calvin.reorderable`, a Compose-Multiplatform library) moved from `:app` into
   `:shared`. A thin `WatchlistContentHost.kt` in `:app` collects the ViewModel flows, adapts each
   `WidgetData` to `WatchlistWidget` and supplies the resources/slots.
+- The **settings screen** — `SettingsScreen` (`ticker.settings`) — and the preference UI components
+  (`SettingsText`, `CheckboxPreference`, `ListPreference`, `MultiSelectListPreference`,
+  `TimeSelectorPreference`, in `ticker.ui.Preferences.kt`) moved into `commonMain` using a fully
+  **stateless** (state-hoisting) design. The `SettingsData` data class (the snapshot of preferences)
+  moved to `commonMain` (Parceling dropped — it is only held in-memory by the ViewModel's
+  `StateFlow`). The preference dialogs (`ListPreference`, `MultiSelectListPreference`,
+  `TimeSelectorPreference`) were reimplemented with Compose Multiplatform `material3.AlertDialog` and
+  `material3.TimePicker`/`TimePickerState`, removing the Android `AlertDialog`/`TimePickerDialog`/
+  `LocalContext` dependencies. The Android-coupled inputs are hoisted as parameters: the localised
+  labels/string-arrays as `String`/`Array<String>` values, the three dialog confirm/dismiss labels,
+  the `Divider` as a composable slot (it lives in `:UI`), the alarm-permission banner as a composable
+  slot, the `Alegreya`/`Bold` fonts as nullable `FontFamily` params, all user actions as callback
+  lambdas (file pickers, Custom Tabs links, notification-permission flow, version-tap easter egg),
+  the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, and the
+  navigation `rememberScrollToTopAction` registration as a `registerScrollToTop` slot. A thin
+  `SettingsScreenHost.kt` in `:app` resolves the Koin `SettingsViewModel`, collects the settings
+  flow, owns the `rememberLauncherForActivityResult` file pickers, the accompanist notification
+  permission, the `AlarmPermissionBanner`, the `OnVersionTap` easter egg, and supplies the
+  resources/slots. The `SettingsViewModel` stays in `:app` (it depends on `WidgetDataProvider`,
+  `NotificationsHandler`, and Android file I/O).
 
 Remaining Phase 4 screens still in `:app` (they retain genuinely Android-only pieces and need more
 decoupling — or new multiplatform dependencies — before moving): the `QuoteDetailScreen` price chart
 (still MPAndroidChart `LineChart` via `AndroidView`; needs swapping for a multiplatform chart such as
-Vico), the `WidgetsScreen` (Glance `WidgetPreview`s and the `WidgetData`/`SharedPreferences` model),
-and the `SettingsScreen` (runtime permissions, file pickers, `Toast` and `Activity` navigation). Coil
-→ Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
+Vico) and the `WidgetsScreen` (Glance `WidgetPreview`s and the `WidgetData`/`SharedPreferences`
+model). Coil → Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
 
 
 ### Remaining (high level)
