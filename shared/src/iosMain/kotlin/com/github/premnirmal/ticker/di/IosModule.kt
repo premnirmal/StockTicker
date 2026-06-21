@@ -27,6 +27,7 @@ import com.github.premnirmal.ticker.network.createYahooFinanceInitialLoadApi
 import com.github.premnirmal.ticker.network.createYahooFinanceMostActiveApi
 import com.github.premnirmal.ticker.network.createYahooFinanceNewsApi
 import com.github.premnirmal.ticker.notifications.LocalNotificationsHandler
+import com.github.premnirmal.ticker.review.AppReviewPrompter
 import com.github.premnirmal.ticker.repo.UserDefaultsTickersStore
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.StocksStorage
@@ -152,6 +153,10 @@ fun iosModule(
 
     // WidgetKit home-screen widget snapshot (App Group, read by the widget extension)
     single { WidgetSnapshotStore(get()) }
+
+    // In-app review prompt (StoreKit SKStoreReviewController), the iOS analogue of Android's
+    // AppReviewManager, gated on UserPreferences.shouldPromptRate.
+    single { AppReviewPrompter(get<UserPreferences>()) }
 }
 
 private const val SUGGESTIONS_ENDPOINT = "https://query2.finance.yahoo.com/v1/finance/"

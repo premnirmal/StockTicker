@@ -651,11 +651,16 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     `HomeScreen.kt` shows it once on first launch (`showIfFirstRun()`), the Settings "Tutorial" row
     re-opens it (`onTutorial` → `controller.show()`), and dismissing it persists the preference. The
     iOS pages are tailored to iOS (watchlist, search, quote detail, Home Screen WidgetKit widget).
-  - **In-app review / version-tap.** *(Version-tap done; in-app review pending.)* Android triggers
+  - **In-app review / version-tap.** *(Done.)* Android triggers
     the Play in-app review flow (`androidApp/.../home/IAppReviewManager.kt`) and a functional
     version-tap handler (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `onVersionTap` is
-    now wired (five quick taps open the debug DB viewer — see below). Still to do: wire up
-    `SKStoreReviewController` for the in-app review prompt.
+    wired (five quick taps open the debug DB viewer — see below). The in-app review prompt is now
+    wired too: `AppReviewPrompter` (`shared/src/iosMain/.../review/AppReviewPrompter.kt`) requests an
+    App Store rating via StoreKit's `SKStoreReviewController.requestReviewInScene(...)`. Like
+    Android's `HomeActivity`, it is triggered when the user opens a quote detail (the iOS
+    `HomeScreen.kt` observes the root nav back stack for the `QUOTE_DETAIL` route) and is gated on the
+    same shared `UserPreferences.shouldPromptRate()` plus a once-per-session guard; the system itself
+    decides whether to actually show the rating sheet and rate-limits it.
   - **Debug database viewer.** *(Done.)* Android exposes a DB viewer from settings
     (`androidApp/.../debug/DbViewerActivity.kt`). The iOS app now has an equivalent:
     `DbViewerScreen.kt` (`shared/src/iosMain/.../ui`) with an `IosDbViewerViewModel` that reads the
