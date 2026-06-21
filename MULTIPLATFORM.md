@@ -269,6 +269,12 @@ Migrated into `commonMain` so far:
   an optional `twoPane` slot (`null` renders the single-column layout). `HoldingsActivity` is now a
   thin host that collects the ViewModel flows, owns the activity-result wiring and supplies the
   resources/callbacks/two-pane slot.
+- The **trending/news-feed ViewModel** — `NewsFeedViewModel` (`ticker.news`) — moved into
+  `commonMain` alongside its already-shared dependencies (`NewsProvider`, `FetchResult`,
+  `NewsFeedItem`). It uses the multiplatform `androidx.lifecycle` `ViewModel`; the package and public
+  contract are unchanged, so the `:app` `NewsFeedScreen` and Koin registration are untouched. The
+  `NewsFeedScreen` itself stays in `:app` for now (it still pulls in `QuoteCard`/`NewsCard` and the
+  Compose navigation graph).
 
 Remaining Phase 4 screens still in `:app` (they need more decoupling before moving): the home
 `WatchlistContent`, `SearchScreen`, `NewsFeedScreen` (these pull in not-yet-shared UI such as
