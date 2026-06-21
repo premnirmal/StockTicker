@@ -7,6 +7,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,7 +66,9 @@ class HoldingsActivity : BaseActivity() {
         var holdings by remember(position.holdings) {
             mutableStateOf(position.holdings.toList())
         }
-        val holdingsSum = remember(holdings) { holdings.holdingsSum() }
+        val holdingsSum by remember(holdings) {
+            derivedStateOf { holdings.holdingsSum() }
+        }
         LaunchedEffect(ticker) {
             viewModel.addedHolding.collect {
                 holdings = holdings.toMutableList().apply { add(it) }
