@@ -1,15 +1,24 @@
 package com.github.premnirmal.ticker.portfolio
 
-import android.icu.text.DecimalFormatSymbols
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
+/**
+ * The default locale's decimal separator. Backed by `android.icu.text.DecimalFormatSymbols` on
+ * Android and `NSNumberFormatter` on iOS, so the input cleanup below accepts the same separator the
+ * platform uses for display.
+ */
+expect fun localeDecimalSeparator(): Char
+
+/**
+ * Cleans up free-form decimal input for the alerts/holdings editors. Shared by Android and iOS; the
+ * only platform input is the locale [localeDecimalSeparator].
+ */
 class DecimalFormatter(
-    symbols: DecimalFormatSymbols = DecimalFormatSymbols.getInstance()
+    private val decimalSeparator: Char = localeDecimalSeparator()
 ) {
-    private val decimalSeparator = symbols.decimalSeparator
 
     fun cleanup(input: String): String {
         if (input.isEmpty()) return ""
