@@ -62,6 +62,9 @@ kotlin {
 
       // Vico multiplatform charting for the price chart (PriceChartView).
       api(libs.vico.multiplatform)
+
+      // Multiplatform drag-to-reorder for the watchlist staggered grid (WatchlistContent).
+      implementation(libs.reorderable)
     }
     commonTest.dependencies {
       implementation(kotlin("test"))

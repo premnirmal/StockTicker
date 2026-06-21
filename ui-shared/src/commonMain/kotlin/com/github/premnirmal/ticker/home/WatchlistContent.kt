@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -53,6 +52,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -60,13 +60,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
@@ -78,24 +75,43 @@ import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.ticker.ui.customTabIndicatorOffset
 import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.ticker.widget.IWidgetData
-import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
-import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.min
 
+/**
+ * Shared (Compose Multiplatform) watchlist screen content.
+ *
+ * Android-only resources are hoisted behind a seam so the composable itself is platform-agnostic:
+ * label/title strings are passed as plain `String`s (or `@Composable` formatter lambdas for the
+ * ones that interpolate runtime values), and drawables are passed as [Painter]s. The Android host
+ * in `:app` resolves these from `R` and delegates here.
+ */
 @OptIn(
     ExperimentalMaterial3Api::class
 )
 @Composable
 fun WatchlistContent(
-    modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
     onQuoteClick: (Quote) -> Unit,
+    appName: String,
+    moneyIcon: Painter,
+    headerBackground: Painter,
+    moreIcon: Painter,
+    removeIcon: Painter,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
+    removeLabel: String,
+    subtitle: @Composable (displayString: String, nextFetch: String) -> String,
+    totalHoldingsLabel: @Composable (holdings: String) -> String,
+    modifier: Modifier = Modifier,
 ) {
     val hasWidgets by viewModel.hasWidget.collectAsState(initial = false)
     val density = LocalDensity.current
@@ -134,11 +150,7 @@ fun WatchlistContent(
                 Pair(fetchState.displayString, nextFetch)
             }
         }
-        val subtitle = stringResource(
-            R.string.last_and_next_fetch,
-            subtitleData.first,
-            subtitleData.second
-        )
+        val subtitleText = subtitle(subtitleData.first, subtitleData.second)
         val coroutineScope = rememberCoroutineScope()
         val hapticFeedback = LocalHapticFeedback.current
         val density = LocalDensity.current
@@ -161,7 +173,8 @@ fun WatchlistContent(
                 .heightIn(max = headerHeightDp)
                 .offset { IntOffset(0, (connection.appBarOffset * 0.5).toInt()) },
             hasWidgets = hasWidgets,
-            subtitle = subtitle,
+            subtitle = subtitleText,
+            headerBackground = headerBackground,
             widgets = widgets,
             selectedItemIndex = selectedItemIndex,
             coroutineScope = coroutineScope,
@@ -180,12 +193,23 @@ fun WatchlistContent(
                 rowState = rowState,
                 hapticFeedback = hapticFeedback,
                 onQuoteClick = onQuoteClick,
+                moreIcon = moreIcon,
+                removeIcon = removeIcon,
+                holdingsLabel = holdingsLabel,
+                dayChangeLabel = dayChangeLabel,
+                changePercentLabel = changePercentLabel,
+                gainLabel = gainLabel,
+                lossLabel = lossLabel,
+                changeAmountLabel = changeAmountLabel,
+                removeLabel = removeLabel,
             )
         }
         TopAppBar(
             modifier = Modifier,
             scrollState = connection,
             viewModel = viewModel,
+            appName = appName,
+            moneyIcon = moneyIcon,
             onTotalHoldingsClick = {
                 showTotalHoldingsPopup = true
             }
@@ -194,7 +218,7 @@ fun WatchlistContent(
         if (showTotalHoldingsPopup && totalHoldings != null) {
             totalHoldings?.let { totalHoldings ->
                 TotalHoldingsPopup(
-                    holdingsLabel = stringResource(R.string.total_holdings, totalHoldings.holdings),
+                    holdingsLabel = totalHoldingsLabel(totalHoldings.holdings),
                     totalHoldings = totalHoldings,
                     onDismiss = {
                         showTotalHoldingsPopup = false
@@ -208,10 +232,12 @@ fun WatchlistContent(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TopAppBar(
-    modifier: Modifier = Modifier,
     viewModel: HomeViewModel,
     scrollState: CollapsingTopBarScrollConnection,
+    appName: String,
+    moneyIcon: Painter,
     onTotalHoldingsClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val topAppBarColors = TopAppBarDefaults.topAppBarColors()
     val backgroundColor = topAppBarColors.containerColor
@@ -231,7 +257,7 @@ private fun TopAppBar(
     )
     TopBar(
         modifier = modifier,
-        text = stringResource(R.string.app_name),
+        text = appName,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = tobAppBarBackgroundColor.value,
             titleContentColor = topAppBarColors.titleContentColor,
@@ -242,7 +268,7 @@ private fun TopAppBar(
                     onClick = onTotalHoldingsClick,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_money),
+                        painter = moneyIcon,
                         contentDescription = null,
                     )
                 }
@@ -260,6 +286,15 @@ private fun Content(
     rowState: LazyListState,
     hapticFeedback: HapticFeedback,
     onQuoteClick: (Quote) -> Unit,
+    moreIcon: Painter,
+    removeIcon: Painter,
+    holdingsLabel: String,
+    dayChangeLabel: String,
+    changePercentLabel: String,
+    gainLabel: String,
+    lossLabel: String,
+    changeAmountLabel: String,
+    removeLabel: String,
 ) {
     if (widgets.isNotEmpty()) {
         val width = gridSize.width
@@ -330,17 +365,17 @@ private fun Content(
                                         ),
                                     interactionSource = interactionSource,
                                     quote = quote,
-                                    holdingsLabel = stringResource(R.string.holdings),
-                                    dayChangeLabel = stringResource(R.string.day_change_amount),
-                                    changePercentLabel = stringResource(R.string.change_percent),
-                                    gainLabel = stringResource(R.string.gain),
-                                    lossLabel = stringResource(R.string.loss),
-                                    changeAmountLabel = stringResource(R.string.change_amount),
+                                    holdingsLabel = holdingsLabel,
+                                    dayChangeLabel = dayChangeLabel,
+                                    changePercentLabel = changePercentLabel,
+                                    gainLabel = gainLabel,
+                                    lossLabel = lossLabel,
+                                    changeAmountLabel = changeAmountLabel,
                                     onClick = { onQuoteClick(quote) },
                                     showMore = true,
-                                    moreIcon = painterResource(R.drawable.ic_more),
-                                    removeIcon = painterResource(R.drawable.ic_remove_circle),
-                                    removeLabel = stringResource(R.string.remove),
+                                    moreIcon = moreIcon,
+                                    removeIcon = removeIcon,
+                                    removeLabel = removeLabel,
                                     onRemoveClick = { quote ->
                                         widget.removeStock(quote.symbol)
                                     }
@@ -357,24 +392,16 @@ private fun Content(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun Header(
-    modifier: Modifier = Modifier,
     hasWidgets: Boolean,
     subtitle: String,
+    headerBackground: Painter,
     widgets: List<IWidgetData>,
     selectedItemIndex: Int,
     coroutineScope: CoroutineScope,
-    rowState: LazyListState
+    rowState: LazyListState,
+    modifier: Modifier = Modifier,
 ) {
     val contentType = LocalContentType.current
-    val bg = when (AppPreferences.SELECTED_THEME) {
-        SelectedTheme.DARK -> R.drawable.bg_header_dark
-        SelectedTheme.LIGHT -> R.drawable.bg_header_light
-        else -> if (isSystemInDarkTheme()) {
-            R.drawable.bg_header_dark
-        } else {
-            R.drawable.bg_header_light
-        }
-    }
     Box(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -394,7 +421,7 @@ private fun Header(
                         )
                     },
                 contentScale = ContentScale.Crop,
-                painter = painterResource(bg),
+                painter = headerBackground,
                 contentDescription = null,
             )
         }
@@ -432,7 +459,7 @@ private fun Header(
                         val selected by remember(selectedItemIndex) { derivedStateOf { selectedItemIndex == index } }
                         TabText(
                             selected = selected,
-                            text = widget.widgetName.uppercase(Locale.getDefault()),
+                            text = widget.widgetName.uppercase(),
                             onClick = {
                                 coroutineScope.launch {
                                     rowState.animateScrollToItem(index)

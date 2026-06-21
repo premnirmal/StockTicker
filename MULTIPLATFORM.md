@@ -848,6 +848,24 @@ keep rule, the `MultilineXAxisRenderer`/`TextMarkerView` helpers and the `Candle
 (the four edit `Activity` launchers, the Accompanist two-pane and `CustomTabs`) is unrelated to the
 chart and is decoupled separately when the whole screen moves.
 
+The home **watchlist screen body** (`WatchlistContent`, `ticker.home`) now lives in `:ui-shared`
+`commonMain`. It is the collapsing-header watchlist surface — the parallax `Header` with the
+fetch-status subtitle and the per-widget tab row, the `TopAppBar` with the total-holdings action, and
+the `Content` `LazyRow` of `LazyVerticalStaggeredGrid`s of drag-reorderable `QuoteCard`s — built on
+the already-shared `HomeViewModel`, `IWidgetData`, `QuoteCard`, `TotalHoldingsPopup`,
+`CollapsingTopBarScrollConnection` and `TopBar`/`TabText` helpers. Following the established seam
+pattern, the Android-only resources are hoisted out of the composable: the label/title strings are
+plain `String` parameters, the two that interpolate runtime values (the `last_and_next_fetch`
+subtitle and the `total_holdings` popup label) are `@Composable (…) -> String` formatter lambdas, and
+every drawable (`ic_money`/`ic_more`/`ic_remove_circle` plus the theme-aware header background) is a
+`Painter` parameter. The theme-aware `bg_header_*` selection (`AppPreferences.SELECTED_THEME` +
+`isSystemInDarkTheme`) stays in `:app`. A thin Android host `WatchlistContent` in `:app`
+(`WatchlistContentHost.kt`) resolves those `R.string`/`R.drawable` values and delegates to the shared
+overload, so the `WatchlistScreen` call sites are unchanged. The drag-to-reorder dependency
+(`sh.calvin.reorderable`, which is itself a Compose Multiplatform library) moved from `:app` to
+`:ui-shared` `commonMain` and links cleanly for iOS. Verified with `:app:compileDevDebugKotlin` and
+`:ui-shared:compileKotlinIosSimulatorArm64` both green.
+
 The remaining Phase 4 work is larger and architectural rather than further leaf moves: replacing
 `androidx.navigation` with **Compose Multiplatform navigation** (the `Home`/`RootGraph`/`HomeNavigation`/
 `WatchlistScreen` graph), and moving the remaining screen composables
