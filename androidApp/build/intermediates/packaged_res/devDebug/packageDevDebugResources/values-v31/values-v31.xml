@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <style name="AppThemeV31" parent="AppThemeV27"/>
-    <style name="StocksWidget.App.Theme" parent="AppThemeV31"/>
-</resources>
