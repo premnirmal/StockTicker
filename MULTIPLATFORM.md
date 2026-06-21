@@ -562,10 +562,19 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   `appTypography()` (`commonMain` `tickerwidget.ui.theme`) builds the Material 3 type scale from
   them, so the Android `AppTheme` and the iOS `IosAppTheme` render the same fonts (the duplicate
   Android `AppTypography.kt` was removed; the `androidApp/res/font` files remain only for the legacy
-  XML themes). *Remaining:* swap the placeholder tabs and the lightweight iOS `QuoteDetailScreen` for
-  the real shared per-tab screens (port the Android-only host slots — window-size-class,
-  `DisplayFeature`, the remaining resource strings, `koinViewModel`), unify the colour scheme into a
-  single cross-platform `AppTheme`, and add the native WidgetKit widget + Firebase iOS.
+  XML themes). The **colour scheme is now shared too**: the brand Material 3 palette and the
+  light/dark `ColorScheme`s (`brandLightColorScheme`/`brandDarkColorScheme`), the `appShapes`, and a
+  single cross-platform `SharedAppTheme` composable all live in `commonMain`
+  (`tickerwidget.ui.theme`). `SharedAppTheme` resolves dark/light from the shared `SelectedTheme` and
+  applies the brand scheme + `appTypography()` + `appShapes`, taking an optional
+  `colorSchemeOverride`. Both platform themes are now thin wrappers over it: the iOS `IosAppTheme`
+  delegates with no override (so it uses the brand scheme), and the Android `AppTheme` supplies a
+  Material You dynamic `ColorScheme` override on Android 12+ (falling back to the same shared brand
+  scheme otherwise); the duplicated Android `AppColours`/`ThemePref`/`AppShapes` and the iOS colour
+  definitions were removed. *Remaining:* swap the placeholder tabs and the lightweight iOS
+  `QuoteDetailScreen` for the real shared per-tab screens (port the Android-only host slots —
+  window-size-class, `DisplayFeature`, the remaining resource strings, `koinViewModel`), and add the
+  native WidgetKit widget + Firebase iOS.
 - **Phase 6:** CI for Android + the iOS framework/app (macOS runner) and `commonTest`
   on the simulator.
 
