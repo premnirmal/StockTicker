@@ -73,6 +73,9 @@ The identifiers must match `StockTickerApp.refreshTaskId` / `cleanupTaskId`.
   this folder only provides the iOS platform plumbing the shared code delegates to.
 - The UI is also shared: `MainViewController()` (in `shared/src/iosMain`) builds a
   `ComposeUIViewController` that renders the Compose Multiplatform screens, themed by `IosAppTheme`.
-  The first hosted screen (`WatchlistScreen`) binds to the shared `IStocksProvider` portfolio flow;
-  later Phase 5 steps host the full shared `RootNavigationGraph` and unify the theme (the Ubuntu /
-  Alegreya fonts still need to move into shared Compose resources).
+  The hosted `HomeScreen` drives the shared `HomeScaffold` + bottom navigation; the Watchlist tab
+  binds to the shared `IStocksProvider` portfolio flow. The theme typography is shared — the brand
+  Ubuntu / Alegreya fonts live in shared Compose resources
+  (`shared/src/commonMain/composeResources/font`) and `IosAppTheme` builds its type scale from the
+  shared `appTypography()`. Later Phase 5 steps host the full shared `RootNavigationGraph` and unify
+  the colour scheme into a single cross-platform `AppTheme`.
