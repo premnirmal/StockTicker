@@ -293,13 +293,29 @@ Migrated into `commonMain` so far:
   `SearchScreenHost.kt` in `:app` resolves the Koin `SearchViewModel`/`NewsFeedViewModel` + the above
   and delegates to the shared screen. `SearchViewModel` stays in `:app` for now (it still depends on
   the not-yet-shared `WidgetDataProvider`/`AppMessaging`).
+- The **home watchlist screen** — `WatchlistContent` (`ticker.home`) — and the pure
+  `CollapsingTopBarScrollConnection` (the collapsing-header nested-scroll connection) moved into
+  `commonMain` using a fully **stateless** (state-hoisting) design. Rather than taking the
+  `HomeViewModel`, the shared screen receives the state it renders (`hasWidgets`/`subtitle`/
+  `isRefreshing`/`hasHoldings`/`totalGainLoss`) and the events it raises (`onRefresh`/`onQuoteClick`)
+  as parameters. The Glance/`SharedPreferences`-backed `WidgetData` is abstracted behind a small shared
+  `WatchlistWidget` interface (name + reactive `stocks` + `rearrange`/`setAutoSort`/`removeStock`),
+  and the `HomeViewModel.TotalGainLoss` data class became the shared `TotalGainLoss`. The remaining
+  Android-coupled inputs are hoisted too: the localised app name as a `String`, the `ic_money` icon as
+  a `Painter`, the theme-aware header background as a nullable `Painter` (null = no image, e.g. in the
+  dual-pane list), the `QuoteCard` and `TotalHoldingsPopup` as composable slots, the `RuntimeShader`-
+  based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, and the two navigation
+  `rememberScrollToTopAction` registrations as `registerResetScroll`/`registerWidgetScroll` slots. The
+  reorderable drag (`sh.calvin.reorderable`, a Compose-Multiplatform library) moved from `:app` into
+  `:shared`. A thin `WatchlistContentHost.kt` in `:app` collects the ViewModel flows, adapts each
+  `WidgetData` to `WatchlistWidget` and supplies the resources/slots.
 
-Remaining Phase 4 screens still in `:app` (they need more decoupling before moving): the home
-`WatchlistContent` (pulls in not-yet-shared UI such as `QuoteCard`, the app
-theme, and the Compose navigation graph), the `QuoteDetailScreen`
-price chart (still MPAndroidChart, to be swapped for a multiplatform chart), and the `WidgetsScreen`
-/ `SettingsScreen` (Glance widget previews, runtime permissions, file pickers and Activities). Coil →
-Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
+Remaining Phase 4 screens still in `:app` (they retain genuinely Android-only pieces and need more
+decoupling — or new multiplatform dependencies — before moving): the `QuoteDetailScreen` price chart
+(still MPAndroidChart `LineChart` via `AndroidView`; needs swapping for a multiplatform chart such as
+Vico), the `WidgetsScreen` (Glance `WidgetPreview`s and the `WidgetData`/`SharedPreferences` model),
+and the `SettingsScreen` (runtime permissions, file pickers, `Toast` and `Activity` navigation). Coil
+→ Coil 3 and Compose Multiplatform navigation are also part of the remaining work.
 
 
 ### Remaining (high level)

@@ -196,7 +196,6 @@ dependencies {
   implementation(libs.accompanist.permissions)
   implementation(AndroidX.compose.runtime.liveData)
   implementation(AndroidX.dataStore.preferences)
-  implementation(libs.reorderable)
 
   implementation(project(":UI"))
   implementation(project(":shared"))

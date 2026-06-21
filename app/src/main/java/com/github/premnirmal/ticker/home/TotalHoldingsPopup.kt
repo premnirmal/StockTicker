@@ -21,7 +21,7 @@ import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 
 @Composable
 fun TotalHoldingsPopup(
-    totalHoldings: HomeViewModel.TotalGainLoss,
+    totalHoldings: TotalGainLoss,
     onDismiss: () -> Unit,
 ) {
     Popup(

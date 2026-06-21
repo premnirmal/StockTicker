@@ -6,9 +6,9 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -68,44 +69,62 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.debugInspectorInfo
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.github.premnirmal.ticker.AppPreferences
-import com.github.premnirmal.ticker.detail.QuoteCard
-import com.github.premnirmal.ticker.navigation.HomeRoute
-import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.ui.ContentType
-import com.github.premnirmal.ticker.ui.LocalContentType
-import com.github.premnirmal.ticker.ui.TopBar
-import com.github.premnirmal.ticker.ui.fadingEdges
-import com.github.premnirmal.ticker.widget.WidgetData
-import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
-import java.util.Locale
 import kotlin.math.abs
 import kotlin.math.min
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyStaggeredGridState
 
-@OptIn(
-    ExperimentalMaterial3Api::class
-)
+/**
+ * Home watchlist screen, shared by Android and iOS. The screen is stateless: the state it renders
+ * and the events it raises are hoisted as parameters so it has no Android, navigation or
+ * dependency-injection dependencies:
+ *  - the collapsing-header title/subtitle/widget tabs from plain values
+ *    ([appName]/[subtitle]/[hasWidgets]/[widgets]),
+ *  - the holdings popup gating from [hasHoldings]/[totalGainLoss] plus the popup itself as a
+ *    [totalHoldingsPopup] slot,
+ *  - the refresh state/event as [isRefreshing]/[onRefresh] and the quote tap as [onQuoteClick],
+ *  - the localised app name as a [String] and the holdings icon as a [Painter] ([totalHoldingsIcon]),
+ *  - the theme-aware header background as a nullable [Painter] ([headerBackground]; null = no image,
+ *    e.g. in the dual-pane list),
+ *  - the quote card as a composable [quoteCard] slot (it still pulls in the not-yet-shared theme),
+ *  - the navigation scroll-to-top registrations as [registerResetScroll]/[registerWidgetScroll].
+ * The Android `WatchlistContent` host in `:app` supplies them.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchlistContent(
-    modifier: Modifier = Modifier,
-    viewModel: HomeViewModel,
+    appName: String,
+    subtitle: String,
+    hasWidgets: Boolean,
+    hasHoldings: Boolean,
+    isRefreshing: Boolean,
+    widgets: List<WatchlistWidget>,
+    totalGainLoss: TotalGainLoss?,
+    totalHoldingsIcon: Painter,
+    headerBackground: Painter?,
+    onRefresh: () -> Unit,
     onQuoteClick: (Quote) -> Unit,
+    quoteCard: @Composable (
+        quote: Quote,
+        modifier: Modifier,
+        interactionSource: MutableInteractionSource,
+        onClick: () -> Unit,
+        onRemoveClick: (Quote) -> Unit,
+    ) -> Unit,
+    totalHoldingsPopup: @Composable (totalHoldings: TotalGainLoss, onDismiss: () -> Unit) -> Unit,
+    modifier: Modifier = Modifier,
+    listFadingEdges: (ScrollableState) -> Modifier = { Modifier },
+    registerResetScroll: @Composable (reset: suspend () -> Unit) -> Unit = {},
+    registerWidgetScroll: @Composable (index: Int, scroll: suspend () -> Unit) -> Unit = { _, _ -> },
 ) {
-    val hasWidgets by viewModel.hasWidget.collectAsState(initial = false)
     val density = LocalDensity.current
     val headerHeightDp = remember(hasWidgets) { if (hasWidgets) 200.dp else 160.dp }
     val headerHeight = remember(hasWidgets, headerHeightDp) {
@@ -128,28 +147,14 @@ fun WatchlistContent(
     var showTotalHoldingsPopup by remember {
         mutableStateOf(false)
     }
-    rememberScrollToTopAction(HomeRoute.Watchlist) {
+    registerResetScroll {
         connection.resetOffset()
     }
     BoxWithConstraints(modifier = Modifier.nestedScroll(connection)) {
         val constraints = this.constraints
-        val widgets by viewModel.widgets.collectAsState()
         val rowState = rememberLazyListState()
-        val fetchState by viewModel.fetchState.collectAsStateWithLifecycle()
-        val nextFetch by viewModel.nextFetch.collectAsStateWithLifecycle("")
-        val subtitleData by remember(fetchState, nextFetch) {
-            derivedStateOf {
-                Pair(fetchState.displayString, nextFetch)
-            }
-        }
-        val subtitle = stringResource(
-            R.string.last_and_next_fetch,
-            subtitleData.first,
-            subtitleData.second
-        )
         val coroutineScope = rememberCoroutineScope()
         val hapticFeedback = LocalHapticFeedback.current
-        val density = LocalDensity.current
         val windowInfo = LocalWindowInfo.current
         val gridSize = remember(windowInfo.containerSize) {
             val heightDp = with(density) { windowInfo.containerSize.height.toDp() }
@@ -173,7 +178,8 @@ fun WatchlistContent(
             widgets = widgets,
             selectedItemIndex = selectedItemIndex,
             coroutineScope = coroutineScope,
-            rowState = rowState
+            rowState = rowState,
+            headerBackground = headerBackground,
         )
         Column(
             modifier = modifier.fillMaxSize()
@@ -182,31 +188,31 @@ fun WatchlistContent(
                 Modifier.height(spaceHeight)
             )
             Content(
-                viewModel = viewModel,
                 widgets = widgets,
                 gridSize = gridSize,
                 rowState = rowState,
                 hapticFeedback = hapticFeedback,
+                isRefreshing = isRefreshing,
+                onRefresh = onRefresh,
                 onQuoteClick = onQuoteClick,
+                quoteCard = quoteCard,
+                listFadingEdges = listFadingEdges,
+                registerWidgetScroll = registerWidgetScroll,
             )
         }
         TopAppBar(
             modifier = Modifier,
             scrollState = connection,
-            viewModel = viewModel,
+            appName = appName,
+            hasHoldings = hasHoldings,
+            totalHoldingsIcon = totalHoldingsIcon,
             onTotalHoldingsClick = {
                 showTotalHoldingsPopup = true
             }
         )
-        val totalHoldings by viewModel.totalGainLoss.collectAsStateWithLifecycle(initialValue = null)
-        if (showTotalHoldingsPopup && totalHoldings != null) {
-            totalHoldings?.let { totalHoldings ->
-                TotalHoldingsPopup(
-                    totalHoldings = totalHoldings,
-                    onDismiss = {
-                        showTotalHoldingsPopup = false
-                    }
-                )
+        if (showTotalHoldingsPopup && totalGainLoss != null) {
+            totalHoldingsPopup(totalGainLoss) {
+                showTotalHoldingsPopup = false
             }
         }
     }
@@ -216,7 +222,9 @@ fun WatchlistContent(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun TopAppBar(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel,
+    appName: String,
+    hasHoldings: Boolean,
+    totalHoldingsIcon: Painter,
     scrollState: CollapsingTopBarScrollConnection,
     onTotalHoldingsClick: () -> Unit,
 ) {
@@ -236,20 +244,20 @@ private fun TopAppBar(
             }
         }
     )
-    TopBar(
+    com.github.premnirmal.ticker.ui.TopBar(
         modifier = modifier,
-        text = stringResource(R.string.app_name),
+        text = appName,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = tobAppBarBackgroundColor.value,
             titleContentColor = topAppBarColors.titleContentColor,
         ),
         actions = {
-            if (viewModel.hasHoldings) {
+            if (hasHoldings) {
                 IconButton(
                     onClick = onTotalHoldingsClick,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_money),
+                        painter = totalHoldingsIcon,
                         contentDescription = null,
                     )
                 }
@@ -261,16 +269,25 @@ private fun TopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Content(
-    viewModel: HomeViewModel,
-    widgets: List<WidgetData>,
+    widgets: List<WatchlistWidget>,
     gridSize: DpSize,
     rowState: LazyListState,
     hapticFeedback: HapticFeedback,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     onQuoteClick: (Quote) -> Unit,
+    quoteCard: @Composable (
+        quote: Quote,
+        modifier: Modifier,
+        interactionSource: MutableInteractionSource,
+        onClick: () -> Unit,
+        onRemoveClick: (Quote) -> Unit,
+    ) -> Unit,
+    listFadingEdges: (ScrollableState) -> Modifier,
+    registerWidgetScroll: @Composable (index: Int, scroll: suspend () -> Unit) -> Unit,
 ) {
     if (widgets.isNotEmpty()) {
         val width = gridSize.width
-        val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
         LazyRow(
             modifier = Modifier.fillMaxSize(),
             verticalAlignment = Alignment.Top,
@@ -291,21 +308,21 @@ private fun Content(
                     }
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.SegmentFrequentTick)
                 }
-                rememberScrollToTopAction(HomeRoute.Watchlist, index) {
+                registerWidgetScroll(index) {
                     lazyStaggeredGridState.animateScrollToItem(0)
                 }
                 PullToRefreshBox(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface),
-                    onRefresh = viewModel::refresh,
+                    onRefresh = onRefresh,
                     isRefreshing = isRefreshing
                 ) {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier
                             .width(width)
                             .fillMaxHeight()
-                            .fadingEdges(state = lazyStaggeredGridState),
+                            .then(listFadingEdges(lazyStaggeredGridState)),
                         state = lazyStaggeredGridState,
                         columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
                         contentPadding = PaddingValues(all = 8.dp),
@@ -318,8 +335,9 @@ private fun Content(
                         ) { _, quote ->
                             ReorderableItem(reorderableLazyStaggeredGridState, key = quote.symbol) {
                                 val interactionSource = remember { MutableInteractionSource() }
-                                QuoteCard(
-                                    modifier = Modifier
+                                quoteCard(
+                                    quote,
+                                    Modifier
                                         .fillMaxWidth()
                                         .longPressDraggableHandle(
                                             onDragStarted = {
@@ -335,13 +353,9 @@ private fun Content(
                                             },
                                             interactionSource = interactionSource,
                                         ),
-                                    interactionSource = interactionSource,
-                                    quote = quote,
-                                    onClick = { onQuoteClick(quote) },
-                                    showMore = true,
-                                    onRemoveClick = { quote ->
-                                        widget.removeStock(quote.symbol)
-                                    }
+                                    interactionSource,
+                                    { onQuoteClick(quote) },
+                                    { q -> widget.removeStock(q.symbol) },
                                 )
                             }
                         }
@@ -358,25 +372,16 @@ private fun Header(
     modifier: Modifier = Modifier,
     hasWidgets: Boolean,
     subtitle: String,
-    widgets: List<WidgetData>,
+    widgets: List<WatchlistWidget>,
     selectedItemIndex: Int,
     coroutineScope: CoroutineScope,
-    rowState: LazyListState
+    rowState: LazyListState,
+    headerBackground: Painter?,
 ) {
-    val contentType = LocalContentType.current
-    val bg = when (AppPreferences.SELECTED_THEME) {
-        SelectedTheme.DARK -> R.drawable.bg_header_dark
-        SelectedTheme.LIGHT -> R.drawable.bg_header_light
-        else -> if (isSystemInDarkTheme()) {
-            R.drawable.bg_header_dark
-        } else {
-            R.drawable.bg_header_light
-        }
-    }
     Box(
         modifier = modifier.fillMaxWidth(),
     ) {
-        if (contentType == ContentType.SINGLE_PANE) {
+        if (headerBackground != null) {
             val color = MaterialTheme.colorScheme.surface
             Image(
                 modifier = Modifier.fillMaxSize().graphicsLayer { alpha = 0.99f }
@@ -392,7 +397,7 @@ private fun Header(
                         )
                     },
                 contentScale = ContentScale.Crop,
-                painter = painterResource(bg),
+                painter = headerBackground,
                 contentDescription = null,
             )
         }
@@ -430,7 +435,7 @@ private fun Header(
                         val selected by remember(selectedItemIndex) { derivedStateOf { selectedItemIndex == index } }
                         TabText(
                             selected = selected,
-                            text = widget.widgetName().uppercase(Locale.getDefault()),
+                            text = widget.name.uppercase(),
                             onClick = {
                                 coroutineScope.launch {
                                     rowState.animateScrollToItem(index)
