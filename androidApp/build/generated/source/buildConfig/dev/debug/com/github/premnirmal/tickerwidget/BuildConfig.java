@@ -11,5 +11,5 @@ public final class BuildConfig {
   public static final int VERSION_CODE = 400000000;
   public static final String VERSION_NAME = "4.0.0";
   // Field from default config.
-  public static final String PREVIOUS_VERSION = "4.0.0";
+  public static final String PREVIOUS_VERSION = "4.0.061";
 }
