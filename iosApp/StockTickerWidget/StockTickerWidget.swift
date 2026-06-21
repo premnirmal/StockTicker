@@ -1,14 +1,18 @@
 import WidgetKit
 import SwiftUI
 import Charts
+import AppIntents
 import Shared
 
 /// The data a single widget timeline entry renders. Built from the shared `WidgetSnapshot` written by
-/// the app to the App Group store (`WidgetSnapshotStore`).
+/// the app to the App Group store (`WidgetSnapshotStore`), filtered/sorted per the widget's own
+/// `StockTickerConfigurationIntent`.
 struct StockTickerEntry: TimelineEntry {
     let date: Date
     let quotes: [WidgetQuoteRow]
     let isPlaceholder: Bool
+    /// The per-widget configuration controlling appearance (header, change amount, bold, …).
+    let configuration: StockTickerConfigurationIntent
 }
 
 /// A flattened, Swift-value copy of the shared `WidgetQuoteSnapshot` (so SwiftUI views don't hold
@@ -24,31 +28,33 @@ struct WidgetQuoteRow: Identifiable {
     let positive: Bool
 }
 
-/// Reads the shared App Group snapshot and supplies the WidgetKit timeline.
+/// Reads the shared App Group snapshot and supplies the WidgetKit timeline, applying each widget
+/// instance's own `StockTickerConfigurationIntent` (watchlist selection + appearance).
 ///
 /// The widget extension runs in its own process, so it cannot reach the app's Koin graph / Room
 /// database. It instead reads the compact JSON snapshot the app persists after every refresh through
 /// the shared `WidgetSnapshotStore` (the iOS counterpart of Android's `WidgetDataProvider`).
-struct StockTickerProvider: TimelineProvider {
+struct StockTickerProvider: AppIntentTimelineProvider {
 
     func placeholder(in context: Context) -> StockTickerEntry {
-        StockTickerEntry(date: Date(), quotes: Self.sampleRows, isPlaceholder: true)
+        StockTickerEntry(date: Date(), quotes: Self.sampleRows, isPlaceholder: true,
+                         configuration: StockTickerConfigurationIntent())
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (StockTickerEntry) -> Void) {
-        completion(loadEntry())
+    func snapshot(for configuration: StockTickerConfigurationIntent, in context: Context) async -> StockTickerEntry {
+        loadEntry(for: configuration)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<StockTickerEntry>) -> Void) {
-        let entry = loadEntry()
+    func timeline(for configuration: StockTickerConfigurationIntent, in context: Context) async -> Timeline<StockTickerEntry> {
+        let entry = loadEntry(for: configuration)
         // The app reloads timelines on every refresh; also poll periodically as a fallback.
         let next = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date()
-        completion(Timeline(entries: [entry], policy: .after(next)))
+        return Timeline(entries: [entry], policy: .after(next))
     }
 
-    private func loadEntry() -> StockTickerEntry {
+    private func loadEntry(for configuration: StockTickerConfigurationIntent) -> StockTickerEntry {
         let snapshot = WidgetSnapshotStore.companion.create().read()
-        let rows = (snapshot?.quotes ?? []).map { quote in
+        var rows = (snapshot?.quotes ?? []).map { quote in
             WidgetQuoteRow(
                 symbol: quote.symbol,
                 name: quote.name,
@@ -59,8 +65,16 @@ struct StockTickerProvider: TimelineProvider {
                 positive: quote.positive
             )
         }
+        // Per-widget watchlist selection: keep only the chosen symbols (or all when none selected).
+        if let selected = configuration.selectedSymbols {
+            rows = rows.filter { selected.contains($0.symbol) }
+        }
+        // Per-widget sort: optionally show the largest movers first.
+        if configuration.sortByChange {
+            rows.sort { abs($0.changeInPercent) > abs($1.changeInPercent) }
+        }
         let date = snapshot.map { Date(timeIntervalSince1970: Double($0.lastUpdatedMillis) / 1000.0) } ?? Date()
-        return StockTickerEntry(date: date, quotes: rows, isPlaceholder: false)
+        return StockTickerEntry(date: date, quotes: rows, isPlaceholder: false, configuration: configuration)
     }
 
     private static let sampleRows: [WidgetQuoteRow] = [
@@ -78,6 +92,7 @@ struct StockTickerProvider: TimelineProvider {
 /// One watchlist row: symbol + price on the leading edge, change% (coloured) on the trailing edge.
 private struct QuoteRowView: View {
     let row: WidgetQuoteRow
+    let configuration: StockTickerConfigurationIntent
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
@@ -91,10 +106,19 @@ private struct QuoteRowView: View {
                     .lineLimit(1)
             }
             Spacer(minLength: 4)
-            Text(row.changePercent)
-                .font(.system(.caption, design: .rounded).weight(.medium))
-                .foregroundStyle(row.positive ? Color.green : Color.red)
-                .lineLimit(1)
+            VStack(alignment: .trailing, spacing: 1) {
+                Text(row.changePercent)
+                    .font(.system(.caption, design: .rounded)
+                        .weight(configuration.boldChange ? .bold : .medium))
+                    .foregroundStyle(row.positive ? Color.green : Color.red)
+                    .lineLimit(1)
+                if configuration.showChangeAmount {
+                    Text(row.changeAmount)
+                        .font(.caption2)
+                        .foregroundStyle(row.positive ? Color.green : Color.red)
+                        .lineLimit(1)
+                }
+            }
         }
     }
 }
@@ -110,7 +134,7 @@ private struct StockTickerListView: View {
                 EmptyWatchlistView()
             } else {
                 ForEach(entry.quotes.prefix(maxRows)) { row in
-                    QuoteRowView(row: row)
+                    QuoteRowView(row: row, configuration: entry.configuration)
                 }
                 Spacer(minLength: 0)
             }
@@ -124,13 +148,15 @@ private struct StockTickerChartView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Watchlist")
-                .font(.headline)
+            if entry.configuration.showHeader {
+                Text("Watchlist")
+                    .font(.headline)
+            }
             if entry.quotes.isEmpty {
                 EmptyWatchlistView()
             } else {
                 ForEach(entry.quotes.prefix(5)) { row in
-                    QuoteRowView(row: row)
+                    QuoteRowView(row: row, configuration: entry.configuration)
                 }
                 Chart(Array(entry.quotes.prefix(6))) { row in
                     BarMark(
@@ -198,7 +224,11 @@ struct StockTickerWidget: Widget {
     private let kind = "StockTickerWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: StockTickerProvider()) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: StockTickerConfigurationIntent.self,
+            provider: StockTickerProvider()
+        ) { entry in
             StockTickerWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Stock Ticker")

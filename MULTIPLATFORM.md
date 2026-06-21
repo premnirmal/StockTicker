@@ -629,14 +629,19 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     on the same `notificationAlerts()`/`updateDays()` preferences. The iOS app starts the observer and
     requests notification permission via `KoinHelper.initializeNotifications()` in
     `StockTickerApp.swift`.
-  - **Home-screen widget configuration & customisation.** Android supports multiple Glance
+  - **Home-screen widget configuration & customisation.** *(Done.)* Android supports multiple Glance
     widgets, each with its own watchlist and per-widget options (auto-sort, layout, size,
     background/text colour, bold text, header visibility, currency display, refresh button),
     configured in-app (`androidApp/.../widget/`). The iOS `StockTickerWidget`
-    (`iosApp/StockTickerWidget/StockTickerWidget.swift`) is a single `StaticConfiguration` that
-    renders the one shared watchlist, and `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) is an
-    informational guidance screen only. Add WidgetKit configuration (e.g. an
-    `AppIntentConfiguration`) for per-widget watchlists and appearance options.
+    (`iosApp/StockTickerWidget/StockTickerWidget.swift`) is now an `AppIntentConfiguration` driven by
+    a per-widget `StockTickerConfigurationIntent`
+    (`iosApp/StockTickerWidget/StockTickerWidgetIntent.swift`): each placed widget keeps its own
+    watchlist selection — a `WatchlistSymbolEntity`/`WatchlistSymbolQuery` offers the symbols read
+    from the shared App Group `WidgetSnapshotStore` snapshot — plus appearance options (sort by
+    change, show header, show change amount, bold change), applied on the render side. The widget
+    family still chooses the layout/size (the equivalent of Android's layout/size prefs). The iOS
+    `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) explains how to add a widget and edit each one
+    (touch & hold → *Edit Widget*).
   - **Onboarding tutorial.** *(Done.)* Android shows a first-run tutorial gated on the shared
     `tutorialShown()` preference (`androidApp/.../home/HomeActivity.kt` →
     `HomeViewModel.checkShowTutorial()`). The iOS app now presents an equivalent onboarding flow:

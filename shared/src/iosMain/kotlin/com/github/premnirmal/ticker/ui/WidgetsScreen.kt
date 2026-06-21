@@ -63,6 +63,15 @@ fun WidgetsScreen() {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
             )
+            Text(
+                modifier = Modifier.padding(top = 8.dp),
+                text = "Each widget can be configured on its own: touch and hold a placed widget and " +
+                    "tap Edit Widget to choose which watchlist symbols it shows and how it looks " +
+                    "(sort by change, header, change amount and bold text).",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
