@@ -1,61 +1,31 @@
 package com.github.premnirmal.ticker.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.offset
-import org.koin.androidx.compose.koinViewModel
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.home.HomeEvent
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
-import com.github.premnirmal.ticker.navigation.LayoutType.CONTENT
-import com.github.premnirmal.ticker.navigation.LayoutType.HEADER
 import com.github.premnirmal.ticker.news.NewsFeedScreen
 import com.github.premnirmal.ticker.portfolio.search.SearchScreen
 import com.github.premnirmal.ticker.settings.SettingsScreen
 import com.github.premnirmal.ticker.ui.LocalContentType
-import com.github.premnirmal.ticker.ui.NavigationContentPosition
-import com.github.premnirmal.ticker.ui.NavigationContentPosition.CENTER
-import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
 import com.github.premnirmal.ticker.widget.WidgetsScreen
-import com.github.premnirmal.tickerwidget.R.drawable
-import com.github.premnirmal.tickerwidget.R.string
+import org.koin.androidx.compose.koinViewModel
 import java.net.URLEncoder
 
+/**
+ * Android-specific host for [HomeNavHost] that supplies the concrete screen composables
+ * (which require Koin, Android resources, window-size-class, etc.) as slots.
+ */
 @Composable
-fun HomeNavHost(
+fun HomeNavHostWrapper(
     rootNavController: NavHostController,
     widthSizeClass: WindowWidthSizeClass,
     navController: NavHostController,
@@ -66,12 +36,10 @@ fun HomeNavHost(
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
-    NavHost(
-        modifier = modifier,
+    HomeNavHost(
         navController = navController,
-        startDestination = HomeRoute.Watchlist.route,
-    ) {
-        composable(HomeRoute.Watchlist.route) { backStackEntry ->
+        modifier = modifier,
+        watchlist = {
             val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
             WatchlistScreen(
                 rootNavController = rootNavController,
@@ -83,8 +51,8 @@ fun HomeNavHost(
                 contentType = contentType,
                 viewModel = homeViewModel,
             )
-        }
-        composable(HomeRoute.Trending.route) {
+        },
+        trending = {
             NewsFeedScreen(
                 modifier = Modifier
                     .fillMaxSize()
@@ -97,8 +65,8 @@ fun HomeNavHost(
                     }
                 }
             )
-        }
-        composable(HomeRoute.Search.route) {
+        },
+        search = {
             SearchScreen(
                 modifier = Modifier
                     .fillMaxSize()
@@ -113,8 +81,8 @@ fun HomeNavHost(
                     }
                 }
             )
-        }
-        composable(HomeRoute.Widgets.route) {
+        },
+        widgets = {
             WidgetsScreen(
                 modifier = Modifier
                     .fillMaxSize()
@@ -122,8 +90,8 @@ fun HomeNavHost(
                 widthSizeClass = widthSizeClass,
                 displayFeatures = displayFeatures
             )
-        }
-        composable(HomeRoute.Settings.route) { backStackEntry ->
+        },
+        settings = {
             val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
             SettingsScreen(
                 modifier = Modifier
@@ -131,265 +99,7 @@ fun HomeNavHost(
                     .background(MaterialTheme.colorScheme.surface),
                 homeViewModel = homeViewModel,
             )
-        }
-    }
-}
-
-@Composable
-fun BottomNavigationBar(
-    selectedDestination: String,
-    destinations: List<HomeBottomNavDestination>,
-    navigateToTopLevelDestination: (HomeBottomNavDestination) -> Unit,
-) {
-    NavigationBar(
-        modifier = Modifier,
-        containerColor = MaterialTheme.colorScheme.surface,
-    ) {
-        destinations.forEach { destination ->
-            NavigationBarItem(
-                selected = selectedDestination == destination.route.route,
-                onClick = { navigateToTopLevelDestination(destination) },
-                enabled = destination.enabled,
-                label = {
-                    Text(
-                        stringResource(id = destination.iconTextId),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                },
-                alwaysShowLabel = false,
-                icon = {
-                    Icon(
-                        imageVector = destination.selectedIcon,
-                        contentDescription = stringResource(id = destination.iconTextId),
-                        tint = if (!destination.enabled) {
-                            MaterialTheme.colorScheme.primary.copy(
-                                alpha = 0.2f
-                            )
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        }
-                    )
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun HomeNavigationRail(
-    selectedDestination: String,
-    destinations: List<HomeBottomNavDestination>,
-    navigationContentPosition: NavigationContentPosition,
-    navigateToTopLevelDestination: (HomeBottomNavDestination) -> Unit
-) {
-    NavigationRail(
-        modifier = Modifier.fillMaxHeight(),
-        containerColor = MaterialTheme.colorScheme.surface
-    ) {
-        // TODO remove custom nav rail positioning when NavRail component supports it
-        Layout(
-            modifier = Modifier.widthIn(max = 80.dp),
-            content = {
-                Column(
-                    modifier = Modifier.layoutId(HEADER),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Spacer(Modifier.height(8.dp)) // NavigationRailHeaderPadding
-                    Spacer(Modifier.height(4.dp)) // NavigationRailVerticalPadding
-                }
-
-                Column(
-                    modifier = Modifier.layoutId(CONTENT),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    destinations.forEach { Destination ->
-                        NavigationRailItem(
-                            selected = selectedDestination == Destination.route.route,
-                            onClick = { navigateToTopLevelDestination(Destination) },
-                            enabled = Destination.enabled,
-                            icon = {
-                                Icon(
-                                    imageVector = Destination.selectedIcon,
-                                    contentDescription = stringResource(
-                                        id = Destination.iconTextId
-                                    ),
-                                    tint = if (!Destination.enabled) {
-                                        LocalContentColor.current.copy(
-                                            alpha = 0.2f
-                                        )
-                                    } else {
-                                        LocalContentColor.current
-                                    }
-                                )
-                            }
-                        )
-                    }
-                }
-            },
-            measurePolicy = { measurables, constraints ->
-                lateinit var headerMeasurable: Measurable
-                lateinit var contentMeasurable: Measurable
-                measurables.forEach {
-                    when (it.layoutId) {
-                        HEADER -> headerMeasurable = it
-                        CONTENT -> contentMeasurable = it
-                        else -> error("Unknown layoutId encountered!")
-                    }
-                }
-
-                val headerPlaceable = headerMeasurable.measure(constraints)
-                val contentPlaceable = contentMeasurable.measure(
-                    constraints.offset(vertical = -headerPlaceable.height)
-                )
-                layout(constraints.maxWidth, constraints.maxHeight) {
-                    // Place the header, this goes at the top
-                    headerPlaceable.placeRelative(0, 0)
-
-                    // Determine how much space is not taken up by the content
-                    val nonContentVerticalSpace = constraints.maxHeight - contentPlaceable.height
-
-                    val contentPlaceableY = when (navigationContentPosition) {
-                        // Figure out the place we want to place the content, with respect to the
-                        // parent (ignoring the header for now)
-                        TOP -> 0
-                        CENTER -> nonContentVerticalSpace / 2
-                    }
-                        // And finally, make sure we don't overlap with the header.
-                        .coerceAtLeast(headerPlaceable.height)
-
-                    contentPlaceable.placeRelative(0, contentPlaceableY)
-                }
-            }
-        )
-    }
-}
-
-class HomeNavigationActions(
-    private val navController: NavHostController,
-    private val viewModel: NavigationViewModel,
-    private val homeViewModel: HomeViewModel,
-) {
-
-    fun navigateTo(destination: HomeBottomNavDestination) {
-        navController.navigate(destination.route.route) {
-            // Pop up to the start destination of the graph to
-            // avoid building up a large stack of destinations
-            // on the back stack as users select items
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            // Avoid multiple copies of the same destination when
-            // reselecting the same item
-            launchSingleTop = true
-            // Restore state when reselecting a previously selected item
-            restoreState = true
-        }
-        navController.currentBackStackEntry?.let {
-            if (it.destination.route == destination.route.route) {
-                viewModel.scrollToTop(destination.route)
-            }
-        }
-        homeViewModel.sendHomeEvent(HomeEvent.PromptRate)
-    }
-}
-
-enum class HomeRoute(val route: String) {
-    Watchlist("Watchlist"),
-    Trending("Trending"),
-    Search("Search"),
-    Widgets("Widgets"),
-    Settings("Settings")
-}
-
-data class HomeBottomNavDestination(
-    val route: HomeRoute,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector,
-    val iconTextId: Int,
-    val enabled: Boolean = true
-)
-
-@Preview(device = Devices.NEXUS_9)
-@Composable
-fun NavigationRailPreview() {
-    HomeNavigationRail(
-        selectedDestination = HomeRoute.Watchlist.route,
-        destinations = listOf(
-            HomeBottomNavDestination(
-                HomeRoute.Watchlist,
-                ImageVector.vectorResource(id = drawable.ic_trending_up),
-                ImageVector.vectorResource(id = drawable.ic_trending_up),
-                string.action_portfolio,
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Trending,
-                ImageVector.vectorResource(id = drawable.ic_news),
-                ImageVector.vectorResource(id = drawable.ic_news),
-                string.action_feed
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Search,
-                ImageVector.vectorResource(id = drawable.ic_search),
-                ImageVector.vectorResource(id = drawable.ic_search),
-                string.action_search
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Widgets,
-                ImageVector.vectorResource(id = drawable.ic_widget),
-                ImageVector.vectorResource(id = drawable.ic_widget),
-                string.action_widgets
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Settings,
-                ImageVector.vectorResource(id = drawable.ic_settings),
-                ImageVector.vectorResource(id = drawable.ic_settings),
-                string.action_settings
-            )
-        ),
-        navigateToTopLevelDestination = {},
-        navigationContentPosition = TOP
+        },
     )
 }
 
-@Preview
-@Composable
-fun BottomNavigationBarPreview() {
-    BottomNavigationBar(
-        selectedDestination = HomeRoute.Watchlist.route,
-        destinations = listOf(
-            HomeBottomNavDestination(
-                HomeRoute.Watchlist,
-                ImageVector.vectorResource(id = drawable.ic_trending_up),
-                ImageVector.vectorResource(id = drawable.ic_trending_up),
-                string.action_portfolio
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Trending,
-                ImageVector.vectorResource(id = drawable.ic_news),
-                ImageVector.vectorResource(id = drawable.ic_news),
-                string.action_feed
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Search,
-                ImageVector.vectorResource(id = drawable.ic_search),
-                ImageVector.vectorResource(id = drawable.ic_search),
-                string.action_search
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Widgets,
-                ImageVector.vectorResource(id = drawable.ic_widget),
-                ImageVector.vectorResource(id = drawable.ic_widget),
-                string.action_widgets
-            ),
-            HomeBottomNavDestination(
-                HomeRoute.Settings,
-                ImageVector.vectorResource(id = drawable.ic_settings),
-                ImageVector.vectorResource(id = drawable.ic_settings),
-                string.action_settings
-            )
-        ),
-        navigateToTopLevelDestination = {}
-    )
-}

@@ -32,7 +32,7 @@ reorderable = "3.1.0"
 material3 = "1.4.0"
 glanceAppwidget = "1.1.1"
 vico = "2.5.1"
-coil = "3.5.0"
+coil = "3.4.0"
 
 [libraries]
 
@@ -69,6 +69,8 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version.ref = "vico" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
+navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.10.0-alpha02" }
 
 javax-inject = "javax.inject:javax.inject:1"
 javax-annotation-api = "javax.annotation:javax.annotation-api:1.3.2"

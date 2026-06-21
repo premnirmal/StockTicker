@@ -1,13 +1,5 @@
 package com.github.premnirmal.ticker.home
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -16,24 +8,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
-import org.koin.androidx.compose.koinViewModel
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
-import com.github.premnirmal.ticker.navigation.BottomNavigationBar
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
-import com.github.premnirmal.ticker.navigation.HomeNavHost
 import com.github.premnirmal.ticker.navigation.HomeNavigationActions
-import com.github.premnirmal.ticker.navigation.HomeNavigationRail
+import com.github.premnirmal.ticker.navigation.HomeNavHostWrapper
 import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.HomeScaffold
 import com.github.premnirmal.ticker.navigation.LocalNavGraphViewModelStoreOwner
 import com.github.premnirmal.ticker.navigation.NavigationViewModel
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
@@ -43,6 +30,7 @@ import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationType
 import com.github.premnirmal.tickerwidget.R.drawable
 import com.github.premnirmal.tickerwidget.R.string
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun HomeListDetail(
@@ -86,44 +74,44 @@ fun HomeListDetail(
             add(
                 HomeBottomNavDestination(
                     HomeRoute.Watchlist,
-                    ImageVector.vectorResource(id = drawable.ic_trending_up),
-                    ImageVector.vectorResource(id = drawable.ic_trending_up),
-                    string.action_portfolio
+                    selectedIcon = painterResource(id = drawable.ic_trending_up),
+                    unselectedIcon = painterResource(id = drawable.ic_trending_up),
+                    label = stringResource(string.action_portfolio)
                 )
             )
             if (widthSizeClass != WindowWidthSizeClass.Expanded) {
                 add(
                     HomeBottomNavDestination(
                         HomeRoute.Trending,
-                        ImageVector.vectorResource(id = drawable.ic_news),
-                        ImageVector.vectorResource(id = drawable.ic_news),
-                        string.action_feed
+                        selectedIcon = painterResource(id = drawable.ic_news),
+                        unselectedIcon = painterResource(id = drawable.ic_news),
+                        label = stringResource(string.action_feed)
                     )
                 )
             }
             add(
                 HomeBottomNavDestination(
                     HomeRoute.Search,
-                    ImageVector.vectorResource(id = drawable.ic_search),
-                    ImageVector.vectorResource(id = drawable.ic_search),
-                    string.action_search
+                    selectedIcon = painterResource(id = drawable.ic_search),
+                    unselectedIcon = painterResource(id = drawable.ic_search),
+                    label = stringResource(string.action_search)
                 )
             )
             add(
                 HomeBottomNavDestination(
                     HomeRoute.Widgets,
-                    ImageVector.vectorResource(id = drawable.ic_widget),
-                    ImageVector.vectorResource(id = drawable.ic_widget),
-                    string.action_widgets,
+                    selectedIcon = painterResource(id = drawable.ic_widget),
+                    unselectedIcon = painterResource(id = drawable.ic_widget),
+                    label = stringResource(string.action_widgets),
                     enabled = hasWidget.value
                 )
             )
             add(
                 HomeBottomNavDestination(
                     HomeRoute.Settings,
-                    ImageVector.vectorResource(id = drawable.ic_settings),
-                    ImageVector.vectorResource(id = drawable.ic_settings),
-                    string.action_settings
+                    selectedIcon = painterResource(id = drawable.ic_settings),
+                    unselectedIcon = painterResource(id = drawable.ic_settings),
+                    label = stringResource(string.action_settings)
                 )
             )
         }
@@ -139,10 +127,8 @@ fun HomeListDetail(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeListDetailNavigationWrapper(
-    modifier: Modifier = Modifier,
     rootNavController: NavHostController,
     navigationType: NavigationType,
     destinations: List<HomeBottomNavDestination>,
@@ -157,92 +143,28 @@ private fun HomeListDetailNavigationWrapper(
     val homeViewModel = koinViewModel<HomeViewModel>(viewModelStoreOwner = viewModelStoreOwner)
     val navController = rememberNavController()
     val homeNavigationActions = remember(navController) {
-        HomeNavigationActions(navController, navigationViewModel, homeViewModel)
+        HomeNavigationActions(navController, navigationViewModel) {
+            homeViewModel.sendHomeEvent(HomeEvent.PromptRate)
+        }
     }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val selectedDestination = navBackStackEntry?.destination?.route ?: HomeRoute.Watchlist.route
 
-    if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
-            bottomBar = {
-                BottomNavigationBar(
-                    selectedDestination = selectedDestination,
-                    navigateToTopLevelDestination = {
-                        homeNavigationActions.navigateTo(it)
-                    },
-                    destinations = destinations
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
-            }
-        ) { padding ->
-            HomeNavHost(
+    HomeScaffold(
+        navigationType = navigationType,
+        selectedDestination = selectedDestination,
+        destinations = destinations,
+        navigationContentPosition = navigationContentPosition,
+        snackbarHostState = LocalAppMessaging.current.snackbarHostState,
+        navigateToTopLevelDestination = { homeNavigationActions.navigateTo(it) },
+        navHost = { modifier ->
+            HomeNavHostWrapper(
                 rootNavController = rootNavController,
                 navController = navController,
                 widthSizeClass = widthSizeClass,
                 displayFeatures = displayFeatures,
-                modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
+                modifier = modifier,
             )
         }
-    } else {
-        Scaffold(
-            modifier = modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface),
-            snackbarHost = {
-                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
-            }
-        ) { padding ->
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                HomeNavigationRail(
-                    selectedDestination = selectedDestination,
-                    navigationContentPosition = navigationContentPosition,
-                    navigateToTopLevelDestination = {
-                        homeNavigationActions.navigateTo(it)
-                    },
-                    destinations = destinations
-                )
-                HomeNavHost(
-                    rootNavController = rootNavController,
-                    navController = navController,
-                    widthSizeClass = widthSizeClass,
-                    displayFeatures = displayFeatures,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun HomeListDetailHandset() {
-    HomeListDetail(
-        rootNavController = rememberNavController(),
-        windowWidthSizeClass = WindowWidthSizeClass.Compact,
-        windowHeightSizeClass = WindowHeightSizeClass.Compact,
-        displayFeatures = emptyList()
-    )
-}
-
-@Preview(
-    device = Devices.NEXUS_9
-)
-@Composable
-fun HomeListDetailTablet() {
-    HomeListDetail(
-        rootNavController = rememberNavController(),
-        windowWidthSizeClass = WindowWidthSizeClass.Expanded,
-        windowHeightSizeClass = WindowHeightSizeClass.Expanded,
-        displayFeatures = emptyList()
     )
 }
