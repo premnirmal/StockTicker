@@ -5,10 +5,10 @@ package com.github.premnirmal.ticker.network.data
  *
  * The chart fetch ([com.github.premnirmal.ticker.model.HistoryProvider]) and its result
  * ([com.github.premnirmal.ticker.model.ChartData]) live in `commonMain`, so [DataPoint] has to be
- * shareable too. It is `expect`/`actual` rather than a plain `data class` because Android renders the
- * chart with MPAndroidChart: the Android `actual` extends MPAndroidChart's `CandleEntry` (and stays
- * `Parcelable`/`Serializable`) so the existing chart UI keeps working unchanged, while `commonMain`
- * (and iOS) only see a platform-neutral, MPAndroidChart-free value that is ordered by its timestamp.
+ * shareable too. The price chart is rendered with the multiplatform Vico library (shared
+ * [com.github.premnirmal.ticker.detail.PriceChartView]), which reads the raw values directly. It is
+ * `expect`/`actual` only so the Android `actual` can stay `Parcelable`/`Serializable` (it is passed
+ * through an `Intent`); `commonMain` (and iOS) see a platform-neutral value ordered by its timestamp.
  */
 expect class DataPoint(
     xVal: Float,

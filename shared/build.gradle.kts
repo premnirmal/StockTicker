@@ -117,13 +117,11 @@ kotlin {
       implementation(compose.ui)
       implementation(compose.components.resources)
       implementation(libs.reorderable)
+      api(libs.vico.multiplatform)
     }
     androidMain.dependencies {
       implementation("io.ktor:ktor-client-okhttp:_")
       implementation(JakeWharton.timber)
-      // The Android DataPoint actual extends MPAndroidChart's CandleEntry so the existing chart UI
-      // can render it directly; commonMain/iOS stay MPAndroidChart-free.
-      implementation(libs.mpandroidchart)
     }
     iosMain.dependencies {
       implementation("io.ktor:ktor-client-darwin:_")

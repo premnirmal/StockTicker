@@ -3,7 +3,6 @@
 
   <integer name="flip_time">8000</integer>
 
-  <dimen name="graph_bottom_offset">8dp</dimen>
 
   <item name="text_size_nano" type="dimen" format="float">8.0</item>
   <item name="text_size_mini" type="dimen" format="float">9.0</item>

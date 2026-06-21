@@ -1,14 +1,7 @@
 package com.github.premnirmal.ticker.detail
 
-import android.R.color
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
-import android.view.ViewGroup.LayoutParams
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -62,34 +55,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import org.koin.androidx.compose.koinViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
-import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.components.YAxis.AxisDependency.RIGHT
-import com.github.mikephil.charting.components.YAxis.YAxisLabelPosition.OUTSIDE_CHART
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.LineDataSet.Mode.CUBIC_BEZIER
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
-import com.github.premnirmal.ticker.network.data.DataPoint
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.changeColour
+import com.github.premnirmal.ticker.detail.PriceChartView
 import com.github.premnirmal.ticker.news.NewsCard
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
@@ -101,17 +82,16 @@ import com.github.premnirmal.ticker.portfolio.HoldingsActivity
 import com.github.premnirmal.ticker.portfolio.NotesActivity
 import com.github.premnirmal.ticker.portfolio.search.AddSymbolDialog
 import com.github.premnirmal.ticker.ui.ContentType
-import com.github.premnirmal.ticker.ui.DateAxisFormatter
 import com.github.premnirmal.ticker.ui.ErrorState
-import com.github.premnirmal.ticker.ui.HourAxisFormatter
 import com.github.premnirmal.ticker.ui.LinkText
 import com.github.premnirmal.ticker.ui.LinkTextData
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
-import com.github.premnirmal.ticker.ui.MultilineXAxisRenderer
-import com.github.premnirmal.ticker.ui.TextMarkerView
 import com.github.premnirmal.ticker.ui.TopBar
-import com.github.premnirmal.ticker.ui.ValueAxisFormatter
 import com.github.premnirmal.ticker.ui.fadingEdges
+import com.github.premnirmal.ticker.ui.formatAxisDate
+import com.github.premnirmal.ticker.ui.formatAxisHour
+import com.github.premnirmal.ticker.ui.formatAxisValue
+import com.github.premnirmal.ticker.ui.formatChartMarker
 import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
@@ -435,13 +415,13 @@ private fun GraphItem(
             } else if (graphError != null && graphData?.dataPoints.isNullOrEmpty()) {
                 ErrorState(text = stringResource(id = R.string.graph_fetch_failed))
             } else {
-                AndroidView(
-                    factory = { context ->
-                        createGraphView(context)
-                    },
-                    update = { graphView ->
-                        updateGraphView(graphData?.dataPoints, graphView, quote, range, color.toArgb())
-                    },
+                PriceChartView(
+                    dataPoints = graphData?.dataPoints.orEmpty(),
+                    lineColor = color,
+                    xAxisFormatter = if (range == Range.ONE_DAY) ::formatAxisHour else ::formatAxisDate,
+                    yAxisFormatter = ::formatAxisValue,
+                    markerFormatter = ::formatChartMarker,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }
@@ -693,89 +673,4 @@ private fun LazyGridScope.newsItems(articles: List<ArticleNewsFeed>?) {
         val item = articles!![i].article
         NewsCard(item)
     }
-}
-
-private fun updateGraphView(
-    dataPoints: List<DataPoint>?,
-    graphView: LineChart,
-    quote: Quote,
-    range: Range,
-    color: Int
-) {
-    if (dataPoints.isNullOrEmpty()) {
-        graphView.setNoDataText(graphView.context.getString(R.string.no_data))
-        graphView.invalidate()
-        return
-    }
-    graphView.setNoDataText("")
-    graphView.lineData?.clearValues()
-    val series = LineDataSet(dataPoints, quote.symbol)
-    series.setDrawHorizontalHighlightIndicator(false)
-    series.setDrawValues(false)
-    series.setDrawFilled(true)
-    series.color = color
-    series.fillColor = color
-    series.fillAlpha = 150
-    series.setDrawCircles(true)
-    series.mode = CUBIC_BEZIER
-    series.cubicIntensity = 0.07f
-    series.lineWidth = 2f
-    series.setDrawCircles(false)
-    series.highLightColor = Color.GRAY
-    val lineData = LineData(series)
-    graphView.data = lineData
-    val xAxis: XAxis = graphView.xAxis
-    val yAxis: YAxis = graphView.axisRight
-    if (range == Range.ONE_DAY) {
-        xAxis.valueFormatter = HourAxisFormatter()
-    } else {
-        xAxis.valueFormatter = DateAxisFormatter()
-    }
-    yAxis.valueFormatter = ValueAxisFormatter()
-    xAxis.position = BOTTOM
-    xAxis.textSize = 10f
-    yAxis.textSize = 10f
-    xAxis.textColor = Color.GRAY
-    yAxis.textColor = Color.GRAY
-    xAxis.setLabelCount(5, true)
-    yAxis.setLabelCount(5, true)
-    yAxis.setPosition(OUTSIDE_CHART)
-    xAxis.setDrawAxisLine(true)
-    yAxis.setDrawAxisLine(true)
-    xAxis.setDrawGridLines(false)
-    yAxis.setDrawGridLines(false)
-    graphView.invalidate()
-}
-
-private fun createGraphView(context: Context): LineChart {
-    val graphView = LineChart(context)
-    graphView.layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
-    graphView.isDoubleTapToZoomEnabled = false
-    graphView.axisLeft.setDrawGridLines(false)
-    graphView.axisLeft.setDrawAxisLine(false)
-    graphView.axisLeft.isEnabled = false
-    graphView.axisRight.setDrawGridLines(false)
-    graphView.axisRight.setDrawAxisLine(true)
-    graphView.axisRight.isEnabled = true
-    graphView.xAxis.setDrawGridLines(false)
-    graphView.setXAxisRenderer(
-        MultilineXAxisRenderer(
-            graphView.viewPortHandler,
-            graphView.xAxis,
-            graphView.getTransformer(RIGHT)
-        )
-    )
-    graphView.extraBottomOffset =
-        context.resources.getDimension(R.dimen.graph_bottom_offset)
-    graphView.legend.isEnabled = false
-    graphView.description = null
-    val colorAccent = if (VERSION.SDK_INT >= VERSION_CODES.S) {
-        ContextCompat.getColor(context, color.system_accent1_600)
-    } else {
-        ContextCompat.getColor(context, R.color.accent_fallback)
-    }
-    graphView.setNoDataText("")
-    graphView.setNoDataTextColor(colorAccent)
-    graphView.marker = TextMarkerView(context)
-    return graphView
 }

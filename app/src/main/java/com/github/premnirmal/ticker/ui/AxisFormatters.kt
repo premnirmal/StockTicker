@@ -1,64 +1,31 @@
 package com.github.premnirmal.ticker.ui
 
-import android.graphics.Canvas
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.formatter.ValueFormatter
-import com.github.mikephil.charting.renderer.XAxisRenderer
-import com.github.mikephil.charting.utils.MPPointF
-import com.github.mikephil.charting.utils.Transformer
-import com.github.mikephil.charting.utils.Utils
-import com.github.mikephil.charting.utils.ViewPortHandler
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.AppPreferences.Companion.DATE_FORMATTER
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class DateAxisFormatter : ValueFormatter() {
+private fun dateTimeOf(value: Double): LocalDateTime = LocalDateTime.ofInstant(
+    Instant.ofEpochSecond(value.toLong()),
+    ZoneId.systemDefault()
+)
 
-    override fun getFormattedValue(
-        value: Float,
-    ): String {
-        val date = LocalDateTime.ofInstant(Instant.ofEpochSecond(value.toLong()), ZoneId.systemDefault()).toLocalDate()
-        return date.format(AppPreferences.AXIS_DATE_FORMATTER)
-    }
-}
+/** Formats a chart x-axis value (an epoch-second timestamp) as a date (used for ranges > 1 day). */
+fun formatAxisDate(value: Double): String =
+    dateTimeOf(value).toLocalDate().format(AppPreferences.AXIS_DATE_FORMATTER)
 
-class HourAxisFormatter : ValueFormatter() {
+/** Formats a chart x-axis value (an epoch-second timestamp) as an hour (used for the 1-day range). */
+fun formatAxisHour(value: Double): String =
+    dateTimeOf(value).toLocalTime().format(AppPreferences.TIME_FORMATTER)
 
-    override fun getFormattedValue(
-        value: Float,
-    ): String {
-        val hour = LocalDateTime.ofInstant(Instant.ofEpochSecond(value.toLong()), ZoneId.systemDefault()).toLocalTime()
-        return hour.format(AppPreferences.TIME_FORMATTER)
-    }
-}
+/** Formats a chart y-axis value (a price) using the app's decimal format. */
+fun formatAxisValue(value: Double): String =
+    AppPreferences.DECIMAL_FORMAT.format(value)
 
-class ValueAxisFormatter : ValueFormatter() {
-
-    override fun getFormattedValue(
-        value: Float,
-    ): String =
-        AppPreferences.DECIMAL_FORMAT.format(value)
-}
-
-class MultilineXAxisRenderer(
-    viewPortHandler: ViewPortHandler?,
-    xAxis: XAxis?,
-    trans: Transformer?
-) : XAxisRenderer(viewPortHandler, xAxis, trans) {
-
-    override fun drawLabel(
-        c: Canvas,
-        formattedLabel: String,
-        x: Float,
-        y: Float,
-        anchor: MPPointF,
-        angleDegrees: Float
-    ) {
-        val lines = formattedLabel.split("-")
-        for (i in 0 until lines.size) {
-            val vOffset = i * mAxisLabelPaint.textSize
-            Utils.drawXAxisValue(c, lines[i], x, y + vOffset, mAxisLabelPaint, anchor, angleDegrees)
-        }
-    }
+/** Formats the highlighted chart point (epoch-second timestamp, price) as a two-line marker label. */
+fun formatChartMarker(x: Double, y: Double): String {
+    val price = AppPreferences.DECIMAL_FORMAT.format(y)
+    val date = dateTimeOf(x).toLocalDate().format(DATE_FORMATTER)
+    return "$price\n$date"
 }
