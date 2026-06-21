@@ -14,9 +14,11 @@ import com.github.premnirmal.ticker.home.AppReviewManager
 import com.github.premnirmal.ticker.home.IAppReviewManager
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.FetchEventLogger
+import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CrumbStore
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
+import com.github.premnirmal.ticker.repo.QuoteStorage
 import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.repo.SharedPreferencesTickersStore
 import com.github.premnirmal.ticker.repo.StocksStorage
@@ -88,6 +90,8 @@ val appModule = module {
     single { get<QuotesDB>().quoteDao() }
     single<TickersStore> { SharedPreferencesTickersStore(get()) }
     single { StocksStorage(get(), get()) }
+    single<IStocksProvider> { get<StocksProvider>() }
+    single<QuoteStorage> { get<StocksStorage>() }
 
     single<Analytics> { AnalyticsImpl(androidContext(), lazy { get<GeneralProperties>() }) }
     single<IAppReviewManager> { AppReviewManager(androidContext()) }

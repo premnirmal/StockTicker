@@ -108,6 +108,7 @@ kotlin {
       api(libs.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.koin.core)
+      api("androidx.lifecycle:lifecycle-viewmodel:_")
       implementation("androidx.datastore:datastore-preferences-core:_")
       implementation("com.squareup.okio:okio:3.9.1")
       implementation(compose.runtime)
