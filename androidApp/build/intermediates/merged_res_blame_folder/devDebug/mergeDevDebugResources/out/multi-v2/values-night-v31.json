@@ -4,7 +4,7 @@
             "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-night-v31/values-night-v31.xml",
             "map": [
                 {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/9f6eb93a8ba25a18fcb7a8cc7ce0abcb/transformed/jetified-glance-1.1.1/res/values-night-v31/values-night-v31.xml",
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/622b066ab5e77426302a5f0781f7cece/transformed/jetified-glance-1.1.1/res/values-night-v31/values-night-v31.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",

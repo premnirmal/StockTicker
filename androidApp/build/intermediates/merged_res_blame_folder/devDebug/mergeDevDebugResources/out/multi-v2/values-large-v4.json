@@ -4,7 +4,7 @@
             "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-large-v4/values-large-v4.xml",
             "map": [
                 {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/98712d2652c68a6a8eabd593916c4897/transformed/appcompat-1.7.1/res/values-large-v4/values-large-v4.xml",
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/fba890147375702b36eab524782f20a0/transformed/appcompat-1.7.1/res/values-large-v4/values-large-v4.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

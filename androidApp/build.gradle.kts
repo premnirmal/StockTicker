@@ -222,8 +222,6 @@ dependencies {
 
   implementation(Square.okHttp3)
   implementation(Square.okHttp3.loggingInterceptor)
-  implementation(Square.retrofit2)
-  implementation(libs.retrofit.kotlin.serialization)
   implementation(KotlinX.serialization.json)
 
   implementation(KotlinX.coroutines.android)

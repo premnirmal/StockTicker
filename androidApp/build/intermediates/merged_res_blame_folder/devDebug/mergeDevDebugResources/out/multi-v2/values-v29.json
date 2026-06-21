@@ -4,7 +4,18 @@
             "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v29/values-v29.xml",
             "map": [
                 {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/fcf25fade6cc6012d45597c396279f2d/transformed/jetified-glance-appwidget-1.1.1/res/values-v29/values-v29.xml",
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/98f7087cc128f0ac617ddf1a791de071/transformed/jetified-core-splashscreen-1.0.1/res/values-v29/values-v29.xml",
+                    "from": {
+                        "startLines": "2,7",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,374",
+                        "endLines": "6,8",
+                        "endColumns": "12,12",
+                        "endOffsets": "369,464"
+                    }
+                },
+                {
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/5410aa41346ac99bb50e15244e045fd1/transformed/jetified-glance-appwidget-1.1.1/res/values-v29/values-v29.xml",
                     "from": {
                         "startLines": "2,5,19,22,25,26,27",
                         "startColumns": "4,4,4,4,4,4,4",
@@ -20,17 +31,6 @@
                         "endLines": "11,25,28,31,32,33,34",
                         "endColumns": "12,12,12,12,88,65,65",
                         "endOffsets": "653,1457,1648,1839,1928,1994,2060"
-                    }
-                },
-                {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/3575e62d4b7c7a0fa5bb70ba9275d250/transformed/jetified-core-splashscreen-1.0.1/res/values-v29/values-v29.xml",
-                    "from": {
-                        "startLines": "2,7",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,374",
-                        "endLines": "6,8",
-                        "endColumns": "12,12",
-                        "endOffsets": "369,464"
                     }
                 }
             ]

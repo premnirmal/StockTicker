@@ -110,7 +110,9 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   `YahooFinanceMostActiveApi`, and the `GoogleNewsApi`/`YahooFinanceNewsApi` news feeds).
   `:app` stays Ktor-free: `androidMain` `createXxxApi(baseUrl, okHttpClient)` factories build the
   Ktor client over the existing (`@Named("yahoo")`-authenticated) `OkHttpClient`, and `NetworkModule`
-  providers call those factories.
+  providers call those factories. The last Retrofit consumer — the unused `GithubApi` compare-tags
+  interface, obsoleted by the network-free shared `CommitsProvider` (the changelog is now baked into
+  the build) — has been removed, so Retrofit is no longer a dependency of `:androidApp`.
 - Replaced Jsoup most-active HTML scraping with a dependency-free `fin-streamer` symbol parser in
   `commonMain` (`YahooFinanceMostActiveApi`), removing `jsoup` and the scalars converter from `:app`.
 - Replaced the SimpleXML RSS models with `kotlinx.serialization` + xmlutil in `commonMain`

@@ -4,7 +4,7 @@
             "outputFile": "com.github.premnirmal.tickerwidget.androidApp-mergeDevDebugResources-69:/values-v27/values-v27.xml",
             "map": [
                 {
-                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/3575e62d4b7c7a0fa5bb70ba9275d250/transformed/jetified-core-splashscreen-1.0.1/res/values-v27/values-v27.xml",
+                    "source": "/home/runner/.gradle/caches/9.4.1/transforms/98f7087cc128f0ac617ddf1a791de071/transformed/jetified-core-splashscreen-1.0.1/res/values-v27/values-v27.xml",
                     "from": {
                         "startLines": "2,3,4,7",
                         "startColumns": "4,4,4,4",
