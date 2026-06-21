@@ -101,6 +101,53 @@ class StocksApiTest {
     }
 
     @Test
+    fun getStockReturnsQuoteOnSuccess() = runTest {
+        val engine = MockEngine { respond(quotesJson("AAPL"), HttpStatusCode.OK, jsonHeaders) }
+        val api = stocksApi(engine)
+
+        val result = api.getStock("AAPL")
+
+        assertTrue(result.wasSuccessful)
+        assertEquals("AAPL", result.data.symbol)
+    }
+
+    @Test
+    fun getStockReturnsFailureWhenRequestThrows() = runTest {
+        val engine = MockEngine { respondError(HttpStatusCode.InternalServerError) }
+        val api = stocksApi(engine)
+
+        val result = api.getStock("AAPL")
+
+        assertFalse(result.wasSuccessful)
+        assertTrue(result.hasError)
+    }
+
+    @Test
+    fun getSuggestionsReturnsResultsOnSuccess() = runTest {
+        val suggestionsJson =
+            """{"count":2,"quotes":[{"symbol":"AAPL","shortname":"Apple Inc"},""" +
+                """{"symbol":"AMZN","shortname":"Amazon"}]}"""
+        val suggestionEngine = MockEngine { respond(suggestionsJson, HttpStatusCode.OK, jsonHeaders) }
+        val api = stocksApi(yahooEngine = unusedEngine(), suggestionEngine = suggestionEngine)
+
+        val result = api.getSuggestions("a")
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("AAPL", "AMZN"), result.data.map { it.symbol })
+    }
+
+    @Test
+    fun getSuggestionsReturnsFailureWhenRequestThrows() = runTest {
+        val suggestionEngine = MockEngine { respondError(HttpStatusCode.InternalServerError) }
+        val api = stocksApi(yahooEngine = unusedEngine(), suggestionEngine = suggestionEngine)
+
+        val result = api.getSuggestions("a")
+
+        assertFalse(result.wasSuccessful)
+        assertTrue(result.hasError)
+    }
+
+    @Test
     fun getStocksRefreshesCrumbAndRetriesOn401() = runTest {
         var yahooCalls = 0
         val yahooEngine = MockEngine {
