@@ -60,7 +60,7 @@ struct StockTickerConfigurationIntent: WidgetConfigurationIntent {
     static var description = IntentDescription("Choose which watchlist symbols to show and how this widget looks.")
 
     /// The symbols this widget should show. Empty (the default) means the whole watchlist.
-    @Parameter(title: "Symbols")
+    @Parameter(title: "Symbols", description: "Symbols this widget shows. Leave empty to show the whole watchlist.")
     var symbols: [WatchlistSymbolEntity]?
 
     /// Sort the rows by the largest movers first instead of the watchlist order.
