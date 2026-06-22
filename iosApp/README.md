@@ -72,6 +72,10 @@ targets (the `iosApp` application and the `StockTickerWidget` widget extension),
 files, the App Group entitlements, the iOS 17 deployment target, and a Gradle run-script phase that
 builds the shared `Shared.framework` the targets link against.
 
+The generated `StockTicker.xcodeproj` (along with other Xcode artifacts such as `*.xcworkspace`,
+`xcuserdata/` and `DerivedData/`) is git-ignored, so it must **not** be committed — regenerate it
+locally with the steps below whenever you need it.
+
 On a Mac:
 
 1. Install XcodeGen (one-time):

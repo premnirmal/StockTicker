@@ -24,3 +24,14 @@ androidApp/keystore.*
 #google services
 app/google-services.json
 androidApp/google-services.json
+
+#iOS / Xcode
+# The Xcode project is generated from iosApp/project.yml with XcodeGen, not committed.
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+DerivedData/
+.swiftpm/
+#iOS Firebase config (optional, prod only)
+iosApp/iosApp/GoogleService-Info.plist
