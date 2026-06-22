@@ -10,10 +10,6 @@ on:
       # TEMPORARY: exercise the iOS pipeline on this feature branch before it
       # is merged to master. Remove this line once the branch is merged.
       - 'copilot/implement-phase-6'
-  # Allow running this workflow manually from any branch (Actions tab or
-  # `gh workflow run ios.yml --ref <branch>`) so the macOS pipeline can be
-  # exercised before merging the iOS work to master.
-  workflow_dispatch:
 
 jobs:
   ios:
