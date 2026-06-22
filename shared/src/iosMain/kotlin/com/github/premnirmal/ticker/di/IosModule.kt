@@ -27,6 +27,7 @@ import com.github.premnirmal.ticker.network.createYahooFinanceApi
 import com.github.premnirmal.ticker.network.createYahooFinanceInitialLoadApi
 import com.github.premnirmal.ticker.network.createYahooFinanceMostActiveApi
 import com.github.premnirmal.ticker.network.createYahooFinanceNewsApi
+import com.github.premnirmal.ticker.network.createYahooHttpClient
 import com.github.premnirmal.ticker.notifications.LocalNotificationsHandler
 import com.github.premnirmal.ticker.review.AppReviewPrompter
 import com.github.premnirmal.ticker.repo.UserDefaultsTickersStore
@@ -44,6 +45,7 @@ import com.github.premnirmal.ticker.settings.PreferenceStore
 import com.github.premnirmal.ticker.widget.WidgetSnapshotStore
 import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.settings.iosPreferencesDataStorePath
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -113,16 +115,22 @@ fun iosModule(
     single<TickersStore> { UserDefaultsTickersStore(get()) }
     single { StocksStorage(get(), get()) }
 
-    // Network (Yahoo-authenticated via the shared CrumbProvider, Darwin engine)
-    single { createSuggestionApi(baseUrl = SUGGESTIONS_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createYahooFinanceApi(baseUrl = YAHOO_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createYahooFinanceInitialLoadApi(baseUrl = YAHOO_INITIAL_LOAD_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createYahooCrumbApi(baseUrl = YAHOO_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
+    // Network (Yahoo-authenticated via the shared CrumbProvider, Darwin engine).
+    // All Yahoo endpoints share a SINGLE HttpClient so they share one in-memory cookie store: the
+    // crumb token Yahoo issues is bound to the consent cookies set during loadCrumb(), so the quote
+    // requests must carry those same cookies. Building a client per API (separate cookie jars) makes
+    // the quote calls fail with HTTP 401. This mirrors Android, which reuses one OkHttp client for
+    // every Yahoo API.
+    single<HttpClient> { createYahooHttpClient(get<CrumbProvider>()) }
+    single { createSuggestionApi(baseUrl = SUGGESTIONS_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createYahooFinanceApi(baseUrl = YAHOO_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createYahooFinanceInitialLoadApi(baseUrl = YAHOO_INITIAL_LOAD_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createYahooCrumbApi(baseUrl = YAHOO_ENDPOINT, httpClient = get<HttpClient>()) }
     single { ApeWisdom(baseUrl = APEWISDOM_ENDPOINT) }
-    single { createYahooFinanceMostActiveApi(baseUrl = YAHOO_FINANCE_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
+    single { createYahooFinanceMostActiveApi(baseUrl = YAHOO_FINANCE_ENDPOINT, httpClient = get<HttpClient>()) }
     single { GoogleNewsApi(baseUrl = GOOGLE_NEWS_ENDPOINT) }
-    single { createYahooFinanceNewsApi(baseUrl = YAHOO_NEWS_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createChartApi(baseUrl = HISTORICAL_DATA_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
+    single { createYahooFinanceNewsApi(baseUrl = YAHOO_NEWS_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createChartApi(baseUrl = HISTORICAL_DATA_ENDPOINT, httpClient = get<HttpClient>()) }
 
     // Diagnostics + scheduling + provider
     single { FetchEventLogger(get(), get(), get()) }
