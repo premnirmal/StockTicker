@@ -17,6 +17,7 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisGuidelineComponent
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianLayerRangeProvider
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
@@ -33,8 +34,33 @@ import com.patrykandpatrick.vico.multiplatform.common.MarkerCornerBasedShape
 import com.patrykandpatrick.vico.multiplatform.common.component.TextComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 
 private const val AXIS_LABEL_COUNT = 5
+
+/**
+ * Fraction of the data's value span added as padding above the highest and below the lowest price so
+ * the line/area has a little breathing room from the chart edges.
+ */
+private const val Y_RANGE_PADDING_FRACTION = 0.1
+
+/**
+ * A [CartesianLayerRangeProvider] that scales the value axis to the data's own min/max (with a small
+ * padding) instead of Vico's default behaviour of anchoring the minimum at zero. Stock prices are
+ * always positive, so the default provider would compress the whole price line into a thin, flat
+ * band near the top of a `0..max` axis; fitting the range to the data restores the visible movement.
+ */
+private object PriceRangeProvider : CartesianLayerRangeProvider {
+    override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+        val padding = (maxY - minY) * Y_RANGE_PADDING_FRACTION
+        return if (padding > 0.0) minY - padding else minY
+    }
+
+    override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
+        val padding = (maxY - minY) * Y_RANGE_PADDING_FRACTION
+        return if (padding > 0.0) maxY + padding else maxY
+    }
+}
 
 /**
  * Shared, multiplatform price chart rendered with Vico (replacing the Android-only MPAndroidChart
@@ -79,7 +105,8 @@ fun PriceChartView(
     CartesianChartHost(
         chart = rememberCartesianChart(
             rememberLineCartesianLayer(
-                lineProvider = LineCartesianLayer.LineProvider.series(line)
+                lineProvider = LineCartesianLayer.LineProvider.series(line),
+                rangeProvider = PriceRangeProvider
             ),
             endAxis = VerticalAxis.rememberEnd(
                 valueFormatter = remember(yAxisFormatter) {
