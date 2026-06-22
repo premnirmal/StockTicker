@@ -21,6 +21,14 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    # Default app/extension version. These back CFBundleShortVersionString
+    # ($(MARKETING_VERSION)) and CFBundleVersion ($(CURRENT_PROJECT_VERSION)) in
+    # every target's Info.plist. They MUST be non-empty: an app extension whose
+    # CFBundleVersion resolves to an empty string fails to install with
+    # "bundleVersion must be set in placeholder attributes for an app extension
+    # placeholder" (IXErrorDomain).
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
     # The shared framework is a static Kotlin/Native framework, so it only has
     # to be on the linker search path — it is not embedded.
     FRAMEWORK_SEARCH_PATHS:
