@@ -54,6 +54,14 @@ targets:
         # Always run so the framework is rebuilt when the shared code changes.
         basedOnDependencyAnalysis: false
         script: |
+          # Xcode build phases run with a minimal environment that does NOT source
+          # your shell profile, so a JDK on your interactive PATH is invisible here
+          # (Gradle then fails with "Unable to locate a Java Runtime"). Load
+          # JAVA_HOME from .xcode.env (committed default) and the optional,
+          # uncommitted .xcode.env.local (your machine-specific override).
+          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+          if [ -n "$JAVA_HOME" ]; then export PATH="$JAVA_HOME/bin:$PATH"; fi
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
 
@@ -78,6 +86,12 @@ targets:
       - name: Compile Kotlin/Native framework
         basedOnDependencyAnalysis: false
         script: |
+          # See the iosApp target's run-script phase: Xcode build phases run with a
+          # minimal environment, so load JAVA_HOME from .xcode.env(.local) before
+          # invoking Gradle, otherwise it fails with "Unable to locate a Java Runtime".
+          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+          if [ -n "$JAVA_HOME" ]; then export PATH="$JAVA_HOME/bin:$PATH"; fi
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
 

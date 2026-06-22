@@ -102,6 +102,29 @@ and links the Kotlin/Native `Shared.framework` for the active configuration/SDK.
 capability (`group.com.github.premnirmal.ticker`) is applied to both targets from the committed
 `*.entitlements` files, so the app and widget share the `WidgetSnapshotStore` `NSUserDefaults` suite.
 
+### Java runtime for the Gradle build phase
+
+That Gradle build phase needs a **JDK 17+** (the same one the Android build uses). Xcode runs build
+phases with a *minimal* environment that does **not** source your shell profile (`~/.zprofile`,
+`~/.zshrc`, …), so a `java` that works in Terminal may be invisible to the script — the build then
+fails with:
+
+```
+Unable to locate a Java Runtime
+```
+
+To avoid this, both run-script phases source [`iosApp/.xcode.env`](.xcode.env) (a committed default
+that sets `JAVA_HOME` from `/usr/libexec/java_home` when it is not already set) and then the optional
+[`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override). If the
+default does not find your JDK, create `iosApp/.xcode.env.local` pointing at it, e.g.:
+
+```sh
+echo 'export JAVA_HOME=/Applications/Android\ Studio.app/Contents/jbr/Contents/Home' \
+  > iosApp/.xcode.env.local
+```
+
+(`.xcode.env.local` is sourced after `.xcode.env`, so it always wins, and it is never committed.)
+
 ### Continuous integration
 
 `.github/workflows/ios.yml` runs this on a pinned `macos-15` runner (Xcode 16.4, which provides the
