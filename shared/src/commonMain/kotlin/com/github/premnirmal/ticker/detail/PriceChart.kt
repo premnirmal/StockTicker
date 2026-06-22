@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.Axis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisGuidelineComponent
@@ -50,7 +51,7 @@ private const val Y_RANGE_PADDING_FRACTION = 0.1
  * always positive, so the default provider would compress the whole price line into a thin, flat
  * band near the top of a `0..max` axis; fitting the range to the data restores the visible movement.
  */
-private object PriceRangeProvider : CartesianLayerRangeProvider {
+internal object PriceRangeProvider : CartesianLayerRangeProvider {
     override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double =
         minY - padding(minY, maxY)
 
@@ -114,7 +115,8 @@ fun PriceChartView(
         chart = rememberCartesianChart(
             rememberLineCartesianLayer(
                 lineProvider = LineCartesianLayer.LineProvider.series(line),
-                rangeProvider = PriceRangeProvider
+                rangeProvider = PriceRangeProvider,
+                verticalAxisPosition = Axis.Position.Vertical.End
             ),
             endAxis = VerticalAxis.rememberEnd(
                 valueFormatter = remember(yAxisFormatter) {

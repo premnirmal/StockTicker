@@ -157,6 +157,10 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
+
+  testOptions {
+    unitTests.isReturnDefaultValues = true
+  }
 }
 
 // The CMP navigation-compose 2.10.0-alpha02 pulls androidx.navigation:*:2.10.0-alpha05 for
