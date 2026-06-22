@@ -51,14 +51,22 @@ private const val Y_RANGE_PADDING_FRACTION = 0.1
  * band near the top of a `0..max` axis; fitting the range to the data restores the visible movement.
  */
 private object PriceRangeProvider : CartesianLayerRangeProvider {
-    override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
-        val padding = (maxY - minY) * Y_RANGE_PADDING_FRACTION
-        return if (padding > 0.0) minY - padding else minY
-    }
+    override fun getMinY(minY: Double, maxY: Double, extraStore: ExtraStore): Double =
+        minY - padding(minY, maxY)
 
-    override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double {
-        val padding = (maxY - minY) * Y_RANGE_PADDING_FRACTION
-        return if (padding > 0.0) maxY + padding else maxY
+    override fun getMaxY(minY: Double, maxY: Double, extraStore: ExtraStore): Double =
+        maxY + padding(minY, maxY)
+
+    /**
+     * The amount to extend the range beyond [minY]/[maxY]. For a non-flat series this is a fraction
+     * of the value span; for flat data (a single value or constant price) the span is zero, so fall
+     * back to a fraction of the value itself (or 1.0) to avoid a zero-height axis.
+     */
+    private fun padding(minY: Double, maxY: Double): Double {
+        val span = maxY - minY
+        if (span > 0.0) return span * Y_RANGE_PADDING_FRACTION
+        val magnitude = maxOf(kotlin.math.abs(minY), kotlin.math.abs(maxY))
+        return if (magnitude > 0.0) magnitude * Y_RANGE_PADDING_FRACTION else 1.0
     }
 }
 
