@@ -114,16 +114,31 @@ Unable to locate a Java Runtime
 ```
 
 To avoid this, both run-script phases source [`iosApp/.xcode.env`](.xcode.env) (a committed default
-that sets `JAVA_HOME` from `/usr/libexec/java_home` when it is not already set) and then the optional
-[`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override). If the
-default does not find your JDK, create `iosApp/.xcode.env.local` pointing at it, e.g.:
+that auto-discovers a JDK and exports `JAVA_HOME` when it is not already set to a valid one) and then
+the optional [`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override).
+The default probes, in order: `/usr/libexec/java_home`, common JDK install locations (the JDK bundled
+with **Android Studio**, Homebrew's `openjdk`, `~/Library/Java/JavaVirtualMachines`,
+`/Library/Java/JavaVirtualMachines`), and finally a `java` already on `PATH`.
+
+If none of those match your setup, point `JAVA_HOME` at your JDK by creating the git-ignored
+`iosApp/.xcode.env.local` (it is sourced after `.xcode.env`, so it always wins and is never
+committed), e.g. any of:
 
 ```sh
+# Pick the registered JDK 17 (recommended if you installed a standalone JDK):
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local
+
+# …or point directly at Android Studio's bundled JDK:
 echo 'export JAVA_HOME=/Applications/Android\ Studio.app/Contents/jbr/Contents/Home' \
   > iosApp/.xcode.env.local
 ```
 
-(`.xcode.env.local` is sourced after `.xcode.env`, so it always wins, and it is never committed.)
+If a JDK still can't be found, the build phase now fails fast with an `error:` line in the Xcode log
+telling you to set `JAVA_HOME` in `iosApp/.xcode.env.local`, instead of Gradle's opaque
+"Unable to locate a Java Runtime".
+
+> **Note:** these scripts are baked into the generated `.xcodeproj`, so after pulling this change you
+> must **regenerate the project** (`cd iosApp && xcodegen generate`) for the fix to take effect.
 
 ### Continuous integration
 

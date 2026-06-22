@@ -61,7 +61,13 @@ targets:
           # uncommitted .xcode.env.local (your machine-specific override).
           if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
           if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
-          if [ -n "$JAVA_HOME" ]; then export PATH="$JAVA_HOME/bin:$PATH"; fi
+          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
+            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
+            exit 1
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
 
@@ -91,7 +97,13 @@ targets:
           # invoking Gradle, otherwise it fails with "Unable to locate a Java Runtime".
           if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
           if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
-          if [ -n "$JAVA_HOME" ]; then export PATH="$JAVA_HOME/bin:$PATH"; fi
+          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
+            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
+            exit 1
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
           cd "$SRCROOT/.."
           ./gradlew :shared:embedAndSignAppleFrameworkForXcode
 
