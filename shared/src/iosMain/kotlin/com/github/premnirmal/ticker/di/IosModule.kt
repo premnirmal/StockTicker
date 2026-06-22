@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.analytics.AnalyticsSink
 import com.github.premnirmal.ticker.analytics.NoopAnalyticsSink
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.AppLogger
 import com.github.premnirmal.ticker.model.FetchEventLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.BackgroundTaskScheduler
@@ -43,6 +44,7 @@ import com.github.premnirmal.ticker.settings.PreferenceStore
 import com.github.premnirmal.ticker.widget.WidgetSnapshotStore
 import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.settings.iosPreferencesDataStorePath
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -73,7 +75,18 @@ fun iosModule(
     onQuotesUpdated: () -> Unit = {}
 ) = module {
     // Core infrastructure
-    single<CoroutineScope> { CoroutineScope(Dispatchers.Default + SupervisorJob()) }
+    // The application-lifecycle scope MUST carry a CoroutineExceptionHandler: on Kotlin/Native an
+    // uncaught exception in any coroutine launched on this scope propagates to the default handler and
+    // terminates the whole app (SupervisorJob alone does not stop this — it only isolates sibling
+    // jobs). Several shared operations launch work here (e.g. StocksProvider.schedule()/addStock and
+    // the portfolio observers), so log such failures instead of crashing, mirroring Android where a
+    // background refresh failure never takes down the UI.
+    single<CoroutineScope> {
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            AppLogger.e(throwable, "Unhandled exception in iOS application coroutine scope")
+        }
+        CoroutineScope(Dispatchers.Default + SupervisorJob() + exceptionHandler)
+    }
     single<AppClock> { AppClock.AppClockImpl }
     single {
         Json {
