@@ -159,9 +159,10 @@ android {
   }
 }
 
-// The CMP navigation-compose 2.10.0-alpha02 pulls androidx.navigation:*:2.10.0-alpha05 for
-// Android, which requires compileSdk 37 + AGP 9.x. Force back to the Jetpack 2.8.x line that
-// the project already uses — the CMP wrapper klib is ABI-compatible with this runtime.
+// CMP navigation-compose is pinned to the stable 2.9.2 line (see gradle/libs.versions.toml),
+// which pulls androidx.navigation:*:2.9.x for Android. Guard against any transitive bump to the
+// 2.10.x pre-release line (which requires compileSdk 37 + AGP 9.x) by forcing it back to the
+// Jetpack 2.8.x line that the project already uses — the CMP wrapper klib stays ABI-compatible.
 configurations.matching { it.name.contains("Android") || it.name.contains("android") || it.name.startsWith("debug") || it.name.startsWith("release") }
   .configureEach {
     resolutionStrategy.eachDependency {
