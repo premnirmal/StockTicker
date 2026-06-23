@@ -2,13 +2,13 @@ package com.github.premnirmal.ticker.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
@@ -24,23 +24,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.github.premnirmal.ticker.network.data.Holding
-import com.github.premnirmal.ticker.network.data.Position
+import com.github.premnirmal.shared.resources.Res
+import com.github.premnirmal.shared.resources.change_amount
+import com.github.premnirmal.shared.resources.change_percent
+import com.github.premnirmal.shared.resources.day_change_amount
+import com.github.premnirmal.shared.resources.gain
+import com.github.premnirmal.shared.resources.holdings
+import com.github.premnirmal.shared.resources.ic_more
+import com.github.premnirmal.shared.resources.ic_remove_circle
+import com.github.premnirmal.shared.resources.loss
+import com.github.premnirmal.shared.resources.remove
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.AppCard
-import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 private const val QUOTE_MAX_LINES = 1
 
+/**
+ * Shared (Compose Multiplatform) quote card rendered identically on Android and iOS. It shows the
+ * symbol, name, last trade price and the change amount/percent, plus an optional overflow menu (the
+ * three-dot [MoreIcon]) that lets the user remove the quote. Quotes that have holdings render the
+ * richer [PositionCard] layout. All localized labels come from the shared string resources so the
+ * card looks and reads the same on every platform.
+ */
 @Composable
 fun QuoteCard(
     quote: Quote,
@@ -146,7 +157,7 @@ private fun PositionCard(
                 text = quote.priceFormat.format(quote.holdings()),
                 up = quote.holdings() > 0,
                 down = quote.holdings() < 0,
-                annotation = stringResource(id = R.string.holdings)
+                annotation = stringResource(Res.string.holdings)
             )
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
@@ -154,7 +165,7 @@ private fun PositionCard(
                 text = quote.dayChangeString(),
                 up = quote.isUp,
                 down = quote.isDown,
-                annotation = stringResource(id = R.string.day_change_amount)
+                annotation = stringResource(Res.string.day_change_amount)
             )
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
@@ -162,10 +173,10 @@ private fun PositionCard(
                 text = quote.changePercentStringWithSign(),
                 up = quote.isUp,
                 down = quote.isDown,
-                annotation = stringResource(id = R.string.change_percent)
+                annotation = stringResource(Res.string.change_percent)
             )
         }
-        val gainOrLoss = if (quote.gainLoss() >= 0) R.string.gain else R.string.loss
+        val gainOrLoss = if (quote.gainLoss() >= 0) Res.string.gain else Res.string.loss
         Row(
             verticalAlignment = Alignment.Bottom,
         ) {
@@ -174,9 +185,9 @@ private fun PositionCard(
                 text = quote.gainLossString(),
                 up = quote.gainLoss() > 0,
                 down = quote.gainLoss() < 0,
-                annotation = stringResource(id = gainOrLoss)
+                annotation = stringResource(gainOrLoss)
             )
-            val gainPercentAnnotation = LocalContext.current.getString(gainOrLoss) + " %"
+            val gainPercentAnnotation = stringResource(gainOrLoss) + " %"
             AnnotatedQuoteValue(
                 modifier = Modifier.weight(1f, fill = true),
                 textAlign = TextAlign.Center,
@@ -191,7 +202,7 @@ private fun PositionCard(
                 text = quote.changeStringWithSign(),
                 up = quote.isUp,
                 down = quote.isDown,
-                annotation = stringResource(id = R.string.change_amount)
+                annotation = stringResource(Res.string.change_amount)
             )
         }
     }
@@ -299,60 +310,6 @@ fun SmallQuoteChangeText(
     )
 }
 
-@Preview
-@Composable
-fun QuoteCardPreview() {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp)
-                .padding(bottom = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            QuoteCard(
-                quote = Quote("VBIAX", "Vanguard balanced admiral mutual funds"),
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                onClick = {},
-                showMore = true,
-            )
-            QuoteCard(
-                quote = Quote("MSFT", "Microsoft Corporation"),
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                onClick = {}
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(130.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            QuoteCard(
-                quote = Quote("AAPL", "Apple Inc"),
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                onClick = {}
-            )
-            QuoteCard(
-                quote = Quote("VBIAX", "Vanguard balanced admiral mutual funds").apply {
-                    position = Position("VBIAX", holdings = arrayListOf(Holding("VBIAX", 5.0f, 100.0f)))
-                },
-                modifier = Modifier
-                    .weight(1f, true)
-                    .fillMaxHeight(),
-                showMore = true,
-                onClick = {}
-            )
-        }
-    }
-}
-
 @Composable
 private fun MoreIcon(
     modifier: Modifier = Modifier,
@@ -367,7 +324,7 @@ private fun MoreIcon(
             },
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_more),
+                painter = painterResource(Res.drawable.ic_more),
                 contentDescription = null,
             )
         }
@@ -380,31 +337,38 @@ private fun MoreIcon(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(horizontal = 4.dp).clickable {
+                    showPopup = false
                     onClick()
                 }
             ) {
                 Icon(
                     modifier = Modifier.size(18.dp).padding(end = 4.dp),
-                    painter = painterResource(R.drawable.ic_remove_circle),
+                    painter = painterResource(Res.drawable.ic_remove_circle),
                     contentDescription = null,
                 )
                 Text(
-                    text = stringResource(id = R.string.remove),
+                    text = stringResource(Res.string.remove),
                 )
             }
         }
     }
 }
 
+private val LightPositiveGreen = Color(0xFF009900)
+private val LightNegativeRed = Color(0xFFe55b5b)
+private val DarkPositiveGreen = Color(0xFFccff66)
+private val DarkNegativeRed = Color(0xFFff6666)
+
 @Composable
 private fun extractColour(
     up: Boolean,
     down: Boolean
 ): Color {
+    val dark = isSystemInDarkTheme()
     return if (up) {
-        ColourPalette.PositiveGreen
+        if (dark) DarkPositiveGreen else LightPositiveGreen
     } else if (down) {
-        ColourPalette.NegativeRed
+        if (dark) DarkNegativeRed else LightNegativeRed
     } else {
         MaterialTheme.colorScheme.onSurfaceVariant
     }

@@ -1,0 +1,9 @@
+<resources>
+    <string name="remove">Remove</string>
+    <string name="holdings">Holdings</string>
+    <string name="gain">Gain</string>
+    <string name="loss">Loss</string>
+    <string name="change_percent">% Change</string>
+    <string name="change_amount">Change</string>
+    <string name="day_change_amount">Day Change</string>
+</resources>
