@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.network
 
 import io.ktor.client.HttpClientConfig
+import io.ktor.client.plugins.HttpRedirect
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.http.HttpHeaders
@@ -61,6 +62,15 @@ internal val yahooAuthPlugin = createClientPlugin("YahooAuth", ::YahooAuthConfig
  */
 internal fun HttpClientConfig<*>.installYahooAuth(crumbProvider: CrumbProvider) {
     install(HttpCookies)
+    // Yahoo's GDPR cookie-consent endpoint replies to the consent POST with a 302 redirect back to
+    // finance.yahoo.com (which sets the A1/A3 session cookies). Ktor's HttpRedirect plugin only
+    // follows redirects for GET/HEAD by default (checkHttpMethod = true), so the consent POST would
+    // otherwise surface as a raw 302 and the cookies would never be collected. Disabling the method
+    // check makes the consent POST follow the redirect — matching the Android OkHttp client, which
+    // follows redirects for every method.
+    install(HttpRedirect) {
+        checkHttpMethod = false
+    }
     install(yahooAuthPlugin) {
         this.crumbProvider = crumbProvider
     }

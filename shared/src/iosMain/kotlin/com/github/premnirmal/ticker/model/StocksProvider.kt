@@ -220,9 +220,15 @@ class StocksProvider(
 
     override fun schedule() {
         coroutineScope.launch {
-            scheduleUpdate()
-            scheduler.enqueuePeriodicRefresh()
-            scheduler.enqueuePeriodicCleanup()
+            try {
+                scheduleUpdate()
+                scheduler.enqueuePeriodicRefresh()
+                scheduler.enqueuePeriodicCleanup()
+            } catch (ex: CancellationException) {
+                throw ex
+            } catch (ex: Throwable) {
+                AppLogger.w(ex, "Failed to schedule background refresh")
+            }
         }
     }
 

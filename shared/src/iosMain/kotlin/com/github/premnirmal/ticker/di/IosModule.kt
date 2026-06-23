@@ -7,6 +7,7 @@ import com.github.premnirmal.ticker.analytics.AnalyticsImpl
 import com.github.premnirmal.ticker.analytics.AnalyticsSink
 import com.github.premnirmal.ticker.analytics.NoopAnalyticsSink
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.AppLogger
 import com.github.premnirmal.ticker.model.FetchEventLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.BackgroundTaskScheduler
@@ -26,6 +27,7 @@ import com.github.premnirmal.ticker.network.createYahooFinanceApi
 import com.github.premnirmal.ticker.network.createYahooFinanceInitialLoadApi
 import com.github.premnirmal.ticker.network.createYahooFinanceMostActiveApi
 import com.github.premnirmal.ticker.network.createYahooFinanceNewsApi
+import com.github.premnirmal.ticker.network.createYahooHttpClient
 import com.github.premnirmal.ticker.notifications.LocalNotificationsHandler
 import com.github.premnirmal.ticker.review.AppReviewPrompter
 import com.github.premnirmal.ticker.repo.UserDefaultsTickersStore
@@ -43,6 +45,8 @@ import com.github.premnirmal.ticker.settings.PreferenceStore
 import com.github.premnirmal.ticker.widget.WidgetSnapshotStore
 import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.settings.iosPreferencesDataStorePath
+import io.ktor.client.HttpClient
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -73,7 +77,18 @@ fun iosModule(
     onQuotesUpdated: () -> Unit = {}
 ) = module {
     // Core infrastructure
-    single<CoroutineScope> { CoroutineScope(Dispatchers.Default + SupervisorJob()) }
+    // The application-lifecycle scope MUST carry a CoroutineExceptionHandler: on Kotlin/Native an
+    // uncaught exception in any coroutine launched on this scope propagates to the default handler and
+    // terminates the whole app (SupervisorJob alone does not stop this — it only isolates sibling
+    // jobs). Several shared operations launch work here (e.g. StocksProvider.schedule()/addStock and
+    // the portfolio observers), so log such failures instead of crashing, mirroring Android where a
+    // background refresh failure never takes down the UI.
+    single<CoroutineScope> {
+        val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+            AppLogger.e(throwable, "Unhandled exception in iOS application coroutine scope")
+        }
+        CoroutineScope(Dispatchers.Default + SupervisorJob() + exceptionHandler)
+    }
     single<AppClock> { AppClock.AppClockImpl }
     single {
         Json {
@@ -100,16 +115,22 @@ fun iosModule(
     single<TickersStore> { UserDefaultsTickersStore(get()) }
     single { StocksStorage(get(), get()) }
 
-    // Network (Yahoo-authenticated via the shared CrumbProvider, Darwin engine)
-    single { createSuggestionApi(baseUrl = SUGGESTIONS_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createYahooFinanceApi(baseUrl = YAHOO_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createYahooFinanceInitialLoadApi(baseUrl = YAHOO_INITIAL_LOAD_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createYahooCrumbApi(baseUrl = YAHOO_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
+    // Network (Yahoo-authenticated via the shared CrumbProvider, Darwin engine).
+    // All Yahoo endpoints share a SINGLE HttpClient so they share one in-memory cookie store: the
+    // crumb token Yahoo issues is bound to the consent cookies set during loadCrumb(), so the quote
+    // requests must carry those same cookies. Building a client per API (separate cookie jars) makes
+    // the quote calls fail with HTTP 401. This mirrors Android, which reuses one OkHttp client for
+    // every Yahoo API.
+    single<HttpClient> { createYahooHttpClient(get<CrumbProvider>()) }
+    single { createSuggestionApi(baseUrl = SUGGESTIONS_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createYahooFinanceApi(baseUrl = YAHOO_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createYahooFinanceInitialLoadApi(baseUrl = YAHOO_INITIAL_LOAD_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createYahooCrumbApi(baseUrl = YAHOO_ENDPOINT, httpClient = get<HttpClient>()) }
     single { ApeWisdom(baseUrl = APEWISDOM_ENDPOINT) }
-    single { createYahooFinanceMostActiveApi(baseUrl = YAHOO_FINANCE_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
+    single { createYahooFinanceMostActiveApi(baseUrl = YAHOO_FINANCE_ENDPOINT, httpClient = get<HttpClient>()) }
     single { GoogleNewsApi(baseUrl = GOOGLE_NEWS_ENDPOINT) }
-    single { createYahooFinanceNewsApi(baseUrl = YAHOO_NEWS_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
-    single { createChartApi(baseUrl = HISTORICAL_DATA_ENDPOINT, crumbProvider = get<CrumbProvider>()) }
+    single { createYahooFinanceNewsApi(baseUrl = YAHOO_NEWS_ENDPOINT, httpClient = get<HttpClient>()) }
+    single { createChartApi(baseUrl = HISTORICAL_DATA_ENDPOINT, httpClient = get<HttpClient>()) }
 
     // Diagnostics + scheduling + provider
     single { FetchEventLogger(get(), get(), get()) }

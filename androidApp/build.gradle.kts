@@ -170,8 +170,9 @@ kotlin {
   }
 }
 
-// Force the Jetpack Navigation to 2.8.5 because the CMP navigation-compose 2.10.0-alpha02
-// (in :shared) transitively pulls 2.10.0-alpha05 android artifacts requiring compileSdk 37.
+// Guard the Jetpack Navigation against the 2.10.x pre-release line: the CMP navigation-compose
+// in :shared is pinned to the stable 2.9.2 line, but force back to 2.8.5 if anything transitively
+// requests 2.10.x android artifacts (which require compileSdk 37).
 configurations.configureEach {
   resolutionStrategy.eachDependency {
     if (requested.group == "androidx.navigation" && requested.version?.startsWith("2.10") == true) {

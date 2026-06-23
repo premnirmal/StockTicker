@@ -40,6 +40,11 @@ top of the shared **iOS Phase 2 implementations** it already wires into a runnin
   Compose screens drive the whole UI.
 - `StockTicker.entitlements` — enables the `group.com.github.premnirmal.ticker` App Group so the app
   can hand the portfolio snapshot to the widget extension.
+- `Info.plist` — the app's property list (bundle metadata, `BGTaskSchedulerPermittedIdentifiers` /
+  `UIBackgroundModes` for background refresh, launch screen). Referenced by `project.yml`.
+- `Assets.xcassets` — the app's asset catalog (`AppIcon` / `AccentColor` placeholders).
+- `../project.yml` — the [XcodeGen](https://github.com/yonaskolb/XcodeGen) spec the `.xcodeproj` is
+  generated from (see *Generating the Xcode project* below).
 
 ### Widget extension — `StockTickerWidget/`
 
@@ -60,23 +65,94 @@ A native WidgetKit home-screen widget (the iOS counterpart of the Android Glance
 
 ## Generating the Xcode project
 
-The Xcode project is intentionally **not committed** — iOS builds require macOS/Xcode and cannot run
-in the (Linux) CI that builds the Android app and compiles the shared Kotlin/Native framework. On a
-Mac:
+The Xcode project is intentionally **not committed** — it is generated on demand from the
+declarative [`iosApp/project.yml`](project.yml) spec with [XcodeGen](https://github.com/yonaskolb/XcodeGen),
+which avoids the fragile, merge-conflict-prone `project.pbxproj`. The spec already describes both
+targets (the `iosApp` application and the `StockTickerWidget` widget extension), their `Info.plist`
+files, the App Group entitlements, the iOS 17 deployment target, and a Gradle run-script phase that
+builds the shared `Shared.framework` the targets link against.
 
-1. Build the shared framework:
+The generated `StockTicker.xcodeproj` (along with other Xcode artifacts such as `*.xcworkspace`,
+`xcuserdata/` and `DerivedData/`) is git-ignored, so it must **not** be committed — regenerate it
+locally with the steps below whenever you need it.
+
+On a Mac:
+
+1. Install XcodeGen (one-time):
    ```sh
-   ./gradlew :shared:linkDebugFrameworkIosSimulatorArm64
+   brew install xcodegen
    ```
-   (or add the `:shared` framework via SPM/CocoaPods — see `shared/build.gradle.kts`).
-2. Create an iOS App target in Xcode, add the Swift files in `iosApp/iosApp/` to it, and link the
-   `Shared.framework` produced above.
-3. Add a **Widget Extension** target, add the Swift files in `iosApp/StockTickerWidget/` to it, and
-   link the same `Shared.framework`.
-4. Enable the **App Groups** capability (`group.com.github.premnirmal.ticker`) on **both** targets —
-   the `*.entitlements` files in each folder already declare it — so the app and the widget share the
-   `WidgetSnapshotStore` `NSUserDefaults` suite.
-5. Configure `Info.plist` (see below) and run.
+2. Generate the project:
+   ```sh
+   cd iosApp
+   xcodegen generate        # produces iosApp/StockTicker.xcodeproj
+   ```
+3. Open `iosApp/StockTicker.xcodeproj` and run, or build from the command line:
+   ```sh
+   xcodebuild build \
+     -project iosApp/StockTicker.xcodeproj \
+     -scheme iosApp \
+     -destination 'generic/platform=iOS Simulator' \
+     CODE_SIGNING_ALLOWED=NO
+   ```
+
+You do **not** need to build the shared framework separately or wire it up by hand: the generated
+project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a build phase, which compiles
+and links the Kotlin/Native `Shared.framework` for the active configuration/SDK. The App Groups
+capability (`group.com.github.premnirmal.ticker`) is applied to both targets from the committed
+`*.entitlements` files, so the app and widget share the `WidgetSnapshotStore` `NSUserDefaults` suite.
+
+### Java runtime for the Gradle build phase
+
+That Gradle build phase needs a **JDK 17+** (the same one the Android build uses). Xcode runs build
+phases with a *minimal* environment that does **not** source your shell profile (`~/.zprofile`,
+`~/.zshrc`, …), so a `java` that works in Terminal may be invisible to the script — the build then
+fails with:
+
+```
+Unable to locate a Java Runtime
+```
+
+To avoid this, both run-script phases source [`iosApp/.xcode.env`](.xcode.env) (a committed default
+that auto-discovers a JDK and exports `JAVA_HOME` when it is not already set to a valid one) and then
+the optional [`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override).
+The default probes, in order: `/usr/libexec/java_home`, common JDK install locations (the JDK bundled
+with **Android Studio**, Homebrew's `openjdk`, `~/Library/Java/JavaVirtualMachines`,
+`/Library/Java/JavaVirtualMachines`), and finally a `java` already on `PATH`.
+
+If none of those match your setup, point `JAVA_HOME` at your JDK by creating the git-ignored
+`iosApp/.xcode.env.local` (it is sourced after `.xcode.env`, so it always wins and is never
+committed), e.g. any of:
+
+```sh
+# Pick the registered JDK 17 (recommended if you installed a standalone JDK):
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local
+
+# …or point directly at Android Studio's bundled JDK:
+echo 'export JAVA_HOME=/Applications/Android\ Studio.app/Contents/jbr/Contents/Home' \
+  > iosApp/.xcode.env.local
+```
+
+If a JDK still can't be found, the build phase now fails fast with an `error:` line in the Xcode log
+telling you to set `JAVA_HOME` in `iosApp/.xcode.env.local`, instead of Gradle's opaque
+"Unable to locate a Java Runtime".
+
+> **Note:** these scripts are baked into the generated `.xcodeproj`, so after pulling this change you
+> must **regenerate the project** (`cd iosApp && xcodegen generate`) for the fix to take effect.
+
+### Continuous integration
+
+`.github/workflows/ios.yml` runs this on a pinned `macos-15` runner (Xcode 16.4, which provides the
+iOS 18.5 simulator SDK that Compose Multiplatform's Kotlin/Native artifacts are built against) on
+every PR/`master` push
+(and can be triggered manually from any branch via `workflow_dispatch` — the Actions tab or
+`gh workflow run ios.yml --ref <branch>` — so the macOS pipeline can be exercised before merging to
+`master`): it
+links the shared framework, runs the shared `commonTest` suite on the iOS simulator, then generates
+the project with XcodeGen and builds the app for the simulator (`CODE_SIGNING_ALLOWED=NO`, so no
+signing secrets are needed). Producing a signed `.ipa` for TestFlight/App Store is intentionally
+out of scope for this gate — that requires code-signing certificates/profiles supplied as encrypted
+secrets (or fastlane match) and an `xcodebuild archive`/`-exportArchive` (or `fastlane`) step.
 
 ### Firebase (optional, prod only)
 
@@ -87,7 +163,9 @@ to `NSLog`, mirroring the Android FOSS/dev flavours.
 
 ## Required `Info.plist` entries
 
-Background refresh uses `BGTaskScheduler`, which requires the task identifiers to be declared:
+These are already declared in the committed [`iosApp/iosApp/Info.plist`](iosApp/Info.plist) that the
+generated project uses. Background refresh uses `BGTaskScheduler`, which requires the task
+identifiers to be declared:
 
 ```xml
 <key>BGTaskSchedulerPermittedIdentifiers</key>

@@ -54,6 +54,43 @@ fun createYahooHttpClient(crumbProvider: CrumbProvider): HttpClient = HttpClient
 }
 
 /**
+ * Yahoo Finance authentication binds the crumb token to the session cookies issued during the
+ * cookie-consent flow, so every Yahoo endpoint (initial load, crumb, quotes, suggestions, charts,
+ * news, most-active) must share a **single** [HttpClient] — and therefore a single in-memory cookie
+ * store. The Android app achieves this by reusing one `@Named("yahoo")` OkHttp client across all
+ * APIs; these `(baseUrl, httpClient)` overloads let the iOS Koin module do the same with one shared
+ * [createYahooHttpClient] instance. Building a separate client per API instead would give each its
+ * own cookie jar, so the consent cookies obtained while fetching the crumb would never accompany the
+ * quote requests, which then fail with HTTP 401.
+ */
+fun createSuggestionApi(baseUrl: String, httpClient: HttpClient): SuggestionApi =
+    SuggestionApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/** See [createSuggestionApi] (shared-client overload): builds a [ChartApi] on a shared Yahoo client. */
+fun createChartApi(baseUrl: String, httpClient: HttpClient): ChartApi =
+    ChartApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/** See [createSuggestionApi] (shared-client overload): builds a [YahooFinanceApi] on a shared Yahoo client. */
+fun createYahooFinanceApi(baseUrl: String, httpClient: HttpClient): YahooFinanceApi =
+    YahooFinanceApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/** See [createSuggestionApi] (shared-client overload): builds a [YahooCrumbApi] on a shared Yahoo client. */
+fun createYahooCrumbApi(baseUrl: String, httpClient: HttpClient): YahooCrumbApi =
+    YahooCrumbApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/** See [createSuggestionApi] (shared-client overload): builds a [YahooFinanceInitialLoadApi] on a shared Yahoo client. */
+fun createYahooFinanceInitialLoadApi(baseUrl: String, httpClient: HttpClient): YahooFinanceInitialLoadApi =
+    YahooFinanceInitialLoadApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/** See [createSuggestionApi] (shared-client overload): builds a [YahooFinanceMostActiveApi] on a shared Yahoo client. */
+fun createYahooFinanceMostActiveApi(baseUrl: String, httpClient: HttpClient): YahooFinanceMostActiveApi =
+    YahooFinanceMostActiveApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/** See [createSuggestionApi] (shared-client overload): builds a [YahooFinanceNewsApi] on a shared Yahoo client. */
+fun createYahooFinanceNewsApi(baseUrl: String, httpClient: HttpClient): YahooFinanceNewsApi =
+    YahooFinanceNewsApi(baseUrl = baseUrl, httpClient = httpClient)
+
+/**
  * Builds a [SuggestionApi] authenticated for Yahoo Finance via the shared, engine-agnostic
  * [createYahooHttpClient]. Unlike the Android `createSuggestionApi(baseUrl, okHttpClient)` factory,
  * this overload works on any platform (notably iOS) because it does not require a preconfigured

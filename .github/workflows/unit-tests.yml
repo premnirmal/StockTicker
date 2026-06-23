@@ -23,6 +23,8 @@ jobs:
           distribution: 'temurin'
       - name: Unit tests
         run: ./gradlew testDevDebug -PdisablePreDex --no-daemon
+      - name: Shared module unit tests (Android target + commonTest)
+        run: ./gradlew :shared:testDebugUnitTest --no-daemon
       - name: Archive test results
         uses: actions/upload-artifact@v4
         with:
@@ -30,3 +32,5 @@ jobs:
           path: |
             androidApp/build/test-results/testDevDebugUnitTest/
             androidApp/build/reports/tests
+            shared/build/test-results/testDebugUnitTest/
+            shared/build/reports/tests
