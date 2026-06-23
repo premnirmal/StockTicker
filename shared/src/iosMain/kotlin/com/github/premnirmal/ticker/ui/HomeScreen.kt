@@ -80,6 +80,7 @@ private fun HomeContent(
 ) {
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
+    val whatsNewController = rememberWhatsNewController()
 
     val destinations = listOf(
         HomeBottomNavDestination(
@@ -152,8 +153,14 @@ private fun HomeContent(
                     )
                 },
                 widgets = {},
-                settings = { SettingsScreen(onTutorial = { onboardingController.show() }) }
+                settings = {
+                    SettingsScreen(
+                        onWhatsNew = { whatsNewController.show() },
+                        onTutorial = { onboardingController.show() },
+                    )
+                }
             )
         }
     )
+    WhatsNewDialog(controller = whatsNewController, versionName = iosVersionName())
 }

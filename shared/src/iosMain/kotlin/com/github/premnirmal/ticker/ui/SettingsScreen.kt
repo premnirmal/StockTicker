@@ -175,7 +175,7 @@ fun SettingsScreen(
         settingsData = settingsData,
         settingsTitle = "Settings",
         whatsNewTitle = "What's new",
-        whatsNewSubtitle = "What's new in $versionName",
+        whatsNewSubtitle = "What's new in v$versionName",
         tutorialTitle = "Tutorial",
         tutorialSubtitle = "How to use the app",
         appThemeTitle = "App theme",
@@ -199,7 +199,7 @@ fun SettingsScreen(
         featureRequestTitle = "Feature request",
         featureRequestSubtitle = "Request a feature on GitHub",
         privacyPolicyTitle = "Privacy policy",
-        openSourceText = "Check out the open source project",
+        openSourceText = OPEN_SOURCE_URL,
         versionName = versionName,
         confirmLabel = "OK",
         dismissLabel = "Cancel",
@@ -228,7 +228,7 @@ fun SettingsScreen(
     )
 }
 
-private fun iosVersionName(): String {
+internal fun iosVersionName(): String {
     val info = NSBundle.mainBundle.infoDictionary
     val version = info?.get("CFBundleShortVersionString") as? String
     return version ?: "1.0"
