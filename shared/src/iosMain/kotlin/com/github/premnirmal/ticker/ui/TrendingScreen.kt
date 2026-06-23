@@ -111,5 +111,5 @@ private fun ArticleCard(
 private fun openArticle(article: NewsArticle) {
     val url = article.url ?: return
     val nsUrl = NSURL.URLWithString(url) ?: return
-    UIApplication.sharedApplication.openURL(nsUrl)
+    UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any?>(), completionHandler = null)
 }
