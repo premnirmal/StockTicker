@@ -138,11 +138,6 @@ private struct StockTickerGridView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            if entry.configuration.showHeader {
-                Text("Watchlist")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            }
             if entry.quotes.isEmpty {
                 EmptyWatchlistView()
             } else {

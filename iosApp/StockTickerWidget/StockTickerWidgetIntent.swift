@@ -67,10 +67,6 @@ struct StockTickerConfigurationIntent: WidgetConfigurationIntent {
     @Parameter(title: "Sort by change", default: false)
     var sortByChange: Bool
 
-    /// Show the "Watchlist" header on the large widget.
-    @Parameter(title: "Show header", default: true)
-    var showHeader: Bool
-
     /// Show each symbol's absolute change amount under the price.
     @Parameter(title: "Show change amount", default: false)
     var showChangeAmount: Bool
