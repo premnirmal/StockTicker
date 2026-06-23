@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,7 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.shared.resources.Res
+import com.github.premnirmal.shared.resources.ic_add
 import com.github.premnirmal.shared.resources.ic_close
+import com.github.premnirmal.shared.resources.ic_remove
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -228,10 +231,12 @@ private fun SuggestionRow(
                 color = MaterialTheme.colorScheme.onSurface,
             )
             IconButton(onClick = onAddRemoveClick) {
-                Text(
-                    text = if (inWatchlist) "\u2212" else "+",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
+                Icon(
+                    painter = painterResource(
+                        if (inWatchlist) Res.drawable.ic_remove else Res.drawable.ic_add
+                    ),
+                    contentDescription = if (inWatchlist) "Remove" else "Add",
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
