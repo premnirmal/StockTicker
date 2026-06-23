@@ -39,6 +39,7 @@ import com.github.premnirmal.shared.resources.ic_close
 import com.github.premnirmal.shared.resources.ic_done
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.components.AppNumberFormat
+import com.github.premnirmal.ticker.components.CompactNumberFormat
 import com.github.premnirmal.ticker.detail.PriceChartView
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.HistoryProvider
@@ -250,7 +251,7 @@ private fun QuoteDetailContent(
                         dataPoints = dataPoints,
                         lineColor = lineColor,
                         xAxisFormatter = { value -> formatAxisDate(value, selectedRange) },
-                        yAxisFormatter = { value -> AppNumberFormat.selected.format(value.toFloat()) },
+                        yAxisFormatter = { value -> CompactNumberFormat.format(value) },
                         markerFormatter = { x, y ->
                             "${formatMarkerDate(x)}\n${AppNumberFormat.selected.format(y.toFloat())}"
                         },

@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.ui
 
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.DATE_FORMATTER
+import com.github.premnirmal.ticker.components.CompactNumberFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -19,9 +20,9 @@ fun formatAxisDate(value: Double): String =
 fun formatAxisHour(value: Double): String =
     dateTimeOf(value).toLocalTime().format(AppPreferences.TIME_FORMATTER)
 
-/** Formats a chart y-axis value (a price) using the app's decimal format. */
+/** Formats a chart y-axis value (a price) as a short, compact label (e.g. `52.7K`). */
 fun formatAxisValue(value: Double): String =
-    AppPreferences.DECIMAL_FORMAT.format(value)
+    CompactNumberFormat.format(value)
 
 /** Formats the highlighted chart point (epoch-second timestamp, price) as a two-line marker label. */
 fun formatChartMarker(x: Double, y: Double): String {

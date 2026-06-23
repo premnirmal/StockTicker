@@ -42,6 +42,14 @@ import com.patrykandpatrick.vico.multiplatform.common.data.ExtraStore
 private const val AXIS_LABEL_COUNT = 5
 
 /**
+ * The approximate number of labels to show along the time (bottom) axis. Without a cap, Vico's
+ * aligned placer puts a label at every data point, so a long range (3M, 1Y, ...) with hundreds of
+ * points renders dozens of overlapping labels that collapse into an unreadable smear. Spacing the
+ * labels to hit roughly this count keeps them legible regardless of how many points there are.
+ */
+internal const val X_AXIS_LABEL_COUNT = 4
+
+/**
  * Fraction of the data's value span added as padding above the highest and below the lowest price so
  * the line/area has a little breathing room from the chart edges.
  */
@@ -71,6 +79,17 @@ internal object PriceRangeProvider : CartesianLayerRangeProvider {
         val magnitude = maxOf(kotlin.math.abs(minY), kotlin.math.abs(maxY))
         return if (magnitude > 0.0) magnitude * Y_RANGE_PADDING_FRACTION else 1.0
     }
+}
+
+/**
+ * The number of data points between consecutive bottom-axis labels needed to keep the visible label
+ * count around [X_AXIS_LABEL_COUNT]. With [pointCount] points the aligned placer would otherwise
+ * label every point; returning `ceil(pointCount / X_AXIS_LABEL_COUNT)` (at least 1) thins them out
+ * for large ranges while leaving small ranges (few points) untouched.
+ */
+internal fun xAxisLabelSpacing(pointCount: Int): Int {
+    if (pointCount <= X_AXIS_LABEL_COUNT) return 1
+    return (pointCount + X_AXIS_LABEL_COUNT - 1) / X_AXIS_LABEL_COUNT
 }
 
 /**
@@ -136,8 +155,16 @@ fun PriceChartView(
                 // left and right of the line. Disabling addExtremeLabelPadding removes that gap so the
                 // line spans the full chart width; the axis still reserves outer layer margin for the
                 // extreme labels (getStartLayerMargin/getEndLayerMargin), so they stay fully visible.
-                itemPlacer = remember {
-                    HorizontalAxis.ItemPlacer.aligned(addExtremeLabelPadding = false)
+                //
+                // The aligned placer otherwise labels every point, so for large ranges with many
+                // points the labels overlap into an unreadable smear. Spacing them out (every Nth
+                // point) caps the visible labels at roughly X_AXIS_LABEL_COUNT so they stay legible.
+                itemPlacer = remember(dataPoints.size) {
+                    val spacing = xAxisLabelSpacing(dataPoints.size)
+                    HorizontalAxis.ItemPlacer.aligned(
+                        spacing = { spacing },
+                        addExtremeLabelPadding = false
+                    )
                 },
                 guideline = null
             ),
