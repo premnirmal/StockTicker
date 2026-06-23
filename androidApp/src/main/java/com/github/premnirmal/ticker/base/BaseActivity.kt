@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -71,6 +74,13 @@ abstract class BaseActivity : ComponentActivity() {
             }
         }
         setContent {
+            setSingletonImageLoaderFactory { context ->
+                ImageLoader.Builder(context)
+                    .components {
+                        add(OkHttpNetworkFetcherFactory())
+                    }
+                    .build()
+            }
             val currentTheme by themeViewModel.themePref.collectAsStateWithLifecycle(
                 initialValue = SelectedTheme.SYSTEM
             )

@@ -2,9 +2,6 @@ package com.github.premnirmal.ticker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import coil3.ImageLoader
-import coil3.SingletonImageLoader
-import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.appModule
 import com.github.premnirmal.ticker.components.viewModelModule
@@ -22,7 +19,7 @@ import timber.log.Timber
 /**
  * Created by premnirmal on 2/26/16.
  */
-open class StocksApp : Application(), KoinComponent, SingletonImageLoader.Factory {
+open class StocksApp : Application(), KoinComponent {
 
     val appPreferences: AppPreferences by inject()
 
@@ -48,13 +45,5 @@ open class StocksApp : Application(), KoinComponent, SingletonImageLoader.Factor
 
     protected open fun initLogger() {
         Timber.plant(LoggingTree())
-    }
-
-    override fun newImageLoader(context: coil3.PlatformContext): ImageLoader {
-        return ImageLoader.Builder(context)
-            .components {
-                add(OkHttpNetworkFetcherFactory())
-            }
-            .build()
     }
 }
