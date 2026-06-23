@@ -131,16 +131,13 @@ fun PriceChartView(
                 valueFormatter = remember(xAxisFormatter) {
                     CartesianValueFormatter { _, value, _ -> xAxisFormatter(value) }
                 },
-                // By default the horizontal axis reserves half a label's width of layer padding at
+                // By default the horizontal axis reserves half a label's width of in-layer padding at
                 // each end so the first/last labels aren't clipped, which leaves an empty gap on the
-                // left and right of the line. Drop that padding and instead anchor the extreme labels
-                // inward (shiftExtremeLabels) so the line spans the full chart width with no gap while
-                // the edge labels stay fully visible.
+                // left and right of the line. Disabling addExtremeLabelPadding removes that gap so the
+                // line spans the full chart width; the axis still reserves outer layer margin for the
+                // extreme labels (getStartLayerMargin/getEndLayerMargin), so they stay fully visible.
                 itemPlacer = remember {
-                    HorizontalAxis.ItemPlacer.aligned(
-                        addExtremeLabelPadding = false,
-                        shiftExtremeLabels = true
-                    )
+                    HorizontalAxis.ItemPlacer.aligned(addExtremeLabelPadding = false)
                 },
                 guideline = null
             ),
