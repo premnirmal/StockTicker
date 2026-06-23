@@ -95,7 +95,7 @@ private struct QuoteRowView: View {
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(row.symbol)
                     .font(.system(.subheadline, design: .rounded).weight(.semibold))
                     .lineLimit(1)
@@ -105,7 +105,7 @@ private struct QuoteRowView: View {
                     .lineLimit(1)
             }
             Spacer(minLength: 4)
-            VStack(alignment: .trailing, spacing: 1) {
+            VStack(alignment: .trailing, spacing: 0) {
                 Text(row.changePercent)
                     .font(.system(.caption, design: .rounded)
                         .weight(configuration.boldChange ? .bold : .medium))
@@ -137,11 +137,11 @@ private struct StockTickerGridView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             if entry.quotes.isEmpty {
                 EmptyWatchlistView()
             } else {
-                LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 6) {
+                LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 2) {
                     ForEach(entry.quotes.prefix(maxItems)) { row in
                         QuoteRowView(row: row, configuration: entry.configuration)
                     }
@@ -172,7 +172,7 @@ struct StockTickerWidgetEntryView: View {
         Group {
             switch family {
             case .systemSmall:
-                StockTickerGridView(entry: entry, columns: 1, maxItems: 3)
+                StockTickerGridView(entry: entry, columns: 1, maxItems: 4)
             case .systemMedium:
                 StockTickerGridView(entry: entry, columns: 2, maxItems: 8)
             default:
