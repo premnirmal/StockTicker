@@ -714,7 +714,7 @@ private fun parseDecimal(text: String): Float? =
 private fun openUrl(url: String?) {
     val target = url ?: return
     val nsUrl = NSURL.URLWithString(target) ?: return
-    UIApplication.sharedApplication.openURL(nsUrl)
+    UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any?>(), completionHandler = null)
 }
 
 /**

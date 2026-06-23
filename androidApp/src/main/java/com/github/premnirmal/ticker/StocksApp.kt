@@ -2,6 +2,9 @@ package com.github.premnirmal.ticker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.PlatformContext
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.appModule
 import com.github.premnirmal.ticker.components.viewModelModule
@@ -19,13 +22,17 @@ import timber.log.Timber
 /**
  * Created by premnirmal on 2/26/16.
  */
-open class StocksApp : Application(), KoinComponent {
+open class StocksApp : Application(), KoinComponent, SingletonImageLoader.Factory {
 
     val appPreferences: AppPreferences by inject()
 
     private val notificationsHandler: NotificationsHandler by inject()
 
     private val widgetDataProvider: WidgetDataProvider by inject()
+
+    private val imageLoader: ImageLoader by inject()
+
+    override fun newImageLoader(context: PlatformContext): ImageLoader = imageLoader
 
     override fun onCreate() {
         initLogger()
