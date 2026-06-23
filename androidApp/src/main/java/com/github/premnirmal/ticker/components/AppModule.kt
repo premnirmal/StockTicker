@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import androidx.work.WorkManager
+import coil3.ImageLoader
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferencesDataMigration
 import com.github.premnirmal.ticker.UserPreferences
@@ -97,4 +99,12 @@ val appModule = module {
 
     single<Analytics> { AnalyticsImpl(androidContext(), lazy { get<GeneralProperties>() }) }
     single<IAppReviewManager> { AppReviewManager(androidContext()) }
+
+    single {
+        ImageLoader.Builder(androidContext())
+            .components {
+                add(OkHttpNetworkFetcherFactory())
+            }
+            .build()
+    }
 }
