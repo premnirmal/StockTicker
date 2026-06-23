@@ -157,6 +157,10 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
+
+  testOptions {
+    unitTests.isReturnDefaultValues = true
+  }
 }
 
 // CMP navigation-compose is pinned to the stable 2.9.2 line (see gradle/libs.versions.toml),
