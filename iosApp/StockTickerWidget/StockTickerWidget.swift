@@ -111,12 +111,10 @@ private struct QuoteRowView: View {
                         .weight(configuration.boldChange ? .bold : .medium))
                     .foregroundStyle(row.positive ? Color.green : Color.red)
                     .lineLimit(1)
-                if configuration.showChangeAmount {
-                    Text(row.changeAmount)
-                        .font(.caption2)
-                        .foregroundStyle(row.positive ? Color.green : Color.red)
-                        .lineLimit(1)
-                }
+                Text(row.changeAmount)
+                    .font(.caption2)
+                    .foregroundStyle(row.positive ? Color.green : Color.red)
+                    .lineLimit(1)
             }
         }
     }
