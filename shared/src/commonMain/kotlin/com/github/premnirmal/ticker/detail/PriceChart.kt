@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.premnirmal.ticker.network.data.DataPoint
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.Zoom
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.Axis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
@@ -134,6 +136,7 @@ fun PriceChartView(
             marker = rememberPriceMarker(markerFormatter)
         ),
         modelProducer = modelProducer,
+        zoomState = rememberVicoZoomState(initialZoom = remember { Zoom.Content }),
         modifier = modifier
     )
 }
