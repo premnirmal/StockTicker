@@ -4,6 +4,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.ComposeUIViewController
+import coil3.ImageLoader
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
 import com.github.premnirmal.ticker.ui.HomeScreen
 import com.github.premnirmal.ticker.ui.IosAppTheme
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
@@ -27,6 +30,13 @@ private object MainKoin : KoinComponent {
  * shared screens can resolve their dependencies from the graph.
  */
 fun MainViewController(): UIViewController = ComposeUIViewController {
+    setSingletonImageLoaderFactory { context ->
+        ImageLoader.Builder(context)
+            .components {
+                add(KtorNetworkFetcherFactory())
+            }
+            .build()
+    }
     val prefs = remember { MainKoin.userPreferences }
     val themePref by prefs.themePrefFlow.collectAsState(initial = prefs.themePref)
     val theme = when (themePref) {
