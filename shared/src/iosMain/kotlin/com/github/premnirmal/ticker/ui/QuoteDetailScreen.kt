@@ -438,6 +438,7 @@ private fun EditSection(
                 Icon(
                     painter = painterResource(Res.drawable.ic_edit),
                     contentDescription = "Edit",
+                    modifier = Modifier.size(18.dp),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
