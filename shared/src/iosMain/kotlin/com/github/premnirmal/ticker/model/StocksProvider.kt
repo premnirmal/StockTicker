@@ -14,6 +14,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import platform.Foundation.NSRecursiveLock
@@ -76,6 +77,12 @@ class StocksProvider(
                 fetch()
             }
         }
+        // Re-emit the portfolio whenever the auto-sort preference changes so the watchlist
+        // re-orders immediately when the user toggles it in Settings. The initial value is skipped
+        // because fetchLocal() above already emits the (sorted) portfolio on startup.
+        coroutineScope.launch {
+            appPreferences.autoSortFlow.drop(1).collect { emitPortfolio() }
+        }
     }
 
     private suspend fun fetchLocal() = withContext(ioDispatcher) {
@@ -93,7 +100,12 @@ class StocksProvider(
     }
 
     private fun emitPortfolio() {
-        _portfolio.value = quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList()
+        val quotes = quoteMap.values.filter { tickerSet.contains(it.symbol) }
+        _portfolio.value = if (appPreferences.autoSort()) {
+            quotes.sortedByDescending { it.changeInPercent }
+        } else {
+            quotes
+        }
     }
 
     private fun saveTickers() = storage.saveTickers(tickerSet)

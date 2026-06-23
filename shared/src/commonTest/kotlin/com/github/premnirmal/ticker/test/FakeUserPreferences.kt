@@ -42,6 +42,13 @@ class FakeUserPreferences : UserPreferences {
         notificationAlerts = set
     }
 
+    private val _autoSort = MutableStateFlow(false)
+    override val autoSortFlow: StateFlow<Boolean> = _autoSort
+    override fun autoSort(): Boolean = _autoSort.value
+    override fun setAutoSort(autoSort: Boolean) {
+        _autoSort.value = autoSort
+    }
+
     private val _themePref = MutableStateFlow(UserPreferences.FOLLOW_SYSTEM_THEME)
     override var themePref: Int
         get() = _themePref.value

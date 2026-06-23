@@ -80,6 +80,18 @@ open class SharedUserPreferences(
         store.setBoolean(SETTING_NOTIFICATION_ALERTS, set)
     }
 
+    private val _autoSort = MutableStateFlow(store.getBoolean(SETTING_AUTOSORT, false))
+
+    override val autoSortFlow: StateFlow<Boolean>
+        get() = _autoSort
+
+    override fun autoSort(): Boolean = _autoSort.value
+
+    override fun setAutoSort(autoSort: Boolean) {
+        _autoSort.value = autoSort
+        store.setBoolean(SETTING_AUTOSORT, autoSort)
+    }
+
     private val _themePref = MutableStateFlow(store.getInt(APP_THEME, FOLLOW_SYSTEM_THEME))
 
     override val themePrefFlow: Flow<Int> = _themePref
@@ -151,6 +163,7 @@ open class SharedUserPreferences(
         const val TUTORIAL_SHOWN = "TUTORIAL_SHOWN"
         const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
         const val SETTING_NOTIFICATION_ALERTS = "SETTING_NOTIFICATION_ALERTS"
+        const val SETTING_AUTOSORT = "SETTING_AUTOSORT"
         const val APP_THEME = "APP_THEME"
         const val PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP = "PREFERENCE_SHOWN_ADD_REMOVE_TOOLTIP"
         const val CRUMB = "CRUMB"

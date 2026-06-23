@@ -56,6 +56,15 @@ interface UserPreferences {
   /** Sets whether price-alert notifications are enabled. */
   fun setNotificationAlerts(set: Boolean)
 
+  /** Whether the watchlist should be auto-sorted by change percentage. */
+  fun autoSort(): Boolean
+
+  /** Sets whether the watchlist should be auto-sorted by change percentage. */
+  fun setAutoSort(autoSort: Boolean)
+
+  /** Whether auto-sort is enabled, as an observable flow. */
+  val autoSortFlow: StateFlow<Boolean>
+
   /** The selected theme preference (0 = light, 1 = dark, 2 = follow system). */
   var themePref: Int
 

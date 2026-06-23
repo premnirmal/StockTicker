@@ -14,7 +14,6 @@ import com.github.premnirmal.shared.resources.ic_news
 import com.github.premnirmal.shared.resources.ic_search
 import com.github.premnirmal.shared.resources.ic_settings
 import com.github.premnirmal.shared.resources.ic_trending_up
-import com.github.premnirmal.shared.resources.ic_widget
 import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
 import com.github.premnirmal.ticker.navigation.HomeNavHost
@@ -102,12 +101,6 @@ private fun HomeContent(
             label = "Search"
         ),
         HomeBottomNavDestination(
-            route = HomeRoute.Widgets,
-            selectedIcon = painterResource(Res.drawable.ic_widget),
-            unselectedIcon = painterResource(Res.drawable.ic_widget),
-            label = "Widgets"
-        ),
-        HomeBottomNavDestination(
             route = HomeRoute.Settings,
             selectedIcon = painterResource(Res.drawable.ic_settings),
             unselectedIcon = painterResource(Res.drawable.ic_settings),
@@ -158,7 +151,7 @@ private fun HomeContent(
                         }
                     )
                 },
-                widgets = { WidgetsScreen() },
+                widgets = {},
                 settings = { SettingsScreen(onTutorial = { onboardingController.show() }) }
             )
         }

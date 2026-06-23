@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -31,7 +30,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.shared.resources.Res
@@ -47,6 +48,7 @@ import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.holdingsSum
 import com.github.premnirmal.ticker.news.NewsCard
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
@@ -65,6 +67,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import platform.Foundation.NSDate
 import platform.Foundation.NSDateFormatter
+import platform.Foundation.NSNumber
+import platform.Foundation.NSNumberFormatter
+import platform.Foundation.NSNumberFormatterDecimalStyle
 import platform.Foundation.NSURL
 import platform.Foundation.dateWithTimeIntervalSince1970
 import platform.UIKit.UIApplication
@@ -102,7 +107,7 @@ private enum class ActiveEditor { NONE, POSITIONS, ALERTS, NOTES, DISPLAYNAME }
  * the shared [AddPositionScreen]/[AlertsScreen]/[NotesScreen]/[DisplaynameScreen] composables,
  * presented full-screen and persisted through the shared view models.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun QuoteDetailScreen(
     symbol: String,
@@ -121,6 +126,16 @@ fun QuoteDetailScreen(
     // Bumped whenever an editor persists a change so the header/holdings reload from storage.
     var reloadKey by remember(symbol) { mutableStateOf(0) }
 
+    // Support the iOS edge-swipe "back" gesture for the full-screen editors. They are presented via
+    // [activeEditor] state (not a NavHost back stack), so without this handler the start-edge pan
+    // would fall through to the root NavHost and pop the whole quote detail back to home. While an
+    // editor is open we intercept the gesture here to dismiss the editor and return to the detail.
+    BackHandler(enabled = activeEditor != ActiveEditor.NONE) {
+        activeEditor = ActiveEditor.NONE
+        reloadKey++
+        viewModel.fetchQuote(symbol)
+    }
+
     LaunchedEffect(symbol) {
         viewModel.loadQuote(symbol)
         viewModel.fetchQuote(symbol)
@@ -133,6 +148,7 @@ fun QuoteDetailScreen(
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val articles by viewModel.newsData.collectAsState()
     val quote = quoteResult?.dataSafe?.quote
+    val quoteSummary = quoteResult?.dataSafe?.quoteSummary
 
     // Once the quote is available, load its news list (decoupled from the chart fetch above).
     LaunchedEffect(quote?.symbol) {
@@ -174,6 +190,7 @@ fun QuoteDetailScreen(
         ActiveEditor.NONE -> QuoteDetailContent(
             symbol = symbol,
             quote = quote,
+            quoteSummary = quoteSummary,
             chartData = chartData,
             selectedRange = selectedRange,
             isRefreshing = isRefreshing,
@@ -194,6 +211,7 @@ fun QuoteDetailScreen(
 private fun QuoteDetailContent(
     symbol: String,
     quote: Quote?,
+    quoteSummary: QuoteSummary?,
     chartData: ChartData?,
     selectedRange: Range,
     isRefreshing: Boolean,
@@ -275,17 +293,55 @@ private fun QuoteDetailContent(
                 }
             }
 
-            if (isInPortfolio && quote != null && quote.hasPositions()) {
-                HoldingsSummary(quote = quote)
+            // Quote-detail value cards (Open, ranges, volume, market cap, …) below the graph,
+            // mirroring the Android `quoteDetailsGrid`.
+            if (quote != null) {
+                val details = remember(quote, quoteSummary) { buildQuoteDetails(quote, quoteSummary) }
+                QuoteDetailsGrid(details)
             }
 
-            EditActions(
-                showHoldingsEditors = isInPortfolio,
-                onEditPositions = onEditPositions,
-                onEditAlerts = onEditAlerts,
-                onEditNotes = onEditNotes,
-                onEditDisplayname = onEditDisplayname
-            )
+            // Positions / Alerts / Notes / Display name as a single-column list of tappable
+            // sections, mirroring the Android `quotePositionsNotesAlerts`. Only portfolio symbols
+            // expose these editors.
+            if (isInPortfolio && quote != null) {
+                EditSection(title = "Positions", onClick = onEditPositions) {
+                    if (quote.hasPositions()) {
+                        HoldingsSummaryRows(quote = quote)
+                    } else {
+                        Text(
+                            text = "--",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                EditSection(title = "Alerts", onClick = onEditAlerts) {
+                    val above = quote.getAlertAbove()
+                    val below = quote.getAlertBelow()
+                    SummaryRow(
+                        label = "Alert above",
+                        value = if (above > 0f) AppNumberFormat.selected.format(above) else "--"
+                    )
+                    SummaryRow(
+                        label = "Alert below",
+                        value = if (below > 0f) AppNumberFormat.selected.format(below) else "--"
+                    )
+                }
+                EditSection(title = "Notes", onClick = onEditNotes) {
+                    Text(
+                        text = quote.properties?.notes?.ifEmpty { "--" } ?: "--",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                EditSection(title = "Display name", onClick = onEditDisplayname) {
+                    Text(
+                        text = quote.properties?.displayname?.ifEmpty { "--" } ?: "--",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
 
             if (articles.isNotEmpty()) {
                 HorizontalDivider()
@@ -305,28 +361,103 @@ private fun QuoteDetailContent(
     }
 }
 
+/**
+ * Two-column grid of quote-detail value cards rendered below the chart, mirroring the Android
+ * `quoteDetailsGrid`: even-indexed items fill the left column and odd-indexed items the right.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HoldingsSummary(quote: Quote) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+private fun QuoteDetailsGrid(details: List<Pair<String, String>>) {
+    if (details.isEmpty()) return
+    val left = details.filterIndexed { index, _ -> index % 2 == 0 }
+    val right = details.filterIndexed { index, _ -> index % 2 != 0 }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.weight(0.5f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = "Holdings", style = MaterialTheme.typography.titleMedium)
-            SummaryRow(label = "Shares", value = quote.numSharesString())
-            SummaryRow(label = "Equity value", value = quote.holdingsString())
-            SummaryRow(label = "Average price", value = quote.averagePositionPrice())
-            SummaryRow(
-                label = "Gain / loss",
-                value = "${quote.gainLossString()} (${quote.gainLossPercentString()})",
-                valueColor = if (quote.gainLoss() >= 0f) PositiveColor else NegativeColor
-            )
-            SummaryRow(
-                label = "Day change",
-                value = quote.dayChangeString(),
-                valueColor = if (quote.dayChange() >= 0f) PositiveColor else NegativeColor
+            left.forEach { (title, value) -> DetailValueCard(title = title, value = value) }
+        }
+        Column(
+            modifier = Modifier.weight(0.5f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            right.forEach { (title, value) -> DetailValueCard(title = title, value = value) }
+        }
+    }
+}
+
+@Composable
+private fun DetailValueCard(title: String, value: String) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Text(text = title, style = MaterialTheme.typography.labelMedium)
+            Text(
+                modifier = Modifier.padding(top = 8.dp),
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+    }
+}
+
+/**
+ * A tappable section header + content card used for the Positions / Alerts / Notes / Display name
+ * rows, mirroring the Android `EditSectionHeader` + section content. Tapping anywhere opens the
+ * matching full-screen editor.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditSection(
+    title: String,
+    onClick: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = title, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Edit",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            content()
+        }
+    }
+}
+
+@Composable
+private fun HoldingsSummaryRows(quote: Quote) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        SummaryRow(label = "Shares", value = quote.numSharesString())
+        SummaryRow(label = "Equity value", value = quote.holdingsString())
+        SummaryRow(label = "Average price", value = quote.averagePositionPrice())
+        SummaryRow(
+            label = "Gain / loss",
+            value = "${quote.gainLossString()} (${quote.gainLossPercentString()})",
+            valueColor = if (quote.gainLoss() >= 0f) PositiveColor else NegativeColor
+        )
+        SummaryRow(
+            label = "Day change",
+            value = quote.dayChangeString(),
+            valueColor = if (quote.dayChange() >= 0f) PositiveColor else NegativeColor
+        )
     }
 }
 
@@ -345,24 +476,73 @@ private fun SummaryRow(label: String, value: String, valueColor: Color = Color.U
     }
 }
 
-@Composable
-private fun EditActions(
-    showHoldingsEditors: Boolean,
-    onEditPositions: () -> Unit,
-    onEditAlerts: () -> Unit,
-    onEditNotes: () -> Unit,
-    onEditDisplayname: () -> Unit
-) {
-    if (!showHoldingsEditors) return
-    Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        OutlinedButton(onClick = onEditPositions) { Text("Positions") }
-        OutlinedButton(onClick = onEditAlerts) { Text("Alerts") }
-        OutlinedButton(onClick = onEditNotes) { Text("Notes") }
-        OutlinedButton(onClick = onEditDisplayname) { Text("Name") }
+/**
+ * Builds the localised list of quote-detail value rows (title to formatted value) shown in the
+ * grid below the chart, mirroring the Android `buildQuoteDetails`. Epoch timestamps are interpreted
+ * as milliseconds to match the Android formatting.
+ */
+private fun buildQuoteDetails(quote: Quote, quoteSummary: QuoteSummary?): List<Pair<String, String>> {
+    val details = mutableListOf<Pair<String, String>>()
+    quote.open?.let { details.add("Open" to quote.priceFormat.format(it)) }
+    val dayLow = quote.dayLow
+    val dayHigh = quote.dayHigh
+    if (dayLow != null && dayHigh != null) {
+        details.add("Day's Range" to "${formatDecimal(dayLow)} - ${formatDecimal(dayHigh)}")
     }
+    quote.fiftyDayAverage?.let { if (it > 0f) details.add("50 Day Average" to formatDecimal(it)) }
+    quote.twoHundredDayAverage?.let { if (it > 0f) details.add("200 Day Average" to formatDecimal(it)) }
+    val ftwLow = quote.fiftyTwoWeekLow
+    val ftwHigh = quote.fiftyTwoWeekHigh
+    if (ftwLow != null && ftwHigh != null) {
+        details.add("52 Week Range" to "${formatDecimal(ftwLow)} - ${formatDecimal(ftwHigh)}")
+    }
+    quote.regularMarketVolume?.let { details.add("Volume" to formatGrouped(it)) }
+    quote.marketCap?.let { details.add("Market Cap" to formatBigNumber(it)) }
+    quote.trailingPE?.let { details.add("PE Ratio" to formatDecimal(it)) }
+    quote.earningsTimestamp?.let { details.add("Earnings Date" to formatEpochDate(it)) }
+    if (quote.annualDividendRate > 0f && quote.annualDividendYield > 0f) {
+        details.add("Dividend Rate" to quote.dividendInfo())
+    }
+    quote.dividendDate?.let { details.add("Dividend Date" to formatEpochDate(it)) }
+    quoteSummary?.financialData?.earningsGrowth?.fmt?.let { details.add("Earnings Growth" to it) }
+    quoteSummary?.financialData?.revenueGrowth?.fmt?.let { details.add("Revenue Growth" to it) }
+    quoteSummary?.financialData?.profitMargins?.fmt?.let { details.add("Profit Margins" to it) }
+    quoteSummary?.financialData?.grossMargins?.fmt?.let { details.add("Gross Margins" to it) }
+    return details
+}
+
+/** Formats a float with two fraction digits, mirroring Android's `Float.format()`. */
+private fun formatDecimal(value: Float): String = AppNumberFormat.TWO_DP.format(value)
+
+/** Formats a long with grouping separators, mirroring Android's `Long.format()`. */
+private fun formatGrouped(value: Long): String {
+    val formatter = NSNumberFormatter().apply { numberStyle = NSNumberFormatterDecimalStyle }
+    return formatter.stringFromNumber(NSNumber(long = value)) ?: value.toString()
+}
+
+/** Abbreviates large numbers as K/M/B/T, mirroring Android's `Long.formatBigNumbers`. */
+private fun formatBigNumber(value: Long): String = when {
+    value < 100_000 -> formatGrouped(value)
+    value < 1_000_000 -> formatAbbreviated(value / 1_000.0, "K")
+    value < 1_000_000_000 -> formatAbbreviated(value / 1_000_000.0, "M")
+    value < 1_000_000_000_000 -> formatAbbreviated(value / 1_000_000_000.0, "B")
+    else -> formatAbbreviated(value / 1_000_000_000_000.0, "T")
+}
+
+private fun formatAbbreviated(value: Double, suffix: String): String {
+    val formatter = NSNumberFormatter().apply {
+        numberStyle = NSNumberFormatterDecimalStyle
+        minimumFractionDigits = 2.toULong()
+        maximumFractionDigits = 2.toULong()
+    }
+    val number = formatter.stringFromNumber(NSNumber(double = value)) ?: value.toString()
+    return "$number$suffix"
+}
+
+/** Formats an epoch-millis timestamp as a long date, mirroring Android's `date_format_long`. */
+private fun formatEpochDate(epochMillis: Long): String {
+    val formatter = NSDateFormatter().apply { dateFormat = "MMM dd, yyyy" }
+    return formatter.stringFromDate(NSDate.dateWithTimeIntervalSince1970(epochMillis.toDouble() / 1000.0))
 }
 
 @Composable

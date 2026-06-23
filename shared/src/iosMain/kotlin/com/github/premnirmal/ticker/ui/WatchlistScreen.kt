@@ -1,16 +1,17 @@
 package com.github.premnirmal.ticker.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,11 +37,16 @@ private object WatchlistKoin : KoinComponent {
     val stocksProvider: IStocksProvider by inject()
 }
 
+private val PositiveColor = Color(0xFF66BB6A)
+private val NegativeColor = Color(0xFFEF5350)
+
 /**
  * First shared Compose Multiplatform screen rendered by the iOS host. It binds directly to the
  * shared [IStocksProvider] portfolio [kotlinx.coroutines.flow.StateFlow] and lets the user trigger a
- * refresh, proving the Phase 4 Compose UI runs inside the iOS app. Tapping a row navigates to the
- * shared quote-detail destination via [onQuoteClick], wired through the shared `RootNavigationGraph`.
+ * refresh, proving the Phase 4 Compose UI runs inside the iOS app. The quotes are laid out in a
+ * staggered grid of cards (mirroring the Android watchlist) rather than a single-column list.
+ * Tapping a card navigates to the shared quote-detail destination via [onQuoteClick], wired through
+ * the shared `RootNavigationGraph`.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,23 +68,25 @@ fun WatchlistScreen(
             )
         }
     ) { padding ->
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+        LazyVerticalStaggeredGrid(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+            contentPadding = PaddingValues(all = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalItemSpacing = 8.dp,
+        ) {
             items(quotes, key = { it.symbol }) { quote ->
-                QuoteRow(quote, onClick = { onQuoteClick(quote) })
-                HorizontalDivider()
+                QuoteCard(quote, onClick = { onQuoteClick(quote) })
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun QuoteRow(quote: Quote, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
+private fun QuoteCard(quote: Quote, onClick: () -> Unit) {
+    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
+        Column(modifier = Modifier.padding(8.dp)) {
             Text(text = quote.symbol, style = MaterialTheme.typography.titleMedium)
             Text(
                 text = quote.name,
@@ -87,15 +95,18 @@ private fun QuoteRow(quote: Quote, onClick: () -> Unit) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-        Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center) {
-            Text(text = quote.priceString(), style = MaterialTheme.typography.titleMedium)
-            val isUp = quote.changeInPercent >= 0f
-            Text(
-                text = quote.changePercentStringWithSign(),
-                style = MaterialTheme.typography.bodySmall,
-                color = if (isUp) Color(0xFF66BB6A) else Color(0xFFEF5350)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = quote.priceString(), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = quote.changePercentStringWithSign(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (quote.changeInPercent >= 0f) PositiveColor else NegativeColor
+                )
+            }
         }
     }
 }
