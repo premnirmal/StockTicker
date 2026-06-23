@@ -50,6 +50,9 @@ fun WatchlistScreen(
     val provider = remember { WatchlistKoin.stocksProvider }
     val quotes by provider.portfolio.collectAsState()
     val scope = rememberCoroutineScope()
+    val onRemove: (Quote) -> Unit = remember(provider) {
+        { quote -> scope.launch { provider.removeStock(quote.symbol) } }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,7 +80,7 @@ fun WatchlistScreen(
                     quote = quote,
                     onClick = { onQuoteClick(quote) },
                     showMore = true,
-                    onRemoveClick = { scope.launch { provider.removeStock(quote.symbol) } }
+                    onRemoveClick = onRemove
                 )
             }
         }

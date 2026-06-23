@@ -698,6 +698,54 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   intentionally out of scope (it needs code-signing secrets + an `xcodebuild archive`/`-exportArchive`
   or fastlane step); see `iosApp/README.md`.
 
+### Shared widget views (hoisting the per-platform composables)
+
+Phase 4 shared the *screens* but left several reusable *widgets* (cards, rows, popups) as
+`@Composable` slot parameters, supplied by the Android `:app` hosts and re-implemented by hand on
+iOS. That slot pattern is the reason the iOS watchlist card drifted out of sync with Android. The
+goal of this follow-up work is to move those widgets into `commonMain` so both platforms render one
+implementation.
+
+**Done so far:**
+
+- **`QuoteCard`** — moved to `shared/src/commonMain/.../detail/QuoteCard.kt` (Instrument + Position
+  variants, the overflow/"three-dot" remove menu and the change colours). Both the Android hosts
+  (`WatchlistContentHost`/`SearchScreenHost`/`NewsFeedScreenHost`) and the iOS
+  `WatchlistScreen`/`SearchScreen` now call the shared card; the Android `detail/QuoteCard.kt` and
+  the bespoke iOS cards were deleted.
+- **`AppCard`** — moved to `shared/src/commonMain/.../tickerwidget/ui/AppCard.kt` (it only used
+  Material3 `Card`, so it was portable as-is).
+- Added shared string resources (`shared/src/commonMain/composeResources/values/strings.xml`:
+  `remove`/`holdings`/`gain`/`loss`/`change_percent`/`change_amount`/`day_change_amount`) and shared
+  drawables (`ic_more`, `ic_remove_circle`) so the shared card needs no per-platform resources.
+
+**Remaining hoisting candidates** (each is currently an Android `:app` composable passed as a slot
+and/or duplicated on iOS):
+
+| View | Android source | iOS duplicate | Blockers before hoisting |
+| --- | --- | --- | --- |
+| `Divider` | `tickerwidget/ui/Divider.kt` | (inline `HorizontalDivider`) | None — thin Material3 wrapper, ready to move. |
+| `SuggestionItem` / `SuggestionRow` | `portfolio/search/SuggestionItem.kt` | `ui/SearchScreen.kt` (`SuggestionRow`) | Switch `R.drawable.ic_add_to_list` to a shared `Res` drawable; share the add/remove labels. |
+| `TotalHoldingsPopup` | `home/TotalHoldingsPopup.kt` | — (not on iOS yet) | Needs `ColourPalette` change-colours + `total_holdings` string shared (see below). |
+| `AddSymbolDialog` | `portfolio/search/AddSymbolDialog.kt` | — | Needs its `R.string.*` labels shared; `SuggestionViewModel` already shareable via Koin. |
+| `NewsCard` | already in `commonMain/.../news/NewsCard.kt` (Coil `AsyncImage`), wrapped by `NewsCardHost` for the `AppCard` slot + placeholder colour | — | Inline the (now-shared) `AppCard` and a shared placeholder colour to drop the host. |
+| `LinkText` | `ui/LinkText.kt` | — | Needs an iOS web-link opener (`expect`/`actual`) to replace Android `CustomTabs`. |
+
+**Shared infrastructure that unblocks several of the above:**
+
+- **Change/theme colours** — `ColourPalette` (`androidApp/.../tickerwidget/ui/theme/Colours.kt`).
+  Hoisting the `ChangePositive`/`ChangeNegative`/`PositiveGreen`/`NegativeRed`/`ImagePlaceHolderGray`
+  values into `commonMain` unblocks `TotalHoldingsPopup` and `NewsCard`'s placeholder, and would let
+  `QuoteCard` drop its private colour copies.
+- **String resources** — continue migrating Android `R.string.*` labels used by shared widgets into
+  `shared/src/commonMain/composeResources/values/strings.xml` (as done for the quote-card labels).
+
+**Not hoistable (genuinely platform-specific), keep as slots:**
+
+- `widgetPreview` — Android Glance widget renderer.
+- `listFadingEdges` — Android-13+ `RuntimeShader`-based modifier (needs an iOS-friendly fallback).
+- `twoPane` — Accompanist adaptive layout supplied per platform.
+
 ## Building
 
 Android (unchanged):
