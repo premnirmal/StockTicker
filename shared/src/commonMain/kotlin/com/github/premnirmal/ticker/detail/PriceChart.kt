@@ -171,12 +171,17 @@ fun PriceChartView(
     val modelProducer = remember { CartesianChartModelProducer() }
     LaunchedEffect(dataPoints) {
         if (dataPoints.isEmpty()) return@LaunchedEffect
+        // Build x/y lists once instead of creating two separate mapped copies that linger in memory.
+        val size = dataPoints.size
+        val xValues = ArrayList<Number>(size)
+        val yValues = ArrayList<Number>(size)
+        for (point in dataPoints) {
+            xValues.add(point.xVal)
+            yValues.add(point.closeVal)
+        }
         modelProducer.runTransaction {
             lineSeries {
-                series(
-                    x = dataPoints.map { it.xVal },
-                    y = dataPoints.map { it.closeVal }
-                )
+                series(x = xValues, y = yValues)
             }
         }
     }
@@ -217,7 +222,11 @@ fun PriceChartView(
                 // that collapse into an unreadable smear. Spacing the labels by xAxisLabelSpacing
                 // caps the visible labels at roughly X_AXIS_LABEL_COUNT so they stay legible.
                 itemPlacer = remember(dataPoints) {
-                    val spacing = xAxisLabelSpacing(dataPoints.map { it.xVal.toDouble() })
+                    val xDoubles = ArrayList<Double>(dataPoints.size)
+                    for (point in dataPoints) {
+                        xDoubles.add(point.xVal.toDouble())
+                    }
+                    val spacing = xAxisLabelSpacing(xDoubles)
                     HorizontalAxis.ItemPlacer.aligned(
                         spacing = { spacing },
                         addExtremeLabelPadding = false

@@ -153,6 +153,11 @@ class QuoteDetailViewModel constructor(
         selectedRange: Range
     ) {
         range.value = selectedRange
+        // Release the previous (potentially large) dataset immediately so it can be GC'd while the
+        // network request is in flight. Without this, switching from a large range (1Y/5Y/max) to a
+        // smaller one keeps hundreds/thousands of DataPoints alive until the response arrives.
+        _data.value = null
+        _dataFetchError.value = null
         val result = historyProvider.fetchDataByRange(symbol, selectedRange)
         if (result.wasSuccessful) {
             _data.value = result.data
