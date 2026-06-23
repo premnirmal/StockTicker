@@ -136,6 +136,11 @@ fun PriceChartView(
             marker = rememberPriceMarker(markerFormatter)
         ),
         modelProducer = modelProducer,
+        // Vico's default initial zoom (Zoom.max(Zoom.fixed(), Zoom.Content)) zooms in to a fixed
+        // per-point spacing and scrolls to the latest point, so for long ranges (3M, 1Y, ...) only
+        // the most recent handful of points is visible while the Y-axis still fits the whole series.
+        // That squeezes the visible line into a thin, flat band. Zoom.Content fits every point to the
+        // chart width so the full range — and its smaller fluctuations — is visible at a glance.
         zoomState = rememberVicoZoomState(initialZoom = remember { Zoom.Content }),
         modifier = modifier
     )
