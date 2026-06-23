@@ -10,7 +10,7 @@ import kotlin.math.abs
  *
  * - `52682.975` -> `52.7K`
  * - `1234567.0` -> `1.23M`
- * - `152.34`    -> `152`
+ * - `152.34`    -> `152.3`
  * - `52.18`     -> `52.18`
  *
  * Values below 1000 keep more precision (smaller charts often span a narrow price band) while
