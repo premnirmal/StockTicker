@@ -4,6 +4,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.github.premnirmal.shared.resources.Res
@@ -24,24 +25,34 @@ import org.jetbrains.compose.resources.Font
  * The font families are exposed as `@Composable` accessors because Compose Multiplatform loads
  * bundled fonts via the `@Composable` [Font] resource API (unlike Android's top-level
  * `Font(R.font.…)`), so they must be resolved inside a composition.
+ *
+ * Each [Font] is declared with the weight (and style) that matches the glyphs baked into the
+ * underlying TTF. This is important on Android: Compose only reads the weight/style we pass here,
+ * not the font's internal metadata, so without it the bold/medium/italic faces are registered as
+ * `Normal`/upright. When a heavier [FontWeight] is then requested (e.g. the toolbar title uses
+ * `headlineMedium` at [FontWeight.SemiBold]), Compose applies *synthetic* bolding on top of the
+ * already-bold glyphs, making titles look far too heavy. Declaring the true weight keeps the
+ * brand fonts rendering at their natural weight on every platform.
  */
 val regularFontFamily: FontFamily
-    @Composable get() = FontFamily(Font(Res.font.ubuntu_regular))
+    @Composable get() = FontFamily(Font(Res.font.ubuntu_regular, FontWeight.Normal))
 
 val mediumFontFamily: FontFamily
-    @Composable get() = FontFamily(Font(Res.font.ubuntu_medium))
+    @Composable get() = FontFamily(Font(Res.font.ubuntu_medium, FontWeight.Medium))
 
 val lightFontFamily: FontFamily
-    @Composable get() = FontFamily(Font(Res.font.ubuntu_light))
+    @Composable get() = FontFamily(Font(Res.font.ubuntu_light, FontWeight.Light))
 
 val boldFontFamily: FontFamily
-    @Composable get() = FontFamily(Font(Res.font.ubuntu_bold))
+    @Composable get() = FontFamily(Font(Res.font.ubuntu_bold, FontWeight.Bold))
 
 val italicFontFamily: FontFamily
-    @Composable get() = FontFamily(Font(Res.font.ubuntu_italic))
+    @Composable get() = FontFamily(Font(Res.font.ubuntu_italic, FontWeight.Normal, FontStyle.Italic))
 
 val alegreyaFontFamily: FontFamily
-    @Composable get() = FontFamily(Font(Res.font.alegreya_black_italic))
+    @Composable get() = FontFamily(
+        Font(Res.font.alegreya_black_italic, FontWeight.Black, FontStyle.Italic)
+    )
 
 /**
  * Builds the shared [Typography]. Must be called from within a composition.
