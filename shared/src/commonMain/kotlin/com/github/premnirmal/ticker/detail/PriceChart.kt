@@ -12,6 +12,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.premnirmal.ticker.network.data.DataPoint
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.multiplatform.cartesian.Zoom
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoZoomState
@@ -43,11 +48,16 @@ private const val AXIS_LABEL_COUNT = 5
 
 /**
  * The approximate number of labels to show along the time (bottom) axis. Without a cap, Vico's
- * aligned placer puts a label at every data point, so a long range (3M, 1Y, ...) with hundreds of
- * points renders dozens of overlapping labels that collapse into an unreadable smear. Spacing the
- * labels to hit roughly this count keeps them legible regardless of how many points there are.
+ * aligned placer puts a label at every "step" along the axis, so a long range (3M, 1Y, ...) renders
+ * dozens of overlapping labels that collapse into an unreadable smear. Spacing the labels to hit
+ * roughly this count keeps them legible regardless of how many points/steps there are.
  */
 internal const val X_AXIS_LABEL_COUNT = 4
+
+// Vico rounds the GCD of the x-value deltas to this many decimals when deriving the axis step; see
+// `Double.gcdWith` in Vico (DOUBLE_GCD_DECIMALS). We replicate it so [xAxisLabelSpacing] computes the
+// same number of axis steps Vico will, and therefore the same number of labels.
+private const val DOUBLE_GCD_DECIMALS = 4
 
 /**
  * Fraction of the data's value span added as padding above the highest and below the lowest price so
@@ -82,14 +92,59 @@ internal object PriceRangeProvider : CartesianLayerRangeProvider {
 }
 
 /**
- * The number of data points between consecutive bottom-axis labels needed to keep the visible label
- * count around [X_AXIS_LABEL_COUNT]. With [pointCount] points the aligned placer would otherwise
- * label every point; returning `ceil(pointCount / X_AXIS_LABEL_COUNT)` (at least 1) thins them out
- * for large ranges while leaving small ranges (few points) untouched.
+ * The number of axis "steps" between consecutive bottom-axis labels needed to keep the visible label
+ * count around [X_AXIS_LABEL_COUNT].
+ *
+ * Vico's `aligned` item placer positions labels every `spacing` axis steps, where one step is the
+ * axis's `xStep` — the greatest common divisor of the gaps between consecutive x-values (see
+ * [xDeltaGcd]). The total number of steps spanning the data is therefore `(maxX - minX) / xStep`,
+ * which is **not** the same as the point count: weekend/holiday gaps and the limited precision of the
+ * `Float` epoch-second timestamps make the GCD small, so the step count can be far larger (e.g. ~350
+ * for a year of daily data). Spacing the labels by `ceil(steps / X_AXIS_LABEL_COUNT)` (at least 1)
+ * caps them at roughly the target count for any range, fixing the unreadably granular axis that
+ * results from labelling every step.
+ *
+ * @param xValues the chart's x-values (epoch seconds), as passed to Vico.
  */
-internal fun xAxisLabelSpacing(pointCount: Int): Int {
-    if (pointCount <= X_AXIS_LABEL_COUNT) return 1
-    return (pointCount + X_AXIS_LABEL_COUNT - 1) / X_AXIS_LABEL_COUNT
+internal fun xAxisLabelSpacing(xValues: List<Double>): Int {
+    if (xValues.size <= X_AXIS_LABEL_COUNT) return 1
+    val step = xDeltaGcd(xValues)
+    val span = xValues.last() - xValues.first()
+    if (step <= 0.0 || span <= 0.0) return 1
+    val steps = (span / step).roundToInt()
+    if (steps <= X_AXIS_LABEL_COUNT) return 1
+    return (steps + X_AXIS_LABEL_COUNT - 1) / X_AXIS_LABEL_COUNT
+}
+
+/**
+ * The greatest common divisor of the differences between consecutive [xValues], matching Vico's
+ * `getXDeltaGcd`/`Double.gcdWith` so [xAxisLabelSpacing] derives the same axis step Vico uses.
+ */
+private fun xDeltaGcd(xValues: List<Double>): Double {
+    var gcd: Double? = null
+    for (i in 1 until xValues.size) {
+        val delta = abs(xValues[i] - xValues[i - 1])
+        if (delta == 0.0) continue
+        gcd = if (gcd == null) delta else gcd.gcdWith(delta)
+    }
+    return gcd ?: 1.0
+}
+
+/** Mirrors Vico's `Double.gcdWith`: a Euclidean GCD rounded to [DOUBLE_GCD_DECIMALS] decimals. */
+private fun Double.gcdWith(other: Double): Double =
+    gcdWithImpl(this, other, threshold = 10.0.pow(-DOUBLE_GCD_DECIMALS - 1))
+        .roundToDecimals(DOUBLE_GCD_DECIMALS)
+
+private tailrec fun gcdWithImpl(a: Double, b: Double, threshold: Double): Double =
+    when {
+        a < b -> gcdWithImpl(b, a, threshold)
+        abs(b) < threshold -> a
+        else -> gcdWithImpl(b, a - floor(a / b) * b, threshold)
+    }
+
+private fun Double.roundToDecimals(decimals: Int): Double {
+    val multiplier = 10.0.pow(decimals)
+    return (this * multiplier).roundToLong() / multiplier
 }
 
 /**
@@ -156,11 +211,13 @@ fun PriceChartView(
                 // line spans the full chart width; the axis still reserves outer layer margin for the
                 // extreme labels (getStartLayerMargin/getEndLayerMargin), so they stay fully visible.
                 //
-                // The aligned placer otherwise labels every point, so for large ranges with many
-                // points the labels overlap into an unreadable smear. Spacing them out (every Nth
-                // point) caps the visible labels at roughly X_AXIS_LABEL_COUNT so they stay legible.
-                itemPlacer = remember(dataPoints.size) {
-                    val spacing = xAxisLabelSpacing(dataPoints.size)
+                // The aligned placer otherwise labels every axis step, and the axis step (the GCD of
+                // the timestamp gaps) is small because of weekend/holiday gaps and the limited
+                // precision of the Float timestamps — so a long range produces hundreds of labels
+                // that collapse into an unreadable smear. Spacing the labels by xAxisLabelSpacing
+                // caps the visible labels at roughly X_AXIS_LABEL_COUNT so they stay legible.
+                itemPlacer = remember(dataPoints) {
+                    val spacing = xAxisLabelSpacing(dataPoints.map { it.xVal.toDouble() })
                     HorizontalAxis.ItemPlacer.aligned(
                         spacing = { spacing },
                         addExtremeLabelPadding = false
