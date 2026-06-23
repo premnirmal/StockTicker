@@ -91,7 +91,7 @@ class IosSettingsViewModel(
         notificationAlerts = prefs.notificationAlerts(),
         startTime = prefs.startTime(),
         endTime = prefs.endTime(),
-        autoSort = null,
+        autoSort = prefs.autoSort(),
         roundToTwoDp = prefs.roundToTwoDecimalPlaces(),
     )
 
@@ -133,6 +133,11 @@ class IosSettingsViewModel(
 
     fun setNotificationAlerts(receive: Boolean) {
         prefs.setNotificationAlerts(receive)
+        refresh()
+    }
+
+    fun setAutoSort(autoSort: Boolean) {
+        prefs.setAutoSort(autoSort)
         refresh()
     }
 }
@@ -208,7 +213,7 @@ fun SettingsScreen(
         onStartTimeSet = { time, _, _ -> viewModel.setStartTime(time) },
         onEndTimeSet = { time, _, _ -> viewModel.setEndTime(time) },
         onUpdateDaysSelected = { viewModel.setUpdateDaysPref(it) },
-        onAutoSortChanged = { /* iOS has no Glance widgets to auto-sort */ },
+        onAutoSortChanged = { viewModel.setAutoSort(it) },
         onRoundToTwoDpChanged = { viewModel.setRoundToTwoDp(it) },
         onNotificationAlertsChanged = { viewModel.setNotificationAlerts(it) },
         onSharePortfolio = { SettingsKoin.portfolioExchange.share() },

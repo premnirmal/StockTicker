@@ -76,6 +76,11 @@ class StocksProvider(
                 fetch()
             }
         }
+        // Re-emit the portfolio whenever the auto-sort preference changes so the watchlist
+        // re-orders immediately when the user toggles it in Settings.
+        coroutineScope.launch {
+            appPreferences.autoSortFlow.collect { emitPortfolio() }
+        }
     }
 
     private suspend fun fetchLocal() = withContext(ioDispatcher) {
@@ -93,7 +98,12 @@ class StocksProvider(
     }
 
     private fun emitPortfolio() {
-        _portfolio.value = quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList()
+        val quotes = quoteMap.values.filter { tickerSet.contains(it.symbol) }
+        _portfolio.value = if (appPreferences.autoSort()) {
+            quotes.sortedByDescending { it.changeInPercent }
+        } else {
+            quotes.toList()
+        }
     }
 
     private fun saveTickers() = storage.saveTickers(tickerSet)
