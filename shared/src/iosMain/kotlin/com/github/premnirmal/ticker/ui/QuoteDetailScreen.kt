@@ -31,7 +31,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.shared.resources.Res
@@ -102,7 +104,7 @@ private enum class ActiveEditor { NONE, POSITIONS, ALERTS, NOTES, DISPLAYNAME }
  * the shared [AddPositionScreen]/[AlertsScreen]/[NotesScreen]/[DisplaynameScreen] composables,
  * presented full-screen and persisted through the shared view models.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun QuoteDetailScreen(
     symbol: String,
@@ -120,6 +122,16 @@ fun QuoteDetailScreen(
     var activeEditor by remember(symbol) { mutableStateOf(ActiveEditor.NONE) }
     // Bumped whenever an editor persists a change so the header/holdings reload from storage.
     var reloadKey by remember(symbol) { mutableStateOf(0) }
+
+    // Support the iOS edge-swipe "back" gesture for the full-screen editors. They are presented via
+    // [activeEditor] state (not a NavHost back stack), so without this handler the start-edge pan
+    // would fall through to the root NavHost and pop the whole quote detail back to home. While an
+    // editor is open we intercept the gesture here to dismiss the editor and return to the detail.
+    BackHandler(enabled = activeEditor != ActiveEditor.NONE) {
+        activeEditor = ActiveEditor.NONE
+        reloadKey++
+        viewModel.fetchQuote(symbol)
+    }
 
     LaunchedEffect(symbol) {
         viewModel.loadQuote(symbol)

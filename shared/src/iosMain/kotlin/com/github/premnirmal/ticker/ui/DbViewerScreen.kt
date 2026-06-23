@@ -16,7 +16,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.interop.UIKitView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -211,9 +213,13 @@ private fun String.escapeHtml(): String =
  * Multiplatform's [UIKitView] interop. Reached from the Settings tab by tapping the version label
  * five times, matching the Android "discover the DB" gesture.
  */
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalForeignApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalForeignApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun DbViewerScreen(onBack: () -> Unit) {
+    // Allow the iOS edge-swipe "back" gesture to dismiss this full-screen viewer. It is presented
+    // via Settings' `showDbViewer` state rather than a NavHost back stack, so this handler is what
+    // routes the start-edge pan to [onBack] instead of letting it pop the Settings tab.
+    BackHandler(onBack = onBack)
     val viewModel = remember { IosDbViewerViewModel(DbViewerKoin.quoteDao) }
     LaunchedEffect(Unit) { viewModel.generate() }
     val html by viewModel.html.collectAsState()
