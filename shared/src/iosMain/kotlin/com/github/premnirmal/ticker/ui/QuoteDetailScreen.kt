@@ -40,6 +40,7 @@ import com.github.premnirmal.shared.resources.Res
 import com.github.premnirmal.shared.resources.ic_arrow_back
 import com.github.premnirmal.shared.resources.ic_close
 import com.github.premnirmal.shared.resources.ic_done
+import com.github.premnirmal.shared.resources.ic_edit
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.components.AppNumberFormat
 import com.github.premnirmal.ticker.components.CompactNumberFormat
@@ -434,10 +435,10 @@ private fun EditSection(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = "Edit",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+                Icon(
+                    painter = painterResource(Res.drawable.ic_edit),
+                    contentDescription = "Edit",
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             content()
