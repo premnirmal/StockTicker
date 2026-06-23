@@ -104,7 +104,7 @@ class StocksProvider(
         _portfolio.value = if (appPreferences.autoSort()) {
             quotes.sortedByDescending { it.changeInPercent }
         } else {
-            quotes.toList()
+            quotes
         }
     }
 
