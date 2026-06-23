@@ -1,6 +1,5 @@
 import WidgetKit
 import SwiftUI
-import Charts
 import AppIntents
 import Shared
 
@@ -123,51 +122,33 @@ private struct QuoteRowView: View {
     }
 }
 
-/// Small/medium widget: a list of the first few watchlist rows.
-private struct StockTickerListView: View {
+/// Two-column grid layout matching the Android widget. Shows all quotes in a scrollable grid.
+private struct StockTickerGridView: View {
     let entry: StockTickerEntry
-    let maxRows: Int
+    let columns: Int
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            if entry.quotes.isEmpty {
-                EmptyWatchlistView()
-            } else {
-                ForEach(entry.quotes.prefix(maxRows)) { row in
-                    QuoteRowView(row: row, configuration: entry.configuration)
-                }
-                Spacer(minLength: 0)
-            }
-        }
+    private let gridColumns: [GridItem]
+
+    init(entry: StockTickerEntry, columns: Int = 2) {
+        self.entry = entry
+        self.columns = columns
+        self.gridColumns = Array(repeating: GridItem(.flexible(), spacing: 8), count: columns)
     }
-}
-
-/// Large widget: the watchlist rows plus a bar chart of each symbol's percent change.
-private struct StockTickerChartView: View {
-    let entry: StockTickerEntry
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             if entry.configuration.showHeader {
                 Text("Watchlist")
-                    .font(.headline)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
             if entry.quotes.isEmpty {
                 EmptyWatchlistView()
             } else {
-                ForEach(entry.quotes.prefix(5)) { row in
-                    QuoteRowView(row: row, configuration: entry.configuration)
-                }
-                Chart(Array(entry.quotes.prefix(6))) { row in
-                    BarMark(
-                        x: .value("Symbol", row.symbol),
-                        y: .value("Change %", row.changeInPercent)
-                    )
-                    .foregroundStyle(row.positive ? Color.green : Color.red)
-                }
-                .frame(height: 80)
-                .chartYAxis {
-                    AxisMarks(position: .leading)
+                LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 6) {
+                    ForEach(entry.quotes.prefix(20)) { row in
+                        QuoteRowView(row: row, configuration: entry.configuration)
+                    }
                 }
             }
         }
@@ -195,11 +176,11 @@ struct StockTickerWidgetEntryView: View {
         Group {
             switch family {
             case .systemSmall:
-                StockTickerListView(entry: entry, maxRows: 3)
+                StockTickerGridView(entry: entry, columns: 1)
             case .systemMedium:
-                StockTickerListView(entry: entry, maxRows: 4)
+                StockTickerGridView(entry: entry, columns: 2)
             default:
-                StockTickerChartView(entry: entry)
+                StockTickerGridView(entry: entry, columns: 2)
             }
         }
         .containerBackgroundCompat()
