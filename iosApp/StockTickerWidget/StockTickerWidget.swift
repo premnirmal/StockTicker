@@ -120,16 +120,19 @@ private struct QuoteRowView: View {
     }
 }
 
-/// Two-column grid layout matching the Android widget. Shows all quotes in a scrollable grid.
+/// Two-column grid layout matching the Android widget. Shows a limited number of quotes to avoid
+/// clipping in each widget size (iOS widgets do not support scrolling).
 private struct StockTickerGridView: View {
     let entry: StockTickerEntry
     let columns: Int
+    let maxItems: Int
 
     private let gridColumns: [GridItem]
 
-    init(entry: StockTickerEntry, columns: Int = 2) {
+    init(entry: StockTickerEntry, columns: Int = 2, maxItems: Int = 16) {
         self.entry = entry
         self.columns = columns
+        self.maxItems = maxItems
         self.gridColumns = Array(repeating: GridItem(.flexible(), spacing: 8), count: columns)
     }
 
@@ -144,7 +147,7 @@ private struct StockTickerGridView: View {
                 EmptyWatchlistView()
             } else {
                 LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 6) {
-                    ForEach(entry.quotes.prefix(20)) { row in
+                    ForEach(entry.quotes.prefix(maxItems)) { row in
                         QuoteRowView(row: row, configuration: entry.configuration)
                     }
                 }
@@ -174,11 +177,11 @@ struct StockTickerWidgetEntryView: View {
         Group {
             switch family {
             case .systemSmall:
-                StockTickerGridView(entry: entry, columns: 1)
+                StockTickerGridView(entry: entry, columns: 1, maxItems: 3)
             case .systemMedium:
-                StockTickerGridView(entry: entry, columns: 2)
+                StockTickerGridView(entry: entry, columns: 2, maxItems: 8)
             default:
-                StockTickerGridView(entry: entry, columns: 2)
+                StockTickerGridView(entry: entry, columns: 2, maxItems: 16)
             }
         }
         .containerBackgroundCompat()
