@@ -240,6 +240,18 @@ internal fun iosVersionName(): String {
 }
 
 /**
+ * The app's display name (`CFBundleDisplayName`, falling back to `CFBundleName`), the iOS analogue of
+ * Android's flavor-specific `app_name` string. Used as the watchlist header title so it mirrors the
+ * Android header.
+ */
+internal fun iosAppName(): String {
+    val info = NSBundle.mainBundle.infoDictionary
+    val displayName = info?.get("CFBundleDisplayName") as? String
+    val bundleName = info?.get("CFBundleName") as? String
+    return displayName ?: bundleName ?: "Stocks Widget"
+}
+
+/**
  * The current build number (`CFBundleVersion`) as an integer, the iOS analogue of Android's
  * `versionCode`. Used to detect launches following an app update. Returns `0` when the value is
  * missing or non-numeric.
