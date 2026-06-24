@@ -422,6 +422,18 @@ Migrated into `commonMain` so far:
   which uses the Android `FoldingFeature`, stays in `:app`). The Android runtime still resolves the
   Jetpack `androidx.navigation` `2.8.5` artifacts (forced via a `resolutionStrategy`, since the CMP
   library's transitive Android artifacts target a newer `compileSdk`), with the CMP wrapper klib on top.
+- The remaining **shared UI building blocks** moved into `commonMain`: the platform-neutral in-app
+  message model (`AppMessage`, in `ticker.ui`, with its `BottomSheetMessage`/`BannerMessage`
+  subtypes — the Android `AppMessaging` dispatcher that needs a `Context` to resolve string
+  resources stays in `:androidApp` and emits these); the **bottom-sheet message UI**
+  (`BottomSheetWithMessage`/`ModalBottomSheetWithMessage`, its Android `@Preview` dropped); the
+  **bottom-sheet message collector** (`CollectBottomSheetMessage`) — now a plain composable that
+  takes the `bottomSheets: Flow<BottomSheetMessage>` as a parameter (hoisted off `LocalAppMessaging`)
+  and queues with a multiplatform `ArrayDeque` instead of `java.util.LinkedList`, with `BaseActivity`
+  supplying `appMessaging.bottomSheets`; the Compose-aware `Quote.changeColour`/`ChartData.changeColour`
+  extensions (`ticker.network.data`, now reading `SharedColours` rather than the Android-only
+  `ColourPalette`); and the navigation `rememberScrollToTopAction` + `LocalNavGraphViewModelStoreOwner`
+  (`ticker.navigation`), built on the already-shared `NavigationViewModel`.
 
 Phase 4 (shared Compose UI) is complete: the home/watchlist, trending/news-feed, search, settings,
 widgets and quote-detail screens, their ViewModels, the shared building blocks, the Vico price chart,
