@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.model.FetchResult
+import com.github.premnirmal.ticker.navigation.LocalContentBottomPadding
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.Suggestion
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
@@ -261,7 +262,7 @@ private fun SearchResults(
         modifier = Modifier
             .fillMaxHeight()
             .background(color = MaterialTheme.colorScheme.surface),
-        contentPadding = PaddingValues(horizontal = 8.dp),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = LocalContentBottomPadding.current),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = rememberLazyListState(),
     ) {
@@ -312,6 +313,7 @@ private fun TrendingStocks(
             .background(color = MaterialTheme.colorScheme.surface)
             .then(listFadingEdges(gridState)),
         columns = columns,
+        contentPadding = PaddingValues(bottom = LocalContentBottomPadding.current),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalItemSpacing = 8.dp,
         state = gridState,

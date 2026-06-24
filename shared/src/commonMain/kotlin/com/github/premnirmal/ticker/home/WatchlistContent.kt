@@ -74,6 +74,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.ticker.navigation.LocalContentBottomPadding
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -325,7 +326,7 @@ private fun Content(
                             .then(listFadingEdges(lazyStaggeredGridState)),
                         state = lazyStaggeredGridState,
                         columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-                        contentPadding = PaddingValues(all = 8.dp),
+                        contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp + LocalContentBottomPadding.current),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalItemSpacing = 8.dp,
                     ) {

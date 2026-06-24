@@ -24,6 +24,7 @@ import com.github.premnirmal.shared.resources.Res
 import com.github.premnirmal.shared.resources.ic_refresh
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.navigation.LocalContentBottomPadding
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
@@ -68,10 +69,11 @@ fun WatchlistScreen(
             )
         }
     ) { padding ->
+        val bottomNavPadding = LocalContentBottomPadding.current
         LazyVerticalStaggeredGrid(
             modifier = Modifier.fillMaxSize().padding(padding),
             columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-            contentPadding = PaddingValues(all = 8.dp),
+            contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp + bottomNavPadding),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalItemSpacing = 8.dp,
         ) {

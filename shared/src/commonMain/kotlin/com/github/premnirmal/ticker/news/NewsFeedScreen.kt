@@ -20,6 +20,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.ticker.navigation.LocalContentBottomPadding
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.news.NewsFeedItem.ArticleNewsFeed
@@ -108,9 +109,10 @@ private fun NewsFeedItems(
     registerScrollToTop {
         state.animateScrollToItem(0)
     }
+    val bottomNavPadding = LocalContentBottomPadding.current
     LazyColumn(
         modifier = modifier.fillMaxWidth().then(listFadingEdges(state)),
-        contentPadding = PaddingValues(all = 8.dp),
+        contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp + bottomNavPadding),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = state,
     ) {

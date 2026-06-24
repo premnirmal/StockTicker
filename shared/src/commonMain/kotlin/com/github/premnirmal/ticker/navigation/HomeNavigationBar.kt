@@ -2,12 +2,15 @@ package com.github.premnirmal.ticker.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -24,6 +27,8 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,7 +40,6 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.BlurEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
@@ -46,7 +50,10 @@ import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
@@ -60,16 +67,34 @@ private val GlassBlurRadius = 24.dp
 private const val GlassTintAlpha = 0.55f
 
 /** Corner radius giving the floating bar its rounded "pill" silhouette. */
-private val GlassCornerRadius = 32.dp
+private val GlassCornerRadius = 28.dp
 
 /** Horizontal inset so the floating bar does not span the full screen width. */
-private val GlassHorizontalMargin = 24.dp
+private val GlassHorizontalMargin = 16.dp
 
 /** Gap between the floating bar and the bottom edge (added on top of the system nav inset). */
-private val GlassBottomMargin = 12.dp
+private val GlassBottomMargin = 8.dp
 
 /** Rounded "pill" silhouette of the floating bar; hoisted so it is allocated once. */
 private val GlassShape = RoundedCornerShape(GlassCornerRadius)
+
+/** Inner padding around the row of navigation items, keeping the bar compact. */
+private val GlassContentPadding = 6.dp
+
+/** Corner radius of the translucent highlight drawn behind the selected item. */
+private val GlassSelectedCornerRadius = 22.dp
+
+/** Rounded silhouette of the selected-item highlight; hoisted so it is allocated once. */
+private val GlassSelectedShape = RoundedCornerShape(GlassSelectedCornerRadius)
+
+/**
+ * Vertical space occupied by the floating "liquid glass" bottom navigation bar (its measured height
+ * including the system navigation inset and bottom margin). Home content is rendered edge-to-edge
+ * beneath the floating bar, so scrollable screens add this as bottom content padding to ensure their
+ * last item can scroll clear of the bar instead of staying hidden behind it. Defaults to `0.dp` when
+ * no floating bar is present (e.g. the navigation-rail layout), so screens can read it unconditionally.
+ */
+val LocalContentBottomPadding = compositionLocalOf { 0.dp }
 
 /**
  * Layout-id enum for positioning content in the [HomeNavigationRail] custom layout.
@@ -109,6 +134,7 @@ fun BottomNavigationBar(
     navigateToTopLevelDestination: (HomeBottomNavDestination) -> Unit,
     modifier: Modifier = Modifier,
     backdrop: GraphicsLayer? = null,
+    onHeightChanged: (Dp) -> Unit = {},
 ) {
     if (backdrop == null) {
         NavigationBar(
@@ -127,8 +153,14 @@ fun BottomNavigationBar(
     // mis-aligned blur on the very first frame before onGloballyPositioned fires.
     var barOffset by remember { mutableStateOf(Offset.Unspecified) }
     val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+    val density = LocalDensity.current
     Box(
         modifier = modifier
+            // Report the full height occupied by the floating bar (including the system navigation
+            // inset and bottom margin added below) so home content can pad its scrollable lists by
+            // the same amount. Measured before those paddings are applied so the reported value
+            // covers the whole region the bar overlays.
+            .onSizeChanged { size -> onHeightChanged(with(density) { size.height.toDp() }) }
             // Float above the system navigation inset, then add margins so the pill clears the
             // screen edges and does not span the full width.
             .windowInsetsPadding(WindowInsets.navigationBars)
@@ -169,12 +201,74 @@ fun BottomNavigationBar(
                 .matchParentSize()
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = GlassTintAlpha))
         )
-        NavigationBar(
-            containerColor = Color.Transparent,
-            // Insets are already handled by the floating container, so the bar itself adds none.
-            windowInsets = WindowInsets(0, 0, 0, 0),
+        // Custom compact item row (instead of Material3 NavigationBar, which pins an 80.dp height and
+        // a tinted "pill" indicator). This keeps the bar low-profile and lets the selected item read
+        // as a frosted-glass highlight rather than a solid container colour.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(GlassContentPadding),
+            horizontalArrangement = Arrangement.spacedBy(GlassContentPadding),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            NavigationBarItems(selectedDestination, destinations, navigateToTopLevelDestination)
+            destinations.forEach { destination ->
+                GlassNavigationItem(
+                    destination = destination,
+                    selected = selectedDestination == destination.route.route,
+                    onClick = { navigateToTopLevelDestination(destination) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * A single item in the floating "liquid glass" bottom navigation bar. The selected item is marked by
+ * a translucent, softly-bordered rounded highlight (the same frosted-glass language as the bar
+ * itself) rather than a solid pink container, and only the selected item shows its label.
+ */
+@Composable
+private fun GlassNavigationItem(
+    destination: HomeBottomNavDestination,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val tint = when {
+        !destination.enabled -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+        else -> MaterialTheme.colorScheme.primary
+    }
+    val highlightColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
+    val highlightBorder = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f)
+    Column(
+        modifier = modifier
+            .clip(GlassSelectedShape)
+            .clickable(enabled = destination.enabled, onClick = onClick)
+            .then(
+                if (selected) {
+                    Modifier
+                        .background(highlightColor, GlassSelectedShape)
+                        .border(1.dp, highlightBorder, GlassSelectedShape)
+                } else {
+                    Modifier
+                }
+            )
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Icon(
+            painter = destination.selectedIcon,
+            contentDescription = destination.contentDescription,
+            tint = tint,
+        )
+        if (selected) {
+            Text(
+                text = destination.label,
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+            )
         }
     }
 }
