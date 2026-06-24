@@ -154,7 +154,7 @@ private struct StockTickerGridView: View {
 private struct EmptyWatchlistView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("Stock Ticker")
+            Text("Stocks Widget")
                 .font(.headline)
             Text("Open the app and add symbols to your watchlist.")
                 .font(.caption)
@@ -208,7 +208,7 @@ struct StockTickerWidget: Widget {
         ) { entry in
             StockTickerWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Stock Ticker")
+        .configurationDisplayName("Stocks Widget")
         .description("Track your watchlist symbols at a glance.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }

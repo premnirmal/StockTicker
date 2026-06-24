@@ -97,6 +97,12 @@ private fun HomeContent(
         HomeNavigationActions(navController, navigationViewModel) {}
     }
 
+    LaunchedEffect(Unit) {
+        // Mirror Android's HomeViewModel.checkShowWhatsNew(): present the changelog automatically on
+        // the first launch after the app has been updated, recording the installed build version.
+        whatsNewController.checkShowOnLaunch(iosVersionCode())
+    }
+
     val destinations = listOf(
         HomeBottomNavDestination(
             route = HomeRoute.Watchlist,
@@ -165,7 +171,7 @@ private fun HomeContent(
                     widgets = {},
                     settings = {
                         SettingsScreen(
-                            onWhatsNew = { whatsNewController.show() },
+                            onWhatsNew = { whatsNewController.show(iosVersionCode()) },
                             onTutorial = { onboardingController.show() },
                         )
                     }
@@ -173,5 +179,5 @@ private fun HomeContent(
             }
         )
     }
-    WhatsNewDialog(controller = whatsNewController, versionName = iosVersionName())
+    WhatsNewBottomSheet(controller = whatsNewController, versionName = iosVersionName())
 }

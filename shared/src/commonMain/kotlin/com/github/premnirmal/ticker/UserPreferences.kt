@@ -44,6 +44,15 @@ interface UserPreferences {
   /** Whether the user should be prompted to rate the app on this launch. */
   fun shouldPromptRate(): Boolean
 
+  /**
+   * The build version that was installed the last time the "What's new" changelog was shown, or `-1`
+   * if it has never been recorded. Used to detect launches following an app update.
+   */
+  fun getLastSavedVersionCode(): Int
+
+  /** Records [code] as the build version for which the "What's new" changelog has been shown. */
+  fun saveVersionCode(code: Int)
+
   /** Whether values are rounded to two decimal places. */
   fun roundToTwoDecimalPlaces(): Boolean
 

@@ -145,4 +145,39 @@ class NewsProviderTest {
         assertTrue(result.wasSuccessful)
         assertEquals(listOf("AAPL"), result.data.map { it.symbol })
     }
+
+    @Test
+    fun fetchTrendingStocksFallsBackToApeWisdomWhenMostActiveQuoteFails() = runTest {
+        // Most-active returns a symbol, but quoting it fails (e.g. crumb/cookies not bootstrapped on
+        // the first Yahoo call). The provider must fall back to ApeWisdom instead of returning empty.
+        val mostActiveHtml =
+            "<html><body><fin-streamer data-symbol=\"TSLA\" class=\"fw(600)\">x</fin-streamer></body></html>"
+        val mostActiveEngine = MockEngine { respond(mostActiveHtml, HttpStatusCode.OK) }
+        val apeWisdomEngine = MockEngine {
+            respond(
+                """{"count":1,"pages":1,"current_page":1,"results":[{"rank":1,"ticker":"AAPL","mentions":5,"mentions_24h_ago":4,"upvotes":3,"name":"Apple"}]}""",
+                HttpStatusCode.OK,
+                jsonHeaders
+            )
+        }
+        // The quote endpoint fails for the most-active symbol but succeeds for the ApeWisdom ticker.
+        val yahooQuoteEngine = MockEngine { request ->
+            if (request.url.parameters["symbols"]?.contains("TSLA") == true) {
+                respondError(HttpStatusCode.InternalServerError)
+            } else {
+                respond(quotesJson("AAPL"), HttpStatusCode.OK, jsonHeaders)
+            }
+        }
+
+        val provider = newsProvider(
+            mostActiveEngine = mostActiveEngine,
+            apeWisdomEngine = apeWisdomEngine,
+            yahooQuoteEngine = yahooQuoteEngine
+        )
+
+        val result = provider.fetchTrendingStocks()
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("AAPL"), result.data.map { it.symbol })
+    }
 }

@@ -30,6 +30,12 @@ class FakeUserPreferences : UserPreferences {
 
     override fun shouldPromptRate(): Boolean = false
 
+    private var lastSavedVersionCode = -1
+    override fun getLastSavedVersionCode(): Int = lastSavedVersionCode
+    override fun saveVersionCode(code: Int) {
+        lastSavedVersionCode = code
+    }
+
     private var roundToTwoDecimalPlaces = true
     override fun roundToTwoDecimalPlaces(): Boolean = roundToTwoDecimalPlaces
     override fun setRoundToTwoDecimalPlaces(round: Boolean) {

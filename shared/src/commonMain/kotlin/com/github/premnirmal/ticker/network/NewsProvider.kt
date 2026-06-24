@@ -91,8 +91,15 @@ class NewsProvider(
                             val mostActiveStocks = stocksApi.getStocks(symbols)
                             if (mostActiveStocks.wasSuccessful) {
                                 cachedTrendingStocks = mostActiveStocks.data
+                                return@withContext mostActiveStocks
                             }
-                            return@withContext mostActiveStocks
+                            // Don't return the failure here: fall through to the ApeWisdom fallback
+                            // below. On the very first trending fetch (e.g. on a fresh launch) this quote
+                            // request can fail because it is the first Yahoo call and the crumb/consent
+                            // cookies have not been bootstrapped yet (loadCrumb only runs reactively on
+                            // the quote's 401). The fallback request reuses that now-established session
+                            // and succeeds, so the trending list is populated on the first attempt instead
+                            // of appearing empty until a manual retry.
                         }
                     }
                 } catch (e: Exception) {

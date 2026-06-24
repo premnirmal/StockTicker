@@ -48,7 +48,7 @@ struct WatchlistSymbolQuery: EntityStringQuery {
     }
 }
 
-/// Per-widget configuration for the Stock Ticker home-screen widget.
+/// Per-widget configuration for the StocksWidget home-screen widget.
 ///
 /// This is the iOS counterpart of Android's per-widget Glance options: each placed widget instance
 /// keeps its own watchlist selection and appearance. Editing it (touch & hold the widget → *Edit
@@ -56,7 +56,7 @@ struct WatchlistSymbolQuery: EntityStringQuery {
 /// configuration. Appearance is applied purely on the render side, while the watchlist selection
 /// filters the shared snapshot, so no extra data needs to cross the App Group boundary.
 struct StockTickerConfigurationIntent: WidgetConfigurationIntent {
-    static var title: LocalizedStringResource = "Stock Ticker"
+    static var title: LocalizedStringResource = "Stocks Widget"
     static var description = IntentDescription("Choose which watchlist symbols to show and how this widget looks.")
 
     /// The symbols this widget should show. Empty (the default) means the whole watchlist.

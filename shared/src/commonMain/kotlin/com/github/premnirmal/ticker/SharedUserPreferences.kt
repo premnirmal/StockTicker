@@ -67,6 +67,12 @@ open class SharedUserPreferences(
 
     override fun shouldPromptRate(): Boolean = Random.nextInt(0, 10) % 3 == 0
 
+    override fun getLastSavedVersionCode(): Int = store.getInt(APP_VERSION_CODE, -1)
+
+    override fun saveVersionCode(code: Int) {
+        store.setInt(APP_VERSION_CODE, code)
+    }
+
     override fun roundToTwoDecimalPlaces(): Boolean = store.getBoolean(SETTING_ROUND_TWO_DP, true)
 
     override fun setRoundToTwoDecimalPlaces(round: Boolean) {
@@ -161,6 +167,7 @@ open class SharedUserPreferences(
         const val UPDATE_INTERVAL = "UPDATE_INTERVAL"
         const val WIDGET_REFRESHING = "WIDGET_REFRESHING"
         const val TUTORIAL_SHOWN = "TUTORIAL_SHOWN"
+        const val APP_VERSION_CODE = "APP_VERSION_CODE"
         const val SETTING_ROUND_TWO_DP = "SETTING_ROUND_TWO_DP"
         const val SETTING_NOTIFICATION_ALERTS = "SETTING_NOTIFICATION_ALERTS"
         const val SETTING_AUTOSORT = "SETTING_AUTOSORT"

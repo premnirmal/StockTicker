@@ -27,11 +27,6 @@ class AppPreferences constructor(
         INSTANCE = this
     }
 
-    fun getLastSavedVersionCode(): Int = store.getInt(APP_VERSION_CODE, -1)
-    fun saveVersionCode(code: Int) {
-        store.setInt(APP_VERSION_CODE, code)
-    }
-
     val selectedDecimalFormat: Format
         get() = if (roundToTwoDecimalPlaces()) {
             DECIMAL_FORMAT_2DP
