@@ -67,6 +67,7 @@ class StocksProvider(
         tickerSet.addAll(saved)
         if (tickerSet.isEmpty()) {
             tickerSet.addAll(DEFAULT_STOCKS)
+            saveTickers()
         }
         _tickers.value = tickerSet.toList()
         _fetchState.value = FetchState.Success(lastFetched)
@@ -100,12 +101,11 @@ class StocksProvider(
     }
 
     private fun emitPortfolio() {
-        val quotes = quoteMap.values.filter { tickerSet.contains(it.symbol) }
-        _portfolio.value = if (appPreferences.autoSort()) {
-            quotes.sortedByDescending { it.changeInPercent }
-        } else {
-            quotes
-        }
+        _portfolio.value = buildWatchlistQuotes(
+            tickers = tickerSet,
+            quotesBySymbol = quoteMap,
+            autoSort = appPreferences.autoSort()
+        )
     }
 
     private fun saveTickers() = storage.saveTickers(tickerSet)

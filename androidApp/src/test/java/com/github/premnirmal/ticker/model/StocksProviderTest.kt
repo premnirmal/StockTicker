@@ -100,6 +100,7 @@ class StocksProviderTest : BaseUnitTest() {
         val provider = createProvider(tickers = emptySet())
         assertTrue(provider.tickers.value.isNotEmpty())
         assertTrue(provider.hasTicker("AAPL"))
+        verify(storage).saveTickers(provider.tickers.value.toSet())
     }
 
     @Test fun testAddStockAddsNewTicker() {

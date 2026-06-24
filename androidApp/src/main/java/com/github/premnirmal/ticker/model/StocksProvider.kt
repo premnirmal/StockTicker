@@ -77,6 +77,7 @@ class StocksProvider constructor(
         this.tickerSet.addAll(tickers)
         if (this.tickerSet.isEmpty()) {
             this.tickerSet.addAll(DEFAULT_STOCKS)
+            saveTickers()
         }
         _tickers.value = tickerSet.toList()
         _fetchState.value = FetchState.Success(lastFetched)
