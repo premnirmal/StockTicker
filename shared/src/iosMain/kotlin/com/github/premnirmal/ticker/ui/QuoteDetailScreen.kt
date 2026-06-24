@@ -68,9 +68,7 @@ import platform.Foundation.NSDateFormatter
 import platform.Foundation.NSNumber
 import platform.Foundation.NSNumberFormatter
 import platform.Foundation.NSNumberFormatterDecimalStyle
-import platform.Foundation.NSURL
 import platform.Foundation.dateWithTimeIntervalSince1970
-import platform.UIKit.UIApplication
 
 private object QuoteDetailKoin : KoinComponent {
     val stocksProvider: IStocksProvider by inject()
@@ -624,9 +622,7 @@ private fun parseDecimal(text: String): Float? =
     text.replace(localeDecimalSeparator(), '.').toFloatOrNull()
 
 private fun openUrl(url: String?) {
-    val target = url ?: return
-    val nsUrl = NSURL.URLWithString(target) ?: return
-    UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any?>(), completionHandler = null)
+    openUrlInApp(url)
 }
 
 /**

@@ -15,9 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import platform.Foundation.NSBundle
 import platform.Foundation.NSDate
-import platform.Foundation.NSURL
 import platform.Foundation.timeIntervalSince1970
-import platform.UIKit.UIApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -145,7 +143,7 @@ class IosSettingsViewModel(
 /**
  * iOS Settings tab. Renders the shared [com.github.premnirmal.ticker.settings.SettingsScreen] backed
  * by an [IosSettingsViewModel]; the external links (report bug / feature request / privacy policy /
- * open source) open in the system browser via [UIApplication]. The portfolio share/import/export
+ * open source) open in an in-app Safari view via [openUrlInApp]. The portfolio share/import/export
  * actions are wired to the shared [com.github.premnirmal.ticker.settings.IosPortfolioExchange], which
  * drives the native iOS document pickers via the [com.github.premnirmal.ticker.settings.PortfolioDocumentBridge].
  */
@@ -235,6 +233,5 @@ internal fun iosVersionName(): String {
 }
 
 private fun openUrl(url: String) {
-    val nsUrl = NSURL.URLWithString(url) ?: return
-    UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any?>(), completionHandler = null)
+    openUrlInApp(url)
 }

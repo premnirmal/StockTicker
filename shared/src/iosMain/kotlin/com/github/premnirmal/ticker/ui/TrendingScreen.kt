@@ -23,8 +23,6 @@ import com.github.premnirmal.ticker.news.NewsFeedScreen
 import com.github.premnirmal.ticker.news.NewsFeedViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import platform.Foundation.NSURL
-import platform.UIKit.UIApplication
 
 private object TrendingKoin : KoinComponent {
     val newsProvider: NewsProvider by inject()
@@ -37,7 +35,7 @@ private val NegativeColor = Color(0xFFEF5350)
  * iOS Trending tab. Drives the shared [NewsFeedViewModel] (built from the iOS Koin graph's
  * [NewsProvider]) through the shared [NewsFeedScreen]. The quote-card slot is supplied here with an
  * iOS-native Material 3 card; the news list uses the shared Coil-backed [NewsCard] directly. Tapping
- * a news article opens its URL in the system browser via [UIApplication]. Tapping a trending quote
+ * a news article opens its URL in an in-app Safari view via [openUrlInApp]. Tapping a trending quote
  * navigates to the shared quote-detail destination via [onQuoteClick].
  */
 @Composable
@@ -95,7 +93,5 @@ private fun TrendingQuoteCard(
 }
 
 private fun openArticle(article: NewsArticle) {
-    val url = article.url ?: return
-    val nsUrl = NSURL.URLWithString(url) ?: return
-    UIApplication.sharedApplication.openURL(nsUrl, options = emptyMap<Any?, Any?>(), completionHandler = null)
+    openUrlInApp(article.url)
 }
