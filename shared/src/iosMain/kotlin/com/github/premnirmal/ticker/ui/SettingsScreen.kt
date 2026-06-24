@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.settings.SettingsData
+import com.github.premnirmal.tickerwidget.ui.theme.alegreyaFontFamily
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import platform.Foundation.NSBundle
@@ -222,6 +223,7 @@ fun SettingsScreen(
         onPrivacyPolicy = { openUrl(PRIVACY_POLICY_URL) },
         onOpenSource = { openUrl(OPEN_SOURCE_URL) },
         onVersionTap = { if (versionTapCounter.onTap()) showDbViewer = true },
+        versionFontFamily = alegreyaFontFamily,
         divider = { HorizontalDivider() },
     )
 }
