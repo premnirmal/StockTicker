@@ -79,7 +79,7 @@ fun WhatsNewBottomSheet(controller: WhatsNewController, versionName: String) {
     if (!controller.visible) return
 
     ModalBottomSheet(
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
         dragHandle = { BottomSheetHandle() },
         onDismissRequest = { controller.dismiss() },
     ) {
