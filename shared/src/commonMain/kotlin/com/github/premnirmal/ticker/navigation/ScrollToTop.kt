@@ -31,7 +31,9 @@ fun rememberScrollToTopAction(
     val viewModelStoreOwner = checkNotNull(LocalNavGraphViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalNavGraphViewModelStoreOwner"
     }
-    val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner)
+    val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner) {
+        NavigationViewModel()
+    }
     val scrolling = remember {
         mutableStateOf(false)
     }

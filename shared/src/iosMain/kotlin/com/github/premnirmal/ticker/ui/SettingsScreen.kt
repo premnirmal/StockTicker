@@ -10,6 +10,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.settings.SettingsData
 import com.github.premnirmal.tickerwidget.ui.theme.alegreyaFontFamily
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -225,6 +227,9 @@ fun SettingsScreen(
         onVersionTap = { if (versionTapCounter.onTap()) showDbViewer = true },
         versionFontFamily = alegreyaFontFamily,
         divider = { HorizontalDivider() },
+        registerScrollToTop = { scrollToTop ->
+            rememberScrollToTopAction(HomeRoute.Settings, scrollToTop = scrollToTop)
+        },
     )
 }
 
@@ -232,6 +237,18 @@ internal fun iosVersionName(): String {
     val info = NSBundle.mainBundle.infoDictionary
     val version = info?.get("CFBundleShortVersionString") as? String
     return version ?: "1.0"
+}
+
+/**
+ * The app's display name (`CFBundleDisplayName`, falling back to `CFBundleName`), the iOS analogue of
+ * Android's flavor-specific `app_name` string. Used as the watchlist header title so it mirrors the
+ * Android header.
+ */
+internal fun iosAppName(): String {
+    val info = NSBundle.mainBundle.infoDictionary
+    val displayName = info?.get("CFBundleDisplayName") as? String
+    val bundleName = info?.get("CFBundleName") as? String
+    return displayName ?: bundleName ?: "Stocks Widget"
 }
 
 /**

@@ -10,4 +10,5 @@
     <string name="total_holdings">Total Holdings: %1$s</string>
     <string name="select_widget">Select Widget</string>
     <string name="save">Save</string>
+    <string name="last_and_next_fetch">Last fetch: %1$s\nNext fetch: %2$s</string>
 </resources>

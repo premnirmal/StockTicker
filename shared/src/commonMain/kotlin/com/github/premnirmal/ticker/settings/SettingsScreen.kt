@@ -5,7 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -22,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.ticker.navigation.LocalContentBottomPadding
 import com.github.premnirmal.ticker.ui.CheckboxPreference
 import com.github.premnirmal.ticker.ui.ListPreference
 import com.github.premnirmal.ticker.ui.MultiSelectListPreference
@@ -127,11 +132,18 @@ fun SettingsScreen(
             TopBar(text = settingsTitle)
         }
     ) { padding ->
+        val layoutDirection = LocalLayoutDirection.current
+        val bottomNavPadding = LocalContentBottomPadding.current
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .then(listFadingEdges(state)),
-            contentPadding = padding,
+            contentPadding = PaddingValues(
+                start = padding.calculateStartPadding(layoutDirection),
+                top = padding.calculateTopPadding(),
+                end = padding.calculateEndPadding(layoutDirection),
+                bottom = padding.calculateBottomPadding() + bottomNavPadding,
+            ),
             state = state,
         ) {
             if (showAlarmPermissionRequest) {
