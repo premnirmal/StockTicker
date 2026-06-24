@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +35,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.awaitFirstDown
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.Dp
@@ -87,9 +90,11 @@ fun SearchScreen(
     listFadingEdges: (ScrollableState) -> Modifier = { Modifier },
     registerScrollToTop: @Composable (scrollToTop: suspend () -> Unit) -> Unit = {},
     addSymbolDialog: @Composable (symbol: String, onDismissRequest: () -> Unit) -> Unit = { _, _ -> },
+    clearFocusOnContentTap: Boolean = false,
     twoPane: (@Composable (first: @Composable () -> Unit) -> Unit)? = null,
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
     val onSuggestionClick: (Suggestion) -> Unit = {
         onQuoteClick(Quote(it.symbol))
     }
@@ -133,7 +138,16 @@ fun SearchScreen(
         PullToRefreshBox(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
+                .padding(padding)
+                .pointerInput(clearFocusOnContentTap) {
+                    if (!clearFocusOnContentTap) {
+                        return@pointerInput
+                    }
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false)
+                        focusManager.clearFocus(force = true)
+                    }
+                },
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
         ) {
