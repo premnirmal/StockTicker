@@ -1,31 +1,39 @@
 package com.github.premnirmal.ticker.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.isSpecified
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
@@ -50,6 +58,18 @@ private val GlassBlurRadius = 24.dp
 
 /** Opacity of the surface tint layered over the blurred backdrop to keep items legible. */
 private const val GlassTintAlpha = 0.55f
+
+/** Corner radius giving the floating bar its rounded "pill" silhouette. */
+private val GlassCornerRadius = 32.dp
+
+/** Horizontal inset so the floating bar does not span the full screen width. */
+private val GlassHorizontalMargin = 24.dp
+
+/** Gap between the floating bar and the bottom edge (added on top of the system nav inset). */
+private val GlassBottomMargin = 12.dp
+
+/** Rounded "pill" silhouette of the floating bar; hoisted so it is allocated once. */
+private val GlassShape = RoundedCornerShape(GlassCornerRadius)
 
 /**
  * Layout-id enum for positioning content in the [HomeNavigationRail] custom layout.
@@ -76,9 +96,11 @@ data class HomeBottomNavDestination(
  * Multiplatform bottom navigation bar for the home screen.
  *
  * When a [backdrop] graphics layer is supplied (the home content captured by [HomeScaffold]), the
- * bar renders as translucent "liquid glass": the slice of content sitting behind the bar is drawn
- * blurred underneath a thin surface tint, so the bar reads as frosted glass on both iOS and Android.
- * Passing a `null` backdrop falls back to the original opaque surface bar.
+ * bar renders as a floating, rounded "liquid glass" pill: it is inset from the screen edges (so it
+ * does not span the full width), clipped to rounded corners, and floats above the content + system
+ * navigation inset. The slice of content sitting behind the pill is drawn blurred underneath a thin
+ * surface tint, so the bar reads as frosted glass on both iOS and Android. Passing a `null` backdrop
+ * falls back to the original opaque, full-width surface bar.
  */
 @Composable
 fun BottomNavigationBar(
@@ -98,15 +120,28 @@ fun BottomNavigationBar(
         return
     }
 
-    // Track where the bar sits relative to its parent so the captured backdrop can be shifted up by
-    // the same amount, lining the blurred slice up exactly with the content drawn behind the bar.
-    // Starts as NaN so the backdrop is only drawn once a real position has been measured, avoiding a
-    // mis-aligned (top-of-content) blur on the very first frame before onGloballyPositioned fires.
-    var barTop by remember { mutableFloatStateOf(Float.NaN) }
+    // Track where the pill sits relative to its parent so the captured backdrop can be shifted by the
+    // same amount, lining the blurred slice up exactly with the content drawn behind the pill (both
+    // horizontally and vertically, since the pill is inset from the screen edges). Starts as
+    // Unspecified so the backdrop is only drawn once a real position has been measured, avoiding a
+    // mis-aligned blur on the very first frame before onGloballyPositioned fires.
+    var barOffset by remember { mutableStateOf(Offset.Unspecified) }
+    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
     Box(
-        modifier = modifier.onGloballyPositioned { barTop = it.positionInParent().y }
+        modifier = modifier
+            // Float above the system navigation inset, then add margins so the pill clears the
+            // screen edges and does not span the full width.
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .padding(
+                start = GlassHorizontalMargin,
+                end = GlassHorizontalMargin,
+                bottom = GlassBottomMargin,
+            )
+            .clip(GlassShape)
+            .border(1.dp, borderColor, GlassShape)
+            .onGloballyPositioned { barOffset = it.positionInParent() }
     ) {
-        // Blurred copy of the content behind the bar. The blur is applied by this node's own
+        // Blurred copy of the content behind the pill. The blur is applied by this node's own
         // graphics layer, so only the backdrop is frosted while the navigation items stay crisp.
         Spacer(
             modifier = Modifier
@@ -117,12 +152,12 @@ fun BottomNavigationBar(
                         radiusY = GlassBlurRadius.toPx(),
                         edgeTreatment = TileMode.Decal
                     )
-                    // Clip to the bar's bounds so the blurred backdrop can't bleed outside the bar.
+                    // Clip to the pill's bounds so the blurred backdrop can't bleed outside the pill.
                     clip = true
                 }
                 .drawBehind {
-                    if (!barTop.isNaN()) {
-                        translate(top = -barTop) {
+                    if (barOffset.isSpecified) {
+                        translate(left = -barOffset.x, top = -barOffset.y) {
                             drawLayer(backdrop)
                         }
                     }
@@ -136,7 +171,8 @@ fun BottomNavigationBar(
         )
         NavigationBar(
             containerColor = Color.Transparent,
-            windowInsets = NavigationBarDefaults.windowInsets,
+            // Insets are already handled by the floating container, so the bar itself adds none.
+            windowInsets = WindowInsets(0, 0, 0, 0),
         ) {
             NavigationBarItems(selectedDestination, destinations, navigateToTopLevelDestination)
         }

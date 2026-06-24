@@ -36,8 +36,8 @@ fun HomeScaffold(
 ) {
     if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
         // Capture the home content into a graphics layer so the glass bottom bar can draw a blurred
-        // slice of whatever is scrolling behind it. The content is rendered edge-to-edge (no bottom
-        // padding) so it extends underneath the translucent bar, producing the frosted-glass look.
+        // slice of whatever is scrolling behind it. The content is rendered edge-to-edge (the bar
+        // floats over it) so it extends underneath the translucent bar, producing the glass look.
         val backdrop = rememberGraphicsLayer()
         Scaffold(
             modifier = Modifier
@@ -46,12 +46,10 @@ fun HomeScaffold(
             snackbarHost = {
                 SnackbarHost(hostState = snackbarHostState)
             }
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = padding.calculateTopPadding())
-            ) {
+        ) { _ ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                // Each home screen supplies its own top-bar insets, so the nav host fills the whole
+                // area (no extra top padding here, which previously double-padded the status bar).
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
