@@ -94,7 +94,7 @@ fun OnboardingTutorial(controller: OnboardingController) {
     val pages = listOf(
         OnboardingPage(
             icon = painterResource(Res.drawable.ic_trending_up),
-            title = "Welcome to Stock Ticker",
+            title = "Welcome to Stocks Widget",
             message = "Keep an eye on your favorite stocks with a clean, real-time watchlist.",
         ),
         OnboardingPage(
@@ -172,7 +172,7 @@ fun OnboardingTutorial(controller: OnboardingController) {
                             if (isLastPage) controller.dismiss() else pageIndex++
                         }
                     ) {
-                        Text(if (isLastPage) "Get started" else "Next")
+                        Text(if (isLastPage) "Done" else "Next")
                     }
                 }
             }
