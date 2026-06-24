@@ -3,8 +3,8 @@ package com.github.premnirmal.ticker.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -86,6 +86,7 @@ fun WhatsNewBottomSheet(controller: WhatsNewController, versionName: String) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight()
                 .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
         ) {
             Text(
@@ -104,7 +105,8 @@ fun WhatsNewBottomSheet(controller: WhatsNewController, versionName: String) {
                 LazyColumn(
                     modifier = Modifier
                         .padding(top = 16.dp)
-                        .heightIn(max = 360.dp),
+                        .fillMaxWidth()
+                        .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(controller.lines) { line ->
