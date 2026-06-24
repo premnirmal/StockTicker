@@ -90,7 +90,9 @@ private fun HomeContent(
     val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
         "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
     }
-    val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner)
+    val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner) {
+        NavigationViewModel()
+    }
     val homeNavigationActions = remember(navController, navigationViewModel) {
         HomeNavigationActions(navController, navigationViewModel) {}
     }
