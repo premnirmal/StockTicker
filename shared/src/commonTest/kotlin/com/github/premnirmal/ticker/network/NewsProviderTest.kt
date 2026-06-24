@@ -180,4 +180,43 @@ class NewsProviderTest {
         assertTrue(result.wasSuccessful)
         assertEquals(listOf("AAPL"), result.data.map { it.symbol })
     }
+
+    @Test
+    fun fetchTrendingStocksFallsBackToApeWisdomWhenMostActiveQuoteIsEmpty() = runTest {
+        // Most-active returns a symbol, and quoting it succeeds at the HTTP level but comes back with an
+        // empty quote list (HTTP 200, "result":[]). This is what happens on the very first Yahoo call of
+        // a fresh launch before the crumb/consent session is fully established. Because an empty list is
+        // still a "successful" FetchResult (data != null), the provider must treat it as a miss and fall
+        // back to ApeWisdom instead of caching/returning the empty list.
+        val mostActiveHtml =
+            "<html><body><fin-streamer data-symbol=\"TSLA\" class=\"fw(600)\">x</fin-streamer></body></html>"
+        val mostActiveEngine = MockEngine { respond(mostActiveHtml, HttpStatusCode.OK) }
+        val apeWisdomEngine = MockEngine {
+            respond(
+                """{"count":1,"pages":1,"current_page":1,"results":[{"rank":1,"ticker":"AAPL","mentions":5,"mentions_24h_ago":4,"upvotes":3,"name":"Apple"}]}""",
+                HttpStatusCode.OK,
+                jsonHeaders
+            )
+        }
+        // The quote endpoint returns an empty result for the most-active symbol but real data for the
+        // ApeWisdom ticker.
+        val yahooQuoteEngine = MockEngine { request ->
+            if (request.url.parameters["symbols"]?.contains("TSLA") == true) {
+                respond(quotesJson(), HttpStatusCode.OK, jsonHeaders)
+            } else {
+                respond(quotesJson("AAPL"), HttpStatusCode.OK, jsonHeaders)
+            }
+        }
+
+        val provider = newsProvider(
+            mostActiveEngine = mostActiveEngine,
+            apeWisdomEngine = apeWisdomEngine,
+            yahooQuoteEngine = yahooQuoteEngine
+        )
+
+        val result = provider.fetchTrendingStocks()
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("AAPL"), result.data.map { it.symbol })
+    }
 }

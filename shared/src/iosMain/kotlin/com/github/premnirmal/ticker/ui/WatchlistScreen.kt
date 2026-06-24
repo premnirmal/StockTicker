@@ -23,6 +23,8 @@ import com.github.premnirmal.ticker.home.WatchlistContent
 import com.github.premnirmal.ticker.home.WatchlistWidget
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.formatFetchTime
+import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -46,7 +48,9 @@ private object WatchlistKoin : KoinComponent {
  * the portfolio is exposed as a single [WatchlistWidget] tab (iOS has no home-screen widgets, so the
  * tab row is hidden via `hasWidgets = false`), the subtitle is built from [IStocksProvider.fetchState]
  * and [IStocksProvider.nextFetchMs], and refresh triggers [IStocksProvider.fetch]. Tapping a card
- * navigates through [onQuoteClick]; the card overflow menu removes the quote from the watchlist.
+ * navigates through [onQuoteClick]; the card overflow menu removes the quote from the watchlist. The
+ * shared content's scroll-to-top hooks are wired to [rememberScrollToTopAction] so reselecting the
+ * Watchlist bottom-nav tab scrolls the list back to the top, matching the Android host.
  */
 @Composable
 fun WatchlistScreen(
@@ -124,6 +128,12 @@ fun WatchlistScreen(
                 totalHoldings = totals,
                 onDismiss = onDismiss,
             )
+        },
+        registerResetScroll = { reset ->
+            rememberScrollToTopAction(HomeRoute.Watchlist, scrollToTop = reset)
+        },
+        registerWidgetScroll = { index, scroll ->
+            rememberScrollToTopAction(HomeRoute.Watchlist, index, scrollToTop = scroll)
         },
     )
 }
