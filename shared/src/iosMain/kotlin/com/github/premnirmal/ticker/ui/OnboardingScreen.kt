@@ -110,7 +110,7 @@ fun OnboardingTutorial(controller: OnboardingController) {
         OnboardingPage(
             icon = painterResource(Res.drawable.ic_widget),
             title = "Add a Home Screen widget",
-            message = "Touch and hold your Home Screen, tap the + button, then search for Stock Ticker " +
+            message = "Touch and hold your Home Screen, tap the + button, then search for Stocks Widget " +
                 "to add a widget.",
         ),
     )

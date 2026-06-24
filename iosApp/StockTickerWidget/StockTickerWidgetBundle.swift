@@ -5,6 +5,7 @@ import SwiftUI
 @main
 struct StockTickerWidgetBundle: WidgetBundle {
     var body: some Widget {
+        CompactStockTickerWidget()
         StockTickerWidget()
     }
 }

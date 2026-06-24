@@ -75,6 +75,10 @@ struct StockTickerConfigurationIntent: WidgetConfigurationIntent {
     @Parameter(title: "Bold change", default: true)
     var boldChange: Bool
 
+    /// Show the "last fetch" timestamp header (used by the compact widget).
+    @Parameter(title: "Show header", default: true)
+    var showHeader: Bool
+
     /// The set of symbols (upper-cased) selected for this widget, or `nil` when showing everything.
     var selectedSymbols: Set<String>? {
         guard let symbols, !symbols.isEmpty else { return nil }
