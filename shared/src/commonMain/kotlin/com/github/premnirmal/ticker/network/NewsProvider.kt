@@ -89,17 +89,20 @@ class NewsProvider(
                         if (symbols.isNotEmpty()) {
                             AppLogger.d("symbols: ${symbols.joinToString(",")}")
                             val mostActiveStocks = stocksApi.getStocks(symbols)
-                            if (mostActiveStocks.wasSuccessful) {
+                            if (mostActiveStocks.wasSuccessful && mostActiveStocks.data.isNotEmpty()) {
                                 cachedTrendingStocks = mostActiveStocks.data
                                 return@withContext mostActiveStocks
                             }
-                            // Don't return the failure here: fall through to the ApeWisdom fallback
-                            // below. On the very first trending fetch (e.g. on a fresh launch) this quote
-                            // request can fail because it is the first Yahoo call and the crumb/consent
-                            // cookies have not been bootstrapped yet (loadCrumb only runs reactively on
-                            // the quote's 401). The fallback request reuses that now-established session
-                            // and succeeds, so the trending list is populated on the first attempt instead
-                            // of appearing empty until a manual retry.
+                            // Don't return here: fall through to the ApeWisdom fallback below. On the
+                            // very first trending fetch (e.g. on a fresh launch) this quote request can
+                            // fail because it is the first Yahoo call and the crumb/consent cookies have
+                            // not been bootstrapped yet (loadCrumb only runs reactively on the quote's
+                            // 401). Crucially, that first call can also come back HTTP 200 with an empty
+                            // quote list — which `wasSuccessful` (data != null) still reports as a
+                            // success — so we must also fall through when the data is empty, otherwise the
+                            // empty list would be cached and the trending screen would stay blank until a
+                            // manual retry. The fallback request reuses that now-established session and
+                            // succeeds, populating the trending list on the first attempt.
                         }
                     }
                 } catch (e: Exception) {
