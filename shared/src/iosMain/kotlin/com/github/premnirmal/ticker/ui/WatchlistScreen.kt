@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -55,6 +56,7 @@ fun WatchlistScreen(
         { quote -> scope.launch { provider.removeStock(quote.symbol) } }
     }
     Scaffold(
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             TopAppBar(
                 title = { Text("Watchlist") },
