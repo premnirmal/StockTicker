@@ -25,7 +25,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -263,13 +262,6 @@ private fun GlassNavigationItem(
             contentDescription = destination.contentDescription,
             tint = tint,
         )
-        if (selected) {
-            Text(
-                text = destination.label,
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelSmall,
-            )
-        }
     }
 }
 
@@ -284,13 +276,6 @@ private fun RowScope.NavigationBarItems(
             selected = selectedDestination == destination.route.route,
             onClick = { navigateToTopLevelDestination(destination) },
             enabled = destination.enabled,
-            label = {
-                Text(
-                    destination.label,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            },
-            alwaysShowLabel = false,
             icon = {
                 Icon(
                     painter = destination.selectedIcon,
