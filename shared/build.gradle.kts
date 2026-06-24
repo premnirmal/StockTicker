@@ -99,19 +99,19 @@ kotlin {
       kotlin.srcDir(generateChangelog)
     }
     commonMain.dependencies {
-      implementation(KotlinX.serialization.json)
-      implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:_")
-      implementation("io.ktor:ktor-client-core:_")
-      implementation("io.ktor:ktor-client-content-negotiation:_")
-      implementation("io.ktor:ktor-serialization-kotlinx-json:_")
-      implementation("io.github.pdvrieze.xmlutil:serialization:0.91.2")
+      implementation(libs.kotlinx.serialization.json)
+      implementation(libs.kotlinx.coroutines.core)
+      implementation(libs.ktor.client.core)
+      implementation(libs.ktor.client.content.negotiation)
+      implementation(libs.ktor.serialization.kotlinx.json)
+      implementation(libs.xmlutil.serialization)
       api(libs.room.runtime)
       implementation(libs.androidx.sqlite.bundled)
       implementation(libs.koin.core)
-      api("androidx.lifecycle:lifecycle-viewmodel:_")
+      api(libs.androidx.lifecycle.viewmodel)
       implementation(libs.navigation.compose)
-      implementation("androidx.datastore:datastore-preferences-core:_")
-      implementation("com.squareup.okio:okio:3.9.1")
+      implementation(libs.androidx.datastore.preferences.core)
+      implementation(libs.okio)
       implementation(compose.runtime)
       implementation(compose.foundation)
       implementation(compose.material3)
@@ -122,18 +122,18 @@ kotlin {
       api(libs.vico.multiplatform)
     }
     androidMain.dependencies {
-      implementation("io.ktor:ktor-client-okhttp:_")
-      implementation(JakeWharton.timber)
+      implementation(libs.ktor.client.okhttp)
+      implementation(libs.timber)
     }
     iosMain.dependencies {
-      implementation("io.ktor:ktor-client-darwin:_")
+      implementation(libs.ktor.client.darwin)
       implementation(libs.kotlinx.datetime)
       implementation(libs.coil.network.ktor3)
     }
     commonTest.dependencies {
       implementation(kotlin("test"))
-      implementation("io.ktor:ktor-client-mock:_")
-      implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:_")
+      implementation(libs.ktor.client.mock)
+      implementation(libs.kotlinx.coroutines.test)
     }
   }
 }
