@@ -22,21 +22,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.network.CommitsProvider
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 private object WhatsNewKoin : KoinComponent {
     val commitsProvider: CommitsProvider by inject()
+    val userPreferences: UserPreferences by inject()
 }
 
 /**
  * Drives the iOS "What's new" changelog bottom sheet. It mirrors Android's
  * `HomeViewModel.showWhatsNew()`, which loads the changelog from the shared [CommitsProvider] (the
  * git history baked into the build) and presents it. On iOS the Settings "What's new" row calls
- * [show] to load the changelog and present the [WhatsNewBottomSheet].
+ * [show] to load the changelog and present the [WhatsNewBottomSheet]; [checkShowOnLaunch] presents it
+ * automatically the first time the app is launched after an update, recording the build version the
+ * way Android's `HomeViewModel.checkShowWhatsNew()` does via the shared [UserPreferences].
  */
-class WhatsNewController(private val commitsProvider: CommitsProvider) {
+class WhatsNewController(
+    private val commitsProvider: CommitsProvider,
+    private val userPreferences: UserPreferences,
+) {
 
     var visible by mutableStateOf(false)
         private set
@@ -45,12 +52,30 @@ class WhatsNewController(private val commitsProvider: CommitsProvider) {
     var error by mutableStateOf<String?>(null)
         private set
 
-    /** Loads the changelog from the shared [CommitsProvider] and presents the bottom sheet. */
-    fun show() {
+    /**
+     * Presents the bottom sheet only when [currentVersionCode] is newer than the last build for which
+     * it was shown, i.e. on the first launch after an app update. Mirrors Android's
+     * `HomeViewModel.checkShowWhatsNew()`.
+     */
+    fun checkShowOnLaunch(currentVersionCode: Int) {
+        if (userPreferences.getLastSavedVersionCode() < currentVersionCode) {
+            show(currentVersionCode)
+        }
+    }
+
+    /**
+     * Loads the changelog from the shared [CommitsProvider] and presents the bottom sheet. When
+     * [versionCode] is provided and the changelog loads successfully, it is recorded as the last
+     * build for which the changelog was shown so the sheet is not shown again until the next update.
+     */
+    fun show(versionCode: Int? = null) {
         val result = commitsProvider.loadWhatsNew()
         if (result.wasSuccessful) {
             lines = result.data.filter { it.isNotBlank() }
             error = null
+            if (versionCode != null) {
+                userPreferences.saveVersionCode(versionCode)
+            }
         } else {
             lines = emptyList()
             error = "Error fetching what's new\n\n :( ${result.error.message.orEmpty()}"
@@ -65,7 +90,7 @@ class WhatsNewController(private val commitsProvider: CommitsProvider) {
 
 @Composable
 fun rememberWhatsNewController(): WhatsNewController =
-    remember { WhatsNewController(WhatsNewKoin.commitsProvider) }
+    remember { WhatsNewController(WhatsNewKoin.commitsProvider, WhatsNewKoin.userPreferences) }
 
 /**
  * iOS "What's new" bottom sheet. A [ModalBottomSheet] listing the changelog as bullet points,

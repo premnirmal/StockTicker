@@ -234,6 +234,17 @@ internal fun iosVersionName(): String {
     return version ?: "1.0"
 }
 
+/**
+ * The current build number (`CFBundleVersion`) as an integer, the iOS analogue of Android's
+ * `versionCode`. Used to detect launches following an app update. Returns `0` when the value is
+ * missing or non-numeric.
+ */
+internal fun iosVersionCode(): Int {
+    val info = NSBundle.mainBundle.infoDictionary
+    val build = info?.get("CFBundleVersion") as? String
+    return build?.toIntOrNull() ?: 0
+}
+
 private fun openUrl(url: String) {
     openUrlInApp(url)
 }

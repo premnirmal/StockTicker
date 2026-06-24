@@ -82,6 +82,12 @@ private fun HomeContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val whatsNewController = rememberWhatsNewController()
 
+    LaunchedEffect(Unit) {
+        // Mirror Android's HomeViewModel.checkShowWhatsNew(): present the changelog automatically on
+        // the first launch after the app has been updated, recording the installed build version.
+        whatsNewController.checkShowOnLaunch(iosVersionCode())
+    }
+
     val destinations = listOf(
         HomeBottomNavDestination(
             route = HomeRoute.Watchlist,
@@ -155,7 +161,7 @@ private fun HomeContent(
                 widgets = {},
                 settings = {
                     SettingsScreen(
-                        onWhatsNew = { whatsNewController.show() },
+                        onWhatsNew = { whatsNewController.show(iosVersionCode()) },
                         onTutorial = { onboardingController.show() },
                     )
                 }
