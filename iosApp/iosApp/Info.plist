@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Stock Ticker</string>
+	<string>Stocks Widget</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -22,19 +22,13 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<!-- Allow loading images over HTTP from news feed sources. -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<!-- Required by Compose Multiplatform's PlistSanityCheck: lets the app render
-	     at the device's full refresh rate (e.g. 120Hz ProMotion) instead of being
-	     capped at 60Hz. Without it (or set to false) Compose throws an
-	     IllegalStateException at startup. -->
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<!-- BGTaskScheduler identifiers; must match StockTickerApp.refreshTaskId / cleanupTaskId. -->
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.github.premnirmal.ticker.refresh</string>
