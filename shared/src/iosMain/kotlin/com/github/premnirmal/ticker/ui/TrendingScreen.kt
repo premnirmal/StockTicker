@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
@@ -56,6 +58,9 @@ fun TrendingScreen(
                 item = article,
                 onClick = { openArticle(article) }
             )
+        },
+        registerScrollToTop = { scrollToTop ->
+            rememberScrollToTopAction(HomeRoute.Trending, scrollToTop = scrollToTop)
         }
     )
 }

@@ -15,6 +15,8 @@ import com.github.premnirmal.shared.resources.ic_remove
 import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.navigation.HomeRoute
+import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.portfolio.search.SuggestionItem
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.SuggestionsProvider
@@ -164,6 +166,9 @@ fun SearchScreen(
                 addRemoveContentDescription = if (inWatchlist) "Remove" else "Add",
                 addRemoveIconTint = MaterialTheme.colorScheme.primary,
             )
+        },
+        registerScrollToTop = { scrollToTop ->
+            rememberScrollToTopAction(HomeRoute.Search, scrollToTop = scrollToTop)
         },
     )
 }

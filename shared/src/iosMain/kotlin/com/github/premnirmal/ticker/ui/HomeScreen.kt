@@ -2,10 +2,12 @@ package com.github.premnirmal.ticker.ui
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -17,8 +19,11 @@ import com.github.premnirmal.shared.resources.ic_trending_up
 import com.github.premnirmal.ticker.navigation.Graph
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
 import com.github.premnirmal.ticker.navigation.HomeNavHost
+import com.github.premnirmal.ticker.navigation.HomeNavigationActions
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.HomeScaffold
+import com.github.premnirmal.ticker.navigation.LocalNavGraphViewModelStoreOwner
+import com.github.premnirmal.ticker.navigation.NavigationViewModel
 import com.github.premnirmal.ticker.navigation.RootNavigationGraph
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.review.AppReviewPrompter
@@ -82,6 +87,14 @@ private fun HomeContent(
     val snackbarHostState = remember { SnackbarHostState() }
     val whatsNewController = rememberWhatsNewController()
 
+    val viewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) {
+        "No ViewModelStoreOwner was provided via LocalViewModelStoreOwner"
+    }
+    val navigationViewModel = viewModel<NavigationViewModel>(viewModelStoreOwner)
+    val homeNavigationActions = remember(navController, navigationViewModel) {
+        HomeNavigationActions(navController, navigationViewModel) {}
+    }
+
     val destinations = listOf(
         HomeBottomNavDestination(
             route = HomeRoute.Watchlist,
@@ -112,55 +125,51 @@ private fun HomeContent(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val selectedDestination = navBackStackEntry?.destination?.route ?: HomeRoute.Watchlist.route
 
-    HomeScaffold(
-        navigationType = NavigationType.BOTTOM_NAVIGATION,
-        selectedDestination = selectedDestination,
-        destinations = destinations,
-        navigationContentPosition = NavigationContentPosition.TOP,
-        snackbarHostState = snackbarHostState,
-        navigateToTopLevelDestination = { destination ->
-            navController.navigate(destination.route.route) {
-                popUpTo(navController.graph.findStartDestination().id) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
+    CompositionLocalProvider(LocalNavGraphViewModelStoreOwner provides viewModelStoreOwner) {
+        HomeScaffold(
+            navigationType = NavigationType.BOTTOM_NAVIGATION,
+            selectedDestination = selectedDestination,
+            destinations = destinations,
+            navigationContentPosition = NavigationContentPosition.TOP,
+            snackbarHostState = snackbarHostState,
+            navigateToTopLevelDestination = { destination ->
+                homeNavigationActions.navigateTo(destination)
+            },
+            navHost = { modifier ->
+                HomeNavHost(
+                    navController = navController,
+                    modifier = modifier,
+                    watchlist = {
+                        WatchlistScreen(
+                            onQuoteClick = { quote ->
+                                rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                            }
+                        )
+                    },
+                    trending = {
+                        TrendingScreen(
+                            onQuoteClick = { quote ->
+                                rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                            }
+                        )
+                    },
+                    search = {
+                        SearchScreen(
+                            onQuoteClick = { quote ->
+                                rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                            }
+                        )
+                    },
+                    widgets = {},
+                    settings = {
+                        SettingsScreen(
+                            onWhatsNew = { whatsNewController.show() },
+                            onTutorial = { onboardingController.show() },
+                        )
+                    }
+                )
             }
-        },
-        navHost = { modifier ->
-            HomeNavHost(
-                navController = navController,
-                modifier = modifier,
-                watchlist = {
-                    WatchlistScreen(
-                        onQuoteClick = { quote ->
-                            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
-                        }
-                    )
-                },
-                trending = {
-                    TrendingScreen(
-                        onQuoteClick = { quote ->
-                            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
-                        }
-                    )
-                },
-                search = {
-                    SearchScreen(
-                        onQuoteClick = { quote ->
-                            rootNavController.navigate("${Graph.QUOTE_DETAIL}/${quote.symbol}")
-                        }
-                    )
-                },
-                widgets = {},
-                settings = {
-                    SettingsScreen(
-                        onWhatsNew = { whatsNewController.show() },
-                        onTutorial = { onboardingController.show() },
-                    )
-                }
-            )
-        }
-    )
+        )
+    }
     WhatsNewDialog(controller = whatsNewController, versionName = iosVersionName())
 }
