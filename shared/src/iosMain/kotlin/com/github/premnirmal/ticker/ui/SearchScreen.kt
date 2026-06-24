@@ -170,6 +170,5 @@ fun SearchScreen(
         registerScrollToTop = { scrollToTop ->
             rememberScrollToTopAction(HomeRoute.Search, scrollToTop = scrollToTop)
         },
-        clearFocusOnContentTap = true,
     )
 }
