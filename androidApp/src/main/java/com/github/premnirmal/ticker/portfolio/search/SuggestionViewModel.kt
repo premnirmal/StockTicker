@@ -63,15 +63,3 @@ class SuggestionViewModel constructor(
     }
 
 }
-
-data class SuggestionState(
-    val symbol: String,
-    val widgetDataList: List<SuggestionWidgetDataState>
-)
-
-data class SuggestionWidgetDataState(
-    val symbol: String,
-    val widgetName: String,
-    val widgetId: Int,
-    val exists: Boolean,
-)

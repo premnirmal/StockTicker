@@ -718,27 +718,43 @@ implementation.
 - Added shared string resources (`shared/src/commonMain/composeResources/values/strings.xml`:
   `remove`/`holdings`/`gain`/`loss`/`change_percent`/`change_amount`/`day_change_amount`) and shared
   drawables (`ic_more`, `ic_remove_circle`) so the shared card needs no per-platform resources.
+- **`Divider`** — moved to `shared/src/commonMain/.../tickerwidget/ui/Divider.kt` (thin Material3
+  `HorizontalDivider` wrapper, same package so the Android call sites are unchanged).
+- **`SuggestionItem`** — moved to `shared/src/commonMain/.../portfolio/search/SuggestionItem.kt`. The
+  trailing add/remove affordance (icon/tint/content-description) is hoisted as parameters so Android
+  (widget picker, `ic_add_to_list`) and iOS (watchlist toggle, `ic_add`/`ic_remove`) configure it;
+  the iOS `SuggestionRow` and Android `SuggestionItem` duplicates were deleted.
+- **`TotalHoldingsPopup`** — moved to `shared/src/commonMain/.../home/TotalHoldingsPopup.kt` using the
+  shared `total_holdings` string and `SharedColours` (the Android-only `excludeFromSystemGesture`
+  popup property was dropped).
+- **`AddSymbolDialog`** — the stateless dialog body moved to
+  `shared/src/commonMain/.../portfolio/search/AddSymbolDialog.kt` (`AddSymbolDialogContent`, with the
+  `SuggestionState`/`SuggestionWidgetDataState` holders). The Android `AddSymbolDialogHost` resolves
+  the Koin `SuggestionViewModel` and delegates to it; the labels use the shared `select_widget`/`save`
+  strings and the `ic_add_circle`/`ic_remove_circle` drawables.
+- **`NewsCard`** — now inlines the (shared) `AppCard` and `SharedColours.ImagePlaceHolderGray`, so it
+  only hoists the article tap as `onClick`; the Android `card`/placeholder slots and the iOS
+  `ArticleCard` were removed.
+- **`LinkText`** — moved to `shared/src/commonMain/.../ui/LinkText.kt`. The link action is hoisted as
+  an `onLinkClick(annotation)` lambda (Android passes Chrome Custom Tabs, iOS its in-app browser)
+  because the URL opener is platform specific.
+- **Shared colours** — `SharedColours` (`shared/src/commonMain/.../tickerwidget/ui/theme/SharedColours.kt`)
+  holds the change/gain/loss colours and the image placeholder grey; the Android `ColourPalette`
+  delegates to it and `QuoteCard` dropped its private colour copies.
+
+All six **remaining hoisting candidates** below are now done.
 
 **Remaining hoisting candidates** (each is currently an Android `:app` composable passed as a slot
 and/or duplicated on iOS):
 
 | View | Android source | iOS duplicate | Blockers before hoisting |
 | --- | --- | --- | --- |
-| `Divider` | `tickerwidget/ui/Divider.kt` | (inline `HorizontalDivider`) | None — thin Material3 wrapper, ready to move. |
-| `SuggestionItem` / `SuggestionRow` | `portfolio/search/SuggestionItem.kt` | `ui/SearchScreen.kt` (`SuggestionRow`) | Switch `R.drawable.ic_add_to_list` to a shared `Res` drawable; share the add/remove labels. |
-| `TotalHoldingsPopup` | `home/TotalHoldingsPopup.kt` | — (not on iOS yet) | Needs `ColourPalette` change-colours + `total_holdings` string shared (see below). |
-| `AddSymbolDialog` | `portfolio/search/AddSymbolDialog.kt` | — | Needs its `R.string.*` labels shared; `SuggestionViewModel` already shareable via Koin. |
-| `NewsCard` | already in `commonMain/.../news/NewsCard.kt` (Coil `AsyncImage`), wrapped by `NewsCardHost` for the `AppCard` slot + placeholder colour | — | Inline the (now-shared) `AppCard` and a shared placeholder colour to drop the host. |
-| `LinkText` | `ui/LinkText.kt` | — | Needs an iOS web-link opener (`expect`/`actual`) to replace Android `CustomTabs`. |
-
-**Shared infrastructure that unblocks several of the above:**
-
-- **Change/theme colours** — `ColourPalette` (`androidApp/.../tickerwidget/ui/theme/Colours.kt`).
-  Hoisting the `ChangePositive`/`ChangeNegative`/`PositiveGreen`/`NegativeRed`/`ImagePlaceHolderGray`
-  values into `commonMain` unblocks `TotalHoldingsPopup` and `NewsCard`'s placeholder, and would let
-  `QuoteCard` drop its private colour copies.
-- **String resources** — continue migrating Android `R.string.*` labels used by shared widgets into
-  `shared/src/commonMain/composeResources/values/strings.xml` (as done for the quote-card labels).
+| ~~`Divider`~~ | done — `shared/.../tickerwidget/ui/Divider.kt` | — | — |
+| ~~`SuggestionItem` / `SuggestionRow`~~ | done — `shared/.../portfolio/search/SuggestionItem.kt` | — | — |
+| ~~`TotalHoldingsPopup`~~ | done — `shared/.../home/TotalHoldingsPopup.kt` | — | — |
+| ~~`AddSymbolDialog`~~ | done — `shared/.../portfolio/search/AddSymbolDialog.kt` (+ Android `AddSymbolDialogHost`) | — | — |
+| ~~`NewsCard`~~ | done — inlines shared `AppCard` + placeholder colour | — | — |
+| ~~`LinkText`~~ | done — `shared/.../ui/LinkText.kt` (link action hoisted as `onLinkClick`) | — | — |
 
 **Not hoistable (genuinely platform-specific), keep as slots:**
 

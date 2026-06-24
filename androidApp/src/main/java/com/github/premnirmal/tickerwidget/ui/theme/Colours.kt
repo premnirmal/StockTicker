@@ -1,6 +1,5 @@
 package com.github.premnirmal.tickerwidget.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
@@ -105,23 +104,19 @@ internal object ColourPaletteDark {
   val text_2 = Color(0xfff3f3f3)
 }
 
+/**
+ * Android entry point for the shared change/accent colours. The change-colour accessors delegate to
+ * [SharedColours] (the values live in `:shared` `commonMain`) so Android and iOS stay in sync.
+ */
 object ColourPalette {
   val ChangePositive: Color
-    @Composable get() {
-      return if (isSystemInDarkTheme()) ColourPaletteDark.change_positive else ColourPaletteLight.change_positive
-    }
+    @Composable get() = SharedColours.ChangePositive
   val ChangeNegative: Color
-    @Composable get() {
-      return if (isSystemInDarkTheme()) ColourPaletteDark.change_negative else ColourPaletteLight.change_negative
-    }
+    @Composable get() = SharedColours.ChangeNegative
   val PositiveGreen: Color
-    @Composable get() {
-      return if (isSystemInDarkTheme()) ColourPaletteDark.positive_green else ColourPaletteLight.positive_green
-    }
+    @Composable get() = SharedColours.PositiveGreen
   val NegativeRed: Color
-    @Composable get() {
-      return if (isSystemInDarkTheme()) ColourPaletteDark.negative_red else ColourPaletteLight.negative_red
-    }
+    @Composable get() = SharedColours.NegativeRed
 
-  val ImagePlaceHolderGray = Color(0x20a7a7a7)
+  val ImagePlaceHolderGray = SharedColours.ImagePlaceHolderGray
 }

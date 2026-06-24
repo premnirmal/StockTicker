@@ -8,9 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.network.data.NewsArticle
-import com.github.premnirmal.tickerwidget.ui.AppCard
 import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
-import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 
 /**
@@ -25,12 +23,8 @@ fun NewsCard(item: NewsArticle) {
     val primaryColor = MaterialTheme.colorScheme.primary
     NewsCard(
         item = item,
-        placeholderColor = ColourPalette.ImagePlaceHolderGray,
         onClick = {
             CustomTabs.openTab(context, item.url, primaryColor.toArgb())
-        },
-        card = { onClick, content ->
-            AppCard(onClick = onClick, content = content)
         }
     )
 }

@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.detail
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,7 +22,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +39,7 @@ import com.github.premnirmal.shared.resources.loss
 import com.github.premnirmal.shared.resources.remove
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.ui.AppCard
+import com.github.premnirmal.tickerwidget.ui.theme.SharedColours
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -290,7 +289,7 @@ fun QuoteChangeText(
         text = text,
         textAlign = textAlign,
         style = MaterialTheme.typography.bodySmall,
-        color = extractColour(up, down)
+        color = SharedColours.changeColour(up, down)
     )
 }
 
@@ -307,7 +306,7 @@ fun SmallQuoteChangeText(
         text = text,
         textAlign = textAlign,
         style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-        color = extractColour(up, down)
+        color = SharedColours.changeColour(up, down)
     )
 }
 
@@ -352,25 +351,5 @@ private fun MoreIcon(
                 )
             }
         }
-    }
-}
-
-private val LightPositiveGreen = Color(0xFF009900)
-private val LightNegativeRed = Color(0xFFe55b5b)
-private val DarkPositiveGreen = Color(0xFFccff66)
-private val DarkNegativeRed = Color(0xFFff6666)
-
-@Composable
-private fun extractColour(
-    up: Boolean,
-    down: Boolean
-): Color {
-    val dark = isSystemInDarkTheme()
-    return if (up) {
-        if (dark) DarkPositiveGreen else LightPositiveGreen
-    } else if (down) {
-        if (dark) DarkNegativeRed else LightNegativeRed
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
     }
 }

@@ -357,11 +357,7 @@ private fun QuoteDetailContent(
                 articles.forEach { article ->
                     NewsCard(
                         item = article,
-                        placeholderColor = MaterialTheme.colorScheme.surfaceVariant,
-                        onClick = { openUrl(article.url) },
-                        card = { onClick, content ->
-                            Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) { content() }
-                        }
+                        onClick = { openUrl(article.url) }
                     )
                 }
             }

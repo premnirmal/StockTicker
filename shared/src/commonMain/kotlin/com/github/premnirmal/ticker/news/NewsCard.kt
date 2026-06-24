@@ -3,7 +3,6 @@ package com.github.premnirmal.ticker.news
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
@@ -26,22 +24,22 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.github.premnirmal.ticker.network.data.NewsArticle
+import com.github.premnirmal.tickerwidget.ui.AppCard
+import com.github.premnirmal.tickerwidget.ui.theme.SharedColours
 
 /**
  * Shared news article card with Coil-backed image loading.
  *
- * The Android-coupled inputs are hoisted as parameters: the article tap (the Custom Tabs open) as
- * [onClick], the image placeholder gradient start colour as [placeholderColor], and the `AppCard`
- * container (it lives in `:UI`) as the [card] composable slot.
+ * The only Android-coupled input is the article tap (the Custom Tabs open on Android, the in-app
+ * Safari view on iOS), hoisted as the [onClick] callback. The container ([AppCard]) and the image
+ * placeholder colour ([SharedColours.ImagePlaceHolderGray]) both live in `commonMain`.
  */
 @Composable
 fun NewsCard(
     item: NewsArticle,
-    placeholderColor: Color,
     onClick: () -> Unit,
-    card: @Composable (onClick: () -> Unit, content: @Composable ColumnScope.() -> Unit) -> Unit,
 ) {
-    card(onClick) {
+    AppCard(onClick = onClick) {
         Column(modifier = Modifier.padding(all = 8.dp)) {
             Row {
                 Text(
@@ -68,7 +66,7 @@ fun NewsCard(
                 item.imageUrl?.let {
                     var sizeImage by remember { mutableStateOf(IntSize.Zero) }
                     val gradient = Brush.verticalGradient(
-                        colors = listOf(placeholderColor, MaterialTheme.colorScheme.surfaceVariant),
+                        colors = listOf(SharedColours.ImagePlaceHolderGray, MaterialTheme.colorScheme.surfaceVariant),
                         startY = sizeImage.height.toFloat(),
                         endY = 0f
                     )
