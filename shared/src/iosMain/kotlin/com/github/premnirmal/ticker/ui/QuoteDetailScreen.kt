@@ -1,57 +1,48 @@
 package com.github.premnirmal.ticker.ui
 
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.github.premnirmal.shared.resources.Res
+import com.github.premnirmal.shared.resources.ic_add_to_list
 import com.github.premnirmal.shared.resources.ic_arrow_back
 import com.github.premnirmal.shared.resources.ic_close
 import com.github.premnirmal.shared.resources.ic_done
 import com.github.premnirmal.shared.resources.ic_edit
+import com.github.premnirmal.shared.resources.ic_refresh
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.components.AppNumberFormat
 import com.github.premnirmal.ticker.components.CompactNumberFormat
-import com.github.premnirmal.ticker.detail.PriceChartView
+import com.github.premnirmal.ticker.detail.QuoteDetailItem
+import com.github.premnirmal.ticker.detail.QuoteDetailStrings
+import com.github.premnirmal.ticker.detail.QuoteDetailScreen as SharedQuoteDetailScreen
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.network.data.holdingsSum
@@ -67,6 +58,8 @@ import com.github.premnirmal.ticker.portfolio.NotesScreen
 import com.github.premnirmal.ticker.portfolio.NotesViewModel
 import com.github.premnirmal.ticker.portfolio.localeDecimalSeparator
 import com.github.premnirmal.ticker.repo.StocksStorage
+import com.github.premnirmal.tickerwidget.ui.AppCard
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -87,16 +80,6 @@ private object QuoteDetailKoin : KoinComponent {
     val stocksStorage: StocksStorage by inject()
 }
 
-private val rangeOptions: List<Pair<Range, String>> = listOf(
-    Range.ONE_DAY to "1D",
-    Range.TWO_WEEKS to "2W",
-    Range.ONE_MONTH to "1M",
-    Range.THREE_MONTH to "3M",
-    Range.ONE_YEAR to "1Y",
-    Range.FIVE_YEARS to "5Y",
-    Range.MAX to "Max"
-)
-
 private val PositiveColor = Color(0xFF66BB6A)
 private val NegativeColor = Color(0xFFEF5350)
 
@@ -104,13 +87,21 @@ private val NegativeColor = Color(0xFFEF5350)
 private enum class ActiveEditor { NONE, POSITIONS, ALERTS, NOTES, DISPLAYNAME }
 
 /**
- * iOS quote-detail content hosted by the shared `RootNavigationGraph` (the `quoteDetailContent`
- * slot). It drives the shared [QuoteDetailViewModel] (resolved from the iOS Koin graph) to show the
- * live quote header, the shared multiplatform [PriceChartView] historical price chart with a range
- * selector, the latest news articles and — for portfolio symbols — a holdings summary. The Android
- * "extras" are now wired on iOS too: the positions / price-alerts / notes / display-name editors are
- * the shared [AddPositionScreen]/[AlertsScreen]/[NotesScreen]/[DisplaynameScreen] composables,
- * presented full-screen and persisted through the shared view models.
+ * iOS quote-detail host. It is the iOS counterpart of the `:app`
+ * `QuoteDetailScreenHost`: it drives the shared [QuoteDetailViewModel] (resolved from the iOS Koin
+ * graph) and delegates all rendering to the cross-platform
+ * [com.github.premnirmal.ticker.detail.QuoteDetailScreen]. The Android-specific inputs the shared
+ * screen hoists are supplied here for iOS:
+ *  - the localised labels as a [QuoteDetailStrings] holder and the quote-detail value rows
+ *    ([buildQuoteDetails] -> [QuoteDetailItem]) derived from the fetched [Quote]/[QuoteSummary],
+ *  - the refresh/add/edit icons as `Res.drawable` [painterResource]s and the platform chart
+ *    date/number formatters,
+ *  - the shared `AppCard`/`NewsCard` slots, an in-app website link and an add/remove-watchlist
+ *    confirmation dialog (iOS has a single watchlist, unlike Android's per-widget add),
+ *  - the positions / price-alerts / notes / display-name editors, presented full-screen via the
+ *    [ActiveEditor] state and persisted through the shared [AddPositionViewModel]/[AlertsViewModel]/
+ *    [NotesViewModel]/[DisplaynameViewModel], wired to the shared screen's `onEdit*` callbacks,
+ *  - a top-bar back button ([navigationIcon]) and a single-column layout (`twoPane = null`).
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
@@ -144,14 +135,10 @@ fun QuoteDetailScreen(
     LaunchedEffect(symbol) {
         viewModel.loadQuote(symbol)
         viewModel.fetchQuote(symbol)
-        viewModel.fetchChartData(symbol, Range.ONE_DAY)
+        viewModel.fetchChartData(symbol, viewModel.range.value)
     }
 
     val quoteResult by viewModel.quote.collectAsState(initial = null)
-    val chartData by viewModel.data.collectAsState()
-    val selectedRange by viewModel.range.collectAsState()
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
-    val articles by viewModel.newsData.collectAsState()
     val quote = quoteResult?.dataSafe?.quote
     val quoteSummary = quoteResult?.dataSafe?.quoteSummary
 
@@ -196,13 +183,10 @@ fun QuoteDetailScreen(
             symbol = symbol,
             quote = quote,
             quoteSummary = quoteSummary,
-            chartData = chartData,
-            selectedRange = selectedRange,
-            isRefreshing = isRefreshing,
-            articles = articles.map { it.article },
-            isInPortfolio = remember(symbol, reloadKey) { viewModel.isInPortfolio(symbol) },
+            viewModel = viewModel,
+            reloadKey = reloadKey,
             onBack = onBack,
-            onRangeSelected = { range -> viewModel.fetchChartData(symbol, range) },
+            onPortfolioChanged = { reloadKey++ },
             onEditPositions = { activeEditor = ActiveEditor.POSITIONS },
             onEditAlerts = { activeEditor = ActiveEditor.ALERTS },
             onEditNotes = { activeEditor = ActiveEditor.NOTES },
@@ -211,308 +195,260 @@ fun QuoteDetailScreen(
     }
 }
 
+/**
+ * Collects the remaining [QuoteDetailViewModel] state and renders the shared
+ * [com.github.premnirmal.ticker.detail.QuoteDetailScreen] with the iOS slots/formatters. Shows a
+ * loading scaffold (mirroring the Android `QuoteDetailActivity`) until the quote is available.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuoteDetailContent(
     symbol: String,
     quote: Quote?,
     quoteSummary: QuoteSummary?,
-    chartData: ChartData?,
-    selectedRange: Range,
-    isRefreshing: Boolean,
-    articles: List<NewsArticle>,
-    isInPortfolio: Boolean,
+    viewModel: QuoteDetailViewModel,
+    reloadKey: Int,
     onBack: () -> Unit,
-    onRangeSelected: (Range) -> Unit,
+    onPortfolioChanged: () -> Unit,
     onEditPositions: () -> Unit,
     onEditAlerts: () -> Unit,
     onEditNotes: () -> Unit,
     onEditDisplayname: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(quote?.name ?: symbol) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            painter = painterResource(Res.drawable.ic_arrow_back),
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors()
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(padding)
-                .verticalScroll(rememberScrollState()).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            if (quote != null) {
-                Text(text = quote.symbol, style = MaterialTheme.typography.titleMedium)
-                Text(text = quote.priceString(), style = MaterialTheme.typography.headlineMedium)
-                val isUp = quote.changeInPercent >= 0f
-                Text(
-                    text = "${quote.changeStringWithSign()} (${quote.changePercentStringWithSign()})",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = if (isUp) PositiveColor else NegativeColor
-                )
-            } else {
-                Text(text = symbol, style = MaterialTheme.typography.titleLarge)
-            }
-
-            RangeSelector(
-                selectedRange = selectedRange,
-                onRangeSelected = onRangeSelected
-            )
-
-            val dataPoints = chartData?.dataPoints.orEmpty()
-            when {
-                dataPoints.isNotEmpty() -> {
-                    val lineColor = if (chartData?.isDown == true) NegativeColor else PositiveColor
-                    PriceChartView(
-                        dataPoints = dataPoints,
-                        lineColor = lineColor,
-                        xAxisFormatter = { value -> formatAxisDate(value, selectedRange) },
-                        yAxisFormatter = { value -> CompactNumberFormat.format(value) },
-                        markerFormatter = { x, y ->
-                            "${formatMarkerDate(x)}\n${AppNumberFormat.selected.format(y.toFloat())}"
-                        },
-                        modifier = Modifier.fillMaxWidth().height(260.dp)
-                    )
-                }
-                isRefreshing -> {
-                    Column(
-                        modifier = Modifier.fillMaxWidth().height(260.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-                else -> {
-                    Text(
-                        text = "No chart data available",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            // Quote-detail value cards (Open, ranges, volume, market cap, …) below the graph,
-            // mirroring the Android `quoteDetailsGrid`.
-            if (quote != null) {
-                val details = remember(quote, quoteSummary) { buildQuoteDetails(quote, quoteSummary) }
-                QuoteDetailsGrid(details)
-            }
-
-            // Positions / Alerts / Notes / Display name as a single-column list of tappable
-            // sections, mirroring the Android `quotePositionsNotesAlerts`. Only portfolio symbols
-            // expose these editors.
-            if (isInPortfolio && quote != null) {
-                EditSection(title = "Positions", onClick = onEditPositions) {
-                    if (quote.hasPositions()) {
-                        HoldingsSummaryRows(quote = quote)
-                    } else {
-                        Text(
-                            text = "--",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-                EditSection(title = "Alerts", onClick = onEditAlerts) {
-                    val above = quote.getAlertAbove()
-                    val below = quote.getAlertBelow()
-                    SummaryRow(
-                        label = "Alert above",
-                        value = if (above > 0f) AppNumberFormat.selected.format(above) else "--"
-                    )
-                    SummaryRow(
-                        label = "Alert below",
-                        value = if (below > 0f) AppNumberFormat.selected.format(below) else "--"
-                    )
-                }
-                EditSection(title = "Notes", onClick = onEditNotes) {
-                    Text(
-                        text = quote.properties?.notes?.ifEmpty { "--" } ?: "--",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                EditSection(title = "Display name", onClick = onEditDisplayname) {
-                    Text(
-                        text = quote.properties?.displayname?.ifEmpty { "--" } ?: "--",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
-            if (articles.isNotEmpty()) {
-                HorizontalDivider()
-                Text(text = "News", style = MaterialTheme.typography.titleMedium)
-                articles.forEach { article ->
-                    NewsCard(
-                        item = article,
-                        onClick = { openUrl(article.url) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-/**
- * Two-column grid of quote-detail value cards rendered below the chart, mirroring the Android
- * `quoteDetailsGrid`: even-indexed items fill the left column and odd-indexed items the right.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun QuoteDetailsGrid(details: List<Pair<String, String>>) {
-    if (details.isEmpty()) return
-    val left = details.filterIndexed { index, _ -> index % 2 == 0 }
-    val right = details.filterIndexed { index, _ -> index % 2 != 0 }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Column(
-            modifier = Modifier.weight(0.5f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            left.forEach { (title, value) -> DetailValueCard(title = title, value = value) }
-        }
-        Column(
-            modifier = Modifier.weight(0.5f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            right.forEach { (title, value) -> DetailValueCard(title = title, value = value) }
-        }
-    }
-}
-
-@Composable
-private fun DetailValueCard(title: String, value: String) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(text = title, style = MaterialTheme.typography.labelMedium)
-            Text(
-                modifier = Modifier.padding(top = 8.dp),
-                text = value,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+    val backButton: @Composable () -> Unit = {
+        IconButton(onClick = onBack) {
+            Icon(
+                painter = painterResource(Res.drawable.ic_arrow_back),
+                contentDescription = "Back"
             )
         }
     }
-}
 
-/**
- * A tappable section header + content card used for the Positions / Alerts / Notes / Display name
- * rows, mirroring the Android `EditSectionHeader` + section content. Tapping anywhere opens the
- * matching full-screen editor.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun EditSection(
-    title: String,
-    onClick: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+    if (quote == null) {
+        Scaffold(
+            topBar = { TopBar(text = symbol, navigationIcon = backButton) }
+        ) { padding ->
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
             ) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
-                Icon(
-                    painter = painterResource(Res.drawable.ic_edit),
-                    contentDescription = "Edit",
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                CircularProgressIndicator()
             }
-            content()
         }
+        return
     }
-}
 
-@Composable
-private fun HoldingsSummaryRows(quote: Quote) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        SummaryRow(label = "Shares", value = quote.numSharesString())
-        SummaryRow(label = "Equity value", value = quote.holdingsString())
-        SummaryRow(label = "Average price", value = quote.averagePositionPrice())
-        SummaryRow(
-            label = "Gain / loss",
-            value = "${quote.gainLossString()} (${quote.gainLossPercentString()})",
-            valueColor = if (quote.gainLoss() >= 0f) PositiveColor else NegativeColor
-        )
-        SummaryRow(
-            label = "Day change",
-            value = quote.dayChangeString(),
-            valueColor = if (quote.dayChange() >= 0f) PositiveColor else NegativeColor
-        )
-    }
-}
+    val chartData by viewModel.data.collectAsState()
+    val selectedRange by viewModel.range.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val articles by viewModel.newsData.collectAsState()
+    val graphError by viewModel.dataFetchError.collectAsState()
+    val showAddRemoveTooltip by viewModel.showAddRemoveTooltip.collectAsState(initial = false)
 
-@Composable
-private fun SummaryRow(label: String, value: String, valueColor: Color = Color.Unspecified) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Text(text = value, style = MaterialTheme.typography.bodyMedium, color = valueColor)
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(viewModel) {
+        viewModel.messages.collect { snackbarHostState.showSnackbar(it) }
     }
+
+    val isInPortfolio = remember(symbol, reloadKey) { viewModel.isInPortfolio(symbol) }
+    val changeColour = if (chartData?.isDown ?: quote.isDown) NegativeColor else PositiveColor
+    val details = remember(quote, quoteSummary) { buildQuoteDetails(quote, quoteSummary) }
+    val alertAbove = quote.getAlertAbove()
+    val alertBelow = quote.getAlertBelow()
+
+    // A tapped quote-detail value card (the Android host shows it in a bottom sheet); iOS surfaces
+    // the full label/value in a simple dialog so long values aren't truncated.
+    var cardDetail by remember { mutableStateOf<Pair<String, String>?>(null) }
+    cardDetail?.let { (title, data) ->
+        AlertDialog(
+            onDismissRequest = { cardDetail = null },
+            title = { Text(title) },
+            text = { Text(data) },
+            confirmButton = {
+                TextButton(onClick = { cardDetail = null }) { Text("OK") }
+            }
+        )
+    }
+
+    SharedQuoteDetailScreen(
+        quote = quote,
+        chartData = chartData,
+        changeColour = changeColour,
+        upColor = PositiveColor,
+        downColor = NegativeColor,
+        details = details,
+        articles = articles.map { it.article },
+        website = quoteSummary?.assetProfile?.website,
+        longBusinessSummary = quoteSummary?.assetProfile?.longBusinessSummary,
+        isInPortfolio = isInPortfolio,
+        isRefreshing = isRefreshing,
+        showAddRemoveTooltip = showAddRemoveTooltip,
+        range = selectedRange,
+        graphError = graphError != null,
+        position = quote.position,
+        alertAbove = alertAbove,
+        alertBelow = alertBelow,
+        alertAboveText = AppNumberFormat.selected.format(alertAbove),
+        alertBelowText = AppNumberFormat.selected.format(alertBelow),
+        notes = quote.properties?.notes ?: "",
+        displayname = quote.properties?.displayname ?: "",
+        strings = iosQuoteDetailStrings,
+        refreshIcon = painterResource(Res.drawable.ic_refresh),
+        addIcon = painterResource(Res.drawable.ic_add_to_list),
+        editIcon = painterResource(Res.drawable.ic_edit),
+        snackbarHostState = snackbarHostState,
+        onRefresh = {
+            if (!isRefreshing) {
+                viewModel.fetchAll(quote)
+            }
+        },
+        onRangeSelected = { range -> viewModel.fetchChartData(symbol, range) },
+        onAddRemoveTooltipShown = { viewModel.addRemoveTooltipShown() },
+        onCardClick = { title, data -> cardDetail = title to data },
+        onEditPositions = onEditPositions,
+        onEditAlerts = onEditAlerts,
+        onEditNotes = onEditNotes,
+        onEditDisplayname = onEditDisplayname,
+        hourAxisFormatter = { value -> formatAxisDate(value, Range.ONE_DAY) },
+        dateAxisFormatter = { value -> formatAxisDate(value, Range.ONE_MONTH) },
+        valueAxisFormatter = { value -> CompactNumberFormat.format(value) },
+        markerFormatter = { x, y ->
+            "${formatMarkerDate(x)}\n${AppNumberFormat.selected.format(y.toFloat())}"
+        },
+        card = { cardModifier, onClick, content ->
+            AppCard(modifier = cardModifier, onClick = onClick, content = content)
+        },
+        newsCard = { article -> NewsCard(item = article, onClick = { openUrl(article.url) }) },
+        navigationIcon = backButton,
+        addSymbolDialog = { dialogSymbol, onDismissRequest ->
+            AddRemovePortfolioDialog(
+                symbol = dialogSymbol,
+                isInPortfolio = isInPortfolio,
+                onDismissRequest = onDismissRequest,
+                onToggle = {
+                    onPortfolioChanged()
+                    viewModel.fetchQuote(symbol)
+                }
+            )
+        },
+        websiteLink = { website ->
+            LinkText(
+                linkTextData = listOf(
+                    LinkTextData(text = website, tag = website, annotation = website)
+                ),
+                onLinkClick = { annotation -> openUrl(annotation) }
+            )
+        },
+    )
 }
 
 /**
- * Builds the localised list of quote-detail value rows (title to formatted value) shown in the
- * grid below the chart, mirroring the Android `buildQuoteDetails`. Epoch timestamps are interpreted
- * as milliseconds to match the Android formatting.
+ * iOS add/remove confirmation dialog backing the shared screen's add/remove FAB. Unlike Android —
+ * where a symbol is added to a specific Glance widget — iOS has a single watchlist, so the action
+ * toggles the symbol's membership of the shared portfolio directly.
  */
-private fun buildQuoteDetails(quote: Quote, quoteSummary: QuoteSummary?): List<Pair<String, String>> {
-    val details = mutableListOf<Pair<String, String>>()
-    quote.open?.let { details.add("Open" to quote.priceFormat.format(it)) }
+@Composable
+private fun AddRemovePortfolioDialog(
+    symbol: String,
+    isInPortfolio: Boolean,
+    onDismissRequest: () -> Unit,
+    onToggle: () -> Unit
+) {
+    val scope = rememberCoroutineScope()
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(symbol) },
+        text = {
+            Text(
+                if (isInPortfolio) {
+                    "Remove $symbol from your watchlist?"
+                } else {
+                    "Add $symbol to your watchlist?"
+                }
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = {
+                scope.launch {
+                    if (isInPortfolio) {
+                        QuoteDetailKoin.stocksProvider.removeStock(symbol)
+                    } else {
+                        QuoteDetailKoin.stocksProvider.addStock(symbol)
+                    }
+                    onToggle()
+                }
+                onDismissRequest()
+            }) {
+                Text(if (isInPortfolio) "Remove" else "Add")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) { Text("Cancel") }
+        }
+    )
+}
+
+/**
+ * The English labels passed to the shared quote-detail screen. The Android host resolves these from
+ * string resources; iOS uses the same literals the iOS UI already shipped.
+ */
+private val iosQuoteDetailStrings = QuoteDetailStrings(
+    addToPortfolio = "Add to watchlist",
+    graphFetchFailed = "Could not fetch chart data",
+    rangeOneDay = "1D",
+    rangeTwoWeeks = "2W",
+    rangeOneMonth = "1M",
+    rangeThreeMonth = "3M",
+    rangeOneYear = "1Y",
+    rangeFiveYears = "5Y",
+    rangeMax = "Max",
+    positions = "Positions",
+    alerts = "Alerts",
+    notes = "Notes",
+    displayname = "Display name",
+    shares = "Shares",
+    equityValue = "Equity value",
+    averagePrice = "Average price",
+    gainLoss = "Gain / loss",
+    dayChangeAmount = "Day change",
+    alertAbove = "Alert above",
+    alertBelow = "Alert below",
+)
+
+/**
+ * Builds the list of quote-detail value rows (title to formatted value) shown in the grid below the
+ * chart, mirroring the Android `buildQuoteDetails`. Epoch timestamps are interpreted as milliseconds
+ * to match the Android formatting.
+ */
+private fun buildQuoteDetails(quote: Quote, quoteSummary: QuoteSummary?): List<QuoteDetailItem> {
+    val details = mutableListOf<QuoteDetailItem>()
+    quote.open?.let { details.add(QuoteDetailItem("Open", quote.priceFormat.format(it))) }
     val dayLow = quote.dayLow
     val dayHigh = quote.dayHigh
     if (dayLow != null && dayHigh != null) {
-        details.add("Day's Range" to "${formatDecimal(dayLow)} - ${formatDecimal(dayHigh)}")
+        details.add(QuoteDetailItem("Day's Range", "${formatDecimal(dayLow)} - ${formatDecimal(dayHigh)}"))
     }
-    quote.fiftyDayAverage?.let { if (it > 0f) details.add("50 Day Average" to formatDecimal(it)) }
-    quote.twoHundredDayAverage?.let { if (it > 0f) details.add("200 Day Average" to formatDecimal(it)) }
+    quote.fiftyDayAverage?.let { if (it > 0f) details.add(QuoteDetailItem("50 Day Average", formatDecimal(it))) }
+    quote.twoHundredDayAverage?.let {
+        if (it > 0f) details.add(QuoteDetailItem("200 Day Average", formatDecimal(it)))
+    }
     val ftwLow = quote.fiftyTwoWeekLow
     val ftwHigh = quote.fiftyTwoWeekHigh
     if (ftwLow != null && ftwHigh != null) {
-        details.add("52 Week Range" to "${formatDecimal(ftwLow)} - ${formatDecimal(ftwHigh)}")
+        details.add(QuoteDetailItem("52 Week Range", "${formatDecimal(ftwLow)} - ${formatDecimal(ftwHigh)}"))
     }
-    quote.regularMarketVolume?.let { details.add("Volume" to formatGrouped(it)) }
-    quote.marketCap?.let { details.add("Market Cap" to formatBigNumber(it)) }
-    quote.trailingPE?.let { details.add("PE Ratio" to formatDecimal(it)) }
-    quote.earningsTimestamp?.let { details.add("Earnings Date" to formatEpochDate(it)) }
+    quote.regularMarketVolume?.let { details.add(QuoteDetailItem("Volume", formatGrouped(it))) }
+    quote.marketCap?.let { details.add(QuoteDetailItem("Market Cap", formatBigNumber(it))) }
+    quote.trailingPE?.let { details.add(QuoteDetailItem("PE Ratio", formatDecimal(it))) }
+    quote.earningsTimestamp?.let { details.add(QuoteDetailItem("Earnings Date", formatEpochDate(it))) }
     if (quote.annualDividendRate > 0f && quote.annualDividendYield > 0f) {
-        details.add("Dividend Rate" to quote.dividendInfo())
+        details.add(QuoteDetailItem("Dividend Rate", quote.dividendInfo()))
     }
-    quote.dividendDate?.let { details.add("Dividend Date" to formatEpochDate(it)) }
-    quoteSummary?.financialData?.earningsGrowth?.fmt?.let { details.add("Earnings Growth" to it) }
-    quoteSummary?.financialData?.revenueGrowth?.fmt?.let { details.add("Revenue Growth" to it) }
-    quoteSummary?.financialData?.profitMargins?.fmt?.let { details.add("Profit Margins" to it) }
-    quoteSummary?.financialData?.grossMargins?.fmt?.let { details.add("Gross Margins" to it) }
+    quote.dividendDate?.let { details.add(QuoteDetailItem("Dividend Date", formatEpochDate(it))) }
+    quoteSummary?.financialData?.earningsGrowth?.fmt?.let { details.add(QuoteDetailItem("Earnings Growth", it)) }
+    quoteSummary?.financialData?.revenueGrowth?.fmt?.let { details.add(QuoteDetailItem("Revenue Growth", it)) }
+    quoteSummary?.financialData?.profitMargins?.fmt?.let { details.add(QuoteDetailItem("Profit Margins", it)) }
+    quoteSummary?.financialData?.grossMargins?.fmt?.let { details.add(QuoteDetailItem("Gross Margins", it)) }
     return details
 }
 
@@ -678,26 +614,6 @@ private fun DisplaynameEditor(
         onBack = onClose,
         onDone = { onClose() }
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun RangeSelector(
-    selectedRange: Range,
-    onRangeSelected: (Range) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        rangeOptions.forEach { (range, label) ->
-            FilterChip(
-                selected = range == selectedRange,
-                onClick = { onRangeSelected(range) },
-                label = { Text(label) }
-            )
-        }
-    }
 }
 
 /**

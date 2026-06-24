@@ -127,6 +127,8 @@ data class QuoteDetailStrings(
  *    (not-yet-shared) `:UI`/`:app` theme/resources on Android,
  *  - the fading-edge decoration as [listFadingEdges] (Android `RuntimeShader`),
  *  - the optional adaptive two-pane layout as [twoPane] (null = single column).
+ *  - the optional top-bar [navigationIcon] slot (e.g. an iOS back button; empty on Android, which
+ *    relies on system/predictive back).
  * The Android `QuoteDetailScreen` host in `:app` supplies them.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -173,6 +175,7 @@ fun QuoteDetailScreen(
     card: @Composable (modifier: Modifier, onClick: () -> Unit, content: @Composable ColumnScope.() -> Unit) -> Unit,
     newsCard: @Composable (article: NewsArticle) -> Unit,
     modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = {},
     addSymbolDialog: @Composable (symbol: String, onDismissRequest: () -> Unit) -> Unit = { _, _ -> },
     websiteLink: @Composable (website: String) -> Unit = {},
     listFadingEdges: (ScrollableState) -> Modifier = { Modifier },
@@ -187,6 +190,7 @@ fun QuoteDetailScreen(
         topBar = {
             TopBar(
                 text = quote.symbol,
+                navigationIcon = navigationIcon,
                 actions = {
                     IconButton(
                         onClick = {
