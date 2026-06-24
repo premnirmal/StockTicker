@@ -225,7 +225,7 @@ fun BottomNavigationBar(
 /**
  * A single item in the floating "liquid glass" bottom navigation bar. The selected item is marked by
  * a translucent, softly-bordered rounded highlight (the same frosted-glass language as the bar
- * itself) rather than a solid pink container, and only the selected item shows its label.
+ * itself) rather than a solid pink container. No label is shown in any state.
  */
 @Composable
 private fun GlassNavigationItem(
