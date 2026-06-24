@@ -2,7 +2,8 @@ package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -142,11 +144,14 @@ fun SearchScreen(
                     if (!clearFocusOnContentTap) {
                         return@pointerInput
                     }
-                    // Dismiss the keyboard on a tap in the content area. detectTapGestures runs on
-                    // the Main pass and waits for an up event, so taps consumed by a child (e.g. the
-                    // search TextField gaining focus, or a card click) never reach here — only taps
-                    // on empty content do, which is exactly when the keyboard should be dismissed.
-                    detectTapGestures {
+                    // Dismiss the keyboard when the user touches anywhere in the content area. We
+                    // observe the Initial pass and react to the first press of each gesture without
+                    // consuming it, so list scrolling and card taps still work, while a tap on empty
+                    // space (or the start of a scroll) clears focus. The search TextField lives in
+                    // the Scaffold topBar — outside this box — so focusing it never reaches here and
+                    // the keyboard still opens normally.
+                    awaitEachGesture {
+                        awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
                         focusManager.clearFocus(force = true)
                     }
                 },
