@@ -254,6 +254,7 @@ private fun SearchInputField(
                     onClick = {
                         text = ""
                         onQueryChange("")
+                        focusManager.clearFocus(force = true)
                     },
                 ) {
                     Icon(
