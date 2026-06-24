@@ -20,7 +20,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -100,7 +100,9 @@ fun BottomNavigationBar(
 
     // Track where the bar sits relative to its parent so the captured backdrop can be shifted up by
     // the same amount, lining the blurred slice up exactly with the content drawn behind the bar.
-    var barTop by remember { mutableStateOf(0f) }
+    // Starts as NaN so the backdrop is only drawn once a real position has been measured, avoiding a
+    // mis-aligned (top-of-content) blur on the very first frame before onGloballyPositioned fires.
+    var barTop by remember { mutableFloatStateOf(Float.NaN) }
     Box(
         modifier = modifier.onGloballyPositioned { barTop = it.positionInParent().y }
     ) {
@@ -115,11 +117,14 @@ fun BottomNavigationBar(
                         radiusY = GlassBlurRadius.toPx(),
                         edgeTreatment = TileMode.Decal
                     )
+                    // Clip to the bar's bounds so the blurred backdrop can't bleed outside the bar.
                     clip = true
                 }
                 .drawBehind {
-                    translate(top = -barTop) {
-                        drawLayer(backdrop)
+                    if (!barTop.isNaN()) {
+                        translate(top = -barTop) {
+                            drawLayer(backdrop)
+                        }
                     }
                 }
         )
