@@ -1,35 +1,21 @@
 package com.github.premnirmal.ticker.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.shared.resources.Res
 import com.github.premnirmal.shared.resources.ic_add
 import com.github.premnirmal.shared.resources.ic_close
 import com.github.premnirmal.shared.resources.ic_remove
+import com.github.premnirmal.ticker.detail.QuoteCard
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.portfolio.search.SuggestionItem
 import com.github.premnirmal.ticker.network.NewsProvider
 import com.github.premnirmal.ticker.network.SuggestionsProvider
 import com.github.premnirmal.ticker.network.data.Quote
@@ -49,8 +35,6 @@ private object SearchKoin : KoinComponent {
     val stocksProvider: IStocksProvider by inject()
 }
 
-private val PositiveColor = Color(0xFF66BB6A)
-private val NegativeColor = Color(0xFFEF5350)
 
 /**
  * Drives the shared [SearchScreen] on iOS: it debounces symbol queries through the shared
@@ -166,80 +150,20 @@ fun SearchScreen(
         onRefresh = { viewModel.fetchTrending() },
         onQuoteClick = onQuoteClick,
         quoteCard = { quote, onClick ->
-            SearchQuoteCard(quote = quote, onClick = { onClick(quote) })
+            QuoteCard(quote = quote, onClick = { onClick(quote) })
         },
         suggestionItem = { suggestion, onSuggestionClick, _ ->
-            SuggestionRow(
+            val inWatchlist = portfolioSymbols.contains(suggestion.symbol)
+            SuggestionItem(
                 suggestion = suggestion,
-                inWatchlist = portfolioSymbols.contains(suggestion.symbol),
                 onSuggestionClick = onSuggestionClick,
-                onAddRemoveClick = { viewModel.toggleSymbol(suggestion.symbol) },
+                onSuggestionAddRemoveClick = { viewModel.toggleSymbol(suggestion.symbol) },
+                addRemoveIcon = painterResource(
+                    if (inWatchlist) Res.drawable.ic_remove else Res.drawable.ic_add
+                ),
+                addRemoveContentDescription = if (inWatchlist) "Remove" else "Add",
+                addRemoveIconTint = MaterialTheme.colorScheme.primary,
             )
         },
     )
-}
-
-@Composable
-private fun SearchQuoteCard(
-    quote: Quote,
-    onClick: () -> Unit
-) {
-    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
-        Column(modifier = Modifier.padding(8.dp)) {
-            Text(text = quote.symbol, style = MaterialTheme.typography.titleMedium)
-            Text(
-                text = quote.name,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = quote.priceString(), style = MaterialTheme.typography.bodyMedium)
-                Text(
-                    text = quote.changePercentStringWithSign(),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (quote.isDown) NegativeColor else PositiveColor
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SuggestionRow(
-    suggestion: Suggestion,
-    inWatchlist: Boolean,
-    onSuggestionClick: (Suggestion) -> Unit,
-    onAddRemoveClick: () -> Unit,
-) {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { onSuggestionClick(suggestion) },
-                text = suggestion.displayString(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            IconButton(onClick = onAddRemoveClick) {
-                Icon(
-                    painter = painterResource(
-                        if (inWatchlist) Res.drawable.ic_remove else Res.drawable.ic_add
-                    ),
-                    contentDescription = if (inWatchlist) "Remove" else "Add",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp))
-    }
 }

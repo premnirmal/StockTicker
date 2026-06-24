@@ -422,6 +422,18 @@ Migrated into `commonMain` so far:
   which uses the Android `FoldingFeature`, stays in `:app`). The Android runtime still resolves the
   Jetpack `androidx.navigation` `2.8.5` artifacts (forced via a `resolutionStrategy`, since the CMP
   library's transitive Android artifacts target a newer `compileSdk`), with the CMP wrapper klib on top.
+- The remaining **shared UI building blocks** moved into `commonMain`: the platform-neutral in-app
+  message model (`AppMessage`, in `ticker.ui`, with its `BottomSheetMessage`/`BannerMessage`
+  subtypes — the Android `AppMessaging` dispatcher that needs a `Context` to resolve string
+  resources stays in `:androidApp` and emits these); the **bottom-sheet message UI**
+  (`BottomSheetWithMessage`/`ModalBottomSheetWithMessage`, its Android `@Preview` dropped); the
+  **bottom-sheet message collector** (`CollectBottomSheetMessage`) — now a plain composable that
+  takes the `bottomSheets: Flow<BottomSheetMessage>` as a parameter (hoisted off `LocalAppMessaging`)
+  and queues with a multiplatform `ArrayDeque` instead of `java.util.LinkedList`, with `BaseActivity`
+  supplying `appMessaging.bottomSheets`; the Compose-aware `Quote.changeColour`/`ChartData.changeColour`
+  extensions (`ticker.network.data`, now reading `SharedColours` rather than the Android-only
+  `ColourPalette`); and the navigation `rememberScrollToTopAction` + `LocalNavGraphViewModelStoreOwner`
+  (`ticker.navigation`), built on the already-shared `NavigationViewModel`.
 
 Phase 4 (shared Compose UI) is complete: the home/watchlist, trending/news-feed, search, settings,
 widgets and quote-detail screens, their ViewModels, the shared building blocks, the Vico price chart,
@@ -697,6 +709,70 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   committed under `iosApp/iosApp/`. Producing a signed `.ipa` for TestFlight/App Store is
   intentionally out of scope (it needs code-signing secrets + an `xcodebuild archive`/`-exportArchive`
   or fastlane step); see `iosApp/README.md`.
+
+### Shared widget views (hoisting the per-platform composables)
+
+Phase 4 shared the *screens* but left several reusable *widgets* (cards, rows, popups) as
+`@Composable` slot parameters, supplied by the Android `:app` hosts and re-implemented by hand on
+iOS. That slot pattern is the reason the iOS watchlist card drifted out of sync with Android. The
+goal of this follow-up work is to move those widgets into `commonMain` so both platforms render one
+implementation.
+
+**Done so far:**
+
+- **`QuoteCard`** — moved to `shared/src/commonMain/.../detail/QuoteCard.kt` (Instrument + Position
+  variants, the overflow/"three-dot" remove menu and the change colours). Both the Android hosts
+  (`WatchlistContentHost`/`SearchScreenHost`/`NewsFeedScreenHost`) and the iOS
+  `WatchlistScreen`/`SearchScreen` now call the shared card; the Android `detail/QuoteCard.kt` and
+  the bespoke iOS cards were deleted.
+- **`AppCard`** — moved to `shared/src/commonMain/.../tickerwidget/ui/AppCard.kt` (it only used
+  Material3 `Card`, so it was portable as-is).
+- Added shared string resources (`shared/src/commonMain/composeResources/values/strings.xml`:
+  `remove`/`holdings`/`gain`/`loss`/`change_percent`/`change_amount`/`day_change_amount`) and shared
+  drawables (`ic_more`, `ic_remove_circle`) so the shared card needs no per-platform resources.
+- **`Divider`** — moved to `shared/src/commonMain/.../tickerwidget/ui/Divider.kt` (thin Material3
+  `HorizontalDivider` wrapper, same package so the Android call sites are unchanged).
+- **`SuggestionItem`** — moved to `shared/src/commonMain/.../portfolio/search/SuggestionItem.kt`. The
+  trailing add/remove affordance (icon/tint/content-description) is hoisted as parameters so Android
+  (widget picker, `ic_add_to_list`) and iOS (watchlist toggle, `ic_add`/`ic_remove`) configure it;
+  the iOS `SuggestionRow` and Android `SuggestionItem` duplicates were deleted.
+- **`TotalHoldingsPopup`** — moved to `shared/src/commonMain/.../home/TotalHoldingsPopup.kt` using the
+  shared `total_holdings` string and `SharedColours` (the Android-only `excludeFromSystemGesture`
+  popup property was dropped).
+- **`AddSymbolDialog`** — the stateless dialog body moved to
+  `shared/src/commonMain/.../portfolio/search/AddSymbolDialog.kt` (`AddSymbolDialogContent`, with the
+  `SuggestionState`/`SuggestionWidgetDataState` holders). The Android `AddSymbolDialogHost` resolves
+  the Koin `SuggestionViewModel` and delegates to it; the labels use the shared `select_widget`/`save`
+  strings and the `ic_add_circle`/`ic_remove_circle` drawables.
+- **`NewsCard`** — now inlines the (shared) `AppCard` and `SharedColours.ImagePlaceHolderGray`, so it
+  only hoists the article tap as `onClick`; the Android `card`/placeholder slots and the iOS
+  `ArticleCard` were removed.
+- **`LinkText`** — moved to `shared/src/commonMain/.../ui/LinkText.kt`. The link action is hoisted as
+  an `onLinkClick(annotation)` lambda (Android passes Chrome Custom Tabs, iOS its in-app browser)
+  because the URL opener is platform specific.
+- **Shared colours** — `SharedColours` (`shared/src/commonMain/.../tickerwidget/ui/theme/SharedColours.kt`)
+  holds the change/gain/loss colours and the image placeholder grey; the Android `ColourPalette`
+  delegates to it and `QuoteCard` dropped its private colour copies.
+
+All six **remaining hoisting candidates** below are now done.
+
+**Remaining hoisting candidates** (each is currently an Android `:app` composable passed as a slot
+and/or duplicated on iOS):
+
+| View | Android source | iOS duplicate | Blockers before hoisting |
+| --- | --- | --- | --- |
+| ~~`Divider`~~ | done — `shared/.../tickerwidget/ui/Divider.kt` | — | — |
+| ~~`SuggestionItem` / `SuggestionRow`~~ | done — `shared/.../portfolio/search/SuggestionItem.kt` | — | — |
+| ~~`TotalHoldingsPopup`~~ | done — `shared/.../home/TotalHoldingsPopup.kt` | — | — |
+| ~~`AddSymbolDialog`~~ | done — `shared/.../portfolio/search/AddSymbolDialog.kt` (+ Android `AddSymbolDialogHost`) | — | — |
+| ~~`NewsCard`~~ | done — inlines shared `AppCard` + placeholder colour | — | — |
+| ~~`LinkText`~~ | done — `shared/.../ui/LinkText.kt` (link action hoisted as `onLinkClick`) | — | — |
+
+**Not hoistable (genuinely platform-specific), keep as slots:**
+
+- `widgetPreview` — Android Glance widget renderer.
+- `listFadingEdges` — Android-13+ `RuntimeShader`-based modifier (needs an iOS-friendly fallback).
+- `twoPane` — Accompanist adaptive layout supplied per platform.
 
 ## Building
 

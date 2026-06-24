@@ -85,22 +85,6 @@ class AppMessaging constructor(
     }
 }
 
-sealed class AppMessage(
-    val title: String,
-    val message: String,
-) {
-    class BottomSheetMessage(
-        title: String,
-        message: String,
-    ) : AppMessage(title, message)
-
-    class BannerMessage(
-        title: String,
-        message: String,
-        onClick: (() -> Unit)? = null,
-    ) : AppMessage(title, message)
-}
-
 val LocalAppMessaging = staticCompositionLocalOf<AppMessaging> {
     error("No AppMessaging sender provided")
 }

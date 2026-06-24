@@ -12,13 +12,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
-import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.ui.theme.ColourPalette
+import com.github.premnirmal.shared.resources.Res
+import com.github.premnirmal.shared.resources.total_holdings
+import com.github.premnirmal.tickerwidget.ui.theme.SharedColours
+import org.jetbrains.compose.resources.stringResource
 
+/**
+ * Shared (Compose Multiplatform) popup summarising the portfolio's total holdings, gain and loss.
+ * Rendered identically on Android and iOS: the localised label comes from the shared string
+ * resources and the gain/loss colours from [SharedColours].
+ */
 @Composable
 fun TotalHoldingsPopup(
     totalHoldings: TotalGainLoss,
@@ -26,9 +31,6 @@ fun TotalHoldingsPopup(
 ) {
     Popup(
         alignment = Alignment.TopEnd,
-        properties = PopupProperties(
-            excludeFromSystemGesture = true,
-        ),
         onDismissRequest = onDismiss,
     ) {
         Surface(
@@ -44,7 +46,7 @@ fun TotalHoldingsPopup(
             ) {
                 Text(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    text = stringResource(R.string.total_holdings, totalHoldings.holdings),
+                    text = stringResource(Res.string.total_holdings, totalHoldings.holdings),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Row(
@@ -52,11 +54,11 @@ fun TotalHoldingsPopup(
                 ) {
                     Text(
                         text = totalHoldings.gain,
-                        color = ColourPalette.PositiveGreen,
+                        color = SharedColours.PositiveGreen,
                     )
                     Text(
                         text = totalHoldings.loss,
-                        color = ColourPalette.NegativeRed,
+                        color = SharedColours.NegativeRed,
                     )
                 }
             }

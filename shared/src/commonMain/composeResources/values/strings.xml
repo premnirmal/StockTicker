@@ -1,0 +1,13 @@
+<resources>
+    <string name="remove">Remove</string>
+    <string name="holdings">Holdings</string>
+    <string name="gain">Gain</string>
+    <string name="loss">Loss</string>
+    <string name="change_percent">% Change</string>
+    <string name="change_amount">Change</string>
+    <string name="day_change_amount">Day Change</string>
+    <string name="add">Add</string>
+    <string name="total_holdings">Total Holdings: %1$s</string>
+    <string name="select_widget">Select Widget</string>
+    <string name="save">Save</string>
+</resources>

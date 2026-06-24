@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -16,12 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.AppPreferences
+import com.github.premnirmal.ticker.CustomTabs
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.network.data.Quote
@@ -240,6 +243,8 @@ fun QuoteDetailScreen(
             AddSymbolDialog(symbol = symbol, onDismissRequest = onDismissRequest)
         },
         websiteLink = { website ->
+            val linkContext = LocalContext.current
+            val linkColor = MaterialTheme.colorScheme.primary
             LinkText(
                 linkTextData = listOf(
                     LinkTextData(
@@ -247,7 +252,10 @@ fun QuoteDetailScreen(
                         tag = website,
                         annotation = website
                     )
-                )
+                ),
+                onLinkClick = { annotation ->
+                    CustomTabs.openTab(linkContext, annotation, linkColor.toArgb())
+                }
             )
         },
         listFadingEdges = { state -> Modifier.fadingEdges(state) },

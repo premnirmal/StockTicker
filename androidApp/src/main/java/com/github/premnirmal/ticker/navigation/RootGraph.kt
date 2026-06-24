@@ -5,7 +5,6 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
@@ -49,8 +48,4 @@ fun RootNavigationGraphHost(
 private fun rememberViewModelStoreOwner(): ViewModelStoreOwner {
     val context = LocalContext.current
     return remember(context) { context as ViewModelStoreOwner }
-}
-
-val LocalNavGraphViewModelStoreOwner = staticCompositionLocalOf<ViewModelStoreOwner> {
-    error("No LocalNavGraphViewModelStoreOwner provided")
 }

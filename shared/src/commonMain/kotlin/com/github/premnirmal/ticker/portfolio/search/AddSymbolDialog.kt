@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.portfolio.search
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,48 +16,52 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import org.koin.androidx.compose.koinViewModel
-import org.koin.core.parameter.parametersOf
-import com.github.premnirmal.tickerwidget.R
-import com.github.premnirmal.tickerwidget.R.string
+import com.github.premnirmal.shared.resources.Res
+import com.github.premnirmal.shared.resources.ic_add_circle
+import com.github.premnirmal.shared.resources.ic_remove_circle
+import com.github.premnirmal.shared.resources.save
+import com.github.premnirmal.shared.resources.select_widget
 import com.github.premnirmal.tickerwidget.ui.Divider
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
-@Composable
-fun AddSymbolDialog(
-    symbol: String,
-    onDismissRequest: () -> Unit = {},
-) {
-    val viewModel = koinViewModel<SuggestionViewModel>(key = symbol) { parametersOf(symbol) }
-    val suggestionState by viewModel.suggestionState.collectAsState(SuggestionState(symbol, emptyList()))
-    AddSymbolDialogInternal(
-        suggestionState = suggestionState,
-        onDismissRequest = onDismissRequest,
-        onRemoved = { suggestionWidgetData ->
-            viewModel.removeFromWidget(suggestionWidgetData)
-        },
-        onAdded = { suggestionWidgetData ->
-            viewModel.addToWidget(suggestionWidgetData)
-        },
-    )
-}
+/**
+ * Snapshot of the widgets a symbol could be added to, shared between platforms (it has no
+ * Android/Glance dependency). The Android `SuggestionViewModel` produces it; the shared
+ * [AddSymbolDialogContent] renders it.
+ */
+data class SuggestionState(
+    val symbol: String,
+    val widgetDataList: List<SuggestionWidgetDataState>
+)
 
+data class SuggestionWidgetDataState(
+    val symbol: String,
+    val widgetName: String,
+    val widgetId: Int,
+    val exists: Boolean,
+)
+
+/**
+ * Shared (Compose Multiplatform) dialog that lets the user add/remove a symbol to/from each widget.
+ * It is stateless: the [suggestionState] and the add/remove/dismiss events are hoisted so the dialog
+ * carries no dependency-injection or platform code. The Android `AddSymbolDialog` host resolves the
+ * Koin `SuggestionViewModel` and delegates here.
+ */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun AddSymbolDialogInternal(
-    onDismissRequest: () -> Unit,
+fun AddSymbolDialogContent(
     suggestionState: SuggestionState,
+    onDismissRequest: () -> Unit,
     onRemoved: (SuggestionWidgetDataState) -> Unit,
     onAdded: (SuggestionWidgetDataState) -> Unit,
 ) {
@@ -75,7 +80,7 @@ private fun AddSymbolDialogInternal(
             stickyHeader {
                 Column {
                     Text(
-                        text = stringResource(id = string.select_widget),
+                        text = stringResource(Res.string.select_widget),
                         style = MaterialTheme.typography.headlineSmall
                     )
                     Spacer(
@@ -114,9 +119,9 @@ private fun AddSymbolDialogInternal(
                     ) {
                         Icon(
                             painter = if (exists) {
-                                painterResource(R.drawable.ic_remove_circle)
+                                painterResource(Res.drawable.ic_remove_circle)
                             } else {
-                                painterResource(R.drawable.ic_add_circle)
+                                painterResource(Res.drawable.ic_add_circle)
                             },
                             contentDescription = null,
                         )
@@ -138,37 +143,10 @@ private fun AddSymbolDialogInternal(
                         onDismissRequest()
                         openDialog.value = false
                     }) {
-                        Text(text = stringResource(id = string.save))
+                        Text(text = stringResource(Res.string.save))
                     }
                 }
             }
         }
     }
-}
-
-@Preview
-@Composable
-fun AddSymbolScreenPreview() {
-    AddSymbolDialogInternal(
-        suggestionState = SuggestionState(
-            symbol = "AAPL",
-            widgetDataList = listOf(
-                SuggestionWidgetDataState(
-                    "AAPL",
-                    "Widget #1",
-                    1,
-                    true
-                ),
-                SuggestionWidgetDataState(
-                    "AAPL",
-                    "Widget #2",
-                    2,
-                    false
-                ),
-            )
-        ),
-        onAdded = { _ -> },
-        onRemoved = { _ -> },
-        onDismissRequest = {},
-    )
 }

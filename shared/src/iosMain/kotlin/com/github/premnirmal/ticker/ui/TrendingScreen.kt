@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -36,11 +35,10 @@ private val NegativeColor = Color(0xFFEF5350)
 
 /**
  * iOS Trending tab. Drives the shared [NewsFeedViewModel] (built from the iOS Koin graph's
- * [NewsProvider]) through the shared [NewsFeedScreen]. The Android-coupled card slots are supplied
- * here with iOS-native Material 3 cards: a lightweight quote card and the shared Coil-backed
- * [NewsCard] (its `card` container slot a Material 3 [Card]); tapping a news article opens its URL in
- * the system browser via [UIApplication]. Tapping a trending quote navigates to the shared
- * quote-detail destination via [onQuoteClick].
+ * [NewsProvider]) through the shared [NewsFeedScreen]. The quote-card slot is supplied here with an
+ * iOS-native Material 3 card; the news list uses the shared Coil-backed [NewsCard] directly. Tapping
+ * a news article opens its URL in the system browser via [UIApplication]. Tapping a trending quote
+ * navigates to the shared quote-detail destination via [onQuoteClick].
  */
 @Composable
 fun TrendingScreen(
@@ -58,9 +56,7 @@ fun TrendingScreen(
         newsCard = { article ->
             NewsCard(
                 item = article,
-                placeholderColor = MaterialTheme.colorScheme.surfaceVariant,
-                onClick = { openArticle(article) },
-                card = { onClick, content -> ArticleCard(onClick = onClick, content = content) }
+                onClick = { openArticle(article) }
             )
         }
     )
@@ -95,16 +91,6 @@ private fun TrendingQuoteCard(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun ArticleCard(
-    onClick: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
-        content()
     }
 }
 
