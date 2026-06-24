@@ -21,7 +21,7 @@ import com.github.premnirmal.ticker.home.TotalGainLoss
 import com.github.premnirmal.ticker.home.TotalHoldingsPopup
 import com.github.premnirmal.ticker.home.WatchlistContent
 import com.github.premnirmal.ticker.home.WatchlistWidget
-import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.formatFetchTime
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
@@ -35,7 +35,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 private object WatchlistKoin : KoinComponent {
-    val stocksProvider: IStocksProvider by inject()
+    val stocksProvider: StocksProvider by inject()
     val userPreferences: UserPreferences by inject()
 }
 
@@ -79,7 +79,7 @@ fun WatchlistScreen(
         }
     }
 
-    val watchlistWidget = remember(provider, scope) { PortfolioWatchlistWidget(provider, scope) }
+    val watchlistWidget = remember(provider, userPreferences, scope) { PortfolioWatchlistWidget(provider, userPreferences, scope) }
     val widgets = remember(watchlistWidget) { listOf(watchlistWidget) }
 
     val subtitle = stringResource(
@@ -166,21 +166,22 @@ private fun List<Quote>.toTotalGainLoss(): TotalGainLoss {
 }
 
 /**
- * Adapts the iOS [IStocksProvider] portfolio to the shared [WatchlistWidget] contract used by
+ * Adapts the iOS [StocksProvider] portfolio to the shared [WatchlistWidget] contract used by
  * [WatchlistContent]. iOS has no home-screen widgets, so there is a single tab backed directly by the
- * portfolio flow; reordering is not persisted (no per-widget storage), and removal delegates to the
- * provider on the supplied [scope].
+ * portfolio flow; reordering persists the new ticker order and disabling auto-sort is forwarded to
+ * [userPreferences], and removal delegates to the provider on the supplied [scope].
  */
 private class PortfolioWatchlistWidget(
-    private val provider: IStocksProvider,
+    private val provider: StocksProvider,
+    private val userPreferences: UserPreferences,
     private val scope: CoroutineScope,
 ) : WatchlistWidget {
     override val name: String = "Watchlist"
     override val stocks: StateFlow<List<Quote>>
         get() = provider.portfolio
 
-    override fun rearrange(tickers: List<String>) = Unit
-    override fun setAutoSort(autoSort: Boolean) = Unit
+    override fun rearrange(tickers: List<String>) = provider.rearrange(tickers)
+    override fun setAutoSort(autoSort: Boolean) = userPreferences.setAutoSort(autoSort)
     override fun removeStock(ticker: String) {
         scope.launch { provider.removeStock(ticker) }
     }

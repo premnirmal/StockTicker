@@ -110,6 +110,16 @@ class StocksProvider(
 
     private fun saveTickers() = storage.saveTickers(tickerSet)
 
+    fun rearrange(tickers: List<String>) {
+        lock.withLock {
+            tickerSet.clear()
+            tickerSet.addAll(tickers)
+            saveTickers()
+        }
+        _tickers.value = tickerSet.toList()
+        emitPortfolio()
+    }
+
     private fun logFetchEvent(event: String, detail: String) =
         fetchEventLogger.log(source = "StocksProvider", event = event, detail = detail)
 
