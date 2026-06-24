@@ -1,7 +1,6 @@
 package com.github.premnirmal.ticker.portfolio.search
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,7 +34,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.input.pointer.awaitFirstDown
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.awaitPointerEvent
+import androidx.compose.ui.input.pointer.awaitPointerEventScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -143,9 +144,11 @@ fun SearchScreen(
                     if (!clearFocusOnContentTap) {
                         return@pointerInput
                     }
-                    awaitEachGesture {
-                        awaitFirstDown(requireUnconsumed = false)
-                        focusManager.clearFocus(force = true)
+                    awaitPointerEventScope {
+                        while (true) {
+                            awaitPointerEvent(PointerEventPass.Initial)
+                            focusManager.clearFocus(force = true)
+                        }
                     }
                 },
             isRefreshing = isRefreshing,
