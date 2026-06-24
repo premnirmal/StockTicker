@@ -162,5 +162,5 @@ private fun HomeContent(
             )
         }
     )
-    WhatsNewDialog(controller = whatsNewController, versionName = iosVersionName())
+    WhatsNewBottomSheet(controller = whatsNewController, versionName = iosVersionName())
 }
