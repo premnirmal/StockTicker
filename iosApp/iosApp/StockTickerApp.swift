@@ -40,9 +40,10 @@ struct StockTickerApp: App {
             portfolioDocumentBridge: portfolioDocumentBridge,
             crashReporter: StockTickerCrashReporter(),
             onQuotesUpdated: {
-                // A successful refresh also flows through the portfolio StateFlow observed by
-                // `WidgetSnapshotSync`, so the widget stays current without this hook. Kept as a
-                // belt-and-braces immediate reload right when a network refresh completes.
+                // A successful network refresh: rewrite the snapshot (so its timestamp/prices are
+                // current) and reload, writing before reloading so the widget never reads a stale
+                // snapshot. Local watchlist edits are additionally covered by `WidgetSnapshotSync`.
+                KoinHelper.shared.writeWidgetSnapshot()
                 WidgetCenterReloader.reloadAll()
             }
         )
