@@ -21,6 +21,7 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
     # Default app/extension version. These back CFBundleShortVersionString
     # ($(MARKETING_VERSION)) and CFBundleVersion ($(CURRENT_PROJECT_VERSION)) in
     # every target's Info.plist. They MUST be non-empty: an app extension whose
@@ -34,6 +35,10 @@ settings:
     FRAMEWORK_SEARCH_PATHS:
       - $(inherited)
       - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+  Debug:
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
+  Release:
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
 
 # Swift Package dependencies. The Firebase iOS SDK is referenced by the iosApp
 # target below (FirebaseAnalytics / FirebaseCore). The Swift code guards every
@@ -43,7 +48,8 @@ settings:
 # otherwise XcodeGen fails with "invalid package dependency Firebase".
 packages:
   Firebase:
-    url: https://github.com/firebase/firebase-ios-sdk
+    url: "https://github.com/firebase/firebase-ios-sdk"
+    minVersion: "11.0.0"
     from: "12.0.0"
 
 targets:
@@ -68,14 +74,21 @@ targets:
           - Shared
     dependencies:
       - target: StockTickerWidget
-      # Firebase Analytics (and its FirebaseCore dependency). Optional: the Swift
-      # code guards every use behind `#if canImport(FirebaseAnalytics)` /
-      # `#if canImport(FirebaseCore)`, so without these the app falls back to
-      # NSLog, mirroring the Android FOSS/dev flavours.
       - package: Firebase
         product: FirebaseAnalytics
       - package: Firebase
-        product: FirebaseCore
+        product: FirebaseCrashlytics
+    postCompileScripts:
+      - name: Firebase Crashlytics
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+          - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+        script: |
+          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols" \
+            -gsp "${SRCROOT}/iosApp/GoogleService-Info.plist" \
+            -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
     preBuildScripts:
       - name: Compile Kotlin/Native framework
         # Always run so the framework is rebuilt when the shared code changes.

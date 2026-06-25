@@ -36,4 +36,5 @@ DerivedData/
 # Local, machine-specific JAVA_HOME override for the iOS Gradle build phase
 iosApp/.xcode.env.local
 #iOS Firebase config (optional, prod only)
+iosApp/GoogleService-Info.plist
 iosApp/iosApp/GoogleService-Info.plist
