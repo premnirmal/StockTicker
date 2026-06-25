@@ -34,6 +34,7 @@ struct StockTickerApp: App {
             backgroundTaskScheduler: backgroundScheduler,
             analyticsSink: StockTickerAnalyticsSink(),
             portfolioDocumentBridge: portfolioDocumentBridge,
+            crashReporter: StockTickerCrashReporter(),
             onQuotesUpdated: {
                 // Persist the portfolio for the WidgetKit extension, then reload its timelines.
                 KoinHelper.shared.writeWidgetSnapshot()

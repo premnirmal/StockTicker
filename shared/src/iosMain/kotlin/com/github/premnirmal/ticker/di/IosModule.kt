@@ -8,6 +8,9 @@ import com.github.premnirmal.ticker.analytics.AnalyticsSink
 import com.github.premnirmal.ticker.analytics.NoopAnalyticsSink
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.components.AppLogger
+import com.github.premnirmal.ticker.components.CrashReporter
+import com.github.premnirmal.ticker.components.IosCrashReporter
+import com.github.premnirmal.ticker.components.NoopCrashReporter
 import com.github.premnirmal.ticker.model.FetchEventLogger
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.BackgroundTaskScheduler
@@ -192,19 +195,26 @@ private const val APEWISDOM_ENDPOINT = "https://apewisdom.io/api/v1.0/"
 /**
  * Starts Koin for the iOS app with the shared and iOS platform modules. Call once from the iOS app
  * launch (see `iosApp/StockTickerApp.swift`), optionally passing the platform [backgroundTaskScheduler]
- * (a `BGTaskScheduler`/WidgetKit bridge), the [analyticsSink] (e.g. Firebase) and the
- * [onQuotesUpdated] hook (to reload WidgetKit timelines after a refresh).
+ * (a `BGTaskScheduler`/WidgetKit bridge), the [analyticsSink] (e.g. Firebase), the [crashReporter]
+ * (e.g. Firebase Crashlytics, which receives shared [AppLogger] errors/warnings as non-fatals) and
+ * the [onQuotesUpdated] hook (to reload WidgetKit timelines after a refresh).
  */
 fun initKoinIos(
     backgroundTaskScheduler: BackgroundTaskScheduler = NoopBackgroundTaskScheduler,
     analyticsSink: AnalyticsSink = NoopAnalyticsSink,
     portfolioDocumentBridge: PortfolioDocumentBridge = NoopPortfolioDocumentBridge,
+    crashReporter: CrashReporter = NoopCrashReporter,
     onQuotesUpdated: () -> Unit = {}
-): KoinApplication = startKoin {
-    modules(
-        sharedModule,
-        iosModule(backgroundTaskScheduler, analyticsSink, portfolioDocumentBridge, onQuotesUpdated)
-    )
+): KoinApplication {
+    // Install the crash reporter before Koin starts so AppLogger forwards errors to it even from the
+    // application scope's CoroutineExceptionHandler (configured inside iosModule).
+    IosCrashReporter.reporter = crashReporter
+    return startKoin {
+        modules(
+            sharedModule,
+            iosModule(backgroundTaskScheduler, analyticsSink, portfolioDocumentBridge, onQuotesUpdated)
+        )
+    }
 }
 
 /**

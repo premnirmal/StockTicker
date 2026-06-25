@@ -21,14 +21,17 @@ top of the shared **iOS Phase 2 implementations** it already wires into a runnin
 
 - `StockTickerApp.swift` — `@main` entry point. Configures Firebase (when the SDK + a
   `GoogleService-Info.plist` are present), starts Koin (`IosModuleKt.doInitKoinIos`) with the
-  platform background scheduler, analytics sink, the portfolio document-picker bridge and the
-  `onQuotesUpdated` hook (which writes the WidgetKit snapshot and reloads its timelines), and
+  platform background scheduler, analytics sink, crash reporter, the portfolio document-picker bridge
+  and the `onQuotesUpdated` hook (which writes the WidgetKit snapshot and reloads its timelines), and
   registers the `BGTaskScheduler` handlers.
 - `StockTickerBackgroundScheduler.swift` — implements the shared `BackgroundTaskScheduler` by
   submitting `BGAppRefreshTaskRequest` / `BGProcessingTaskRequest`, and runs the shared
   `IStocksProvider.fetch` / `cleanup` from the task handlers.
 - `StockTickerAnalyticsSink.swift` — implements the shared `AnalyticsSink`; forwards to Firebase
   when the SDK is linked, otherwise logs.
+- `StockTickerCrashReporter.swift` — implements the shared `CrashReporter`; records shared
+  `AppLogger` errors as Firebase Crashlytics non-fatals and warnings as breadcrumbs when the
+  Crashlytics SDK is linked, otherwise a no-op.
 - `PortfolioDocumentBridgeImpl.swift` — implements the shared `PortfolioDocumentBridge`; presents the
   system `UIDocumentPickerViewController` (export/import) and `UIActivityViewController` (share) for
   the Settings share/import/export actions. The shared `IosPortfolioExchange` owns the serialization
@@ -188,6 +191,25 @@ information has to be available to Crashlytics:
 
 No extra setup is required beyond dropping in the `GoogleService-Info.plist` and regenerating the
 project; release/archive builds upload the symbols automatically.
+
+#### Crashlytics & Kotlin symbolication
+
+When the FirebaseCrashlytics SDK is linked, `StockTickerCrashReporter` records shared `AppLogger`
+errors as Crashlytics non-fatals (and warnings as breadcrumbs); native crashes and uncaught Kotlin
+exceptions are captured automatically. For Crashlytics to **symbolicate Kotlin frames**:
+
+- The shared `Shared` framework is built with `-Xadd-light-debug=enable` (see
+  [`shared/build.gradle.kts`](../shared/build.gradle.kts)), so Kotlin file/line info is preserved even
+  in optimized release builds.
+- `project.yml` sets `DEBUG_INFORMATION_FORMAT = dwarf-with-dsym`, so a dSYM is produced. Because the
+  framework is **statically** linked, the Kotlin symbols land in the **app's own dSYM**.
+- Add a Crashlytics run-script build phase that runs both the Crashlytics `run` and `upload-symbols`
+  (the latter ships the app dSYM, which now carries the Kotlin symbols, to Firebase). Point its
+  `-gsp` at the on-disk `GoogleService-Info.plist`, and **do not** declare the bundle-copied plist as
+  a script *Input File* (that creates an Xcode build dependency cycle).
+
+For TestFlight/App Store builds Apple may strip/regenerate dSYMs — download them from App Store
+Connect and run `upload-symbols` if Crashlytics reports missing dSYMs.
 
 ## Required `Info.plist` entries
 

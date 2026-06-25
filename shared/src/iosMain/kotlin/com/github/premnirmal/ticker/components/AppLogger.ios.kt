@@ -14,11 +14,13 @@ private fun nsLog(text: String) {
 internal actual fun logError(throwable: Throwable?, message: String?) {
     val text = listOfNotNull(message, throwable?.toString()).joinToString(separator = ": ")
     nsLog("ERROR: $text")
+    IosCrashReporter.reporter.recordError(throwable, message)
 }
 
 internal actual fun logWarning(throwable: Throwable?, message: String?) {
     val text = listOfNotNull(message, throwable?.toString()).joinToString(separator = ": ")
     nsLog("WARN: $text")
+    IosCrashReporter.reporter.log("WARN: $text")
 }
 
 internal actual fun logDebug(message: String?) {

@@ -21,7 +21,12 @@ options:
 settings:
   base:
     SWIFT_VERSION: "5.0"
-    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
+    # Produce a separate dSYM bundle (not just inline DWARF) for every configuration. The shared
+    # Kotlin/Native `Shared` framework is linked statically, so its symbols land in the app's own
+    # dSYM — uploading that dSYM to Firebase Crashlytics (see the README) symbolicates both Swift and
+    # Kotlin crash frames. Debug builds default to plain `dwarf` (no dSYM); forcing dwarf-with-dsym
+    # here ensures symbolication works for Release/Archive (TestFlight/App Store) builds.
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
     # Default app/extension version. These back CFBundleShortVersionString
     # ($(MARKETING_VERSION)) and CFBundleVersion ($(CURRENT_PROJECT_VERSION)) in
     # every target's Info.plist. They MUST be non-empty: an app extension whose
