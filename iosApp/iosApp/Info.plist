@@ -31,8 +31,8 @@
 	<true/>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.github.premnirmal.ticker.refresh</string>
-		<string>com.github.premnirmal.ticker.cleanup</string>
+		<string>com.github.premnirmal.tickerwidget.refresh</string>
+		<string>com.github.premnirmal.tickerwidget.cleanup</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

@@ -17,8 +17,8 @@ import FirebaseCore
 struct StockTickerApp: App {
 
     /// Identifiers must also be listed under `BGTaskSchedulerPermittedIdentifiers` in Info.plist.
-    static let refreshTaskId = "com.github.premnirmal.ticker.refresh"
-    static let cleanupTaskId = "com.github.premnirmal.ticker.cleanup"
+    static let refreshTaskId = "com.github.premnirmal.tickerwidget.refresh"
+    static let cleanupTaskId = "com.github.premnirmal.tickerwidget.cleanup"
 
     private let backgroundScheduler = StockTickerBackgroundScheduler(
         refreshTaskId: refreshTaskId,
