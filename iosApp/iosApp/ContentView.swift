@@ -9,10 +9,7 @@ import Shared
 /// (Koin start-up, background scheduling, analytics, WidgetKit reloads).
 struct ContentView: View {
     var body: some View {
-//        ComposeView()
-//            .ignoresSafeArea() // let the shared Compose UI draw edge-to-edge
-        Button("Crash") {
-          fatalError("Crash was triggered")
-        }
+        ComposeView()
+            .ignoresSafeArea() // let the shared Compose UI draw edge-to-edge
     }
 }
