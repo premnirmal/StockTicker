@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +27,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -52,9 +55,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.offset
+import androidx.compose.ui.unit.sp
 import com.github.premnirmal.ticker.ui.NavigationContentPosition
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.CENTER
 import com.github.premnirmal.ticker.ui.NavigationContentPosition.TOP
@@ -225,7 +230,9 @@ fun BottomNavigationBar(
 /**
  * A single item in the floating "liquid glass" bottom navigation bar. The selected item is marked by
  * a translucent, softly-bordered rounded highlight (the same frosted-glass language as the bar
- * itself) rather than a solid pink container. No label is shown in any state.
+ * itself) rather than a solid pink container. Each item shows its label beneath the icon; the label
+ * auto-sizes down so longer strings such as "Watchlist" or "Settings" always fit on a single line
+ * without truncation or ellipsis.
  */
 @Composable
 private fun GlassNavigationItem(
@@ -253,7 +260,7 @@ private fun GlassNavigationItem(
                     Modifier
                 }
             )
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 6.dp, vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
@@ -261,6 +268,22 @@ private fun GlassNavigationItem(
             painter = destination.selectedIcon,
             contentDescription = destination.contentDescription,
             tint = tint,
+        )
+        // Auto-size the label so the whole word stays on one line for any item width. softWrap is
+        // disabled and maxLines is 1, so the text shrinks (down to minFontSize) to fit instead of
+        // wrapping or showing an ellipsis.
+        BasicText(
+            text = destination.label,
+            modifier = Modifier.fillMaxWidth(),
+            color = { tint },
+            maxLines = 1,
+            softWrap = false,
+            autoSize = TextAutoSize.StepBased(
+                minFontSize = 7.sp,
+                maxFontSize = 11.sp,
+                stepSize = 0.5.sp,
+            ),
+            style = MaterialTheme.typography.labelSmall.copy(textAlign = TextAlign.Center),
         )
     }
 }
@@ -285,6 +308,12 @@ private fun RowScope.NavigationBarItems(
                     } else {
                         MaterialTheme.colorScheme.primary
                     }
+                )
+            },
+            label = {
+                Text(
+                    text = destination.label,
+                    style = MaterialTheme.typography.labelSmall,
                 )
             }
         )
