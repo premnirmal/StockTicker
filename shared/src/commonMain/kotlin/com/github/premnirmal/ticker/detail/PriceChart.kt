@@ -52,7 +52,7 @@ private const val AXIS_LABEL_COUNT = 5
  * dozens of overlapping labels that collapse into an unreadable smear. Spacing the labels to hit
  * roughly this count keeps them legible regardless of how many points/steps there are.
  */
-internal const val X_AXIS_LABEL_COUNT = 5
+internal const val X_AXIS_LABEL_COUNT = 6
 
 // Vico rounds the GCD of the x-value deltas to this many decimals when deriving the axis step; see
 // `Double.gcdWith` in Vico (DOUBLE_GCD_DECIMALS). We replicate it so [xAxisLabelSpacing] computes the
