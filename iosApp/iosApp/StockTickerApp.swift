@@ -27,6 +27,10 @@ struct StockTickerApp: App {
 
     private let portfolioDocumentBridge = PortfolioDocumentBridgeImpl()
 
+    /// Keeps the shared-portfolio subscription that syncs the WidgetKit App Group snapshot alive for
+    /// the app's lifetime. Cancelling/dropping it would stop the widget from receiving updates.
+    private let widgetSnapshotSync = WidgetSnapshotSync()
+
     init() {
         configureFirebase()
         // Start Koin with the shared graph and the iOS platform implementations.
@@ -36,11 +40,18 @@ struct StockTickerApp: App {
             portfolioDocumentBridge: portfolioDocumentBridge,
             crashReporter: StockTickerCrashReporter(),
             onQuotesUpdated: {
-                // Persist the portfolio for the WidgetKit extension, then reload its timelines.
-                KoinHelper.shared.writeWidgetSnapshot()
+                // A successful refresh also flows through the portfolio StateFlow observed by
+                // `WidgetSnapshotSync`, so the widget stays current without this hook. Kept as a
+                // belt-and-braces immediate reload right when a network refresh completes.
                 WidgetCenterReloader.reloadAll()
             }
         )
+        // Keep the WidgetKit snapshot in sync with EVERY watchlist change (add / remove / reorder /
+        // holdings), not just full refreshes. Observing the shared portfolio StateFlow also writes a
+        // fresh snapshot at launch (StateFlow replays its current value on subscription), so a widget
+        // added after the app already had quotes shows the real watchlist instead of the install-time
+        // default list.
+        widgetSnapshotSync.start()
         // Request notification permission and start observing refreshes for price-alert /
         // daily-summary local notifications (the iOS analogue of Android's NotificationsHandler).
         KoinHelper.shared.initializeNotifications()
