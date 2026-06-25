@@ -32,6 +32,7 @@ class NewsProvider(
 
     fun initCache() {
         coroutineScope.launch {
+            AppLogger.d("$TAG initCache: prefetching market news + trending stocks")
             fetchMarketNews()
             fetchTrendingStocks()
         }
@@ -87,7 +88,6 @@ class NewsProvider(
                     if (mostActive.isSuccessful) {
                         val symbols = mostActive.symbols
                         if (symbols.isNotEmpty()) {
-                            AppLogger.d("symbols: ${symbols.joinToString(",")}")
                             val mostActiveStocks = stocksApi.getStocks(symbols)
                             if (mostActiveStocks.wasSuccessful && mostActiveStocks.data.isNotEmpty()) {
                                 cachedTrendingStocks = mostActiveStocks.data
@@ -106,7 +106,7 @@ class NewsProvider(
                         }
                     }
                 } catch (e: Exception) {
-                    AppLogger.w(e)
+                    AppLogger.w(e, "$TAG fetchTrendingStocks: most-active path threw, falling back to ApeWisdom")
                 }
 
                 // fallback to apewisdom api
@@ -118,10 +118,14 @@ class NewsProvider(
                 }
                 return@withContext trendingResult
             } catch (ex: Exception) {
-                AppLogger.w(ex)
+                AppLogger.w(ex, "$TAG fetchTrendingStocks failed")
                 return@withContext FetchResult.failure<List<Quote>>(
                     FetchException("Error fetching trending", ex)
                 )
             }
         }
+
+    private companion object {
+        private const val TAG = "[NewsProvider]"
+    }
 }

@@ -31,6 +31,18 @@ class StocksApi(
         Regex("csrfToken\" value=\"(.+)\">")
     }
 
+    private companion object {
+        private const val TAG = "[StocksApi]"
+
+        // Bootstrapping the crumb can take more than one [loadCrumb] cycle: the cookie-consent path
+        // (when a csrfToken is present in the initial HTML) frequently fails (e.g. HTTP 405), storing
+        // no crumb, and only a subsequent cycle through the plain finance.yahoo.com page succeeds. We
+        // therefore allow a few quote retries so the crumb that is finally stored is actually used on
+        // the same call instead of only benefiting the next one. The bound keeps a persistently
+        // failing endpoint (always 401) from looping forever.
+        private const val MAX_QUOTE_ATTEMPTS = 3
+    }
+
     private suspend fun loadCrumb() {
         withContext(ioDispatcher) {
             try {
@@ -48,7 +60,7 @@ class StocksApi(
                         sessionId = sessionId
                     )
                     if (!cookieConsent.isSuccessful) {
-                        AppLogger.e("Failed cookie consent with code: ${cookieConsent.statusCode}")
+                        AppLogger.e("$TAG Failed cookie consent with code: ${cookieConsent.statusCode}")
                         return@withContext
                     }
                 }
@@ -58,12 +70,14 @@ class StocksApi(
                     val crumb = crumbResponse.crumb
                     if (!crumb.isNullOrEmpty()) {
                         crumbStore.setCrumb(crumb)
+                    } else {
+                        AppLogger.e("$TAG loadCrumb: crumb response successful but crumb was empty")
                     }
                 } else {
-                    AppLogger.e("Failed to get crumb with code: ${crumbResponse.statusCode}")
+                    AppLogger.e("$TAG Failed to get crumb with code: ${crumbResponse.statusCode}")
                 }
             } catch (e: Exception) {
-                AppLogger.e(e, "Crumb load failed")
+                AppLogger.e(e, "$TAG Crumb load failed")
             }
         }
     }
@@ -83,11 +97,13 @@ class StocksApi(
     suspend fun getStocks(tickerList: List<String>): FetchResult<List<Quote>> =
         withContext(ioDispatcher) {
             try {
+                AppLogger.d("$TAG getStocks: requesting ${tickerList.size} symbols")
                 val quoteNets = getStocksYahoo(tickerList)
                     ?: return@withContext FetchResult.failure(FetchException("Failed to fetch"))
-                return@withContext FetchResult.success(quoteNets.toQuoteMap().toOrderedList(tickerList))
+                val quotes = quoteNets.toQuoteMap().toOrderedList(tickerList)
+                return@withContext FetchResult.success(quotes)
             } catch (ex: Exception) {
-                AppLogger.e(ex)
+                AppLogger.e(ex, "$TAG getStocks failed")
                 return@withContext FetchResult.failure(FetchException("Failed to fetch", ex))
             }
         }
@@ -114,17 +130,28 @@ class StocksApi(
             try {
                 quotesResponse = yahooFinance.getStocks(query)
                 if (!quotesResponse.isSuccessful) {
-                    AppLogger.e("Yahoo quote fetch failed with code ${quotesResponse.statusCode}")
+                    AppLogger.e("$TAG Yahoo quote fetch failed with code ${quotesResponse.statusCode}")
                 }
-                if (quotesResponse.statusCode == 401) {
+                val quoteNets = quotesResponse.response?.quoteResponse?.result
+                // A missing crumb/session can surface two ways on a cold launch: as an HTTP 401, or
+                // (notably on iOS) as a "successful" HTTP 200 that carries an empty quote list. The
+                // latter never triggered the crumb refresh below, so the empty list propagated to the
+                // caller and the trending list stayed blank on the first open of search/news. Treat an
+                // empty 200 response with no stored crumb as the same "needs bootstrap" signal so the
+                // crumb is fetched and the request retried, just like the 401 case.
+                val emptyDueToMissingCrumb = quotesResponse.isSuccessful &&
+                    quoteNets.isNullOrEmpty() &&
+                    crumbStore.getCrumb().isNullOrEmpty()
+                if (quotesResponse.statusCode == 401 || emptyDueToMissingCrumb) {
                     crumbStore.setCrumb(null)
                     loadCrumb()
-                    if (invocationCount == 1) {
+                    if (invocationCount < MAX_QUOTE_ATTEMPTS) {
                         return@withContext getStocksYahoo(tickerList, invocationCount = invocationCount + 1)
                     }
+                    AppLogger.e("$TAG getStocksYahoo: still failing after crumb bootstrap + retries")
                 }
             } catch (ex: Exception) {
-                AppLogger.e(ex)
+                AppLogger.e(ex, "$TAG getStocksYahoo failed")
                 throw ex
             }
             val quoteNets = quotesResponse.response?.quoteResponse?.result

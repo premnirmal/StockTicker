@@ -21,6 +21,18 @@ fun createHttpClient(okHttpClient: OkHttpClient): HttpClient = HttpClient(OkHttp
 }
 
 /**
+ * Android [createYahooHttpClient] actual. Builds a standalone OkHttp-backed Ktor client with the
+ * shared Yahoo authentication. In practice the Android app injects its preconfigured `@Named("yahoo")`
+ * [OkHttpClient] through the `(baseUrl, okHttpClient)` factories above, so this actual exists mainly
+ * to satisfy the `expect` declaration; OkHttp lets Ktor's `HttpCookies` plugin manage cookies, so no
+ * extra engine configuration is required (unlike the iOS Darwin actual).
+ */
+actual fun createYahooHttpClient(crumbProvider: CrumbProvider): HttpClient = HttpClient(OkHttp) {
+    installDefaults()
+    installYahooAuth(crumbProvider)
+}
+
+/**
  * Builds a [SuggestionApi] backed by the Yahoo-authenticated [okHttpClient]. Keeps Ktor types out
  * of the Android app module: `:app` only needs to know about [SuggestionApi] and its existing
  * `@Named("yahoo")` [OkHttpClient].

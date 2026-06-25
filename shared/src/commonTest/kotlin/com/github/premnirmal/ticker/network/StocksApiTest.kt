@@ -148,6 +148,104 @@ class StocksApiTest {
     }
 
     @Test
+    fun getStocksBootstrapsCrumbAndRetriesWhenFirstResponseIsEmptyWithNoCrumb() = runTest {
+        // Cold launch on iOS: no crumb stored yet. The first quote request succeeds at the HTTP level
+        // (200) but comes back with an empty quote list because the crumb/consent session is not yet
+        // established. The api must fetch the crumb and retry once so the data loads on the first try.
+        var yahooCalls = 0
+        val yahooEngine = MockEngine {
+            yahooCalls++
+            if (yahooCalls == 1) {
+                respond(quotesJson(), HttpStatusCode.OK, jsonHeaders)
+            } else {
+                respond(quotesJson("AAPL"), HttpStatusCode.OK, jsonHeaders)
+            }
+        }
+        val initialLoadEngine = MockEngine { respond("<html>no token here</html>", HttpStatusCode.OK) }
+        val crumbEngine = MockEngine { respond("fresh-crumb", HttpStatusCode.OK) }
+        val crumbStore = FakeCrumbStore(stored = null)
+
+        val api = stocksApi(
+            yahooEngine = yahooEngine,
+            crumbStore = crumbStore,
+            initialLoadEngine = initialLoadEngine,
+            crumbEngine = crumbEngine
+        )
+
+        val result = api.getStocks(listOf("AAPL"))
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("AAPL"), result.data.map { it.symbol })
+        assertEquals("fresh-crumb", crumbStore.getCrumb())
+        assertEquals(2, yahooCalls)
+    }
+
+    @Test
+    fun getStocksRetriesAcrossMultipleCrumbBootstrapCyclesOn401() = runTest {
+        // Real-world cold launch: the first crumb bootstrap cycle goes through the cookie-consent path
+        // which fails (no crumb stored), and only a second cycle through the plain finance.yahoo.com
+        // page stores a crumb. The quote request must keep retrying until the crumb that is finally
+        // stored is actually used, instead of giving up after a single retry.
+        var yahooCalls = 0
+        val yahooEngine = MockEngine {
+            yahooCalls++
+            // Unauthorized until a crumb has actually been stored (third quote request).
+            if (yahooCalls < 3) {
+                respondError(HttpStatusCode.Unauthorized)
+            } else {
+                respond(quotesJson("AAPL"), HttpStatusCode.OK, jsonHeaders)
+            }
+        }
+        val initialLoadEngine = MockEngine { respond("<html>no token here</html>", HttpStatusCode.OK) }
+        var crumbCalls = 0
+        val crumbEngine = MockEngine {
+            crumbCalls++
+            // First bootstrap cycle fails to produce a crumb; the second one succeeds.
+            if (crumbCalls == 1) {
+                respondError(HttpStatusCode.MethodNotAllowed)
+            } else {
+                respond("fresh-crumb", HttpStatusCode.OK)
+            }
+        }
+        val crumbStore = FakeCrumbStore(stored = "stale-crumb")
+
+        val api = stocksApi(
+            yahooEngine = yahooEngine,
+            crumbStore = crumbStore,
+            initialLoadEngine = initialLoadEngine,
+            crumbEngine = crumbEngine
+        )
+
+        val result = api.getStocks(listOf("AAPL"))
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("AAPL"), result.data.map { it.symbol })
+        assertEquals("fresh-crumb", crumbStore.getCrumb())
+        assertEquals(3, yahooCalls)
+    }
+
+    @Test
+    fun getStocksDoesNotRetryOnEmptyResponseWhenCrumbAlreadyPresent() = runTest {
+        // A genuinely empty result (e.g. invalid symbols) when a crumb is already stored must not loop
+        // or trigger an extra crumb refresh: only one quote request should be made.
+        var yahooCalls = 0
+        val yahooEngine = MockEngine {
+            yahooCalls++
+            respond(quotesJson(), HttpStatusCode.OK, jsonHeaders)
+        }
+        val crumbStore = FakeCrumbStore(stored = "existing-crumb")
+
+        val api = stocksApi(yahooEngine = yahooEngine, crumbStore = crumbStore)
+
+        val result = api.getStocks(listOf("AAPL"))
+
+        assertTrue(result.wasSuccessful)
+        assertTrue(result.data.isEmpty())
+        assertEquals(1, yahooCalls)
+        assertEquals("existing-crumb", crumbStore.getCrumb())
+    }
+
+    @Test
     fun getStocksRefreshesCrumbAndRetriesOn401() = runTest {
         var yahooCalls = 0
         val yahooEngine = MockEngine {

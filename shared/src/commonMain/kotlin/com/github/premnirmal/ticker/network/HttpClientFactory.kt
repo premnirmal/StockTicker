@@ -42,16 +42,18 @@ fun createHttpClient(): HttpClient = HttpClient {
 /**
  * Creates a Ktor [HttpClient] configured with the shared lenient JSON content negotiation **and**
  * the shared Yahoo Finance authentication ([installYahooAuth]: browser `User-Agent`/`Accept`
- * headers, crumb query parameter and an in-memory cookie store). The HTTP engine is picked up from
- * the classpath of the consuming platform (OkHttp on Android, Darwin on iOS), so this works on every
- * target without depending on the Android-only OkHttp interceptor stack.
+ * headers, crumb query parameter and an in-memory cookie store).
+ *
+ * This is `expect`/`actual` (rather than a single classpath-engine builder) so each platform can
+ * pin and configure its engine. iOS in particular needs to disable the Darwin engine's native
+ * `NSURLSession` cookie handling so Ktor's [io.ktor.client.plugins.cookies.HttpCookies] plugin is
+ * the single cookie authority — otherwise the shared `NSHTTPCookieStorage` competes with Ktor's
+ * in-memory store and the Yahoo crumb/consent cookies are not sent consistently, which leaves
+ * trending stocks empty on the first cold fetch. See the iOS actual for details.
  *
  * @param crumbProvider supplies the current Yahoo crumb token (see [CrumbProvider]).
  */
-fun createYahooHttpClient(crumbProvider: CrumbProvider): HttpClient = HttpClient {
-    installDefaults()
-    installYahooAuth(crumbProvider)
-}
+expect fun createYahooHttpClient(crumbProvider: CrumbProvider): HttpClient
 
 /**
  * Yahoo Finance authentication binds the crumb token to the session cookies issued during the
