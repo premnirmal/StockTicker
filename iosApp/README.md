@@ -169,6 +169,26 @@ you remove the `Firebase` package from `project.yml`.
 The `GoogleService-Info.plist` is git-ignored (`iosApp/iosApp/GoogleService-Info.plist`), exactly like
 the Android `google-services.json`, so your Firebase config is never committed.
 
+#### Crash symbolication (Kotlin/Native)
+
+Crashes are reported through **Firebase Crashlytics** (the `FirebaseCrashlytics` product is linked in
+[`project.yml`](project.yml) and auto-initialises once `FirebaseApp.configure()` runs). For crash
+reports to show **readable Kotlin function names** instead of raw addresses, the Kotlin/Native debug
+information has to be available to Crashlytics:
+
+- The shared framework is built with `-Xadd-light-debug=enable` (see `shared/build.gradle.kts`), which
+  embeds light debug info (function symbols) into the Kotlin/Native binary. Because `:shared` is a
+  **static** framework, that code is linked directly into the app binary, so the Kotlin symbols end up
+  in the app's own `.dSYM` (the project builds with `dwarf-with-dsym`). See the
+  [Kotlin debugging docs](https://kotlinlang.org/docs/native-debugging.html#debug-ios-applications).
+- The *Firebase Crashlytics* post-compile build phase in [`project.yml`](project.yml) runs Crashlytics'
+  `run` helper and then `upload-symbols` over the whole `${DWARF_DSYM_FOLDER_PATH}`, so every `.dSYM`
+  (including the Kotlin symbols folded into the app `.dSYM`) is uploaded to Firebase. It also uploads a
+  standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build).
+
+No extra setup is required beyond dropping in the `GoogleService-Info.plist` and regenerating the
+project; release/archive builds upload the symbols automatically.
+
 ## Required `Info.plist` entries
 
 These are already declared in the committed [`iosApp/iosApp/Info.plist`](iosApp/Info.plist) that the

@@ -86,9 +86,21 @@ targets:
           - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
         script: |
           "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
-          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols" \
-            -gsp "${SRCROOT}/iosApp/GoogleService-Info.plist" \
-            -p ios "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}"
+          UPLOAD_SYMBOLS="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols"
+          GSP="${SRCROOT}/iosApp/GoogleService-Info.plist"
+          # Upload every .dSYM in the app's dSYM folder (not just the app target's). The Kotlin/Native
+          # `:shared` framework is linked statically, so the Kotlin debug info (emitted via
+          # -Xadd-light-debug=enable) is folded into the app binary's own .dSYM here; uploading the
+          # whole folder also captures any additional framework .dSYM Xcode produces, so Crashlytics
+          # can symbolicate Kotlin stack frames.
+          "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "${DWARF_DSYM_FOLDER_PATH}"
+          # If the Kotlin/Native build also emitted a standalone Shared.framework.dSYM (e.g. a dynamic
+          # framework build), upload it too. It is absent for the current static framework, so guard on
+          # its existence to keep the build green.
+          SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
+          if [ -d "$SHARED_DSYM" ]; then
+            "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "$SHARED_DSYM"
+          fi
     preBuildScripts:
       - name: Compile Kotlin/Native framework
         # Always run so the framework is rebuilt when the shared code changes.

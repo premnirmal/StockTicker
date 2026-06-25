@@ -91,6 +91,14 @@ kotlin {
     iosTarget.binaries.framework {
       baseName = "Shared"
       isStatic = true
+      // Embed Kotlin/Native debug information into the framework so Firebase Crashlytics can
+      // symbolicate Kotlin stack frames in iOS crash reports. Because this is a *static* framework
+      // the Kotlin code is linked directly into the app binary (there is no separate Shared.framework
+      // dynamic binary with its own auto-generated .dSYM), so the light debug info has to be added to
+      // the binary here. It then ends up in the app's .dSYM that the Crashlytics build phase uploads,
+      // turning otherwise-unsymbolicated Kotlin frames into readable function names.
+      // See https://kotlinlang.org/docs/native-debugging.html#debug-ios-applications
+      freeCompilerArgs += "-Xadd-light-debug=enable"
     }
   }
 
