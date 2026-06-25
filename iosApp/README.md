@@ -156,10 +156,18 @@ secrets (or fastlane match) and an `xcodebuild archive`/`-exportArchive` (or `fa
 
 ### Firebase (optional, prod only)
 
-Firebase is optional. To enable analytics, link the FirebaseAnalytics SDK and drop a
-`GoogleService-Info.plist` into the app target. `StockTickerApp.configureFirebase()` calls
-`FirebaseApp.configure()` only when both are present; otherwise `StockTickerAnalyticsSink` falls back
-to `NSLog`, mirroring the Android FOSS/dev flavours.
+Firebase is optional. The FirebaseAnalytics / FirebaseCore SDK is wired into the `iosApp` target as a
+Swift Package in [`project.yml`](project.yml) (`packages.Firebase` →
+`https://github.com/firebase/firebase-ios-sdk`), so all you have to do to enable analytics is drop a
+`GoogleService-Info.plist` into the app target (it is git-ignored — see below) and regenerate the
+project. `StockTickerApp.configureFirebase()` calls `FirebaseApp.configure()` only when the SDK is
+linked **and** the plist is present; otherwise `StockTickerAnalyticsSink` falls back to `NSLog`,
+mirroring the Android FOSS/dev flavours. Every Firebase use in Swift is guarded by
+`#if canImport(FirebaseAnalytics)` / `#if canImport(FirebaseCore)`, so the app still builds even if
+you remove the `Firebase` package from `project.yml`.
+
+The `GoogleService-Info.plist` is git-ignored (`iosApp/iosApp/GoogleService-Info.plist`), exactly like
+the Android `google-services.json`, so your Firebase config is never committed.
 
 ## Required `Info.plist` entries
 
