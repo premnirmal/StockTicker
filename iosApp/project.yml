@@ -87,14 +87,22 @@ targets:
         product: FirebaseAnalytics
       - package: Firebase
         product: FirebaseCrashlytics
-    postCompileScripts:
+    # This MUST be a post-*build* script (runs after Copy Bundle Resources, Embed
+    # App Extensions and dSYM generation), NOT a post-compile script. The Firebase
+    # Crashlytics phase consumes the app's .dSYM, processed Info.plist and linked
+    # executable — all produced late in the build. If it runs as a postCompileScript
+    # (which XcodeGen schedules *before* the resource-copy/embed phases), Xcode is
+    # forced to run "Copy Bundle Resources" (which copies GoogleService-Info.plist)
+    # *after* this script, while this script must run *after* the .dSYM that depends
+    # on the fully-built app — producing the "Cycle inside StocksWidget" archive
+    # error. Placing it as a postBuildScript breaks that cycle.
+    postBuildScripts:
       - name: Firebase Crashlytics
         basedOnDependencyAnalysis: false
         inputFiles:
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
-          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
           - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
           - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
