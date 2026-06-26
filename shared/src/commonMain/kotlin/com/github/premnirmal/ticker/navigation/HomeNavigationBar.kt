@@ -5,11 +5,14 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -17,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
@@ -47,13 +51,14 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -78,6 +83,9 @@ private val GlassHorizontalMargin = 16.dp
 
 /** Gap between the floating bar and the bottom edge (added on top of the system nav inset). */
 private val GlassBottomMargin = 8.dp
+
+/** Gap between the floating navigation bar and the separate floating search button. */
+private val GlassGroupSpacing = 12.dp
 
 /** Rounded "pill" silhouette of the floating bar; hoisted so it is allocated once. */
 private val GlassShape = RoundedCornerShape(GlassCornerRadius)
@@ -130,6 +138,10 @@ data class HomeBottomNavDestination(
  * navigation inset. The slice of content sitting behind the pill is drawn blurred underneath a thin
  * surface tint, so the bar reads as frosted glass on both iOS and Android. Passing a `null` backdrop
  * falls back to the original opaque, full-width surface bar.
+ *
+ * When [searchDestination] is supplied (glass mode only), it is rendered as a separate circular
+ * "liquid glass" button on the bottom-right — without a text label — sitting beside the main bar
+ * rather than inside it. The bar (carrying the remaining [destinations]) stays on the left.
  */
 @Composable
 fun BottomNavigationBar(
@@ -139,28 +151,31 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     backdrop: GraphicsLayer? = null,
     onHeightChanged: (Dp) -> Unit = {},
+    searchDestination: HomeBottomNavDestination? = null,
 ) {
     if (backdrop == null) {
+        // No glass backdrop available: fall back to the opaque Material bar and keep the search
+        // destination inline with the rest so it remains reachable.
+        val allDestinations = if (searchDestination != null) {
+            destinations + searchDestination
+        } else {
+            destinations
+        }
         NavigationBar(
             modifier = modifier,
             containerColor = MaterialTheme.colorScheme.surface,
         ) {
-            NavigationBarItems(selectedDestination, destinations, navigateToTopLevelDestination)
+            NavigationBarItems(selectedDestination, allDestinations, navigateToTopLevelDestination)
         }
         return
     }
 
-    // Track where the pill sits relative to its parent so the captured backdrop can be shifted by the
-    // same amount, lining the blurred slice up exactly with the content drawn behind the pill (both
-    // horizontally and vertically, since the pill is inset from the screen edges). Starts as
-    // Unspecified so the backdrop is only drawn once a real position has been measured, avoiding a
-    // mis-aligned blur on the very first frame before onGloballyPositioned fires.
-    var barOffset by remember { mutableStateOf(Offset.Unspecified) }
-    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
     val density = LocalDensity.current
-    Box(
+    // Lay the floating bar (left, weighted) and the optional separate search button (right) in a
+    // single bottom row so they share the same vertical inset/margin and report a combined height.
+    Row(
         modifier = modifier
-            // Report the full height occupied by the floating bar (including the system navigation
+            // Report the full height occupied by the floating row (including the system navigation
             // inset and bottom margin added below) so home content can pad its scrollable lists by
             // the same amount. Measured before those paddings are applied so the reported value
             // covers the whole region the bar overlays.
@@ -172,13 +187,82 @@ fun BottomNavigationBar(
                 start = GlassHorizontalMargin,
                 end = GlassHorizontalMargin,
                 bottom = GlassBottomMargin,
-            )
-            .clip(GlassShape)
-            .border(1.dp, borderColor, GlassShape)
-            .onGloballyPositioned { barOffset = it.positionInParent() }
+            ),
+        horizontalArrangement = Arrangement.spacedBy(GlassGroupSpacing),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        // Blurred copy of the content behind the pill. The blur is applied by this node's own
-        // graphics layer, so only the backdrop is frosted while the navigation items stay crisp.
+        GlassSurface(
+            backdrop = backdrop,
+            shape = GlassShape,
+            modifier = Modifier.weight(1f),
+        ) {
+            // Custom compact item row (instead of Material3 NavigationBar, which pins an 80.dp
+            // height and a tinted "pill" indicator). This keeps the bar low-profile and lets the
+            // selected item read as a frosted-glass highlight rather than a solid container colour.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(GlassContentPadding),
+                horizontalArrangement = Arrangement.spacedBy(GlassContentPadding),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                destinations.forEach { destination ->
+                    GlassNavigationItem(
+                        destination = destination,
+                        selected = selectedDestination == destination.route.route,
+                        onClick = { navigateToTopLevelDestination(destination) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+            }
+        }
+        if (searchDestination != null) {
+            // Separate circular glass button on the bottom-right. fillMaxHeight + aspectRatio(1f)
+            // makes it a perfect circle matching the bar's height, with no text label.
+            GlassSurface(
+                backdrop = backdrop,
+                shape = CircleShape,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f),
+            ) {
+                GlassIconButton(
+                    destination = searchDestination,
+                    selected = selectedDestination == searchDestination.route.route,
+                    onClick = { navigateToTopLevelDestination(searchDestination) },
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Reusable "liquid glass" surface: clips its [content] to [shape], frames it with a thin border, and
+ * draws a blurred slice of [backdrop] (aligned to this surface's position on screen) beneath a
+ * translucent surface tint so it reads as frosted glass. Shared by the floating navigation bar and
+ * the separate search button so both blur the same captured home content consistently.
+ */
+@Composable
+private fun GlassSurface(
+    backdrop: GraphicsLayer,
+    shape: Shape,
+    modifier: Modifier = Modifier,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    // Track where this surface sits relative to the screen so the captured backdrop can be shifted
+    // by the same amount, lining the blurred slice up exactly with the content drawn behind it.
+    // Starts as Unspecified so the backdrop is only drawn once a real position has been measured,
+    // avoiding a mis-aligned blur on the very first frame before onGloballyPositioned fires.
+    var offset by remember { mutableStateOf(Offset.Unspecified) }
+    val borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+    Box(
+        modifier = modifier
+            .clip(shape)
+            .border(1.dp, borderColor, shape)
+            .onGloballyPositioned { offset = it.positionInRoot() }
+    ) {
+        // Blurred copy of the content behind the surface. The blur is applied by this node's own
+        // graphics layer, so only the backdrop is frosted while the foreground content stays crisp.
         Spacer(
             modifier = Modifier
                 .matchParentSize()
@@ -188,12 +272,12 @@ fun BottomNavigationBar(
                         radiusY = GlassBlurRadius.toPx(),
                         edgeTreatment = TileMode.Decal
                     )
-                    // Clip to the pill's bounds so the blurred backdrop can't bleed outside the pill.
+                    // Clip to the surface's bounds so the blurred backdrop can't bleed outside it.
                     clip = true
                 }
                 .drawBehind {
-                    if (barOffset.isSpecified) {
-                        translate(left = -barOffset.x, top = -barOffset.y) {
+                    if (offset.isSpecified) {
+                        translate(left = -offset.x, top = -offset.y) {
                             drawLayer(backdrop)
                         }
                     }
@@ -205,25 +289,49 @@ fun BottomNavigationBar(
                 .matchParentSize()
                 .background(MaterialTheme.colorScheme.surface.copy(alpha = GlassTintAlpha))
         )
-        // Custom compact item row (instead of Material3 NavigationBar, which pins an 80.dp height and
-        // a tinted "pill" indicator). This keeps the bar low-profile and lets the selected item read
-        // as a frosted-glass highlight rather than a solid container colour.
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(GlassContentPadding),
-            horizontalArrangement = Arrangement.spacedBy(GlassContentPadding),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            destinations.forEach { destination ->
-                GlassNavigationItem(
-                    destination = destination,
-                    selected = selectedDestination == destination.route.route,
-                    onClick = { navigateToTopLevelDestination(destination) },
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        }
+        content()
+    }
+}
+
+/**
+ * A single circular icon-only button for the separate floating glass action (e.g. Search). Unlike
+ * [GlassNavigationItem] it shows no text label. The selected state is marked with the same
+ * translucent frosted-glass highlight language as the bar.
+ */
+@Composable
+private fun GlassIconButton(
+    destination: HomeBottomNavDestination,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val tint = when {
+        !destination.enabled -> MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)
+        else -> MaterialTheme.colorScheme.primary
+    }
+    val highlightColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.10f)
+    val highlightBorder = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.18f)
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .clip(CircleShape)
+            .clickable(enabled = destination.enabled, onClick = onClick)
+            .then(
+                if (selected) {
+                    Modifier
+                        .background(highlightColor, CircleShape)
+                        .border(1.dp, highlightBorder, CircleShape)
+                } else {
+                    Modifier
+                }
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            painter = destination.selectedIcon,
+            contentDescription = destination.contentDescription,
+            tint = tint,
+        )
     }
 }
 

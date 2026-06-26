@@ -41,6 +41,10 @@ fun HomeScaffold(
     navHost: @Composable (Modifier) -> Unit,
 ) {
     if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
+        // Render the Search destination as a separate floating glass button on the bottom-right,
+        // keeping the remaining destinations in the bar on the left.
+        val searchDestination = destinations.firstOrNull { it.route == HomeRoute.Search }
+        val barDestinations = destinations.filter { it.route != HomeRoute.Search }
         // Capture the home content into a graphics layer so the glass bottom bar can draw a blurred
         // slice of whatever is scrolling behind it. The content is rendered edge-to-edge (the bar
         // floats over it) so it extends underneath the translucent bar, producing the glass look.
@@ -76,7 +80,8 @@ fun HomeScaffold(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     selectedDestination = selectedDestination,
                     navigateToTopLevelDestination = navigateToTopLevelDestination,
-                    destinations = destinations,
+                    destinations = barDestinations,
+                    searchDestination = searchDestination,
                     backdrop = backdrop,
                     onHeightChanged = { bottomBarHeight = it },
                 )
