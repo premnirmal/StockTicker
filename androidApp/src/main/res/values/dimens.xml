@@ -1,0 +1,14 @@
+<resources>
+  <dimen name="snackbar_margin">12dp</dimen>
+
+  <integer name="flip_time">8000</integer>
+
+
+  <item name="text_size_nano" type="dimen" format="float">8.0</item>
+  <item name="text_size_mini" type="dimen" format="float">9.0</item>
+  <item name="text_size_small" type="dimen" format="float">10.0</item>
+  <item name="text_size_medium" type="dimen" format="float">12.0</item>
+  <item name="text_size_large" type="dimen" format="float">14.0</item>
+  <item name="text_size_huge" type="dimen" format="float">18.0</item>
+  <item name="text_size_giant" type="dimen" format="float">22.0</item>
+</resources>

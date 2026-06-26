@@ -6,18 +6,36 @@
 .DS_Store
 /build
 /captures
-app/build
+**/build/
 app/full-r8-config.txt
+androidApp/full-r8-config.txt
 app/prod/
-ui/build
-buildSrc/build
+androidApp/prod/
 /.vs/
 .kotlin/
+**/.kotlin/
 
 #ignore keystore and keystore.properties
 *.jks
 keystore.*
 app/keystore.*
+androidApp/keystore.*
 
 #google services
 app/google-services.json
+androidApp/google-services.json
+
+#iOS / Xcode
+# The Xcode project is generated from iosApp/project.yml with XcodeGen, not committed.
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+DerivedData/
+.swiftpm/
+# Local, machine-specific JAVA_HOME override for the iOS Gradle build phase
+iosApp/.xcode.env.local
+#iOS Firebase config (optional, prod only)
+iosApp/GoogleService-Info.plist
+iosApp/iosApp/GoogleService-Info.plist
+iosApp/StockTickerWidget/GoogleService-Info.plist

@@ -31,14 +31,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Build bundle
-        run: ./gradlew :app:bundleDevDebug
+        run: ./gradlew :androidApp:bundleDevDebug
       - name: Build APK
-        run: ./gradlew :app:assembleDevDebug
+        run: ./gradlew :androidApp:assembleDevDebug
       - name: Upload APK and bundle
         uses: actions/upload-artifact@v4
         with:
           name: app
-          path: app/build/outputs/
+          path: androidApp/build/outputs/
       - name: Create release
         if: startsWith(github.ref, 'refs/tags/')
         uses: marvinpinto/action-automatic-releases@latest
@@ -48,5 +48,5 @@ jobs:
           automatic_release_tag: "${{ env.VERSION }}"
           title: "${{ env.VERSION }}"
           files: |
-            app/build/outputs/apk/dev/debug/app-dev-debug.apk
-            app/build/outputs/bundle/dev/app-dev-debug.aab
+            androidApp/build/outputs/apk/dev/debug/androidApp-dev-debug.apk
+            androidApp/build/outputs/bundle/devDebug/androidApp-dev-debug.aab

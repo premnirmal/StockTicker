@@ -1,0 +1,186 @@
+# XcodeGen spec for the StockTicker iOS app.
+#
+# The `.xcodeproj` is intentionally NOT committed — it is generated on demand
+# (locally or in CI) from this declarative spec, which avoids the fragile,
+# merge-conflict-prone `project.pbxproj`. Generate it with:
+#
+#   brew install xcodegen          # one-time
+#   cd iosApp && xcodegen generate # produces iosApp/StockTicker.xcodeproj
+#
+# The shared Kotlin/Native `Shared.framework` is built by Gradle via the
+# standard KMP `embedAndSignAppleFrameworkForXcode` run-script phase below, so
+# no framework binary needs to be committed either.
+name: StockTicker
+
+options:
+  bundleIdPrefix: com.github.premnirmal
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    # Produce a separate dSYM bundle (not just inline DWARF) for every configuration. The shared
+    # Kotlin/Native `Shared` framework is linked statically, so its symbols land in the app's own
+    # dSYM — uploading that dSYM to Firebase Crashlytics (see the README) symbolicates both Swift and
+    # Kotlin crash frames. Debug builds default to plain `dwarf` (no dSYM); forcing dwarf-with-dsym
+    # here ensures symbolication works for Release/Archive (TestFlight/App Store) builds.
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
+    # App/extension version, derived from the latest git tag (mirroring the
+    # Android app — see androidApp/build.gradle.kts). These back
+    # CFBundleShortVersionString ($(MARKETING_VERSION)) and CFBundleVersion
+    # ($(CURRENT_PROJECT_VERSION)) in every target's Info.plist. They MUST be
+    # non-empty: an app extension whose CFBundleVersion resolves to an empty
+    # string fails to install with "bundleVersion must be set in placeholder
+    # attributes for an app extension placeholder" (IXErrorDomain). XcodeGen
+    # expands the ${...} references below from the environment, so source
+    # `iosApp/version.sh` before `xcodegen generate` (it derives the values from
+    # `git describe --tags` and falls back to 1.0 / 1 when no tag is reachable).
+    MARKETING_VERSION: "${MARKETING_VERSION}"
+    CURRENT_PROJECT_VERSION: "${CURRENT_PROJECT_VERSION}"
+    # The shared framework is a static Kotlin/Native framework, so it only has
+    # to be on the linker search path — it is not embedded.
+    FRAMEWORK_SEARCH_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+  Debug:
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
+  Release:
+    DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
+
+# Swift Package dependencies. The Firebase iOS SDK is referenced by the iosApp
+# target below (FirebaseAnalytics / FirebaseCore). The Swift code guards every
+# Firebase use behind `#if canImport(...)`, so the app still builds and runs
+# (falling back to NSLog) even if you remove this package — but it must be
+# defined here for any target that lists `package: Firebase` as a dependency,
+# otherwise XcodeGen fails with "invalid package dependency Firebase".
+packages:
+  Firebase:
+    url: "https://github.com/firebase/firebase-ios-sdk"
+    minVersion: "11.0.0"
+    from: "12.0.0"
+
+targets:
+  StocksWidget:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.StocksWidget
+        INFOPLIST_FILE: iosApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: iosApp/StockTicker.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        # Allow the Gradle run-script phase below to write the framework into
+        # the build directory (script sandboxing would otherwise block it).
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
+    dependencies:
+      - target: StockTickerWidget
+      - package: Firebase
+        product: FirebaseAnalytics
+      - package: Firebase
+        product: FirebaseCrashlytics
+    postCompileScripts:
+      - name: Firebase Crashlytics
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
+          - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
+          - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
+        script: |
+          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          UPLOAD_SYMBOLS="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols"
+          GSP="${SRCROOT}/iosApp/GoogleService-Info.plist"
+          # Upload every .dSYM in the app's dSYM folder (not just the app target's). The Kotlin/Native
+          # `:shared` framework is linked statically, so the Kotlin debug info (emitted via
+          # -Xadd-light-debug=enable) is folded into the app binary's own .dSYM here; uploading the
+          # whole folder also captures any additional framework .dSYM Xcode produces, so Crashlytics
+          # can symbolicate Kotlin stack frames.
+          "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "${DWARF_DSYM_FOLDER_PATH}"
+          # If the Kotlin/Native build also emitted a standalone Shared.framework.dSYM (e.g. a dynamic
+          # framework build), upload it too. It is absent for the current static framework, so guard on
+          # its existence to keep the build green.
+          SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
+          if [ -d "$SHARED_DSYM" ]; then
+            "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "$SHARED_DSYM"
+          fi
+    preBuildScripts:
+      - name: Compile Kotlin/Native framework
+        # Always run so the framework is rebuilt when the shared code changes.
+        basedOnDependencyAnalysis: false
+        script: |
+          # Xcode build phases run with a minimal environment that does NOT source
+          # your shell profile, so a JDK on your interactive PATH is invisible here
+          # (Gradle then fails with "Unable to locate a Java Runtime"). Load
+          # JAVA_HOME from .xcode.env (committed default) and the optional,
+          # uncommitted .xcode.env.local (your machine-specific override).
+          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
+            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
+            exit 1
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+
+  StockTickerWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: StockTickerWidget
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.StocksWidget.Widget
+        INFOPLIST_FILE: StockTickerWidget/Info.plist
+        CODE_SIGN_ENTITLEMENTS: StockTickerWidget/StockTickerWidget.entitlements
+        # Allow the Gradle run-script phase below to write the framework into
+        # the build directory (script sandboxing would otherwise block it).
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
+    preBuildScripts:
+      - name: Compile Kotlin/Native framework
+        basedOnDependencyAnalysis: false
+        script: |
+          # See the iosApp target's run-script phase: Xcode build phases run with a
+          # minimal environment, so load JAVA_HOME from .xcode.env(.local) before
+          # invoking Gradle, otherwise it fails with "Unable to locate a Java Runtime".
+          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
+            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
+            exit 1
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
+          cd "$SRCROOT/.."
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+
+schemes:
+  StocksWidget:
+    build:
+      targets:
+        StocksWidget: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release

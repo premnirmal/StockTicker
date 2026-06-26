@@ -1,0 +1,317 @@
+package com.github.premnirmal.ticker.debug
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import com.github.premnirmal.ticker.StocksApp
+import com.github.premnirmal.ticker.model.RefreshWorker
+import com.github.premnirmal.ticker.portfolio.CleanupWorker
+import com.github.premnirmal.ticker.repo.QuoteDao
+import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
+import kotlinx.serialization.json.Json
+import java.io.File
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+class DbViewerViewModel constructor(
+    application: Application,
+    private val dao: QuoteDao,
+    private val workManager: WorkManager,
+    private val widgetDataProvider: WidgetDataProvider,
+) : AndroidViewModel(application) {
+
+    companion object {
+        const val FILENAME = "db.html"
+        private const val FETCH_LOG_LIMIT = 300
+        private val LOG_TIME_FORMATTER: DateTimeFormatter =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
+    }
+
+    private val _showProgress = MutableStateFlow<Boolean>(false)
+    val showProgress: StateFlow<Boolean>
+        get() = _showProgress
+
+    private val _htmlFile = MutableStateFlow<File?>(null)
+    val htmlFile: StateFlow<File?>
+        get() = _htmlFile
+
+    @Suppress("LongMethod")
+    fun generateDatabaseHtml() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _showProgress.emit(true)
+            val quotesInfo = StringBuilder()
+                .append(
+                    """
+            <h2>Quotes</h2>
+            <table>
+            <tr>
+            <th>#</th>
+            <th>Symbol</th><th>Name</th><th>Last&nbsp;trade&nbsp;price</th>
+            <th>Change</th><th>Change %</th><th>Exchange</th>
+            <th>Currency</th><th>Dividend</th>
+            <th>annualDividendRate</th>
+            <th>annualDividendYield</th>
+            <th>dayHigh</th>
+            <th>dayLow</th>
+            <th>previousClose</th>
+            <th>open</th>
+            <th>regularMarketVolume</th>
+            <th>peRatio</th>
+            <th>fiftyTwoWeekLowChange</th>
+            <th>fiftyTwoWeekLowChangePercent</th>
+            <th>fiftyTwoWeekHighChange</th>
+            <th>fiftyTwoWeekHighChangePercent</th>
+            <th>fiftyTwoWeekLow</th>
+            <th>fiftyTwoWeekHigh</th>
+            <th>dividendDate</th>
+            <th>earningsDate</th>
+            <th>marketCap</th>
+            <th>marketState</th>
+            <th>isTradeable</th>
+            <th>isTriggerable</th>
+            </tr>
+            """
+                )
+            val holdingsInfo = StringBuilder()
+                .append(
+                    """
+            <h2>Holdings</h2>
+            <table>
+            <tr>
+            <th>id</th><th>Symbol</th><th>Shares</th><th>Price</th>
+            </tr>
+            """
+                )
+            val propsInfo = StringBuilder()
+                .append(
+                    """
+            <h2>Properties</h2>
+            <table>
+            <tr>
+            <th>id</th><th>Symbol</th><th>Notes</th><th>Display Name</th><th>Alert&nbsp;Above</th><th>Alert&nbsp;Below</th>
+            </tr>
+            """
+                )
+            val stringBuilder = StringBuilder().also { sb ->
+                sb.append(
+                    """<html><body>
+                    <style>
+                        table, th, td {
+                            border: 1px solid black;
+                            border-collapse: collapse;
+                            padding: 2px;
+                        }
+                        th {
+                          background-color: lightgray;
+                        }
+                    </style>
+          """
+                )
+                var count = 0
+                dao.getQuotesWithHoldings()
+                    .forEach {
+                        val quote = it.quote
+                        quotesInfo.append("<tr>")
+                            .append("<td>${++count}</td>")
+                            .append("<td>${quote.symbol}</td>")
+                            .append("<td>${quote.name}</td>")
+                            .append("<td>${quote.lastTradePrice}</td>")
+                            .append("<td>${quote.change}</td>")
+                            .append("<td>${quote.changeInPercent}%</td>")
+                            .append("<td>${quote.stockExchange}</td>")
+                            .append("<td>${quote.currency}</td>")
+                            .append(
+                                if (quote.annualDividendRate > 0.0f && quote.annualDividendYield > 0.0f) {
+                                    "<td>${quote.annualDividendRate} (${String.format(
+                                        Locale.ENGLISH,
+                                        "%.2f",
+                                        quote.annualDividendYield * 100
+                                    )}%)</td>"
+                                } else {
+                                    "<td></td>"
+                                }
+                            )
+                            .append("<td>${quote.annualDividendRate}</td>")
+                            .append("<td>${quote.annualDividendYield}</td>")
+                            .append("<td>${quote.dayHigh}</td>")
+                            .append("<td>${quote.dayLow}</td>")
+                            .append("<td>${quote.previousClose}</td>")
+                            .append("<td>${quote.open}</td>")
+                            .append("<td>${quote.regularMarketVolume}</td>")
+                            .append("<td>${quote.peRatio}</td>")
+                            .append("<td>${quote.fiftyTwoWeekLowChange}</td>")
+                            .append("<td>${quote.fiftyTwoWeekLowChangePercent}</td>")
+                            .append("<td>${quote.fiftyTwoWeekHighChange}</td>")
+                            .append("<td>${quote.fiftyTwoWeekHighChangePercent}</td>")
+                            .append("<td>${quote.fiftyTwoWeekLow}</td>")
+                            .append("<td>${quote.fiftyTwoWeekHigh}</td>")
+                            .append("<td>${quote.dividendDate}</td>")
+                            .append("<td>${quote.earningsDate}</td>")
+                            .append("<td>${quote.marketCap}</td>")
+                            .append("<td>${quote.marketState}</td>")
+                            .append("<td>${quote.isTradeable}</td>")
+                            .append("<td>${quote.isTriggerable}</td>")
+                            .append("</tr>")
+
+                        val holdings = it.holdings
+                        holdings.forEach { holding ->
+                            holdingsInfo.append("<tr>")
+                                .append("<td>${holding.id}</td>")
+                                .append("<td>${holding.quoteSymbol}</td>")
+                                .append("<td>${holding.shares}</td>")
+                                .append("<td>${holding.price}</td>")
+                                .append("</tr>")
+                            yield()
+                        }
+                        val properties = it.properties
+                        if (properties != null) {
+                            propsInfo.append("<tr>")
+                                .append("<td>${properties.id}</td>")
+                                .append("<td>${properties.quoteSymbol}</td>")
+                                .append("<td>${properties.notes}</td>")
+                                .append("<td>${properties.displayname}</td>")
+                                .append("<td>${properties.alertAbove}</td>")
+                                .append("<td>${properties.alertBelow}</td>")
+                                .append("</tr>")
+                            yield()
+                        }
+                    }
+                quotesInfo.append("</table>")
+                holdingsInfo.append("</table>")
+                propsInfo.append("</table>")
+
+                val widgetsInfo = extractWidgetsInfo()
+                val workerInfo = extractWorkerInfo()
+                val fetchLogsInfo = extractFetchLogsInfo()
+                sb.append(quotesInfo)
+                    .append(holdingsInfo)
+                    .append(propsInfo)
+                    .append(workerInfo)
+                    .append(fetchLogsInfo)
+                    .append(widgetsInfo)
+                    .append("</body></html>")
+            }
+            val file = File(getApplication<StocksApp>().cacheDir, FILENAME)
+            if (!file.exists()) {
+                file.createNewFile()
+            } else {
+                file.delete()
+                file.createNewFile()
+            }
+            file.writeText(stringBuilder.toString(), Charsets.UTF_8)
+            _htmlFile.emit(file)
+            _showProgress.emit(false)
+        }
+    }
+
+    private suspend fun extractWidgetsInfo(): StringBuilder {
+        val sb = StringBuilder().append(
+            """
+            <h2>Widgets</h2>
+            <table>
+            <tr>
+            <th>Name</th><th>Quotes</th><th>ID</th>
+            </tr>
+            """
+        )
+        val widgetData = widgetDataProvider.refreshWidgetDataList()
+        widgetData.forEach { wd ->
+            sb.append("<tr>")
+                .append("<td>${wd.widgetName}</td>")
+            val tickers = StringBuilder()
+            wd.getTickers().forEachIndexed { i, symbol ->
+                tickers.append(symbol)
+                tickers.append(", ")
+                if (i % 5 == 0) {
+                    tickers.append("\n")
+                }
+            }
+            sb.append("<td>$tickers</td>")
+                .append("<td>${wd.widgetId}</td>")
+            sb.append("</tr>")
+        }
+        sb.append("</table>")
+        sb.append("</p>")
+        val json = Json {
+            prettyPrint = true
+            isLenient = true
+        }
+        widgetData.forEach { wd ->
+            sb.append("<h3>Settings for ${wd.widgetId}:${wd.widgetName}</h3>")
+            sb.append(
+                json.encodeToString(wd.toState())
+            )
+            sb.append("</p>")
+        }
+        return sb
+    }
+
+    private fun extractWorkerInfo(): StringBuilder {
+        val sb = StringBuilder().append(
+            """
+            <h2>Scheduled Work</h2>
+            <table>
+            <tr>
+            <th>Tag</th><th>State</th><th>RunAttemptCount</th>
+            </tr>
+            """
+        )
+        with(workManager) {
+            pruneWork()
+            val workInfos = ArrayList<WorkInfo>().apply {
+                addAll(getWorkInfosByTag(RefreshWorker.TAG).get())
+                addAll(getWorkInfosByTag(RefreshWorker.TAG_PERIODIC).get())
+                addAll(getWorkInfosByTag(CleanupWorker.TAG).get())
+                addAll(getWorkInfosByTag(CleanupWorker.TAG_PERIODIC).get())
+            }
+            for (wi in workInfos) {
+                sb.append("<tr>")
+                    .append("<td>${wi.tags.minByOrNull { it.length }!!}</td>")
+                    .append("<td>${wi.state.name}</td>")
+                    .append("<td>${wi.runAttemptCount}</td>")
+                    .append("</tr>")
+            }
+        }
+        sb.append("</table>")
+        return sb
+    }
+
+    private suspend fun extractFetchLogsInfo(): StringBuilder {
+        val sb = StringBuilder().append(
+            """
+            <h2>Fetch Logs</h2>
+            <table>
+            <tr>
+            <th>id</th><th>time</th><th>source</th><th>event</th><th>detail</th>
+            </tr>
+            """
+        )
+        dao.getFetchLogs(FETCH_LOG_LIMIT).forEach { log ->
+            sb.append("<tr>")
+                .append("<td>${log.id}</td>")
+                .append("<td>${LOG_TIME_FORMATTER.format(Instant.ofEpochMilli(log.createdAtMs))}</td>")
+                .append("<td>${log.source.escapeHtml()}</td>")
+                .append("<td>${log.event.escapeHtml()}</td>")
+                .append("<td>${log.detail.escapeHtml()}</td>")
+                .append("</tr>")
+            yield()
+        }
+        sb.append("</table>")
+        return sb
+    }
+
+    private fun String.escapeHtml(): String {
+        return this.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+    }
+}
