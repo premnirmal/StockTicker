@@ -19,12 +19,24 @@
 - Only performs automatic fetching of stocks during trading hours
 - Displays price change and summary alerts
 
+## iOS app
+
+StockTicker also runs on iOS. The iOS app is a thin SwiftUI shell that hosts the same shared
+Compose Multiplatform UI as Android, plus a native WidgetKit home-screen widget. It shares the
+full business logic (networking, persistence, preferences, background refresh) and the in-app
+screens (watchlist, trending, search, quote detail, settings) with Android via the `:shared`
+module. See [`iosApp/README.md`](iosApp/README.md) for build instructions.
+
+<img src="https://github.com/user-attachments/assets/75e65d1d-70ac-4464-a2f3-d9b3674d226c" height="400"/>
+<img src="https://github.com/user-attachments/assets/cd0b7bae-26f3-44af-a3fc-339c76507471" height="400"/>
+
 ## Kotlin Multiplatform
 
-This project is being incrementally migrated to Kotlin Multiplatform (KMP) with planned
-iOS support. Platform-agnostic code lives in the `:shared` module
-(`androidTarget` + iOS targets). See [MULTIPLATFORM.md](MULTIPLATFORM.md) for the module
-layout, current status, and the migration roadmap.
+This project has been migrated to Kotlin Multiplatform (KMP) with shared Compose Multiplatform
+UI, so Android and iOS run from one shared codebase. Platform-agnostic code and the shared
+in-app screens live in the `:shared` module (`androidTarget` + iOS targets), with thin
+platform shells in `:app` (Android) and `iosApp` (iOS). See [MULTIPLATFORM.md](MULTIPLATFORM.md)
+for the module layout and the history of the migration.
 
 ## License
 

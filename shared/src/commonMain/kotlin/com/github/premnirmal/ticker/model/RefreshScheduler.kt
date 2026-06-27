@@ -12,8 +12,9 @@ package com.github.premnirmal.ticker.model
  * [com.github.premnirmal.ticker.network.CrumbProvider] split (shared contract in `commonMain`,
  * platform implementation per target).
  *
- * On Android this is implemented by `AlarmScheduler`; the iOS app will provide its own
- * implementation once it exists. Platform-only operations that take/return platform types (e.g.
+ * On Android this is implemented by `AlarmScheduler`; iOS provides its own implementation
+ * (`BackgroundRefreshScheduler` over `BGTaskScheduler`/`WidgetKit`). Platform-only operations that
+ * take/return platform types (e.g.
  * scheduling the exact next alarm or the daily-summary notification) stay on the concrete
  * implementations and are intentionally not part of this contract.
  */
