@@ -1,5 +1,5 @@
 # Stocks Widget
-[![Build](https://github.com/premnirmal/StockTicker/workflows/Build/badge.svg)](https://github.com/premnirmal/StockTicker/actions) [![Unit tests](https://github.com/premnirmal/StockTicker/workflows/Run%20unit%20tests/badge.svg)](https://github.com/premnirmal/StockTicker/actions)
+[![Android](https://github.com/premnirmal/StockTicker/workflows/Build/badge.svg)](https://github.com/premnirmal/StockTicker/actions) [![Unit tests](https://github.com/premnirmal/StockTicker/workflows/Run%20unit%20tests/badge.svg)](https://github.com/premnirmal/StockTicker/actions) [![Detekt](https://github.com/premnirmal/StockTicker/workflows/Detekt/badge.svg)](https://github.com/premnirmal/StockTicker/actions) [![iOS](https://github.com/premnirmal/StockTicker/workflows/iOS/badge.svg)](https://github.com/premnirmal/StockTicker/actions)
 
 <a href="https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget" target="_blank">
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/500px-Google_Play_Store_badge_EN.svg.png" alt="Get it on Google Play" height="40"/>
