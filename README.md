@@ -30,7 +30,7 @@ full business logic (networking, persistence, preferences, background refresh) a
 screens (watchlist, trending, search, quote detail, settings) with Android via the `:shared`
 module. See [`iosApp/README.md`](iosApp/README.md) for build instructions.
 
-## Android
+## Screenshots
 ![](https://play-lh.googleusercontent.com/R9khJ5kNzXHUjO4BxNw1cNKTx62grZ7FtLRT_F2H0BhC99iuMWDxvuGTYvyydtqE3w=h400-rw)
 <img src="https://i.postimg.cc/dvjnChBZ/Screenshot-20260627-113556.png" height="400"/>
 <img src="https://github.com/user-attachments/assets/75e65d1d-70ac-4464-a2f3-d9b3674d226c" height="400"/>
