@@ -2,11 +2,11 @@ package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.net.Uri
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.FileOutputStream
 import java.io.IOException

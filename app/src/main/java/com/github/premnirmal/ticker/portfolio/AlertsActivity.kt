@@ -8,9 +8,9 @@ import androidx.compose.ui.res.stringResource
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.tickerwidget.R
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.NumberFormat
 import kotlin.getValue
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AlertsActivity : BaseActivity() {
     override val simpleName: String

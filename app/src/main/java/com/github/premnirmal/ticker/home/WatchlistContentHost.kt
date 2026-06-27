@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.home
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,7 +21,6 @@ import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.tickerwidget.R
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
-import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
 

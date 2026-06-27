@@ -17,8 +17,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.layout.DisplayFeature
 import com.github.premnirmal.ticker.navigation.HomeBottomNavDestination
-import com.github.premnirmal.ticker.navigation.HomeNavigationActions
 import com.github.premnirmal.ticker.navigation.HomeNavHostWrapper
+import com.github.premnirmal.ticker.navigation.HomeNavigationActions
 import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.HomeScaffold
 import com.github.premnirmal.ticker.navigation.LocalNavGraphViewModelStoreOwner

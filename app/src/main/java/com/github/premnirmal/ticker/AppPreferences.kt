@@ -1,8 +1,8 @@
 package com.github.premnirmal.ticker
 
-import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import com.github.premnirmal.ticker.network.CrumbStore
 import com.github.premnirmal.ticker.settings.PreferenceStore
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import java.text.DecimalFormat
 import java.text.Format
 import java.time.format.DateTimeFormatter

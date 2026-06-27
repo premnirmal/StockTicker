@@ -56,14 +56,14 @@ import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.github.premnirmal.ticker.AppPreferences
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import com.github.premnirmal.ticker.home.HomeActivity
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.tickerwidget.R
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.random.Random
 
 class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
@@ -73,7 +73,6 @@ class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
     private val widgetDataProvider: WidgetDataProvider by inject()
 
     private val appPreferences: AppPreferences by inject()
-
 
     override val sizeMode = SizeMode.Exact
 

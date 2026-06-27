@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -18,8 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.FetchState
+import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
@@ -31,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 abstract class BaseActivity : ComponentActivity() {
 

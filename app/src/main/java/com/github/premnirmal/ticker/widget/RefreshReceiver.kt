@@ -3,8 +3,6 @@ package com.github.premnirmal.ticker.widget
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import com.github.premnirmal.ticker.isNetworkOnline
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.FetchEventLogger
@@ -13,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 /**

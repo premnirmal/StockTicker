@@ -12,7 +12,7 @@ import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class WidgetDataProvider constructor(
-        private val context: Context,
+    private val context: Context,
 ) {
 
     private val glanceAppWidgetManager: GlanceAppWidgetManager by lazy {

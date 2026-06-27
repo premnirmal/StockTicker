@@ -38,7 +38,7 @@ import java.util.concurrent.TimeUnit.MINUTES
  * Created by premnirmal on 2/28/16.
  */
 class AlarmScheduler constructor(
-        private val context: Context,
+    private val context: Context,
     private val appPreferences: AppPreferences,
     private val clock: AppClock,
     private val preferences: SharedPreferences,
