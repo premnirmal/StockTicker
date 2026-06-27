@@ -8,9 +8,7 @@
 /captures
 **/build/
 app/full-r8-config.txt
-androidApp/full-r8-config.txt
 app/prod/
-androidApp/prod/
 /.vs/
 .kotlin/
 **/.kotlin/
@@ -19,11 +17,9 @@ androidApp/prod/
 *.jks
 keystore.*
 app/keystore.*
-androidApp/keystore.*
 
 #google services
 app/google-services.json
-androidApp/google-services.json
 
 #iOS / Xcode
 # The Xcode project is generated from iosApp/project.yml with XcodeGen, not committed.

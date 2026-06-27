@@ -15,7 +15,7 @@ reviewable changes.
 | Module    | Type                         | Contents                                            |
 |-----------|------------------------------|-----------------------------------------------------|
 | `:shared` | Kotlin Multiplatform library | Platform-agnostic code shared by Android and iOS    |
-| `:androidApp` | Android application      | Android entry point, Glance widget, Firebase, WorkManager, Android theming/resources |
+| `:app` | Android application      | Android entry point, Glance widget, Firebase, WorkManager, Android theming/resources |
 | `iosApp`  | Xcode project (planned)      | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
 
 The in-app screens are shared via **Compose Multiplatform** (see "UI strategy"
@@ -112,7 +112,7 @@ Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here
   Ktor client over the existing (`@Named("yahoo")`-authenticated) `OkHttpClient`, and `NetworkModule`
   providers call those factories. The last Retrofit consumer — the unused `GithubApi` compare-tags
   interface, obsoleted by the network-free shared `CommitsProvider` (the changelog is now baked into
-  the build) — has been removed, so Retrofit is no longer a dependency of `:androidApp`.
+  the build) — has been removed, so Retrofit is no longer a dependency of `:app`.
 - Replaced Jsoup most-active HTML scraping with a dependency-free `fin-streamer` symbol parser in
   `commonMain` (`YahooFinanceMostActiveApi`), removing `jsoup` and the scalars converter from `:app`.
 - Replaced the SimpleXML RSS models with `kotlinx.serialization` + xmlutil in `commonMain`
@@ -320,7 +320,7 @@ Migrated into `commonMain` so far:
   `material3.TimePicker`/`TimePickerState`, removing the Android `AlertDialog`/`TimePickerDialog`/
   `LocalContext` dependencies. The Android-coupled inputs are hoisted as parameters: the localised
   labels/string-arrays as `String`/`Array<String>` values, the three dialog confirm/dismiss labels,
-  the `Divider` as a composable slot (it lives in `:androidApp`), the alarm-permission banner as a composable
+  the `Divider` as a composable slot (it lives in `:app`), the alarm-permission banner as a composable
   slot, the `Alegreya`/`Bold` fonts as nullable `FontFamily` params, all user actions as callback
   lambdas (file pickers, Custom Tabs links, notification-permission flow, version-tap easter egg),
   the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, and the
@@ -358,7 +358,7 @@ Migrated into `commonMain` so far:
   formatters as lambdas, the `AppMessaging` bottom-sheet card-tap as an `onCardClick(title, data)`
   lambda, the per-section `Holdings`/`Alerts`/`Notes`/`Displayname` editing as `onEdit*` callbacks plus
   the displayed `position`/`alert`/`notes`/`displayname` state values, the `AppCard` container
-  (it lives in `:androidApp`), `NewsCard`, `AddSymbolDialog` and the website `LinkText` as composable slots,
+  (it lives in `:app`), `NewsCard`, `AddSymbolDialog` and the website `LinkText` as composable slots,
   the `RuntimeShader`-based `fadingEdges` as a `(ScrollableState) -> Modifier` lambda, the
   `SnackbarHostState`, and the adaptive Accompanist `TwoPane`/`WindowWidthSizeClass`/`ContentType`
   layout as an optional `twoPane(first, second)` slot (null = single column). A thin
@@ -396,7 +396,7 @@ Migrated into `commonMain` so far:
   multiplatform `coil3.compose.AsyncImage` for the article thumbnail. The Android-coupled inputs are
   hoisted as parameters: the article tap (the `CustomTabs` Custom Tab open) as an `onClick` callback,
   the `ColourPalette` image placeholder gradient colour as a `placeholderColor: Color`, and the
-  `AppCard` container (it lives in `:androidApp`) as a `card` composable slot. A thin `:app` `NewsCard.kt`
+  `AppCard` container (it lives in `:app`) as a `card` composable slot. A thin `:app` `NewsCard.kt`
   overload (`NewsCard(item)`, keeping the same signature so `NewsFeedScreenHost`,
   `QuoteDetailScreenHost` and `SearchScreenHost` are unchanged) supplies the Custom Tab open, the
   `ColourPalette` placeholder colour and the `AppCard` slot.
@@ -425,7 +425,7 @@ Migrated into `commonMain` so far:
 - The remaining **shared UI building blocks** moved into `commonMain`: the platform-neutral in-app
   message model (`AppMessage`, in `ticker.ui`, with its `BottomSheetMessage`/`BannerMessage`
   subtypes — the Android `AppMessaging` dispatcher that needs a `Context` to resolve string
-  resources stays in `:androidApp` and emits these); the **bottom-sheet message UI**
+  resources stays in `:app` and emits these); the **bottom-sheet message UI**
   (`BottomSheetWithMessage`/`ModalBottomSheetWithMessage`, its Android `@Preview` dropped); the
   **bottom-sheet message collector** (`CollectBottomSheetMessage`) — now a plain composable that
   takes the `bottomSheets: Flow<BottomSheetMessage>` as a parameter (hoisted off `LocalAppMessaging`)
@@ -573,7 +573,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   into shared Compose resources (`shared/src/commonMain/composeResources/font`) and a shared
   `appTypography()` (`commonMain` `tickerwidget.ui.theme`) builds the Material 3 type scale from
   them, so the Android `AppTheme` and the iOS `IosAppTheme` render the same fonts (the duplicate
-  Android `AppTypography.kt` was removed; the `androidApp/res/font` files remain only for the legacy
+  Android `AppTypography.kt` was removed; the `app/res/font` files remain only for the legacy
   XML themes). The **colour scheme is now shared too**: the brand Material 3 palette and the
   light/dark `ColorScheme`s (`brandLightColorScheme`/`brandDarkColorScheme`), the `appShapes`, and a
   single cross-platform `SharedAppTheme` composable all live in `commonMain`
@@ -629,7 +629,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   end, but a number of Android features are still missing, stubbed or simplified on iOS. Close
   these gaps before moving on to CI:
   - **Local notifications (price alerts + daily summary).** *(Done.)* Android delivers price-alert
-    notifications and a scheduled daily-summary notification (`androidApp/.../notifications/
+    notifications and a scheduled daily-summary notification (`app/.../notifications/
     NotificationsHandler.kt`, `DailySummaryNotificationReceiver.kt`) via `AlarmManager`/
     `WorkManager`. The iOS app now has an equivalent `UNUserNotificationCenter`-backed
     `LocalNotificationsHandler` (`shared/src/iosMain/.../notifications/LocalNotificationsHandler.kt`):
@@ -644,7 +644,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
   - **Home-screen widget configuration & customisation.** *(Done.)* Android supports multiple Glance
     widgets, each with its own watchlist and per-widget options (auto-sort, layout, size,
     background/text colour, bold text, header visibility, currency display, refresh button),
-    configured in-app (`androidApp/.../widget/`). The iOS `StockTickerWidget`
+    configured in-app (`app/.../widget/`). The iOS `StockTickerWidget`
     (`iosApp/StockTickerWidget/StockTickerWidget.swift`) is now an `AppIntentConfiguration` driven by
     a per-widget `StockTickerConfigurationIntent`
     (`iosApp/StockTickerWidget/StockTickerWidgetIntent.swift`): each placed widget keeps its own
@@ -655,7 +655,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     `WidgetsScreen.kt` (`shared/src/iosMain/.../ui`) explains how to add a widget and edit each one
     (touch & hold → *Edit Widget*).
   - **Onboarding tutorial.** *(Done.)* Android shows a first-run tutorial gated on the shared
-    `tutorialShown()` preference (`androidApp/.../home/HomeActivity.kt` →
+    `tutorialShown()` preference (`app/.../home/HomeActivity.kt` →
     `HomeViewModel.checkShowTutorial()`). The iOS app now presents an equivalent onboarding flow:
     `OnboardingScreen.kt` (`shared/src/iosMain/.../ui`) is a multi-step Compose Multiplatform modal
     (`OnboardingController` + `OnboardingTutorial`) driven by the same shared
@@ -664,8 +664,8 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     re-opens it (`onTutorial` → `controller.show()`), and dismissing it persists the preference. The
     iOS pages are tailored to iOS (watchlist, search, quote detail, Home Screen WidgetKit widget).
   - **In-app review / version-tap.** *(Done.)* Android triggers
-    the Play in-app review flow (`androidApp/.../home/IAppReviewManager.kt`) and a functional
-    version-tap handler (`androidApp/.../settings/SettingsScreenHost.kt`). The iOS `onVersionTap` is
+    the Play in-app review flow (`app/.../home/IAppReviewManager.kt`) and a functional
+    version-tap handler (`app/.../settings/SettingsScreenHost.kt`). The iOS `onVersionTap` is
     wired (five quick taps open the debug DB viewer — see below). The in-app review prompt is now
     wired too: `AppReviewPrompter` (`shared/src/iosMain/.../review/AppReviewPrompter.kt`) requests an
     App Store rating via StoreKit's `SKStoreReviewController.requestReviewInScene(...)`. Like
@@ -674,7 +674,7 @@ The full plan and rationale live in the PR description / issue. Subsequent phase
     same shared `UserPreferences.shouldPromptRate()` plus a once-per-session guard; the system itself
     decides whether to actually show the rating sheet and rate-limits it.
   - **Debug database viewer.** *(Done.)* Android exposes a DB viewer from settings
-    (`androidApp/.../debug/DbViewerActivity.kt`). The iOS app now has an equivalent:
+    (`app/.../debug/DbViewerActivity.kt`). The iOS app now has an equivalent:
     `DbViewerScreen.kt` (`shared/src/iosMain/.../ui`) with an `IosDbViewerViewModel` that reads the
     shared Room-backed `QuoteDao` and renders the quotes/holdings/properties tables plus recent fetch
     logs as HTML in a native `WKWebView` (JavaScript disabled), hosted via Compose Multiplatform's
@@ -779,7 +779,7 @@ and/or duplicated on iOS):
 Android (unchanged):
 
 ```bash
-./gradlew :androidApp:assembleDevDebug
+./gradlew :app:assembleDevDebug
 ```
 
 Shared module checks:

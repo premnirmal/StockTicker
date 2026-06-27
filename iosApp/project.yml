@@ -28,7 +28,7 @@ settings:
     # here ensures symbolication works for Release/Archive (TestFlight/App Store) builds.
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
     # App/extension version, derived from the latest git tag (mirroring the
-    # Android app — see androidApp/build.gradle.kts). These back
+    # Android app — see app/build.gradle.kts). These back
     # CFBundleShortVersionString ($(MARKETING_VERSION)) and CFBundleVersion
     # ($(CURRENT_PROJECT_VERSION)) in every target's Info.plist. They MUST be
     # non-empty: an app extension whose CFBundleVersion resolves to an empty

@@ -29,7 +29,7 @@ import kotlin.math.absoluteValue
 
 /**
  * iOS implementation of local notifications — the counterpart of Android's
- * `NotificationsHandler` (`androidApp/.../notifications/NotificationsHandler.kt`).
+ * `NotificationsHandler` (`app/.../notifications/NotificationsHandler.kt`).
  *
  * It mirrors the same two notification kinds Android delivers and that the "notification alerts"
  * settings toggle ([UserPreferences.notificationAlerts]) gates:

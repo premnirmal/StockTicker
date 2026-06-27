@@ -30,7 +30,7 @@ jobs:
         with:
           name: test-results
           path: |
-            androidApp/build/test-results/testDevDebugUnitTest/
-            androidApp/build/reports/tests
+            app/build/test-results/testDevDebugUnitTest/
+            app/build/reports/tests
             shared/build/test-results/testDebugUnitTest/
             shared/build/reports/tests

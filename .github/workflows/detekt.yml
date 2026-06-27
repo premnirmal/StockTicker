@@ -28,5 +28,5 @@ jobs:
         with:
           name: detekt-reports
           path: |
-            androidApp/build/reports/detekt/
+            app/build/reports/detekt/
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Derive the iOS app version from the latest git tag, mirroring the Android app
-# (androidApp/build.gradle.kts derives versionName/versionCode from
+# (app/build.gradle.kts derives versionName/versionCode from
 # `git describe --tags --abbrev=0`).
 #
 # Source this script before generating the Xcode project so XcodeGen can expand
@@ -31,7 +31,7 @@ if [ -z "$_version_name" ]; then
 fi
 
 # Build number = major*100000000 + minor*100000 + patch, mirroring the Android
-# versionCode in androidApp/build.gradle.kts. Missing components default to 0.
+# versionCode in app/build.gradle.kts. Missing components default to 0.
 _version_major="$(printf '%s' "$_version_name" | cut -d. -f1)"
 _version_minor="$(printf '%s' "$_version_name" | cut -d. -f2)"
 _version_patch="$(printf '%s' "$_version_name" | cut -d. -f3)"

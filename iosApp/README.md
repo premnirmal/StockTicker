@@ -94,7 +94,7 @@ On a Mac:
    `version.sh` exports `MARKETING_VERSION` (`CFBundleShortVersionString`) and
    `CURRENT_PROJECT_VERSION` (`CFBundleVersion`) from `git describe --tags`,
    mirroring how the Android app derives its `versionName` / `versionCode` in
-   `androidApp/build.gradle.kts` (falling back to `1.0` / `1` when no tag is
+   `app/build.gradle.kts` (falling back to `1.0` / `1` when no tag is
    reachable). `project.yml` references those env vars, so source it before
    generating — otherwise the bundle version is empty and an app-extension
    install fails.

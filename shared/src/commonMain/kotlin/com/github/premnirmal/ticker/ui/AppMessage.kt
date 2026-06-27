@@ -2,7 +2,7 @@ package com.github.premnirmal.ticker.ui
 
 /**
  * Platform-neutral in-app message model shared by Android and iOS. The Android `AppMessaging`
- * dispatcher (which needs a `Context` to resolve string resources) stays in `:androidApp` and emits
+ * dispatcher (which needs a `Context` to resolve string resources) stays in `:app` and emits
  * these messages; the shared bottom-sheet UI renders [BottomSheetMessage].
  */
 sealed class AppMessage(
