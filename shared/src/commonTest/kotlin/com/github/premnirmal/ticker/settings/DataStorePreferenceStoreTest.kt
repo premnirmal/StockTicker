@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.settings
 
+import okio.FileSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -8,7 +9,11 @@ import kotlin.test.assertTrue
 class DataStorePreferenceStoreTest {
 
     private fun newStore(): PreferenceStore {
-        val path = "build/test-datastore/prefs-${kotlin.random.Random.nextInt()}.preferences_pb"
+        // Use an absolute path under the system temporary directory. A relative path is not
+        // writable from the iOS simulator's working directory and makes DataStore throw.
+        val dir = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "stockticker-test-datastore"
+        FileSystem.SYSTEM.createDirectories(dir)
+        val path = (dir / "prefs-${kotlin.random.Random.nextInt()}.preferences_pb").toString()
         return DataStorePreferenceStore(createPreferenceDataStore { path })
     }
 
