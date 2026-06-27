@@ -3,6 +3,8 @@
 
 <a href="https://play.google.com/store/apps/details?id=com.github.premnirmal.tickerwidget" target="_blank">
 <img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" alt="Get it on Google Play" height="90"/></a>
+<a href="https://apps.apple.com/us/app/todaystocks/id993467855" target="_blank">
+<img src="https://github.com/user-attachments/assets/109a051a-7d0d-492a-a6e5-efbc20ac4a96" alt="Available on the App Store" height="60"/></a>
 
 <a href="https://f-droid.org/en/packages/com.github.premnirmal.tickerwidget/" target="_blank">
 <img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="90"/></a>
