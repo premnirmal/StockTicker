@@ -9,7 +9,7 @@ on:
       - 'master'
       # TEMPORARY: exercise the iOS pipeline on this feature branch before it
       # is merged to master. Remove this line once the branch is merged.
-      - 'copilot/implement-phase-6'
+      - 'copilot/fix-ios-action-failure-ci'
 
 jobs:
   ios:
