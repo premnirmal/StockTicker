@@ -73,6 +73,6 @@ jobs:
         run: |
           xcodebuild build \
             -project iosApp/StockTicker.xcodeproj \
-            -scheme iosApp \
+            -scheme StocksWidget \
             -destination 'generic/platform=iOS Simulator' \
             CODE_SIGNING_ALLOWED=NO
