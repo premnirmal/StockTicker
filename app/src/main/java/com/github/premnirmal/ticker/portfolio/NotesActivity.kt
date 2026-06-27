@@ -8,8 +8,8 @@ import androidx.compose.ui.res.stringResource
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.tickerwidget.R
-import kotlin.getValue
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.getValue
 
 class NotesActivity : BaseActivity() {
 

@@ -3,8 +3,8 @@ package com.github.premnirmal.ticker
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import coil3.ImageLoader
-import coil3.SingletonImageLoader
 import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import com.github.premnirmal.ticker.components.LoggingTree
 import com.github.premnirmal.ticker.components.appModule
 import com.github.premnirmal.ticker.components.viewModelModule

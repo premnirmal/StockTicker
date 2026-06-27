@@ -8,7 +8,6 @@ import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.FakePreferenceStore
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider

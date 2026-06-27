@@ -14,24 +14,27 @@ import androidx.compose.ui.platform.LocalContext
  * Android 12+ (where it falls back to the shared brand scheme otherwise).
  */
 @Composable fun AppTheme(
-  theme: SelectedTheme,
-  content: @Composable () -> Unit
+    theme: SelectedTheme,
+    content: @Composable () -> Unit
 ) {
-  val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-  val dynamicColorScheme: ColorScheme? = if (dynamicColor) {
-    val isDark = when (theme) {
-      SelectedTheme.SYSTEM -> isSystemInDarkTheme()
-      SelectedTheme.LIGHT -> false
-      SelectedTheme.DARK -> true
+    val dynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val dynamicColorScheme: ColorScheme? = if (dynamicColor) {
+        val isDark = when (theme) {
+            SelectedTheme.SYSTEM -> isSystemInDarkTheme()
+            SelectedTheme.LIGHT -> false
+            SelectedTheme.DARK -> true
+        }
+        if (isDark) {
+            dynamicDarkColorScheme(LocalContext.current)
+        } else {
+            dynamicLightColorScheme(LocalContext.current)
+        }
+    } else {
+        null
     }
-    if (isDark) dynamicDarkColorScheme(LocalContext.current)
-    else dynamicLightColorScheme(LocalContext.current)
-  } else {
-    null
-  }
-  SharedAppTheme(
-    theme = theme,
-    colorSchemeOverride = dynamicColorScheme,
-    content = content
-  )
+    SharedAppTheme(
+        theme = theme,
+        colorSchemeOverride = dynamicColorScheme,
+        content = content
+    )
 }

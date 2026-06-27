@@ -5,7 +5,6 @@ import android.os.Build.VERSION
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -29,6 +28,7 @@ import com.github.premnirmal.tickerwidget.R
 import com.google.accompanist.adaptive.calculateDisplayFeatures
 import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeActivity : BaseActivity() {
     override val simpleName = "HomeActivity"

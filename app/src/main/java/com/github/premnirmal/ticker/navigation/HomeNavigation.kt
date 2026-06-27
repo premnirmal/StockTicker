@@ -1,15 +1,14 @@
 package com.github.premnirmal.ticker.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavHostController
 import androidx.window.layout.DisplayFeature
-import com.github.premnirmal.ticker.home.HomeEvent
 import com.github.premnirmal.ticker.home.HomeViewModel
 import com.github.premnirmal.ticker.home.WatchlistScreen
 import com.github.premnirmal.ticker.news.NewsFeedScreen
@@ -104,4 +103,3 @@ fun HomeNavHostWrapper(
         },
     )
 }
-

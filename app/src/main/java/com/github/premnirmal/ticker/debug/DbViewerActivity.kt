@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.debug
 
 import android.os.Bundle
 import android.webkit.WebView
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
@@ -22,6 +21,7 @@ import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.ticker.ui.TopBar
 import com.github.premnirmal.tickerwidget.R
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
 class DbViewerActivity : BaseActivity() {

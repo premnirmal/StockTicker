@@ -27,9 +27,9 @@ import com.google.accompanist.adaptive.FoldAwareConfiguration
 import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
 import com.google.accompanist.adaptive.TwoPane
 import com.google.accompanist.adaptive.calculateDisplayFeatures
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.NumberFormat
 import kotlin.getValue
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HoldingsActivity : BaseActivity() {
     override val simpleName: String

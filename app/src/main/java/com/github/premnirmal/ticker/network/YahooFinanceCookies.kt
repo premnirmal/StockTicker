@@ -5,7 +5,7 @@ import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import java.util.concurrent.ConcurrentHashMap
 
-class YahooFinanceCookies constructor() : CookieJar {
+class YahooFinanceCookies : CookieJar {
 
     private var _cookies = ConcurrentHashMap<String, Cookie>()
 

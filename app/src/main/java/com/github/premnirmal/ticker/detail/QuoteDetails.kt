@@ -15,133 +15,46 @@ import com.github.premnirmal.tickerwidget.R
  * here so the shared screen renders a fully-resolved [QuoteDetailItem].
  */
 fun buildQuoteDetails(summary: QuoteWithSummary, context: Context): List<QuoteDetailItem> {
-
     val quote = summary.quote
     val quoteSummary = summary.quoteSummary
     val details = mutableListOf<QuoteDetailItem>()
-    quote.open?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_open),
-                quote.priceFormat.format(it)
-            )
-        )
+    fun add(titleRes: Int, data: String?) {
+        if (data != null) {
+            details.add(QuoteDetailItem(context.getString(titleRes), data))
+        }
     }
+    add(R.string.quote_details_open, quote.open?.let { quote.priceFormat.format(it) })
     if (quote.dayLow != null && quote.dayHigh != null) {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_day_range),
-                "${quote.dayLow!!.format()} - ${quote.dayHigh!!.format()}"
-            )
-        )
+        add(R.string.quote_details_day_range, "${quote.dayLow!!.format()} - ${quote.dayHigh!!.format()}")
     }
-    quote.fiftyDayAverage?.let {
-        if (it > 0f) {
-            details.add(
-                QuoteDetailItem(
-                context.getString(R.string.quote_details_fifty_day_average),
-                    it.format()
-                )
-            )
-        }
-    }
-    quote.twoHundredDayAverage?.let {
-        if (it > 0f) {
-            details.add(
-                QuoteDetailItem(
-                context.getString(R.string.quote_details_two_hundred_day_average),
-                    it.format()
-                )
-            )
-        }
-    }
+    add(R.string.quote_details_fifty_day_average, quote.fiftyDayAverage?.takeIf { it > 0f }?.format())
+    add(
+        R.string.quote_details_two_hundred_day_average,
+        quote.twoHundredDayAverage?.takeIf { it > 0f }?.format()
+    )
     if (quote.fiftyTwoWeekLow != null && quote.fiftyTwoWeekHigh != null) {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_ftw_range),
-                "${quote.fiftyTwoWeekLow!!.format()} - ${quote.fiftyTwoWeekHigh!!.format()}"
-            )
+        add(
+            R.string.quote_details_ftw_range,
+            "${quote.fiftyTwoWeekLow!!.format()} - ${quote.fiftyTwoWeekHigh!!.format()}"
         )
     }
-    quote.regularMarketVolume?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_volume),
-                it.format()
-            )
-        )
-    }
-    quote.marketCap?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_market_cap),
-                it.formatBigNumbers(context)
-            )
-        )
-    }
-    quote.trailingPE?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_pe_ratio),
-                it.format()
-            )
-        )
-    }
-    quote.earningsTimestamp?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_earnings_date),
-                it.formatDate(context.getString(R.string.date_format_long))
-            )
-        )
-    }
+    add(R.string.quote_details_volume, quote.regularMarketVolume?.format())
+    add(R.string.quote_details_market_cap, quote.marketCap?.formatBigNumbers(context))
+    add(R.string.quote_details_pe_ratio, quote.trailingPE?.format())
+    add(
+        R.string.quote_details_earnings_date,
+        quote.earningsTimestamp?.formatDate(context.getString(R.string.date_format_long))
+    )
     if (quote.annualDividendRate > 0f && quote.annualDividendYield > 0f) {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_dividend_rate),
-                quote.dividendInfo()
-            )
-        )
+        add(R.string.quote_details_dividend_rate, quote.dividendInfo())
     }
-    quote.dividendDate?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_dividend_date),
-                it.formatDate(context.getString(R.string.date_format_long))
-            )
-        )
-    }
-    quoteSummary?.financialData?.earningsGrowth?.fmt?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_earnings_growth),
-                it
-            )
-        )
-    }
-    quoteSummary?.financialData?.revenueGrowth?.fmt?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_revenue_growth),
-                it
-            )
-        )
-    }
-    quoteSummary?.financialData?.profitMargins?.fmt?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_profit_margins),
-                it
-            )
-        )
-    }
-    quoteSummary?.financialData?.grossMargins?.fmt?.let {
-        details.add(
-            QuoteDetailItem(
-                context.getString(R.string.quote_details_gross_margins),
-                it
-            )
-        )
-    }
+    add(
+        R.string.quote_details_dividend_date,
+        quote.dividendDate?.formatDate(context.getString(R.string.date_format_long))
+    )
+    add(R.string.quote_details_earnings_growth, quoteSummary?.financialData?.earningsGrowth?.fmt)
+    add(R.string.quote_details_revenue_growth, quoteSummary?.financialData?.revenueGrowth?.fmt)
+    add(R.string.quote_details_profit_margins, quoteSummary?.financialData?.profitMargins?.fmt)
+    add(R.string.quote_details_gross_margins, quoteSummary?.financialData?.grossMargins?.fmt)
     return details
 }

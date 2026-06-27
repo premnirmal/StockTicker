@@ -61,5 +61,4 @@ class SuggestionViewModel constructor(
             )
         }
     }
-
 }

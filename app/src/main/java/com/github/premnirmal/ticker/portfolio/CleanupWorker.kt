@@ -3,10 +3,10 @@ package com.github.premnirmal.ticker.portfolio
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 class CleanupWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params), KoinComponent {

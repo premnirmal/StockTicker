@@ -7,8 +7,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.tickerwidget.R
-import kotlin.getValue
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.getValue
 
 class DisplaynameActivity : BaseActivity() {
 

@@ -2,7 +2,6 @@ package com.github.premnirmal.ticker.news
 
 import android.appwidget.AppWidgetManager
 import android.os.Bundle
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -16,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.detail.QuoteDetailScreen
 import com.google.accompanist.adaptive.calculateDisplayFeatures
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class QuoteDetailActivity : BaseActivity() {
 

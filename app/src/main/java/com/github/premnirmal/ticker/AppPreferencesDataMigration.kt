@@ -60,8 +60,11 @@ class AppPreferencesDataMigration(
         // DataStore. Removing them is unnecessary and avoids any risk to the shared prefs file.
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun Preferences.toMutablePreferences() =
-        mutablePreferencesOf(*asMap().map { (k, v) -> @Suppress("UNCHECKED_CAST") (k as Preferences.Key<Any>) to v }.toTypedArray())
+        mutablePreferencesOf(
+            *asMap().map { (k, v) -> (k as Preferences.Key<Any>) to v }.toTypedArray()
+        )
 
     companion object {
         const val MIGRATED_KEY = "shared_prefs_migrated"
