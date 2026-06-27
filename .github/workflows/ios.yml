@@ -4,6 +4,18 @@ on:
   pull_request:
     branches:
       - 'master'
+    # Only run the iOS pipeline when changes touch code that affects iOS: the
+    # shared KMP module, the iOS app, or the build configuration / this workflow.
+    paths:
+      - 'shared/**'
+      - 'iosApp/**'
+      - 'buildSrc/**'
+      - 'gradle/**'
+      - '*.gradle.kts'
+      - 'gradle.properties'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - '.github/workflows/ios.yml'
   push:
     branches:
       - 'master'
