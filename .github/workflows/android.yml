@@ -4,19 +4,6 @@ on:
   pull_request:
     branches:
       - 'master'
-    # Only run the Android pipeline when changes touch code that affects Android:
-    # the shared KMP module, the Android app, or the build configuration / this
-    # workflow.
-    paths:
-      - 'shared/**'
-      - 'app/**'
-      - 'buildSrc/**'
-      - 'gradle/**'
-      - '*.gradle.kts'
-      - 'gradle.properties'
-      - 'gradlew'
-      - 'gradlew.bat'
-      - '.github/workflows/android.yml'
   push:
     branches:
       - 'master'
