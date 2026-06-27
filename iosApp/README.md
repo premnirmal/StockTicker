@@ -1,8 +1,8 @@
 # iosApp — StockTicker iOS shell
 
-This is the thin SwiftUI host for the Kotlin Multiplatform `:shared` framework. As of **Phase 5**
-it hosts the shared **Compose Multiplatform UI** (built in Phase 4) inside a `UIViewController`, on
-top of the shared **iOS Phase 2 implementations** it already wires into a running iOS app:
+This is the thin SwiftUI host for the Kotlin Multiplatform `:shared` framework. It hosts the
+shared **Compose Multiplatform UI** inside a `UIViewController`, on top of the shared **iOS
+implementations** it wires into a running iOS app:
 
 | Shared (Kotlin/Native, `shared/src/iosMain`) | iOS app (Swift, this folder) |
 | --- | --- |
@@ -257,5 +257,5 @@ required for the document picker or share sheet.
   binds to the shared `IStocksProvider` portfolio flow. The theme typography is shared — the brand
   Ubuntu / Alegreya fonts live in shared Compose resources
   (`shared/src/commonMain/composeResources/font`) and `IosAppTheme` builds its type scale from the
-  shared `appTypography()`. Later Phase 5 steps host the full shared `RootNavigationGraph` and unify
-  the colour scheme into a single cross-platform `AppTheme`.
+  shared `appTypography()`. The iOS host renders the full shared `RootNavigationGraph` and the
+  colour scheme is unified into a single cross-platform `AppTheme`.

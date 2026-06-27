@@ -1,14 +1,15 @@
 # Kotlin Multiplatform migration
 
-This document tracks the incremental migration of StockTicker from an Android-only
+This document records the (now complete) migration of StockTicker from an Android-only
 app to a Kotlin Multiplatform (KMP) project with a shared core and shared Compose
 Multiplatform UI, plus a thin native iOS shell and a native iOS widget.
 
-The migration is deliberately **incremental**: the Android app must keep building and
-all existing tests must keep passing at every step. Large rewrites (Glance widget →
+The migration was deliberately **incremental**: the Android app kept building and
+all existing tests kept passing at every step. Large rewrites (Glance widget →
 WidgetKit, Retrofit → Ktor, Room → Room KMP, and adopting Compose
-Multiplatform for the shared screens) are broken into separate, independently
-reviewable changes.
+Multiplatform for the shared screens) were broken into separate, independently
+reviewable changes. The status section below is kept as a historical record of how the
+work was sequenced.
 
 ## Module layout
 
@@ -16,7 +17,7 @@ reviewable changes.
 |-----------|------------------------------|-----------------------------------------------------|
 | `:shared` | Kotlin Multiplatform library | Platform-agnostic code shared by Android and iOS    |
 | `:app` | Android application      | Android entry point, Glance widget, Firebase, WorkManager, Android theming/resources |
-| `iosApp`  | Xcode project (planned)      | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
+| `iosApp`  | Xcode project                | SwiftUI shell + WidgetKit extension, hosts shared Compose UI |
 
 The in-app screens are shared via **Compose Multiplatform** (see "UI strategy"
 below), so the bulk of the Compose UI lives in `:shared` (`commonMain`) and is hosted
@@ -26,7 +27,7 @@ by both `:app` (Android) and `iosApp` (inside a `UIViewController`).
 
 - `androidTarget()` — consumed by `:app` as a normal project dependency.
 - `iosX64()`, `iosArm64()`, `iosSimulatorArm64()` — packaged as a static `Shared`
-  framework for the (planned) iOS app.
+  framework for the iOS app.
 
 Source sets:
 
@@ -61,6 +62,11 @@ CMP equivalents or `expect`/`actual` shims. DI has already moved off Hilt to **K
 Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here.
 
 ## Status
+
+The migration is **complete**: all phases below (the shared core, the shared Compose
+Multiplatform UI, and the native iOS app + WidgetKit widget) have shipped. Both Android and iOS
+build and run from the shared `:shared` module. The phase-by-phase breakdown that follows is
+retained as a historical record of how the work was sequenced.
 
 ### Done — Phase 0/1 (foundation)
 - Added the `:shared` KMP module with Android + iOS targets and an iOS framework.
@@ -441,8 +447,9 @@ the Coil-backed news card and the navigation graph all live in `:shared`, with t
 the Android-coupled wiring.
 
 
-### Remaining (high level)
-The full plan and rationale live in the PR description / issue. Subsequent phases:
+### Roadmap (all phases complete)
+All phases below have shipped. This section is retained as a historical record of the migration
+plan and how each phase was delivered.
 
 - **Phase 1 (cont.):** Move more pure logic into `commonMain`.
 - **Phase 2 (cont.):** Replace the remaining Android-only infrastructure with KMP equivalents —

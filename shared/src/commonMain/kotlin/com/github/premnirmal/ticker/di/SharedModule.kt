@@ -13,8 +13,8 @@ import org.koin.dsl.module
  * (orchestrators built from plain constructors). Their leaf dependencies — the Ktor/HTTP API
  * clients, the [com.github.premnirmal.ticker.network.CrumbStore], the [kotlinx.serialization.json.Json]
  * instance and the application [kotlinx.coroutines.CoroutineScope] — are contributed by the platform
- * module (Android wires them in `:app`; iOS will provide its own equivalents), so this single module
- * is reused by every platform.
+ * module (Android wires them in `:app`; iOS wires its own equivalents in `iosMain`), so this single
+ * module is reused by every platform.
  */
 val sharedModule = module {
     single { CommitsProvider() }

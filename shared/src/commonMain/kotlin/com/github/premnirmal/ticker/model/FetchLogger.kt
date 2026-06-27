@@ -9,8 +9,8 @@ package com.github.premnirmal.ticker.model
  * the common contract lives in `commonMain`, the concrete sink is platform specific. On Android this
  * is implemented by `FetchEventLogger`, which persists each entry through the Room-backed
  * `StocksStorage.addFetchLog` (a platform-typed operation that stays on the concrete implementation)
- * and reports failures through `Timber`; the iOS app will provide its own implementation once it
- * exists.
+ * and reports failures through `Timber`. The implementation (`FetchEventLogger`) is itself shared in
+ * `commonMain`, so Android and iOS use the same sink.
  */
 interface FetchLogger {
 
