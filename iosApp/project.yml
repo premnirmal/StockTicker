@@ -69,7 +69,7 @@ targets:
       - path: iosApp
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.StocksWidget
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.TodayStocks
         INFOPLIST_FILE: iosApp/Info.plist
         CODE_SIGN_ENTITLEMENTS: iosApp/StockTicker.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -152,7 +152,7 @@ targets:
       - path: StockTickerWidget
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.StocksWidget.Widget
+        PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.TodayStocks.Widget
         INFOPLIST_FILE: StockTickerWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: StockTickerWidget/StockTickerWidget.entitlements
         # Allow the Gradle run-script phase below to write the framework into
