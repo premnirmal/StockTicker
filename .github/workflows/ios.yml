@@ -69,22 +69,23 @@ jobs:
         run: |
           source ./version.sh
           xcodegen generate
-      - name: Build iOS app (no code signing)
-        # Build against the generic iOS *device* SDK (iphoneos) rather than the
-        # simulator. The hosted Xcode 26 image ships the iOS 26 device SDK (part
-        # of Xcode itself) but does NOT install an iOS 26 *Simulator* runtime, so
-        # any simulator destination fails: `-destination 'generic/platform=iOS Simulator'`
-        # errors with "iOS 26.0 is not installed", and `-sdk iphonesimulator`
-        # errors with "Found no destinations ... and action build" because there
-        # are zero installed simulator devices. Downloading the runtime is not
-        # reliable on hosted runners. A generic device build only needs the
-        # bundled device SDK (no simulator runtime, no bootable device), so it is
-        # a dependable compile/link verification. CODE_SIGNING_ALLOWED/REQUIRED=NO
-        # skip signing, which a device build would otherwise require.
+      - name: Install iOS platform
+        # The macos-26 image ships Xcode 26 with the iOS 26 SDK (enough for the
+        # Gradle Kotlin/Native framework link + the SPM package graph to resolve),
+        # but it does NOT pre-install the iOS 26 *platform* support (device build
+        # support + simulator runtime). Without it every xcodebuild destination
+        # fails with "iOS 26.0 is not installed. Please download and install the
+        # platform from Xcode > Settings > Components." `-downloadPlatform iOS`
+        # installs it on demand for the selected Xcode so the app can be built.
+        run: sudo xcodebuild -downloadPlatform iOS
+      - name: Build iOS app (simulator, no code signing)
+        # Build for the iOS Simulator (no code signing needed). The iOS platform —
+        # including the simulator runtime — is installed by the previous step, so
+        # the generic simulator destination resolves. A generic destination needs
+        # no specific simulator device to be created/booted.
         run: |
           xcodebuild build \
             -project iosApp/StockTicker.xcodeproj \
             -scheme StocksWidget \
-            -destination 'generic/platform=iOS' \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO
