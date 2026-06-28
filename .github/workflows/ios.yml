@@ -70,9 +70,16 @@ jobs:
           source ./version.sh
           xcodegen generate
       - name: Build iOS app (simulator, no code signing)
+        # Build against the iOS Simulator SDK rather than a concrete
+        # `-destination`. The hosted Xcode 26 image ships the iOS 26 SDK but does
+        # NOT install an iOS Simulator runtime, so `-destination 'generic/platform=iOS Simulator'`
+        # fails to resolve ("iOS 26.0 is not installed") and xcodebuild falls back
+        # to the "Any iOS Device" placeholder. A compile/link check only needs the
+        # SDK, not a bootable simulator runtime, so `-sdk iphonesimulator` is both
+        # sufficient and avoids the missing-runtime failure.
         run: |
           xcodebuild build \
             -project iosApp/StockTicker.xcodeproj \
             -scheme StocksWidget \
-            -destination 'generic/platform=iOS Simulator' \
+            -sdk iphonesimulator \
             CODE_SIGNING_ALLOWED=NO
