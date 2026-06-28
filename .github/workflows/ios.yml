@@ -70,23 +70,14 @@ jobs:
           source ./version.sh
           xcodegen generate
       - name: Install iOS platform
-        # The macos-26 image ships Xcode 26 with the iOS 26 SDK (enough for the
-        # Gradle Kotlin/Native framework link + the SPM package graph to resolve),
-        # but it does NOT pre-install the iOS 26 *platform* support (device build
-        # support + simulator runtime). Without it every xcodebuild destination
-        # fails with "iOS 26.0 is not installed. Please download and install the
-        # platform from Xcode > Settings > Components." `-downloadPlatform iOS`
-        # installs it on demand for the selected Xcode so the app can be built.
+        # The macos-26 image ships the iOS 26 SDK but not the iOS 26 platform
+        # support (simulator runtime), so xcodebuild destinations fail with
+        # "iOS 26.0 is not installed" until it is downloaded on demand.
         run: sudo xcodebuild -downloadPlatform iOS
       - name: Build iOS app (simulator, no code signing)
-        # Build for the iOS Simulator (no code signing needed). The iOS platform —
-        # including the simulator runtime — is installed by the previous step.
-        # Pin a concrete named simulator device rather than a generic destination:
-        # on the M-series (arm64) runner a named device resolves to a single
-        # architecture, avoiding the build failures seen when the generic
-        # destination tried to build for multiple/ambiguous simulator archs. No
-        # OS is pinned so the destination uses whichever iPhone 17 runtime is
-        # pre-installed on the image (e.g. 26.2/26.4/26.5).
+        # Pin a concrete named simulator device: on the arm64 runner it resolves
+        # to a single architecture (a generic destination did not). No OS is
+        # pinned, so an already-installed iPhone 17 runtime is used.
         run: |
           xcodebuild build \
             -project iosApp/StockTicker.xcodeproj \
