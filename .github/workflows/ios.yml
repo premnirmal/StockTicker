@@ -7,9 +7,6 @@ on:
   push:
     branches:
       - 'master'
-      # TEMPORARY: exercise the iOS pipeline on this feature branch before it
-      # is merged to master. Remove this line once the branch is merged.
-      - 'copilot/implement-phase-6'
 
 jobs:
   ios:
@@ -72,10 +69,18 @@ jobs:
         run: |
           source ./version.sh
           xcodegen generate
+      - name: Install iOS platform
+        # The macos-26 image ships the iOS 26 SDK but not the iOS 26 platform
+        # support (simulator runtime), so xcodebuild destinations fail with
+        # "iOS 26.0 is not installed" until it is downloaded on demand.
+        run: sudo xcodebuild -downloadPlatform iOS
       - name: Build iOS app (simulator, no code signing)
+        # Pin a concrete named simulator device: on the arm64 runner it resolves
+        # to a single architecture (a generic destination did not). No OS is
+        # pinned, so an already-installed iPhone 17 runtime is used.
         run: |
           xcodebuild build \
             -project iosApp/StockTicker.xcodeproj \
-            -scheme iosApp \
-            -destination 'generic/platform=iOS Simulator' \
+            -scheme StocksWidget \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
             CODE_SIGNING_ALLOWED=NO
