@@ -80,12 +80,16 @@ jobs:
         run: sudo xcodebuild -downloadPlatform iOS
       - name: Build iOS app (simulator, no code signing)
         # Build for the iOS Simulator (no code signing needed). The iOS platform —
-        # including the simulator runtime — is installed by the previous step, so
-        # the generic simulator destination resolves. A generic destination needs
-        # no specific simulator device to be created/booted.
+        # including the simulator runtime — is installed by the previous step.
+        # Pin a concrete named simulator device rather than a generic destination:
+        # on the M-series (arm64) runner a named device resolves to a single
+        # architecture, avoiding the build failures seen when the generic
+        # destination tried to build for multiple/ambiguous simulator archs. No
+        # OS is pinned so the destination uses whichever iPhone 17 runtime is
+        # pre-installed on the image (e.g. 26.2/26.4/26.5).
         run: |
           xcodebuild build \
             -project iosApp/StockTicker.xcodeproj \
             -scheme StocksWidget \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
             CODE_SIGNING_ALLOWED=NO
