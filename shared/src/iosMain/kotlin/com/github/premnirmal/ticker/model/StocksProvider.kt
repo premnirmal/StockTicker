@@ -108,6 +108,22 @@ class StocksProvider(
         )
     }
 
+    /**
+     * The watchlist quotes in their saved ticker order, ignoring the global auto-sort preference.
+     *
+     * The WidgetKit home-screen widget snapshot uses this so each placed widget can apply its own
+     * "Sort by change" toggle: the snapshot always carries the raw watchlist order, and the widget —
+     * not the app's global auto-sort setting — decides whether to sort. This keeps the per-widget
+     * toggle authoritative (enabling it sorts, disabling it shows the watchlist order).
+     */
+    fun widgetOrderedQuotes(): List<Quote> = lock.withLock {
+        buildWatchlistQuotes(
+            tickers = tickerSet,
+            quotesBySymbol = quoteMap,
+            autoSort = false
+        )
+    }
+
     private fun saveTickers() = storage.saveTickers(tickerSet)
 
     fun rearrange(tickers: List<String>) {

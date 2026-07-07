@@ -46,9 +46,23 @@ struct StockTickerProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: StockTickerConfigurationIntent, in context: Context) async -> Timeline<StockTickerEntry> {
         let entry = loadEntry(for: configuration)
-        // The app reloads timelines on every refresh; also poll periodically as a fallback.
-        let next = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date()
+        // Reload the timeline at the user's selected update interval so the widget refreshes at the
+        // cadence chosen in the app (WidgetKit still enforces its own system minimum). Falls back to
+        // 30 minutes for snapshots written by older app versions that didn't record an interval.
+        let snapshot = WidgetSnapshotStore.companion.create().read()
+        let intervalMinutes = Self.refreshIntervalMinutes(from: snapshot)
+        let next = Calendar.current.date(byAdding: .minute, value: intervalMinutes, to: Date()) ?? Date()
         return Timeline(entries: [entry], policy: .after(next))
+    }
+
+    /// The widget's next-reload interval, in minutes, derived from the user's selected update interval
+    /// in the shared snapshot. Clamped to a small floor so WidgetKit isn't asked for an unreasonably
+    /// tight cadence, defaulting to 30 minutes when no interval was recorded.
+    private static func refreshIntervalMinutes(from snapshot: WidgetSnapshot?) -> Int {
+        let millis = snapshot.map { Int64($0.updateIntervalMillis) } ?? 0
+        guard millis > 0 else { return 30 }
+        let minutes = Int(millis / 60_000)
+        return max(5, minutes)
     }
 
     private func loadEntry(for configuration: StockTickerConfigurationIntent) -> StockTickerEntry {
@@ -68,9 +82,11 @@ struct StockTickerProvider: AppIntentTimelineProvider {
         if let selected = configuration.selectedSymbols {
             rows = rows.filter { selected.contains($0.symbol) }
         }
-        // Per-widget sort: optionally show the largest movers first.
+        // Per-widget sort: optionally show the largest gainers first, matching the app's auto-sort
+        // (change % descending). The snapshot is written in the raw watchlist order, so this toggle
+        // is authoritative: enabling it sorts, disabling it keeps the watchlist order.
         if configuration.sortByChange {
-            rows.sort { abs($0.changeInPercent) > abs($1.changeInPercent) }
+            rows.sort { $0.changeInPercent > $1.changeInPercent }
         }
         let date = snapshot.map { Date(timeIntervalSince1970: Double($0.lastUpdatedMillis) / 1000.0) } ?? Date()
         return StockTickerEntry(date: date, quotes: rows, isPlaceholder: false, configuration: configuration)
