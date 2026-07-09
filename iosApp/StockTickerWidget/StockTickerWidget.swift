@@ -94,11 +94,11 @@ struct StockTickerProvider: AppIntentTimelineProvider {
 
     private static let sampleRows: [WidgetQuoteRow] = [
         WidgetQuoteRow(symbol: "AAPL", name: "Apple Inc.", price: "$192.32",
-                       changePercent: "+1.24%", changeAmount: "+2.35", changeInPercent: 1.24, positive: true),
+                       changePercent: "1.24%", changeAmount: "2.35", changeInPercent: 1.24, positive: true),
         WidgetQuoteRow(symbol: "MSFT", name: "Microsoft", price: "$421.10",
                        changePercent: "-0.42%", changeAmount: "-1.78", changeInPercent: -0.42, positive: false),
         WidgetQuoteRow(symbol: "GOOG", name: "Alphabet", price: "$175.98",
-                       changePercent: "+0.88%", changeAmount: "+1.54", changeInPercent: 0.88, positive: true),
+                       changePercent: "0.88%", changeAmount: "1.54", changeInPercent: 0.88, positive: true),
     ]
 }
 

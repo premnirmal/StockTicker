@@ -79,8 +79,8 @@ class WidgetSnapshotStore(
         symbol = symbol,
         name = name,
         price = priceString(),
-        changePercent = changePercentStringWithSign(),
-        changeAmount = changeStringWithSign(),
+        changePercent = changePercentString(),
+        changeAmount = changeString(),
         changeInPercent = changeInPercent,
         positive = change >= 0f,
     )
