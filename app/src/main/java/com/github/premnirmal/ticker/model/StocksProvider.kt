@@ -6,9 +6,14 @@ import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.SHARE_EPSILON
+import com.github.premnirmal.ticker.network.data.isValidLedger
+import com.github.premnirmal.ticker.network.data.replayLedger
+import com.github.premnirmal.ticker.network.data.toPosition
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.CancellationException
@@ -336,45 +341,52 @@ class StocksProvider constructor(
 
     override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-    override suspend fun addHolding(
-        ticker: String,
-        shares: Float,
-        price: Float
-    ): Holding {
-        val quote: Quote?
-        var position: Position
+    override fun getMovements(ticker: String): List<Movement> =
+        quoteMap[ticker]?.movements ?: emptyList()
+
+    override suspend fun buy(ticker: String, shares: Float, price: Float): Movement {
         synchronized(quoteMap) {
-            quote = quoteMap[ticker]
-            position = getPosition(ticker) ?: Position(ticker)
-            if (!tickerSet.contains(ticker)) {
-                tickerSet.add(ticker)
-            }
+            if (!tickerSet.contains(ticker)) tickerSet.add(ticker)
         }
         _tickers.emit(tickerSet.toList())
         saveTickers()
-        val holding = Holding(ticker, shares, price)
-        position.add(holding)
-        quote?.position = position
-        val id = storage.addHolding(holding)
-        holding.id = id
+        val movement = Movement(ticker, MovementType.BUY, shares, price)
+        movement.id = storage.addMovement(movement)
+        refreshLedger(ticker)
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
-        return holding
+        return movement
     }
 
-    override suspend fun removePosition(
-        ticker: String,
-        holding: Holding
-    ): Boolean {
-        var removed = false
-        synchronized(quoteMap) {
-            val position = getPosition(ticker)
-            val quote = quoteMap[ticker]
-            removed = position?.remove(holding) ?: false
-            quote?.position = position
+    override suspend fun sell(ticker: String, shares: Float, price: Float): SellResult {
+        val summary = getMovements(ticker).replayLedger()
+        if (shares > summary.shares + SHARE_EPSILON) {
+            return SellResult.NotEnoughShares(summary.shares)
         }
-        storage.removeHolding(ticker, holding)
+        val movement = Movement(ticker, MovementType.SELL, shares, price)
+        movement.id = storage.addMovement(movement)
+        refreshLedger(ticker)
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
-        return removed
+        return SellResult.Success(movement, (price - summary.averagePrice) * shares)
+    }
+
+    override suspend fun removeMovement(ticker: String, movement: Movement): RemoveMovementResult {
+        val remaining = getMovements(ticker).filterNot { it.id == movement.id }
+        if (!remaining.isValidLedger()) return RemoveMovementResult.BlockedBySells
+        storage.removeMovement(movement)
+        refreshLedger(ticker)
+        _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+        return RemoveMovementResult.Removed
+    }
+
+    /** Reloads [ticker]'s ledger from storage and rebuilds the derived position. */
+    private suspend fun refreshLedger(ticker: String) {
+        val movements = storage.readMovements(ticker)
+        synchronized(quoteMap) {
+            quoteMap[ticker]?.let {
+                it.movements = movements
+                it.position = movements.replayLedger().toPosition(ticker)
+            }
+        }
     }
 
     override fun addStocks(symbols: Collection<String>): Collection<String> {
@@ -444,6 +456,11 @@ class StocksProvider constructor(
         widgetDataProvider.updateWidgets(tickerSet.toList())
         coroutineScope.launch {
             storage.saveQuotes(portfolio)
+            portfolio.forEach { quote ->
+                quote.ensureMovements()
+                storage.saveMovements(quote.symbol, quote.movements)
+                quote.position = quote.movements.replayLedger().toPosition(quote.symbol)
+            }
             fetchLocal()
             fetch()
         }

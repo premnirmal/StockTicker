@@ -7,14 +7,14 @@ import androidx.room.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.github.premnirmal.ticker.components.ioDispatcher
 import com.github.premnirmal.ticker.repo.data.FetchLogRow
-import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.repo.data.MovementRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.github.premnirmal.ticker.repo.migrations.allMigrations
 
 @Database(
-    entities = [QuoteRow::class, HoldingRow::class, PropertiesRow::class, FetchLogRow::class],
-    version = 9,
+    entities = [QuoteRow::class, MovementRow::class, PropertiesRow::class, FetchLogRow::class],
+    version = 10,
     exportSchema = true
 )
 @ConstructedBy(QuotesDBConstructor::class)

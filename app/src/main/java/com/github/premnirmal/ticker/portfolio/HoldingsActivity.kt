@@ -9,9 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -19,7 +17,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.base.BaseActivity
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
-import com.github.premnirmal.ticker.network.data.holdingsSum
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.HoldingSum
+import com.github.premnirmal.ticker.network.data.MovementType
+import com.github.premnirmal.ticker.network.data.toPosition
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.LocalAppMessaging
 import com.github.premnirmal.tickerwidget.R
@@ -62,23 +63,23 @@ class HoldingsActivity : BaseActivity() {
             displayFeatures = displayFeatures
         ).second
 
-        val position by viewModel.position.collectAsStateWithLifecycle()
-        var holdings by remember(position.holdings) {
-            mutableStateOf(position.holdings.toList())
-        }
-        val holdingsSum by remember(holdings) {
-            derivedStateOf { holdings.holdingsSum() }
-        }
-        LaunchedEffect(ticker) {
-            viewModel.addedHolding.collect {
-                holdings = holdings.toMutableList().apply { add(it) }
-                updateActivityResult()
+        val movements by viewModel.movements.collectAsStateWithLifecycle()
+        val summary by viewModel.summary.collectAsStateWithLifecycle()
+        val holdings by remember {
+            derivedStateOf {
+                movements.filter { it.type == MovementType.BUY }
+                    .map { Holding(it.symbol, it.shares, it.price, it.id) }
             }
         }
+        val holdingsSum by remember {
+            derivedStateOf { HoldingSum(summary.shares, summary.costBasis, summary.averagePrice) }
+        }
         LaunchedEffect(ticker) {
-            viewModel.removedHolding.collect {
-                holdings = holdings.toMutableList().apply { remove(it) }
-                updateActivityResult()
+            viewModel.events.collect { event ->
+                when (event) {
+                    is PositionEvent.RemoveBlocked -> appMessaging.sendSnackbar(R.string.invalid_number)
+                    else -> updateActivityResult()
+                }
             }
         }
 
@@ -101,7 +102,9 @@ class HoldingsActivity : BaseActivity() {
             formatNumber = { AppPreferences.DECIMAL_FORMAT.format(it) },
             onBack = { finish() },
             onAdd = { priceText, sharesText -> onAddClicked(priceText, sharesText) },
-            onRemove = { viewModel.removeHolding(ticker, it) },
+            onRemove = { holding ->
+                movements.firstOrNull { it.id == holding.id }?.let { viewModel.deleteMovement(ticker, it) }
+            },
             twoPane = if (contentType == SINGLE_PANE) {
                 null
             } else {
@@ -150,7 +153,7 @@ class HoldingsActivity : BaseActivity() {
                 }
             }
             if (!sharesError && !priceError) {
-                viewModel.addHolding(ticker, shares, price)
+                viewModel.buy(ticker, shares, price)
             }
         } else {
             sharesError = true
@@ -162,7 +165,7 @@ class HoldingsActivity : BaseActivity() {
 
     private fun updateActivityResult() {
         val data = Intent().apply {
-            putExtra(POSITIONS, viewModel.position.value)
+            putExtra(POSITIONS, viewModel.summary.value.toPosition(ticker))
         }
         setResult(RESULT_OK, data)
     }

@@ -8,10 +8,16 @@ import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.FakePreferenceStore
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.network.StocksApi
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
+import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.times
@@ -169,34 +175,98 @@ class StocksProviderTest : BaseUnitTest() {
         }
     }
 
-    @Test fun testAddHoldingCreatesPosition() {
+    @Test fun testBuyPersistsMovementAndUpdatesPosition() {
         runBlocking {
-            whenever(storage.addHolding(any())).thenReturn(42L)
+            whenever(storage.addMovement(any())).thenReturn(42L)
+            whenever(storage.readMovements("AAPL")).thenReturn(
+                listOf(Movement("AAPL", MovementType.BUY, 10f, 5f, id = 42L))
+            )
             val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(Quote(symbol = "AAPL")))
 
-            val holding = provider.addHolding("AAPL", shares = 10f, price = 5f)
+            val movement = provider.buy("AAPL", shares = 10f, price = 5f)
 
-            assertEquals(42L, holding.id)
+            assertEquals(42L, movement.id)
             assertTrue(provider.hasPosition("AAPL"))
             assertTrue(provider.hasPositions())
             val position = provider.getPosition("AAPL")
             assertNotNull(position)
             assertEquals(1, position!!.holdings.size)
-            verify(storage).addHolding(any())
+            assertEquals(10f, position.holdings[0].shares)
+            verify(storage).addMovement(any())
         }
     }
 
-    @Test fun testRemovePositionRemovesHolding() {
+    @Test fun testSellBeyondOwnedSharesReturnsNotEnoughSharesAndPersistsNothing() {
         runBlocking {
-            whenever(storage.addHolding(any())).thenReturn(1L)
-            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(Quote(symbol = "AAPL")))
-            val holding = provider.addHolding("AAPL", shares = 10f, price = 5f)
+            val quote = Quote(symbol = "AAPL").apply {
+                movements = listOf(Movement("AAPL", MovementType.BUY, 5f, 10f, id = 1L))
+            }
+            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(quote))
 
-            val removed = provider.removePosition("AAPL", holding)
+            val result = provider.sell("AAPL", shares = 10f, price = 12f)
 
-            assertTrue(removed)
-            assertFalse(provider.hasPosition("AAPL"))
-            verify(storage).removeHolding("AAPL", holding)
+            assertTrue(result is SellResult.NotEnoughShares)
+            assertEquals(5f, (result as SellResult.NotEnoughShares).sharesOwned)
+            verify(storage, never()).addMovement(any())
+        }
+    }
+
+    @Test fun testSellReturnsAverageCostGain() {
+        runBlocking {
+            val quote = Quote(symbol = "AAPL").apply {
+                movements = listOf(Movement("AAPL", MovementType.BUY, 10f, 5f, id = 1L))
+            }
+            whenever(storage.addMovement(any())).thenReturn(99L)
+            whenever(storage.readMovements("AAPL")).thenReturn(
+                listOf(
+                    Movement("AAPL", MovementType.BUY, 10f, 5f, id = 1L),
+                    Movement("AAPL", MovementType.SELL, 4f, 8f, id = 99L)
+                )
+            )
+            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(quote))
+
+            val result = provider.sell("AAPL", shares = 4f, price = 8f)
+
+            assertTrue(result is SellResult.Success)
+            val success = result as SellResult.Success
+            assertEquals(99L, success.movement.id)
+            assertEquals(12f, success.gain)
+            verify(storage).addMovement(any())
+        }
+    }
+
+    @Test fun testRemoveMovementOnDependedOnBuyReturnsBlockedBySells() {
+        runBlocking {
+            val buyMovement = Movement("AAPL", MovementType.BUY, 10f, 5f, id = 1L)
+            val quote = Quote(symbol = "AAPL").apply {
+                movements = listOf(
+                    buyMovement,
+                    Movement("AAPL", MovementType.SELL, 5f, 8f, id = 2L)
+                )
+            }
+            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(quote))
+
+            val result = provider.removeMovement("AAPL", buyMovement)
+
+            assertTrue(result is RemoveMovementResult.BlockedBySells)
+            verify(storage, never()).removeMovement(any())
+        }
+    }
+
+    @Test fun testRemoveMovementSucceedsWhenNotDependedOn() {
+        runBlocking {
+            val buyMovement = Movement("AAPL", MovementType.BUY, 10f, 5f, id = 1L)
+            val quote = Quote(symbol = "AAPL").apply {
+                movements = listOf(buyMovement)
+            }
+            whenever(storage.readMovements("AAPL")).thenReturn(emptyList())
+            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(quote))
+
+            val result = provider.removeMovement("AAPL", buyMovement)
+
+            assertTrue(result is RemoveMovementResult.Removed)
+            verify(storage).removeMovement(buyMovement)
+            assertTrue(provider.getMovements("AAPL").isEmpty())
         }
     }
 
@@ -253,6 +323,40 @@ class StocksProviderTest : BaseUnitTest() {
 
         assertTrue(provider.hasTicker("NFLX"))
         assertEquals("AAPL", provider.getStock("AAPL")?.symbol)
+    }
+
+    @Test fun testAddPortfolioRoutesLegacyImportThroughLedger() {
+        val quote = Quote(
+            symbol = "AAPL",
+            position = Position(
+                "AAPL",
+                mutableListOf(Holding("AAPL", 20f, 150f), Holding("AAPL", 10f, 239.22f))
+            )
+        )
+        val quotes = listOf(quote)
+        runBlocking {
+            whenever(api.getStocks(any())).thenReturn(FetchResult.success(quotes))
+            whenever(storage.readQuotes()).thenReturn(quotes)
+        }
+        val provider = createProvider(tickers = setOf("AAPL"))
+
+        provider.addPortfolio(quotes)
+
+        val moved = argumentCaptor<List<Movement>>()
+        runBlocking { verify(storage).saveMovements(eq("AAPL"), moved.capture()) }
+        val savedMovements = moved.firstValue
+        assertEquals(2, savedMovements.size)
+        assertTrue(savedMovements.all { it.type == MovementType.BUY })
+        assertEquals(20f, savedMovements[0].shares)
+        assertEquals(150f, savedMovements[0].price)
+        assertEquals(10f, savedMovements[1].shares)
+        assertEquals(239.22f, savedMovements[1].price)
+
+        val rebuiltPosition = provider.getStock("AAPL")?.position
+        assertNotNull(rebuiltPosition)
+        assertEquals(1, rebuiltPosition!!.holdings.size)
+        assertEquals(30f, rebuiltPosition.totalShares())
+        assertEquals(179.74f, rebuiltPosition.averagePrice(), 0.01f)
     }
 
     private companion object {

@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
@@ -64,8 +66,11 @@ class StocksStorageTest : BaseUnitTest() {
         }
     }
 
-    @Test fun testSaveQuotesWithHoldingsAndProperties() {
+    @Test fun testSaveQuotesPersistsQuoteAndPropertiesOnly() {
         runBlocking {
+            // saveQuotes is the quote-refresh path: it must persist the quote fields and
+            // properties, but must never create, modify, or delete ledger movements — even when
+            // the in-memory Quote carries a `position` (e.g. one derived earlier in the session).
             val quote = Quote(symbol = "AAPL", name = "Apple").apply {
                 position = Position("AAPL", mutableListOf(Holding("AAPL", 10f, 100f)))
                 properties = Properties("AAPL", notes = "buy more", alertAbove = 200f)
@@ -74,10 +79,56 @@ class StocksStorageTest : BaseUnitTest() {
 
             val read = storage.readQuote("AAPL")
             assertNotNull(read)
-            assertEquals(1, read!!.position?.holdings?.size)
-            assertEquals(10f, read.position?.holdings?.first()?.shares)
+            assertEquals("AAPL", read!!.symbol)
+            assertEquals("Apple", read.name)
+            assertTrue(read.movements.isEmpty())
+            assertTrue(read.position?.holdings.isNullOrEmpty())
             assertEquals("buy more", read.properties?.notes)
             assertEquals(200f, read.properties?.alertAbove)
+        }
+    }
+
+    @Test fun testSaveQuotesNeverTouchesAnExistingLedger() {
+        runBlocking {
+            storage.saveQuote(Quote(symbol = "AAPL"))
+            storage.addMovement(Movement("AAPL", MovementType.BUY, 10f, 100f))
+
+            // A later quote refresh (new price, no position set on the in-memory Quote) must
+            // leave the previously recorded movement untouched.
+            storage.saveQuotes(listOf(Quote(symbol = "AAPL", name = "Apple Inc", lastTradePrice = 155f)))
+
+            val read = storage.readQuote("AAPL")
+            assertEquals("Apple Inc", read?.name)
+            assertEquals(155f, read?.lastTradePrice)
+            assertEquals(1, read?.movements?.size)
+            assertEquals(10f, read?.position?.holdings?.first()?.shares)
+        }
+    }
+
+    @Test fun testMovementsLedgerRoundTrip() {
+        runBlocking {
+            storage.saveQuote(Quote(symbol = "AAPL"))
+            val buy = Movement("AAPL", MovementType.BUY, 20f, 150f)
+            val buyId = storage.addMovement(buy)
+            val sell = Movement("AAPL", MovementType.SELL, 5f, 168.20f)
+            val sellId = storage.addMovement(sell)
+
+            val movements = storage.readMovements("AAPL")
+            assertEquals(listOf(buyId, sellId), movements.map { it.id })
+            assertEquals(MovementType.BUY, movements[0].type)
+            assertEquals(MovementType.SELL, movements[1].type)
+
+            // Average-cost replay: 20 @ 150 then sell 5 leaves 15 shares at the same average (150).
+            val read = storage.readQuote("AAPL")
+            assertEquals(15f, read?.position?.holdings?.first()?.shares)
+            assertEquals(150f, read?.position?.holdings?.first()?.price)
+
+            storage.saveMovements("AAPL", listOf(Movement("AAPL", MovementType.BUY, 3f, 90f)))
+
+            val afterReplace = storage.readQuote("AAPL")
+            assertEquals(1, storage.readMovements("AAPL").size)
+            assertEquals(3f, afterReplace?.position?.holdings?.first()?.shares)
+            assertEquals(90f, afterReplace?.position?.holdings?.first()?.price)
         }
     }
 
@@ -112,16 +163,18 @@ class StocksStorageTest : BaseUnitTest() {
         }
     }
 
-    @Test fun testAddAndRemoveHolding() {
+    @Test fun testAddAndRemoveMovement() {
         runBlocking {
             storage.saveQuote(Quote(symbol = "AAPL"))
-            val id = storage.addHolding(Holding("AAPL", 5f, 50f))
+            val movement = Movement("AAPL", MovementType.BUY, 5f, 50f)
+            val id = storage.addMovement(movement)
             assertTrue(id > 0L)
+            movement.id = id
 
             var read = storage.readQuote("AAPL")
             assertEquals(1, read?.position?.holdings?.size)
 
-            storage.removeHolding("AAPL", Holding("AAPL", 5f, 50f, id))
+            storage.removeMovement(movement)
             read = storage.readQuote("AAPL")
             assertTrue(read?.position?.holdings.isNullOrEmpty())
         }

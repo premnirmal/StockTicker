@@ -5,7 +5,7 @@ import com.github.premnirmal.ticker.repo.QuoteDao
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.repo.TickersStore
 import com.github.premnirmal.ticker.repo.data.FetchLogRow
-import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.repo.data.MovementRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.github.premnirmal.ticker.repo.data.QuoteWithHoldings
@@ -73,12 +73,12 @@ class FetchEventLoggerTest {
         override suspend fun upsertQuotes(quotes: List<QuoteRow>): LongArray = LongArray(0)
         override suspend fun upsertQuote(quote: QuoteRow): Long = 0L
         override suspend fun deleteQuoteById(symbol: String) = Unit
-        override suspend fun insertHoldings(holdings: List<HoldingRow>): LongArray = LongArray(0)
-        override suspend fun insertHolding(holding: HoldingRow): Long = 0L
-        override suspend fun deleteHoldingsByQuoteId(symbol: String) = Unit
         override suspend fun deleteByQuotesId(symbols: List<String>) = Unit
-        override suspend fun deleteHoldingsByQuoteIds(symbols: List<String>) = Unit
-        override suspend fun deleteHolding(holding: HoldingRow) = Unit
+        override suspend fun getMovements(symbol: String): List<MovementRow> = emptyList()
+        override suspend fun insertMovement(movement: MovementRow): Long = 0L
+        override suspend fun deleteMovement(movement: MovementRow) = Unit
+        override suspend fun deleteMovementsBySymbol(symbol: String) = Unit
+        override suspend fun deleteMovementsBySymbols(symbols: List<String>) = Unit
         override suspend fun insertProperties(quote: PropertiesRow) = Unit
         override suspend fun deletePropertiesByQuoteId(symbol: String) = Unit
     }

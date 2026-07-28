@@ -7,7 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.github.premnirmal.ticker.repo.data.FetchLogRow
-import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.repo.data.MovementRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import com.github.premnirmal.ticker.repo.data.QuoteWithHoldings
@@ -30,55 +30,49 @@ interface QuoteDao {
     suspend fun upsertQuote(quote: QuoteRow): Long
 
     @Transaction
-    suspend fun upsertQuoteAndHolding(
-        quote: QuoteRow,
-        holdings: List<HoldingRow>?
-    ) {
+    suspend fun upsertQuoteAndProperties(quote: QuoteRow) {
         upsertQuote(quote)
-        holdings?.let { upsertHoldings(quote.symbol, it) }
-    }
-
-    @Transaction
-    suspend fun deleteQuoteAndHoldings(symbol: String) {
-        deleteQuoteById(symbol)
-        deleteHoldingsByQuoteId(symbol)
-    }
-
-    @Transaction
-    suspend fun deleteQuotesAndHoldings(symbols: List<String>) {
-        deleteByQuotesId(symbols)
-        deleteHoldingsByQuoteIds(symbols)
     }
 
     @Query("DELETE FROM QuoteRow WHERE symbol = :symbol")
     suspend fun deleteQuoteById(symbol: String)
 
-    @Transaction
-    suspend fun upsertHoldings(
-        symbol: String,
-        holdings: List<HoldingRow>
-    ) {
-        deleteHoldingsByQuoteId(symbol)
-        insertHoldings(holdings)
-    }
-
-    @Insert
-    suspend fun insertHoldings(holdings: List<HoldingRow>): LongArray
-
-    @Insert
-    suspend fun insertHolding(holding: HoldingRow): Long
-
-    @Query("DELETE FROM HoldingRow WHERE quote_symbol = :symbol")
-    suspend fun deleteHoldingsByQuoteId(symbol: String)
-
     @Query("DELETE FROM QuoteRow WHERE symbol IN (:symbols)")
     suspend fun deleteByQuotesId(symbols: List<String>)
 
-    @Query("DELETE FROM HoldingRow WHERE quote_symbol IN (:symbols)")
-    suspend fun deleteHoldingsByQuoteIds(symbols: List<String>)
+    @Transaction
+    suspend fun deleteQuoteAndHoldings(symbol: String) {   // keep name; callers unchanged
+        deleteQuoteById(symbol)
+        deleteMovementsBySymbol(symbol)
+        deletePropertiesByQuoteId(symbol)
+    }
+
+    @Transaction
+    suspend fun deleteQuotesAndHoldings(symbols: List<String>) {
+        deleteByQuotesId(symbols)
+        deleteMovementsBySymbols(symbols)
+    }
+
+    @Query("SELECT * FROM MovementRow WHERE quote_symbol = :symbol ORDER BY id ASC")
+    suspend fun getMovements(symbol: String): List<MovementRow>
+
+    @Insert
+    suspend fun insertMovement(movement: MovementRow): Long
 
     @Delete
-    suspend fun deleteHolding(holding: HoldingRow)
+    suspend fun deleteMovement(movement: MovementRow)
+
+    @Query("DELETE FROM MovementRow WHERE quote_symbol = :symbol")
+    suspend fun deleteMovementsBySymbol(symbol: String)
+
+    @Query("DELETE FROM MovementRow WHERE quote_symbol IN (:symbols)")
+    suspend fun deleteMovementsBySymbols(symbols: List<String>)
+
+    @Transaction
+    suspend fun replaceMovements(symbol: String, movements: List<MovementRow>) {
+        deleteMovementsBySymbol(symbol)
+        movements.forEach { insertMovement(it) }
+    }
 
     @Transaction
     suspend fun upsertProperties(
@@ -110,13 +104,9 @@ interface QuoteDao {
     @Transaction
     suspend fun upsertQuotesWithHoldingsAndProperties(
         quotes: List<QuoteRow>,
-        holdingsBySymbol: Map<String, List<HoldingRow>>,
         properties: List<PropertiesRow>
     ) {
         upsertQuotes(quotes)
-        holdingsBySymbol.forEach { (symbol, holdings) ->
-            upsertHoldings(symbol, holdings)
-        }
         properties.forEach { upsertProperties(it) }
     }
 

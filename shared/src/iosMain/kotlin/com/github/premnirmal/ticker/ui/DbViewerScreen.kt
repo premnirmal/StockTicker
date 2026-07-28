@@ -139,15 +139,16 @@ class IosDbViewerViewModel(
     }
 
     private fun appendHoldings(sb: StringBuilder, data: List<QuoteWithHoldings>) {
-        sb.append("<h2>Holdings</h2><table><tr>")
-            .append("<th>id</th><th>Symbol</th><th>Shares</th><th>Price</th></tr>")
+        sb.append("<h2>Movements</h2><table><tr>")
+            .append("<th>id</th><th>Symbol</th><th>Type</th><th>Shares</th><th>Price</th></tr>")
         data.forEach { qwh ->
-            qwh.holdings.forEach { holding ->
+            qwh.movements.forEach { movement ->
                 sb.append("<tr>")
-                    .cell(holding.id)
-                    .cell(holding.quoteSymbol)
-                    .cell(holding.shares)
-                    .cell(holding.price)
+                    .cell(movement.id)
+                    .cell(movement.quoteSymbol)
+                    .cell(movement.type)
+                    .cell(movement.shares)
+                    .cell(movement.price)
                     .append("</tr>")
             }
         }
