@@ -122,30 +122,56 @@ private struct QuoteRowView: View {
 
 /// Two-column grid layout matching the Android widget. Shows a limited number of quotes to avoid
 /// clipping in each widget size (iOS widgets do not support scrolling).
+///
+/// The rows are distributed across the full available height so the widget doesn't leave blank
+/// space at the bottom; the quotes fill the whole widget instead of clustering at the top.
 private struct StockTickerGridView: View {
     let entry: StockTickerEntry
     let columns: Int
     let maxItems: Int
 
-    private let gridColumns: [GridItem]
-
     init(entry: StockTickerEntry, columns: Int = 2, maxItems: Int = 16) {
         self.entry = entry
         self.columns = columns
         self.maxItems = maxItems
-        self.gridColumns = Array(repeating: GridItem(.flexible(), spacing: 8), count: columns)
+    }
+
+    /// Chunk the (capped) quotes into rows of `columns` items each.
+    private var quoteRows: [[WidgetQuoteRow]] {
+        let items = Array(entry.quotes.prefix(maxItems))
+        return stride(from: 0, to: items.count, by: columns).map {
+            Array(items[$0 ..< min($0 + columns, items.count)])
+        }
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        Group {
             if entry.quotes.isEmpty {
                 EmptyWatchlistView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else {
-                LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 2) {
-                    ForEach(entry.quotes.prefix(maxItems)) { row in
-                        QuoteRowView(row: row, configuration: entry.configuration)
+                let rows = quoteRows
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            ForEach(row) { quote in
+                                QuoteRowView(row: quote, configuration: entry.configuration)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            // Keep column widths aligned when the last row is not full.
+                            if row.count < columns {
+                                ForEach(0 ..< (columns - row.count), id: \.self) { _ in
+                                    Color.clear.frame(maxWidth: .infinity)
+                                }
+                            }
+                        }
+                        // Even gaps between rows fill the height so no blank space is left at the bottom.
+                        if index < rows.count - 1 {
+                            Spacer(minLength: 2)
+                        }
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
     }
@@ -172,11 +198,11 @@ struct StockTickerWidgetEntryView: View {
         Group {
             switch family {
             case .systemSmall:
-                StockTickerGridView(entry: entry, columns: 1, maxItems: 4)
+                StockTickerGridView(entry: entry, columns: 1, maxItems: 6)
             case .systemMedium:
-                StockTickerGridView(entry: entry, columns: 2, maxItems: 8)
+                StockTickerGridView(entry: entry, columns: 2, maxItems: 10)
             default:
-                StockTickerGridView(entry: entry, columns: 2, maxItems: 16)
+                StockTickerGridView(entry: entry, columns: 2, maxItems: 24)
             }
         }
         .containerBackgroundCompat()
