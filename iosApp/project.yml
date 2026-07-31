@@ -136,28 +136,31 @@ targets:
             echo "Skipping Crashlytics dSYM upload: $GSP not found."
             exit 0
           fi
-          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          RUN="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
           UPLOAD_SYMBOLS="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols"
           # Upload every .dSYM in the app's dSYM folder (not just the app target's). The Kotlin/Native
           # `:shared` framework is linked statically, so the Kotlin debug info (emitted via
           # -Xadd-light-debug=enable) is folded into the app binary's own .dSYM here; uploading the
           # whole folder also captures any additional framework .dSYM Xcode produces, so Crashlytics
           # can symbolicate Kotlin stack frames.
-          # `upload-symbols` uploads over the network SYNCHRONOUSLY, which stalls the
-          # build phase (the archive appears to hang at "Run custom shell script
-          # 'Firebase Crashlytics'") until every dSYM has been transferred. The
-          # Crashlytics `run` helper above already kicks off the app dSYM upload in
-          # the background, so run these supplementary uploads detached too: fully
-          # disconnect their stdio and nohup them so Xcode does not wait on (or kill)
-          # them, letting the build/archive finish immediately while the upload
-          # completes in the background. A standalone Shared.framework.dSYM (e.g. a
-          # future dynamic-framework build) is uploaded too when present.
+          # BOTH the Crashlytics `run` helper AND `upload-symbols` transfer dSYMs over
+          # the network SYNCHRONOUSLY, so running either in the foreground stalls the
+          # build phase — the archive appears to hang at "Run custom shell script
+          # 'Firebase Crashlytics'" until every dSYM has been uploaded (and can hang
+          # indefinitely on a slow/blocked network). Detaching only `upload-symbols`
+          # (as a previous fix did) still left `run` blocking the archive, so run the
+          # WHOLE sequence — `run` then the supplementary `upload-symbols` uploads —
+          # detached: fully disconnect its stdio and nohup it so Xcode does not wait
+          # on (or kill) it, letting the build/archive finish immediately while the
+          # uploads complete in the background. A standalone Shared.framework.dSYM
+          # (e.g. a future dynamic-framework build) is uploaded too when present.
           SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
           UPLOAD_LOG="${BUILD_DIR%/Build/*}/crashlytics-upload-symbols.log"
           nohup sh -c '
-            "$0" -gsp "$1" -p ios "$2"
-            if [ -d "$3" ]; then "$0" -gsp "$1" -p ios "$3"; fi
-          ' "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM" \
+            "$0"
+            "$1" -gsp "$2" -p ios "$3"
+            if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
+          ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM" \
             >"$UPLOAD_LOG" 2>&1 </dev/null &
           echo "Crashlytics dSYM upload started in the background (log: $UPLOAD_LOG)."
     preBuildScripts:

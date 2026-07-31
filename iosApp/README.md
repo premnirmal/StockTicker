@@ -199,10 +199,11 @@ information has to be available to Crashlytics:
   `run` helper and then `upload-symbols` over the whole `${DWARF_DSYM_FOLDER_PATH}`, so every `.dSYM`
   (including the Kotlin symbols folded into the app `.dSYM`) is uploaded to Firebase. It also uploads a
   standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build). This
-  upload runs **only for `Release` builds** and when `GoogleService-Info.plist` is present: `upload-symbols`
-  is synchronous, so running it on Debug simulator builds only slows them down (and appears to hang the
-  build over a slow/blocked network) for symbols you never need locally. Even for `Release`, the
-  `upload-symbols` invocations are **detached to the background** (`nohup`, stdio redirected to
+  upload runs **only for `Release` builds** and when `GoogleService-Info.plist` is present: both `run`
+  and `upload-symbols` are synchronous, so running them on Debug simulator builds only slows them down
+  (and appears to hang the build over a slow/blocked network) for symbols you never need locally. Even
+  for `Release`, the entire Crashlytics sequence (the `run` helper **and** the `upload-symbols`
+  invocations) is **detached to the background** (`nohup`, stdio redirected to
   `crashlytics-upload-symbols.log` next to `DerivedData`) so the build/archive finishes immediately
   instead of hanging at "Run custom shell script 'Firebase Crashlytics'" while the network transfer
   completes.
