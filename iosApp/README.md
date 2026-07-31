@@ -203,10 +203,12 @@ information has to be available to Crashlytics:
   and `upload-symbols` are synchronous, so running them on Debug simulator builds only slows them down
   (and appears to hang the build over a slow/blocked network) for symbols you never need locally. Even
   for `Release`, the entire Crashlytics sequence (the `run` helper **and** the `upload-symbols`
-  invocations) is **detached to the background** (`nohup`, stdio redirected to
-  `crashlytics-upload-symbols.log` next to `DerivedData`) so the build/archive finishes immediately
-  instead of hanging at "Run custom shell script 'Firebase Crashlytics'" while the network transfer
-  completes.
+  invocations) is **detached to the background** so the build/archive finishes immediately instead of
+  hanging at "Run custom shell script 'Firebase Crashlytics'" while the network transfer completes.
+  `nohup … &` alone is **not** sufficient — Xcode's build system waits for the run-script phase's whole
+  process group, so the job is launched inside a `( … & )` subshell (with stdio redirected to
+  `crashlytics-upload-symbols.log` next to `DerivedData`) so it is reparented away from the shell Xcode
+  monitors and the phase returns right away.
 
 No extra setup is required beyond dropping in the `GoogleService-Info.plist` and regenerating the
 project; release/archive builds upload the symbols automatically.

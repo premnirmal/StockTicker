@@ -147,21 +147,24 @@ targets:
           # the network SYNCHRONOUSLY, so running either in the foreground stalls the
           # build phase — the archive appears to hang at "Run custom shell script
           # 'Firebase Crashlytics'" until every dSYM has been uploaded (and can hang
-          # indefinitely on a slow/blocked network). Detaching only `upload-symbols`
-          # (as a previous fix did) still left `run` blocking the archive, so run the
-          # WHOLE sequence — `run` then the supplementary `upload-symbols` uploads —
-          # detached: fully disconnect its stdio and nohup it so Xcode does not wait
-          # on (or kill) it, letting the build/archive finish immediately while the
-          # uploads complete in the background. A standalone Shared.framework.dSYM
+          # indefinitely on a slow/blocked network). Detaching with only `nohup … &`
+          # is NOT enough: Xcode's build system waits for the run-script phase's whole
+          # process group, so a backgrounded child that is still a direct child of the
+          # phase shell keeps the archive blocked. Wrap the job in a `( … & )` subshell
+          # so the intermediate subshell exits immediately and the upload is reparented
+          # away from the shell Xcode monitors; combined with `nohup` and fully
+          # redirected stdio (so no build pipe is held open), the build/archive finishes
+          # right away while the uploads — `run` then the supplementary `upload-symbols`
+          # invocations — complete in the background. A standalone Shared.framework.dSYM
           # (e.g. a future dynamic-framework build) is uploaded too when present.
           SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
           UPLOAD_LOG="${BUILD_DIR%/Build/*}/crashlytics-upload-symbols.log"
-          nohup sh -c '
-            "$0"
-            "$1" -gsp "$2" -p ios "$3"
-            if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
-          ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM" \
-            >"$UPLOAD_LOG" 2>&1 </dev/null &
+          ( nohup sh -c '
+              "$0"
+              "$1" -gsp "$2" -p ios "$3"
+              if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
+            ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM" \
+            >"$UPLOAD_LOG" 2>&1 </dev/null & )
           echo "Crashlytics dSYM upload started in the background (log: $UPLOAD_LOG)."
     preBuildScripts:
       - name: Compile Kotlin/Native framework
