@@ -1,0 +1,24 @@
+// App/extension version, consumed by every target's Info.plist via
+// CFBundleShortVersionString ($(MARKETING_VERSION)) and CFBundleVersion
+// ($(CURRENT_PROJECT_VERSION)).
+//
+// These committed values are deliberately NON-EMPTY fallbacks: an app extension
+// whose CFBundleVersion resolves to an empty string fails to install on the
+// simulator/device with
+//   "bundleVersion must be set in placeholder attributes for an app extension
+//    placeholder" (IXErrorDomain, code 17).
+// Because they live in this xcconfig (read by Xcode at build time) rather than
+// being substituted into the generated project at `xcodegen generate` time,
+// the build is always installable even if you forget to run `version.sh`.
+//
+// To stamp the real, git-derived version (mirroring the Android app), run
+// `iosApp/version.sh`. It writes `iosApp/Version.local.xcconfig` (git-ignored)
+// with the values from `git describe --tags`, which the optional include below
+// layers on top of these defaults — so a proper version is used for
+// TestFlight/App Store archives without dirtying this committed file.
+MARKETING_VERSION = 1.0
+CURRENT_PROJECT_VERSION = 1
+
+// Optional machine-local override written by version.sh (git-ignored). The `?`
+// makes the include optional, so builds still succeed when it is absent.
+#include? "Version.local.xcconfig"

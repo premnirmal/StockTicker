@@ -88,16 +88,19 @@ On a Mac:
 2. Generate the project:
    ```sh
    cd iosApp
-   source ./version.sh      # derives the version from the latest git tag
+   ./version.sh             # stamps the version from the latest git tag
    xcodegen generate        # produces iosApp/StockTicker.xcodeproj
    ```
-   `version.sh` exports `MARKETING_VERSION` (`CFBundleShortVersionString`) and
-   `CURRENT_PROJECT_VERSION` (`CFBundleVersion`) from `git describe --tags`,
-   mirroring how the Android app derives its `versionName` / `versionCode` in
-   `app/build.gradle.kts` (falling back to `1.0` / `1` when no tag is
-   reachable). `project.yml` references those env vars, so source it before
-   generating — otherwise the bundle version is empty and an app-extension
-   install fails.
+   `version.sh` writes `MARKETING_VERSION` (`CFBundleShortVersionString`) and
+   `CURRENT_PROJECT_VERSION` (`CFBundleVersion`) into the git-ignored
+   `Version.local.xcconfig` from `git describe --tags`, mirroring how the Android
+   app derives its `versionName` / `versionCode` in `app/build.gradle.kts`
+   (falling back to `1.0` / `1` when no tag is reachable). The committed
+   `Version.xcconfig` (read by every target and optionally including
+   `Version.local.xcconfig`) already ships non-empty `1.0` / `1` fallbacks, so
+   even if you skip `version.sh` the bundle version is never empty and the
+   app-extension install still succeeds — running `version.sh` just stamps the
+   real git-derived version for TestFlight/App Store archives.
 3. Open `iosApp/StockTicker.xcodeproj` and run, or build from the command line:
    ```sh
    xcodebuild build \

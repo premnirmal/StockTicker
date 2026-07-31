@@ -18,6 +18,20 @@ options:
     iOS: "17.0"
   createIntermediateGroups: true
 
+# App/extension version, derived from the latest git tag (mirroring the Android
+# app — see app/build.gradle.kts). Version.xcconfig sets CFBundleShortVersionString
+# ($(MARKETING_VERSION)) and CFBundleVersion ($(CURRENT_PROJECT_VERSION)) for
+# every target, with committed non-empty fallbacks (1.0 / 1). It optionally
+# #includes Version.local.xcconfig, which `iosApp/version.sh` writes with the
+# git-derived values. Resolving these in an xcconfig (read by Xcode at build
+# time) — rather than substituting `${...}` at `xcodegen generate` time — means
+# the bundle version is NEVER empty even if you forget to run version.sh, so an
+# app extension no longer fails to install with "bundleVersion must be set in
+# placeholder attributes for an app extension placeholder" (IXErrorDomain).
+configFiles:
+  Debug: Version.xcconfig
+  Release: Version.xcconfig
+
 settings:
   base:
     SWIFT_VERSION: "5.0"
@@ -27,18 +41,14 @@ settings:
     # Kotlin crash frames. Debug builds default to plain `dwarf` (no dSYM); forcing dwarf-with-dsym
     # here ensures symbolication works for Release/Archive (TestFlight/App Store) builds.
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
-    # App/extension version, derived from the latest git tag (mirroring the
-    # Android app — see app/build.gradle.kts). These back
-    # CFBundleShortVersionString ($(MARKETING_VERSION)) and CFBundleVersion
-    # ($(CURRENT_PROJECT_VERSION)) in every target's Info.plist. They MUST be
-    # non-empty: an app extension whose CFBundleVersion resolves to an empty
-    # string fails to install with "bundleVersion must be set in placeholder
-    # attributes for an app extension placeholder" (IXErrorDomain). XcodeGen
-    # expands the ${...} references below from the environment, so source
-    # `iosApp/version.sh` before `xcodegen generate` (it derives the values from
-    # `git describe --tags` and falls back to 1.0 / 1 when no tag is reachable).
-    MARKETING_VERSION: "${MARKETING_VERSION}"
-    CURRENT_PROJECT_VERSION: "${CURRENT_PROJECT_VERSION}"
+    # App/extension version comes from Version.xcconfig (see the top-level
+    # `configFiles` above): CFBundleShortVersionString ($(MARKETING_VERSION))
+    # and CFBundleVersion ($(CURRENT_PROJECT_VERSION)). Those MUST be non-empty:
+    # an app extension whose CFBundleVersion resolves to an empty string fails to
+    # install with "bundleVersion must be set in placeholder attributes for an
+    # app extension placeholder" (IXErrorDomain). Version.xcconfig ships
+    # non-empty fallbacks and optionally includes Version.local.xcconfig (written
+    # by iosApp/version.sh) for the git-derived version.
     # The shared framework is a static Kotlin/Native framework, so it only has
     # to be on the linker search path — it is not embedded.
     FRAMEWORK_SEARCH_PATHS:

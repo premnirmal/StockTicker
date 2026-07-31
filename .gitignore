@@ -31,6 +31,9 @@ DerivedData/
 .swiftpm/
 # Local, machine-specific JAVA_HOME override for the iOS Gradle build phase
 iosApp/.xcode.env.local
+# Local, git-derived version override written by iosApp/version.sh (optionally
+# #included by the committed iosApp/Version.xcconfig)
+iosApp/Version.local.xcconfig
 #iOS Firebase config (optional, prod only)
 iosApp/GoogleService-Info.plist
 iosApp/iosApp/GoogleService-Info.plist
