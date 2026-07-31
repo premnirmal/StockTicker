@@ -143,14 +143,23 @@ targets:
           # -Xadd-light-debug=enable) is folded into the app binary's own .dSYM here; uploading the
           # whole folder also captures any additional framework .dSYM Xcode produces, so Crashlytics
           # can symbolicate Kotlin stack frames.
-          "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "${DWARF_DSYM_FOLDER_PATH}"
-          # If the Kotlin/Native build also emitted a standalone Shared.framework.dSYM (e.g. a dynamic
-          # framework build), upload it too. It is absent for the current static framework, so guard on
-          # its existence to keep the build green.
+          # `upload-symbols` uploads over the network SYNCHRONOUSLY, which stalls the
+          # build phase (the archive appears to hang at "Run custom shell script
+          # 'Firebase Crashlytics'") until every dSYM has been transferred. The
+          # Crashlytics `run` helper above already kicks off the app dSYM upload in
+          # the background, so run these supplementary uploads detached too: fully
+          # disconnect their stdio and nohup them so Xcode does not wait on (or kill)
+          # them, letting the build/archive finish immediately while the upload
+          # completes in the background. A standalone Shared.framework.dSYM (e.g. a
+          # future dynamic-framework build) is uploaded too when present.
           SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
-          if [ -d "$SHARED_DSYM" ]; then
-            "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "$SHARED_DSYM"
-          fi
+          UPLOAD_LOG="${BUILD_DIR%/Build/*}/crashlytics-upload-symbols.log"
+          nohup sh -c '
+            "$0" -gsp "$1" -p ios "$2"
+            if [ -d "$3" ]; then "$0" -gsp "$1" -p ios "$3"; fi
+          ' "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM" \
+            >"$UPLOAD_LOG" 2>&1 </dev/null &
+          echo "Crashlytics dSYM upload started in the background (log: $UPLOAD_LOG)."
     preBuildScripts:
       - name: Compile Kotlin/Native framework
         # Always run so the framework is rebuilt when the shared code changes.

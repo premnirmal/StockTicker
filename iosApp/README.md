@@ -201,7 +201,11 @@ information has to be available to Crashlytics:
   standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build). This
   upload runs **only for `Release` builds** and when `GoogleService-Info.plist` is present: `upload-symbols`
   is synchronous, so running it on Debug simulator builds only slows them down (and appears to hang the
-  build over a slow/blocked network) for symbols you never need locally.
+  build over a slow/blocked network) for symbols you never need locally. Even for `Release`, the
+  `upload-symbols` invocations are **detached to the background** (`nohup`, stdio redirected to
+  `crashlytics-upload-symbols.log` next to `DerivedData`) so the build/archive finishes immediately
+  instead of hanging at "Run custom shell script 'Firebase Crashlytics'" while the network transfer
+  completes.
 
 No extra setup is required beyond dropping in the `GoogleService-Info.plist` and regenerating the
 project; release/archive builds upload the symbols automatically.
