@@ -198,7 +198,10 @@ information has to be available to Crashlytics:
 - The *Firebase Crashlytics* post-compile build phase in [`project.yml`](project.yml) runs Crashlytics'
   `run` helper and then `upload-symbols` over the whole `${DWARF_DSYM_FOLDER_PATH}`, so every `.dSYM`
   (including the Kotlin symbols folded into the app `.dSYM`) is uploaded to Firebase. It also uploads a
-  standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build).
+  standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build). This
+  upload runs **only for `Release` builds** and when `GoogleService-Info.plist` is present: `upload-symbols`
+  is synchronous, so running it on Debug simulator builds only slows them down (and appears to hang the
+  build over a slow/blocked network) for symbols you never need locally.
 
 No extra setup is required beyond dropping in the `GoogleService-Info.plist` and regenerating the
 project; release/archive builds upload the symbols automatically.

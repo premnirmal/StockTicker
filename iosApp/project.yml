@@ -117,9 +117,27 @@ targets:
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
           - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
         script: |
+          # Only upload dSYMs to Crashlytics for Release builds (TestFlight/App
+          # Store archives), where symbolication actually matters. `upload-symbols`
+          # runs SYNCHRONOUSLY and blocks the build while it uploads over the
+          # network — on a Debug simulator build that adds no value and makes the
+          # build appear to hang at "Run custom shell script 'Firebase
+          # Crashlytics'" whenever the network is slow or unreachable. Skip it for
+          # every non-Release configuration so local Debug runs stay fast.
+          if [ "${CONFIGURATION}" != "Release" ]; then
+            echo "Skipping Crashlytics dSYM upload for ${CONFIGURATION} build."
+            exit 0
+          fi
+          GSP="${SRCROOT}/iosApp/GoogleService-Info.plist"
+          # GoogleService-Info.plist is optional and git-ignored (see iosApp/README.md).
+          # Without it the Crashlytics run/upload tools error out, so skip cleanly
+          # when it is absent instead of failing (or hanging) the build.
+          if [ ! -f "$GSP" ]; then
+            echo "Skipping Crashlytics dSYM upload: $GSP not found."
+            exit 0
+          fi
           "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
           UPLOAD_SYMBOLS="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols"
-          GSP="${SRCROOT}/iosApp/GoogleService-Info.plist"
           # Upload every .dSYM in the app's dSYM folder (not just the app target's). The Kotlin/Native
           # `:shared` framework is linked statically, so the Kotlin debug info (emitted via
           # -Xadd-light-debug=enable) is folded into the app binary's own .dSYM here; uploading the
