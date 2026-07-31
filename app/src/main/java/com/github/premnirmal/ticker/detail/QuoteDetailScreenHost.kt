@@ -101,8 +101,8 @@ fun QuoteDetailScreen(
 
     // Per-section editable state, updated by the activity-result launchers below.
     var holdings by remember(currentQuote.position) { mutableStateOf(currentQuote.position) }
-    var alertAbove by remember(currentQuote.symbol) { mutableFloatStateOf(currentQuote.getAlertAbove()) }
-    var alertBelow by remember(currentQuote.symbol) { mutableFloatStateOf(currentQuote.getAlertBelow()) }
+    var alertAbove by remember(currentQuote.properties) { mutableFloatStateOf(currentQuote.getAlertAbove()) }
+    var alertBelow by remember(currentQuote.properties) { mutableFloatStateOf(currentQuote.getAlertBelow()) }
     var notes by remember(currentQuote.properties) { mutableStateOf(currentQuote.properties?.notes ?: "") }
     var displayname by remember(currentQuote.properties) {
         mutableStateOf(currentQuote.properties?.displayname ?: "")
