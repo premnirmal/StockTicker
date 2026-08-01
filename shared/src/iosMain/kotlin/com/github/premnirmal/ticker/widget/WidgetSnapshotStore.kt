@@ -29,6 +29,12 @@ data class WidgetQuoteSnapshot(
 data class WidgetSnapshot(
     val quotes: List<WidgetQuoteSnapshot>,
     val lastUpdatedMillis: Long,
+    /**
+     * The user's selected refresh interval in milliseconds. The widget uses it to schedule its next
+     * timeline reload, so a home-screen widget refreshes at the same cadence the user picked in the
+     * app instead of a fixed fallback. Defaults to 0 for snapshots written by older app versions.
+     */
+    val updateIntervalMillis: Long = 0L,
 )
 
 /**
@@ -50,10 +56,11 @@ class WidgetSnapshotStore(
 ) {
 
     /** Serialize the current [quotes] and store them for the widget extension to read. */
-    fun write(quotes: List<Quote>, lastUpdatedMillis: Long) {
+    fun write(quotes: List<Quote>, lastUpdatedMillis: Long, updateIntervalMillis: Long = 0L) {
         val snapshot = WidgetSnapshot(
             quotes = quotes.map { it.toWidgetSnapshot() },
             lastUpdatedMillis = lastUpdatedMillis,
+            updateIntervalMillis = updateIntervalMillis,
         )
         runCatching { json.encodeToString(snapshot) }
             .onSuccess { defaults.setObject(it, SNAPSHOT_KEY) }
@@ -72,8 +79,8 @@ class WidgetSnapshotStore(
         symbol = symbol,
         name = name,
         price = priceString(),
-        changePercent = changePercentStringWithSign(),
-        changeAmount = changeStringWithSign(),
+        changePercent = changePercentString(),
+        changeAmount = changeString(),
         changeInPercent = changeInPercent,
         positive = change >= 0f,
     )
