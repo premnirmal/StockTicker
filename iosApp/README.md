@@ -114,9 +114,12 @@ You do **not** need to build the shared framework separately or wire it up by ha
 project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a scheme **Build pre-action**,
 which compiles and links the Kotlin/Native `Shared.framework` for the active configuration/SDK once,
 before either the app or the widget extension links it. (It is a single scheme pre-action rather than
-a per-target run-script phase on purpose: running the same Gradle framework build in **both** the app
-and the widget target made `xcodebuild archive` hang — the two concurrent Gradle invocations
-deadlocked on Gradle's lock/daemon. See the comments in [`project.yml`](project.yml).) The App Groups
+a per-target run-script phase on purpose: running the identical Gradle framework build in **both** the
+app and the widget target is redundant, so consolidating it into one up-front pre-action builds the
+framework a single time. Note this is a simplification, **not** the fix for the archive hang — the
+widget extension and both Gradle phases already existed at tag `4.1.000`. The "archive hangs at *Run
+custom shell script*" symptom was the synchronous Firebase Crashlytics dSYM upload staying in
+`xcodebuild`'s process group; see the Crashlytics notes below.) The App Groups
 capability (`group.com.github.premnirmal.ticker`) is applied to both targets from the committed
 `*.entitlements` files, so the app and widget share the `WidgetSnapshotStore` `NSUserDefaults` suite.
 

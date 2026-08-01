@@ -182,10 +182,12 @@ targets:
     # NOTE: the shared Kotlin/Native framework is NOT built by a per-target
     # run-script phase here. It is built ONCE by the scheme's Build pre-action
     # (see `schemes.StocksWidget.build.preActions` below), before either this app
-    # target or the widget extension links `-framework Shared`. Having the Gradle
-    # `:shared:embedAndSignAppleFrameworkForXcode` phase in BOTH targets caused
-    # `xcodebuild archive` to hang (two concurrent Gradle builds of the same
-    # framework deadlocking on the Gradle lock/daemon) — see the pre-action.
+    # target or the widget extension links `-framework Shared`. Consolidating it
+    # there avoids running the identical `:shared:embedAndSignAppleFrameworkForXcode`
+    # Gradle build twice (once per target) for the same framework. (This is a
+    # simplification, NOT the fix for the "archive hangs at Run custom shell
+    # script" problem — that was the synchronous Firebase Crashlytics dSYM upload
+    # staying in xcodebuild's process group; see the Firebase Crashlytics phase.)
 
   StockTickerWidget:
     type: app-extension
@@ -208,9 +210,10 @@ targets:
           - Shared
     # See the note on the StocksWidget app target above: the shared framework is
     # built ONCE by the scheme Build pre-action, not by a per-target run-script
-    # phase, so this extension does not run Gradle itself (which is what made
-    # `xcodebuild archive` hang). It only links `-framework Shared` (built into
-    # shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME by that pre-action).
+    # phase, so this extension does not run Gradle itself (avoiding a redundant
+    # second build of the same framework). It only links `-framework Shared`
+    # (built into shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME by that
+    # pre-action).
 
 schemes:
   StocksWidget:
@@ -220,12 +223,17 @@ schemes:
       # Build the shared Kotlin/Native `Shared.framework` ONCE, before Xcode
       # builds any target in the scheme. This replaces the old per-target
       # "Compile Kotlin/Native framework" run-script phases that lived in BOTH
-      # the app and the widget-extension target: during `xcodebuild archive`
-      # those two Gradle invocations of the same
-      # `:shared:embedAndSignAppleFrameworkForXcode` task ran concurrently and
-      # deadlocked on Gradle's lock/daemon, so the archive hung at the widget's
-      # "Compile Kotlin/Native framework" phase and never finished (it worked
-      # before the widget extension existed, when there was a single invocation).
+      # the app and the widget-extension target. Running the identical
+      # `:shared:embedAndSignAppleFrameworkForXcode` Gradle build in two targets
+      # is redundant (the second invocation just repeats or waits on the same
+      # work); a single up-front pre-action builds the framework exactly once.
+      # NOTE: this consolidation is a simplification, not the cure for the
+      # "archive hangs at Run custom shell script" symptom. Both the widget
+      # extension and these duplicate Gradle phases already existed at tag
+      # 4.1.000, so they did not introduce the hang. The hang was the synchronous
+      # Firebase Crashlytics dSYM upload lingering in `xcodebuild`'s process
+      # group (fixed in the Firebase Crashlytics phase via fork+setsid — see that
+      # script and iosApp/README.md).
       # A scheme Build pre-action runs a single time up front, so the framework
       # is present in shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME
       # before either target links `-framework Shared`. Build pre-actions also
