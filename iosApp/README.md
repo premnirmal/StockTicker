@@ -168,6 +168,42 @@ signing secrets are needed). Producing a signed `.ipa` for TestFlight/App Store 
 out of scope for this gate — that requires code-signing certificates/profiles supplied as encrypted
 secrets (or fastlane match) and an `xcodebuild archive`/`-exportArchive` (or `fastlane`) step.
 
+### Code signing (for `xcodebuild archive`)
+
+The simulator builds above pass `CODE_SIGNING_ALLOWED=NO`, so they need no signing identity. An
+`archive`, however, builds the **Release** configuration, which **must** be code-signed — with
+automatic signing that requires a **Development Team**, otherwise the archive fails with:
+
+```
+error: Signing for "StocksWidget" requires a development team. Select a development team in the
+Signing & Capabilities editor. (in target 'StocksWidget' from project 'StocksWidget')
+```
+
+A Team ID is personal, so it is **not** committed. The committed
+[`iosApp/Signing.xcconfig`](Signing.xcconfig) (read by every target via `Version.xcconfig`) sets
+`CODE_SIGN_STYLE = Automatic` and optionally includes the git-ignored `iosApp/Signing.local.xcconfig`.
+Set your team there once (no `xcodegen generate` needed — it is read at build time):
+
+```sh
+echo 'DEVELOPMENT_TEAM = ABCDE12345' > iosApp/Signing.local.xcconfig
+```
+
+Find your 10-character Team ID in the [Apple Developer portal](https://developer.apple.com/account)
+under *Membership*, or via `security find-identity -v -p codesigning`. You must also be signed into
+that Apple Developer account in Xcode (*Settings → Accounts*) so automatic signing can issue the
+provisioning profiles. Then:
+
+```sh
+xcodebuild -project iosApp/StockTicker.xcodeproj \
+  -scheme StocksWidget \
+  -configuration Release \
+  -archivePath build/StockTicker.xcarchive \
+  archive
+```
+
+Alternatively, skip the local file and pass the team on the command line
+(`xcodebuild ... archive DEVELOPMENT_TEAM=ABCDE12345`).
+
 ### Firebase (optional, prod only)
 
 Firebase is optional. The FirebaseAnalytics / FirebaseCore SDK is wired into the `iosApp` target as a

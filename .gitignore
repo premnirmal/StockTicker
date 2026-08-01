@@ -34,6 +34,9 @@ iosApp/.xcode.env.local
 # Local, git-derived version override written by iosApp/version.sh (optionally
 # #included by the committed iosApp/Version.xcconfig)
 iosApp/Version.local.xcconfig
+# Local, machine-specific code-signing team override (git-ignored) layered on
+# top of the committed iosApp/Signing.xcconfig for signed `xcodebuild archive`
+iosApp/Signing.local.xcconfig
 #iOS Firebase config (optional, prod only)
 iosApp/GoogleService-Info.plist
 iosApp/iosApp/GoogleService-Info.plist

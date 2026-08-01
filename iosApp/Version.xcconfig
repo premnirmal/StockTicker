@@ -22,3 +22,9 @@ CURRENT_PROJECT_VERSION = 1
 // Optional machine-local override written by version.sh (git-ignored). The `?`
 // makes the include optional, so builds still succeed when it is absent.
 #include? "Version.local.xcconfig"
+
+// Code-signing configuration (CODE_SIGN_STYLE + an optional git-ignored
+// DEVELOPMENT_TEAM override). Kept in a separate committed file, but included
+// here because Version.xcconfig is the single base `configFiles` entry Xcode
+// reads for every target — see Signing.xcconfig for details.
+#include "Signing.xcconfig"

@@ -1,0 +1,31 @@
+// Code-signing configuration, applied to every target via the project's base
+// `configFiles` (Version.xcconfig #includes this file, which Xcode reads at
+// build time — so no `xcodegen generate` is needed for a change here to take
+// effect).
+//
+// `archive` builds the Release configuration, which — unlike the simulator
+// builds used by `run`/CI (`CODE_SIGNING_ALLOWED=NO`) — MUST be code-signed.
+// Automatic signing then requires a DEVELOPMENT_TEAM, otherwise xcodebuild fails
+// with:
+//   error: Signing for "StocksWidget" requires a development team. Select a
+//   development team in the Signing & Capabilities editor.
+//
+// A team ID is personal/machine-specific, so it is deliberately NOT committed
+// here. Set it once in the git-ignored `Signing.local.xcconfig` (layered on top
+// via the optional include below), e.g.:
+//
+//   echo 'DEVELOPMENT_TEAM = ABCDE12345' > iosApp/Signing.local.xcconfig
+//
+// (Find your 10-character Team ID in the Apple Developer portal under
+// Membership, or via `security find-identity -v -p codesigning`.) Both the app
+// and its widget extension pick it up, so a signed `xcodebuild archive`
+// succeeds. Alternatively, pass it on the command line without any local file:
+//
+//   xcodebuild ... archive DEVELOPMENT_TEAM=ABCDE12345
+//
+CODE_SIGN_STYLE = Automatic
+
+// Optional machine-local override that sets DEVELOPMENT_TEAM (git-ignored). The
+// `?` makes the include optional, so builds that do not need signing (e.g. the
+// simulator build with CODE_SIGNING_ALLOWED=NO) still succeed when it is absent.
+#include? "Signing.local.xcconfig"
