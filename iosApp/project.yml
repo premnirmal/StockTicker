@@ -147,25 +147,35 @@ targets:
           # the network SYNCHRONOUSLY, so running either in the foreground stalls the
           # build phase — the archive appears to hang at "Run custom shell script
           # 'Firebase Crashlytics'" until every dSYM has been uploaded (and can hang
-          # indefinitely on a slow/blocked network). Detaching with only `nohup … &`
-          # is NOT enough: Xcode's build system waits for the run-script phase's whole
-          # process group, so a backgrounded child that is still a direct child of the
-          # phase shell keeps the archive blocked. Wrap the job in a `( … & )` subshell
-          # so the intermediate subshell exits immediately and the upload is reparented
-          # away from the shell Xcode monitors; combined with `nohup` and fully
-          # redirected stdio (so no build pipe is held open), the build/archive finishes
-          # right away while the uploads — `run` then the supplementary `upload-symbols`
-          # invocations — complete in the background. A standalone Shared.framework.dSYM
+          # indefinitely on a slow/blocked network).
+          #
+          # Plain backgrounding (`nohup … &`, even wrapped in a `( … & )` subshell) is
+          # NOT enough here: those reparent the process to launchd but leave it in the
+          # build phase's PROCESS GROUP, and `xcodebuild` (the `archive` driver) blocks
+          # until that whole process group drains — so the archive keeps waiting on the
+          # still-running upload. The only reliable fix is to move the upload into its
+          # OWN session/process group so it is no longer part of the phase's group.
+          # macOS does not ship `setsid`, but its system Perl provides POSIX::setsid,
+          # so fork+setsid the upload via Perl: the phase returns immediately while the
+          # uploads — `run` then the supplementary `upload-symbols` invocations — run to
+          # completion detached in the background. A standalone Shared.framework.dSYM
           # (e.g. a future dynamic-framework build) is uploaded too when present.
           SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
-          UPLOAD_LOG="${BUILD_DIR%/Build/*}/crashlytics-upload-symbols.log"
-          ( nohup sh -c '
-              "$0"
-              "$1" -gsp "$2" -p ios "$3"
-              if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
-            ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM" \
-            >"$UPLOAD_LOG" 2>&1 </dev/null & )
-          echo "Crashlytics dSYM upload started in the background (log: $UPLOAD_LOG)."
+          export UPLOAD_LOG="${BUILD_DIR%/Build/*}/crashlytics-upload-symbols.log"
+          /usr/bin/env perl -e '
+            use POSIX qw(setsid);
+            exit 0 if fork;                 # phase shell returns immediately
+            setsid();                       # escape xcodebuild archive process group
+            open(STDIN,  "<", "/dev/null");
+            open(STDOUT, ">", $ENV{UPLOAD_LOG});
+            open(STDERR, ">&", STDOUT);
+            exec @ARGV;
+          ' /bin/sh -c '
+            "$0"
+            "$1" -gsp "$2" -p ios "$3"
+            if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
+          ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM"
+          echo "Crashlytics dSYM upload started detached (log: $UPLOAD_LOG)."
     preBuildScripts:
       - name: Compile Kotlin/Native framework
         # Always run so the framework is rebuilt when the shared code changes.
