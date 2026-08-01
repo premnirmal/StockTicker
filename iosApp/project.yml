@@ -8,8 +8,9 @@
 #   cd iosApp && xcodegen generate # produces iosApp/StockTicker.xcodeproj
 #
 # The shared Kotlin/Native `Shared.framework` is built by Gradle via the
-# standard KMP `embedAndSignAppleFrameworkForXcode` run-script phase below, so
-# no framework binary needs to be committed either.
+# standard KMP `embedAndSignAppleFrameworkForXcode` task, run once from the
+# scheme's Build pre-action below, so no framework binary needs to be committed
+# either.
 name: StockTicker
 
 options:
@@ -84,8 +85,10 @@ targets:
         CODE_SIGN_ENTITLEMENTS: iosApp/StockTicker.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        # Allow the Gradle run-script phase below to write the framework into
-        # the build directory (script sandboxing would otherwise block it).
+        # The scheme Build pre-action (see schemes.StocksWidget.build.preActions)
+        # runs Gradle to write the shared framework into the build directory;
+        # disable user-script sandboxing so that (and any other build script) is
+        # allowed to write there.
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         OTHER_LDFLAGS:
           - $(inherited)
@@ -176,27 +179,13 @@ targets:
             if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
           ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM"
           echo "Crashlytics dSYM upload started detached (log: $UPLOAD_LOG)."
-    preBuildScripts:
-      - name: Compile Kotlin/Native framework
-        # Always run so the framework is rebuilt when the shared code changes.
-        basedOnDependencyAnalysis: false
-        script: |
-          # Xcode build phases run with a minimal environment that does NOT source
-          # your shell profile, so a JDK on your interactive PATH is invisible here
-          # (Gradle then fails with "Unable to locate a Java Runtime"). Load
-          # JAVA_HOME from .xcode.env (committed default) and the optional,
-          # uncommitted .xcode.env.local (your machine-specific override).
-          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
-          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
-          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
-            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
-            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
-            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
-            exit 1
-          fi
-          export PATH="$JAVA_HOME/bin:$PATH"
-          cd "$SRCROOT/.."
-          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    # NOTE: the shared Kotlin/Native framework is NOT built by a per-target
+    # run-script phase here. It is built ONCE by the scheme's Build pre-action
+    # (see `schemes.StocksWidget.build.preActions` below), before either this app
+    # target or the widget extension links `-framework Shared`. Having the Gradle
+    # `:shared:embedAndSignAppleFrameworkForXcode` phase in BOTH targets caused
+    # `xcodebuild archive` to hang (two concurrent Gradle builds of the same
+    # framework deadlocking on the Gradle lock/daemon) — see the pre-action.
 
   StockTickerWidget:
     type: app-extension
@@ -208,37 +197,65 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.TodayStocks.Widget
         INFOPLIST_FILE: StockTickerWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: StockTickerWidget/StockTickerWidget.entitlements
-        # Allow the Gradle run-script phase below to write the framework into
-        # the build directory (script sandboxing would otherwise block it).
+        # The scheme Build pre-action (see schemes.StocksWidget.build.preActions)
+        # runs Gradle to write the shared framework into the build directory;
+        # disable user-script sandboxing so that (and any other build script) is
+        # allowed to write there.
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         OTHER_LDFLAGS:
           - $(inherited)
           - -framework
           - Shared
-    preBuildScripts:
-      - name: Compile Kotlin/Native framework
-        basedOnDependencyAnalysis: false
-        script: |
-          # See the iosApp target's run-script phase: Xcode build phases run with a
-          # minimal environment, so load JAVA_HOME from .xcode.env(.local) before
-          # invoking Gradle, otherwise it fails with "Unable to locate a Java Runtime".
-          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
-          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
-          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
-            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
-            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
-            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
-            exit 1
-          fi
-          export PATH="$JAVA_HOME/bin:$PATH"
-          cd "$SRCROOT/.."
-          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    # See the note on the StocksWidget app target above: the shared framework is
+    # built ONCE by the scheme Build pre-action, not by a per-target run-script
+    # phase, so this extension does not run Gradle itself (which is what made
+    # `xcodebuild archive` hang). It only links `-framework Shared` (built into
+    # shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME by that pre-action).
 
 schemes:
   StocksWidget:
     build:
       targets:
         StocksWidget: all
+      # Build the shared Kotlin/Native `Shared.framework` ONCE, before Xcode
+      # builds any target in the scheme. This replaces the old per-target
+      # "Compile Kotlin/Native framework" run-script phases that lived in BOTH
+      # the app and the widget-extension target: during `xcodebuild archive`
+      # those two Gradle invocations of the same
+      # `:shared:embedAndSignAppleFrameworkForXcode` task ran concurrently and
+      # deadlocked on Gradle's lock/daemon, so the archive hung at the widget's
+      # "Compile Kotlin/Native framework" phase and never finished (it worked
+      # before the widget extension existed, when there was a single invocation).
+      # A scheme Build pre-action runs a single time up front, so the framework
+      # is present in shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME
+      # before either target links `-framework Shared`. Build pre-actions also
+      # run as part of Archive, so this covers `xcodebuild archive` too.
+      # `settingsTarget` gives the script the app target's build settings
+      # (SRCROOT, CONFIGURATION, SDK_NAME, ARCHS, …) that the Gradle task needs.
+      preActions:
+        - name: Compile Kotlin/Native framework
+          settingsTarget: StocksWidget
+          script: |
+            # Xcode runs pre-actions with a minimal environment that does NOT
+            # source your shell profile, so a JDK on your interactive PATH is
+            # invisible here (Gradle then fails with "Unable to locate a Java
+            # Runtime"). Load JAVA_HOME from .xcode.env (committed default) and
+            # the optional, uncommitted .xcode.env.local (machine override).
+            if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+            if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+            if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+              echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+              echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
+              echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
+              exit 1
+            fi
+            export PATH="$JAVA_HOME/bin:$PATH"
+            cd "$SRCROOT/.."
+            # `--no-daemon` (matching CI) means the Gradle JVM exits when the
+            # build finishes instead of leaving a daemon behind, and `</dev/null`
+            # detaches stdin so a non-interactive `xcodebuild` invocation cannot
+            # block waiting on input — both guard against the archive hanging.
+            ./gradlew :shared:embedAndSignAppleFrameworkForXcode --no-daemon < /dev/null
     run:
       config: Debug
     test:

@@ -72,8 +72,8 @@ The Xcode project is intentionally **not committed** — it is generated on dema
 declarative [`iosApp/project.yml`](project.yml) spec with [XcodeGen](https://github.com/yonaskolb/XcodeGen),
 which avoids the fragile, merge-conflict-prone `project.pbxproj`. The spec already describes both
 targets (the `iosApp` application and the `StockTickerWidget` widget extension), their `Info.plist`
-files, the App Group entitlements, the iOS 17 deployment target, and a Gradle run-script phase that
-builds the shared `Shared.framework` the targets link against.
+files, the App Group entitlements, the iOS 17 deployment target, and a scheme Build **pre-action**
+that builds the shared `Shared.framework` (once) that the targets link against.
 
 The generated `StockTicker.xcodeproj` (along with other Xcode artifacts such as `*.xcworkspace`,
 `xcuserdata/` and `DerivedData/`) is git-ignored, so it must **not** be committed — regenerate it
@@ -111,25 +111,30 @@ On a Mac:
    ```
 
 You do **not** need to build the shared framework separately or wire it up by hand: the generated
-project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a build phase, which compiles
-and links the Kotlin/Native `Shared.framework` for the active configuration/SDK. The App Groups
+project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a scheme **Build pre-action**,
+which compiles and links the Kotlin/Native `Shared.framework` for the active configuration/SDK once,
+before either the app or the widget extension links it. (It is a single scheme pre-action rather than
+a per-target run-script phase on purpose: running the same Gradle framework build in **both** the app
+and the widget target made `xcodebuild archive` hang — the two concurrent Gradle invocations
+deadlocked on Gradle's lock/daemon. See the comments in [`project.yml`](project.yml).) The App Groups
 capability (`group.com.github.premnirmal.ticker`) is applied to both targets from the committed
 `*.entitlements` files, so the app and widget share the `WidgetSnapshotStore` `NSUserDefaults` suite.
 
 ### Java runtime for the Gradle build phase
 
-That Gradle build phase needs a **JDK 17+** (the same one the Android build uses). Xcode runs build
-phases with a *minimal* environment that does **not** source your shell profile (`~/.zprofile`,
-`~/.zshrc`, …), so a `java` that works in Terminal may be invisible to the script — the build then
-fails with:
+That Gradle framework build needs a **JDK 17+** (the same one the Android build uses). Xcode runs
+build phases and scheme pre-actions with a *minimal* environment that does **not** source your shell
+profile (`~/.zprofile`, `~/.zshrc`, …), so a `java` that works in Terminal may be invisible to the
+script — the build then fails with:
 
 ```
 Unable to locate a Java Runtime
 ```
 
-To avoid this, both run-script phases source [`iosApp/.xcode.env`](.xcode.env) (a committed default
-that auto-discovers a JDK and exports `JAVA_HOME` when it is not already set to a valid one) and then
-the optional [`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override).
+To avoid this, the framework pre-action (and the Crashlytics phase) source
+[`iosApp/.xcode.env`](.xcode.env) (a committed default that auto-discovers a JDK and exports
+`JAVA_HOME` when it is not already set to a valid one) and then the optional
+[`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override).
 The default probes, in order: `/usr/libexec/java_home`, common JDK install locations (the JDK bundled
 with **Android Studio**, Homebrew's `openjdk`, `~/Library/Java/JavaVirtualMachines`,
 `/Library/Java/JavaVirtualMachines`), and finally a `java` already on `PATH`.
