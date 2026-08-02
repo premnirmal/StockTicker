@@ -51,6 +51,7 @@ interface QuoteDao {
     suspend fun deleteQuotesAndHoldings(symbols: List<String>) {
         deleteByQuotesId(symbols)
         deleteMovementsBySymbols(symbols)
+        deletePropertiesByQuotesId(symbols)
     }
 
     @Query("SELECT * FROM MovementRow WHERE quote_symbol = :symbol ORDER BY id ASC")
@@ -91,6 +92,9 @@ interface QuoteDao {
 
     @Query("DELETE FROM PropertiesRow WHERE properties_quote_symbol = :symbol")
     suspend fun deletePropertiesByQuoteId(symbol: String)
+
+    @Query("DELETE FROM PropertiesRow WHERE properties_quote_symbol IN (:symbols)")
+    suspend fun deletePropertiesByQuotesId(symbols: List<String>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFetchLog(log: FetchLogRow): Long

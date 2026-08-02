@@ -191,6 +191,24 @@ class StocksStorageTest : BaseUnitTest() {
         }
     }
 
+    @Test fun testRemoveQuotesBySymbolCleansUpProperties() {
+        runBlocking {
+            storage.saveQuote(Quote(symbol = "AAPL"))
+            storage.saveQuoteProperties(Properties("AAPL", notes = "keep an eye", alertAbove = 200f))
+            storage.saveQuote(Quote(symbol = "MSFT"))
+            storage.saveQuoteProperties(Properties("MSFT", displayname = "Microsoft"))
+
+            storage.removeQuotesBySymbol(listOf("AAPL", "MSFT"))
+
+            assertNull(storage.readQuote("AAPL"))
+            assertNull(storage.readQuote("MSFT"))
+
+            // re-adding a symbol must not resurrect its old notes/alerts
+            storage.saveQuote(Quote(symbol = "AAPL"))
+            assertNull(storage.readQuote("AAPL")?.properties)
+        }
+    }
+
     @Test fun testFetchLogsAreOrderedNewestFirst() {
         runBlocking {
             for (i in 1..3) {

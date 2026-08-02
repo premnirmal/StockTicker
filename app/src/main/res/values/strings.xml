@@ -139,6 +139,7 @@
   <string name="ok">OK</string>
   <string name="cancel">Cancel</string>
   <string name="invalid_number">Invalid number</string>
+  <string name="cannot_remove_buy">Can\'t remove this buy — later sells depend on it</string>
   <string name="invalid_time">Invalid time</string>
   <string name="add_positions_prompt">Do you want to add positions for %1$s?</string>
   <string name="already_in_portfolio">%1$s is already in your portfolio</string>

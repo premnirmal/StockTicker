@@ -89,15 +89,17 @@ class FakeStocksProvider(
     }
 
     override suspend fun sell(ticker: String, shares: Float, price: Float): SellResult {
-        val summary = getMovements(ticker).replayLedger()
+        val ledger = getMovements(ticker)
+        val summary = ledger.replayLedger()
         if (shares > summary.shares + SHARE_EPSILON) {
             return SellResult.NotEnoughShares(summary.shares)
         }
         val movement = Movement(ticker, MovementType.SELL, shares, price, id = nextMovementId++)
+        val gain = checkNotNull((ledger + movement).replayLedger().movementGains.last().gain)
         val movements = movementsBySymbol.getOrPut(ticker) { mutableListOf() }
         movements.add(movement)
         refreshLedger(ticker)
-        return SellResult.Success(movement, (price - summary.averagePrice) * shares)
+        return SellResult.Success(movement, gain)
     }
 
     override suspend fun removeMovement(ticker: String, movement: Movement): RemoveMovementResult {

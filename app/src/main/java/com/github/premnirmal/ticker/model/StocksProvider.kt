@@ -358,15 +358,17 @@ class StocksProvider constructor(
     }
 
     override suspend fun sell(ticker: String, shares: Float, price: Float): SellResult {
-        val summary = getMovements(ticker).replayLedger()
+        val ledger = getMovements(ticker)
+        val summary = ledger.replayLedger()
         if (shares > summary.shares + SHARE_EPSILON) {
             return SellResult.NotEnoughShares(summary.shares)
         }
         val movement = Movement(ticker, MovementType.SELL, shares, price)
+        val gain = checkNotNull((ledger + movement).replayLedger().movementGains.last().gain)
         movement.id = storage.addMovement(movement)
         refreshLedger(ticker)
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
-        return SellResult.Success(movement, (price - summary.averagePrice) * shares)
+        return SellResult.Success(movement, gain)
     }
 
     override suspend fun removeMovement(ticker: String, movement: Movement): RemoveMovementResult {

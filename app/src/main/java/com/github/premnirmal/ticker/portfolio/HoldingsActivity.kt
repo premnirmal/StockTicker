@@ -77,7 +77,7 @@ class HoldingsActivity : BaseActivity() {
         LaunchedEffect(ticker) {
             viewModel.events.collect { event ->
                 when (event) {
-                    is PositionEvent.RemoveBlocked -> appMessaging.sendSnackbar(R.string.invalid_number)
+                    is PositionEvent.RemoveBlocked -> appMessaging.sendSnackbar(R.string.cannot_remove_buy)
                     else -> updateActivityResult()
                 }
             }

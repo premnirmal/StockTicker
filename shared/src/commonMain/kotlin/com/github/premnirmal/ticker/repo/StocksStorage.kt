@@ -43,7 +43,9 @@ class StocksStorage(
         return withContext(ioDispatcher) {
             quotesWithHoldings.map { quoteWithHoldings ->
                 val quote = quoteWithHoldings.quote.toQuote()
-                val movements = quoteWithHoldings.movements.map { it.toMovement() }
+                val movements = quoteWithHoldings.movements
+                    .sortedBy { it.id ?: 0L }
+                    .map { it.toMovement() }
                 quote.movements = movements
                 quote.position = movements.replayLedger().toPosition(quote.symbol)
                 quote.properties = quoteWithHoldings.properties?.toProperties()
@@ -57,7 +59,9 @@ class StocksStorage(
         return withContext(ioDispatcher) {
             quoteWithHolding?.let {
                 val quote = quoteWithHolding.quote.toQuote()
-                val movements = quoteWithHolding.movements.map { it.toMovement() }
+                val movements = quoteWithHolding.movements
+                    .sortedBy { it.id ?: 0L }
+                    .map { it.toMovement() }
                 quote.movements = movements
                 quote.position = movements.replayLedger().toPosition(quote.symbol)
                 quote.properties = quoteWithHolding.properties?.toProperties()

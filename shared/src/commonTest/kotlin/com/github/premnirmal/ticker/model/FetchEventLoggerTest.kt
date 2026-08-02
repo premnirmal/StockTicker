@@ -81,5 +81,6 @@ class FetchEventLoggerTest {
         override suspend fun deleteMovementsBySymbols(symbols: List<String>) = Unit
         override suspend fun insertProperties(quote: PropertiesRow) = Unit
         override suspend fun deletePropertiesByQuoteId(symbol: String) = Unit
+        override suspend fun deletePropertiesByQuotesId(symbols: List<String>) = Unit
     }
 }
