@@ -8,8 +8,9 @@
 #   cd iosApp && xcodegen generate # produces iosApp/StockTicker.xcodeproj
 #
 # The shared Kotlin/Native `Shared.framework` is built by Gradle via the
-# standard KMP `embedAndSignAppleFrameworkForXcode` run-script phase below, so
-# no framework binary needs to be committed either.
+# standard KMP `embedAndSignAppleFrameworkForXcode` task, run once from the
+# scheme's Build pre-action below, so no framework binary needs to be committed
+# either.
 name: StockTicker
 
 options:
@@ -17,6 +18,20 @@ options:
   deploymentTarget:
     iOS: "17.0"
   createIntermediateGroups: true
+
+# App/extension version, derived from the latest git tag (mirroring the Android
+# app — see app/build.gradle.kts). Version.xcconfig sets CFBundleShortVersionString
+# ($(MARKETING_VERSION)) and CFBundleVersion ($(CURRENT_PROJECT_VERSION)) for
+# every target, with committed non-empty fallbacks (1.0 / 1). It optionally
+# #includes Version.local.xcconfig, which `iosApp/version.sh` writes with the
+# git-derived values. Resolving these in an xcconfig (read by Xcode at build
+# time) — rather than substituting `${...}` at `xcodegen generate` time — means
+# the bundle version is NEVER empty even if you forget to run version.sh, so an
+# app extension no longer fails to install with "bundleVersion must be set in
+# placeholder attributes for an app extension placeholder" (IXErrorDomain).
+configFiles:
+  Debug: Version.xcconfig
+  Release: Version.xcconfig
 
 settings:
   base:
@@ -27,18 +42,14 @@ settings:
     # Kotlin crash frames. Debug builds default to plain `dwarf` (no dSYM); forcing dwarf-with-dsym
     # here ensures symbolication works for Release/Archive (TestFlight/App Store) builds.
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"
-    # App/extension version, derived from the latest git tag (mirroring the
-    # Android app — see app/build.gradle.kts). These back
-    # CFBundleShortVersionString ($(MARKETING_VERSION)) and CFBundleVersion
-    # ($(CURRENT_PROJECT_VERSION)) in every target's Info.plist. They MUST be
-    # non-empty: an app extension whose CFBundleVersion resolves to an empty
-    # string fails to install with "bundleVersion must be set in placeholder
-    # attributes for an app extension placeholder" (IXErrorDomain). XcodeGen
-    # expands the ${...} references below from the environment, so source
-    # `iosApp/version.sh` before `xcodegen generate` (it derives the values from
-    # `git describe --tags` and falls back to 1.0 / 1 when no tag is reachable).
-    MARKETING_VERSION: "${MARKETING_VERSION}"
-    CURRENT_PROJECT_VERSION: "${CURRENT_PROJECT_VERSION}"
+    # App/extension version comes from Version.xcconfig (see the top-level
+    # `configFiles` above): CFBundleShortVersionString ($(MARKETING_VERSION))
+    # and CFBundleVersion ($(CURRENT_PROJECT_VERSION)). Those MUST be non-empty:
+    # an app extension whose CFBundleVersion resolves to an empty string fails to
+    # install with "bundleVersion must be set in placeholder attributes for an
+    # app extension placeholder" (IXErrorDomain). Version.xcconfig ships
+    # non-empty fallbacks and optionally includes Version.local.xcconfig (written
+    # by iosApp/version.sh) for the git-derived version.
     # The shared framework is a static Kotlin/Native framework, so it only has
     # to be on the linker search path — it is not embedded.
     FRAMEWORK_SEARCH_PATHS:
@@ -74,8 +85,10 @@ targets:
         CODE_SIGN_ENTITLEMENTS: iosApp/StockTicker.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
-        # Allow the Gradle run-script phase below to write the framework into
-        # the build directory (script sandboxing would otherwise block it).
+        # The scheme Build pre-action (see schemes.StocksWidget.build.preActions)
+        # runs Gradle to write the shared framework into the build directory;
+        # disable user-script sandboxing so that (and any other build script) is
+        # allowed to write there.
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         OTHER_LDFLAGS:
           - $(inherited)
@@ -107,43 +120,74 @@ targets:
           - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}
           - $(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)
         script: |
-          "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
-          UPLOAD_SYMBOLS="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols"
+          # Only upload dSYMs to Crashlytics for Release builds (TestFlight/App
+          # Store archives), where symbolication actually matters. `upload-symbols`
+          # runs SYNCHRONOUSLY and blocks the build while it uploads over the
+          # network — on a Debug simulator build that adds no value and makes the
+          # build appear to hang at "Run custom shell script 'Firebase
+          # Crashlytics'" whenever the network is slow or unreachable. Skip it for
+          # every non-Release configuration so local Debug runs stay fast.
+          if [ "${CONFIGURATION}" != "Release" ]; then
+            echo "Skipping Crashlytics dSYM upload for ${CONFIGURATION} build."
+            exit 0
+          fi
           GSP="${SRCROOT}/iosApp/GoogleService-Info.plist"
+          # GoogleService-Info.plist is optional and git-ignored (see iosApp/README.md).
+          # Without it the Crashlytics run/upload tools error out, so skip cleanly
+          # when it is absent instead of failing (or hanging) the build.
+          if [ ! -f "$GSP" ]; then
+            echo "Skipping Crashlytics dSYM upload: $GSP not found."
+            exit 0
+          fi
+          RUN="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          UPLOAD_SYMBOLS="${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/upload-symbols"
           # Upload every .dSYM in the app's dSYM folder (not just the app target's). The Kotlin/Native
           # `:shared` framework is linked statically, so the Kotlin debug info (emitted via
           # -Xadd-light-debug=enable) is folded into the app binary's own .dSYM here; uploading the
           # whole folder also captures any additional framework .dSYM Xcode produces, so Crashlytics
           # can symbolicate Kotlin stack frames.
-          "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "${DWARF_DSYM_FOLDER_PATH}"
-          # If the Kotlin/Native build also emitted a standalone Shared.framework.dSYM (e.g. a dynamic
-          # framework build), upload it too. It is absent for the current static framework, so guard on
-          # its existence to keep the build green.
+          # BOTH the Crashlytics `run` helper AND `upload-symbols` transfer dSYMs over
+          # the network SYNCHRONOUSLY, so running either in the foreground stalls the
+          # build phase — the archive appears to hang at "Run custom shell script
+          # 'Firebase Crashlytics'" until every dSYM has been uploaded (and can hang
+          # indefinitely on a slow/blocked network).
+          #
+          # Plain backgrounding (`nohup … &`, even wrapped in a `( … & )` subshell) is
+          # NOT enough here: those reparent the process to launchd but leave it in the
+          # build phase's PROCESS GROUP, and `xcodebuild` (the `archive` driver) blocks
+          # until that whole process group drains — so the archive keeps waiting on the
+          # still-running upload. The only reliable fix is to move the upload into its
+          # OWN session/process group so it is no longer part of the phase's group.
+          # macOS does not ship `setsid`, but its system Perl provides POSIX::setsid,
+          # so fork+setsid the upload via Perl: the phase returns immediately while the
+          # uploads — `run` then the supplementary `upload-symbols` invocations — run to
+          # completion detached in the background. A standalone Shared.framework.dSYM
+          # (e.g. a future dynamic-framework build) is uploaded too when present.
           SHARED_DSYM="${SRCROOT}/../shared/build/xcode-frameworks/${CONFIGURATION}/${SDK_NAME}/Shared.framework.dSYM"
-          if [ -d "$SHARED_DSYM" ]; then
-            "$UPLOAD_SYMBOLS" -gsp "$GSP" -p ios "$SHARED_DSYM"
-          fi
-    preBuildScripts:
-      - name: Compile Kotlin/Native framework
-        # Always run so the framework is rebuilt when the shared code changes.
-        basedOnDependencyAnalysis: false
-        script: |
-          # Xcode build phases run with a minimal environment that does NOT source
-          # your shell profile, so a JDK on your interactive PATH is invisible here
-          # (Gradle then fails with "Unable to locate a Java Runtime"). Load
-          # JAVA_HOME from .xcode.env (committed default) and the optional,
-          # uncommitted .xcode.env.local (your machine-specific override).
-          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
-          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
-          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
-            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
-            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
-            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
-            exit 1
-          fi
-          export PATH="$JAVA_HOME/bin:$PATH"
-          cd "$SRCROOT/.."
-          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+          export UPLOAD_LOG="${BUILD_DIR%/Build/*}/crashlytics-upload-symbols.log"
+          /usr/bin/env perl -e '
+            use POSIX qw(setsid);
+            exit 0 if fork;                 # phase shell returns immediately
+            setsid();                       # escape xcodebuild archive process group
+            open(STDIN,  "<", "/dev/null");
+            open(STDOUT, ">", $ENV{UPLOAD_LOG});
+            open(STDERR, ">&", STDOUT);
+            exec @ARGV;
+          ' /bin/sh -c '
+            "$0"
+            "$1" -gsp "$2" -p ios "$3"
+            if [ -d "$4" ]; then "$1" -gsp "$2" -p ios "$4"; fi
+          ' "$RUN" "$UPLOAD_SYMBOLS" "$GSP" "${DWARF_DSYM_FOLDER_PATH}" "$SHARED_DSYM"
+          echo "Crashlytics dSYM upload started detached (log: $UPLOAD_LOG)."
+    # NOTE: the shared Kotlin/Native framework is NOT built by a per-target
+    # run-script phase here. It is built ONCE by the scheme's Build pre-action
+    # (see `schemes.StocksWidget.build.preActions` below), before either this app
+    # target or the widget extension links `-framework Shared`. Consolidating it
+    # there avoids running the identical `:shared:embedAndSignAppleFrameworkForXcode`
+    # Gradle build twice (once per target) for the same framework. (This is a
+    # simplification, NOT the fix for the "archive hangs at Run custom shell
+    # script" problem — that was the synchronous Firebase Crashlytics dSYM upload
+    # staying in xcodebuild's process group; see the Firebase Crashlytics phase.)
 
   StockTickerWidget:
     type: app-extension
@@ -155,37 +199,71 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.github.premnirmal.TodayStocks.Widget
         INFOPLIST_FILE: StockTickerWidget/Info.plist
         CODE_SIGN_ENTITLEMENTS: StockTickerWidget/StockTickerWidget.entitlements
-        # Allow the Gradle run-script phase below to write the framework into
-        # the build directory (script sandboxing would otherwise block it).
+        # The scheme Build pre-action (see schemes.StocksWidget.build.preActions)
+        # runs Gradle to write the shared framework into the build directory;
+        # disable user-script sandboxing so that (and any other build script) is
+        # allowed to write there.
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         OTHER_LDFLAGS:
           - $(inherited)
           - -framework
           - Shared
-    preBuildScripts:
-      - name: Compile Kotlin/Native framework
-        basedOnDependencyAnalysis: false
-        script: |
-          # See the iosApp target's run-script phase: Xcode build phases run with a
-          # minimal environment, so load JAVA_HOME from .xcode.env(.local) before
-          # invoking Gradle, otherwise it fails with "Unable to locate a Java Runtime".
-          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
-          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
-          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
-            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
-            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
-            echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
-            exit 1
-          fi
-          export PATH="$JAVA_HOME/bin:$PATH"
-          cd "$SRCROOT/.."
-          ./gradlew :shared:embedAndSignAppleFrameworkForXcode
+    # See the note on the StocksWidget app target above: the shared framework is
+    # built ONCE by the scheme Build pre-action, not by a per-target run-script
+    # phase, so this extension does not run Gradle itself (avoiding a redundant
+    # second build of the same framework). It only links `-framework Shared`
+    # (built into shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME by that
+    # pre-action).
 
 schemes:
   StocksWidget:
     build:
       targets:
         StocksWidget: all
+      # Build the shared Kotlin/Native `Shared.framework` ONCE, before Xcode
+      # builds any target in the scheme. This replaces the old per-target
+      # "Compile Kotlin/Native framework" run-script phases that lived in BOTH
+      # the app and the widget-extension target. Running the identical
+      # `:shared:embedAndSignAppleFrameworkForXcode` Gradle build in two targets
+      # is redundant (the second invocation just repeats or waits on the same
+      # work); a single up-front pre-action builds the framework exactly once.
+      # NOTE: this consolidation is a simplification, not the cure for the
+      # "archive hangs at Run custom shell script" symptom. Both the widget
+      # extension and these duplicate Gradle phases already existed at tag
+      # 4.1.000, so they did not introduce the hang. The hang was the synchronous
+      # Firebase Crashlytics dSYM upload lingering in `xcodebuild`'s process
+      # group (fixed in the Firebase Crashlytics phase via fork+setsid — see that
+      # script and iosApp/README.md).
+      # A scheme Build pre-action runs a single time up front, so the framework
+      # is present in shared/build/xcode-frameworks/$CONFIGURATION/$SDK_NAME
+      # before either target links `-framework Shared`. Build pre-actions also
+      # run as part of Archive, so this covers `xcodebuild archive` too.
+      # `settingsTarget` gives the script the app target's build settings
+      # (SRCROOT, CONFIGURATION, SDK_NAME, ARCHS, …) that the Gradle task needs.
+      preActions:
+        - name: Compile Kotlin/Native framework
+          settingsTarget: StocksWidget
+          script: |
+            # Xcode runs pre-actions with a minimal environment that does NOT
+            # source your shell profile, so a JDK on your interactive PATH is
+            # invisible here (Gradle then fails with "Unable to locate a Java
+            # Runtime"). Load JAVA_HOME from .xcode.env (committed default) and
+            # the optional, uncommitted .xcode.env.local (machine override).
+            if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+            if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+            if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+              echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+              echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local, e.g.:" >&2
+              echo "error:   echo 'export JAVA_HOME=\$(/usr/libexec/java_home -v 17)' > iosApp/.xcode.env.local" >&2
+              exit 1
+            fi
+            export PATH="$JAVA_HOME/bin:$PATH"
+            cd "$SRCROOT/.."
+            # `--no-daemon` (matching CI) means the Gradle JVM exits when the
+            # build finishes instead of leaving a daemon behind, and `</dev/null`
+            # detaches stdin so a non-interactive `xcodebuild` invocation cannot
+            # block waiting on input — both guard against the archive hanging.
+            ./gradlew :shared:embedAndSignAppleFrameworkForXcode --no-daemon < /dev/null
     run:
       config: Debug
     test:

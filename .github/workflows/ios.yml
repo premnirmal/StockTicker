@@ -62,12 +62,13 @@ jobs:
         run: brew install xcodegen
       - name: Generate Xcode project
         working-directory: iosApp
-        # Source version.sh first so XcodeGen can expand ${MARKETING_VERSION} /
-        # ${CURRENT_PROJECT_VERSION} in project.yml from the latest git tag
-        # (mirroring the Android version derivation). fetch-depth: 0 above brings
+        # Run version.sh first so the git-derived MARKETING_VERSION /
+        # CURRENT_PROJECT_VERSION are written to Version.local.xcconfig (included
+        # by the committed Version.xcconfig) and stamped into the bundles,
+        # mirroring the Android version derivation. fetch-depth: 0 above brings
         # the tags this needs.
         run: |
-          source ./version.sh
+          ./version.sh
           xcodegen generate
       - name: Install iOS platform
         # The macos-26 image ships the iOS 26 SDK but not the iOS 26 platform
