@@ -57,6 +57,18 @@ settings:
       - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
   Debug:
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
+    # Build only the active architecture (arm64 on Apple silicon) rather than the
+    # full `arm64 x86_64` simulator fat slice. The shared Kotlin/Native `:shared`
+    # framework declares only `iosArm64`/`iosSimulatorArm64` targets (see
+    # shared/build.gradle.kts) — there is no `iosX64` (Intel simulator) target — so
+    # when Xcode's ARCHS contains `x86_64`, the
+    # `:shared:embedAndSignAppleFrameworkForXcode` task (which reads ARCHS) fails
+    # the build with "Unknown iOS simulator arch: 'x86_64'". Newer Xcode/Simulator
+    # default to ONLY_ACTIVE_ARCH=NO for simulator builds, which pulls in the
+    # x86_64 slice even on Apple silicon; forcing YES here keeps ARCHS to the Mac's
+    # native arch, matching the KMP simulator targets. Release/Archive builds are
+    # left untouched (device arm64), so App Store/TestFlight archives are unaffected.
+    ONLY_ACTIVE_ARCH: "YES"
   Release:
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
 
