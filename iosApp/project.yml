@@ -46,6 +46,10 @@ settings:
     # ONLY_ACTIVE_ARCH is only resolved when a concrete run destination is active,
     # so excluding x86_64 for the simulator SDK is the reliable fix. This is scoped
     # to `iphonesimulator*` only, so device/archive (arm64) builds are unaffected.
+    # NOTE: this per-target setting is NOT visible to the scheme's "Compile
+    # Kotlin/Native framework" Build pre-action (pre-actions run before Xcode
+    # applies EXCLUDED_ARCHS per target), so that pre-action strips x86_64 from
+    # ARCHS itself — see schemes.StocksWidget.build.preActions below.
     EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
     # Produce a separate dSYM bundle (not just inline DWARF) for every configuration. The shared
     # Kotlin/Native `Shared` framework is linked statically, so its symbols land in the app's own
@@ -274,6 +278,31 @@ schemes:
               exit 1
             fi
             export PATH="$JAVA_HOME/bin:$PATH"
+            # A scheme Build pre-action does NOT get the per-target
+            # `EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"` filtering applied to
+            # its environment: `settingsTarget` supplies the target's *base* build
+            # settings, but Xcode strips EXCLUDED_ARCHS from ARCHS only when it
+            # actually builds each target, AFTER pre-actions have run. So on Apple
+            # silicon (where the simulator defaults to the `arm64 x86_64` fat slice)
+            # this script still sees `x86_64` in ARCHS and passes it to
+            # `:shared:embedAndSignAppleFrameworkForXcode`, which reads ARCHS and
+            # fails the build with "Unknown iOS simulator arch: 'x86_64'" (the
+            # `:shared` framework only declares iosArm64/iosSimulatorArm64 — no
+            # iosX64). Reproduce the EXCLUDED_ARCHS behaviour here by dropping
+            # x86_64 from ARCHS for the simulator SDK before invoking Gradle, so the
+            # Kotlin/Native task only ever sees arm64. Device/archive (arm64) builds
+            # are unaffected because their ARCHS never contains x86_64.
+            case "$SDK_NAME" in
+              iphonesimulator*)
+                FILTERED_ARCHS=""
+                for arch in $ARCHS; do
+                  if [ "$arch" != "x86_64" ]; then
+                    FILTERED_ARCHS="${FILTERED_ARCHS:+$FILTERED_ARCHS }$arch"
+                  fi
+                done
+                export ARCHS="$FILTERED_ARCHS"
+                ;;
+            esac
             cd "$SRCROOT/.."
             # `--no-daemon` (matching CI) means the Gradle JVM exits when the
             # build finishes instead of leaving a daemon behind, and `</dev/null`
