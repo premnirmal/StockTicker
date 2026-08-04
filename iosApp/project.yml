@@ -120,6 +120,25 @@ targets:
         product: FirebaseAnalytics
       - package: Firebase
         product: FirebaseCrashlytics
+    # The scheme pre-action builds Shared.framework once, but it runs before
+    # Xcode prepares the app product and Compose's resource output can therefore
+    # be removed when the product wrapper is created. Re-sync only the resources
+    # from a target build phase, when BUILT_PRODUCTS_DIR and
+    # UNLOCALIZED_RESOURCES_FOLDER_PATH point at the final app bundle.
+    preBuildScripts:
+      - name: Sync Compose resources
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local." >&2
+            exit 1
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
+          cd "$SRCROOT/.."
+          ./gradlew :shared:syncComposeResourcesForIos --no-daemon < /dev/null
     # This MUST be a post-*build* script (runs after Copy Bundle Resources, Embed
     # App Extensions and dSYM generation), NOT a post-compile script. The Firebase
     # Crashlytics phase consumes the app's .dSYM, processed Info.plist and linked
