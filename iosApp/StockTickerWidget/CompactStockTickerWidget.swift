@@ -83,7 +83,6 @@ private struct CompactGridView: View {
                     }
                 }
             }
-            Spacer(minLength: 0)
         }
     }
 }
@@ -107,6 +106,21 @@ struct CompactStockTickerWidgetEntryView: View {
     @Environment(\.widgetFamily) private var family
     let entry: StockTickerEntry
 
+    private var largeGrid: some View {
+        ViewThatFits(in: .vertical) {
+            CompactGridView(entry: entry, columns: 2, maxItems: entry.quotes.count)
+            CompactGridView(entry: entry, columns: 2, maxItems: 48)
+            CompactGridView(entry: entry, columns: 2, maxItems: 46)
+            CompactGridView(entry: entry, columns: 2, maxItems: 44)
+            CompactGridView(entry: entry, columns: 2, maxItems: 42)
+            CompactGridView(entry: entry, columns: 2, maxItems: 40)
+            CompactGridView(entry: entry, columns: 2, maxItems: 38)
+            CompactGridView(entry: entry, columns: 2, maxItems: 36)
+            CompactGridView(entry: entry, columns: 2, maxItems: 34)
+            CompactGridView(entry: entry, columns: 2, maxItems: 32)
+        }
+    }
+
     var body: some View {
         Group {
             switch family {
@@ -115,9 +129,10 @@ struct CompactStockTickerWidgetEntryView: View {
             case .systemMedium:
                 CompactGridView(entry: entry, columns: 2, maxItems: 16)
             default:
-                CompactGridView(entry: entry, columns: 2, maxItems: 32)
+                largeGrid
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .containerBackgroundCompat()
     }
 }
