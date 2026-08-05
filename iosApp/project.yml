@@ -36,6 +36,21 @@ configFiles:
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    # Never build the Intel (x86_64) iOS *simulator* slice. The shared Kotlin/Native
+    # `:shared` framework declares only `iosArm64`/`iosSimulatorArm64` targets (see
+    # shared/build.gradle.kts) — there is no `iosX64` (Intel simulator) target — so
+    # when Xcode's ARCHS contains `x86_64` the `:shared:embedAndSignAppleFrameworkForXcode`
+    # task (which reads ARCHS) fails the build with "Unknown iOS simulator arch:
+    # 'x86_64'". Newer Xcode/Simulator default to ONLY_ACTIVE_ARCH=NO and build the
+    # full `arm64 x86_64` simulator fat slice even on Apple silicon, and
+    # ONLY_ACTIVE_ARCH is only resolved when a concrete run destination is active,
+    # so excluding x86_64 for the simulator SDK is the reliable fix. This is scoped
+    # to `iphonesimulator*` only, so device/archive (arm64) builds are unaffected.
+    # NOTE: this per-target setting is NOT visible to the scheme's "Compile
+    # Kotlin/Native framework" Build pre-action (pre-actions run before Xcode
+    # applies EXCLUDED_ARCHS per target), so that pre-action strips x86_64 from
+    # ARCHS itself — see schemes.StocksWidget.build.preActions below.
+    EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
     # Produce a separate dSYM bundle (not just inline DWARF) for every configuration. The shared
     # Kotlin/Native `Shared` framework is linked statically, so its symbols land in the app's own
     # dSYM — uploading that dSYM to Firebase Crashlytics (see the README) symbolicates both Swift and
@@ -57,6 +72,11 @@ settings:
       - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
   Debug:
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
+    # Build only the active (arm64) architecture for faster local Debug builds.
+    # The Intel simulator slice is additionally excluded in `base` above via
+    # EXCLUDED_ARCHS, which is what actually prevents the Kotlin/Native
+    # "Unknown iOS simulator arch: 'x86_64'" failure regardless of run destination.
+    ONLY_ACTIVE_ARCH: "YES"
   Release:
     DEBUG_INFORMATION_FORMAT: "dwarf-with-dsym"   # produces a .dSYM, not just inline DWARF
 
@@ -100,6 +120,25 @@ targets:
         product: FirebaseAnalytics
       - package: Firebase
         product: FirebaseCrashlytics
+    # The scheme pre-action builds Shared.framework once, but it runs before
+    # Xcode prepares the app product and Compose's resource output can therefore
+    # be removed when the product wrapper is created. Re-sync only the resources
+    # from a target build phase, when BUILT_PRODUCTS_DIR and
+    # UNLOCALIZED_RESOURCES_FOLDER_PATH point at the final app bundle.
+    preBuildScripts:
+      - name: Sync Compose resources
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ -f "$SRCROOT/.xcode.env" ]; then source "$SRCROOT/.xcode.env"; fi
+          if [ -f "$SRCROOT/.xcode.env.local" ]; then source "$SRCROOT/.xcode.env.local"; fi
+          if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ]; then
+            echo "error: Could not locate a Java runtime (JAVA_HOME is unset or invalid)." >&2
+            echo "error: Install a JDK 17+ and/or set JAVA_HOME in iosApp/.xcode.env.local." >&2
+            exit 1
+          fi
+          export PATH="$JAVA_HOME/bin:$PATH"
+          cd "$SRCROOT/.."
+          ./gradlew :shared:syncComposeResourcesForIos --no-daemon < /dev/null
     # This MUST be a post-*build* script (runs after Copy Bundle Resources, Embed
     # App Extensions and dSYM generation), NOT a post-compile script. The Firebase
     # Crashlytics phase consumes the app's .dSYM, processed Info.plist and linked
@@ -258,6 +297,31 @@ schemes:
               exit 1
             fi
             export PATH="$JAVA_HOME/bin:$PATH"
+            # A scheme Build pre-action does NOT get the per-target
+            # `EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"` filtering applied to
+            # its environment: `settingsTarget` supplies the target's *base* build
+            # settings, but Xcode strips EXCLUDED_ARCHS from ARCHS only when it
+            # actually builds each target, AFTER pre-actions have run. So on Apple
+            # silicon (where the simulator defaults to the `arm64 x86_64` fat slice)
+            # this script still sees `x86_64` in ARCHS and passes it to
+            # `:shared:embedAndSignAppleFrameworkForXcode`, which reads ARCHS and
+            # fails the build with "Unknown iOS simulator arch: 'x86_64'" (the
+            # `:shared` framework only declares iosArm64/iosSimulatorArm64 — no
+            # iosX64). Reproduce the EXCLUDED_ARCHS behaviour here by dropping
+            # x86_64 from ARCHS for the simulator SDK before invoking Gradle, so the
+            # Kotlin/Native task only ever sees arm64. Device/archive (arm64) builds
+            # are unaffected because their ARCHS never contains x86_64.
+            case "$SDK_NAME" in
+              iphonesimulator*)
+                FILTERED_ARCHS=""
+                for arch in $ARCHS; do
+                  if [ "$arch" != "x86_64" ]; then
+                    FILTERED_ARCHS="${FILTERED_ARCHS:+$FILTERED_ARCHS }$arch"
+                  fi
+                done
+                export ARCHS="$FILTERED_ARCHS"
+                ;;
+            esac
             cd "$SRCROOT/.."
             # `--no-daemon` (matching CI) means the Gradle JVM exits when the
             # build finishes instead of leaving a daemon behind, and `</dev/null`
