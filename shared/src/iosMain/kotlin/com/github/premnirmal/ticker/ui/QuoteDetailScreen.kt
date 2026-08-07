@@ -336,7 +336,7 @@ private fun QuoteDetailContent(
         dateAxisFormatter = { value -> formatAxisDate(value, Range.ONE_MONTH) },
         valueAxisFormatter = { value -> CompactNumberFormat.format(value) },
         markerFormatter = { x, y ->
-            "${formatMarkerDate(x)}\n${AppNumberFormat.selected.format(y.toFloat())}"
+            "${AppNumberFormat.TWO_DP.format(y.toFloat())}\n${formatMarkerDate(x)}"
         },
         card = { cardModifier, onClick, content ->
             AppCard(modifier = cardModifier, onClick = onClick, content = content)
