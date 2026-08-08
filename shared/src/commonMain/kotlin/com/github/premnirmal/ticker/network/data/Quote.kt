@@ -55,6 +55,9 @@ data class Quote constructor(
     var twoHundredDayAverageChangePercent: Float? = 0.0f
     var marketCap: Long? = null
 
+    /** The buy/sell ledger for this symbol, in replay order. Serialized in portfolio exports. */
+    var movements: List<Movement> = emptyList()
+
     val priceFormat: PriceFormat
         get() = currencyCodes[currencyCode]?.let {
             PriceFormat(currencyCode = currencyCode, symbol = it, prefix = prefixCurrencies[currencyCode] ?: true)
@@ -137,6 +140,28 @@ data class Quote constructor(
             return "+$gainLossString"
         }
         return gainLossString
+    }
+
+    fun hasSells(): Boolean = movements.any { it.type == MovementType.SELL }
+
+    fun realizedGain(): Float = movements.replayLedger().realizedGain
+
+    fun realizedGainString(): String {
+        val realized = realizedGain()
+        val formatted = AppNumberFormat.selected.format(realized)
+        return if (realized >= 0) "+$formatted" else formatted
+    }
+
+    /**
+     * Backfills the ledger from a legacy [position] (pre-v10 export files carry holdings but no
+     * movements): each lot becomes a BUY movement. A quote that already has movements is untouched.
+     */
+    fun ensureMovements() {
+        if (movements.isEmpty()) {
+            movements = position?.holdings?.map {
+                Movement(symbol, MovementType.BUY, it.shares, it.price)
+            } ?: emptyList()
+        }
     }
 
     private fun gainLossPercent(): Float {

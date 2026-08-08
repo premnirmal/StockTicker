@@ -17,6 +17,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,9 +46,11 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.network.NewsProvider
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.HoldingSum
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
-import com.github.premnirmal.ticker.network.data.holdingsSum
 import com.github.premnirmal.ticker.news.NewsCard
 import com.github.premnirmal.ticker.news.QuoteDetailViewModel
 import com.github.premnirmal.ticker.portfolio.AddPositionScreen
@@ -520,11 +523,21 @@ private fun PositionsEditor(
         AddPositionViewModel(QuoteDetailKoin.stocksProvider).apply { loadQuote(symbol) }
     }
     val snackbarHostState = remember { SnackbarHostState() }
-    val position by viewModel.position.collectAsState()
+    val movements by viewModel.movements.collectAsState()
+    val summary by viewModel.summary.collectAsState()
+    val holdings by remember {
+        derivedStateOf {
+            movements.filter { it.type == MovementType.BUY }
+                .map { Holding(it.symbol, it.shares, it.price, it.id) }
+        }
+    }
+    val holdingsSum by remember {
+        derivedStateOf { HoldingSum(summary.shares, summary.costBasis, summary.averagePrice) }
+    }
     AddPositionScreen(
         ticker = symbol,
-        holdings = position.holdings,
-        holdingsSum = position.holdings.holdingsSum(),
+        holdings = holdings,
+        holdingsSum = holdingsSum,
         title = "Add position",
         sharesLabel = "Number of shares",
         priceLabel = "Price",
@@ -545,11 +558,13 @@ private fun PositionsEditor(
             val priceError = price == null
             val sharesError = shares == null || shares == 0f
             if (price != null && shares != null && shares != 0f) {
-                viewModel.addHolding(symbol, shares, price)
+                viewModel.buy(symbol, shares, price)
             }
             Pair(priceError, sharesError)
         },
-        onRemove = { holding -> viewModel.removeHolding(symbol, holding) }
+        onRemove = { holding ->
+            movements.firstOrNull { it.id == holding.id }?.let { viewModel.deleteMovement(symbol, it) }
+        }
     )
 }
 

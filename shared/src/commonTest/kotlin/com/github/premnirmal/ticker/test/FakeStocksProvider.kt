@@ -3,9 +3,16 @@ package com.github.premnirmal.ticker.test
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.model.IStocksProvider
-import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.model.RemoveMovementResult
+import com.github.premnirmal.ticker.model.SellResult
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.SHARE_EPSILON
+import com.github.premnirmal.ticker.network.data.isValidLedger
+import com.github.premnirmal.ticker.network.data.replayLedger
+import com.github.premnirmal.ticker.network.data.toPosition
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -36,7 +43,8 @@ class FakeStocksProvider(
     private val _nextFetchMs = MutableStateFlow(0L)
     override val nextFetchMs: StateFlow<Long> = _nextFetchMs
 
-    private var nextHoldingId = 1L
+    private val movementsBySymbol: MutableMap<String, MutableList<Movement>> = mutableMapOf()
+    private var nextMovementId = 1L
 
     fun setQuote(quote: Quote) {
         quotesBySymbol[quote.symbol] = quote
@@ -69,16 +77,45 @@ class FakeStocksProvider(
 
     override fun getPosition(ticker: String): Position? = quotesBySymbol[ticker]?.position
 
-    override suspend fun addHolding(ticker: String, shares: Float, price: Float): Holding {
-        val holding = Holding(symbol = ticker, shares = shares, price = price, id = nextHoldingId++)
-        val quote = quotesBySymbol.getOrPut(ticker) { Quote(symbol = ticker) }
-        val position = quote.position ?: Position(ticker).also { quote.position = it }
-        position.add(holding)
-        return holding
+    override fun getMovements(ticker: String): List<Movement> =
+        movementsBySymbol[ticker] ?: emptyList()
+
+    override suspend fun buy(ticker: String, shares: Float, price: Float): Movement {
+        val movement = Movement(ticker, MovementType.BUY, shares, price, id = nextMovementId++)
+        val movements = movementsBySymbol.getOrPut(ticker) { mutableListOf() }
+        movements.add(movement)
+        refreshLedger(ticker)
+        return movement
     }
 
-    override suspend fun removePosition(ticker: String, holding: Holding): Boolean {
-        return quotesBySymbol[ticker]?.position?.remove(holding) ?: false
+    override suspend fun sell(ticker: String, shares: Float, price: Float): SellResult {
+        val ledger = getMovements(ticker)
+        val summary = ledger.replayLedger()
+        if (shares > summary.shares + SHARE_EPSILON) {
+            return SellResult.NotEnoughShares(summary.shares)
+        }
+        val movement = Movement(ticker, MovementType.SELL, shares, price, id = nextMovementId++)
+        val gain = checkNotNull((ledger + movement).replayLedger().movementGains.last().gain)
+        val movements = movementsBySymbol.getOrPut(ticker) { mutableListOf() }
+        movements.add(movement)
+        refreshLedger(ticker)
+        return SellResult.Success(movement, gain)
+    }
+
+    override suspend fun removeMovement(ticker: String, movement: Movement): RemoveMovementResult {
+        val remaining = getMovements(ticker).filterNot { it.id == movement.id }
+        if (!remaining.isValidLedger()) return RemoveMovementResult.BlockedBySells
+        movementsBySymbol[ticker] = remaining.toMutableList()
+        refreshLedger(ticker)
+        return RemoveMovementResult.Removed
+    }
+
+    private fun refreshLedger(ticker: String) {
+        val movements = getMovements(ticker)
+        val quote = quotesBySymbol.getOrPut(ticker) { Quote(symbol = ticker) }
+        quote.movements = movements
+        quote.position = movements.replayLedger().toPosition(ticker)
+        _portfolio.value = quotesBySymbol.values.toList()
     }
 
     override fun addStocks(symbols: Collection<String>): Collection<String> {
