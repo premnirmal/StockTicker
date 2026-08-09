@@ -72,8 +72,8 @@ The Xcode project is intentionally **not committed** — it is generated on dema
 declarative [`iosApp/project.yml`](project.yml) spec with [XcodeGen](https://github.com/yonaskolb/XcodeGen),
 which avoids the fragile, merge-conflict-prone `project.pbxproj`. The spec already describes both
 targets (the `iosApp` application and the `StockTickerWidget` widget extension), their `Info.plist`
-files, the App Group entitlements, the iOS 17 deployment target, and a Gradle run-script phase that
-builds the shared `Shared.framework` the targets link against.
+files, the App Group entitlements, the iOS 17 deployment target, and a scheme Build **pre-action**
+that builds the shared `Shared.framework` (once) that the targets link against.
 
 The generated `StockTicker.xcodeproj` (along with other Xcode artifacts such as `*.xcworkspace`,
 `xcuserdata/` and `DerivedData/`) is git-ignored, so it must **not** be committed — regenerate it
@@ -88,16 +88,19 @@ On a Mac:
 2. Generate the project:
    ```sh
    cd iosApp
-   source ./version.sh      # derives the version from the latest git tag
+   ./version.sh             # stamps the version from the latest git tag
    xcodegen generate        # produces iosApp/StockTicker.xcodeproj
    ```
-   `version.sh` exports `MARKETING_VERSION` (`CFBundleShortVersionString`) and
-   `CURRENT_PROJECT_VERSION` (`CFBundleVersion`) from `git describe --tags`,
-   mirroring how the Android app derives its `versionName` / `versionCode` in
-   `app/build.gradle.kts` (falling back to `1.0` / `1` when no tag is
-   reachable). `project.yml` references those env vars, so source it before
-   generating — otherwise the bundle version is empty and an app-extension
-   install fails.
+   `version.sh` writes `MARKETING_VERSION` (`CFBundleShortVersionString`) and
+   `CURRENT_PROJECT_VERSION` (`CFBundleVersion`) into the git-ignored
+   `Version.local.xcconfig` from `git describe --tags`, mirroring how the Android
+   app derives its `versionName` / `versionCode` in `app/build.gradle.kts`
+   (falling back to `1.0` / `1` when no tag is reachable). The committed
+   `Version.xcconfig` (read by every target and optionally including
+   `Version.local.xcconfig`) already ships non-empty `1.0` / `1` fallbacks, so
+   even if you skip `version.sh` the bundle version is never empty and the
+   app-extension install still succeeds — running `version.sh` just stamps the
+   real git-derived version for TestFlight/App Store archives.
 3. Open `iosApp/StockTicker.xcodeproj` and run, or build from the command line:
    ```sh
    xcodebuild build \
@@ -108,25 +111,33 @@ On a Mac:
    ```
 
 You do **not** need to build the shared framework separately or wire it up by hand: the generated
-project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a build phase, which compiles
-and links the Kotlin/Native `Shared.framework` for the active configuration/SDK. The App Groups
+project runs `./gradlew :shared:embedAndSignAppleFrameworkForXcode` as a scheme **Build pre-action**,
+which compiles and links the Kotlin/Native `Shared.framework` for the active configuration/SDK once,
+before either the app or the widget extension links it. (It is a single scheme pre-action rather than
+a per-target run-script phase on purpose: running the identical Gradle framework build in **both** the
+app and the widget target is redundant, so consolidating it into one up-front pre-action builds the
+framework a single time. Note this is a simplification, **not** the fix for the archive hang — the
+widget extension and both Gradle phases already existed at tag `4.1.000`. The "archive hangs at *Run
+custom shell script*" symptom was the synchronous Firebase Crashlytics dSYM upload staying in
+`xcodebuild`'s process group; see the Crashlytics notes below.) The App Groups
 capability (`group.com.github.premnirmal.ticker`) is applied to both targets from the committed
 `*.entitlements` files, so the app and widget share the `WidgetSnapshotStore` `NSUserDefaults` suite.
 
 ### Java runtime for the Gradle build phase
 
-That Gradle build phase needs a **JDK 17+** (the same one the Android build uses). Xcode runs build
-phases with a *minimal* environment that does **not** source your shell profile (`~/.zprofile`,
-`~/.zshrc`, …), so a `java` that works in Terminal may be invisible to the script — the build then
-fails with:
+That Gradle framework build needs a **JDK 17+** (the same one the Android build uses). Xcode runs
+build phases and scheme pre-actions with a *minimal* environment that does **not** source your shell
+profile (`~/.zprofile`, `~/.zshrc`, …), so a `java` that works in Terminal may be invisible to the
+script — the build then fails with:
 
 ```
 Unable to locate a Java Runtime
 ```
 
-To avoid this, both run-script phases source [`iosApp/.xcode.env`](.xcode.env) (a committed default
-that auto-discovers a JDK and exports `JAVA_HOME` when it is not already set to a valid one) and then
-the optional [`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override).
+To avoid this, the framework pre-action (and the Crashlytics phase) source
+[`iosApp/.xcode.env`](.xcode.env) (a committed default that auto-discovers a JDK and exports
+`JAVA_HOME` when it is not already set to a valid one) and then the optional
+[`iosApp/.xcode.env.local`](.xcode.env) (git-ignored, for a machine-specific override).
 The default probes, in order: `/usr/libexec/java_home`, common JDK install locations (the JDK bundled
 with **Android Studio**, Homebrew's `openjdk`, `~/Library/Java/JavaVirtualMachines`,
 `/Library/Java/JavaVirtualMachines`), and finally a `java` already on `PATH`.
@@ -165,6 +176,42 @@ signing secrets are needed). Producing a signed `.ipa` for TestFlight/App Store 
 out of scope for this gate — that requires code-signing certificates/profiles supplied as encrypted
 secrets (or fastlane match) and an `xcodebuild archive`/`-exportArchive` (or `fastlane`) step.
 
+### Code signing (for `xcodebuild archive`)
+
+The simulator builds above pass `CODE_SIGNING_ALLOWED=NO`, so they need no signing identity. An
+`archive`, however, builds the **Release** configuration, which **must** be code-signed — with
+automatic signing that requires a **Development Team**, otherwise the archive fails with:
+
+```
+error: Signing for "StocksWidget" requires a development team. Select a development team in the
+Signing & Capabilities editor. (in target 'StocksWidget' from project 'StocksWidget')
+```
+
+A Team ID is personal, so it is **not** committed. The committed
+[`iosApp/Signing.xcconfig`](Signing.xcconfig) (read by every target via `Version.xcconfig`) sets
+`CODE_SIGN_STYLE = Automatic` and optionally includes the git-ignored `iosApp/Signing.local.xcconfig`.
+Set your team there once (no `xcodegen generate` needed — it is read at build time):
+
+```sh
+echo 'DEVELOPMENT_TEAM = ABCDE12345' > iosApp/Signing.local.xcconfig
+```
+
+Find your 10-character Team ID in the [Apple Developer portal](https://developer.apple.com/account)
+under *Membership*, or via `security find-identity -v -p codesigning`. You must also be signed into
+that Apple Developer account in Xcode (*Settings → Accounts*) so automatic signing can issue the
+provisioning profiles. Then:
+
+```sh
+xcodebuild -project iosApp/StockTicker.xcodeproj \
+  -scheme StocksWidget \
+  -configuration Release \
+  -archivePath build/StockTicker.xcarchive \
+  archive
+```
+
+Alternatively, skip the local file and pass the team on the command line
+(`xcodebuild ... archive DEVELOPMENT_TEAM=ABCDE12345`).
+
 ### Firebase (optional, prod only)
 
 Firebase is optional. The FirebaseAnalytics / FirebaseCore SDK is wired into the `iosApp` target as a
@@ -195,7 +242,20 @@ information has to be available to Crashlytics:
 - The *Firebase Crashlytics* post-compile build phase in [`project.yml`](project.yml) runs Crashlytics'
   `run` helper and then `upload-symbols` over the whole `${DWARF_DSYM_FOLDER_PATH}`, so every `.dSYM`
   (including the Kotlin symbols folded into the app `.dSYM`) is uploaded to Firebase. It also uploads a
-  standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build).
+  standalone `Shared.framework.dSYM` if one is present (e.g. a future dynamic-framework build). This
+  upload runs **only for `Release` builds** and when `GoogleService-Info.plist` is present: both `run`
+  and `upload-symbols` are synchronous, so running them on Debug simulator builds only slows them down
+  (and appears to hang the build over a slow/blocked network) for symbols you never need locally. Even
+  for `Release`, the entire Crashlytics sequence (the `run` helper **and** the `upload-symbols`
+  invocations) is **detached into its own session/process group** so the build/archive finishes
+  immediately instead of hanging at "Run custom shell script 'Firebase Crashlytics'" while the network
+  transfer completes. Plain backgrounding (`nohup … &`, even inside a `( … & )` subshell) is **not**
+  sufficient: it reparents the process but leaves it in the build phase's **process group**, and
+  `xcodebuild` (the `archive` driver) blocks until that whole process group drains — so the archive
+  keeps waiting on the upload. The job is therefore `fork`+`setsid`-ed (via macOS's system Perl, since
+  `setsid` is not a macOS command) into a fresh process group, with stdio redirected to
+  `crashlytics-upload-symbols.log` next to `DerivedData`, so it is no longer part of the phase's group
+  and the phase returns right away.
 
 No extra setup is required beyond dropping in the `GoogleService-Info.plist` and regenerating the
 project; release/archive builds upload the symbols automatically.

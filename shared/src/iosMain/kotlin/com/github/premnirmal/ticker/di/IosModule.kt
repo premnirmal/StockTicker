@@ -231,10 +231,25 @@ object KoinHelper : KoinComponent {
     private val portfolioExchange: IosPortfolioExchange by inject()
     private val widgetSnapshotStore: WidgetSnapshotStore by inject()
     private val clock: AppClock by inject()
+    private val appPreferences: UserDefaultsPreferences by inject()
 
     fun stocksProvider(): StocksProvider = stocksProvider
     fun refreshScheduler(): BackgroundRefreshScheduler = refreshScheduler
     fun analytics(): Analytics = analytics
+
+    /**
+     * The user's selected refresh interval in milliseconds. The iOS app uses it to drive the
+     * foreground refresh loop and the background-task cadence so quotes/widgets update at the
+     * interval the user picked in Settings.
+     */
+    fun updateIntervalMillis(): Long = appPreferences.updateIntervalMs
+
+    /**
+     * The scheduled epoch time (ms) of the next quotes refresh, as decided by the shared scheduler.
+     * The iOS foreground refresh loop uses it to fetch exactly when a refresh is due instead of
+     * hammering the network on every foreground.
+     */
+    fun nextFetchMillis(): Long = stocksProvider.nextFetchMs.value
 
     /**
      * The shared local-notifications handler (price alerts + daily summary). The iOS app starts its
@@ -261,7 +276,11 @@ object KoinHelper : KoinComponent {
      * reload), the iOS analogue of Android's `WidgetDataProvider` update.
      */
     fun writeWidgetSnapshot() {
-        widgetSnapshotStore.write(stocksProvider.portfolio.value, clock.currentTimeMillis())
+        widgetSnapshotStore.write(
+            quotes = stocksProvider.widgetOrderedQuotes(),
+            lastUpdatedMillis = clock.currentTimeMillis(),
+            updateIntervalMillis = appPreferences.updateIntervalMs,
+        )
     }
 
     /**

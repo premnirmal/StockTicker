@@ -270,6 +270,9 @@ private fun rememberPriceMarker(
             textAlign = TextAlign.Center,
             fontSize = 12.sp
         ),
+        // The marker label is two lines (price and date); rememberTextComponent defaults lineCount to
+        // 1, which truncated the label to just the first line, so the second value was never shown.
+        lineCount = 2,
         padding = Insets(8.dp, 4.dp),
         background = labelBackground,
         minWidth = TextComponent.MinWidth.fixed(40.dp)

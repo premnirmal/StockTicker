@@ -31,6 +31,11 @@ struct StockTickerApp: App {
     /// the app's lifetime. Cancelling/dropping it would stop the widget from receiving updates.
     private let widgetSnapshotSync = WidgetSnapshotSync()
 
+    /// Refreshes quotes/widgets at the user's selected interval while the app is in the foreground.
+    private let foregroundRefresh = ForegroundRefreshCoordinator()
+
+    @Environment(\.scenePhase) private var scenePhase
+
     init() {
         configureFirebase()
         // Start Koin with the shared graph and the iOS platform implementations.
@@ -62,7 +67,32 @@ struct StockTickerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .task {
+                    // Kick off the aggressive foreground refresh as soon as the UI appears (cold
+                    // launch does not emit a scenePhase change for the initial `.active` value).
+                    foregroundRefresh.start()
+                }
+                .onChange(of: scenePhase) { _, newPhase in
+                    switch newPhase {
+                    case .active:
+                        // Resume aggressive foreground refreshing at the user's selected interval.
+                        foregroundRefresh.start()
+                    case .background:
+                        // Stop the foreground loop and hand off to a background refresh so quotes and
+                        // widgets keep updating (as close to the selected interval as iOS allows).
+                        foregroundRefresh.stop()
+                        scheduleBackgroundRefresh()
+                    default:
+                        break
+                    }
+                }
         }
+    }
+
+    /// Submits a background refresh scaled to the user's selected update interval, so the widget/app
+    /// keeps updating after the app is backgrounded (subject to the OS's background scheduling).
+    private func scheduleBackgroundRefresh() {
+        backgroundScheduler.enqueuePeriodicRefresh(intervalMs: KoinHelper.shared.updateIntervalMillis())
     }
 
     /// Configures the Firebase iOS SDK when it is linked and a `GoogleService-Info.plist` is present

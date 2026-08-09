@@ -46,9 +46,23 @@ struct StockTickerProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: StockTickerConfigurationIntent, in context: Context) async -> Timeline<StockTickerEntry> {
         let entry = loadEntry(for: configuration)
-        // The app reloads timelines on every refresh; also poll periodically as a fallback.
-        let next = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date()
+        // Reload the timeline at the user's selected update interval so the widget refreshes at the
+        // cadence chosen in the app (WidgetKit still enforces its own system minimum). Falls back to
+        // 30 minutes for snapshots written by older app versions that didn't record an interval.
+        let snapshot = WidgetSnapshotStore.companion.create().read()
+        let intervalMinutes = Self.refreshIntervalMinutes(from: snapshot)
+        let next = Calendar.current.date(byAdding: .minute, value: intervalMinutes, to: Date()) ?? Date()
         return Timeline(entries: [entry], policy: .after(next))
+    }
+
+    /// The widget's next-reload interval, in minutes, derived from the user's selected update interval
+    /// in the shared snapshot. Clamped to a small floor so WidgetKit isn't asked for an unreasonably
+    /// tight cadence, defaulting to 30 minutes when no interval was recorded.
+    private static func refreshIntervalMinutes(from snapshot: WidgetSnapshot?) -> Int {
+        let millis = snapshot.map { Int64($0.updateIntervalMillis) } ?? 0
+        guard millis > 0 else { return 30 }
+        let minutes = Int(millis / 60_000)
+        return max(5, minutes)
     }
 
     private func loadEntry(for configuration: StockTickerConfigurationIntent) -> StockTickerEntry {
@@ -68,9 +82,11 @@ struct StockTickerProvider: AppIntentTimelineProvider {
         if let selected = configuration.selectedSymbols {
             rows = rows.filter { selected.contains($0.symbol) }
         }
-        // Per-widget sort: optionally show the largest movers first.
+        // Per-widget sort: optionally show the largest gainers first, matching the app's auto-sort
+        // (change % descending). The snapshot is written in the raw watchlist order, so this toggle
+        // is authoritative: enabling it sorts, disabling it keeps the watchlist order.
         if configuration.sortByChange {
-            rows.sort { abs($0.changeInPercent) > abs($1.changeInPercent) }
+            rows.sort { $0.changeInPercent > $1.changeInPercent }
         }
         let date = snapshot.map { Date(timeIntervalSince1970: Double($0.lastUpdatedMillis) / 1000.0) } ?? Date()
         return StockTickerEntry(date: date, quotes: rows, isPlaceholder: false, configuration: configuration)
@@ -78,11 +94,11 @@ struct StockTickerProvider: AppIntentTimelineProvider {
 
     private static let sampleRows: [WidgetQuoteRow] = [
         WidgetQuoteRow(symbol: "AAPL", name: "Apple Inc.", price: "$192.32",
-                       changePercent: "+1.24%", changeAmount: "+2.35", changeInPercent: 1.24, positive: true),
+                       changePercent: "1.24%", changeAmount: "2.35", changeInPercent: 1.24, positive: true),
         WidgetQuoteRow(symbol: "MSFT", name: "Microsoft", price: "$421.10",
                        changePercent: "-0.42%", changeAmount: "-1.78", changeInPercent: -0.42, positive: false),
         WidgetQuoteRow(symbol: "GOOG", name: "Alphabet", price: "$175.98",
-                       changePercent: "+0.88%", changeAmount: "+1.54", changeInPercent: 0.88, positive: true),
+                       changePercent: "0.88%", changeAmount: "1.54", changeInPercent: 0.88, positive: true),
     ]
 }
 
@@ -122,30 +138,56 @@ private struct QuoteRowView: View {
 
 /// Two-column grid layout matching the Android widget. Shows a limited number of quotes to avoid
 /// clipping in each widget size (iOS widgets do not support scrolling).
+///
+/// The rows are distributed across the full available height so the widget doesn't leave blank
+/// space at the bottom; the quotes fill the whole widget instead of clustering at the top.
 private struct StockTickerGridView: View {
     let entry: StockTickerEntry
     let columns: Int
     let maxItems: Int
 
-    private let gridColumns: [GridItem]
-
     init(entry: StockTickerEntry, columns: Int = 2, maxItems: Int = 16) {
         self.entry = entry
         self.columns = columns
         self.maxItems = maxItems
-        self.gridColumns = Array(repeating: GridItem(.flexible(), spacing: 8), count: columns)
+    }
+
+    /// Chunk the (capped) quotes into rows of `columns` items each.
+    private var quoteRows: [[WidgetQuoteRow]] {
+        let items = Array(entry.quotes.prefix(maxItems))
+        return stride(from: 0, to: items.count, by: columns).map {
+            Array(items[$0 ..< min($0 + columns, items.count)])
+        }
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        Group {
             if entry.quotes.isEmpty {
                 EmptyWatchlistView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             } else {
-                LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 2) {
-                    ForEach(entry.quotes.prefix(maxItems)) { row in
-                        QuoteRowView(row: row, configuration: entry.configuration)
+                let rows = quoteRows
+                VStack(alignment: .leading, spacing: 0) {
+                    ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            ForEach(row) { quote in
+                                QuoteRowView(row: quote, configuration: entry.configuration)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            // Keep column widths aligned when the last row is not full.
+                            if row.count < columns {
+                                ForEach(0 ..< (columns - row.count), id: \.self) { _ in
+                                    Color.clear.frame(maxWidth: .infinity)
+                                }
+                            }
+                        }
+                        // Even gaps between rows fill the height so no blank space is left at the bottom.
+                        if index < rows.count - 1 {
+                            Spacer(minLength: 2)
+                        }
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
     }
@@ -172,11 +214,11 @@ struct StockTickerWidgetEntryView: View {
         Group {
             switch family {
             case .systemSmall:
-                StockTickerGridView(entry: entry, columns: 1, maxItems: 4)
+                StockTickerGridView(entry: entry, columns: 1, maxItems: 6)
             case .systemMedium:
-                StockTickerGridView(entry: entry, columns: 2, maxItems: 8)
+                StockTickerGridView(entry: entry, columns: 2, maxItems: 10)
             default:
-                StockTickerGridView(entry: entry, columns: 2, maxItems: 16)
+                StockTickerGridView(entry: entry, columns: 2, maxItems: 24)
             }
         }
         .containerBackgroundCompat()
