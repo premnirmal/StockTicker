@@ -17,7 +17,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,9 +45,6 @@ import com.github.premnirmal.ticker.model.HistoryProvider
 import com.github.premnirmal.ticker.model.IStocksProvider
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.network.NewsProvider
-import com.github.premnirmal.ticker.network.data.Holding
-import com.github.premnirmal.ticker.network.data.HoldingSum
-import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.network.data.QuoteSummary
 import com.github.premnirmal.ticker.news.NewsCard
@@ -61,6 +57,8 @@ import com.github.premnirmal.ticker.portfolio.DisplaynameScreen
 import com.github.premnirmal.ticker.portfolio.DisplaynameViewModel
 import com.github.premnirmal.ticker.portfolio.NotesScreen
 import com.github.premnirmal.ticker.portfolio.NotesViewModel
+import com.github.premnirmal.ticker.portfolio.PositionEditorStrings
+import com.github.premnirmal.ticker.portfolio.PositionEvent
 import com.github.premnirmal.ticker.portfolio.localeDecimalSeparator
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.ui.AppCard
@@ -441,6 +439,7 @@ private val iosQuoteDetailStrings = QuoteDetailStrings(
     dayChangeAmount = "Day change",
     alertAbove = "Alert above",
     alertBelow = "Alert below",
+    realizedGain = "Realized gain",
 )
 
 /**
@@ -525,47 +524,61 @@ private fun PositionsEditor(
     val snackbarHostState = remember { SnackbarHostState() }
     val movements by viewModel.movements.collectAsState()
     val summary by viewModel.summary.collectAsState()
-    val holdings by remember {
-        derivedStateOf {
-            movements.filter { it.type == MovementType.BUY }
-                .map { Holding(it.symbol, it.shares, it.price, it.id) }
+    LaunchedEffect(symbol) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is PositionEvent.SellRejected ->
+                    launch {
+                        snackbarHostState.showSnackbar("You only own ${AppNumberFormat.selected.format(event.sharesOwned)} shares")
+                    }
+                is PositionEvent.RemoveBlocked ->
+                    launch {
+                        snackbarHostState.showSnackbar("Can't remove this buy — later sells depend on it")
+                    }
+                else -> Unit
+            }
         }
-    }
-    val holdingsSum by remember {
-        derivedStateOf { HoldingSum(summary.shares, summary.costBasis, summary.averagePrice) }
     }
     AddPositionScreen(
         ticker = symbol,
-        holdings = holdings,
-        holdingsSum = holdingsSum,
-        title = "Add position",
-        sharesLabel = "Number of shares",
-        priceLabel = "Price",
-        addLabel = "Add",
-        currentPositionsLabel = "Current positions",
-        sharesColumnLabel = "Shares",
-        priceColumnLabel = "Price",
-        valueColumnLabel = "Value",
-        removeContentDescription = "Remove holding",
+        movements = movements,
+        summary = summary,
+        strings = PositionEditorStrings(
+            title = "Positions", sharesLabel = "Number of shares", priceLabel = "Price",
+            sellPriceLabel = "Sell price", buyToggle = "Buy", sellToggle = "Sell",
+            buyButton = "Buy", sellButton = "Sell", yourPositionLabel = "Your position",
+            movementsLabel = "Movements", sharesColumnLabel = "Shares", priceColumnLabel = "Price",
+            valueColumnLabel = "Value", gainColumnLabel = "Gain", realizedTotalLabel = "Realized total",
+            removeContentDescription = "Remove movement",
+        ),
         backIcon = painterResource(Res.drawable.ic_close),
         removeIcon = painterResource(Res.drawable.ic_close),
         snackbarHostState = snackbarHostState,
         formatNumber = { AppNumberFormat.selected.format(it) },
         onBack = onClose,
-        onAdd = { priceText, sharesText ->
-            val price = parseDecimal(priceText)
-            val shares = parseDecimal(sharesText)
-            val priceError = price == null
-            val sharesError = shares == null || shares == 0f
-            if (price != null && shares != null && shares != 0f) {
-                viewModel.buy(symbol, shares, price)
-            }
-            Pair(priceError, sharesError)
-        },
-        onRemove = { holding ->
-            movements.firstOrNull { it.id == holding.id }?.let { viewModel.deleteMovement(symbol, it) }
-        }
+        onBuy = { priceText, sharesText -> parseAndTrade(priceText, sharesText) { s, p -> viewModel.buy(symbol, s, p) } },
+        onSell = { priceText, sharesText -> parseAndTrade(priceText, sharesText) { s, p -> viewModel.sell(symbol, s, p) } },
+        onRemove = { viewModel.deleteMovement(symbol, it) },
     )
+}
+
+/**
+ * Parses the shares/price text fields and, if both are valid non-zero numbers, invokes [trade]
+ * with `(shares, price)`. Returns the `(priceError, sharesError)` pair the shared screen expects.
+ */
+private fun parseAndTrade(
+    priceText: String,
+    sharesText: String,
+    trade: (shares: Float, price: Float) -> Unit,
+): Pair<Boolean, Boolean> {
+    val price = parseDecimal(priceText)
+    val shares = parseDecimal(sharesText)
+    val priceError = price == null
+    val sharesError = shares == null || shares == 0f
+    if (price != null && shares != null && shares != 0f) {
+        trade(shares, price)
+    }
+    return Pair(priceError, sharesError)
 }
 
 @Composable

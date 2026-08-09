@@ -144,10 +144,12 @@ data class Quote constructor(
 
     fun hasSells(): Boolean = movements.any { it.type == MovementType.SELL }
 
-    fun realizedGain(): Float = movements.replayLedger().realizedGain
+    fun realizedGain(): Float =
+        if (hasSells()) movements.replayLedger().realizedGain else 0f
 
-    fun realizedGainString(): String {
-        val realized = realizedGain()
+    fun realizedGainString(): String = realizedGainString(realizedGain())
+
+    fun realizedGainString(realized: Float): String {
         val formatted = AppNumberFormat.selected.format(realized)
         return if (realized >= 0) "+$formatted" else formatted
     }

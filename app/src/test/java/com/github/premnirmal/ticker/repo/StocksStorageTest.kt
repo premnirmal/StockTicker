@@ -163,6 +163,29 @@ class StocksStorageTest : BaseUnitTest() {
         }
     }
 
+    @Test fun testRemoveQuotesBySymbolCleansUpProperties() {
+        runBlocking {
+            val aapl = Quote(symbol = "AAPL", name = "Apple").apply {
+                properties = Properties("AAPL", notes = "buy more", alertAbove = 200f)
+            }
+            val msft = Quote(symbol = "MSFT", name = "Microsoft").apply {
+                properties = Properties("MSFT", notes = "watch closely", alertBelow = 50f)
+            }
+            storage.saveQuotes(listOf(aapl, msft))
+
+            storage.removeQuotesBySymbol(listOf("AAPL", "MSFT"))
+
+            assertNull(storage.readQuote("AAPL"))
+            assertNull(storage.readQuote("MSFT"))
+
+            // Re-adding a symbol after a bulk delete must not resurrect old properties.
+            storage.saveQuote(Quote(symbol = "AAPL", name = "Apple"))
+            val readBack = storage.readQuote("AAPL")
+            assertNotNull(readBack)
+            assertNull(readBack!!.properties)
+        }
+    }
+
     @Test fun testAddAndRemoveMovement() {
         runBlocking {
             storage.saveQuote(Quote(symbol = "AAPL"))
@@ -188,24 +211,6 @@ class StocksStorageTest : BaseUnitTest() {
             val read = storage.readQuote("AAPL")
             assertEquals("Apple Inc", read?.properties?.displayname)
             assertEquals(90f, read?.properties?.alertBelow)
-        }
-    }
-
-    @Test fun testRemoveQuotesBySymbolCleansUpProperties() {
-        runBlocking {
-            storage.saveQuote(Quote(symbol = "AAPL"))
-            storage.saveQuoteProperties(Properties("AAPL", notes = "keep an eye", alertAbove = 200f))
-            storage.saveQuote(Quote(symbol = "MSFT"))
-            storage.saveQuoteProperties(Properties("MSFT", displayname = "Microsoft"))
-
-            storage.removeQuotesBySymbol(listOf("AAPL", "MSFT"))
-
-            assertNull(storage.readQuote("AAPL"))
-            assertNull(storage.readQuote("MSFT"))
-
-            // re-adding a symbol must not resurrect its old notes/alerts
-            storage.saveQuote(Quote(symbol = "AAPL"))
-            assertNull(storage.readQuote("AAPL")?.properties)
         }
     }
 

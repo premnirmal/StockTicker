@@ -141,7 +141,6 @@
   <string name="widget_name">ウィジェット名</string>
   <string name="widget_name_updated">ウィジェット名を更新しました</string>
   <string name="set">設定</string>
-  <string name="current_positions">現在のポジション</string>
   <string name="total">合計</string>
   <string name="positions">ポジション</string>
   <string name="recent_news">最新ニュース</string>
@@ -184,7 +183,6 @@
   <string name="add_notes">メモを追加</string>
   <string name="add_displayname">表示名を追加</string>
   <string name="add_alerts">アラート</string>
-  <string name="remove_holding">ポートフォリオからエントリー %1$s を削除してもよいですか？</string>
   <string name="save">保存</string>
   <string name="desc_channel_alerts">銘柄アラート</string>
   <string name="desc_channel_summary">デイリーサマリー</string>

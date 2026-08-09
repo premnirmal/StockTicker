@@ -6,18 +6,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -42,11 +47,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.github.premnirmal.ticker.network.data.Holding
-import com.github.premnirmal.ticker.network.data.HoldingSum
+import com.github.premnirmal.ticker.network.data.LedgerSummary
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.ui.AppTextFieldDefaultColors
 import com.github.premnirmal.ticker.ui.AppTextFieldShape
 import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.tickerwidget.ui.theme.SharedColours
 
 /**
  * Per-ticker note editor, shared by Android and iOS. Android resources (the localised labels and the
@@ -360,44 +367,57 @@ fun AlertsScreen(
     }
 }
 
+/** All display strings for the position editor, provided by the platform host. */
+data class PositionEditorStrings(
+    val title: String,
+    val sharesLabel: String,
+    val priceLabel: String,
+    val sellPriceLabel: String,
+    val buyToggle: String,
+    val sellToggle: String,
+    val buyButton: String,
+    val sellButton: String,
+    val yourPositionLabel: String,
+    val movementsLabel: String,
+    val sharesColumnLabel: String,
+    val priceColumnLabel: String,
+    val valueColumnLabel: String,
+    val gainColumnLabel: String,
+    val realizedTotalLabel: String,
+    val removeContentDescription: String,
+)
+
 /**
- * Per-ticker "add position" / holdings editor, shared by Android and iOS. The localised strings and
- * the back/remove [Painter]s are hoisted as parameters, the holdings number formatting is delegated
- * to [formatNumber], and the parse/validate/persist of the entered values is delegated to [onAdd]
- * (which returns the `price`/`shares` error flags) so the locale-aware number parsing stays on the
- * host. The optional [twoPane] slot lets the host supply an adaptive two-pane layout (Android uses
- * Accompanist `TwoPane`); when it is `null` the screen renders a single column. [HoldingsActivity]
- * supplies these.
+ * Per-ticker "add position" / sell-shares / movements editor, shared by Android and iOS. The
+ * localised [strings] and the back/remove [Painter]s are hoisted as parameters, the number
+ * formatting is delegated to [formatNumber], and the parse/validate/persist of the entered values
+ * is delegated to [onBuy]/[onSell] (which return the `price`/`shares` error flags) so the
+ * locale-aware number parsing stays on the host. The optional [twoPane] slot lets the host supply
+ * an adaptive two-pane layout (Android uses Accompanist `TwoPane`); when it is `null` the screen
+ * renders a single column. [HoldingsActivity] supplies these.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPositionScreen(
     ticker: String,
-    holdings: List<Holding>,
-    holdingsSum: HoldingSum,
-    title: String,
-    sharesLabel: String,
-    priceLabel: String,
-    addLabel: String,
-    currentPositionsLabel: String,
-    sharesColumnLabel: String,
-    priceColumnLabel: String,
-    valueColumnLabel: String,
-    removeContentDescription: String,
+    movements: List<Movement>,
+    summary: LedgerSummary,
+    strings: PositionEditorStrings,
     backIcon: Painter,
     removeIcon: Painter,
     snackbarHostState: SnackbarHostState,
     formatNumber: (Float) -> String,
     onBack: () -> Unit,
-    onAdd: (priceText: String, sharesText: String) -> Pair<Boolean, Boolean>,
-    onRemove: (Holding) -> Unit,
+    onBuy: (priceText: String, sharesText: String) -> Pair<Boolean, Boolean>,
+    onSell: (priceText: String, sharesText: String) -> Pair<Boolean, Boolean>,
+    onRemove: (Movement) -> Unit,
     twoPane: (@Composable (first: @Composable () -> Unit, second: @Composable () -> Unit) -> Unit)? = null,
 ) {
     Scaffold(
         modifier = Modifier.imePadding(),
         topBar = {
             TopBar(
-                text = title,
+                text = strings.title,
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -413,23 +433,18 @@ fun AddPositionScreen(
         }
     ) { paddingValues ->
         val input: @Composable () -> Unit = {
-            AddPositionInput(
+            PositionInput(
                 ticker = ticker,
-                sharesLabel = sharesLabel,
-                priceLabel = priceLabel,
-                addLabel = addLabel,
-                onAdd = onAdd,
+                strings = strings,
+                onBuy = onBuy,
+                onSell = onSell,
             )
         }
-        val currentHoldings: @Composable () -> Unit = {
-            CurrentHoldings(
-                holdings = holdings,
-                holdingsSum = holdingsSum,
-                currentPositionsLabel = currentPositionsLabel,
-                sharesColumnLabel = sharesColumnLabel,
-                priceColumnLabel = priceColumnLabel,
-                valueColumnLabel = valueColumnLabel,
-                removeContentDescription = removeContentDescription,
+        val positionAndMovements: @Composable () -> Unit = {
+            PositionAndMovements(
+                movements = movements,
+                summary = summary,
+                strings = strings,
                 removeIcon = removeIcon,
                 formatNumber = formatNumber,
                 onRemove = onRemove,
@@ -450,7 +465,7 @@ fun AddPositionScreen(
                         style = MaterialTheme.typography.headlineMedium,
                     )
                     input()
-                    currentHoldings()
+                    positionAndMovements()
                 }
             }
         } else {
@@ -472,7 +487,7 @@ fun AddPositionScreen(
                         }
                     },
                     {
-                        currentHoldings()
+                        positionAndMovements()
                     }
                 )
             }
@@ -480,23 +495,47 @@ fun AddPositionScreen(
     }
 }
 
+/**
+ * The shares/price input form plus the Buy/Sell [SingleChoiceSegmentedButtonRow] toggle that
+ * decides whether the submit button routes to [onBuy] or [onSell].
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddPositionInput(
+private fun PositionInput(
     ticker: String,
-    sharesLabel: String,
-    priceLabel: String,
-    addLabel: String,
-    onAdd: (priceText: String, sharesText: String) -> Pair<Boolean, Boolean>,
+    strings: PositionEditorStrings,
+    onBuy: (priceText: String, sharesText: String) -> Pair<Boolean, Boolean>,
+    onSell: (priceText: String, sharesText: String) -> Pair<Boolean, Boolean>,
 ) {
     val decimalFormatter = remember { DecimalFormatter() }
     var sharesError by remember { mutableStateOf(false) }
     var priceError by remember { mutableStateOf(false) }
     var priceText by remember(ticker) { mutableStateOf("") }
     var sharesText by remember(ticker) { mutableStateOf("") }
+    var isSell by remember(ticker) { mutableStateOf(false) }
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .align(Alignment.CenterHorizontally),
+        ) {
+            SegmentedButton(
+                selected = !isSell,
+                onClick = { isSell = false },
+                shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+            ) {
+                Text(text = strings.buyToggle)
+            }
+            SegmentedButton(
+                selected = isSell,
+                onClick = { isSell = true },
+                shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+            ) {
+                Text(text = strings.sellToggle)
+            }
+        }
         TextField(
             shape = AppTextFieldShape,
             modifier = Modifier.padding(vertical = 16.dp).align(Alignment.CenterHorizontally),
@@ -505,7 +544,7 @@ private fun AddPositionInput(
             singleLine = true,
             textStyle = TextStyle.Default.copy(textAlign = TextAlign.End),
             isError = sharesError,
-            label = { Text(text = sharesLabel) },
+            label = { Text(text = strings.sharesLabel) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
             onValueChange = {
@@ -521,7 +560,7 @@ private fun AddPositionInput(
             singleLine = true,
             textStyle = TextStyle.Default.copy(textAlign = TextAlign.End),
             isError = priceError,
-            label = { Text(text = priceLabel) },
+            label = { Text(text = if (isSell) strings.sellPriceLabel else strings.priceLabel) },
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Decimal),
             visualTransformation = DecimalInputVisualTransformation(decimalFormatter),
             onValueChange = {
@@ -531,8 +570,16 @@ private fun AddPositionInput(
         )
         Button(
             modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp),
+            colors = if (isSell) {
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                )
+            } else {
+                ButtonDefaults.buttonColors()
+            },
             onClick = {
-                val pair = onAdd(priceText, sharesText)
+                val pair = if (isSell) onSell(priceText, sharesText) else onBuy(priceText, sharesText)
                 priceError = pair.first
                 sharesError = pair.second
                 if (!priceError && !sharesError) {
@@ -542,108 +589,191 @@ private fun AddPositionInput(
             },
         ) {
             Text(
-                text = addLabel.uppercase(),
+                text = (if (isSell) strings.sellButton else strings.buyButton).uppercase(),
                 style = MaterialTheme.typography.labelLarge,
             )
         }
     }
 }
 
+/**
+ * The pool summary ("your position" — current shares/average price/cost basis) followed by the
+ * newest-first movements table (one row per buy/sell, each sell showing its realized gain) and a
+ * realized-total footer.
+ */
 @Composable
-private fun CurrentHoldings(
-    holdings: List<Holding>,
-    holdingsSum: HoldingSum,
-    currentPositionsLabel: String,
-    sharesColumnLabel: String,
-    priceColumnLabel: String,
-    valueColumnLabel: String,
-    removeContentDescription: String,
+private fun PositionAndMovements(
+    movements: List<Movement>,
+    summary: LedgerSummary,
+    strings: PositionEditorStrings,
     removeIcon: Painter,
     formatNumber: (Float) -> String,
-    onRemove: (Holding) -> Unit,
+    onRemove: (Movement) -> Unit,
 ) {
+    val gainByMovementId = remember(summary) {
+        summary.movementGains.associateBy { it.movement.id }
+    }
+    val reversedMovements = remember(movements) { movements.asReversed() }
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
-            text = currentPositionsLabel,
+            text = strings.yourPositionLabel,
             style = MaterialTheme.typography.labelLarge,
         )
-        HoldingRow(
-            modifier = Modifier,
-            shares = sharesColumnLabel,
-            price = priceColumnLabel,
-            value = valueColumnLabel,
-            removeContentDescription = removeContentDescription,
+        MovementRow(
+            first = strings.sharesColumnLabel,
+            second = strings.priceColumnLabel,
+            third = strings.valueColumnLabel,
+            removeContentDescription = strings.removeContentDescription,
             removeIcon = removeIcon,
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+        )
+        MovementRow(
+            modifier = Modifier.padding(bottom = 8.dp),
+            first = formatNumber(summary.shares),
+            second = formatNumber(summary.averagePrice),
+            third = formatNumber(summary.costBasis),
+            removeContentDescription = strings.removeContentDescription,
+            removeIcon = removeIcon,
+        )
+        Text(
+            modifier = Modifier.padding(top = 8.dp, bottom = 16.dp),
+            text = strings.movementsLabel,
+            style = MaterialTheme.typography.labelLarge,
         )
         LazyColumn(
             Modifier.padding(vertical = 8.dp),
             state = rememberLazyListState(),
         ) {
+            item {
+                MovementRow(
+                    first = "",
+                    second = "",
+                    third = strings.gainColumnLabel,
+                    removeContentDescription = strings.removeContentDescription,
+                    removeIcon = removeIcon,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                )
+            }
             items(
-                count = holdings.size,
-                key = { i -> holdings[i].id ?: i }
+                count = reversedMovements.size,
+                key = { i -> reversedMovements[i].id ?: i }
             ) { i ->
-                val holding = holdings[i]
-                HoldingRow(
+                val movement = reversedMovements[i]
+                val gain = gainByMovementId[movement.id]?.gain
+                val isBuy = movement.type == MovementType.BUY
+                MovementRow(
                     modifier = Modifier.padding(bottom = 8.dp),
-                    shares = formatNumber(holding.shares),
-                    price = formatNumber(holding.price),
-                    value = formatNumber(holding.totalValue()),
-                    removeContentDescription = removeContentDescription,
+                    first = if (isBuy) strings.buyToggle else strings.sellToggle,
+                    firstStyle = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    firstColor = if (isBuy) SharedColours.PositiveGreen else SharedColours.NegativeRed,
+                    second = "${formatNumber(movement.shares)} @ ${formatNumber(movement.price)}",
+                    third = gain?.let { formatSignedGain(it, formatNumber) } ?: NO_GAIN_PLACEHOLDER,
+                    thirdColor = gainColor(gain),
+                    removeContentDescription = strings.removeContentDescription,
                     removeIcon = removeIcon,
                     showRemoveButton = true,
-                    onRemoveClick = { onRemove(holding) }
+                    onRemoveClick = { onRemove(movement) },
                 )
             }
             item {
                 HorizontalDivider(thickness = 0.2.dp)
             }
             item {
-                HoldingRow(
-                    modifier = Modifier.padding(top = 8.dp),
-                    shares = formatNumber(holdingsSum.totalShares),
-                    price = formatNumber(holdingsSum.averagePrice),
-                    value = formatNumber(holdingsSum.totalPaidPrice),
-                    removeContentDescription = removeContentDescription,
-                    removeIcon = removeIcon,
+                RealizedTotalRow(
+                    label = strings.realizedTotalLabel,
+                    value = formatSignedGain(summary.realizedGain, formatNumber),
+                    color = gainColor(summary.realizedGain),
                 )
             }
         }
     }
 }
 
+private const val NO_GAIN_PLACEHOLDER = "—"
+
+/**
+ * Formats a realized gain with an explicit `+` for non-negative values, mirroring the app-wide
+ * convention in `Quote.gainLossString()`/`realizedGainString()`/`changeStringWithSign()` — negative
+ * values already carry their own `-` from [formatNumber].
+ */
+private fun formatSignedGain(gain: Float, formatNumber: (Float) -> String): String {
+    val formatted = formatNumber(gain)
+    return if (gain >= 0f) "+$formatted" else formatted
+}
+
+/** BUY movements (and the pool summary/header rows) carry no gain, so [gain] is `null` for them. */
 @Composable
-private fun HoldingRow(
-    modifier: Modifier = Modifier,
-    shares: String,
-    price: String,
+private fun gainColor(gain: Float?): Color = when {
+    gain == null -> Color.Unspecified
+    gain >= 0f -> SharedColours.PositiveGreen
+    else -> SharedColours.NegativeRed
+}
+
+@Composable
+private fun RealizedTotalRow(
+    label: String,
     value: String,
+    color: Color,
+) {
+    Row(
+        modifier = Modifier.padding(top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = label,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            color = color,
+        )
+    }
+}
+
+/**
+ * A generic three-column-plus-remove-button row, reused both for the "your position" header/summary
+ * (shares/price/value) and for each movement in the movements table (type/shares@price/gain). The
+ * DB entity `MovementRow` lives in `com.github.premnirmal.ticker.repo.data` and is never imported
+ * here, so there is no name clash.
+ */
+@Composable
+private fun MovementRow(
+    modifier: Modifier = Modifier,
+    first: String,
+    second: String,
+    third: String,
     removeContentDescription: String,
     removeIcon: Painter,
     style: TextStyle = MaterialTheme.typography.bodyLarge,
+    firstStyle: TextStyle = style,
+    firstColor: Color = Color.Unspecified,
+    thirdColor: Color = Color.Unspecified,
     showRemoveButton: Boolean = false,
     onRemoveClick: () -> Unit = {},
 ) {
-    androidx.compose.foundation.layout.Row(
+    Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             modifier = Modifier.weight(1f),
-            text = shares,
+            text = first,
+            style = firstStyle,
+            color = firstColor,
+        )
+        Text(
+            modifier = Modifier.weight(1f),
+            text = second,
             style = style,
         )
         Text(
             modifier = Modifier.weight(1f),
-            text = price,
+            text = third,
             style = style,
-        )
-        Text(
-            modifier = Modifier.weight(1f),
-            text = value,
-            style = style,
+            color = thirdColor,
         )
         IconButton(
             enabled = showRemoveButton,

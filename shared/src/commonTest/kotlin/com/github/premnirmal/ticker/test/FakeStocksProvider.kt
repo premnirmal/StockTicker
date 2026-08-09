@@ -91,6 +91,9 @@ class FakeStocksProvider(
     override suspend fun sell(ticker: String, shares: Float, price: Float): SellResult {
         val ledger = getMovements(ticker)
         val summary = ledger.replayLedger()
+        if (shares <= 0f) {
+            return SellResult.NotEnoughShares(summary.shares)
+        }
         if (shares > summary.shares + SHARE_EPSILON) {
             return SellResult.NotEnoughShares(summary.shares)
         }

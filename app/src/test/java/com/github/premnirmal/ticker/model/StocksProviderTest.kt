@@ -211,6 +211,36 @@ class StocksProviderTest : BaseUnitTest() {
         }
     }
 
+    @Test fun testSellZeroSharesReturnsNotEnoughSharesAndPersistsNothing() {
+        runBlocking {
+            val quote = Quote(symbol = "AAPL").apply {
+                movements = listOf(Movement("AAPL", MovementType.BUY, 5f, 10f, id = 1L))
+            }
+            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(quote))
+
+            val result = provider.sell("AAPL", shares = 0f, price = 12f)
+
+            assertTrue(result is SellResult.NotEnoughShares)
+            assertEquals(5f, (result as SellResult.NotEnoughShares).sharesOwned)
+            verify(storage, never()).addMovement(any())
+        }
+    }
+
+    @Test fun testSellNegativeSharesReturnsNotEnoughSharesAndPersistsNothing() {
+        runBlocking {
+            val quote = Quote(symbol = "AAPL").apply {
+                movements = listOf(Movement("AAPL", MovementType.BUY, 5f, 10f, id = 1L))
+            }
+            val provider = createProvider(tickers = setOf("AAPL"), quotes = listOf(quote))
+
+            val result = provider.sell("AAPL", shares = -1f, price = 12f)
+
+            assertTrue(result is SellResult.NotEnoughShares)
+            assertEquals(5f, (result as SellResult.NotEnoughShares).sharesOwned)
+            verify(storage, never()).addMovement(any())
+        }
+    }
+
     @Test fun testSellReturnsAverageCostGain() {
         runBlocking {
             val quote = Quote(symbol = "AAPL").apply {
