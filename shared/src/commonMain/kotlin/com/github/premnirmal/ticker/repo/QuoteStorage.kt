@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.repo
 
 import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 
@@ -49,11 +50,17 @@ interface QuoteStorage {
   /** Removes the quotes (and their holdings) for [tickers]. */
   suspend fun removeQuotesBySymbol(tickers: List<String>)
 
-  /** Adds a [holding], returning the id assigned to the newly persisted row. */
-  suspend fun addHolding(holding: Holding): Long
+  /** Appends a [movement] to its symbol's ledger, returning the id assigned to the new row. */
+  suspend fun addMovement(movement: Movement): Long
 
-  /** Removes a [holding] for [ticker]. */
-  suspend fun removeHolding(ticker: String, holding: Holding)
+  /** Removes a [movement] (by id) from its symbol's ledger. */
+  suspend fun removeMovement(movement: Movement)
+
+  /** Reads the ledger for [symbol] in replay order (empty if none). */
+  suspend fun readMovements(symbol: String): List<Movement>
+
+  /** Replaces the whole ledger for [symbol] — import/restore only; never used by quote refresh. */
+  suspend fun saveMovements(symbol: String, movements: List<Movement>)
 
   /** Persists per-quote [properties] (notes, display name, alerts). */
   suspend fun saveQuoteProperties(properties: Properties)

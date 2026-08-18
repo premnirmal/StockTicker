@@ -1,17 +1,21 @@
 package com.github.premnirmal.ticker.portfolio
 
-import com.github.premnirmal.ticker.network.data.Holding
-import com.github.premnirmal.ticker.network.data.Position
+import com.github.premnirmal.ticker.model.IStocksProvider
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.test.FakeStocksProvider
 import com.github.premnirmal.ticker.test.MainDispatcherRule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.math.abs
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class AddPositionViewModelTest {
@@ -22,65 +26,79 @@ class AddPositionViewModelTest {
     @AfterTest
     fun tearDown() = MainDispatcherRule.reset()
 
+    private fun vmWith(provider: IStocksProvider) =
+        AddPositionViewModel(provider).also { it.loadQuote("AAPL") }
+
+    private fun provider() = FakeStocksProvider(listOf(Quote(symbol = "AAPL")))
+
     @Test
-    fun loadQuote_publishesQuoteAndPosition() = runTest {
-        val quote = Quote(symbol = "AAPL").apply {
-            position = Position(symbol = "AAPL", holdings = mutableListOf(Holding("AAPL", 2f, 100f)))
-        }
-        val provider = FakeStocksProvider(listOf(quote))
-        val viewModel = AddPositionViewModel(provider)
-
-        viewModel.loadQuote("AAPL")
-
-        assertEquals("AAPL", viewModel.quote.value?.symbol)
-        assertEquals(2f, viewModel.position.value.totalShares())
+    fun buyEmitsBoughtAndGrowsPool() = runTest {
+        val vm = vmWith(provider())
+        val events = mutableListOf<PositionEvent>()
+        val job = launch(Dispatchers.Main) { vm.events.collect { events.add(it) } }
+        vm.buy("AAPL", 10f, 100f)
+        advanceUntilIdle()
+        assertIs<PositionEvent.Bought>(events.single())
+        assertEquals(1, vm.movements.value.size)
+        assertEquals(10f, vm.summary.value.shares)
+        job.cancel()
     }
 
     @Test
-    fun loadQuote_withNoPosition_publishesEmptyPosition() = runTest {
-        val quote = Quote(symbol = "AAPL")
-        val provider = FakeStocksProvider(listOf(quote))
-        val viewModel = AddPositionViewModel(provider)
-
-        viewModel.loadQuote("AAPL")
-
-        assertEquals("AAPL", viewModel.position.value.symbol)
-        assertTrue(viewModel.position.value.holdings.isEmpty())
+    fun overSellEmitsRejectionAndChangesNothing() = runTest {
+        val vm = vmWith(provider())
+        val events = mutableListOf<PositionEvent>()
+        val job = launch(Dispatchers.Main) { vm.events.collect { events.add(it) } }
+        vm.buy("AAPL", 10f, 100f)
+        vm.sell("AAPL", 11f, 120f)
+        advanceUntilIdle()
+        val rejection = events.filterIsInstance<PositionEvent.SellRejected>().single()
+        assertEquals(10f, rejection.sharesOwned)
+        assertEquals(1, vm.movements.value.size) // only the buy
+        job.cancel()
     }
 
     @Test
-    fun addHolding_addsToPositionAndEmitsAddedHolding() = runTest {
-        val quote = Quote(symbol = "AAPL")
-        val provider = FakeStocksProvider(listOf(quote))
-        val viewModel = AddPositionViewModel(provider)
-
-        val added = ArrayList<Holding>()
-        val collector = launch(Dispatchers.Main) { viewModel.addedHolding.collect { added.add(it) } }
-
-        viewModel.addHolding(symbol = "AAPL", shares = 3f, price = 50f)
-
-        assertEquals(1, added.size)
-        assertEquals(3f, added.first().shares)
-        assertEquals(3f, viewModel.position.value.totalShares())
-        collector.cancel()
+    fun validSellEmitsSoldWithAverageCostGain() = runTest {
+        val vm = vmWith(provider())
+        val events = mutableListOf<PositionEvent>()
+        val job = launch(Dispatchers.Main) { vm.events.collect { events.add(it) } }
+        vm.buy("AAPL", 20f, 150f)
+        vm.buy("AAPL", 10f, 239.22f)
+        vm.sell("AAPL", 10f, 231.40f)
+        advanceUntilIdle()
+        val sold = events.filterIsInstance<PositionEvent.Sold>().single()
+        assertTrue(abs(sold.gain - 516.60f) < 0.01f)
+        assertTrue(abs(vm.summary.value.realizedGain - 516.60f) < 0.01f)
+        job.cancel()
     }
 
     @Test
-    fun removeHolding_removesAndEmitsRemovedHolding() = runTest {
-        val holding = Holding("AAPL", 2f, 100f)
-        val quote = Quote(symbol = "AAPL").apply {
-            position = Position(symbol = "AAPL", holdings = mutableListOf(holding))
-        }
-        val provider = FakeStocksProvider(listOf(quote))
-        val viewModel = AddPositionViewModel(provider)
+    fun deletingASellRecomputesRealizedGain() = runTest {
+        val vm = vmWith(provider())
+        vm.buy("AAPL", 10f, 100f)
+        vm.sell("AAPL", 5f, 120f)
+        advanceUntilIdle()
+        val sellMovement = vm.movements.value.single { it.type == MovementType.SELL }
+        vm.deleteMovement("AAPL", sellMovement)
+        advanceUntilIdle()
+        assertEquals(0f, vm.summary.value.realizedGain)
+        assertEquals(10f, vm.summary.value.shares)
+    }
 
-        val removed = ArrayList<Holding>()
-        val collector = launch(Dispatchers.Main) { viewModel.removedHolding.collect { removed.add(it) } }
-
-        viewModel.removeHolding(symbol = "AAPL", holding = holding)
-
-        assertEquals(listOf(holding), removed)
-        assertTrue(viewModel.position.value.holdings.isEmpty())
-        collector.cancel()
+    @Test
+    fun deletingADependedOnBuyIsBlocked() = runTest {
+        val vm = vmWith(provider())
+        val events = mutableListOf<PositionEvent>()
+        val job = launch(Dispatchers.Main) { vm.events.collect { events.add(it) } }
+        vm.buy("AAPL", 10f, 100f)
+        vm.sell("AAPL", 5f, 120f)
+        advanceUntilIdle()
+        val buyMovement = vm.movements.value.single { it.type == MovementType.BUY }
+        vm.deleteMovement("AAPL", buyMovement)
+        advanceUntilIdle()
+        assertIs<PositionEvent.RemoveBlocked>(events.last())
+        assertEquals(2, vm.movements.value.size) // ledger unchanged
+        job.cancel()
     }
 }

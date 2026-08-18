@@ -133,7 +133,6 @@
   <string name="widget_name">Widget-Name</string>
   <string name="widget_name_updated">Widget-Name aktualisiert</string>
   <string name="set">Setzen</string>
-  <string name="current_positions">Aktuelle Bestände</string>
   <string name="total">Gesamt</string>
   <string name="positions">Bestände</string>
   <string name="recent_news">Neueste Nachrichten</string>
@@ -174,7 +173,6 @@
   <string name="alerts_disabled">Warnungen deaktiviert, Einstellungen überprüfen</string>
   <string name="add_notes">Anmerkungen hinzufügen</string>
   <string name="add_alerts">Benachrichtigungen hinzufügen</string>
-  <string name="remove_holding">Möchten Sie den Eintrag %1$s wirklich aus Ihrem Portfolio entfernen?</string>
   <string name="save">Speichern</string>
   <string name="desc_channel_alerts">Lagerwarnungen</string>
   <string name="desc_channel_summary">Tägliche Zusammenfassung</string>

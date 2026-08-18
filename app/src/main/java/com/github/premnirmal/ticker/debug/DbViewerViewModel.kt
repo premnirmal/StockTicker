@@ -84,10 +84,10 @@ class DbViewerViewModel constructor(
             val holdingsInfo = StringBuilder()
                 .append(
                     """
-            <h2>Holdings</h2>
+            <h2>Movements</h2>
             <table>
             <tr>
-            <th>id</th><th>Symbol</th><th>Shares</th><th>Price</th>
+            <th>id</th><th>Symbol</th><th>Type</th><th>Shares</th><th>Price</th>
             </tr>
             """
                 )
@@ -162,13 +162,14 @@ class DbViewerViewModel constructor(
                             .append("<td>${quote.isTriggerable}</td>")
                             .append("</tr>")
 
-                        val holdings = it.holdings
-                        holdings.forEach { holding ->
+                        val movements = it.movements
+                        movements.forEach { movement ->
                             holdingsInfo.append("<tr>")
-                                .append("<td>${holding.id}</td>")
-                                .append("<td>${holding.quoteSymbol}</td>")
-                                .append("<td>${holding.shares}</td>")
-                                .append("<td>${holding.price}</td>")
+                                .append("<td>${movement.id}</td>")
+                                .append("<td>${movement.quoteSymbol}</td>")
+                                .append("<td>${movement.type}</td>")
+                                .append("<td>${movement.shares}</td>")
+                                .append("<td>${movement.price}</td>")
                                 .append("</tr>")
                             yield()
                         }

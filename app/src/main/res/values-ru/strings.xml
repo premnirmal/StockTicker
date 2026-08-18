@@ -135,7 +135,6 @@
   <string name="widget_name">Название виджета</string>
   <string name="widget_name_updated">Название виджета обновлено</string>
   <string name="set">Установить</string>
-  <string name="current_positions">Текущие позиции</string>
   <string name="total">Общее</string>
   <string name="positions">Позиции</string>
   <string name="recent_news">Недавние новости</string>
@@ -176,7 +175,6 @@
   <string name="alerts_disabled">Оповещения отключены, проверьте настройки</string>
   <string name="add_notes">Добавить заметку</string>
   <string name="add_alerts">Оповещения</string>
-  <string name="remove_holding">Вы уверены, что хотите удалить %1$s из вашего портфолио?</string>
   <string name="save">Сохранить</string>
   <string name="desc_channel_alerts">Оповещения о движении акций</string>
   <string name="desc_channel_summary">Ежедневный обзор</string>

@@ -107,6 +107,15 @@
   <string name="price">Price</string>
   <string name="add_position">Positions</string>
   <string name="add">Add</string>
+  <string name="buy">Buy</string>
+  <string name="sell">Sell</string>
+  <string name="sell_price">Sell price</string>
+  <string name="your_position">Your position</string>
+  <string name="movements">Movements</string>
+  <string name="realized_total">Realized total</string>
+  <string name="realized_gain">Realized gain</string>
+  <string name="not_enough_shares">You only own %1$s shares</string>
+  <string name="remove_movement">Remove movement</string>
   <string name="done">Done</string>
   <string name="skip">Skip</string>
   <string name="edit_position">Positions</string>
@@ -139,6 +148,7 @@
   <string name="ok">OK</string>
   <string name="cancel">Cancel</string>
   <string name="invalid_number">Invalid number</string>
+  <string name="cannot_remove_buy">Can\'t remove this buy — later sells depend on it</string>
   <string name="invalid_time">Invalid time</string>
   <string name="add_positions_prompt">Do you want to add positions for %1$s?</string>
   <string name="already_in_portfolio">%1$s is already in your portfolio</string>
@@ -159,7 +169,6 @@
   <string name="widget_name">Widget name</string>
   <string name="widget_name_updated">Widget name updated</string>
   <string name="set">Set</string>
-  <string name="current_positions">Current Positions</string>
   <string name="total">Total</string>
   <string name="positions">Positions</string>
   <string name="recent_news">Recent News</string>
@@ -202,7 +211,6 @@
   <string name="add_notes">Add Notes</string>
   <string name="add_displayname">Add Display Name</string>
   <string name="add_alerts">Alerts</string>
-  <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
   <string name="save">Save</string>
   <string name="desc_channel_alerts">Stock alerts</string>
   <string name="desc_channel_summary">Daily summary</string>

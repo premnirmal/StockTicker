@@ -132,7 +132,6 @@
   <string name="widget_name">Nom du widget</string>
   <string name="widget_name_updated">Nom du widget mis à jour</string>
   <string name="set">Fixer</string>
-  <string name="current_positions">Positions actuelles</string>
   <string name="total">Total</string>
   <string name="positions">Positions</string>
   <string name="recent_news">Actualités récentes</string>
@@ -173,7 +172,6 @@
   <string name="alerts_disabled">Alertes désactivées, vérifiez les paramètres</string>
   <string name="add_notes">Ajouter des notess</string>
   <string name="add_alerts">Ajouter des alertes</string>
-  <string name="remove_holding">Êtes-vous sûr de vouloir supprimer l’entrée %1$s de votre portefeuille?</string>
   <string name="save">Sauvegardez</string>
   <string name="desc_channel_alerts">Alertes de stock</string>
   <string name="desc_channel_summary">Résumé quotidien</string>
