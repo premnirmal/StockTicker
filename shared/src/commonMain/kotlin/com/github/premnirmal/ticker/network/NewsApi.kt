@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.network
 
 import com.github.premnirmal.ticker.network.data.NewsRssFeed
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.expectSuccess
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
@@ -44,6 +45,7 @@ class GoogleNewsApi(
      */
     suspend fun getNewsFeed(query: String): NewsRssFeed {
         val body = httpClient.get(baseUrl.trimEnd('/')) {
+            expectSuccess = true
             url { appendPathSegments("rss", "search", "") }
             parameter("q", query)
         }.bodyAsText()
@@ -55,6 +57,7 @@ class GoogleNewsApi(
      */
     suspend fun getBusinessNews(): NewsRssFeed {
         val body = httpClient.get(baseUrl.trimEnd('/')) {
+            expectSuccess = true
             url { appendPathSegments("news", "rss", "headlines", "section", "topic", "BUSINESS") }
         }.bodyAsText()
         return parseRssFeed(body)
@@ -65,7 +68,7 @@ class GoogleNewsApi(
  * Multiplatform client for the Yahoo Finance news RSS endpoint. Replaces the Android-only Retrofit
  * `YahooFinanceNewsApi` interface; the public contract is unchanged so `NewsProvider` keeps working.
  *
- * @param baseUrl the Yahoo Finance news base URL (e.g. `https://finance.yahoo.com/news/`).
+ * @param baseUrl the Yahoo Finance RSS base URL (e.g. `https://feeds.finance.yahoo.com/rss/2.0/`).
  * @param httpClient the Ktor client to use; defaults to a freshly configured client.
  */
 class YahooFinanceNewsApi(
@@ -74,11 +77,16 @@ class YahooFinanceNewsApi(
 ) {
 
     /**
-     * Retrieves the Yahoo Finance market-news feed.
+     * Retrieves Yahoo Finance headlines for the S&P 500. The old `/news/rssindex` feed now
+     * returns an HTML 404 page.
      */
     suspend fun getNewsFeed(): NewsRssFeed {
         val body = httpClient.get(baseUrl.trimEnd('/')) {
-            url { appendPathSegments("rssindex") }
+            expectSuccess = true
+            url { appendPathSegments("headline") }
+            parameter("s", "^GSPC")
+            parameter("region", "US")
+            parameter("lang", "en-US")
         }.bodyAsText()
         return parseRssFeed(body)
     }

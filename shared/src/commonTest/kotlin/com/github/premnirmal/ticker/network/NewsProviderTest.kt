@@ -8,12 +8,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 /**
@@ -77,7 +79,7 @@ class NewsProviderTest {
     ) = NewsProvider(
         coroutineScope = CoroutineScope(SupervisorJob()),
         googleNewsApi = GoogleNewsApi(baseUrl = "https://news.google.com/", httpClient = jsonClient(googleEngine)),
-        yahooNewsApi = YahooFinanceNewsApi(baseUrl = "https://finance.yahoo.com/news/", httpClient = jsonClient(yahooNewsEngine)),
+        yahooNewsApi = YahooFinanceNewsApi(baseUrl = "https://feeds.finance.yahoo.com/rss/2.0/", httpClient = jsonClient(yahooNewsEngine)),
         apeWisdom = ApeWisdom(baseUrl = "https://apewisdom.io/api/v1.0/", httpClient = jsonClient(apeWisdomEngine)),
         yahooFinanceMostActive = YahooFinanceMostActiveApi(baseUrl = "https://finance.yahoo.com/", httpClient = jsonClient(mostActiveEngine)),
         stocksApi = stocksApi(yahooQuoteEngine)
@@ -107,6 +109,87 @@ class NewsProviderTest {
         val titles = result.data.map { it.title }
         assertTrue(titles.contains("Yahoo headline"))
         assertTrue(titles.contains("Google business"))
+    }
+
+    @Test
+    fun fetchMarketNewsUsesAndCachesGoogleWhenYahooReturnsHtml404() = runTest {
+        var googleRequests = 0
+        var yahooRequests = 0
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine {
+                yahooRequests++
+                respond("<html><body>Not found</body></html>", HttpStatusCode.NotFound)
+            },
+            googleEngine = MockEngine {
+                googleRequests++
+                respond(rssFeed("Google business"), HttpStatusCode.OK)
+            }
+        )
+
+        val result = provider.fetchMarketNews()
+        val cached = provider.fetchMarketNews(useCache = true)
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("Google business"), result.data.map { it.title })
+        assertEquals(result.data, cached.data)
+        assertEquals(1, yahooRequests)
+        assertEquals(1, googleRequests)
+    }
+
+    @Test
+    fun fetchMarketNewsUsesYahooWhenGoogleFails() = runTest {
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine { respond(rssFeed("Yahoo headline"), HttpStatusCode.OK) },
+            googleEngine = MockEngine { respondError(HttpStatusCode.ServiceUnavailable) }
+        )
+
+        val result = provider.fetchMarketNews()
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("Yahoo headline"), result.data.map { it.title })
+    }
+
+    @Test
+    fun fetchMarketNewsUsesGoogleWhenYahooReturnsHtmlWithSuccessStatus() = runTest {
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine {
+                respond("<html><body>Consent required</body></html>", HttpStatusCode.OK)
+            },
+            googleEngine = MockEngine { respond(rssFeed("Google business"), HttpStatusCode.OK) }
+        )
+
+        val result = provider.fetchMarketNews()
+
+        assertTrue(result.wasSuccessful)
+        assertEquals(listOf("Google business"), result.data.map { it.title })
+    }
+
+    @Test
+    fun fetchMarketNewsReturnsFailureWhenBothFeedsFail() = runTest {
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine { respondError(HttpStatusCode.TooManyRequests) },
+            googleEngine = MockEngine { respondError(HttpStatusCode.ServiceUnavailable) }
+        )
+
+        val result = provider.fetchMarketNews()
+
+        assertFalse(result.wasSuccessful)
+        assertTrue(result.hasError)
+    }
+
+    @Test
+    fun fetchMarketNewsPropagatesCancellation() = runTest {
+        var googleRequests = 0
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine { throw CancellationException("Cancelled") },
+            googleEngine = MockEngine {
+                googleRequests++
+                respond(rssFeed("Google business"), HttpStatusCode.OK)
+            }
+        )
+
+        assertFailsWith<CancellationException> { provider.fetchMarketNews() }
+        assertEquals(0, googleRequests)
     }
 
     @Test

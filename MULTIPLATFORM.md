@@ -151,8 +151,11 @@ retained as a historical record of how the work was sequenced.
   from `:app` into `commonMain`. Like `StocksApi` it no longer depends on `Timber` (now the
   multiplatform `AppLogger`, extended with `w`/`d` levels), `Dispatchers.IO` (now `ioDispatcher`)
   or Hilt/`javax.inject` (it is now plain and declared in the shared Koin `sharedModule`).
-  The public contract is unchanged so the `:app` view models keep working. `commonTest`
-  (`NewsProviderTest`, via Ktor `MockEngine`) covers the merged market-news feeds, the
+  The public contract is unchanged so the `:app` view models keep working.
+  Yahoo headlines use the S&P 500 feed at `https://feeds.finance.yahoo.com/rss/2.0/headline`
+  instead of the retired `/news/rssindex` endpoint. RSS requests reject HTTP errors before parsing;
+  market news uses either available source and reports failure only when both feeds fail.
+  `commonTest` (`NewsProviderTest`, via Ktor `MockEngine`) covers the merged and single-source market-news feeds, the
   trending-stocks ApeWisdom fallback and the news-query failure path, so the aggregation is verified
   on iOS as well as Android.
 - Moved the `CommitsProvider` ("what's new" changelog reader) from `:app` into `commonMain`. Like

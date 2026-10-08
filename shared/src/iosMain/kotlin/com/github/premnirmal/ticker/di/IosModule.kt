@@ -188,7 +188,7 @@ private const val YAHOO_ENDPOINT = "https://query1.finance.yahoo.com/"
 private const val YAHOO_INITIAL_LOAD_ENDPOINT = "https://finance.yahoo.com/"
 private const val YAHOO_FINANCE_ENDPOINT = "https://finance.yahoo.com/"
 private const val GOOGLE_NEWS_ENDPOINT = "https://news.google.com/"
-private const val YAHOO_NEWS_ENDPOINT = "https://finance.yahoo.com/news/"
+private const val YAHOO_NEWS_ENDPOINT = "https://feeds.finance.yahoo.com/rss/2.0/"
 private const val HISTORICAL_DATA_ENDPOINT = "https://query1.finance.yahoo.com/v8/finance/"
 private const val APEWISDOM_ENDPOINT = "https://apewisdom.io/api/v1.0/"
 

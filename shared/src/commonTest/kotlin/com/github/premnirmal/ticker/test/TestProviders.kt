@@ -76,7 +76,7 @@ object TestProviders {
     ) = NewsProvider(
         coroutineScope = CoroutineScope(SupervisorJob()),
         googleNewsApi = GoogleNewsApi(baseUrl = "https://news.google.com/", httpClient = jsonClient(googleEngine)),
-        yahooNewsApi = YahooFinanceNewsApi(baseUrl = "https://finance.yahoo.com/news/", httpClient = jsonClient(yahooNewsEngine)),
+        yahooNewsApi = YahooFinanceNewsApi(baseUrl = "https://feeds.finance.yahoo.com/rss/2.0/", httpClient = jsonClient(yahooNewsEngine)),
         apeWisdom = ApeWisdom(baseUrl = "https://apewisdom.io/api/v1.0/", httpClient = jsonClient(apeWisdomEngine)),
         yahooFinanceMostActive = YahooFinanceMostActiveApi(baseUrl = "https://finance.yahoo.com/", httpClient = jsonClient(mostActiveEngine)),
         stocksApi = stocksApi(yahooQuoteEngine)
