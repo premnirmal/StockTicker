@@ -162,12 +162,14 @@ private fun QuotesGrid(
     if (widgetData.showPortfolioSummary) {
         val context = androidx.compose.ui.platform.LocalContext.current
         val tableColumns = stockTableColumns(widthDp, stockTableScreenWidth(context))
-        val rows = stockTableRows(context, quotes, stockPerformance)
+        val rows = if (widgetData.stockTableExpanded) stockTableRows(context, quotes, stockPerformance) else emptyList()
         LazyColumn {
             item { PortfolioSummaryPreview(widgetData, portfolioSummary) }
-            item { StockTableHeaderPreview(context, widgetData, tableColumns) }
-            itemsIndexed(rows, key = { _, row -> row.symbol }) { _, row ->
-                StockTableRowPreview(widgetData, tableColumns, row)
+            if (widgetData.stockTableExpanded) {
+                item { StockTableHeaderPreview(context, widgetData, tableColumns) }
+                itemsIndexed(rows, key = { _, row -> row.symbol }) { _, row ->
+                    StockTableRowPreview(widgetData, tableColumns, row)
+                }
             }
         }
         return

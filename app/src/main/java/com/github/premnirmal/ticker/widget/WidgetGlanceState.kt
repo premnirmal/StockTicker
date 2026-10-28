@@ -69,6 +69,7 @@ data class SerializableWidgetState(
     val isRefreshing: Boolean = false,
     val showRefreshButton: Boolean = false,
     val showPortfolioSummary: Boolean = false,
+    val stockTableExpanded: Boolean = false,
     val fetchState: SerializableFetchState = SerializableFetchState.NotFetched,
 ) {
     fun getChangeColor(change: Float, changeInPercent: Float): Int {
@@ -103,6 +104,7 @@ data class SerializableWidgetState(
                 textColor = state.textColor,
                 showRefreshButton = state.showRefreshButton,
                 showPortfolioSummary = state.showPortfolioSummary,
+                stockTableExpanded = state.stockTableExpanded,
                 isRefreshing = isRefreshing,
                 fetchState = SerializableFetchState.from(fetchState),
             )

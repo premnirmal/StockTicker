@@ -15,13 +15,14 @@ class WidgetSummaryStateTest {
         val old = """{"widgetState":{},"quotes":[]}"""
         val state = WidgetGlanceStateSerializer.readFrom(ByteArrayInputStream(old.toByteArray()))
         assertFalse(state.widgetState.showPortfolioSummary)
+        assertFalse(state.widgetState.stockTableExpanded)
         assertTrue(state.portfolioSummary.isEmpty())
         assertTrue(state.stockPerformance.isEmpty())
     }
 
     @Test fun summaryRoundTripsWithUnavailableMetrics() = runTest {
         val state = WidgetGlanceState(
-            widgetState = SerializableWidgetState(showPortfolioSummary = true),
+            widgetState = SerializableWidgetState(showPortfolioSummary = true, stockTableExpanded = true),
             portfolioSummary = listOf(PortfolioSummary("USD", 250.0, 80.0, null, -3.8, null)),
             stockPerformance = listOf(StockPerformance("A", "USD", null, -3.8, null, null, null)),
         )
@@ -37,6 +38,7 @@ class WidgetSummaryStateTest {
         }]}"""
         val state = WidgetGlanceStateSerializer.readFrom(ByteArrayInputStream(old.toByteArray()))
         assertTrue(state.widgetState.showPortfolioSummary)
+        assertFalse(state.widgetState.stockTableExpanded)
         assertEquals("EUR", state.portfolioSummary.single().currency)
         assertTrue(state.stockPerformance.isEmpty())
     }

@@ -189,18 +189,20 @@ private fun QuotesGrid(
     if (widgetData.showPortfolioSummary) {
         val context = LocalContext.current
         val tableColumns = stockTableColumns(LocalSize.current.width.value, stockTableScreenWidth(context))
-        val rows = stockTableRows(context, quotes, stockPerformance)
+        val rows = if (widgetData.stockTableExpanded) stockTableRows(context, quotes, stockPerformance) else emptyList()
         // One scrolling collection keeps every currency group and stock accessible on small widgets.
         LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
             if (portfolioSummary.isEmpty()) item { PortfolioSummaryGlance(widgetData, emptyList()) }
             itemsIndexed(portfolioSummary, itemId = { index, _ -> index.toLong() }) { _, summary ->
                 PortfolioSummaryGlance(widgetData, listOf(summary))
             }
-            item(itemId = portfolioSummary.size.toLong()) {
-                StockTableHeaderGlance(context, widgetData, tableColumns)
-            }
-            itemsIndexed(rows, itemId = { index, _ -> (index + portfolioSummary.size + 1).toLong() }) { _, row ->
-                StockTableRowGlance(widgetData, tableColumns, row)
+            if (widgetData.stockTableExpanded) {
+                item(itemId = portfolioSummary.size.toLong()) {
+                    StockTableHeaderGlance(context, widgetData, tableColumns)
+                }
+                itemsIndexed(rows, itemId = { index, _ -> (index + portfolioSummary.size + 1).toLong() }) { _, row ->
+                    StockTableRowGlance(widgetData, tableColumns, row)
+                }
             }
         }
     } else {

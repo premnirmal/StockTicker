@@ -29,9 +29,13 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(application = TestApplication::class, qualifiers = "w400dp")
 class PortfolioSummaryRenderTest {
-    @Test fun translatesNarrowAndWideWidgetsWithMultipleCurrenciesInEveryLayout() = runTest {
+    @Test fun translatesOpenAndClosedTablesAtEveryWidthAndTheme() = runTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val scenarios = listOf(100, 180, 240, 300, 340, 400).flatMap { listOf(it to false, it to true) }
+        val scenarios = listOf(100, 180, 240, 300, 340, 400).flatMap { width ->
+            listOf(false, true).flatMap { dark ->
+                listOf(false, true).map { expanded -> Triple(width, dark, expanded) }
+            }
+        }
         val quotes = listOf(
             Quote(
                 "A",
@@ -45,10 +49,11 @@ class PortfolioSummaryRenderTest {
             },
         )
         val history = mapOf("A" to 123400.0, "B" to 100.0)
-        for ((width, dark) in scenarios) {
+        for ((width, dark, expanded) in scenarios) {
             for (layout in SerializableLayoutType.entries) {
                 val state = SerializableWidgetState(
                     showPortfolioSummary = true,
+                    stockTableExpanded = expanded,
                     hideWidgetHeader = true,
                     layoutType = layout,
                     isDarkMode = dark,

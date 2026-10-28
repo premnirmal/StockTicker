@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -133,9 +135,23 @@ fun WidgetsScreen(
                 WidgetPreview(
                     fetchState = fetchState,
                     widgetData = it,
-                    state = it.toState(),
                     onRefreshClick = { viewModel.refresh() },
                 )
+            }
+        },
+        stockTableControl = {
+            widgetData?.let { data ->
+                val state by data.data.collectAsState()
+                Button(
+                    onClick = { data.setStockTableExpanded(!data.stockTableExpanded()) },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        stringResource(
+                            if (state.stockTableExpanded) R.string.stock_table_close else R.string.stock_table_open
+                        )
+                    )
+                }
             }
         },
         modifier = modifier,
@@ -169,7 +185,6 @@ fun WidgetsScreen(
 private fun WidgetPreview(
     fetchState: FetchState,
     widgetData: WidgetData,
-    state: WidgetData.Data,
     onRefreshClick: () -> Unit,
 ) {
     Box(
@@ -177,6 +192,7 @@ private fun WidgetPreview(
             .paint(painterResource(R.drawable.bg_header_light), contentScale = ContentScale.FillBounds)
             .padding(24.dp),
     ) {
+        val state by widgetData.data.collectAsState()
         val quotes by widgetData.stocks.collectAsState()
         val summary by widgetData.portfolioSummary.collectAsState()
         val performance by widgetData.stockPerformance.collectAsState()

@@ -249,6 +249,8 @@
     <string name="portfolio_gain_percent" formatted="false">% Gain</string>
     <string name="portfolio_month_change">Month to date</string>
     <string name="stock_table_stock">Stock</string>
+    <string name="stock_table_open">Open stock table</string>
+    <string name="stock_table_close">Close stock table</string>
     <string name="stock_table_day" formatted="false">% Day</string>
     <string name="stock_table_month" formatted="false">% Month</string>
 </resources>

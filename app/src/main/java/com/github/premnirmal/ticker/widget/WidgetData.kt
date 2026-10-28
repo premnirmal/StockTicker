@@ -460,6 +460,14 @@ class WidgetData : IWidgetData, KoinComponent {
 
     fun showPortfolioSummary(): Boolean = preferences.getBoolean("SHOW_PORTFOLIO_SUMMARY", false)
 
+    fun stockTableExpanded(): Boolean = preferences.getBoolean("STOCK_TABLE_EXPANDED", false)
+
+    fun setStockTableExpanded(expanded: Boolean) {
+        preferences.edit { putBoolean("STOCK_TABLE_EXPANDED", expanded) }
+        _data.value = toState()
+        emitWidgetChanges(refreshSummary = false)
+    }
+
     fun setShowPortfolioSummary(show: Boolean) {
         preferences.edit { putBoolean("SHOW_PORTFOLIO_SUMMARY", show) }
         _prefsFlow.value = toPrefs()
@@ -535,6 +543,7 @@ class WidgetData : IWidgetData, KoinComponent {
             textColor = textColorRes(),
             showRefreshButton = showRefreshButton(),
             showPortfolioSummary = showPortfolioSummary(),
+            stockTableExpanded = stockTableExpanded(),
         )
     }
 
@@ -653,6 +662,7 @@ class WidgetData : IWidgetData, KoinComponent {
         val textColor: Int,
         val showRefreshButton: Boolean,
         val showPortfolioSummary: Boolean = false,
+        val stockTableExpanded: Boolean = false,
     ) : Parcelable
 
     @Parcelize

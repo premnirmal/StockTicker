@@ -12,6 +12,7 @@ import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,7 @@ import org.junit.runner.RunWith
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import org.mockito.Mockito.clearInvocations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -112,6 +114,45 @@ class WidgetDataSummaryTest {
         first.setShowPortfolioSummary(false)
         assertTrue(first.portfolioSummary.value.isEmpty())
         assertTrue(first.stockPerformance.value.isEmpty())
+    }
+
+    @Test fun tableChoiceIsIndependentAndSurvivesRefreshesAndSummaryToggling() = runTest {
+        val quote = Quote(
+            "A",
+            lastTradePrice = 100f,
+            position = Position("A", mutableListOf(Holding("A", 2f, 50f))),
+        )
+        whenever(stocks.getStock("A")).thenReturn(quote)
+        val first = WidgetData(1, 101)
+        val second = WidgetData(2, 102)
+        assertFalse(first.data.value.stockTableExpanded)
+        assertFalse(first.stockTableExpanded())
+        first.setShowPortfolioSummary(true)
+        clearInvocations(widgets, stocks, history)
+
+        first.setStockTableExpanded(true)
+        assertTrue(first.data.value.stockTableExpanded)
+        assertTrue(SerializableWidgetState.from(first.data.value).stockTableExpanded)
+        assertFalse(second.data.value.stockTableExpanded)
+        verify(widgets, never()).refreshPortfolioSummaries()
+        verify(history, never()).refresh(any(), any())
+        verify(stocks, never()).fetch(any())
+
+        quote.position!!.add(Holding("A", 1f, 60f))
+        first.refreshStocksList()
+        assertTrue(first.data.value.stockTableExpanded)
+        assertEquals(300.0, first.portfolioSummary.value.single().holdings)
+        first.rearrange(emptyList())
+        assertTrue(first.data.value.stockTableExpanded)
+        first.setShowPortfolioSummary(false)
+        assertTrue(first.data.value.stockTableExpanded)
+        first.setShowPortfolioSummary(true)
+        assertTrue(first.data.value.stockTableExpanded)
+        assertTrue(WidgetData(1, 101).stockTableExpanded())
+
+        first.setStockTableExpanded(false)
+        assertFalse(first.data.value.stockTableExpanded)
+        assertFalse(WidgetData(1, 101).stockTableExpanded())
     }
 
     @Test fun unheldStocksParticipateInBackgroundHistoryRefresh() = runTest {

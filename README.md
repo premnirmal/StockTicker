@@ -26,7 +26,9 @@ gain percentage, and month-to-date percentage above the stocks. Add share quanti
 prices in the app first. Only stocks selected for that widget contribute, and each currency has
 its own totals. Scroll the widget to reach additional currencies and stocks.
 
-Below the totals, a table shows every selected stock, including stocks without saved holdings.
+In the app's Widget tab, tap **Open stock table** below **Show portfolio summary** to display every
+selected stock beneath the totals, including stocks without saved holdings. Tap **Close stock table**
+to hide it. The table starts closed, and each widget remembers its choice across refreshes and restarts.
 At less than 45% of the screen width it shows the stock name, currency, and daily percentage.
 As you widen the widget, holdings appear at 45%, gain at 60%, gain percentage at 75%, and
 month-to-date percentage at 85%. A nearly full-width phone widget shows all six columns.
