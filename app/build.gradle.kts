@@ -262,6 +262,9 @@ dependencies {
   testImplementation(libs.mockito.core)
   testImplementation(libs.mockito.kotlin)
   testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.ktor.client.mock)
+  testImplementation(libs.ktor.client.content.negotiation)
+  testImplementation(libs.ktor.serialization.kotlinx.json)
   testImplementation(libs.androidx.work.testing)
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)

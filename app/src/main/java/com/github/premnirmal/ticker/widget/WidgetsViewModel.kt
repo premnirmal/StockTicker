@@ -28,6 +28,7 @@ class WidgetsViewModel constructor(
     fun refresh() {
         viewModelScope.launch {
             stocksProvider.fetch()
+            widgetDataProvider.refreshPortfolioSummaries(force = true)
         }
     }
 }

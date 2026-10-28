@@ -117,6 +117,8 @@ fun WidgetsScreen(
             showCurrencyDesc = stringResource(id = R.string.setting_currency_desc),
             showRefresh = stringResource(id = R.string.show_refresh),
             showRefreshDesc = stringResource(id = R.string.show_refresh_desc),
+            showPortfolioSummary = stringResource(R.string.show_portfolio_summary),
+            showPortfolioSummaryDesc = stringResource(R.string.show_portfolio_summary_desc),
         ),
         spinnerArrowIcon = painterResource(id = R.drawable.ic_arrow_down),
         doneIcon = painterResource(id = R.drawable.ic_done),
@@ -176,11 +178,13 @@ private fun WidgetPreview(
             .padding(24.dp),
     ) {
         val quotes by widgetData.stocks.collectAsState()
-        val data = remember(state) { SerializableWidgetState.from(state, fetchState, false) }
+        val summary by widgetData.portfolioSummary.collectAsState()
+        val data = remember(state, fetchState) { SerializableWidgetState.from(state, fetchState, false) }
         GlanceWidgetPreview(
             modifier = Modifier.fillMaxWidth().height(220.dp),
             widgetData = data,
             quotes = quotes,
+            portfolioSummary = summary,
             onRefreshClick = onRefreshClick,
         )
     }
@@ -211,6 +215,7 @@ private class WidgetDataSettings(
     override fun setHideHeader(value: Boolean) = widgetData.setHideHeader(value)
     override fun setCurrencyEnabled(value: Boolean) = widgetData.setCurrencyEnabled(value)
     override fun setShowRefreshButton(value: Boolean) = widgetData.setShowRefreshButton(value)
+    override fun setShowPortfolioSummary(value: Boolean) = widgetData.setShowPortfolioSummary(value)
 }
 
 @Suppress("DEPRECATION")
@@ -226,4 +231,5 @@ private fun WidgetData.Prefs.toWidgetPrefs() = WidgetPrefs(
     hideWidgetHeader = hideWidgetHeader,
     showCurrency = showCurrency,
     showRefreshButton = showRefreshButton,
+    showPortfolioSummary = showPortfolioSummary,
 )

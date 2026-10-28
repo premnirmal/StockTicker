@@ -13,11 +13,9 @@ fun Project.getVersionNameFromGit(): String =
 
 fun Project.getOldGitVersionFromGit(): String =
   try {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      execAndGetStdout("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 15 | Select-Object -last 1")
-    } else {
-      execAndGetStdout("sh", "-c", "git tag --sort=-committerdate | head -20 | tail -1")
-    }
+    val count = if (Os.isFamily(Os.FAMILY_WINDOWS)) 15 else 20
+    execAndGetStdout("git", "tag", "--sort=-committerdate")
+      .lineSequence().filter(String::isNotBlank).take(count).lastOrNull() ?: getVersionNameFromGit()
   } catch (e: Exception) {
     println(e.message)
     println(e.stackTrace)
@@ -26,12 +24,7 @@ fun Project.getOldGitVersionFromGit(): String =
 
 fun Project.getCommitsBetween(old: String, new: String): String =
   try {
-    val log =
-      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        execAndGetStdout("powershell", "-command", "git log --pretty=format:\"%s\" $old...$new")
-      } else {
-        execAndGetStdout("sh", "-c", "git log --pretty=format:\"%s\" $old...$new")
-      }
+    val log = execAndGetStdout("git", "log", "--pretty=format:%s", "$old...$new")
     log.replace("\n", "\\n")
   } catch (e: Exception) {
     println(e.message)

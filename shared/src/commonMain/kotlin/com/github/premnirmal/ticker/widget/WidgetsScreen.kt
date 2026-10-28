@@ -258,6 +258,15 @@ private fun LazyListScope.widgetSettings(
     }
     item {
         CheckboxPreference(
+            title = strings.showPortfolioSummary,
+            subtitle = strings.showPortfolioSummaryDesc,
+            checked = prefs.showPortfolioSummary,
+            onCheckChanged = settings::setShowPortfolioSummary
+        )
+        divider()
+    }
+    item {
+        CheckboxPreference(
             title = strings.hideHeader,
             subtitle = strings.hideHeaderDesc,
             checked = prefs.hideWidgetHeader,

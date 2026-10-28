@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.PortfolioSummary
 import com.github.premnirmal.tickerwidget.R
 import kotlin.random.Random
 
@@ -51,22 +54,23 @@ fun GlanceWidgetPreview(
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
     onRefreshClick: () -> Unit = {},
+    portfolioSummary: List<PortfolioSummary> = emptyList(),
 ) {
-    val columns = when {
-        widgetData.sizePref > 0 -> widgetData.sizePref
-        widgetData.layoutType == SerializableLayoutType.MyPortfolio -> 1
-        else -> 2
-    }
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .toBackgroundPainter(widgetData)
             // .paint(painterResource(widgetData.backgroundResource))
             .padding(6.dp)
     ) {
+        val columns = widgetColumnCount(maxWidth.value.toInt(), widgetData.sizePref)
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
+            if (!widgetData.hideWidgetHeader && quotes.isNotEmpty()) Header(widgetData, onRefreshClick)
+            if (widgetData.showPortfolioSummary && quotes.isEmpty()) {
+                PortfolioSummaryPreview(widgetData, portfolioSummary)
+            }
             if (quotes.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
@@ -83,10 +87,7 @@ fun GlanceWidgetPreview(
                     )
                 }
             } else {
-                if (!widgetData.hideWidgetHeader) {
-                    Header(widgetData, onRefreshClick)
-                }
-                QuotesGrid(columns, widgetData, quotes)
+                QuotesGrid(columns, widgetData, quotes, portfolioSummary)
             }
         }
     }
@@ -150,6 +151,7 @@ private fun QuotesGrid(
     columns: Int,
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
+    portfolioSummary: List<PortfolioSummary>,
 ) {
     var changeType by remember(widgetData) { mutableStateOf(widgetData.changeType) }
     val textColor = colorResource(widgetData.textColor)
@@ -160,10 +162,13 @@ private fun QuotesGrid(
         modifier = Modifier,
         columns = GridCells.Fixed(columns),
     ) {
+        if (widgetData.showPortfolioSummary) {
+            item(span = { GridItemSpan(maxLineSpan) }) { PortfolioSummaryPreview(widgetData, portfolioSummary) }
+        }
         items(items = quotes, key = { it.symbol }) { stock ->
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()
-            val priceFormatted = remember(widgetData.showCurrency) {
+            val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
                 if (widgetData.showCurrency) {
                     stock.priceFormat.format(stock.lastTradePrice)
                 } else {
@@ -177,7 +182,7 @@ private fun QuotesGrid(
                 widgetData.getChangeColor(change, changeInPercent)
             }
             val changeColor = colorResource(widgetChangeColor)
-            val changeFormatted = remember(changeType, layoutType) {
+            val changeFormatted = remember(changeType, layoutType, stock.change, stock.changeInPercent) {
                 if (layoutType == SerializableLayoutType.Tabs) {
                     changeValueFormatted
                 } else {

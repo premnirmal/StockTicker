@@ -358,6 +358,7 @@ class StocksProvider constructor(
         val id = storage.addHolding(holding)
         holding.id = id
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+        widgetDataProvider.broadcastUpdateAllWidgets()
         return holding
     }
 
@@ -374,6 +375,7 @@ class StocksProvider constructor(
         }
         storage.removeHolding(ticker, holding)
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+        widgetDataProvider.broadcastUpdateAllWidgets()
         return removed
     }
 

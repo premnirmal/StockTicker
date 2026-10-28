@@ -10,6 +10,7 @@ import androidx.glance.state.GlanceStateDefinition
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.PortfolioSummary
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -27,6 +28,7 @@ import java.time.ZonedDateTime
 data class WidgetGlanceState(
     val widgetState: SerializableWidgetState,
     val quotes: List<Quote> = emptyList(),
+    val portfolioSummary: List<PortfolioSummary> = emptyList(),
 ) {
     companion object {
         val Default = WidgetGlanceState(
@@ -64,6 +66,7 @@ data class SerializableWidgetState(
     val textColor: Int = 0,
     val isRefreshing: Boolean = false,
     val showRefreshButton: Boolean = false,
+    val showPortfolioSummary: Boolean = false,
     val fetchState: SerializableFetchState = SerializableFetchState.NotFetched,
 ) {
     fun getChangeColor(change: Float, changeInPercent: Float): Int {
@@ -97,6 +100,7 @@ data class SerializableWidgetState(
                 negativeTextColor = state.negativeTextColor,
                 textColor = state.textColor,
                 showRefreshButton = state.showRefreshButton,
+                showPortfolioSummary = state.showPortfolioSummary,
                 isRefreshing = isRefreshing,
                 fetchState = SerializableFetchState.from(fetchState),
             )
