@@ -62,7 +62,7 @@ internal fun summaryMetrics(context: Context, summary: PortfolioSummary): List<S
     )
 }
 
-private fun metricColor(state: SerializableWidgetState, change: Double?): Int = when {
+internal fun metricColor(state: SerializableWidgetState, change: Double?): Int = when {
     change == null || change == 0.0 -> state.textColor
     change < 0 -> state.negativeTextColor
     else -> state.positiveTextColor

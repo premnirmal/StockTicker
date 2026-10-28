@@ -11,8 +11,11 @@ import androidx.glance.appwidget.compose
 import androidx.glance.appwidget.provideContent
 import androidx.test.core.app.ApplicationProvider
 import com.github.premnirmal.ticker.TestApplication
+import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Position
+import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
-import com.github.premnirmal.ticker.portfolio.PortfolioSummary
+import com.github.premnirmal.ticker.portfolio.PortfolioSummaryCalculator
 import com.github.premnirmal.tickerwidget.R
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
@@ -24,11 +27,24 @@ import org.robolectric.annotation.Config
 /** Exercises real Glance-to-RemoteViews translation, including collection IDs and layout nesting. */
 @OptIn(ExperimentalGlanceApi::class)
 @RunWith(RobolectricTestRunner::class)
-@Config(application = TestApplication::class)
+@Config(application = TestApplication::class, qualifiers = "w400dp")
 class PortfolioSummaryRenderTest {
     @Test fun translatesNarrowAndWideWidgetsWithMultipleCurrenciesInEveryLayout() = runTest {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        val scenarios = listOf(180 to false, 400 to false, 180 to true, 400 to true)
+        val scenarios = listOf(100, 180, 240, 300, 340, 400).flatMap { listOf(it to false, it to true) }
+        val quotes = listOf(
+            Quote(
+                "A",
+                lastTradePrice = 123456.78f,
+                position = Position("A", mutableListOf(Holding("A", 1000000f, 123457f))),
+                properties = Properties("A", displayname = "A very long custom stock name"),
+            ).apply { previousClose = 123450f },
+            Quote("B", lastTradePrice = 50f).apply {
+                previousClose = 40f
+                currencyCode = "EUR"
+            },
+        )
+        val history = mapOf("A" to 123400.0, "B" to 100.0)
         for ((width, dark) in scenarios) {
             for (layout in SerializableLayoutType.entries) {
                 val state = SerializableWidgetState(
@@ -46,11 +62,9 @@ class PortfolioSummaryRenderTest {
                         provideContent {
                             GlanceWidget(
                                 state,
-                                listOf(Quote("A", lastTradePrice = 100f)),
-                                listOf(
-                                    PortfolioSummary("USD", 123456789012.34, -500.0, -1.0, 2.0, null),
-                                    PortfolioSummary("EUR", 100.0, 20.0, 25.0, 0.0, 10.0),
-                                ),
+                                quotes,
+                                PortfolioSummaryCalculator.calculate(quotes, history),
+                                PortfolioSummaryCalculator.calculateStocks(quotes, history),
                             )
                         }
                     }

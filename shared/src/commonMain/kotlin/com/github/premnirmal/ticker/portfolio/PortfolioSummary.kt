@@ -14,8 +14,39 @@ data class PortfolioSummary(
     val monthChangePercent: Double?,
 )
 
+/** Per-stock price performance is available even when no position has been entered. */
+@Serializable
+data class StockPerformance(
+    val symbol: String,
+    val currency: String,
+    val holdings: Double?,
+    val dayChangePercent: Double?,
+    val gain: Double?,
+    val gainPercent: Double?,
+    val monthChangePercent: Double?,
+)
+
 /** Price performance of today's positions, excluding cash flows, dividends and realised gains. */
 object PortfolioSummaryCalculator {
+    fun calculateStocks(quotes: List<Quote>, monthCloses: Map<String, Double> = emptyMap()): List<StockPerformance> =
+        quotes.distinctBy { it.symbol }.map { quote ->
+            val position = calculate(listOf(quote), monthCloses).singleOrNull()
+            val price = quote.lastTradePrice.toDouble().takeIf { it.isFinite() && it > 0 }
+            fun priceChange(reference: Double?): Double? = percentage(
+                price,
+                reference?.takeIf { it.isFinite() && it > 0 },
+            )
+            StockPerformance(
+                symbol = quote.symbol,
+                currency = quote.currencyCode.ifBlank { "?" },
+                holdings = position?.holdings,
+                dayChangePercent = priceChange(quote.previousClose.toDouble()),
+                gain = position?.gain,
+                gainPercent = position?.gainPercent,
+                monthChangePercent = priceChange(monthCloses[quote.symbol]),
+            )
+        }
+
     fun calculate(quotes: List<Quote>, monthCloses: Map<String, Double> = emptyMap()): List<PortfolioSummary> =
         quotes.distinctBy { it.symbol }
             .filter { quote ->

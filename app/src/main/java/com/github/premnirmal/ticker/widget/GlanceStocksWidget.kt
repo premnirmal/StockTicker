@@ -63,6 +63,7 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioSummary
+import com.github.premnirmal.ticker.portfolio.StockPerformance
 import com.github.premnirmal.tickerwidget.R
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -105,6 +106,7 @@ class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
                 ),
                 quotes = currentQuotes,
                 portfolioSummary = widgetData.portfolioSummary.value,
+                stockPerformance = widgetData.stockPerformance.value,
             )
         }
 
@@ -124,6 +126,7 @@ class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
                 widgetData = glanceState.widgetState,
                 quotes = glanceState.quotes,
                 portfolioSummary = glanceState.portfolioSummary,
+                stockPerformance = glanceState.stockPerformance,
             )
         }
     }
@@ -134,6 +137,7 @@ fun GlanceWidget(
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
     portfolioSummary: List<PortfolioSummary> = emptyList(),
+    stockPerformance: List<StockPerformance> = emptyList(),
 ) {
     val context = LocalContext.current
     val size = LocalSize.current
@@ -168,7 +172,7 @@ fun GlanceWidget(
                     )
                 }
             } else {
-                QuotesGrid(columns, widgetData, quotes, portfolioSummary)
+                QuotesGrid(columns, widgetData, quotes, portfolioSummary, stockPerformance)
             }
         }
     }
@@ -180,24 +184,23 @@ private fun QuotesGrid(
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
     portfolioSummary: List<PortfolioSummary>,
+    stockPerformance: List<StockPerformance>,
 ) {
     if (widgetData.showPortfolioSummary) {
+        val context = LocalContext.current
+        val tableColumns = stockTableColumns(LocalSize.current.width.value, stockTableScreenWidth(context))
+        val rows = stockTableRows(context, quotes, stockPerformance)
         // One scrolling collection keeps every currency group and stock accessible on small widgets.
         LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
             if (portfolioSummary.isEmpty()) item { PortfolioSummaryGlance(widgetData, emptyList()) }
             itemsIndexed(portfolioSummary, itemId = { index, _ -> index.toLong() }) { _, summary ->
                 PortfolioSummaryGlance(widgetData, listOf(summary))
             }
-            itemsIndexed(
-                quotes.chunked(columns),
-                itemId = { index, _ -> (index + portfolioSummary.size).toLong() },
-            ) { _, row ->
-                Row(modifier = GlanceModifier.fillMaxWidth()) {
-                    row.forEach { stock ->
-                        Box(modifier = GlanceModifier.defaultWeight()) { QuoteCell(stock, widgetData) }
-                    }
-                    repeat(columns - row.size) { Box(modifier = GlanceModifier.defaultWeight()) {} }
-                }
+            item(itemId = portfolioSummary.size.toLong()) {
+                StockTableHeaderGlance(context, widgetData, tableColumns)
+            }
+            itemsIndexed(rows, itemId = { index, _ -> (index + portfolioSummary.size + 1).toLong() }) { _, row ->
+                StockTableRowGlance(widgetData, tableColumns, row)
             }
         }
     } else {
@@ -736,6 +739,8 @@ class RefreshCallback : ActionCallback, KoinComponent {
         ) { currentState ->
             currentState.copy(
                 quotes = currentQuotes,
+                portfolioSummary = widgetData.portfolioSummary.value,
+                stockPerformance = widgetData.stockPerformance.value,
                 widgetState = currentState.widgetState.copy(
                     fetchState = SerializableFetchState.from(currentFetchState),
                     isRefreshing = false,
@@ -774,6 +779,8 @@ class FlipTextCallback : ActionCallback, KoinComponent {
             widgetData.setChange(newChangeType == SerializableChangeType.Percent)
             currentState.copy(
                 quotes = currentQuotes,
+                portfolioSummary = widgetData.portfolioSummary.value,
+                stockPerformance = widgetData.stockPerformance.value,
                 widgetState = currentState.widgetState.copy(
                     changeType = newChangeType,
                     fetchState = SerializableFetchState.from(currentFetchState),

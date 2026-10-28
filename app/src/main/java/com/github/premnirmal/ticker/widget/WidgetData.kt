@@ -19,6 +19,7 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioSummary
 import com.github.premnirmal.ticker.portfolio.PortfolioSummaryCalculator
+import com.github.premnirmal.ticker.portfolio.StockPerformance
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
@@ -78,6 +79,8 @@ class WidgetData : IWidgetData, KoinComponent {
 
     private val _portfolioSummary = MutableStateFlow<List<PortfolioSummary>>(emptyList())
     val portfolioSummary: StateFlow<List<PortfolioSummary>> = _portfolioSummary.asStateFlow()
+    private val _stockPerformance = MutableStateFlow<List<StockPerformance>>(emptyList())
+    val stockPerformance: StateFlow<List<StockPerformance>> = _stockPerformance.asStateFlow()
 
     private val position: Int
     override val widgetId: Int
@@ -466,10 +469,13 @@ class WidgetData : IWidgetData, KoinComponent {
 
     fun updatePortfolioSummary() {
         val quotes = stocks.value
-        _portfolioSummary.value = if (showPortfolioSummary()) {
-            PortfolioSummaryCalculator.calculate(quotes, monthBaselineProvider.prices(quotes))
+        if (showPortfolioSummary()) {
+            val prices = monthBaselineProvider.prices(quotes)
+            _portfolioSummary.value = PortfolioSummaryCalculator.calculate(quotes, prices)
+            _stockPerformance.value = PortfolioSummaryCalculator.calculateStocks(quotes, prices)
         } else {
-            emptyList()
+            _portfolioSummary.value = emptyList()
+            _stockPerformance.value = emptyList()
         }
     }
 
@@ -573,6 +579,7 @@ class WidgetData : IWidgetData, KoinComponent {
                         ),
                         quotes = currentQuotes,
                         portfolioSummary = portfolioSummary.value,
+                        stockPerformance = stockPerformance.value,
                     )
                 }
                 GlanceStocksWidget().update(context, glanceId)

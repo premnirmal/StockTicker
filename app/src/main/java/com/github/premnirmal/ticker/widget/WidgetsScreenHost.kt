@@ -179,12 +179,14 @@ private fun WidgetPreview(
     ) {
         val quotes by widgetData.stocks.collectAsState()
         val summary by widgetData.portfolioSummary.collectAsState()
+        val performance by widgetData.stockPerformance.collectAsState()
         val data = remember(state, fetchState) { SerializableWidgetState.from(state, fetchState, false) }
         GlanceWidgetPreview(
             modifier = Modifier.fillMaxWidth().height(220.dp),
             widgetData = data,
             quotes = quotes,
             portfolioSummary = summary,
+            stockPerformance = performance,
             onRefreshClick = onRefreshClick,
         )
     }

@@ -25,7 +25,7 @@ class WidgetDataProvider constructor(
     fun refreshPortfolioSummaries(force: Boolean = false) {
         coroutineScope.launch {
             val enabled = synchronized(widgets) { widgets.values.filter { it.showPortfolioSummary() } }
-            val quotes = enabled.flatMap { it.stocks.value }.filter { it.hasPositions() }
+            val quotes = enabled.flatMap { it.stocks.value }
             if (quotes.isNotEmpty() && monthBaselineProvider.refresh(quotes, force)) {
                 enabled.forEach { it.emitWidgetChanges(refreshSummary = false) }
             }

@@ -26,6 +26,13 @@ gain percentage, and month-to-date percentage above the stocks. Add share quanti
 prices in the app first. Only stocks selected for that widget contribute, and each currency has
 its own totals. Scroll the widget to reach additional currencies and stocks.
 
+Below the totals, a table shows every selected stock, including stocks without saved holdings.
+At less than 45% of the screen width it shows the stock name, currency, and daily percentage.
+As you widen the widget, holdings appear at 45%, gain at 60%, gain percentage at 75%, and
+month-to-date percentage at 85%. A nearly full-width phone widget shows all six columns.
+Each stock row opens the stock's detail screen. Without saved holdings, holding-dependent
+values show `—`, while daily and monthly price changes remain available when their prices are known.
+
 Percentages use the combined value of the holdings, rather than averaging stock percentages.
 Month to date compares today's share quantities with the last trading close before the current
 month in each stock's exchange timezone. It measures price performance of current holdings;

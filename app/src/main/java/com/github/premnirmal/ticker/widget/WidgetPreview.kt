@@ -13,10 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +46,7 @@ import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioSummary
+import com.github.premnirmal.ticker.portfolio.StockPerformance
 import com.github.premnirmal.tickerwidget.R
 import kotlin.random.Random
 
@@ -55,6 +57,7 @@ fun GlanceWidgetPreview(
     quotes: List<Quote>,
     onRefreshClick: () -> Unit = {},
     portfolioSummary: List<PortfolioSummary> = emptyList(),
+    stockPerformance: List<StockPerformance> = emptyList(),
 ) {
     BoxWithConstraints(
         modifier = modifier
@@ -63,7 +66,8 @@ fun GlanceWidgetPreview(
             // .paint(painterResource(widgetData.backgroundResource))
             .padding(6.dp)
     ) {
-        val columns = widgetColumnCount(maxWidth.value.toInt(), widgetData.sizePref)
+        val widthDp = maxWidth.value
+        val columns = widgetColumnCount(widthDp.toInt(), widgetData.sizePref)
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -87,7 +91,7 @@ fun GlanceWidgetPreview(
                     )
                 }
             } else {
-                QuotesGrid(columns, widgetData, quotes, portfolioSummary)
+                QuotesGrid(columns, widgetData, quotes, portfolioSummary, stockPerformance, widthDp)
             }
         }
     }
@@ -152,7 +156,22 @@ private fun QuotesGrid(
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
     portfolioSummary: List<PortfolioSummary>,
+    stockPerformance: List<StockPerformance>,
+    widthDp: Float,
 ) {
+    if (widgetData.showPortfolioSummary) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        val tableColumns = stockTableColumns(widthDp, stockTableScreenWidth(context))
+        val rows = stockTableRows(context, quotes, stockPerformance)
+        LazyColumn {
+            item { PortfolioSummaryPreview(widgetData, portfolioSummary) }
+            item { StockTableHeaderPreview(context, widgetData, tableColumns) }
+            itemsIndexed(rows, key = { _, row -> row.symbol }) { _, row ->
+                StockTableRowPreview(widgetData, tableColumns, row)
+            }
+        }
+        return
+    }
     var changeType by remember(widgetData) { mutableStateOf(widgetData.changeType) }
     val textColor = colorResource(widgetData.textColor)
     val fontSize = widgetData.fontSize
@@ -162,9 +181,6 @@ private fun QuotesGrid(
         modifier = Modifier,
         columns = GridCells.Fixed(columns),
     ) {
-        if (widgetData.showPortfolioSummary) {
-            item(span = { GridItemSpan(maxLineSpan) }) { PortfolioSummaryPreview(widgetData, portfolioSummary) }
-        }
         items(items = quotes, key = { it.symbol }) { stock ->
             val changeValueFormatted = stock.changeString()
             val changePercentFormatted = stock.changePercentString()

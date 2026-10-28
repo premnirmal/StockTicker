@@ -11,6 +11,7 @@ import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.portfolio.PortfolioSummary
+import com.github.premnirmal.ticker.portfolio.StockPerformance
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -29,6 +30,7 @@ data class WidgetGlanceState(
     val widgetState: SerializableWidgetState,
     val quotes: List<Quote> = emptyList(),
     val portfolioSummary: List<PortfolioSummary> = emptyList(),
+    val stockPerformance: List<StockPerformance> = emptyList(),
 ) {
     companion object {
         val Default = WidgetGlanceState(
