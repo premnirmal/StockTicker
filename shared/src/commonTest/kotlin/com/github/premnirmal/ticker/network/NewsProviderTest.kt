@@ -193,6 +193,55 @@ class NewsProviderTest {
     }
 
     @Test
+    fun fetchMarketNewsPropagatesGoogleCancellationEvenWhenYahooSucceeds() = runTest {
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine { respond(rssFeed("Yahoo headline"), HttpStatusCode.OK) },
+            googleEngine = MockEngine { throw CancellationException("Cancelled") }
+        )
+
+        assertFailsWith<CancellationException> { provider.fetchMarketNews() }
+    }
+
+    @Test
+    fun fetchMarketNewsPreservesCacheWhenRefreshFails() = runTest {
+        var feedsUnavailable = false
+        var yahooRequests = 0
+        var googleRequests = 0
+        val provider = newsProvider(
+            yahooNewsEngine = MockEngine {
+                yahooRequests++
+                if (feedsUnavailable) {
+                    respondError(HttpStatusCode.ServiceUnavailable)
+                } else {
+                    respond(rssFeed("Yahoo headline"), HttpStatusCode.OK)
+                }
+            },
+            googleEngine = MockEngine {
+                googleRequests++
+                if (feedsUnavailable) {
+                    respondError(HttpStatusCode.ServiceUnavailable)
+                } else {
+                    respond(rssFeed("Google business"), HttpStatusCode.OK)
+                }
+            }
+        )
+
+        val initial = provider.fetchMarketNews()
+        assertTrue(initial.wasSuccessful)
+        feedsUnavailable = true
+
+        val refresh = provider.fetchMarketNews()
+        val cached = provider.fetchMarketNews(useCache = true)
+
+        assertFalse(refresh.wasSuccessful)
+        assertTrue(refresh.hasError)
+        assertTrue(cached.wasSuccessful)
+        assertEquals(initial.data, cached.data)
+        assertEquals(2, yahooRequests)
+        assertEquals(2, googleRequests)
+    }
+
+    @Test
     fun fetchNewsForQueryReturnsFailureWhenRequestThrows() = runTest {
         val provider = newsProvider(
             googleEngine = MockEngine { respondError(HttpStatusCode.InternalServerError) }

@@ -6,6 +6,7 @@ import com.github.premnirmal.ticker.model.FetchException
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.network.data.NewsArticle
 import com.github.premnirmal.ticker.network.data.Quote
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -54,26 +55,36 @@ class NewsProvider(
 
     suspend fun fetchMarketNews(useCache: Boolean = false): FetchResult<List<NewsArticle>> =
         withContext(ioDispatcher) {
-            try {
-                if (useCache && cachedBusinessArticles.isNotEmpty()) {
-                    return@withContext FetchResult.success(cachedBusinessArticles)
-                }
-                val marketNewsArticles = yahooNewsApi.getNewsFeed().articleList.orEmpty()
-                val businessNewsArticles = googleNewsApi.getBusinessNews().articleList.orEmpty()
-                val articles: Set<NewsArticle> = HashSet<NewsArticle>().apply {
-                    addAll(marketNewsArticles)
-                    addAll(businessNewsArticles)
-                }
-                val newsArticleList = articles.toList().sorted()
-                cachedBusinessArticles = newsArticleList
-                return@withContext FetchResult.success(newsArticleList)
-            } catch (ex: Exception) {
-                AppLogger.w(ex)
-                return@withContext FetchResult.failure<List<NewsArticle>>(
-                    FetchException("Error fetching news", ex)
-                )
+            if (useCache && cachedBusinessArticles.isNotEmpty()) {
+                return@withContext FetchResult.success(cachedBusinessArticles)
             }
+
+            // A failed or malformed feed must not discard headlines from the other source.
+            val marketNews = fetchMarketNewsFeed { yahooNewsApi.getNewsFeed().articleList.orEmpty() }
+            val businessNews = fetchMarketNewsFeed { googleNewsApi.getBusinessNews().articleList.orEmpty() }
+            if (!marketNews.wasSuccessful && !businessNews.wasSuccessful) {
+                return@withContext marketNews
+            }
+
+            val articles: Set<NewsArticle> = HashSet<NewsArticle>().apply {
+                addAll(marketNews.dataSafe.orEmpty())
+                addAll(businessNews.dataSafe.orEmpty())
+            }
+            val newsArticleList = articles.toList().sorted()
+            cachedBusinessArticles = newsArticleList
+            FetchResult.success(newsArticleList)
         }
+
+    private suspend fun fetchMarketNewsFeed(
+        fetchArticles: suspend () -> List<NewsArticle>
+    ): FetchResult<List<NewsArticle>> = try {
+        FetchResult.success(fetchArticles())
+    } catch (ex: CancellationException) {
+        throw ex
+    } catch (ex: Exception) {
+        AppLogger.w(ex)
+        FetchResult.failure<List<NewsArticle>>(FetchException("Error fetching news", ex))
+    }
 
     suspend fun fetchTrendingStocks(useCache: Boolean = false): FetchResult<List<Quote>> =
         withContext(ioDispatcher) {
