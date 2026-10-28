@@ -1,0 +1,7 @@
+formatting:
+  active: true
+  android: false
+  autoCorrect: true
+  MaximumLineLength:
+    active: false
+

@@ -1,25 +1,27 @@
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
-import org.apache.tools.ant.taskdefs.condition.Os
-import java.io.ByteArrayOutputStream
+import com.github.premnirmal.gradle.getOldGitVersionFromGit
+import com.github.premnirmal.gradle.getVersionNameFromGit
 import java.io.FileInputStream
 import java.util.Locale
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 
 plugins {
   id("com.android.application")
   id("org.jetbrains.kotlin.android")
   id("kotlin-parcelize")
-  id("com.google.gms.google-services")
-  id("com.google.firebase.crashlytics")
+  alias(libs.plugins.google.services)
+  alias(libs.plugins.firebase.crashlytics)
   alias(libs.plugins.com.google.devtools.ksp)
-  alias(libs.plugins.hilt)
   alias(libs.plugins.compose.compiler)
   alias(libs.plugins.detekt.plugin)
+  alias(libs.plugins.kotlinx.serialization)
 }
 
 detekt {
   toolVersion = libs.versions.detekt.get()
-  config.setFrom(file("../config/detekt/detekt.yml"))
+  config.setFrom(files("../config/detekt/detekt.yml", "../config/detekt/detekt-formatting.yml"))
   buildUponDefaultConfig = true
   autoCorrect = true
 }
@@ -44,37 +46,6 @@ repositories {
 }
 
 android {
-  val getVersionName = { ->
-    ByteArrayOutputStream().use { outputStream ->
-      val stdout = outputStream
-      exec {
-        commandLine("git", "describe", "--tags", "--abbrev=0")
-        standardOutput = stdout
-      }
-      stdout.toString().trim()
-    }
-  }
-
-  val getOldGitVersion = { ->
-    try {
-      ByteArrayOutputStream().use { stdout ->
-        exec {
-          if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-            commandLine("powershell", "-command", "git tag --sort=-committerdate | Select-Object -first 10 | Select-Object -last 1")
-          } else {
-            commandLine("sh", "-c", "git tag --sort=-committerdate | head -10 | tail -1")
-          }
-          standardOutput = stdout
-        }
-        stdout.toString().trim()
-      }
-    } catch (e: Exception) {
-      println(e.message)
-      println(e.stackTrace)
-      "1.0"
-    }
-  }
-
   buildFeatures {
     buildConfig = true
   }
@@ -83,12 +54,12 @@ android {
   compileSdk = 36
   buildToolsVersion = "31.0.0"
 
-  val name = getVersionName()
+  val name = project.getVersionNameFromGit()
   val major = name.split(".")[0].toInt()
   val minor = name.split(".")[1].toInt()
   val patch = name.split(".")[2].toInt()
   val code = (major * 100000000) + (minor * 100000) + patch
-  val oldGitVersion = getOldGitVersion()
+  val oldGitVersion = project.getOldGitVersionFromGit()
   println("get version name $name")
   println("Old git version $oldGitVersion")
   val appIdBase = "com.github.premnirmal.tickerwidget"
@@ -102,28 +73,13 @@ android {
     versionName = name
 
     buildConfigField("String", "PREVIOUS_VERSION", "\"$oldGitVersion\"")
-
-    // room {
-    //   schemaDirectory("$projectDir/schemas")
-    // }
-  }
-  // resources.sourceSets["test"].resources {
-  //   srcDirs("src/test/resources")
-  // }
-
-  dexOptions {
-    javaMaxHeapSize = "2048M"
-  }
-
-  buildFeatures {
-    viewBinding = true
   }
 
   signingConfigs {
     create("release") {
-      storeFile = file("file:keystore.jks")
+      storeFile = file("keystore.jks")
 
-      val propsFile: File = file("file:keystore.properties")
+      val propsFile: File = file("keystore.properties")
       if (propsFile.exists()) {
         val props: Properties = Properties()
         props.load(FileInputStream(propsFile))
@@ -139,7 +95,7 @@ android {
   productFlavors {
     create("dev") {
       dimension = "mobile"
-      applicationId = appIdBase + ".dev"
+      applicationId = "$appIdBase.dev"
     }
     create("prod") {
       dimension = "mobile"
@@ -147,7 +103,6 @@ android {
     }
     create("purefoss") {
       dimension = "mobile"
-      // no analytics, but still using the production packageName
       applicationId = appIdBase
     }
   }
@@ -169,7 +124,7 @@ android {
       isDebuggable = false
       signingConfig = signingConfigs.getByName("release")
       isMinifyEnabled = true
-      setProguardFiles(listOf(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"))
+      setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
     }
     debug {
       isDebuggable = true
@@ -178,7 +133,7 @@ android {
       configure<CrashlyticsExtension> {
         mappingFileUploadEnabled = false
       }
-      setProguardFiles(listOf(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"))
+      setProguardFiles(listOf(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"))
     }
   }
 
@@ -189,7 +144,7 @@ android {
     kotlinCompilerExtensionVersion = "1.5.8"
   }
 
-  packagingOptions {
+  packaging {
     resources {
       excludes +=
           listOf("META-INF/DEPENDENCIES", "META-INF/NOTICE", "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE.txt")
@@ -207,91 +162,85 @@ android {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
   }
-  kotlinOptions {
-    jvmTarget = JavaVersion.VERSION_17.toString()
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget.set(JvmTarget.JVM_17)
+  }
+}
+
+// Guard the Jetpack Navigation against the 2.10.x pre-release line: the CMP navigation-compose
+// in :shared is pinned to the stable 2.9.2 line, but force back to 2.8.5 if anything transitively
+// requests 2.10.x android artifacts (which require compileSdk 37).
+configurations.configureEach {
+  resolutionStrategy.eachDependency {
+    if (requested.group == "androidx.navigation" && requested.version?.startsWith("2.10") == true) {
+      useVersion("2.8.5")
+    }
   }
 }
 
 dependencies {
   implementation(kotlin("stdlib"))
-  implementation(AndroidX.core.ktx)
+  implementation(libs.androidx.core.ktx)
 
-  implementation(AndroidX.appCompat)
-  implementation(libs.legacy.support.v4)
-  implementation(Google.android.material)
-  implementation(AndroidX.preference.ktx)
-  implementation(AndroidX.browser)
-
-  implementation(AndroidX.constraintLayout)
-  implementation(AndroidX.viewPager2)
-  implementation(AndroidX.core.splashscreen)
-  implementation(AndroidX.fragment.ktx)
-  implementation(AndroidX.activity.compose)
-  implementation(AndroidX.navigation.compose)
+  implementation(libs.androidx.appcompat)
+  implementation(libs.androidx.browser)
+  implementation(libs.androidx.core.splashscreen)
+  implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.navigation.compose.jetpack)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.compose.foundation)
   implementation(libs.androidx.compose.ui.ui)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.material3.android)
   implementation(libs.androidx.compose.ui.tooling.preview)
+  implementation(libs.androidx.glance.appwidget)
+  implementation(libs.androidx.glance.material3)
+  implementation(libs.androidx.glance.appwidget.preview)
+  implementation(libs.androidx.glance.preview)
   debugImplementation(libs.androidx.compose.ui.tooling)
-  implementation(AndroidX.lifecycle.viewModelCompose)
-  implementation(AndroidX.compose.material3.windowSizeClass)
-  implementation(Google.accompanist.adaptive)
-  implementation(libs.accompanist.pager)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+  implementation(libs.androidx.compose.material3.window.size)
+  implementation(libs.accompanist.adaptive)
   implementation(libs.accompanist.permissions)
-  implementation(AndroidX.compose.runtime.liveData)
-  implementation(AndroidX.hilt.navigationCompose)
-  implementation(AndroidX.dataStore.preferences)
-  implementation(libs.reorderable)
+  implementation(libs.androidx.compose.runtime.livedata)
+  implementation(libs.androidx.datastore.preferences)
 
-  implementation(project(":UI"))
+  implementation(project(":shared"))
 
-  implementation(COIL)
-  implementation(COIL.compose)
+  implementation(libs.coil.compose)
+  implementation(libs.coil.network.okhttp)
 
   implementation(libs.javax.inject)
   implementation(libs.javax.annotation.api)
 
-  implementation(AndroidX.compose.ui.toolingPreview)
-  implementation(libs.hilt)
-  implementation(libs.androidx.hilt)
-  ksp(libs.hilt.android.compiler)
+  implementation(libs.koin.android)
+  implementation(libs.koin.androidx.compose)
+  implementation(libs.koin.androidx.workmanager)
 
-  implementation(Square.okHttp3)
-  implementation(Square.okHttp3.loggingInterceptor)
-  implementation(Square.retrofit2)
-  implementation(Square.retrofit2.converter.gson)
-  implementation(Square.retrofit2.converter.simpleXml)
-  implementation(Square.retrofit2.converter.scalars)
-  implementation(libs.jsoup)
+  implementation(libs.okhttp)
+  implementation(libs.okhttp.logging.interceptor)
+  implementation(libs.kotlinx.serialization.json)
 
-  implementation(KotlinX.coroutines.android)
-  implementation(AndroidX.lifecycle.runtime.ktx)
-  implementation(AndroidX.lifecycle.viewModelKtx)
-  implementation(AndroidX.lifecycle.liveDataKtx)
-  implementation(AndroidX.lifecycle.commonJava8)
-  implementation(AndroidX.work.runtime)
-  implementation(AndroidX.work.runtimeKtx)
-  implementation(AndroidX.dataStore)
+  implementation(libs.kotlinx.coroutines.android)
+  implementation(libs.androidx.lifecycle.runtime.ktx)
+  implementation(libs.androidx.lifecycle.viewmodel.ktx)
+  implementation(libs.androidx.lifecycle.livedata.ktx)
+  implementation(libs.androidx.lifecycle.common.java8)
+  implementation(libs.androidx.work.runtime)
+  implementation(libs.androidx.work.runtime.ktx)
+  implementation(libs.androidx.datastore)
+  implementation(libs.androidx.datastore.preferences)
 
-  implementation(libs.threetenabp)
-
-  implementation(JakeWharton.timber)
-  implementation(libs.mpandroidchart)
-
-  implementation(libs.room.runtime)
-  implementation(libs.room.ktx)
+  implementation(libs.timber)
 
   detektPlugins(libs.detekt.formatting)
   detektPlugins(libs.detekt.compose)
 
-  ksp(libs.room.compiler)
-
-  "prodImplementation"(Google.android.play.review)
-  "prodImplementation"(Google.android.play.reviewKtx)
-
-  implementation(libs.ticker)
+  "prodImplementation"(libs.google.play.review)
+  "prodImplementation"(libs.google.play.review.ktx)
 
   "prodImplementation"(platform("com.google.firebase:firebase-bom:34.1.0"))
   "prodImplementation"("com.google.firebase:firebase-analytics")
@@ -299,36 +248,36 @@ dependencies {
 
   //  debugImplementation(Square.leakCanary.android)
 
-  testImplementation(Google.dagger.hilt.android.testing)
-  kspTest(libs.hilt.android.compiler)
+  testImplementation(libs.koin.test)
+  testImplementation(libs.koin.test.junit4)
 
-  testImplementation(Testing.junit4)
-  testImplementation(Testing.assertj.core)
-  testImplementation(Testing.robolectric)
-  testImplementation(AndroidX.test.runner)
-  testImplementation(AndroidX.test.rules)
-  testImplementation(AndroidX.annotation)
-  testImplementation(AndroidX.test.rules)
-  testImplementation(libs.threetenbp)
-  testImplementation(Testing.mockito.core)
-  testImplementation(Testing.mockito.kotlin)
-  testImplementation(KotlinX.coroutines.test)
-  testImplementation(libs.room.testing)
+  testImplementation(libs.junit)
+  testImplementation(libs.assertj.core)
+  testImplementation(libs.robolectric)
+  testImplementation(libs.androidx.test.core)
+  testImplementation(libs.androidx.test.runner)
+  testImplementation(libs.androidx.test.rules)
+  testImplementation(libs.androidx.annotation)
+  testImplementation(libs.androidx.test.rules)
+  testImplementation(libs.mockito.core)
+  testImplementation(libs.mockito.kotlin)
+  testImplementation(libs.kotlinx.coroutines.test)
+  testImplementation(libs.androidx.work.testing)
 
   // Need this to fix a class not found error in tests (https://github.com/robolectric/robolectric/issues/1932)
   testImplementation(libs.opengl.api)
 }
 
-// Remove google play services and crashlytics plugin for purefoss, because f-droid folks are snowflakes
+// Remove google play services and crashlytics plugin for non prod builds
 android {
   androidComponents {
-    onVariants {
-      println("Variant: ${it.name}, buildType: ${it.buildType}, flavor: ${it.flavorName}")
-      if (!it.name.lowercase(Locale.getDefault()).contains("prod")) {
+    onVariants { variant ->
+      println("Variant: ${variant.name}, buildType: ${variant.buildType}, flavor: ${variant.flavorName}")
+      if (!variant.name.lowercase(Locale.getDefault()).contains("prod")) {
         val googleTask =
-          tasks.findByName("process${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}GoogleServices")
+          tasks.findByName("process${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}GoogleServices")
         val crashlyticsMappingTask =
-          tasks.findByName("uploadCrashlyticsMappingFile${it.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}")
+          tasks.findByName("uploadCrashlyticsMappingFile${variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }}")
         googleTask?.let {
           println("disabling ${googleTask.name}")
           googleTask.enabled = false

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-  <string name="widget_label" translatable="false">Stocks Tracker Widget</string>
+  <string name="widget_label" translatable="false">Stocks Widget</string>
   <string name="google_news_endpoint" translatable="false">https://news.google.com/</string>
-  <string name="yahoo_news_endpoint" translatable="false">https://finance.yahoo.com/news/</string>
+  <string name="yahoo_news_endpoint" translatable="false">https://feeds.finance.yahoo.com/rss/2.0/</string>
   <string name="yahoo_finance_endpoint" translatable="false">https://finance.yahoo.com/</string>
   <string name="suggestions_endpoint" translatable="false">https://query2.finance.yahoo.com/v1/finance/</string>
   <string name="yahoo_endpoint" translatable="false">https://query1.finance.yahoo.com/</string>
@@ -13,16 +13,21 @@
   <string name="github_endoint" translatable="false">https://api.github.com/</string>
   <string name="apewisdom_endpoint" translatable="false">https://apewisdom.io/api/v1.0/</string>
   <string name="checkout_open_source" translatable="false">https://github.com/premnirmal/StockTicker</string>
-  <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/StockTicker/blob/master/PRIVACY_POLICY.md</string>
+  <string name="privacy_policy_url" translatable="false">https://github.com/premnirmal/privacy/blob/master/STOCKTICKER_PRIVACY.md</string>
+  <string name="github_bug_report_new_issue_url" translatable="false">https://github.com/premnirmal/StockTicker/issues/new?template=bug_report.md</string>
+  <string name="github_feature_request_new_issue_url" translatable="false">https://github.com/premnirmal/StockTicker/issues/new?template=feature_request.md</string>
   <string name="dotdotdot" translatable="false">…</string>
 
   <string name="portfolio">Portfolio</string>
+  <string name="add_to_portfolio">Add or remove from Portfolio</string>
+  <string name="report_bug">Report a bug</string>
+  <string name="report_bug_desc">File a bug report</string>
+  <string name="feature_request">Request a feature</string>
+  <string name="feature_request_desc">File a new feature request</string>
   <string name="action_add">Add</string>
   <string name="action_export">Export quotes</string>
   <string name="action_share">Share Portfolio</string>
-  <string name="action_nuke">Clear app data</string>
   <string name="privacy_policy">Privacy policy</string>
-  <string name="nuke_desc">Reset app to default settings. Use this if you are experiencing issues with your portfolio.</string>
   <string name="export_desc">Export your portfolio to a .json file</string>
   <string name="action_import">Import quotes</string>
   <string name="import_desc">Import quotes from a comma separated .txt file, or a .json file</string>
@@ -41,7 +46,7 @@
   <string name="add_ticker">Add ticker</string>
   <string name="bg">Widget background</string>
   <string name="layout_type">Widget type</string>
-  <string name="widget_width">Widget size</string>
+  <string name="widget_width">Number of columns</string>
   <string name="text_color">Text color</string>
   <string name="start_time">Start time</string>
   <string name="end_time">End time</string>
@@ -53,6 +58,8 @@
   <string name="notification_alerts">Notification alerts</string>
   <string name="notification_alerts_desc">Receive notification alerts</string>
   <string name="notification_alerts_required_message">The app requires the notifications permission to receive notification alerts.</string>
+  <string name="show_refresh">Show refresh icon</string>
+  <string name="show_refresh_desc">Show a refresh icon in the widget (unreliable due to Android OS battery saving updates)</string>
   <string name="auto_sort">Autosort</string>
   <string name="auto_sort_desc">Stocks will be sorted by percent change.</string>
   <string name="hide_header">Hide widget header</string>
@@ -63,7 +70,7 @@
   <string name="bold_change_desc">Show changes and market value in bold</string>
   <string name="setting_currency">Show currency</string>
   <string name="setting_currency_desc">Show currency in the widget</string>
-  <string name="choose_text_size">Widget text size</string>
+  <string name="choose_text_size">Widget text size (will be removed)</string>
   <string name="app_theme">App and widget theme</string>
   <string name="text_size_updated_message">Text size updated</string>
   <string name="bg_updated_message">Background updated</string>
@@ -175,11 +182,12 @@
   <string name="widgets">Widgets</string>
   <string name="tutorial">Tutorial</string>
   <string name="how_to_title">How to add a widget</string>
-  <string name="how_to">- Long-press an empty space on your home screen to bring up the menu\n\n- Now select the \'Widgets\' option.\n\n- Select the \'Stocks Widget\' item from the list of widgets.\n\n- You can add multiple widgets each with their own portfolio.</string>
+  <string name="how_to">- Long-press an empty space on your home screen to bring up the menu\n- Now select the \'Widgets\' option.\n- Select the \'Stocks Widget\' item from the list of widgets.\n- Edit the widget in the opened settings screen.\n- You can add multiple widgets each with their own portfolio.</string>
   <string name="db_viewer">Application database</string>
   <string name="discovered_db">You have discovered the secret entrance to the DB viewer</string>
   <string name="db_tap_count">Tap %1$d more times to unlock the DB viewer</string>
   <string name="notes">Notes</string>
+  <string name="displayname">Display Name</string>
   <string name="alerts">Alerts</string>
   <string name="alert_above">Alert Above</string>
   <string name="alert_below">Alert Below</string>
@@ -192,6 +200,7 @@
   <string name="alert_dismiss">Dismiss</string>
   <string name="alerts_disabled">Alerts disabled, check settings</string>
   <string name="add_notes">Add Notes</string>
+  <string name="add_displayname">Add Display Name</string>
   <string name="add_alerts">Alerts</string>
   <string name="remove_holding">Are you sure you want to remove the entry %1$s from your portfolio?</string>
   <string name="save">Save</string>
@@ -227,4 +236,7 @@
   <string name="quote_change_neg">%1$.2f</string>
   <string name="quote_change_percent_pos">+%1$.2f%%</string>
   <string name="quote_change_percent_neg">%1$.2f%%</string>
+
+  <string name="exact_alarm_permission_required_message">The exact alarm permission is required to refresh the widget in a timely manner.</string>
+  <string name="go_to_settings">Grant</string>
 </resources>

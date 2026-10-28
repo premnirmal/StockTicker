@@ -2,48 +2,52 @@ package com.github.premnirmal.ticker
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.github.premnirmal.ticker.analytics.Analytics
-import com.github.premnirmal.ticker.components.Injector
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
 import com.github.premnirmal.ticker.components.LoggingTree
+import com.github.premnirmal.ticker.components.appModule
+import com.github.premnirmal.ticker.components.viewModelModule
+import com.github.premnirmal.ticker.di.sharedModule
+import com.github.premnirmal.ticker.network.networkModule
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import com.google.android.material.color.DynamicColors
-import com.jakewharton.threetenabp.AndroidThreeTen
-import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.runBlocking
+import org.koin.android.ext.android.inject
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.context.startKoin
 import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Created by premnirmal on 2/26/16.
  */
-@HiltAndroidApp
-open class StocksApp : Application() {
+open class StocksApp : Application(), KoinComponent, SingletonImageLoader.Factory {
 
-    @Inject lateinit var analytics: Analytics
+    val appPreferences: AppPreferences by inject()
 
-    @Inject lateinit var appPreferences: AppPreferences
+    private val notificationsHandler: NotificationsHandler by inject()
 
-    @Inject lateinit var notificationsHandler: NotificationsHandler
+    private val widgetDataProvider: WidgetDataProvider by inject()
 
-    @Inject lateinit var widgetDataProvider: WidgetDataProvider
+    private val imageLoader: ImageLoader by inject()
+
+    override fun newImageLoader(context: PlatformContext): ImageLoader = imageLoader
 
     override fun onCreate() {
         initLogger()
-        initThreeTen()
-        Injector.init(this)
+        startKoin {
+            androidContext(this@StocksApp)
+            modules(sharedModule, networkModule, appModule, viewModelModule)
+        }
         super.onCreate()
-        DynamicColors.applyToActivitiesIfAvailable(this)
-        AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode)
+        AppCompatDelegate.setDefaultNightMode(appPreferences.nightMode.toAppCompatNightMode())
         initNotificationHandler()
-        widgetDataProvider.refreshWidgetDataList()
+        runBlocking { widgetDataProvider.refreshWidgetDataList() }
     }
 
     protected open fun initNotificationHandler() {
         notificationsHandler.initialize()
-    }
-
-    protected open fun initThreeTen() {
-        AndroidThreeTen.init(this)
     }
 
     protected open fun initLogger() {

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
   <string name="portfolio">Portafolio</string>
+  <string name="add_to_portfolio">Agregar o eliminar del portafolio</string>
   <string name="action_add">Añadir</string>
   <string name="action_export">Exportar su cartera</string>
   <string name="action_share">Comparte su portafolio</string>
-  <string name="action_nuke">Borrar datos de la aplicación</string>
   <string name="privacy_policy">Política de privacidad</string>
-  <string name="nuke_desc">Restablecer la aplicación a la configuración predeterminada. Use esto si tiene problemas con su cartera.</string>
   <string name="export_desc">Exportar su portafolio a un archivo .json</string>
   <string name="action_import">Importar cotizaciones</string>
   <string name="import_desc">Importar citas de un archivo .txt separado por comas, o un archivo .json</string>
@@ -182,4 +181,6 @@
   <string name="error">Error</string>
   <string name="error_fetching_whats_new">Error al obtener las novedades</string>
   <string name="loading">Cargando</string>
-</resources>
+   <string name="exact_alarm_permission_required_message">Se requiere el permiso de alarma exacta para actualizar el widget de manera oportuna.</string>
+   <string name="go_to_settings">Otorgar</string>
+ </resources>

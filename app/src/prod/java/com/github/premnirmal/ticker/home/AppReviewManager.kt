@@ -4,10 +4,9 @@ import android.app.Activity
 import android.content.Context
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
-import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 
-class AppReviewManager(@ApplicationContext private val context: Context) : IAppReviewManager {
+class AppReviewManager(private val context: Context) : IAppReviewManager {
 
   private val manager: ReviewManager by lazy {
     ReviewManagerFactory.create(context)

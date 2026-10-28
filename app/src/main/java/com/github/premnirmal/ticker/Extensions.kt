@@ -7,53 +7,27 @@ import android.content.DialogInterface
 import android.content.DialogInterface.OnClickListener
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
-import android.view.LayoutInflater
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
+import android.net.NetworkCapabilities
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.fragment.app.Fragment
-import androidx.viewbinding.ViewBinding
+import androidx.appcompat.app.AppCompatDelegate
 import com.github.premnirmal.ticker.components.AppClock.AppClockImpl
+import com.github.premnirmal.ticker.components.todayZoned
 import com.github.premnirmal.tickerwidget.R
-import org.threeten.bp.DayOfWeek
-import org.threeten.bp.ZonedDateTime
-import org.threeten.bp.format.TextStyle.SHORT
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
+import java.time.ZonedDateTime
+import java.time.format.TextStyle.SHORT
 import java.util.Date
 import java.util.Locale
-
-inline fun <T : ViewBinding> Activity.viewBinding(
-    crossinline bindingInflater: (LayoutInflater) -> T
-) = lazy(LazyThreadSafetyMode.NONE) {
-    bindingInflater.invoke(layoutInflater)
-}
-
-inline fun <T : ViewBinding> Fragment.viewBinding(
-    crossinline bindingInflater: (LayoutInflater) -> T
-) = lazy(LazyThreadSafetyMode.NONE) {
-    bindingInflater.invoke(layoutInflater)
-}
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = AppPreferences.PREFS_NAME)
 
 @RequiresApi(33)
 fun Context.hasNotificationPermission(): Boolean {
     return checkCallingOrSelfPermission(
         Manifest.permission.POST_NOTIFICATIONS
     ) == PackageManager.PERMISSION_GRANTED
-}
-
-fun Activity.dismissKeyboard() {
-    val view = currentFocus
-    if (view is TextView) {
-        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
 }
 
 fun Activity.showDialog(
@@ -65,13 +39,28 @@ fun Activity.showDialog(
 }
 
 fun Context.showDialog(
+    title: String,
     message: String,
     cancelable: Boolean = true,
     listener: OnClickListener
 ) {
     AlertDialog.Builder(
         this
-    ).setMessage(message).setCancelable(cancelable).setNeutralButton(R.string.ok, listener).show()
+    ).setTitle(title).setMessage(message).setCancelable(cancelable).setNeutralButton(R.string.ok, listener).show()
+}
+
+fun Context.showDialog(
+    title: String,
+    message: String,
+    positiveButton: String,
+    negativeButton: String,
+    cancelable: Boolean = true,
+    listener: OnClickListener
+) {
+    AlertDialog.Builder(
+        this
+    ).setTitle(title).setMessage(message).setCancelable(cancelable).setPositiveButton(positiveButton, listener)
+        .setNegativeButton(negativeButton, listener).show()
 }
 
 fun Context.showDialog(message: String): AlertDialog {
@@ -79,27 +68,18 @@ fun Context.showDialog(message: String): AlertDialog {
         .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
 }
 
-fun Fragment.showDialog(
-    message: String,
-    cancelable: Boolean = true
-): AlertDialog {
-    return AlertDialog.Builder(requireContext()).setMessage(message).setCancelable(cancelable)
+fun Context.showDialog(@StringRes stringRes: Int): AlertDialog {
+    return AlertDialog.Builder(this).setMessage(stringRes).setCancelable(false)
         .setNeutralButton(R.string.ok) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
 }
 
 fun Context.isNetworkOnline(): Boolean {
-    try {
-        val connectivityManager = this.getSystemService(
-            Context.CONNECTIVITY_SERVICE
-        ) as ConnectivityManager
-        val i = connectivityManager.activeNetworkInfo ?: return false
-        if (!i.isConnected) return false
-        if (!i.isAvailable) return false
-        return true
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return false
-    }
+    val connectivityManager =
+        getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager ?: return false
+    val network = connectivityManager.activeNetwork ?: return false
+    val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+    return capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+        capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
 }
 
 fun ZonedDateTime.createTimeString(): String {
@@ -114,6 +94,17 @@ fun ZonedDateTime.createTimeString(): String {
         "$timeStr $day"
     }
     return fetched
+}
+
+/**
+ * Maps the shared [NightMode] onto AndroidX `AppCompatDelegate`'s `MODE_NIGHT_*` constants.
+ */
+@AppCompatDelegate.NightMode
+fun NightMode.toAppCompatNightMode(): Int = when (this) {
+    NightMode.LIGHT -> AppCompatDelegate.MODE_NIGHT_NO
+    NightMode.DARK -> AppCompatDelegate.MODE_NIGHT_YES
+    NightMode.FOLLOW_SYSTEM -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+    NightMode.AUTO_BATTERY -> AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
 }
 
 fun Float.format(fractionDigits: Int = 2): String {

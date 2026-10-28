@@ -7,13 +7,10 @@ import androidx.window.layout.FoldingFeature
 import com.github.premnirmal.ticker.ui.ContentType
 import com.github.premnirmal.ticker.ui.DevicePosture
 import com.github.premnirmal.ticker.ui.NavigationType
+import com.github.premnirmal.ticker.ui.WidthSizeClass
+import com.github.premnirmal.ticker.ui.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.ui.isBookPosture
 import com.github.premnirmal.ticker.ui.isSeparating
-
-enum class LayoutType {
-    HEADER,
-    CONTENT
-}
 
 @Composable
 fun calculateContentAndNavigationType(
@@ -36,29 +33,23 @@ fun calculateContentAndNavigationType(
 
         else -> DevicePosture.NormalPosture
     }
-    val contentType: ContentType
-    val navigationType: NavigationType
-    when (widthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-            navigationType = NavigationType.BOTTOM_NAVIGATION
-            contentType = ContentType.SINGLE_PANE
-        }
-        WindowWidthSizeClass.Medium -> {
-            navigationType = NavigationType.BOTTOM_NAVIGATION
-            contentType = if (foldingDevicePosture != DevicePosture.NormalPosture) {
-                ContentType.DUAL_PANE
-            } else {
-                ContentType.SINGLE_PANE
-            }
-        }
-        WindowWidthSizeClass.Expanded -> {
-            navigationType = NavigationType.NAVIGATION_RAIL
-            contentType = ContentType.DUAL_PANE
-        }
-        else -> {
-            navigationType = NavigationType.BOTTOM_NAVIGATION
-            contentType = ContentType.SINGLE_PANE
-        }
+    // Delegate the width-only mapping to the shared, fold-free helper, then layer fold handling on
+    // top: a half-folded device at the Medium width should show a dual pane.
+    val sharedWidthSizeClass = when (widthSizeClass) {
+        WindowWidthSizeClass.Compact -> WidthSizeClass.COMPACT
+        WindowWidthSizeClass.Medium -> WidthSizeClass.MEDIUM
+        WindowWidthSizeClass.Expanded -> WidthSizeClass.EXPANDED
+        else -> WidthSizeClass.COMPACT
+    }
+    val (navigationType, baseContentType) =
+        calculateContentAndNavigationType(sharedWidthSizeClass)
+    val contentType = if (
+        widthSizeClass == WindowWidthSizeClass.Medium &&
+        foldingDevicePosture != DevicePosture.NormalPosture
+    ) {
+        ContentType.DUAL_PANE
+    } else {
+        baseContentType
     }
     return Pair(navigationType, contentType)
 }

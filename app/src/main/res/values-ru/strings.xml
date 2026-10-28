@@ -2,12 +2,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="portfolio">Портфолио</string>
+  <string name="add_to_portfolio">Добавить или удалить из портфеля</string>
   <string name="action_add">Добавить</string>
   <string name="action_export">Экспортировать портфолио</string>
   <string name="action_share">Отправить портфолио</string>
-  <string name="action_nuke">Очистить данные приложения</string>
   <string name="privacy_policy">Политика конфеденциальности</string>
-  <string name="nuke_desc">Сбросить приложение к изначальным настройкам. Используйте это, если у вас возникли проблемы с вашим портфолио.</string>
   <string name="export_desc">Экспортировать ваше портфолио в .json файл</string>
   <string name="action_import">Импорт котировок</string>
   <string name="import_desc">Импорт котировок в текстовый .txt файл, или файл формата .json</string>
@@ -211,4 +210,6 @@
   <string name="quote_change_neg">%1$.2f</string>
   <string name="quote_change_percent_pos">+%1$.2f%%</string>
   <string name="quote_change_percent_neg">%1$.2f%%</string>
-</resources>
+   <string name="exact_alarm_permission_required_message">Разрешение на точные будильники необходимо для своевременного обновления виджета.</string>
+   <string name="go_to_settings">Разрешить</string>
+ </resources>

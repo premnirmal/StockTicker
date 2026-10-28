@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
   <string name="portfolio">Portfolio</string>
+  <string name="add_to_portfolio">Aggiungi o rimuovi dal portafoglio</string>
   <string name="action_add">Aggiungi</string>
   <string name="action_export">Esporta Quotazioni</string>
   <string name="action_share">Condividi Portfolio</string>
-  <string name="action_nuke">Ripulisci dati app</string>
   <string name="privacy_policy">Informativa Privacy</string>
-  <string name="nuke_desc">Resetta impostazioni predefinite dell\'app. Fallo se si verificano problemi con il tuo portfolio.</string>
   <string name="export_desc">Esporta il tuo portfolio in un file .json</string>
   <string name="action_import">Importa Quotazioni</string>
   <string name="import_desc">Importa quotazioni (separate da virgola) da un file .txt, o da un file .json</string>
@@ -184,4 +183,6 @@
   <string name="error">Errore</string>
   <string name="error_fetching_whats_new">Errore ottenimento novità</string>
   <string name="loading">Caricamento</string>
-</resources>
+   <string name="exact_alarm_permission_required_message">L\'autorizzazione agli allarmi esatti è necessaria per aggiornare il widget tempestivamente.</string>
+   <string name="go_to_settings">Concedi</string>
+ </resources>

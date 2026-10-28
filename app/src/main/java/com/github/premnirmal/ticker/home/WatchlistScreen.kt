@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.home
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
@@ -8,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.window.layout.DisplayFeature
@@ -19,7 +21,8 @@ import com.github.premnirmal.ticker.ui.ContentType.DUAL_PANE
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.EmptyState
 import com.github.premnirmal.ticker.ui.ListDetail
-import com.google.accompanist.adaptive.HorizontalTwoPaneStrategy
+import com.github.premnirmal.tickerwidget.R
+import java.net.URLEncoder
 
 @Composable
 fun WatchlistScreen(
@@ -78,18 +81,16 @@ fun WatchlistScreen(
                         quote = quote
                     )
                 } else {
-                    EmptyState(text = "Select a quote")
+                    EmptyState(text = stringResource(R.string.my_stock_portfolio))
                 }
             },
-            twoPaneStrategy = HorizontalTwoPaneStrategy(
-                splitFraction = 1f / 2.25f,
-            ),
-            displayFeatures = displayFeatures
+            splitFraction = 1f / 2.25f,
+            backHandler = { onBack -> BackHandler { onBack() } },
         )
     } else {
         WatchlistContent(
             onQuoteClick = { quote ->
-                rootNavController.navigate(route = "${Graph.QUOTE_DETAIL}/${quote.symbol}")
+                rootNavController.navigate(route = "${Graph.QUOTE_DETAIL}/${URLEncoder.encode(quote.symbol)}")
             },
             viewModel = viewModel,
         )

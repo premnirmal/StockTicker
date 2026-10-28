@@ -2,15 +2,18 @@ package com.github.premnirmal.ticker.settings
 
 import android.content.Context
 import android.net.Uri
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 import java.io.FileOutputStream
 import java.io.IOException
 
-internal object TickersExporter {
+internal object TickersExporter : KoinComponent {
+
+    private val portfolioSerializer: PortfolioSerializer by inject()
 
     suspend fun exportTickers(context: Context, uri: Uri, vararg tickers: List<String>): String? = withContext(
         Dispatchers.IO
@@ -20,9 +23,7 @@ internal object TickersExporter {
         try {
             contentResolver.openFileDescriptor(uri, "w")?.use {
                 FileOutputStream(it.fileDescriptor).use { fileOutputStream ->
-                    for (ticker in tickerList) {
-                        fileOutputStream.write(("$ticker, ").toByteArray())
-                    }
+                    fileOutputStream.write(portfolioSerializer.serializeTickers(tickerList).toByteArray())
                 }
             }
         } catch (e: IOException) {
@@ -34,14 +35,14 @@ internal object TickersExporter {
     }
 }
 
-internal object PortfolioExporter {
+internal object PortfolioExporter : KoinComponent {
 
-    private val gson = Injector.appComponent().gson()
+    private val portfolioSerializer: PortfolioSerializer by inject()
 
     suspend fun exportQuotes(context: Context, uri: Uri, vararg quoteLists: List<Quote>): String? =
         withContext(Dispatchers.IO) {
             val quoteList: List<Quote> = quoteLists[0]
-            val jsonString = gson.toJson(quoteList)
+            val jsonString = portfolioSerializer.serializePortfolio(quoteList)
             val contentResolver = context.applicationContext.contentResolver
             try {
                 contentResolver.openFileDescriptor(uri, "rwt")

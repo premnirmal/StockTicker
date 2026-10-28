@@ -2,12 +2,11 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
   <string name="portfolio">Portfolio</string>
+  <string name="add_to_portfolio">Zum Portfolio hinzufügen oder daraus entfernen</string>
   <string name="action_add">Hinzufügen</string>
   <string name="action_export">Aktienliste Exportieren</string>
   <string name="action_share">Portfolio teilen</string>
-  <string name="action_nuke">Alle Daten entfernen</string>
   <string name="privacy_policy">Datenschutz-Bestimmungen</string>
-  <string name="nuke_desc">App auf Standardeinstellungen zurücksetzen. Verwenden Sie diese Option, wenn Probleme mit Ihrem Portfolio auftreten.</string>
   <string name="export_desc">Aktienliste ihres Portfolios in eine .json-Datei exportieren.</string>
   <string name="action_import">Aktienliste Importieren</string>
   <string name="import_desc">Aktienliste von einer durch Kommas getrennten TXT-Datei oder einer JSON-Datei importieren.</string>
@@ -184,4 +183,6 @@
   <string name="error">Fehler</string>
   <string name="error_fetching_whats_new">Fehler beim Abrufen der neuen Funktionen</string>
   <string name="loading">Wird geladen</string>
-</resources>
+   <string name="exact_alarm_permission_required_message">Die Berechtigung für exakte Alarme ist erforderlich, um das Widget rechtzeitig zu aktualisieren.</string>
+   <string name="go_to_settings">Gewähren</string>
+ </resources>

@@ -1,50 +1,63 @@
 package com.github.premnirmal.ticker.base
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.viewbinding.ViewBinding
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.analytics.Analytics
+import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.model.StocksProvider
-import com.github.premnirmal.ticker.model.StocksProvider.FetchState
 import com.github.premnirmal.ticker.showDialog
-import com.github.premnirmal.tickerwidget.R
-import com.google.android.material.color.DynamicColors
+import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.ui.CollectBottomSheetMessage
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
+import com.github.premnirmal.ticker.ui.ThemeViewModel
+import com.github.premnirmal.tickerwidget.ui.theme.AppTheme
+import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * Created by premnirmal on 2/26/16.
- */
-abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
+abstract class BaseActivity : ComponentActivity() {
 
     abstract val simpleName: String
-    abstract val binding: T
     open val subscribeToErrorEvents = true
     private var isErrorDialogShowing = false
 
-    @Inject lateinit var analytics: Analytics
+    private val themeViewModel by viewModel<ThemeViewModel>()
 
-    @Inject lateinit var stocksProvider: StocksProvider
+    val analytics: Analytics by inject()
 
-    @Inject lateinit var appPreferences: AppPreferences
+    val stocksProvider: StocksProvider by inject()
 
+    val appPreferences: AppPreferences by inject()
+
+    val appMessaging: AppMessaging by inject()
+
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
-        DynamicColors.applyToActivityIfAvailable(this)
-        setContentView(binding.root)
         savedInstanceState?.let { isErrorDialogShowing = it.getBoolean(IS_ERROR_DIALOG_SHOWING, false) }
+        create(savedInstanceState)
         if (subscribeToErrorEvents) {
             lifecycleScope.launch {
-                repeatOnLifecycle(state = Lifecycle.State.STARTED) {
+                repeatOnLifecycle(Lifecycle.State.STARTED) {
                     stocksProvider.fetchState.collect { state ->
                         if (state is FetchState.Failure) {
                             if (this.isActive && !isErrorDialogShowing && !isFinishing) {
@@ -57,11 +70,34 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
                 }
             }
         }
+        setContent {
+            val currentTheme by themeViewModel.themePref.collectAsStateWithLifecycle(
+                initialValue = SelectedTheme.SYSTEM
+            )
+            AppTheme(theme = currentTheme) {
+                CompositionLocalProvider(LocalAppMessaging provides appMessaging) {
+                    val isDarkTheme = isSystemInDarkTheme()
+                    DisposableEffect(isDarkTheme) {
+                        enableEdgeToEdge()
+                        onDispose {}
+                    }
+                    Box {
+                        ShowContent()
+                        CollectBottomSheetMessage(appMessaging.bottomSheets)
+                    }
+                }
+            }
+        }
     }
+
+    open fun create(savedInstanceState: Bundle?) {}
+
+    @Composable
+    abstract fun ShowContent()
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        analytics.trackScreenView(simpleName, this)
+        analytics.trackScreenView(simpleName)
     }
 
     override fun onResume() {
@@ -71,23 +107,6 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(IS_ERROR_DIALOG_SHOWING, isErrorDialogShowing)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        try {
-            super.onRestoreInstanceState(savedInstanceState)
-        } catch (ex: Throwable) {
-            // android bug
-            Timber.w(ex)
-        }
-    }
-
-    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-            return true
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     companion object {

@@ -1,37 +1,90 @@
 package com.github.premnirmal.ticker.debug
 
 import android.os.Bundle
-import android.view.View
-import androidx.activity.viewModels
+import android.webkit.WebView
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.github.premnirmal.ticker.base.BaseActivity
-import com.github.premnirmal.ticker.viewBinding
-import com.github.premnirmal.tickerwidget.databinding.ActivityDbViewerBinding
-import dagger.hilt.android.AndroidEntryPoint
+import com.github.premnirmal.ticker.ui.LocalAppMessaging
+import com.github.premnirmal.ticker.ui.TopBar
+import com.github.premnirmal.tickerwidget.R
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.File
 
-@AndroidEntryPoint
-class DbViewerActivity : BaseActivity<ActivityDbViewerBinding>() {
-    override val binding: (ActivityDbViewerBinding) by viewBinding(ActivityDbViewerBinding::inflate)
+class DbViewerActivity : BaseActivity() {
 
     override val simpleName = "DebugViewerActivity"
     override val subscribeToErrorEvents = false
 
-    private val viewModel: DbViewerViewModel by viewModels()
+    private val viewModel: DbViewerViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding.toolbar.setNavigationOnClickListener {
-            finish()
-        }
-        binding.webview.settings.allowFileAccess = true
-
-        viewModel.htmlFile.observe(this) {
-            binding.webview.loadUrl("file://${it.absolutePath}")
-        }
-
-        viewModel.showProgress.observe(this) { show ->
-            binding.progress.visibility = if (show) View.VISIBLE else View.GONE
-        }
-
+    override fun create(savedInstanceState: Bundle?) {
+        super.create(savedInstanceState)
         viewModel.generateDatabaseHtml()
+    }
+
+    override fun onDestroy() {
+        File(cacheDir, DbViewerViewModel.FILENAME).delete()
+        super.onDestroy()
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    override fun ShowContent() {
+        Scaffold(
+            modifier = Modifier.imePadding(),
+            topBar = {
+                TopBar(
+                    text = stringResource(R.string.db_viewer),
+                )
+            },
+            snackbarHost = {
+                SnackbarHost(hostState = LocalAppMessaging.current.snackbarHostState)
+            }
+        ) { paddingValues ->
+            Box(Modifier.fillMaxSize().padding(paddingValues)) {
+                val showProgress by viewModel.showProgress.collectAsStateWithLifecycle()
+                val htmlFile by viewModel.htmlFile.collectAsStateWithLifecycle()
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = {
+                        WebView(it).apply {
+                            settings.allowFileAccess = true
+                            @Suppress("DEPRECATION")
+                            settings.allowFileAccessFromFileURLs = false
+                            @Suppress("DEPRECATION")
+                            settings.allowUniversalAccessFromFileURLs = false
+                            settings.javaScriptEnabled = false
+                        }
+                    },
+                    update = { webView ->
+                        htmlFile?.let {
+                            webView.loadUrl("file://${it.absolutePath}")
+                        }
+                    }
+                )
+
+                if (showProgress) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                }
+            }
+        }
     }
 }

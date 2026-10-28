@@ -3,40 +3,26 @@ package com.github.premnirmal.ticker.settings
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
-import android.os.Parcelable
-import androidx.core.content.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.notifications.NotificationsHandler
-import com.github.premnirmal.ticker.repo.QuotesDB
 import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.parcelize.Parcelize
-import org.threeten.bp.DayOfWeek
 import timber.log.Timber
-import javax.inject.Inject
-import kotlin.system.exitProcess
 
-@HiltViewModel
-class SettingsViewModel @Inject constructor(
+class SettingsViewModel constructor(
     private val widgetDataProvider: WidgetDataProvider,
     private val appPreferences: AppPreferences,
-    private val preferences: SharedPreferences,
-    private val db: QuotesDB,
     private val stocksProvider: StocksProvider,
     private val notificationsHandler: NotificationsHandler,
 ) : ViewModel() {
@@ -72,44 +58,32 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.themePref = themePref
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
-        }
-    }
-
-    fun setWidgetTextSizePref(textSizePref: Int) {
-        viewModelScope.launch {
-            preferences.edit {
-                remove(AppPreferences.FONT_SIZE).putInt(AppPreferences.FONT_SIZE, textSizePref)
-            }
-            _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
             broadcastUpdateWidget()
         }
     }
 
     fun setUpdateIntervalPref(intervalPref: Int) {
         viewModelScope.launch {
-            preferences.edit {
-                putInt(AppPreferences.UPDATE_INTERVAL, intervalPref)
-            }
+            appPreferences.updateIntervalPref = intervalPref
+            _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            stocksProvider.scheduleUpdate()
+            broadcastUpdateWidget()
+        }
+    }
+
+    fun setStartTime(time: String, _hour: Int, _minute: Int) {
+        viewModelScope.launch {
+            appPreferences.setStartTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
             broadcastUpdateWidget()
         }
     }
 
-    fun setStartTime(time: String, hour: Int, minute: Int) {
+    fun setEndTime(time: String, _hour: Int, _minute: Int) {
         viewModelScope.launch {
-            preferences.edit {
-                putString(AppPreferences.START_TIME, time)
-            }
+            appPreferences.setEndTime(time)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
-        }
-    }
-
-    fun setEndTime(time: String, hour: Int, minute: Int) {
-        viewModelScope.launch {
-            preferences.edit {
-                putString(AppPreferences.END_TIME, time)
-            }
-            _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -119,8 +93,9 @@ class SettingsViewModel @Inject constructor(
                 _error.emit(R.string.days_updated_error_message)
                 return@launch
             }
-            appPreferences.setUpdateDays(days.map { it.toString() }.toSet())
+            appPreferences.setUpdateDays(days)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -129,6 +104,7 @@ class SettingsViewModel @Inject constructor(
             val widgetData = widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
             widgetData.setAutoSort(autoSort)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -136,6 +112,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             appPreferences.setRoundToTwoDecimalPlaces(round)
             _settings.emit(buildData(widgetDataProvider.dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)))
+            broadcastUpdateWidget()
         }
     }
 
@@ -146,18 +123,6 @@ class SettingsViewModel @Inject constructor(
         }
         if (initializeHandler) {
             notificationsHandler.initialize()
-        }
-    }
-
-    fun clearAppData() {
-        viewModelScope.launch {
-            preferences.edit {
-                clear()
-            }
-            withContext(Dispatchers.IO) {
-                db.clearAllTables()
-            }
-            exitProcess(0)
         }
     }
 
@@ -214,8 +179,7 @@ class SettingsViewModel @Inject constructor(
         return SettingsData(
             hasWidgets = widgetDataProvider.hasWidget(),
             themePref = appPreferences.themePref,
-            textSizePref = preferences.getInt(AppPreferences.FONT_SIZE, 1),
-            updateIntervalPref = preferences.getInt(AppPreferences.UPDATE_INTERVAL, 1),
+            updateIntervalPref = appPreferences.updateIntervalPref,
             updateDays = appPreferences.updateDays(),
             notificationAlerts = appPreferences.notificationAlerts(),
             startTime = appPreferences.startTime(),
@@ -225,21 +189,7 @@ class SettingsViewModel @Inject constructor(
         )
     }
 
-    private fun broadcastUpdateWidget() {
+    private suspend fun broadcastUpdateWidget() {
         widgetDataProvider.broadcastUpdateAllWidgets()
     }
-
-    @Parcelize
-    data class SettingsData(
-        val hasWidgets: Boolean,
-        val themePref: Int,
-        val textSizePref: Int,
-        val updateIntervalPref: Int,
-        val updateDays: Set<DayOfWeek>,
-        val notificationAlerts: Boolean,
-        val startTime: AppPreferences.Time,
-        val endTime: AppPreferences.Time,
-        val autoSort: Boolean?,
-        val roundToTwoDp: Boolean,
-    ) : Parcelable
 }

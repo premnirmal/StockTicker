@@ -3,48 +3,41 @@ package com.github.premnirmal.ticker.network
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.BaseUnitTest
 import com.github.premnirmal.ticker.mock.Mocker
-import com.github.premnirmal.ticker.network.data.YahooQuoteNet
 import com.github.premnirmal.ticker.network.data.YahooResponse
-import com.google.gson.reflect.TypeToken
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Response
 
-@HiltAndroidTest
 class StocksApiTest : BaseUnitTest() {
 
     companion object {
         val TEST_TICKER_LIST = arrayListOf("SPY", "GOOG", "MSFT", "DIA", "AAPL")
     }
 
-    internal lateinit var yahooFinance: YahooFinance
-    internal lateinit var yahooFinanceQuoteDetails: YahooQuoteDetails
-    internal lateinit var yahooFinanceCrumb: YahooFinanceCrumb
-    internal lateinit var yahooFinanceInitialLoad: YahooFinanceInitialLoad
+    internal lateinit var yahooFinance: YahooFinanceApi
+    internal lateinit var yahooFinanceCrumb: YahooCrumbApi
+    internal lateinit var yahooFinanceInitialLoad: YahooFinanceInitialLoadApi
     internal lateinit var mockPrefs: AppPreferences
 
     private lateinit var stocksApi: StocksApi
 
     @Before fun initMocks() {
         runBlocking {
-            yahooFinance = Mocker.provide(YahooFinance::class)
+            yahooFinance = Mocker.provide(YahooFinanceApi::class)
             mockPrefs = Mocker.provide(AppPreferences::class)
-            yahooFinanceQuoteDetails = Mocker.provide(YahooQuoteDetails::class)
-            yahooFinanceCrumb = Mocker.provide(YahooFinanceCrumb::class)
-            yahooFinanceInitialLoad = Mocker.provide(YahooFinanceInitialLoad::class)
+            yahooFinanceCrumb = Mocker.provide(YahooCrumbApi::class)
+            yahooFinanceInitialLoad = Mocker.provide(YahooFinanceInitialLoadApi::class)
             val suggestionApi = Mocker.provide(SuggestionApi::class)
-            stocksApi = StocksApi(yahooFinanceInitialLoad, yahooFinanceCrumb, yahooFinance, mockPrefs, yahooFinanceQuoteDetails, suggestionApi)
-            val listType = object : TypeToken<List<YahooQuoteNet>>() {}.type
-            val yahooStockList =
-                parseJsonFile<YahooResponse>(YahooResponse::class.java, "YahooQuotes.json")
-            whenever(yahooFinance.getStocks(any())).thenReturn(Response.success(200, yahooStockList))
+            stocksApi = StocksApi(yahooFinanceInitialLoad, yahooFinanceCrumb, yahooFinance, mockPrefs, suggestionApi)
+            val yahooStockList = parseJsonFile<YahooResponse>("YahooQuotes.json")
+            whenever(yahooFinance.getStocks(any())).thenReturn(
+                YahooQuoteResult(statusCode = 200, response = yahooStockList)
+            )
         }
     }
 

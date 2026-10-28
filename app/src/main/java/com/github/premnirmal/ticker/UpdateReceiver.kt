@@ -3,31 +3,39 @@ package com.github.premnirmal.ticker
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.github.premnirmal.ticker.components.Injector
 import com.github.premnirmal.ticker.model.StocksProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * Created by premnirmal on 2/27/16.
  */
-class UpdateReceiver : BroadcastReceiver() {
+class UpdateReceiver : BroadcastReceiver(), KoinComponent {
 
-    @Inject internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject internal lateinit var coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope by inject()
 
     override fun onReceive(
         context: Context,
         intent: Intent
     ) {
-        Injector.appComponent().inject(this)
-        val pendingResult = goAsync()
-        coroutineScope.launch(Dispatchers.Main) {
-            stocksProvider.fetch()
-            pendingResult.finish()
+        if (intent.action == "android.intent.action.MY_PACKAGE_REPLACED") {
+            val pendingResult = goAsync()
+            coroutineScope.launch(Dispatchers.IO) {
+                stocksProvider.fetch()
+                pendingResult.finish()
+            }
+        }
+        if (intent.action == "android.intent.action.BOOT_COMPLETED") {
+            val pendingResult = goAsync()
+            coroutineScope.launch(Dispatchers.IO) {
+                stocksProvider.scheduleUpdate()
+                pendingResult.finish()
+            }
         }
     }
 }

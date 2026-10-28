@@ -2,9 +2,13 @@
 <resources>
 
   <string-array name="font_sizes">
+    <item>Nano</item>
+    <item>Mini</item>
     <item>Pequeña</item>
     <item>Medio</item>
     <item>Grande</item>
+    <item>Muy grande</item>
+    <item>Gigante</item>
   </string-array>
 
   <string-array name="app_themes">
@@ -21,8 +25,12 @@
   </string-array>
 
   <string-array name="widget_width_types">
-    <item>Defecto</item>
-    <item>Stock único en una fila</item>
+    <item>Auto</item>
+    <item>1</item>
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+    <item>5</item>
   </string-array>
 
   <string-array name="backgrounds">

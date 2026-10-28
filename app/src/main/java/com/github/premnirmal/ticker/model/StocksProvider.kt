@@ -2,16 +2,15 @@ package com.github.premnirmal.ticker.model
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
-import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.network.StocksApi
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,45 +19,45 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
-import javax.inject.Singleton
+import java.util.concurrent.TimeUnit.MINUTES
 
 /**
  * Created by premnirmal on 2/28/16.
  */
-@Singleton
 class StocksProvider constructor(
-    @ApplicationContext private val context: Context,
+    private val context: Context,
     private val api: StocksApi,
     private val preferences: SharedPreferences,
     private val clock: AppClock,
     private val appPreferences: AppPreferences,
     private val widgetDataProvider: WidgetDataProvider,
     private val alarmScheduler: AlarmScheduler,
+    private val fetchEventLogger: FetchEventLogger,
     private val storage: StocksStorage,
     private val coroutineScope: CoroutineScope
-) {
+) : IStocksProvider {
 
     companion object {
         private const val LAST_FETCHED = "LAST_FETCHED"
         private const val NEXT_FETCH = "NEXT_FETCH"
+        private const val CONSECUTIVE_FETCH_FAILURES = "CONSECUTIVE_FETCH_FAILURES"
+        private const val MIN_SCHEDULE_MS = 15_000L
+        private const val MAX_FAILURE_BACKOFF_MS = 30 * 60 * 1000L
         private val DEFAULT_STOCKS = arrayOf("^GSPC", "^DJI", "GOOG", "AAPL", "MSFT")
         const val DEFAULT_INTERVAL_MS: Long = 15_000L
     }
 
-    val tickers: StateFlow<List<String>>
+    override val tickers: StateFlow<List<String>>
         get() = _tickers
 
-    val portfolio: StateFlow<List<Quote>>
+    override val portfolio: StateFlow<List<Quote>>
         get() = _portfolio // quoteMap.filter { widgetDataProvider.containsTicker(it.key) }.map { it.value }
 
-    val fetchState: StateFlow<FetchState>
+    override val fetchState: StateFlow<FetchState>
         get() = _fetchState
 
-    val nextFetchMs: StateFlow<Long>
+    override val nextFetchMs: StateFlow<Long>
         get() = _nextFetch
 
     private val tickerSet: MutableSet<String> = HashSet()
@@ -71,22 +70,22 @@ class StocksProvider constructor(
 
     init {
         val tickers = storage.readTickers()
-        this.tickerSet.addAll(tickers)
-        if (this.tickerSet.isEmpty()) {
-            this.tickerSet.addAll(DEFAULT_STOCKS)
-        }
-        _tickers.value = tickerSet.toList()
         val lastFetchedLoaded = preferences.getLong(LAST_FETCHED, 0L)
         lastFetched = lastFetchedLoaded
         val nextFetch = preferences.getLong(NEXT_FETCH, 0L)
         _nextFetch.value = nextFetch
+        this.tickerSet.addAll(tickers)
+        if (this.tickerSet.isEmpty()) {
+            this.tickerSet.addAll(DEFAULT_STOCKS)
+            saveTickers()
+        }
+        _tickers.value = tickerSet.toList()
+        _fetchState.value = FetchState.Success(lastFetched)
         runBlocking { fetchLocal() }
-        if (lastFetched == 0L) {
+        if (lastFetched == 0L || (nextFetch > 0L && nextFetch < clock.currentTimeMillis())) {
             coroutineScope.launch {
                 fetch()
             }
-        } else {
-            _fetchState.value = FetchState.Success(lastFetched)
         }
     }
 
@@ -102,30 +101,89 @@ class StocksProvider constructor(
         }
     }
 
-    private fun saveLastFetched() {
-        preferences.edit()
-            .putLong(LAST_FETCHED, lastFetched)
-            .apply()
+    private fun saveLastFetched(lastFetched: Long) {
+        preferences.edit {
+            putLong(LAST_FETCHED, lastFetched)
+        }
     }
 
     private fun saveTickers() {
         storage.saveTickers(tickerSet)
     }
 
-    private fun scheduleUpdate() {
-        scheduleUpdateWithMs(alarmScheduler.msToNextAlarm(lastFetched))
+    override fun scheduleUpdate(reason: String) {
+        val msToNextAlarm = alarmScheduler.msToNextAlarm(lastFetched)
+        scheduleUpdateWithMs(msToNextAlarm, reason)
     }
 
     private fun scheduleUpdateWithMs(
-        msToNextAlarm: Long
+        msToNextAlarm: Long,
+        reason: String
     ) {
-        val updateTime = alarmScheduler.scheduleUpdate(msToNextAlarm, context)
+        val clampedDelayMs = msToNextAlarm.coerceAtLeast(MIN_SCHEDULE_MS)
+        val updateTime = alarmScheduler.scheduleUpdate(clampedDelayMs, context)
         _nextFetch.value = updateTime.toInstant().toEpochMilli()
-        preferences.edit()
-            .putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
-            .apply()
+        preferences.edit {
+            putLong(NEXT_FETCH, updateTime.toInstant().toEpochMilli())
+        }
+        Timber.d(
+            "Scheduled next refresh reason=%s delayMs=%d at=%s",
+            reason,
+            clampedDelayMs,
+            updateTime.toInstant()
+        )
+        logFetchEvent(
+            event = "schedule_next",
+            detail = "reason=$reason delayMs=$clampedDelayMs nextAt=${updateTime.toInstant()}"
+        )
         appPreferences.setRefreshing(false)
-        widgetDataProvider.broadcastUpdateAllWidgets()
+    }
+
+    private fun logFetchEvent(event: String, detail: String) =
+        fetchEventLogger.log(source = "StocksProvider", event = event, detail = detail)
+
+    private fun resetConsecutiveFailures() {
+        preferences.edit { putInt(CONSECUTIVE_FETCH_FAILURES, 0) }
+    }
+
+    private fun incrementConsecutiveFailures(): Int {
+        val nextValue = preferences.getInt(CONSECUTIVE_FETCH_FAILURES, 0) + 1
+        preferences.edit { putInt(CONSECUTIVE_FETCH_FAILURES, nextValue) }
+        return nextValue
+    }
+
+    private fun scheduleFailureBackoff(reason: String, error: Throwable?) {
+        val failureCount = incrementConsecutiveFailures()
+        val exponent = (failureCount - 1).coerceAtMost(10)
+        val backoffMs = (MINUTES.toMillis(1) * (1L shl exponent)).coerceAtMost(MAX_FAILURE_BACKOFF_MS)
+        val regularScheduleMs = alarmScheduler.msToNextAlarm(lastFetched)
+        val retryDelayMs = minOf(regularScheduleMs, backoffMs)
+        val scheduleReason = "failure_backoff($failureCount):$reason"
+        if (error != null) {
+            Timber.w(
+                error,
+                "Fetch failed reason=%s failures=%d backoffMs=%d regularMs=%d chosenMs=%d",
+                reason,
+                failureCount,
+                backoffMs,
+                regularScheduleMs,
+                retryDelayMs
+            )
+        } else {
+            Timber.w(
+                "Fetch failed reason=%s failures=%d backoffMs=%d regularMs=%d chosenMs=%d",
+                reason,
+                failureCount,
+                backoffMs,
+                regularScheduleMs,
+                retryDelayMs
+            )
+        }
+        logFetchEvent(
+            event = "failure_backoff",
+            detail = "reason=$reason failures=$failureCount backoffMs=$backoffMs regularMs=$regularScheduleMs chosenMs=$retryDelayMs"
+        )
+        scheduleUpdateWithMs(retryDelayMs, scheduleReason)
     }
 
     private suspend fun fetchStockInternal(ticker: String, allowCache: Boolean): FetchResult<Quote> = withContext(
@@ -161,68 +219,95 @@ class StocksProvider constructor(
     // public api
     // ///////////////////
 
-    fun hasTicker(ticker: String): Boolean {
+    override fun hasTicker(ticker: String): Boolean {
         return tickerSet.contains(ticker)
     }
 
-    suspend fun fetch(allowScheduling: Boolean = true): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
+    override suspend fun fetch(allowScheduling: Boolean): FetchResult<List<Quote>> = withContext(Dispatchers.IO) {
         if (tickerSet.isEmpty()) {
-            if (allowScheduling) {
-                _fetchState.emit(FetchState.Failure(FetchException("No symbols in portfolio")))
-            }
+            Timber.d("No tickers/symbols to fetch")
             FetchResult.failure<List<Quote>>(FetchException("No symbols in portfolio"))
         } else {
+            var shouldScheduleInFinally = allowScheduling
+            var failureReason = "unknown"
+            var failureError: Throwable? = null
             return@withContext try {
+                Timber.d("Starting fetch allowScheduling=%s tickers=%d", allowScheduling, tickerSet.size)
+                logFetchEvent(
+                    event = "fetch_start",
+                    detail = "allowScheduling=$allowScheduling tickers=${tickerSet.size}"
+                )
                 if (allowScheduling) {
                     appPreferences.setRefreshing(true)
                 }
-                widgetDataProvider.broadcastUpdateAllWidgets()
                 val fr = api.getStocks(tickerSet.toList())
                 if (fr.hasError) {
+                    failureReason = "api_error"
                     throw fr.error
                 }
                 val fetchedStocks = fr.data
                 if (fetchedStocks.isEmpty()) {
+                    failureReason = "empty_response"
+                    failureError = FetchException("Refresh failed")
                     return@withContext FetchResult.failure<List<Quote>>(FetchException("Refresh failed"))
                 } else {
                     synchronized(tickerSet) {
                         tickerSet.addAll(fetchedStocks.map { it.symbol })
                     }
                     _tickers.emit(tickerSet.toList())
-                    // clean up existing tickers
-                    tickerSet.toSet().forEach { ticker ->
-                        if (!widgetDataProvider.containsTicker(ticker)) {
-                            removeStock(ticker)
-                        }
-                    }
                     storage.saveQuotes(fetchedStocks)
                     fetchLocal()
                     if (allowScheduling) {
                         lastFetched = clock.currentTimeMillis()
                         _fetchState.emit(FetchState.Success(lastFetched))
-                        saveLastFetched()
-                        scheduleUpdate()
+                        saveLastFetched(lastFetched)
+                        resetConsecutiveFailures()
+                        scheduleUpdate(reason = "fetch_success")
+                        shouldScheduleInFinally = false
                     }
-                    widgetDataProvider.refreshWidgetDataList()
+                    appPreferences.setRefreshing(false)
+                    widgetDataProvider.broadcastUpdateAllWidgets()
+                    Timber.d("Fetch succeeded stocks=%d", fetchedStocks.size)
+                    logFetchEvent(
+                        event = "fetch_success",
+                        detail = "stocks=${fetchedStocks.size}"
+                    )
                     FetchResult.success(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
                 }
             } catch (ex: CancellationException) {
+                shouldScheduleInFinally = false
+                failureReason = "cancelled"
+                failureError = ex
                 FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
             } catch (ex: Throwable) {
+                failureReason = ex::class.java.simpleName
+                failureError = ex
                 Timber.w(ex)
                 FetchResult.failure<List<Quote>>(FetchException("Failed to fetch", ex))
             } finally {
                 appPreferences.setRefreshing(false)
+                if (shouldScheduleInFinally) {
+                    // Keep scheduling chain alive across transient failures.
+                    logFetchEvent(
+                        event = "fetch_failure",
+                        detail = "reason=$failureReason error=${failureError?.message.orEmpty()}"
+                    )
+                    runCatching { scheduleFailureBackoff(failureReason, failureError) }
+                        .onFailure { Timber.w(it, "Failed scheduling after fetch failure") }
+                }
             }
         }
     }
 
-    fun schedule() {
-        scheduleUpdate()
-        alarmScheduler.enqueuePeriodicRefresh()
+    override fun schedule() {
+        coroutineScope.launch {
+            scheduleUpdate()
+            alarmScheduler.enqueuePeriodicRefresh()
+            alarmScheduler.enqueuePeriodicCleanup()
+        }
     }
 
-    fun addStock(ticker: String): Collection<String> {
+    override fun addStock(ticker: String): Collection<String> {
         synchronized(quoteMap) {
             if (!tickerSet.contains(ticker)) {
                 tickerSet.add(ticker)
@@ -245,13 +330,13 @@ class StocksProvider constructor(
         return tickerSet
     }
 
-    fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
+    override fun hasPositions(): Boolean = quoteMap.filter { it.value.hasPositions() }.isNotEmpty()
 
-    fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
+    override fun hasPosition(ticker: String): Boolean = quoteMap[ticker]?.hasPositions() ?: false
 
-    fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
+    override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-    suspend fun addHolding(
+    override suspend fun addHolding(
         ticker: String,
         shares: Float,
         price: Float
@@ -276,21 +361,23 @@ class StocksProvider constructor(
         return holding
     }
 
-    suspend fun removePosition(
+    override suspend fun removePosition(
         ticker: String,
         holding: Holding
-    ) {
+    ): Boolean {
+        var removed = false
         synchronized(quoteMap) {
             val position = getPosition(ticker)
             val quote = quoteMap[ticker]
-            position?.remove(holding)
+            removed = position?.remove(holding) ?: false
             quote?.position = position
         }
         storage.removeHolding(ticker, holding)
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+        return removed
     }
 
-    fun addStocks(symbols: Collection<String>): Collection<String> {
+    override fun addStocks(symbols: Collection<String>): Collection<String> {
         synchronized(this.tickerSet) {
             val filterNot = symbols.filterNot { this.tickerSet.contains(it) }
             filterNot.forEach { this.tickerSet.add(it) }
@@ -306,7 +393,7 @@ class StocksProvider constructor(
         return this.tickerSet
     }
 
-    suspend fun removeStock(ticker: String): Collection<String> {
+    override suspend fun removeStock(ticker: String): Collection<String> {
         synchronized(quoteMap) {
             tickerSet.remove(ticker)
             saveTickers()
@@ -318,7 +405,7 @@ class StocksProvider constructor(
         return tickerSet
     }
 
-    suspend fun removeStocks(symbols: Collection<String>) {
+    override suspend fun removeStocks(symbols: Collection<String>) {
         synchronized(quoteMap) {
             symbols.forEach {
                 tickerSet.remove(it)
@@ -331,13 +418,21 @@ class StocksProvider constructor(
         saveTickers()
     }
 
-    suspend fun fetchStock(ticker: String, allowCache: Boolean = true): FetchResult<Quote> {
+    override suspend fun cleanup() {
+        val quotes = storage.readQuotes().map { it.symbol }
+        val toRemove = quotes.filterNot {
+            tickerSet.contains(it)
+        }
+        storage.removeQuotesBySymbol(toRemove)
+    }
+
+    override suspend fun fetchStock(ticker: String, allowCache: Boolean): FetchResult<Quote> {
         return fetchStockInternal(ticker, allowCache)
     }
 
-    fun getStock(ticker: String): Quote? = quoteMap[ticker]
+    override fun getStock(ticker: String): Quote? = quoteMap[ticker]
 
-    fun addPortfolio(portfolio: List<Quote>) {
+    override fun addPortfolio(portfolio: List<Quote>) {
         synchronized(quoteMap) {
             portfolio.forEach {
                 val symbol = it.symbol
@@ -351,28 +446,6 @@ class StocksProvider constructor(
             storage.saveQuotes(portfolio)
             fetchLocal()
             fetch()
-        }
-    }
-
-    sealed class FetchState {
-        abstract val displayString: String
-
-        object NotFetched : FetchState() {
-            override val displayString: String = "--"
-        }
-
-        class Success(val fetchTime: Long) : FetchState() {
-            override val displayString: String by lazy {
-                val instant = Instant.ofEpochMilli(fetchTime)
-                val time = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault())
-                time.createTimeString()
-            }
-        }
-
-        class Failure(val exception: Throwable) : FetchState() {
-            override val displayString: String by lazy {
-                exception.message.orEmpty()
-            }
         }
     }
 }

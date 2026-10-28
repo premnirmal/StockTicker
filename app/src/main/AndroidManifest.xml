@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <uses-sdk tools:overrideLibrary="androidx.browser,com.google.firebase.iid"/>
     <application
@@ -31,17 +32,22 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AddPositionActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.HoldingsActivity"
             android:label="@string/add_position"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AddNotesActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.NotesActivity"
             android:label="@string/add_notes"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.github.premnirmal.ticker.portfolio.AddAlertsActivity"
+            android:name="com.github.premnirmal.ticker.portfolio.DisplaynameActivity"
+            android:label="@string/add_displayname"
+            android:theme="@style/AddPositionTheme"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.github.premnirmal.ticker.portfolio.AlertsActivity"
             android:label="@string/add_alerts"
             android:theme="@style/AddPositionTheme"
             android:windowSoftInputMode="adjustResize" />
@@ -78,6 +84,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         <receiver
@@ -88,30 +95,17 @@
             android:enabled="true"
             android:exported="false" />
 
-        <receiver
-            android:name="com.github.premnirmal.ticker.widget.WidgetClickReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.github.premnirmal.ticker.WIDGET_CLICK" />
-            </intent-filter>
-        </receiver>
-        <receiver
+        <!-- Glance Widget -->
+        <receiver android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:exported="true"
-            android:name="com.github.premnirmal.ticker.widget.StockWidget"
             android:label="@string/widget_label">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget" />
         </receiver>
-
-        <service
-            android:name="com.github.premnirmal.ticker.widget.RemoteStockProviderService"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!-- File provider -->
         <provider

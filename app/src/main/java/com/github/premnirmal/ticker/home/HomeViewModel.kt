@@ -1,10 +1,13 @@
 package com.github.premnirmal.ticker.home
 
 import android.app.Application
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.createTimeString
+import com.github.premnirmal.ticker.model.AlarmScheduler
+import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.CommitsProvider
 import com.github.premnirmal.ticker.network.NewsProvider
@@ -14,8 +17,8 @@ import com.github.premnirmal.ticker.widget.WidgetData
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,24 +26,23 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
-import javax.inject.Inject
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
-@HiltViewModel
-class HomeViewModel @Inject constructor(
+class HomeViewModel constructor(
     application: Application,
     private val stocksProvider: StocksProvider,
     private val appPreferences: AppPreferences,
     private val newsProvider: NewsProvider,
-    private val commitsProvider: CommitsProvider,
     private val widgetDataProvider: WidgetDataProvider,
     private val notificationsHandler: NotificationsHandler,
     private val appMessaging: AppMessaging,
+    private val alarmScheduler: AlarmScheduler,
+    private val commitsProvider: CommitsProvider,
 ) : AndroidViewModel(application) {
 
-    val fetchState: StateFlow<StocksProvider.FetchState>
+    val fetchState: StateFlow<FetchState>
         get() = stocksProvider.fetchState
     val nextFetch: Flow<String>
         get() = stocksProvider.nextFetchMs.map {
@@ -57,26 +59,63 @@ class HomeViewModel @Inject constructor(
         get() = _homeEvent
     private val _homeEvent = MutableSharedFlow<HomeEvent>()
 
-    val widgets: Flow<List<WidgetData>>
+    val widgets: StateFlow<List<WidgetData>>
         get() = widgetDataProvider.widgetData
     val hasWidget: Flow<Boolean>
         get() = widgetDataProvider.hasWidget
 
+    val hasHoldings: Boolean
+        get() = stocksProvider.hasPositions()
+
+    val showAlarmPermissionRequest: Boolean
+        get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmScheduler.canScheduleExactAlarm()
+
+    private var fetchJob: Job? = null
+
     init {
         initCaches()
-        widgetDataProvider.refreshWidgetDataList()
+        viewModelScope.launch { widgetDataProvider.refreshWidgetDataList() }
     }
 
     private fun initCaches() {
         newsProvider.initCache()
-        if (appPreferences.getLastSavedVersionCode() < BuildConfig.VERSION_CODE) {
-            commitsProvider.initCache()
-        }
     }
 
     fun initNotifications() {
         notificationsHandler.initialize()
     }
+
+    fun sendHomeEvent(event: HomeEvent) {
+        viewModelScope.launch {
+            _homeEvent.emit(event)
+        }
+    }
+
+    val totalGainLoss: Flow<TotalGainLoss>
+        get() = stocksProvider.portfolio.map { portfolio ->
+            val totalHoldings = portfolio.filter { it.hasPositions() }.sumOf { quote ->
+                quote.holdings().toDouble()
+            }
+            val totalHoldingsStr = appPreferences.selectedDecimalFormat.format(totalHoldings)
+            var totalGain = 0.0f
+            var totalLoss = 0.0f
+            val quotesWithPositions = portfolio.filter { it.hasPositions() }
+            for (quote in quotesWithPositions) {
+                val gainLoss = quote.gainLoss()
+                if (gainLoss > 0.0f) {
+                    totalGain += gainLoss
+                } else {
+                    totalLoss += gainLoss
+                }
+            }
+            val totalGainStr = "+" + appPreferences.selectedDecimalFormat.format(totalGain)
+            val totalLossStr = if (totalLoss != 0.0f) {
+                appPreferences.selectedDecimalFormat.format(totalLoss)
+            } else {
+                ""
+            }
+            TotalGainLoss(totalHoldingsStr, totalGainStr, totalLossStr)
+        }
 
     fun checkShowTutorial() {
         val tutorialShown = appPreferences.tutorialShown()
@@ -102,7 +141,7 @@ class HomeViewModel @Inject constructor(
 
     fun showWhatsNew() {
         viewModelScope.launch {
-            val whatsNewResult = commitsProvider.fetchWhatsNew()
+            val whatsNewResult = commitsProvider.loadWhatsNew()
             val title = getApplication<Application>().getString(R.string.whats_new_in, BuildConfig.VERSION_NAME)
             val message = with(whatsNewResult) {
                 if (wasSuccessful) {
@@ -120,6 +159,9 @@ class HomeViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch {
+            if (widgets.value.isEmpty()) {
+                widgetDataProvider.refreshWidgetDataList()
+            }
             _isRefreshing.value = true
             stocksProvider.fetch()
         }.invokeOnCompletion {
@@ -128,7 +170,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchPortfolioInRealTime() {
-        viewModelScope.launch(Dispatchers.Default) {
+        fetchJob = viewModelScope.launch(Dispatchers.Default) {
             do {
                 var isMarketOpen = false
                 val result = stocksProvider.fetch(false)
@@ -138,5 +180,9 @@ class HomeViewModel @Inject constructor(
                 delay(StocksProvider.DEFAULT_INTERVAL_MS)
             } while (result.wasSuccessful && isMarketOpen)
         }
+    }
+
+    fun stopRealTimeFetch() {
+        fetchJob?.cancel()
     }
 }

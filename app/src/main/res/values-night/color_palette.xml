@@ -6,9 +6,10 @@
   <color name="card_bg">#1d1d1d</color>
   <color name="card_shadow">#95000000</color>
 
+  <color name="translucent">#98000000</color>
   <color name="error_red">#ff3232</color>
   <color name="negative_red">#ff6666</color>
   <color name="positive_green">#ccff66</color>
   <color name="positive_green_dark">#009900</color>
-  <color name="text_2">#fff3f3f3</color>
+  <color name="marker_text">#FFFAF9F6</color>
 </resources>

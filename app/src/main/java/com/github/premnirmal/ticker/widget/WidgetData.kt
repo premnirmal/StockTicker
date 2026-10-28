@@ -1,30 +1,38 @@
 package com.github.premnirmal.ticker.widget
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Parcelable
-import androidx.annotation.ColorInt
+import android.util.TypedValue
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.content.ContextCompat
+import androidx.annotation.Keep
 import androidx.core.content.edit
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.updateAppWidgetState
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.AppPreferences.Companion.toCommaSeparatedString
-import com.github.premnirmal.ticker.components.Injector
+import com.github.premnirmal.ticker.NightMode
+import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.parcelize.Parcelize
-import javax.inject.Inject
-import kotlin.collections.sortByDescending
+import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class WidgetData {
+class WidgetData : IWidgetData, KoinComponent {
 
     companion object {
         private const val SORTED_STOCK_LIST = AppPreferences.SORTED_STOCK_LIST
@@ -32,8 +40,12 @@ class WidgetData {
         private const val WIDGET_NAME = "WIDGET_NAME"
         private const val LAYOUT_TYPE = AppPreferences.LAYOUT_TYPE
         private const val WIDGET_SIZE = AppPreferences.WIDGET_SIZE
+
+        @Deprecated("will be removed in future version")
+        private const val FONT_SIZE = AppPreferences.FONT_SIZE
         private const val BOLD_CHANGE = AppPreferences.BOLD_CHANGE
         private const val SHOW_CURRENCY = AppPreferences.SHOW_CURRENCY
+        private const val SHOW_REFRESH = AppPreferences.SHOW_REFRESH
         private const val PERCENT = AppPreferences.PERCENT
         private const val AUTOSORT = AppPreferences.SETTING_AUTOSORT
         private const val HIDE_HEADER = AppPreferences.SETTING_HIDE_HEADER
@@ -44,40 +56,39 @@ class WidgetData {
         private const val SYSTEM = AppPreferences.SYSTEM
         private const val DARK = AppPreferences.DARK
         private const val LIGHT = AppPreferences.LIGHT
-
-        enum class ChangeType {
-            Value,
-            Percent
-        }
     }
 
-    @Inject internal lateinit var stocksProvider: StocksProvider
+    private val stocksProvider: StocksProvider by inject()
 
-    @Inject @ApplicationContext
-    internal lateinit var context: Context
+    private val context: Context by inject()
 
-    @Inject internal lateinit var widgetDataProvider: WidgetDataProvider
+    private val widgetDataProvider: WidgetDataProvider by inject()
 
-    @Inject internal lateinit var appPreferences: AppPreferences
+    private val appPreferences: AppPreferences by inject()
 
-    @Inject internal lateinit var coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope by inject()
+
+    private val appMessaging: AppMessaging by inject()
+
+    private val alarmScheduler: AlarmScheduler by inject()
 
     private val position: Int
-    val widgetId: Int
+    override val widgetId: Int
     private val tickerList: MutableList<String>
     val tickers: StateFlow<List<String>>
         get() = _tickerList
     private val _tickerList = MutableStateFlow<List<String>>(emptyList())
-    val stocks: StateFlow<List<Quote>>
-        get() = _stocks
     private val _stocks = MutableStateFlow<List<Quote>>(emptyList())
+    override val stocks: StateFlow<List<Quote>> = _stocks.asStateFlow()
     private val preferences: SharedPreferences
     private val _autoSortEnabled = MutableStateFlow(false)
-    val autoSortEnabled: StateFlow<Boolean>
-        get() = _autoSortEnabled
-    val changeFlow: StateFlow<ImmutableWidgetData>
-        get() = _changeFlow
-    private val _changeFlow by lazy { MutableStateFlow(toImmutableData()) }
+    val prefsFlow: StateFlow<Prefs>
+        get() = _prefsFlow
+    private val _prefsFlow by lazy { MutableStateFlow(toPrefs()) }
+
+    override val data: StateFlow<Data>
+        get() = _data
+    private val _data by lazy { MutableStateFlow(toState()) }
 
     constructor(
         position: Int,
@@ -85,8 +96,6 @@ class WidgetData {
     ) {
         this.position = position
         this.widgetId = widgetId
-        Injector.appComponent()
-            .inject(this)
         val prefsName = "$PREFS_NAME_PREFIX$widgetId"
         preferences = context.getSharedPreferences(prefsName, Context.MODE_PRIVATE)
         val tickerListVars = preferences.getString(SORTED_STOCK_LIST, "")
@@ -116,10 +125,11 @@ class WidgetData {
     }
 
     private val nightMode: Boolean
-        get() = appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
+        get() = appPreferences.nightMode == NightMode.DARK
 
+    @get:ColorRes
     val positiveTextColor: Int
-        @ColorRes get() {
+        get() {
             return when (textColorPref()) {
                 SYSTEM -> {
                     if (nightMode) {
@@ -128,51 +138,64 @@ class WidgetData {
                         R.color.text_widget_positive
                     }
                 }
+
                 DARK -> {
                     R.color.text_widget_positive_dark
                 }
+
                 LIGHT -> {
                     R.color.text_widget_positive_light
                 }
+
                 else -> {
                     R.color.text_widget_positive
                 }
             }
         }
 
+    @get:ColorRes
     val negativeTextColor: Int
-        @ColorRes get() {
+        get() {
             return R.color.text_widget_negative
         }
 
-    fun widgetName(): String {
-        var name = preferences.getString(WIDGET_NAME, "")!!
-        if (name.isEmpty()) {
-            name = "Widget #$position"
-            setWidgetName(name)
+    override val widgetName: String
+        get() {
+            var name = preferences.getString(WIDGET_NAME, "")!!
+            if (name.isEmpty()) {
+                name = "Widget #$position"
+                setWidgetName(name)
+            }
+            return name
         }
-        return name
-    }
+
+    fun widgetName(): String = widgetName
 
     fun setWidgetName(value: String) {
         preferences.edit {
             putString(WIDGET_NAME, value)
         }
-        _changeFlow.value = toImmutableData()
-        widgetDataProvider.refreshWidgetDataList()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
+        runBlocking { widgetDataProvider.refreshWidgetDataList() }
     }
 
-    fun changeType(): ChangeType {
+    override val changeType: IWidgetData.ChangeType
+        get() = changeType()
+
+    fun changeType(): IWidgetData.ChangeType {
         val state = preferences.getBoolean(PERCENT, false)
-        return if (state) ChangeType.Percent else ChangeType.Value
+        return if (state) IWidgetData.ChangeType.Percent else IWidgetData.ChangeType.Value
     }
 
-    fun flipChange() {
-        val state = preferences.getBoolean(PERCENT, false)
+    fun setChange(percent: Boolean) {
         preferences.edit {
-            putBoolean(PERCENT, !state)
+            putBoolean(PERCENT, percent)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun widgetSizePref(): Int = preferences.getInt(WIDGET_SIZE, 0)
@@ -181,7 +204,42 @@ class WidgetData {
         preferences.edit {
             putInt(WIDGET_SIZE, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
+    }
+
+    @Deprecated("will be removed in future version")
+    fun fontSizePref(): Int = preferences.getInt(FONT_SIZE, 3)
+
+    @Deprecated("will be removed in future version")
+    fun readFontSize(): Float {
+        val size = fontSizePref()
+        val resId = when (size) {
+            0 -> R.dimen.text_size_nano
+            1 -> R.dimen.text_size_mini
+            2 -> R.dimen.text_size_small
+            3 -> R.dimen.text_size_medium
+            4 -> R.dimen.text_size_large
+            5 -> R.dimen.text_size_huge
+            6 -> R.dimen.text_size_giant
+            else -> R.dimen.text_size_medium
+        }
+        val typedValue = TypedValue()
+        context.resources.getValue(resId, typedValue, true)
+        return typedValue.float
+    }
+
+    @Deprecated("will be removed in future version")
+    fun setFontSize(value: Int) {
+        appMessaging.sendSnackbar("Font size is a deprecated setting, FYI this will be removed in a future version!")
+        val validValue = value.coerceIn(0, 6)
+        preferences.edit {
+            putInt(FONT_SIZE, validValue)
+        }
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun layoutPref(): Int = preferences.getInt(LAYOUT_TYPE, 0)
@@ -190,34 +248,30 @@ class WidgetData {
         preferences.edit {
             putInt(LAYOUT_TYPE, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
-    @ColorInt fun textColor(): Int {
+    @ColorRes fun textColorRes(): Int {
         val pref = textColorPref()
         return if (pref == SYSTEM) {
             if (nightMode) {
-                ContextCompat.getColor(context, R.color.dark_widget_text)
+                R.color.dark_widget_text
             } else {
-                ContextCompat.getColor(context, R.color.widget_text)
+                R.color.widget_text
             }
         } else if (pref == DARK) {
-            ContextCompat.getColor(context, R.color.widget_text_black)
+            R.color.widget_text_black
         } else if (pref == LIGHT) {
-            ContextCompat.getColor(context, R.color.widget_text_white)
+            R.color.widget_text_white
         } else {
-            ContextCompat.getColor(context, R.color.widget_text)
+            R.color.widget_text
         }
     }
 
-    @LayoutRes fun stockViewLayout(): Int {
-        return when (layoutPref()) {
-            0 -> R.layout.stockview
-            1 -> R.layout.stockview2
-            2 -> R.layout.stockview3
-            else -> R.layout.stockview4
-        }
-    }
+    override val layoutType: LayoutType
+        get() = LayoutType.fromInt(layoutPref())
 
     @DrawableRes
     fun backgroundResource(): Int {
@@ -226,7 +280,11 @@ class WidgetData {
                 R.drawable.transparent_widget_bg
             }
             bgPref() == TRANSLUCENT -> {
-                R.drawable.translucent_widget_bg
+                if (nightMode) {
+                    R.drawable.translucent_widget_bg_dark
+                } else {
+                    R.drawable.translucent_widget_bg
+                }
             }
             nightMode -> {
                 R.drawable.app_widget_background_dark
@@ -243,7 +301,9 @@ class WidgetData {
         preferences.edit {
             putInt(TEXT_COLOR, pref)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun bgPref(): Int {
@@ -255,11 +315,33 @@ class WidgetData {
         return pref
     }
 
+    fun bgType(): IWidgetData.BackgroundType {
+        val pref = bgPref()
+        return when (pref) {
+            TRANSPARENT -> IWidgetData.BackgroundType.Transparent
+            TRANSLUCENT -> IWidgetData.BackgroundType.Translucent
+            SYSTEM -> IWidgetData.BackgroundType.System
+            else -> IWidgetData.BackgroundType.System
+        }
+    }
+
+    fun textColorType(): IWidgetData.TextColorType {
+        val pref = textColorPref()
+        return when (pref) {
+            SYSTEM -> IWidgetData.TextColorType.System
+            LIGHT -> IWidgetData.TextColorType.Light
+            DARK -> IWidgetData.TextColorType.Dark
+            else -> IWidgetData.TextColorType.System
+        }
+    }
+
     fun setBgPref(value: Int) {
         preferences.edit {
             putInt(WIDGET_BG, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun autoSortEnabled(): Boolean = preferences.getBoolean(AUTOSORT, false)
@@ -272,42 +354,37 @@ class WidgetData {
         save()
     }
 
-    fun hideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
+    fun readHideHeader(): Boolean = preferences.getBoolean(HIDE_HEADER, false)
 
     fun setHideHeader(hide: Boolean) {
         preferences.edit {
             putBoolean(HIDE_HEADER, hide)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
-    fun isBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
+    fun readIsBoldEnabled(): Boolean = preferences.getBoolean(BOLD_CHANGE, false)
 
     fun setBoldEnabled(value: Boolean) {
         preferences.edit {
             putBoolean(BOLD_CHANGE, value)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
-    fun isCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
+    fun readIsCurrencyEnabled(): Boolean = preferences.getBoolean(SHOW_CURRENCY, false)
 
     fun setCurrencyEnabled(value: Boolean) {
         preferences.edit {
             putBoolean(SHOW_CURRENCY, value)
         }
-        _changeFlow.value = toImmutableData()
-    }
-
-    @Deprecated("Use the stocks flow")
-    fun getQuotesList(): List<Quote> {
-        val quoteList = ArrayList<Quote>()
-        tickerList.map { stocksProvider.getStock(it) }
-            .forEach { quote -> quote?.let { quoteList.add(it) } }
-        if (autoSortEnabled()) {
-            quoteList.sortByDescending { it.changeInPercent }
-        }
-        return quoteList
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
     fun getTickers(): List<String> = tickerList
@@ -362,24 +439,69 @@ class WidgetData {
             tickerList.remove(ticker)
         }
         save()
+        alarmScheduler.enqueueCleanup()
     }
 
     fun addAllFromStocksProvider() {
         addTickers(stocksProvider.tickers.value)
     }
 
-    fun onWidgetRemoved() {
+    fun showRefreshButton(): Boolean = preferences.getBoolean(SHOW_REFRESH, false)
+
+    fun setShowRefreshButton(show: Boolean) {
         preferences.edit {
-            clear()
+            putBoolean(SHOW_REFRESH, show)
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
     }
 
-    fun toImmutableData(): ImmutableWidgetData {
-        return ImmutableWidgetData(
-            widgetId, widgetName(), autoSortEnabled(), isBoldEnabled(),
-            hideHeader(), isCurrencyEnabled(), layoutPref(), widgetSizePref(), bgPref(), textColorPref(),
-            changeType()
+    fun toPrefs(): Prefs {
+        return Prefs(
+            id = widgetId,
+            name = widgetName(),
+            autoSort = autoSortEnabled(),
+            boldText = readIsBoldEnabled(),
+            hideWidgetHeader = readHideHeader(),
+            showCurrency = readIsCurrencyEnabled(),
+            isDarkMode = nightMode,
+            typePref = layoutPref(),
+            sizePref = widgetSizePref(),
+            backgroundPref = bgPref(),
+            textColourPref = textColorPref(),
+            changeType = changeType(),
+            layoutType = layoutType,
+            fontSizePref = fontSizePref(),
+            fontSize = readFontSize(),
+            backgroundResource = backgroundResource(),
+            positiveTextColor = positiveTextColor,
+            negativeTextColor = negativeTextColor,
+            textColor = textColorRes(),
+            showRefreshButton = showRefreshButton(),
+        )
+    }
+
+    fun toState(): Data {
+        return Data(
+            id = widgetId,
+            name = widgetName,
+            boldText = readIsBoldEnabled(),
+            changeType = changeType(),
+            layoutType = layoutType,
+            fontSizePref = fontSizePref(),
+            fontSize = readFontSize(),
+            showCurrency = readIsCurrencyEnabled(),
+            isDarkMode = nightMode,
+            sizePref = widgetSizePref(),
+            hideWidgetHeader = readHideHeader(),
+            backgroundResource = backgroundResource(),
+            bgPref = bgType(),
+            textColorPref = textColorType(),
+            positiveTextColor = positiveTextColor,
+            negativeTextColor = negativeTextColor,
+            textColor = textColorRes(),
+            showRefreshButton = showRefreshButton(),
         )
     }
 
@@ -387,7 +509,8 @@ class WidgetData {
         synchronized(tickerList) {
             preferences.edit { putString(SORTED_STOCK_LIST, tickerList.toCommaSeparatedString()) }
         }
-        _changeFlow.value = toImmutableData()
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
         _tickerList.value = tickerList
         _stocks.value = tickerList.mapNotNull {
             stocksProvider.getStock(it)
@@ -398,18 +521,49 @@ class WidgetData {
                 quotes
             }
         }
+        emitWidgetChanges()
+    }
+
+    fun emitWidgetChanges() {
+        if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+            coroutineScope.launch {
+                val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(widgetId)
+                updateAppWidgetState(
+                    context = context,
+                    definition = WidgetGlanceStateDefinition,
+                    glanceId = glanceId,
+                ) { state ->
+                    val currentQuotes = stocks.value
+                    val currentState = data.value
+                    val currentFetchState = stocksProvider.fetchState.value
+                    val currentIsRefreshing = appPreferences.isRefreshing.value
+                    state.copy(
+                        widgetState = SerializableWidgetState.from(
+                            state = currentState,
+                            fetchState = currentFetchState,
+                            isRefreshing = currentIsRefreshing
+                        ),
+                        quotes = currentQuotes
+                    )
+                }
+                GlanceStocksWidget().update(context, glanceId)
+            }
+        }
     }
 
     fun refreshStocksList() {
         _tickerList.value = tickerList
-        _stocks.value = tickerList.mapNotNull {
-            stocksProvider.getStock(it)
+        val quotes = tickerList.map {
+            stocksProvider.getStock(it) ?: Quote(symbol = it)
         }.let { quotes ->
-            if (autoSortEnabled()) {
+            return@let if (autoSortEnabled()) {
                 quotes.toMutableList().sortedByDescending { it.changeInPercent }
             } else {
                 quotes
             }
+        }
+        _stocks.update {
+            quotes
         }
     }
 
@@ -417,101 +571,82 @@ class WidgetData {
         if (this === other) return true
         if (other !is WidgetData) return false
 
-        if (toImmutableData() != other.toImmutableData()) return false
+        if (toPrefs() != other.toPrefs()) return false
+        if (toState() != other.toState()) return false
+        if (tickerList != other.tickerList) return false
+        if (_stocks.value != other._stocks.value) return false
         return true
     }
 
     override fun hashCode(): Int {
-        return toImmutableData().hashCode()
+        return toPrefs().hashCode() * 31 + toState().hashCode() * 31 + tickerList.hashCode() * 31 + _stocks.value.hashCode()
     }
 
     @Parcelize
-    data class ImmutableWidgetData(
+    @Serializable
+    @Keep
+    data class Data(
+        val id: Int,
+        val name: String,
+        val boldText: Boolean,
+        val changeType: IWidgetData.ChangeType,
+        val layoutType: LayoutType,
+        @Deprecated("will be removed in future version")
+        val fontSizePref: Int,
+        @Deprecated("will be removed in future version")
+        val fontSize: Float,
+        val showCurrency: Boolean,
+        val isDarkMode: Boolean,
+        val sizePref: Int,
+        val hideWidgetHeader: Boolean,
+        @param:DrawableRes
+        @get:DrawableRes
+        val backgroundResource: Int,
+        val bgPref: IWidgetData.BackgroundType,
+        val textColorPref: IWidgetData.TextColorType,
+        @param:ColorRes
+        @get:ColorRes
+        val positiveTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val negativeTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val textColor: Int,
+        val showRefreshButton: Boolean,
+    ) : Parcelable
+
+    @Parcelize
+    data class Prefs(
         val id: Int,
         val name: String,
         val autoSort: Boolean,
         val boldText: Boolean,
         val hideWidgetHeader: Boolean,
         val showCurrency: Boolean,
+        val isDarkMode: Boolean,
         val typePref: Int,
         val sizePref: Int,
         val backgroundPref: Int,
         val textColourPref: Int,
-        val changeType: ChangeType
-    ) : Parcelable {
-
-        @LayoutRes fun stockViewLayout(): Int {
-            return when (typePref) {
-                0 -> R.layout.stockview
-                1 -> R.layout.stockview2
-                2 -> R.layout.stockview3
-                else -> R.layout.stockview4
-            }
-        }
-
-        @DrawableRes
-        fun backgroundResource(): Int {
-            return when {
-                backgroundPref == TRANSPARENT -> {
-                    R.drawable.transparent_widget_bg
-                }
-                backgroundPref == TRANSLUCENT -> {
-                    R.drawable.translucent_widget_bg
-                }
-                Injector.appComponent().appPreferences().nightMode == AppCompatDelegate.MODE_NIGHT_YES -> {
-                    R.drawable.app_widget_background_dark
-                }
-                else -> {
-                    R.drawable.app_widget_background
-                }
-            }
-        }
-
-        @ColorInt fun textColor(
-            context: Context
-        ): Int {
-            val appPreferences = Injector.appComponent().appPreferences()
-            val pref = textColourPref
-            return if (pref == SYSTEM) {
-                if (appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-                    ContextCompat.getColor(context, R.color.dark_widget_text)
-                } else {
-                    ContextCompat.getColor(context, R.color.widget_text)
-                }
-            } else if (pref == DARK) {
-                ContextCompat.getColor(context, R.color.widget_text_black)
-            } else if (pref == LIGHT) {
-                ContextCompat.getColor(context, R.color.widget_text_white)
-            } else {
-                ContextCompat.getColor(context, R.color.widget_text)
-            }
-        }
-
-        fun positiveTextColor(): Int {
-            val appPreferences = Injector.appComponent().appPreferences()
-            return when (textColourPref) {
-                SYSTEM -> {
-                    if (appPreferences.nightMode == AppCompatDelegate.MODE_NIGHT_YES
-                    ) {
-                        R.color.text_widget_positive_light
-                    } else {
-                        R.color.text_widget_positive
-                    }
-                }
-                DARK -> {
-                    R.color.text_widget_positive_dark
-                }
-                LIGHT -> {
-                    R.color.text_widget_positive_light
-                }
-                else -> {
-                    R.color.text_widget_positive
-                }
-            }
-        }
-
-        fun negativeTextColor(): Int {
-            return R.color.text_widget_negative
-        }
-    }
+        val changeType: IWidgetData.ChangeType,
+        val layoutType: LayoutType,
+        @Deprecated("will be removed in future version")
+        val fontSizePref: Int,
+        @Deprecated("will be removed in future version")
+        val fontSize: Float,
+        @param:DrawableRes
+        @get:DrawableRes
+        val backgroundResource: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val positiveTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val negativeTextColor: Int,
+        @param:ColorRes
+        @get:ColorRes
+        val textColor: Int,
+        val showRefreshButton: Boolean,
+    ) : Parcelable
 }

@@ -6,11 +6,12 @@
 .DS_Store
 /build
 /captures
-app/build
+**/build/
 app/full-r8-config.txt
 app/prod/
 /.vs/
 .kotlin/
+**/.kotlin/
 
 #ignore keystore and keystore.properties
 *.jks
@@ -19,3 +20,24 @@ app/keystore.*
 
 #google services
 app/google-services.json
+
+#iOS / Xcode
+# The Xcode project is generated from iosApp/project.yml with XcodeGen, not committed.
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+DerivedData/
+.swiftpm/
+# Local, machine-specific JAVA_HOME override for the iOS Gradle build phase
+iosApp/.xcode.env.local
+# Local, git-derived version override written by iosApp/version.sh (optionally
+# #included by the committed iosApp/Version.xcconfig)
+iosApp/Version.local.xcconfig
+# Local, machine-specific code-signing team override (git-ignored) layered on
+# top of the committed iosApp/Signing.xcconfig for signed `xcodebuild archive`
+iosApp/Signing.local.xcconfig
+#iOS Firebase config (optional, prod only)
+iosApp/GoogleService-Info.plist
+iosApp/iosApp/GoogleService-Info.plist
+iosApp/StockTickerWidget/GoogleService-Info.plist

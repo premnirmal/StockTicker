@@ -17,6 +17,7 @@ import androidx.core.app.TaskStackBuilder
 import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
+import com.github.premnirmal.ticker.components.todayLocal
 import com.github.premnirmal.ticker.hasNotificationPermission
 import com.github.premnirmal.ticker.home.HomeActivity
 import com.github.premnirmal.ticker.model.AlarmScheduler
@@ -26,23 +27,19 @@ import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.tickerwidget.BuildConfig
 import com.github.premnirmal.tickerwidget.R
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.threeten.bp.Duration
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.ZonedDateTime
 import timber.log.Timber
+import java.time.Duration
+import java.time.Instant
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicInteger
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
-@Singleton
-class NotificationsHandler @Inject constructor(
-    @ApplicationContext private val context: Context,
+class NotificationsHandler constructor(
+    private val context: Context,
     private val stocksProvider: StocksProvider,
     private val stocksStorage: StocksStorage,
     private val alarmScheduler: AlarmScheduler,
@@ -157,7 +154,7 @@ class NotificationsHandler @Inject constructor(
         if (VERSION.SDK_INT >= 33 && !context.hasNotificationPermission()) return
         if (!notificationManager.areNotificationsEnabled()) return
         if (Random.nextBoolean()) enqueueDailySummaryNotification()
-        if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek)) return
+        if (!appPreferences.updateDays().contains(clock.todayLocal().dayOfWeek.value)) return
 
         val portfolio: List<Quote> = stocksProvider.portfolio.value
         for (quote in portfolio) {

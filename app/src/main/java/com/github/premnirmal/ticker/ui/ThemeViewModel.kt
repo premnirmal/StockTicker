@@ -3,13 +3,10 @@ package com.github.premnirmal.ticker.ui
 import androidx.lifecycle.ViewModel
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.tickerwidget.ui.theme.SelectedTheme
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-@HiltViewModel
-class ThemeViewModel @Inject constructor(
+class ThemeViewModel constructor(
     private val appPreferences: AppPreferences
 ) : ViewModel() {
 
