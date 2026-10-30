@@ -164,6 +164,7 @@ class HomeViewModel constructor(
             }
             _isRefreshing.value = true
             stocksProvider.fetch()
+            widgetDataProvider.refreshPortfolioSummaries(force = true)
         }.invokeOnCompletion {
             _isRefreshing.value = false
         }

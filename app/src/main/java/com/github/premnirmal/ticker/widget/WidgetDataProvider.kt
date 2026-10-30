@@ -4,16 +4,33 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import timber.log.Timber
 
 class WidgetDataProvider constructor(
     private val context: Context,
-) {
+) : KoinComponent {
+
+    private val monthBaselineProvider: MonthBaselineProvider by inject()
+    private val coroutineScope: CoroutineScope by inject()
+
+    fun refreshPortfolioSummaries(force: Boolean = false) {
+        coroutineScope.launch {
+            val enabled = synchronized(widgets) { widgets.values.filter { it.showPortfolioSummary() } }
+            val quotes = enabled.flatMap { it.stocks.value }
+            if (quotes.isNotEmpty() && monthBaselineProvider.refresh(quotes, force)) {
+                enabled.forEach { it.emitWidgetChanges(refreshSummary = false) }
+            }
+        }
+    }
 
     private val glanceAppWidgetManager: GlanceAppWidgetManager by lazy {
         GlanceAppWidgetManager(context)
@@ -45,6 +62,7 @@ class WidgetDataProvider constructor(
             dataForWidgetId(it)
         }.sortedBy { it.widgetName() }
         _widgetData.emit(widgetDataList)
+        refreshPortfolioSummaries()
         return widgetDataList
     }
 

@@ -17,6 +17,9 @@ import com.github.premnirmal.ticker.NightMode
 import com.github.premnirmal.ticker.model.AlarmScheduler
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.PortfolioSummary
+import com.github.premnirmal.ticker.portfolio.PortfolioSummaryCalculator
+import com.github.premnirmal.ticker.portfolio.StockPerformance
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.widget.IWidgetData.LayoutType
 import com.github.premnirmal.tickerwidget.R
@@ -71,6 +74,13 @@ class WidgetData : IWidgetData, KoinComponent {
     private val appMessaging: AppMessaging by inject()
 
     private val alarmScheduler: AlarmScheduler by inject()
+
+    private val monthBaselineProvider: MonthBaselineProvider by inject()
+
+    private val _portfolioSummary = MutableStateFlow<List<PortfolioSummary>>(emptyList())
+    val portfolioSummary: StateFlow<List<PortfolioSummary>> = _portfolioSummary.asStateFlow()
+    private val _stockPerformance = MutableStateFlow<List<StockPerformance>>(emptyList())
+    val stockPerformance: StateFlow<List<StockPerformance>> = _stockPerformance.asStateFlow()
 
     private val position: Int
     override val widgetId: Int
@@ -448,6 +458,35 @@ class WidgetData : IWidgetData, KoinComponent {
 
     fun showRefreshButton(): Boolean = preferences.getBoolean(SHOW_REFRESH, false)
 
+    fun showPortfolioSummary(): Boolean = preferences.getBoolean("SHOW_PORTFOLIO_SUMMARY", false)
+
+    fun stockTableExpanded(): Boolean = preferences.getBoolean("STOCK_TABLE_EXPANDED", false)
+
+    fun setStockTableExpanded(expanded: Boolean) {
+        preferences.edit { putBoolean("STOCK_TABLE_EXPANDED", expanded) }
+        _data.value = toState()
+        emitWidgetChanges(refreshSummary = false)
+    }
+
+    fun setShowPortfolioSummary(show: Boolean) {
+        preferences.edit { putBoolean("SHOW_PORTFOLIO_SUMMARY", show) }
+        _prefsFlow.value = toPrefs()
+        _data.value = toState()
+        emitWidgetChanges()
+    }
+
+    fun updatePortfolioSummary() {
+        val quotes = stocks.value
+        if (showPortfolioSummary()) {
+            val prices = monthBaselineProvider.prices(quotes)
+            _portfolioSummary.value = PortfolioSummaryCalculator.calculate(quotes, prices)
+            _stockPerformance.value = PortfolioSummaryCalculator.calculateStocks(quotes, prices)
+        } else {
+            _portfolioSummary.value = emptyList()
+            _stockPerformance.value = emptyList()
+        }
+    }
+
     fun setShowRefreshButton(show: Boolean) {
         preferences.edit {
             putBoolean(SHOW_REFRESH, show)
@@ -479,6 +518,7 @@ class WidgetData : IWidgetData, KoinComponent {
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
             showRefreshButton = showRefreshButton(),
+            showPortfolioSummary = showPortfolioSummary(),
         )
     }
 
@@ -502,6 +542,8 @@ class WidgetData : IWidgetData, KoinComponent {
             negativeTextColor = negativeTextColor,
             textColor = textColorRes(),
             showRefreshButton = showRefreshButton(),
+            showPortfolioSummary = showPortfolioSummary(),
+            stockTableExpanded = stockTableExpanded(),
         )
     }
 
@@ -524,7 +566,8 @@ class WidgetData : IWidgetData, KoinComponent {
         emitWidgetChanges()
     }
 
-    fun emitWidgetChanges() {
+    fun emitWidgetChanges(refreshSummary: Boolean = true) {
+        updatePortfolioSummary()
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
             coroutineScope.launch {
                 val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(widgetId)
@@ -543,12 +586,15 @@ class WidgetData : IWidgetData, KoinComponent {
                             fetchState = currentFetchState,
                             isRefreshing = currentIsRefreshing
                         ),
-                        quotes = currentQuotes
+                        quotes = currentQuotes,
+                        portfolioSummary = portfolioSummary.value,
+                        stockPerformance = stockPerformance.value,
                     )
                 }
                 GlanceStocksWidget().update(context, glanceId)
             }
         }
+        if (refreshSummary && showPortfolioSummary()) widgetDataProvider.refreshPortfolioSummaries()
     }
 
     fun refreshStocksList() {
@@ -565,6 +611,7 @@ class WidgetData : IWidgetData, KoinComponent {
         _stocks.update {
             quotes
         }
+        updatePortfolioSummary()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -614,6 +661,8 @@ class WidgetData : IWidgetData, KoinComponent {
         @get:ColorRes
         val textColor: Int,
         val showRefreshButton: Boolean,
+        val showPortfolioSummary: Boolean = false,
+        val stockTableExpanded: Boolean = false,
     ) : Parcelable
 
     @Parcelize
@@ -648,5 +697,6 @@ class WidgetData : IWidgetData, KoinComponent {
         @get:ColorRes
         val textColor: Int,
         val showRefreshButton: Boolean,
+        val showPortfolioSummary: Boolean = false,
     ) : Parcelable
 }

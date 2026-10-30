@@ -55,6 +55,7 @@ import com.github.premnirmal.ticker.ui.TopBar
  *  - the user-visible strings and string arrays as a [WidgetSettingsStrings] holder,
  *  - the spinner drop-down arrow and the name-field "done" icons as [Painter]s,
  *  - the Glance widget preview as a [widgetPreview] composable slot (it is genuinely Android-only),
+ *  - an optional Android [stockTableControl] beneath the enabled portfolio summary setting,
  *  - the adaptive two-pane layout as an optional [twoPane] slot (`null` = single column),
  *  - the `Divider` as a composable [divider] slot (it lives in the Android `:UI` module),
  *  - the fading-edge decoration as [listFadingEdges] (Android `RuntimeShader`),
@@ -85,6 +86,7 @@ fun WidgetsScreen(
     listFadingEdges: (ScrollableState) -> Modifier = { Modifier },
     registerScrollToTop: @Composable (scrollToTop: suspend () -> Unit) -> Unit = {},
     topAppBarActions: @Composable RowScope.() -> Unit = {},
+    stockTableControl: (@Composable () -> Unit)? = null,
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets(0.dp),
@@ -131,7 +133,9 @@ fun WidgetsScreen(
                 item {
                     widgetPreview()
                 }
-                widgetSettings(settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, divider)
+                widgetSettings(
+                    settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, divider, stockTableControl
+                )
             }
         } else {
             twoPane(
@@ -154,7 +158,9 @@ fun WidgetsScreen(
                                 )
                             }
                         }
-                        widgetSettings(settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, divider)
+                        widgetSettings(
+                            settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, divider, stockTableControl
+                        )
                     }
                 },
                 {
@@ -175,6 +181,7 @@ private fun LazyListScope.widgetSettings(
     showAddStocks: Boolean,
     onAddStocks: () -> Unit,
     divider: @Composable () -> Unit,
+    stockTableControl: (@Composable () -> Unit)?,
 ) {
     item {
         WidgetName(prefs.name, doneIcon, strings.widgetName, settings::setWidgetName)
@@ -255,6 +262,21 @@ private fun LazyListScope.widgetSettings(
             onCheckChanged = settings::setBoldEnabled
         )
         divider()
+    }
+    item {
+        CheckboxPreference(
+            title = strings.showPortfolioSummary,
+            subtitle = strings.showPortfolioSummaryDesc,
+            checked = prefs.showPortfolioSummary,
+            onCheckChanged = settings::setShowPortfolioSummary
+        )
+        divider()
+    }
+    if (prefs.showPortfolioSummary && stockTableControl != null) {
+        item {
+            stockTableControl()
+            divider()
+        }
     }
     item {
         CheckboxPreference(

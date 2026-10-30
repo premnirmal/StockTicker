@@ -11,6 +11,7 @@ app/full-r8-config.txt
 app/prod/
 /.vs/
 .kotlin/
+/.local-tools/
 **/.kotlin/
 
 #ignore keystore and keystore.properties

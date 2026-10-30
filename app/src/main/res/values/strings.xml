@@ -239,4 +239,18 @@
 
   <string name="exact_alarm_permission_required_message">The exact alarm permission is required to refresh the widget in a timely manner.</string>
   <string name="go_to_settings">Grant</string>
+    <string name="show_portfolio_summary">Show portfolio summary</string>
+    <string name="show_portfolio_summary_desc">Totals by currency for this widget’s holdings. Month to date uses current share quantities.</string>
+    <string name="portfolio_currency">Portfolio · %1$s</string>
+    <string name="portfolio_no_holdings">No holdings</string>
+    <string name="portfolio_holdings">Holdings</string>
+    <string name="portfolio_day_change" formatted="false">% Day change</string>
+    <string name="portfolio_gain">Gain</string>
+    <string name="portfolio_gain_percent" formatted="false">% Gain</string>
+    <string name="portfolio_month_change">Month to date</string>
+    <string name="stock_table_stock">Stock</string>
+    <string name="stock_table_open">Open stock table</string>
+    <string name="stock_table_close">Close stock table</string>
+    <string name="stock_table_day" formatted="false">% Day</string>
+    <string name="stock_table_month" formatted="false">% Month</string>
 </resources>
