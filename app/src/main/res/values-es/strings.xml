@@ -132,7 +132,6 @@
   <string name="widget_name_updated">Nombre del widget actualizado</string>
   <string name="set">Fijado</string>
   <string name="total">Total</string>
-  <string name="current_positions">Posiciones actuales</string>
   <string name="positions">Posiciones</string>
   <string name="recent_news">Noticias recientes</string>
   <string name="no_data">No datos</string>
@@ -172,7 +171,6 @@
   <string name="alerts_disabled">Alertas desactivadas, verifique la configuración</string>
   <string name="add_notes">Añadir notas</string>
   <string name="add_alerts">Añadir alertas</string>
-  <string name="remove_holding">¿Está seguro de que desea eliminar la entrada %1$s de su cartera?</string>
   <string name="save">Hecho</string>
   <string name="desc_channel_alerts">Alertas de stock</string>
   <string name="desc_channel_summary">Resumen diario</string>

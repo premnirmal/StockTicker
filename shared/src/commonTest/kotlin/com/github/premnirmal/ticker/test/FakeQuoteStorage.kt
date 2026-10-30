@@ -1,23 +1,22 @@
 package com.github.premnirmal.ticker.test
 
-import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.repo.QuoteStorage
 
 /**
  * In-memory [QuoteStorage] used by the shared ViewModel tests. It records the saved properties,
- * holdings and tickers so tests can assert on persistence side effects without a real database.
+ * movements and tickers so tests can assert on persistence side effects without a real database.
  */
 class FakeQuoteStorage : QuoteStorage {
 
     val savedProperties: MutableList<Properties> = mutableListOf()
     val savedQuotes: MutableList<Quote> = mutableListOf()
-    val addedHoldings: MutableList<Holding> = mutableListOf()
-    val removedHoldings: MutableList<Pair<String, Holding>> = mutableListOf()
+    val movements: MutableMap<String, MutableList<Movement>> = mutableMapOf()
     var tickers: MutableSet<String> = mutableSetOf()
 
-    private var nextHoldingId = 1L
+    private var nextMovementId = 1L
 
     override fun saveTickers(tickers: Set<String>) {
         this.tickers = tickers.toMutableSet()
@@ -45,13 +44,21 @@ class FakeQuoteStorage : QuoteStorage {
         savedQuotes.removeAll { it.symbol in tickers }
     }
 
-    override suspend fun addHolding(holding: Holding): Long {
-        addedHoldings.add(holding)
-        return nextHoldingId++
+    override suspend fun addMovement(movement: Movement): Long {
+        val id = nextMovementId++
+        movements.getOrPut(movement.symbol) { mutableListOf() }.add(movement.copy(id = id))
+        return id
     }
 
-    override suspend fun removeHolding(ticker: String, holding: Holding) {
-        removedHoldings.add(ticker to holding)
+    override suspend fun removeMovement(movement: Movement) {
+        movements[movement.symbol]?.removeAll { it.id == movement.id }
+    }
+
+    override suspend fun readMovements(symbol: String): List<Movement> =
+        movements[symbol]?.toList() ?: emptyList()
+
+    override suspend fun saveMovements(symbol: String, movements: List<Movement>) {
+        this.movements[symbol] = movements.toMutableList()
     }
 
     override suspend fun saveQuoteProperties(properties: Properties) {

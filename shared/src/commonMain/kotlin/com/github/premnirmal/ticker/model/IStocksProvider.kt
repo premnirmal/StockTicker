@@ -1,14 +1,14 @@
 package com.github.premnirmal.ticker.model
 
-import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Platform-neutral contract for the central stock/portfolio data provider: the observable watchlist
- * and portfolio state, plus the operations to add/remove tickers and holdings, fetch quotes and
- * schedule the periodic refresh.
+ * and portfolio state, plus the operations to add/remove tickers, record the buy/sell movements
+ * ledger (and remove individual movements), fetch quotes and schedule the periodic refresh.
  *
  * This is the shared "provider interface" of the multiplatform persistence/refresh story: it mirrors
  * the existing [RefreshScheduler] / [com.github.premnirmal.ticker.repo.QuoteStorage] /
@@ -63,11 +63,23 @@ interface IStocksProvider {
   /** The [Position] for [ticker], or `null` if there is none. */
   fun getPosition(ticker: String): Position?
 
-  /** Adds a holding ([shares] at [price]) to [ticker], returning the created [Holding]. */
-  suspend fun addHolding(ticker: String, shares: Float, price: Float): Holding
+  /** Records a purchase of [shares] of [ticker] at [price], appending a BUY [Movement] to its ledger. */
+  suspend fun buy(ticker: String, shares: Float, price: Float): Movement
 
-  /** Removes [holding] from [ticker], returning whether it was removed. */
-  suspend fun removePosition(ticker: String, holding: Holding): Boolean
+  /**
+   * Records a sale of [shares] of [ticker] at [price], validating against shares held — see
+   * [SellResult].
+   */
+  suspend fun sell(ticker: String, shares: Float, price: Float): SellResult
+
+  /**
+   * Deletes [movement] from [ticker]'s ledger unless later sells depend on it — see
+   * [RemoveMovementResult].
+   */
+  suspend fun removeMovement(ticker: String, movement: Movement): RemoveMovementResult
+
+  /** The buy/sell ledger for [ticker], in replay order (empty if none). */
+  fun getMovements(ticker: String): List<Movement>
 
   /** Adds [symbols] to the watchlist, returning the updated set of symbols. */
   fun addStocks(symbols: Collection<String>): Collection<String>
@@ -92,4 +104,22 @@ interface IStocksProvider {
 
   /** Seeds the provider with a previously loaded [portfolio]. */
   fun addPortfolio(portfolio: List<Quote>)
+}
+
+/** Outcome of [IStocksProvider.sell]. */
+sealed class SellResult {
+  /** The sale was recorded as [movement], realizing [gain] (average-cost) on the shares sold. */
+  data class Success(val movement: Movement, val gain: Float) : SellResult()
+
+  /** The sale was rejected because only [sharesOwned] shares are held. */
+  data class NotEnoughShares(val sharesOwned: Float) : SellResult()
+}
+
+/** Outcome of [IStocksProvider.removeMovement]. */
+sealed class RemoveMovementResult {
+  /** The movement was deleted from the ledger. */
+  data object Removed : RemoveMovementResult()
+
+  /** The movement was kept because removing it would invalidate a later sell. */
+  data object BlockedBySells : RemoveMovementResult()
 }

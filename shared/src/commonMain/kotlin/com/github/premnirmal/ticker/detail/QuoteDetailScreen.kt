@@ -118,6 +118,7 @@ data class QuoteDetailStrings(
     val dayChangeAmount: String,
     val alertAbove: String,
     val alertBelow: String,
+    val realizedGain: String,
 )
 
 /**
@@ -785,6 +786,9 @@ private fun PositionDetailCard(
     val gainLossPercentage = remember(position) { quote.gainLossPercentStringNoPercentSign() }
     val dayChange = remember(position) { quote.dayChangeString() }
     val averagePositionPrice = remember(position) { quote.averagePositionPrice() }
+    val hasSells = remember(position, quote.movements) { quote.hasSells() }
+    val realizedGain = remember(position, quote.movements) { quote.realizedGain() }
+    val realizedGainString = remember(realizedGain) { quote.realizedGainString(realizedGain) }
 
     card(modifier, onClick) {
         Row(
@@ -869,6 +873,31 @@ private fun PositionDetailCard(
                     text = dayChange,
                     up = quote.isUp,
                     down = quote.isDown,
+                    upColor = upColor,
+                    downColor = downColor,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        // Shown independently of `hasPositions`: a fully-sold symbol (0 shares left) has no open
+        // position but still has a realized gain worth surfacing — arguably the moment it matters
+        // most.
+        if (hasSells) {
+            Row(
+                modifier = Modifier.padding(top = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.weight(0.5f),
+                    text = strings.realizedGain,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                QuoteDetailChangeText(
+                    modifier = Modifier.weight(0.5f),
+                    text = realizedGainString,
+                    up = realizedGain > 0f,
+                    down = realizedGain < 0f,
                     upColor = upColor,
                     downColor = downColor,
                     textAlign = TextAlign.Center

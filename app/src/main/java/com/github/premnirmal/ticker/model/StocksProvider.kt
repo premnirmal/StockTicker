@@ -6,9 +6,14 @@ import androidx.core.content.edit
 import com.github.premnirmal.ticker.AppPreferences
 import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.network.StocksApi
-import com.github.premnirmal.ticker.network.data.Holding
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.SHARE_EPSILON
+import com.github.premnirmal.ticker.network.data.isValidLedger
+import com.github.premnirmal.ticker.network.data.replayLedger
+import com.github.premnirmal.ticker.network.data.toPosition
 import com.github.premnirmal.ticker.repo.StocksStorage
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.CancellationException
@@ -18,6 +23,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.concurrent.TimeUnit.MINUTES
@@ -60,6 +67,7 @@ class StocksProvider constructor(
     override val nextFetchMs: StateFlow<Long>
         get() = _nextFetch
 
+    private val ledgerMutex = Mutex()
     private val tickerSet: MutableSet<String> = HashSet()
     private val quoteMap: MutableMap<String, Quote> = HashMap()
     private val _fetchState = MutableStateFlow<FetchState>(FetchState.NotFetched)
@@ -336,45 +344,60 @@ class StocksProvider constructor(
 
     override fun getPosition(ticker: String): Position? = quoteMap[ticker]?.position
 
-    override suspend fun addHolding(
-        ticker: String,
-        shares: Float,
-        price: Float
-    ): Holding {
-        val quote: Quote?
-        var position: Position
+    override fun getMovements(ticker: String): List<Movement> =
+        quoteMap[ticker]?.movements ?: emptyList()
+
+    override suspend fun buy(ticker: String, shares: Float, price: Float): Movement =
+        ledgerMutex.withLock {
+            synchronized(quoteMap) {
+                if (!tickerSet.contains(ticker)) tickerSet.add(ticker)
+            }
+            _tickers.emit(tickerSet.toList())
+            saveTickers()
+            val movement = Movement(ticker, MovementType.BUY, shares, price)
+            movement.id = storage.addMovement(movement)
+            refreshLedger(ticker)
+            _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+            movement
+        }
+
+    override suspend fun sell(ticker: String, shares: Float, price: Float): SellResult =
+        ledgerMutex.withLock {
+            val ledger = getMovements(ticker)
+            val summary = ledger.replayLedger()
+            if (shares <= 0f) {
+                return@withLock SellResult.NotEnoughShares(summary.shares)
+            }
+            if (shares > summary.shares + SHARE_EPSILON) {
+                return@withLock SellResult.NotEnoughShares(summary.shares)
+            }
+            val movement = Movement(ticker, MovementType.SELL, shares, price)
+            val gain = checkNotNull((ledger + movement).replayLedger().movementGains.last().gain)
+            movement.id = storage.addMovement(movement)
+            refreshLedger(ticker)
+            _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+            SellResult.Success(movement, gain)
+        }
+
+    override suspend fun removeMovement(ticker: String, movement: Movement): RemoveMovementResult =
+        ledgerMutex.withLock {
+            val remaining = getMovements(ticker).filterNot { it.id == movement.id }
+            if (!remaining.isValidLedger()) return@withLock RemoveMovementResult.BlockedBySells
+            storage.removeMovement(movement)
+            refreshLedger(ticker)
+            _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
+            RemoveMovementResult.Removed
+        }
+
+    /** Reloads [ticker]'s ledger from storage and rebuilds the derived position. */
+    private suspend fun refreshLedger(ticker: String) {
+        val movements = storage.readMovements(ticker)
         synchronized(quoteMap) {
-            quote = quoteMap[ticker]
-            position = getPosition(ticker) ?: Position(ticker)
-            if (!tickerSet.contains(ticker)) {
-                tickerSet.add(ticker)
+            quoteMap[ticker]?.let {
+                it.movements = movements
+                it.position = movements.replayLedger().toPosition(ticker)
             }
         }
-        _tickers.emit(tickerSet.toList())
-        saveTickers()
-        val holding = Holding(ticker, shares, price)
-        position.add(holding)
-        quote?.position = position
-        val id = storage.addHolding(holding)
-        holding.id = id
-        _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
-        return holding
-    }
-
-    override suspend fun removePosition(
-        ticker: String,
-        holding: Holding
-    ): Boolean {
-        var removed = false
-        synchronized(quoteMap) {
-            val position = getPosition(ticker)
-            val quote = quoteMap[ticker]
-            removed = position?.remove(holding) ?: false
-            quote?.position = position
-        }
-        storage.removeHolding(ticker, holding)
-        _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
-        return removed
     }
 
     override fun addStocks(symbols: Collection<String>): Collection<String> {
@@ -394,36 +417,41 @@ class StocksProvider constructor(
     }
 
     override suspend fun removeStock(ticker: String): Collection<String> {
-        synchronized(quoteMap) {
-            tickerSet.remove(ticker)
-            saveTickers()
-            quoteMap.remove(ticker)
+        ledgerMutex.withLock {
+            synchronized(quoteMap) {
+                tickerSet.remove(ticker)
+                saveTickers()
+                quoteMap.remove(ticker)
+            }
+            storage.removeQuoteBySymbol(ticker)
         }
-        storage.removeQuoteBySymbol(ticker)
         _tickers.emit(tickerSet.toList())
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
         return tickerSet
     }
 
     override suspend fun removeStocks(symbols: Collection<String>) {
-        synchronized(quoteMap) {
-            symbols.forEach {
-                tickerSet.remove(it)
-                quoteMap.remove(it)
+        ledgerMutex.withLock {
+            synchronized(quoteMap) {
+                symbols.forEach {
+                    tickerSet.remove(it)
+                    quoteMap.remove(it)
+                }
             }
+            storage.removeQuotesBySymbol(symbols.toList())
         }
-        storage.removeQuotesBySymbol(symbols.toList())
         _tickers.emit(tickerSet.toList())
         _portfolio.emit(quoteMap.values.filter { tickerSet.contains(it.symbol) }.toList())
         saveTickers()
     }
 
     override suspend fun cleanup() {
-        val quotes = storage.readQuotes().map { it.symbol }
-        val toRemove = quotes.filterNot {
-            tickerSet.contains(it)
+        ledgerMutex.withLock {
+            val tickers = synchronized(quoteMap) { tickerSet.toSet() }
+            val quotes = storage.readQuotes().map { it.symbol }
+            val toRemove = quotes.filterNot { tickers.contains(it) }
+            storage.removeQuotesBySymbol(toRemove)
         }
-        storage.removeQuotesBySymbol(toRemove)
     }
 
     override suspend fun fetchStock(ticker: String, allowCache: Boolean): FetchResult<Quote> {
@@ -444,6 +472,13 @@ class StocksProvider constructor(
         widgetDataProvider.updateWidgets(tickerSet.toList())
         coroutineScope.launch {
             storage.saveQuotes(portfolio)
+            ledgerMutex.withLock {
+                portfolio.forEach { quote ->
+                    quote.ensureMovements()
+                    storage.saveMovements(quote.symbol, quote.movements)
+                    quote.position = quote.movements.replayLedger().toPosition(quote.symbol)
+                }
+            }
             fetchLocal()
             fetch()
         }

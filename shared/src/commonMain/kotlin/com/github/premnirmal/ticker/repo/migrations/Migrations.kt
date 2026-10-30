@@ -127,6 +127,26 @@ val MIGRATION_8_9 = object : Migration(8, 9) {
     }
 }
 
+/**
+ * Migration from version 9 to 10: replace the mutable HoldingRow lots with the immutable
+ * MovementRow buy/sell ledger. Every existing lot becomes a BUY movement; insertion order
+ * (and therefore replay order) preserves the old HoldingRow id order.
+ */
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(connection: SQLiteConnection) {
+        connection.execSQL(
+            "CREATE TABLE IF NOT EXISTS `MovementRow` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`quote_symbol` TEXT NOT NULL, `type` TEXT NOT NULL, " +
+                "`shares` REAL NOT NULL, `price` REAL NOT NULL)"
+        )
+        connection.execSQL(
+            "INSERT INTO `MovementRow` (`quote_symbol`, `type`, `shares`, `price`) " +
+                "SELECT `quote_symbol`, 'BUY', `shares`, `price` FROM `HoldingRow` ORDER BY `id` ASC"
+        )
+        connection.execSQL("DROP TABLE `HoldingRow`")
+    }
+}
+
 /** The full ordered migration chain, applied by [com.github.premnirmal.ticker.repo.buildQuotesDB]. */
 val allMigrations: Array<Migration> = arrayOf(
     MIGRATION_1_2,
@@ -136,5 +156,6 @@ val allMigrations: Array<Migration> = arrayOf(
     MIGRATION_5_6,
     MIGRATION_6_7,
     MIGRATION_7_8,
-    MIGRATION_8_9
+    MIGRATION_8_9,
+    MIGRATION_9_10
 )

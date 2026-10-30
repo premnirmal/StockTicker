@@ -133,7 +133,6 @@
   <string name="widget_name">Nome widget</string>
   <string name="widget_name_updated">Nome widget aggiornato</string>
   <string name="set">Imposta</string>
-  <string name="current_positions">Posizioni Attuali</string>
   <string name="total">Totale</string>
   <string name="positions">Posizioni</string>
   <string name="recent_news">Ultime Notizie</string>
@@ -174,7 +173,6 @@
   <string name="alerts_disabled">Allerta disabilitati, controlla le impostazioni</string>
   <string name="add_notes">Aggiungi Note</string>
   <string name="add_alerts">Aggiungi Allerta</string>
-  <string name="remove_holding">Confermi di voler rimuovere %1$s dal tuo portfolio?</string>
   <string name="save">Salva</string>
   <string name="desc_channel_alerts">Allerta azioni</string>
   <string name="desc_channel_summary">Sommario giornaliero</string>

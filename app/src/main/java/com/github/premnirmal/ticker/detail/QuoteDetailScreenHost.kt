@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.neverEqualPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -100,7 +101,12 @@ fun QuoteDetailScreen(
     val changeColour = chartData?.changeColour ?: currentQuote.changeColour
 
     // Per-section editable state, updated by the activity-result launchers below.
-    var holdings by remember(currentQuote.position) { mutableStateOf(currentQuote.position) }
+    // neverEqualPolicy so a compensating ledger edit that returns a structurally-equal Position
+    // (e.g. re-selling the same share count at a different price) still propagates from the
+    // activity-result write and refreshes the realized P/L display.
+    var holdings by remember(currentQuote.position) {
+        mutableStateOf(currentQuote.position, policy = neverEqualPolicy())
+    }
     var alertAbove by remember(currentQuote.properties) { mutableFloatStateOf(currentQuote.getAlertAbove()) }
     var alertBelow by remember(currentQuote.properties) { mutableFloatStateOf(currentQuote.getAlertBelow()) }
     var notes by remember(currentQuote.properties) { mutableStateOf(currentQuote.properties?.notes ?: "") }
@@ -160,6 +166,7 @@ fun QuoteDetailScreen(
         dayChangeAmount = stringResource(R.string.day_change_amount),
         alertAbove = stringResource(R.string.alert_above),
         alertBelow = stringResource(R.string.alert_below),
+        realizedGain = stringResource(R.string.realized_gain),
     )
 
     LaunchedEffect(viewModel) {

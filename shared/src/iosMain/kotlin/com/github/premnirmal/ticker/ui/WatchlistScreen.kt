@@ -21,6 +21,7 @@ import com.github.premnirmal.ticker.home.TotalGainLoss
 import com.github.premnirmal.ticker.home.TotalHoldingsPopup
 import com.github.premnirmal.ticker.home.WatchlistContent
 import com.github.premnirmal.ticker.home.WatchlistWidget
+import com.github.premnirmal.ticker.home.toGainLossTotals
 import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.model.formatFetchTime
 import com.github.premnirmal.ticker.navigation.HomeRoute
@@ -89,8 +90,10 @@ fun WatchlistScreen(
         formatFetchTime(nextFetchMs)
     )
 
-    val hasHoldings = remember(quotes) { quotes.any { it.hasPositions() } }
-    val totalGainLoss = remember(quotes) { quotes.toTotalGainLoss() }
+    val hasHoldings = remember(quotes) { quotes.any { it.hasPositions() || it.hasSells() } }
+    // Additionally key on the ledgers: a compensating ledger edit can leave a structurally-equal
+    // Position while changing realized gain, so keying on `quotes` alone would show stale totals.
+    val totalGainLoss = remember(quotes, quotes.map { it.movements }) { quotes.toTotalGainLoss() }
 
     val themePref by userPreferences.themePrefFlow.collectAsState(initial = userPreferences.themePref)
     val useDarkHeader = when (themePref) {
@@ -144,26 +147,29 @@ fun WatchlistScreen(
  * `HomeViewModel.totalGainLoss` computation using the shared [AppNumberFormat].
  */
 private fun List<Quote>.toTotalGainLoss(): TotalGainLoss {
-    val withPositions = filter { it.hasPositions() }
-    val totalHoldings = withPositions.fold(0.0f) { acc, quote -> acc + quote.holdings() }
-    var totalGain = 0.0f
-    var totalLoss = 0.0f
-    for (quote in withPositions) {
-        val gainLoss = quote.gainLoss()
-        if (gainLoss > 0.0f) {
-            totalGain += gainLoss
-        } else {
-            totalLoss += gainLoss
-        }
-    }
-    val totalHoldingsStr = AppNumberFormat.selected.format(totalHoldings)
-    val totalGainStr = "+" + AppNumberFormat.selected.format(totalGain)
-    val totalLossStr = if (totalLoss != 0.0f) {
-        AppNumberFormat.selected.format(totalLoss)
+    val totals = toGainLossTotals()
+    val totalHoldingsStr = AppNumberFormat.selected.format(totals.totalHoldings)
+    val totalGainStr = "+" + AppNumberFormat.selected.format(totals.totalGain)
+    val totalLossStr = if (totals.totalLoss != 0.0f) {
+        AppNumberFormat.selected.format(totals.totalLoss)
     } else {
         ""
     }
-    return TotalGainLoss(totalHoldingsStr, totalGainStr, totalLossStr)
+    fun signed(value: Float): String {
+        val formatted = AppNumberFormat.selected.format(value)
+        return if (value >= 0) "+$formatted" else formatted
+    }
+    return TotalGainLoss(
+        holdings = totalHoldingsStr,
+        gain = totalGainStr,
+        loss = totalLossStr,
+        unrealized = signed(totals.unrealized),
+        unrealizedIsPositive = totals.unrealized >= 0f,
+        realized = signed(totals.realized),
+        realizedIsPositive = totals.realized >= 0f,
+        total = signed(totals.total),
+        totalIsPositive = totals.total >= 0f,
+    )
 }
 
 /**

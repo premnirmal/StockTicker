@@ -8,6 +8,9 @@
     <string name="day_change_amount">Day Change</string>
     <string name="add">Add</string>
     <string name="total_holdings">Total Holdings: %1$s</string>
+    <string name="unrealized_label">Unrealized</string>
+    <string name="realized_label">Realized</string>
+    <string name="total_label">Total</string>
     <string name="select_widget">Select Widget</string>
     <string name="save">Save</string>
     <string name="last_and_next_fetch">Last fetch: %1$s\nNext fetch: %2$s</string>

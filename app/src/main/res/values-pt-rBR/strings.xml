@@ -129,7 +129,6 @@
   <string name="widget_name">Nome do Widget</string>
   <string name="widget_name_updated">Nome do Widget atualizado</string>
   <string name="set">Ajustar</string>
-  <string name="current_positions">Posição atual</string>
   <string name="total">Total</string>
   <string name="positions">Posições</string>
   <string name="recent_news">Notícias Recentes</string>
@@ -163,7 +162,6 @@
   <string name="alerts_disabled">Alertas disabilitados, verifique as configurações</string>
   <string name="add_notes">Adiconar Notas</string>
   <string name="add_alerts">Add Alertas</string>
-  <string name="remove_holding">Voce tem certeza que deseja remover o item %1$s do seu portfolio?</string>
   <string name="save">Salvar</string><string name="desc_channel_alerts">Stock alerts</string>
   <string name="desc_channel_summary">Resumo diário</string>
   <string name="notification_summary_title">Voce olhou as cotações hoje?</string>
