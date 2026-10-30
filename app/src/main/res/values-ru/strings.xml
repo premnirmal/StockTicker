@@ -3,6 +3,10 @@
 
   <string name="portfolio">Портфолио</string>
   <string name="add_to_portfolio">Добавить или удалить из портфеля</string>
+  <string name="report_bug">Сообщить об ошибке</string>
+  <string name="report_bug_desc">Отправить отчёт об ошибке</string>
+  <string name="feature_request">Предложить функцию</string>
+  <string name="feature_request_desc">Отправить запрос на новую функцию</string>
   <string name="action_add">Добавить</string>
   <string name="action_export">Экспортировать портфолио</string>
   <string name="action_share">Отправить портфолио</string>
@@ -37,6 +41,8 @@
   <string name="notification_alerts">Уведомление об обновлении</string>
   <string name="notification_alerts_desc">Получать уведомления об обновлении данных</string>
   <string name="notification_alerts_required_message">Приложению необходимо разрешить отправку уведомлений для получения уведомлений об обновлении.</string>
+  <string name="show_refresh">Показывать значок обновления</string>
+  <string name="show_refresh_desc">Показывать значок обновления в виджете (ненадёжно из-за энергосберегающих обновлений Android OS)</string>
   <string name="auto_sort">Автоматическая сортировка</string>
   <string name="auto_sort_desc">Акции будут отсортированы по проценту изменения.</string>
   <string name="hide_header">Скрыть заголовок виджета</string>
@@ -163,6 +169,7 @@
   <string name="discovered_db">Вы обнаружили секретный вход в средство просмотра БД.</string>
   <string name="db_tap_count">Нажмите %1$d еще раз, чтобы разблокировать средство просмотра базы данных.</string>
   <string name="notes">Заметки</string>
+  <string name="displayname">Отображаемое имя</string>
   <string name="alerts">Оповещения</string>
   <string name="alert_above">Оповещение выше</string>
   <string name="alert_below">Оповещение ниже</string>
@@ -175,6 +182,7 @@
   <string name="alert_dismiss">Отклонить</string>
   <string name="alerts_disabled">Оповещения отключены, проверьте настройки</string>
   <string name="add_notes">Добавить заметку</string>
+  <string name="add_displayname">Добавить отображаемое имя</string>
   <string name="add_alerts">Оповещения</string>
   <string name="remove_holding">Вы уверены, что хотите удалить %1$s из вашего портфолио?</string>
   <string name="save">Сохранить</string>
