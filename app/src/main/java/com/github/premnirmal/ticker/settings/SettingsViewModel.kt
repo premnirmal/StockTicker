@@ -139,11 +139,13 @@ class SettingsViewModel constructor(
 
     fun importPortfolio(context: Context, fileUri: Uri) {
         viewModelScope.launch {
-            val imported = PortfolioImportTask(stocksProvider).import(context, fileUri)
-            if (imported) {
-                context.showDialog(context.getString(R.string.ticker_import_success))
-            } else {
-                context.showDialog(context.getString(R.string.ticker_import_fail))
+            when (PortfolioImportTask(stocksProvider).import(context, fileUri)) {
+                ImportResult.SUCCESS ->
+                    context.showDialog(context.getString(R.string.ticker_import_success))
+                ImportResult.WRONG_FILE_TYPE ->
+                    context.showDialog(context.getString(R.string.portfolio_import_wrong_file))
+                ImportResult.INVALID_FILE ->
+                    context.showDialog(context.getString(R.string.ticker_import_fail))
             }
         }
     }

@@ -6,6 +6,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class PortfolioSerializerTest {
@@ -102,5 +103,129 @@ class PortfolioSerializerTest {
 
         assertTrue(text.contains("\"type\":\"${WidgetExport.WIDGET_EXPORT_TYPE}\""))
         assertTrue(text.contains("\"version\":${WidgetExport.WIDGET_EXPORT_VERSION}"))
+    }
+
+    @Test
+    fun parseWidgetImport_detectsWidgetExport() {
+        val text = serializer.serializeWidget(
+            WidgetExport(name = "w", autoSort = true, tickers = listOf("MSFT", "AAPL"))
+        )
+
+        assertEquals(
+            WidgetImportFile.Widget(
+                WidgetExport(name = "w", autoSort = true, tickers = listOf("MSFT", "AAPL"))
+            ),
+            serializer.parseWidgetImport(text)
+        )
+    }
+
+    @Test
+    fun parseWidgetImport_detectsLegacyTickerList() {
+        assertEquals(
+            WidgetImportFile.Tickers(listOf("AAPL", "MSFT")),
+            serializer.parseWidgetImport("AAPL, MSFT, ")
+        )
+    }
+
+    @Test
+    fun parseWidgetImport_detectsPortfolioExportInsteadOfTickers() {
+        val portfolio = serializer.serializePortfolio(
+            listOf(Quote(symbol = "AAPL", name = "Apple Inc", lastTradePrice = 1.23f))
+        )
+
+        assertEquals(WidgetImportFile.Portfolio, serializer.parseWidgetImport(portfolio))
+    }
+
+    @Test
+    fun parseWidgetImport_rejectsMalformedJson() {
+        assertFailsWith<InvalidImportFileException> {
+            serializer.parseWidgetImport("""{"not":"a widget export"}""")
+        }
+    }
+
+    @Test
+    fun parseWidgetImport_rejectsInvalidLegacyTicker() {
+        assertFailsWith<InvalidImportFileException> {
+            serializer.parseWidgetImport("AAPL, not a ticker!")
+        }
+    }
+
+    @Test
+    fun parseWidgetImport_handlesUtf8Bom() {
+        val text = "\uFEFF" + serializer.serializeWidget(
+            WidgetExport(name = "w", autoSort = false, tickers = listOf("AAPL"))
+        )
+
+        assertEquals(
+            WidgetImportFile.Widget(
+                WidgetExport(name = "w", autoSort = false, tickers = listOf("AAPL"))
+            ),
+            serializer.parseWidgetImport(text)
+        )
+    }
+
+    @Test
+    fun validateTickers_removesDuplicatesPreservingOrder() {
+        assertEquals(
+            listOf("AAPL", "MSFT"),
+            serializer.validateTickers(listOf("AAPL", "MSFT", "AAPL"))
+        )
+    }
+
+    @Test
+    fun deserializeWidget_rejectsWrongType() {
+        assertFailsWith<InvalidImportFileException> {
+            serializer.deserializeWidget(
+                """{"type":"portfolio","version":1,"name":"w","autoSort":false,"tickers":["AAPL"]}"""
+            )
+        }
+    }
+
+    @Test
+    fun deserializeWidget_rejectsNewerVersion() {
+        assertFailsWith<InvalidImportFileException> {
+            serializer.deserializeWidget(
+                """{"type":"widget","version":2,"name":"w","autoSort":false,"tickers":["AAPL"]}"""
+            )
+        }
+    }
+
+    @Test
+    fun deserializeWidget_rejectsEmptyTickerList() {
+        assertFailsWith<InvalidImportFileException> {
+            serializer.deserializeWidget(
+                """{"type":"widget","version":1,"name":"w","autoSort":false,"tickers":[]}"""
+            )
+        }
+    }
+
+    @Test
+    fun deserializeWidget_rejectsJsonFragmentsAsTickers() {
+        assertFailsWith<InvalidImportFileException> {
+            serializer.deserializeWidget(
+                """{"type":"widget","version":1,"name":"w","autoSort":false,"tickers":["AAPL","\"symbol\":\"MSFT\""]}"""
+            )
+        }
+    }
+
+    @Test
+    fun deserializeWidget_acceptsRealWorldSymbols() {
+        val tickers = listOf("BRK.B", "BTC-USD", "^GSPC", "EURUSD=X")
+        val text = serializer.serializeWidget(
+            WidgetExport(name = "w", autoSort = false, tickers = tickers)
+        )
+
+        assertEquals(tickers, serializer.deserializeWidget(text).tickers)
+    }
+
+    @Test
+    fun deserializePortfolio_rejectsWidgetExport() {
+        val text = serializer.serializeWidget(
+            WidgetExport(name = "w", autoSort = false, tickers = listOf("AAPL"))
+        )
+
+        assertFailsWith<InvalidImportFileException> {
+            serializer.deserializePortfolio(text)
+        }
     }
 }

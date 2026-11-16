@@ -448,10 +448,11 @@ class WidgetData : IWidgetData, KoinComponent {
      * the user's arranged order rather than append to the existing list.
      */
     fun replaceTickers(tickers: List<String>) {
+        val distinct = tickers.distinct()
         synchronized(tickerList) {
             tickerList.clear()
-            tickerList.addAll(tickers.distinct())
-            stocksProvider.addStocks(tickers.filter { !stocksProvider.hasTicker(it) })
+            tickerList.addAll(distinct)
+            stocksProvider.addStocks(distinct.filter { !stocksProvider.hasTicker(it) })
         }
         save()
     }

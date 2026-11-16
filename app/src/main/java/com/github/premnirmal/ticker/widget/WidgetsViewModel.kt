@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.model.FetchState
 import com.github.premnirmal.ticker.model.StocksProvider
+import com.github.premnirmal.ticker.settings.ImportResult
 import com.github.premnirmal.ticker.settings.TickersExporter
 import com.github.premnirmal.ticker.settings.WidgetExporter
 import com.github.premnirmal.ticker.settings.WidgetImportTask
@@ -85,11 +86,13 @@ class WidgetsViewModel constructor(
      */
     fun importWidget(context: Context, widgetId: Int, fileUri: Uri) {
         viewModelScope.launch {
-            val imported = WidgetImportTask(widgetDataProvider, widgetId).import(context, fileUri)
-            if (imported) {
-                context.showDialog(context.getString(R.string.ticker_import_success))
-            } else {
-                context.showDialog(context.getString(R.string.ticker_import_fail))
+            when (WidgetImportTask(widgetDataProvider, widgetId).import(context, fileUri)) {
+                ImportResult.SUCCESS ->
+                    context.showDialog(context.getString(R.string.ticker_import_success))
+                ImportResult.WRONG_FILE_TYPE ->
+                    context.showDialog(context.getString(R.string.widget_import_wrong_file))
+                ImportResult.INVALID_FILE ->
+                    context.showDialog(context.getString(R.string.ticker_import_fail))
             }
         }
     }
