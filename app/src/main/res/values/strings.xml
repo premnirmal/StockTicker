@@ -31,6 +31,9 @@
   <string name="export_desc">Export your portfolio to a .json file</string>
   <string name="action_import">Import quotes</string>
   <string name="import_desc">Import quotes from a comma separated .txt file, or a .json file</string>
+  <string name="widget_share_desc">Share this widget\'s stock list as plain text</string>
+  <string name="widget_import_desc">Import a widget file, replacing this widget\'s stock list</string>
+  <string name="widget_export_desc">Export this widget\'s stock list and sort setting to a .json file</string>
   <string name="action_portfolio">Watchlist</string>
   <string name="action_widgets">Widgets</string>
   <string name="action_search">Search</string>

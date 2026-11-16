@@ -1,6 +1,7 @@
 package com.github.premnirmal.ticker.settings
 
 import com.github.premnirmal.ticker.network.data.Quote
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 /**
@@ -17,6 +18,15 @@ import kotlinx.serialization.json.Json
  * formats, so a file exported on one platform imports cleanly on the other.
  */
 class PortfolioSerializer(private val json: Json) {
+
+    /**
+     * The widget-export JSON always writes default values so the `type`/`version` envelope fields
+     * are present in the file even when the injected [json] has `encodeDefaults = false`; they are
+     * what lets a future importer recognise and migrate the format.
+     */
+    private val widgetJson: Json by lazy {
+        Json(json) { encodeDefaults = true }
+    }
 
     /**
      * Serialize a list of ticker symbols to the comma+space separated text used by the tickers
@@ -46,4 +56,36 @@ class PortfolioSerializer(private val json: Json) {
      * [Quote].
      */
     fun deserializePortfolio(text: String): List<Quote> = json.decodeFromString(text)
+
+    /**
+     * Serialize a single widget's export ([WidgetExport]) to JSON. The ticker list is stored as a
+     * JSON array, so the stock order the user arranged in the widget is preserved exactly.
+     */
+    fun serializeWidget(export: WidgetExport): String = widgetJson.encodeToString(export)
+
+    /**
+     * Deserialize a widget export previously produced by [serializeWidget] back into a
+     * [WidgetExport].
+     */
+    fun deserializeWidget(text: String): WidgetExport = json.decodeFromString(text)
+}
+
+/**
+ * The on-disk model for a per-widget export file: the ordered stock list plus the auto-sort flag
+ * (when auto-sort is enabled the list order is ignored by the widget) and the widget's name, so a
+ * file exported on one device can be matched to the right widget on another — widget ids are
+ * reassigned by the system on every install and cannot be relied on for identification.
+ */
+@Serializable
+data class WidgetExport(
+    val type: String = WIDGET_EXPORT_TYPE,
+    val version: Int = WIDGET_EXPORT_VERSION,
+    val name: String,
+    val autoSort: Boolean,
+    val tickers: List<String>,
+) {
+    companion object {
+        const val WIDGET_EXPORT_TYPE = "widget"
+        const val WIDGET_EXPORT_VERSION = 1
+    }
 }

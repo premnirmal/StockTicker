@@ -68,4 +68,39 @@ class PortfolioSerializerTest {
     fun deserializePortfolio_emptyList() {
         assertTrue(serializer.deserializePortfolio("[]").isEmpty())
     }
+
+    @Test
+    fun widgetExport_roundTripsThroughJson() {
+        val export = WidgetExport(
+            name = "My Watchlist",
+            autoSort = true,
+            tickers = listOf("MSFT", "AAPL", "GOOG"),
+        )
+
+        val restored = serializer.deserializeWidget(serializer.serializeWidget(export))
+
+        assertEquals(export, restored)
+    }
+
+    @Test
+    fun widgetExport_preservesTickerOrder() {
+        val tickers = listOf("TSLA", "AAPL", "MSFT", "AMZN")
+        val restored = serializer.deserializeWidget(
+            serializer.serializeWidget(
+                WidgetExport(name = "w", autoSort = false, tickers = tickers)
+            )
+        )
+
+        assertEquals(tickers, restored.tickers)
+    }
+
+    @Test
+    fun widgetExport_serializesTypeAndVersion() {
+        val text = serializer.serializeWidget(
+            WidgetExport(name = "w", autoSort = false, tickers = listOf("AAPL"))
+        )
+
+        assertTrue(text.contains("\"type\":\"${WidgetExport.WIDGET_EXPORT_TYPE}\""))
+        assertTrue(text.contains("\"version\":${WidgetExport.WIDGET_EXPORT_VERSION}"))
+    }
 }

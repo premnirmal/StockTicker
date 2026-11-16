@@ -1,5 +1,7 @@
 package com.github.premnirmal.ticker.widget
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.RowScope
@@ -29,6 +31,7 @@ import com.github.premnirmal.ticker.navigation.HomeRoute
 import com.github.premnirmal.ticker.navigation.calculateContentAndNavigationType
 import com.github.premnirmal.ticker.navigation.rememberScrollToTopAction
 import com.github.premnirmal.ticker.portfolio.search.SearchActivity
+import com.github.premnirmal.ticker.showDialog
 import com.github.premnirmal.ticker.ui.ContentType.SINGLE_PANE
 import com.github.premnirmal.ticker.ui.fadingEdges
 import com.github.premnirmal.tickerwidget.R
@@ -67,6 +70,37 @@ fun WidgetsScreen(
     val widgetDataList by viewModel.widgetDataList.collectAsState(emptyList())
     val fetchState by viewModel.fetchState.collectAsState()
 
+    // File-picker launchers. The widget id is captured at launch time so the result callback still
+    // targets the right widget even if the selection changes while the picker is open.
+    var pendingWidgetId by rememberSaveable { mutableIntStateOf(Int.MIN_VALUE) }
+    val shareLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("text/plain")
+    ) { uri ->
+        if (uri != null) {
+            viewModel.shareWidget(context, pendingWidgetId, uri)
+        } else {
+            context.showDialog(R.string.error_sharing)
+        }
+    }
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            viewModel.importWidget(context, pendingWidgetId, uri)
+        } else {
+            context.showDialog(R.string.ticker_import_fail)
+        }
+    }
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        if (uri != null) {
+            viewModel.exportWidget(context, pendingWidgetId, uri)
+        } else {
+            context.showDialog(R.string.error_exporting)
+        }
+    }
+
     var widgetDataSelectedIndex by rememberSaveable { mutableIntStateOf(0) }
     val widgetData = remember(widgetDataSelectedIndex, selectedWidgetId, widgetDataList) {
         selectedWidgetId?.let { id ->
@@ -97,6 +131,12 @@ fun WidgetsScreen(
             widgetName = stringResource(id = R.string.widget_name),
             addStock = stringResource(id = R.string.add_stock),
             trendingStocks = stringResource(id = R.string.trending_stocks),
+            shareLabel = stringResource(id = R.string.action_share),
+            shareWidgetDesc = stringResource(id = R.string.widget_share_desc),
+            importLabel = stringResource(id = R.string.action_import),
+            importWidgetDesc = stringResource(id = R.string.widget_import_desc),
+            exportLabel = stringResource(id = R.string.action_export),
+            exportWidgetDesc = stringResource(id = R.string.widget_export_desc),
             autoSort = stringResource(id = R.string.auto_sort),
             autoSortDesc = stringResource(id = R.string.auto_sort_desc),
             layoutType = stringResource(id = R.string.layout_type),
@@ -124,6 +164,24 @@ fun WidgetsScreen(
         onAddStocks = {
             selectedWidgetId?.let { id ->
                 context.startActivity(SearchActivity.launchIntent(context, id))
+            }
+        },
+        onShareWidget = {
+            widgetData?.let { data ->
+                pendingWidgetId = data.widgetId
+                shareLauncher.launch("${data.widgetName().toFileName()}.txt")
+            }
+        },
+        onImportWidget = {
+            widgetData?.let { data ->
+                pendingWidgetId = data.widgetId
+                importLauncher.launch(arrayOf("application/json", "text/plain"))
+            }
+        },
+        onExportWidget = {
+            widgetData?.let { data ->
+                pendingWidgetId = data.widgetId
+                exportLauncher.launch("${data.widgetName().toFileName()}.json")
             }
         },
         widgetPreview = {
@@ -162,6 +220,10 @@ fun WidgetsScreen(
         topAppBarActions = topAppBarActions,
     )
 }
+
+/** Makes a widget name safe to use as a file name for the share/export pickers. */
+private fun String.toFileName(): String =
+    replace(Regex("[^A-Za-z0-9._-]"), "_").ifBlank { "widget" }
 
 @Composable
 private fun WidgetPreview(

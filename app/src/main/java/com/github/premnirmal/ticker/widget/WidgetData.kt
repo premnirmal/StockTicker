@@ -442,6 +442,20 @@ class WidgetData : IWidgetData, KoinComponent {
         alarmScheduler.enqueueCleanup()
     }
 
+    /**
+     * Replaces the widget's stock list with [tickers] in the given order, fetching quotes that are
+     * not yet in the [StocksProvider]. Used when importing a per-widget export, which must restore
+     * the user's arranged order rather than append to the existing list.
+     */
+    fun replaceTickers(tickers: List<String>) {
+        synchronized(tickerList) {
+            tickerList.clear()
+            tickerList.addAll(tickers.distinct())
+            stocksProvider.addStocks(tickers.filter { !stocksProvider.hasTicker(it) })
+        }
+        save()
+    }
+
     fun addAllFromStocksProvider() {
         addTickers(stocksProvider.tickers.value)
     }
