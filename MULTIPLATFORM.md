@@ -184,7 +184,7 @@ retained as a historical record of how the work was sequenced.
   their on-disk text — the comma+space separated tickers list (`serializeTickers`/`parseTickers`)
   and the `kotlinx.serialization` JSON of a `Quote` portfolio
   (`serializePortfolio`/`deserializePortfolio`) — that previously lived inline in Android's
-  `TickersExporter`/`PortfolioExporter` and `TickersImportTask`/`PortfolioImportTask`. Those Android
+  `TickersExporter`/`PortfolioExporter` and `WidgetImportTask`/`PortfolioImportTask`. Those Android
   tasks now keep only the platform IO (`ContentResolver`/`Uri`/`FileOutputStream`) and delegate the
   format to the shared serializer, which is declared in the Koin `sharedModule` (taking the
   app-provided `Json` as a leaf dependency), so a file exported on one platform imports cleanly on

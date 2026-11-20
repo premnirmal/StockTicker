@@ -77,15 +77,6 @@ fun SettingsScreen(
     val context = LocalContext.current
 
     // File-picker launchers
-    val shareLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("text/plain")
-    ) {
-        if (it != null) {
-            viewModel.sharePortfolio(context, it)
-        } else {
-            context.showDialog(R.string.error_sharing)
-        }
-    }
     val importLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) {
@@ -137,10 +128,9 @@ fun SettingsScreen(
         roundTwoDpSubtitle = stringResource(id = R.string.round_two_dp_desc),
         notificationAlertsTitle = stringResource(id = R.string.notification_alerts),
         notificationAlertsSubtitle = stringResource(id = R.string.notification_alerts_desc),
-        shareTitle = stringResource(id = R.string.action_share),
-        importTitle = stringResource(id = R.string.action_import),
-        importSubtitle = stringResource(id = R.string.action_import),
-        exportTitle = stringResource(id = R.string.action_export),
+        importTitle = stringResource(id = R.string.action_import_portfolio),
+        importSubtitle = stringResource(id = R.string.import_desc),
+        exportTitle = stringResource(id = R.string.action_export_portfolio),
         exportSubtitle = stringResource(id = R.string.export_desc),
         reportBugTitle = stringResource(id = R.string.report_bug),
         reportBugSubtitle = stringResource(id = R.string.report_bug_desc),
@@ -169,8 +159,7 @@ fun SettingsScreen(
                 notificationPermissionState.launchPermissionRequest()
             }
         },
-        onSharePortfolio = { shareLauncher.launch("portfolio.txt") },
-        onImportPortfolio = { importLauncher.launch(arrayOf("application/json", "text/plain")) },
+        onImportPortfolio = { importLauncher.launch(arrayOf("application/json")) },
         onExportPortfolio = { exportLauncher.launch("portfolio.json") },
         onReportBug = {
             CustomTabs.openTab(context, R.string.github_bug_report_new_issue_url, primaryColor.toArgb())
