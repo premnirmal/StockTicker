@@ -77,7 +77,7 @@ class WidgetSnapshotStore(
 
     private fun Quote.toWidgetSnapshot() = WidgetQuoteSnapshot(
         symbol = symbol,
-        name = name,
+        name = displayName,
         price = priceString(),
         changePercent = changePercentString(),
         changeAmount = changeString(),
