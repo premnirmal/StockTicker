@@ -138,7 +138,7 @@ class StocksStorage(
 
     private fun Quote.toQuoteRow(): QuoteRow {
         return QuoteRow(
-            this.symbol, this.name, this.lastTradePrice, this.changeInPercent,
+            this.symbol, this.displayName, this.lastTradePrice, this.changeInPercent,
             this.change, this.stockExchange, this.currencyCode,
             this.isPostMarket, this.annualDividendRate, this.annualDividendYield,
             this.dayHigh, this.dayLow, this.previousClose, this.open,

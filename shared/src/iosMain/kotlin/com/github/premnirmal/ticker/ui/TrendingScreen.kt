@@ -75,7 +75,7 @@ private fun TrendingQuoteCard(
         Column(modifier = Modifier.padding(8.dp)) {
             Text(text = quote.symbol, style = MaterialTheme.typography.titleMedium)
             Text(
-                text = quote.name,
+                text = quote.displayName,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,

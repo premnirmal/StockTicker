@@ -280,7 +280,7 @@ private class NotificationFactory(
         )
         val text = context.getString(
             R.string.alert_above_notification,
-            quote.name,
+            quote.displayName,
             appPreferences.selectedDecimalFormat.format(quote.properties!!.alertAbove),
             appPreferences.selectedDecimalFormat.format(quote.lastTradePrice)
         )
@@ -298,7 +298,7 @@ private class NotificationFactory(
         )
         val text = context.getString(
             R.string.alert_below_notification,
-            quote.name,
+            quote.displayName,
             appPreferences.selectedDecimalFormat.format(quote.properties!!.alertBelow),
             appPreferences.selectedDecimalFormat.format(quote.lastTradePrice)
         )
@@ -309,7 +309,7 @@ private class NotificationFactory(
         quote: Quote
     ) {
         val title = "${quote.symbol} ${quote.changePercentStringWithSign()}"
-        val text = "${quote.changePercentStringWithSign()} ${quote.name}"
+        val text = "${quote.changePercentStringWithSign()} ${quote.displayName}"
         sendNotification(quote, title, text)
     }
 

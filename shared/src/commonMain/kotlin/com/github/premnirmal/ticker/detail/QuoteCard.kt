@@ -98,7 +98,7 @@ private fun InstrumentCard(
                 )
             }
         }
-        QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.name, maxLines = quoteNameMaxLines)
+        QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.displayName, maxLines = quoteNameMaxLines)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
@@ -147,7 +147,7 @@ private fun PositionCard(
                 )
             }
         }
-        QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.name, maxLines = 1)
+        QuoteNameText(modifier = Modifier.padding(top = 4.dp), text = quote.displayName, maxLines = 1)
         Row(
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier.padding(top = 4.dp)

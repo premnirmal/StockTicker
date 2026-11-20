@@ -101,6 +101,13 @@ data class Quote constructor(
         }
     }
 
+    val displayName: String
+        get() = if ("MUTUALFUND" == quoteType) {
+            longName ?: name
+        } else {
+            name
+        }
+
     val isUp: Boolean
         get() = change > 0f
 
@@ -184,7 +191,7 @@ data class Quote constructor(
             )
         } else {
             symbol
-        }} ${name.split(
+        }} ${displayName.split(
             " "
         ).toMutableList().apply { removeAll(
             arrayOf("Inc.", "Corporation", "PLC", "ORD")

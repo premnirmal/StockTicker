@@ -176,11 +176,8 @@ class StocksApi(
 
     private fun YahooQuoteNet.toQuote(): Quote {
         val quote = Quote(
-            symbol = this.symbol, name = if ("MUTUALFUND" == this.quoteType.uppercase()) {
-                (this.longName ?: this.name).orEmpty()
-            } else {
-                (this.name ?: this.longName).orEmpty()
-            },
+            symbol = this.symbol,
+            name = (this.name ?: this.longName).orEmpty(),
             lastTradePrice = this.lastTradePrice ?: 0f,
             changeInPercent = this.changePercent ?: 0f,
             change = this.change ?: 0f

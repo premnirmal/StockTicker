@@ -421,7 +421,7 @@ private fun LazyGridScope.quoteInfo(
         GridItemSpan(maxLineSpan)
     }) {
         Text(
-            text = quote.name,
+            text = quote.displayName,
             style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()

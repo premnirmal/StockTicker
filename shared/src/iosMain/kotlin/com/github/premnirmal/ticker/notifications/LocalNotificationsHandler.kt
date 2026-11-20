@@ -175,7 +175,7 @@ class LocalNotificationsHandler(
         // "%1$s > %2$s at %3$s"
         val title = "${quote.symbol} > $alert at $price"
         // "%1$s is now above %2$s at %3$s"
-        val body = "${quote.name} is now above $alert at $price"
+        val body = "${quote.displayName} is now above $alert at $price"
         deliver(title, body)
     }
 
@@ -185,14 +185,14 @@ class LocalNotificationsHandler(
         // "%1$s < %2$s at %3$s"
         val title = "${quote.symbol} < $alert at $price"
         // "%1$s is now below %2$s at %3$s"
-        val body = "${quote.name} is now below $alert at $price"
+        val body = "${quote.displayName} is now below $alert at $price"
         deliver(title, body)
     }
 
     private fun sendGenericAlert(quote: Quote) {
         val change = quote.changePercentStringWithSign()
         val title = "${quote.symbol} $change"
-        val body = "$change ${quote.name}"
+        val body = "$change ${quote.displayName}"
         deliver(title, body)
     }
 
