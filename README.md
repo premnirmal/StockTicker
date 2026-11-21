@@ -18,6 +18,29 @@
 - Only performs automatic fetching of stocks during trading hours
 - Displays price change and summary alerts
 
+## Android portfolio summary
+
+In the app's widget settings, enable **Show portfolio summary** for the widget you want to update.
+This optional setting works with every layout and shows holdings, day change percentage, gain,
+gain percentage, and month-to-date percentage above the stocks. Add share quantities and purchase
+prices in the app first. Only stocks selected for that widget contribute, and each currency has
+its own totals. Scroll the widget to reach additional currencies and stocks.
+
+In the app's Widget tab, tap **Open stock table** below **Show portfolio summary** to display every
+selected stock beneath the totals, including stocks without saved holdings. Tap **Close stock table**
+to hide it. The table starts closed, and each widget remembers its choice across refreshes and restarts.
+At less than 45% of the screen width it shows the stock name, currency, and daily percentage.
+As you widen the widget, holdings appear at 45%, gain at 60%, gain percentage at 75%, and
+month-to-date percentage at 85%. A nearly full-width phone widget shows all six columns.
+Each stock row opens the stock's detail screen. Without saved holdings, holding-dependent
+values show `—`, while daily and monthly price changes remain available when their prices are known.
+
+Percentages use the combined value of the holdings, rather than averaging stock percentages.
+Month to date compares today's share quantities with the last trading close before the current
+month in each stock's exchange timezone. It measures price performance of current holdings;
+transaction timing, realised gains and dividends are excluded. Missing data appears as `—`.
+Monthly history is cached locally for 24 hours and rechecked on manual refresh.
+
 ## Kotlin Multiplatform
 
 This project has been migrated to Kotlin Multiplatform (KMP) with shared Compose Multiplatform

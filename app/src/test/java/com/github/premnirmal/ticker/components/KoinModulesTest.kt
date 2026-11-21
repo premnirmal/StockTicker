@@ -16,6 +16,7 @@ import com.github.premnirmal.ticker.network.SuggestionsProvider
 import com.github.premnirmal.ticker.network.networkModule
 import com.github.premnirmal.ticker.ui.AppMessaging
 import com.github.premnirmal.ticker.ui.ThemeViewModel
+import com.github.premnirmal.ticker.widget.MonthBaselineProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import org.junit.After
 import org.junit.Test
@@ -61,6 +62,7 @@ class KoinModulesTest {
         // Android singletons.
         koin.get<AppPreferences>()
         koin.get<WidgetDataProvider>()
+        koin.get<MonthBaselineProvider>()
         koin.get<AppMessaging>()
         koin.get<FetchEventLogger>()
         koin.get<AlarmScheduler>()

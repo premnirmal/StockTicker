@@ -32,6 +32,7 @@ import com.github.premnirmal.ticker.settings.DataStorePreferenceStore
 import com.github.premnirmal.ticker.settings.PreferenceStore
 import com.github.premnirmal.ticker.settings.createPreferenceDataStore
 import com.github.premnirmal.ticker.ui.AppMessaging
+import com.github.premnirmal.ticker.widget.MonthBaselineProvider
 import com.github.premnirmal.ticker.widget.WidgetDataProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -70,6 +71,13 @@ val appModule = module {
     single<UserPreferences> { get<AppPreferences>() }
 
     single { WidgetDataProvider(androidContext()) }
+    single {
+        MonthBaselineProvider(
+            get(),
+            androidContext().getSharedPreferences("portfolio_month_baselines", MODE_PRIVATE),
+            get(),
+        )
+    }
     single { AppMessaging(androidContext(), get()) }
     single { FetchEventLogger(get(), get(), get()) }
     single { AlarmScheduler(androidContext(), get(), get(), get(), get()) }

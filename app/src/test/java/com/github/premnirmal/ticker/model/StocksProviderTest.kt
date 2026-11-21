@@ -183,6 +183,7 @@ class StocksProviderTest : BaseUnitTest() {
             assertNotNull(position)
             assertEquals(1, position!!.holdings.size)
             verify(storage).addHolding(any())
+            verify(widgetDataProvider).broadcastUpdateAllWidgets()
         }
     }
 
@@ -197,6 +198,7 @@ class StocksProviderTest : BaseUnitTest() {
             assertTrue(removed)
             assertFalse(provider.hasPosition("AAPL"))
             verify(storage).removeHolding("AAPL", holding)
+            verify(widgetDataProvider, times(2)).broadcastUpdateAllWidgets()
         }
     }
 

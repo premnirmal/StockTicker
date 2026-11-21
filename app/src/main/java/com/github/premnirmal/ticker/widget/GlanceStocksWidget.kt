@@ -30,6 +30,7 @@ import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.lazy.GridCells
+import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.LazyVerticalGrid
 import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.appwidget.provideContent
@@ -61,6 +62,8 @@ import com.github.premnirmal.ticker.model.StocksProvider
 import com.github.premnirmal.ticker.network.data.Holding
 import com.github.premnirmal.ticker.network.data.Position
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.portfolio.PortfolioSummary
+import com.github.premnirmal.ticker.portfolio.StockPerformance
 import com.github.premnirmal.tickerwidget.R
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -102,8 +105,12 @@ class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
                     isRefreshing = currentIsRefreshing,
                 ),
                 quotes = currentQuotes,
+                portfolioSummary = widgetData.portfolioSummary.value,
+                stockPerformance = widgetData.stockPerformance.value,
             )
         }
+
+        widgetDataProvider.refreshPortfolioSummaries()
 
         provideContent {
             val glanceState = currentState<WidgetGlanceState>()
@@ -118,6 +125,8 @@ class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
             GlanceWidget(
                 widgetData = glanceState.widgetState,
                 quotes = glanceState.quotes,
+                portfolioSummary = glanceState.portfolioSummary,
+                stockPerformance = glanceState.stockPerformance,
             )
         }
     }
@@ -127,18 +136,13 @@ class GlanceStocksWidget : GlanceAppWidget(), KoinComponent {
 fun GlanceWidget(
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
+    portfolioSummary: List<PortfolioSummary> = emptyList(),
+    stockPerformance: List<StockPerformance> = emptyList(),
 ) {
     val context = LocalContext.current
     val size = LocalSize.current
     val width = size.width.value.toInt()
-    val columns = when {
-        widgetData.sizePref > 0 -> widgetData.sizePref
-        // 0 means auto, where we calculate column count based on the width below
-        width > 850 -> 4
-        width > 750 -> 3
-        width > 250 -> 2
-        else -> 1
-    }
+    val columns = widgetColumnCount(width, widgetData.sizePref)
 
     Box(
         modifier = GlanceModifier.fillMaxSize()
@@ -148,6 +152,10 @@ fun GlanceWidget(
         Column(
             modifier = GlanceModifier.fillMaxSize()
         ) {
+            if (!widgetData.hideWidgetHeader && quotes.isNotEmpty()) Header(widgetData)
+            if (widgetData.showPortfolioSummary && quotes.isEmpty()) {
+                PortfolioSummaryGlance(widgetData, portfolioSummary)
+            }
             if (quotes.isEmpty()) {
                 Box(
                     modifier = GlanceModifier.fillMaxSize().clickable(actionStartActivity<HomeActivity>()),
@@ -164,10 +172,7 @@ fun GlanceWidget(
                     )
                 }
             } else {
-                if (!widgetData.hideWidgetHeader) {
-                    Header(widgetData)
-                }
-                QuotesGrid(columns, widgetData, quotes)
+                QuotesGrid(columns, widgetData, quotes, portfolioSummary, stockPerformance)
             }
         }
     }
@@ -178,142 +183,135 @@ private fun QuotesGrid(
     columns: Int,
     widgetData: SerializableWidgetState,
     quotes: List<Quote>,
+    portfolioSummary: List<PortfolioSummary>,
+    stockPerformance: List<StockPerformance>,
 ) {
+    if (widgetData.showPortfolioSummary) {
+        val context = LocalContext.current
+        val tableColumns = stockTableColumns(LocalSize.current.width.value, stockTableScreenWidth(context))
+        val rows = if (widgetData.stockTableExpanded) stockTableRows(context, quotes, stockPerformance) else emptyList()
+        // One scrolling collection keeps every currency group and stock accessible on small widgets.
+        LazyColumn(modifier = GlanceModifier.fillMaxSize()) {
+            if (portfolioSummary.isEmpty()) item { PortfolioSummaryGlance(widgetData, emptyList()) }
+            itemsIndexed(portfolioSummary, itemId = { index, _ -> index.toLong() }) { _, summary ->
+                PortfolioSummaryGlance(widgetData, listOf(summary))
+            }
+            if (widgetData.stockTableExpanded) {
+                item(itemId = portfolioSummary.size.toLong()) {
+                    StockTableHeaderGlance(context, widgetData, tableColumns)
+                }
+                itemsIndexed(rows, itemId = { index, _ -> (index + portfolioSummary.size + 1).toLong() }) { _, row ->
+                    StockTableRowGlance(widgetData, tableColumns, row)
+                }
+            }
+        }
+    } else {
+        LazyVerticalGrid(gridCells = GridCells.Fixed(columns)) {
+            itemsIndexed(quotes, itemId = { index, _ -> index.toLong() }) { _, stock -> QuoteCell(stock, widgetData) }
+        }
+    }
+}
+
+@Composable
+private fun QuoteCell(stock: Quote, widgetData: SerializableWidgetState) {
     val context = LocalContext.current
     val changeType by remember(widgetData) { mutableStateOf(widgetData.changeType) }
     val textColor = ColorProvider(widgetData.textColor)
     val fontSize = widgetData.fontSize
     val layoutType = remember(widgetData) { widgetData.layoutType }
     val isBold = widgetData.boldText
-    LazyVerticalGrid(
-        modifier = GlanceModifier,
-        gridCells = GridCells.Fixed(columns),
-    ) {
-        itemsIndexed(items = quotes, itemId = { index, _ -> index.toLong() }) { _, stock ->
-            val changeValueFormatted = stock.changeString()
-            val changePercentFormatted = stock.changePercentString()
-            val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
-                if (widgetData.showCurrency) {
-                    stock.priceFormat.format(stock.lastTradePrice)
-                } else {
-                    stock.priceString()
-                }
+    val changeValueFormatted = stock.changeString()
+    val changePercentFormatted = stock.changePercentString()
+    val priceFormatted = remember(widgetData.showCurrency, stock.lastTradePrice) {
+        if (widgetData.showCurrency) {
+            stock.priceFormat.format(stock.lastTradePrice)
+        } else {
+            stock.priceString()
+        }
+    }
+    val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
+    val change = stock.change
+    val changeInPercent = stock.changeInPercent
+    val widgetChangeColor = remember(change, changeInPercent) {
+        widgetData.getChangeColor(change, changeInPercent)
+    }
+    val changeColor = ColorProvider(widgetChangeColor)
+    val changeFormatted = remember(changeType, layoutType, stock.change, stock.changeInPercent) {
+        if (layoutType == SerializableLayoutType.Tabs) {
+            changeValueFormatted
+        } else {
+            when (changeType) {
+                SerializableChangeType.Value -> changeValueFormatted
+                SerializableChangeType.Percent -> changePercentFormatted
             }
-            val displayName = stock.properties?.displayname.takeUnless { it.isNullOrBlank() } ?: stock.symbol
-            val change = stock.change
-            val changeInPercent = stock.changeInPercent
-            val widgetChangeColor = remember(change, changeInPercent) {
-                widgetData.getChangeColor(change, changeInPercent)
-            }
-            val changeColor = ColorProvider(widgetChangeColor)
-            val changeFormatted = remember(changeType, layoutType) {
-                if (layoutType == SerializableLayoutType.Tabs) {
-                    changeValueFormatted
-                } else {
-                    when (changeType) {
-                        SerializableChangeType.Value -> changeValueFormatted
-                        SerializableChangeType.Percent -> changePercentFormatted
-                    }
-                }
-            }
+        }
+    }
 
-            if (layoutType == SerializableLayoutType.MyPortfolio) {
-                MyPortfolio(
-                    stock = stock,
-                    widgetData = widgetData,
-                )
-            } else {
-                Row(
-                    modifier = GlanceModifier.fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
+    if (layoutType == SerializableLayoutType.MyPortfolio) {
+        MyPortfolio(
+            stock = stock,
+            widgetData = widgetData,
+        )
+    } else {
+        Row(
+            modifier = GlanceModifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp).clickable(
+                    actionStartActivity<HomeActivity>(
+                        // actionParametersOf(
+                        //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
+                        // )
+                    )
+                ),
+                text = displayName,
+                style = TextStyle(
+                    color = textColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    textAlign = TextAlign.Start,
+                    fontWeight = FontWeight.Medium,
+                ),
+                maxLines = 1,
+            )
+            Text(
+                modifier = GlanceModifier.padding(horizontal = 2.dp).clickable(
+                    actionStartActivity<HomeActivity>(
+                        // actionParametersOf(
+                        //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
+                        // )
+                    )
+                ),
+                text = priceFormatted,
+                style = TextStyle(
+                    color = textColor,
+                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.End,
+                ),
+                maxLines = 1,
+            )
+
+            if (layoutType == SerializableLayoutType.Animated) {
+                val flipper = RemoteViews(context.packageName, R.layout.stockview_flipper)
+                Box(
+                    modifier = GlanceModifier.defaultWeight().padding(end = 2.dp).clickable(
+                        actionStartActivity<HomeActivity>(
+                            // actionParametersOf(
+                            //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
+                            // )
+                        )
+                    ),
+                    contentAlignment = Alignment.CenterEnd,
                 ) {
-                    Text(
-                        modifier = GlanceModifier.defaultWeight().padding(horizontal = 2.dp).clickable(
-                            actionStartActivity<HomeActivity>(
-                                // actionParametersOf(
-                                //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
-                                // )
-                            )
-                        ),
-                        text = displayName,
-                        style = TextStyle(
-                            color = textColor,
-                            fontSize = TextUnit(fontSize, TextUnitType.Sp),
-                            textAlign = TextAlign.Start,
-                            fontWeight = FontWeight.Medium,
-                        ),
-                        maxLines = 1,
-                    )
-                    Text(
-                        modifier = GlanceModifier.padding(horizontal = 2.dp).clickable(
-                            actionStartActivity<HomeActivity>(
-                                // actionParametersOf(
-                                //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
-                                // )
-                            )
-                        ),
-                        text = priceFormatted,
-                        style = TextStyle(
-                            color = textColor,
-                            fontSize = TextUnit(fontSize, TextUnitType.Sp),
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.End,
-                        ),
-                        maxLines = 1,
-                    )
-
-                    if (layoutType == SerializableLayoutType.Animated) {
-                        val flipper = RemoteViews(context.packageName, R.layout.stockview_flipper)
-                        Box(
-                            modifier = GlanceModifier.defaultWeight().padding(end = 2.dp).clickable(
-                                actionStartActivity<HomeActivity>(
-                                    // actionParametersOf(
-                                    //     ActionParameters.Key<String>(HomeActivity.EXTRA_SYMBOL) to stock.symbol
-                                    // )
-                                )
-                            ),
-                            contentAlignment = Alignment.CenterEnd,
-                        ) {
-                            AndroidRemoteViews(
-                                remoteViews = flipper,
-                                containerViewId = R.id.view_flipper,
-                                modifier = GlanceModifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    modifier = GlanceModifier.fillMaxWidth(),
-                                    text = changeValueFormatted,
-                                    style = TextStyle(
-                                        color = changeColor,
-                                        fontSize = TextUnit(fontSize, TextUnitType.Sp),
-                                        fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
-                                        textAlign = TextAlign.End,
-                                    ),
-                                    maxLines = 1,
-                                )
-                                Text(
-                                    modifier = GlanceModifier.fillMaxWidth(),
-                                    text = changePercentFormatted,
-                                    style = TextStyle(
-                                        color = changeColor,
-                                        fontSize = TextUnit(fontSize, TextUnitType.Sp),
-                                        fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
-                                        textAlign = TextAlign.End,
-                                    ),
-                                    maxLines = 1,
-                                )
-                            }
-                        }
-                    } else {
+                    AndroidRemoteViews(
+                        remoteViews = flipper,
+                        containerViewId = R.id.view_flipper,
+                        modifier = GlanceModifier.fillMaxWidth()
+                    ) {
                         Text(
-                            modifier = GlanceModifier.defaultWeight().padding(end = 2.dp)
-                                .then(
-                                    if (layoutType == SerializableLayoutType.Fixed) {
-                                        GlanceModifier.clickable(actionRunCallback<FlipTextCallback>())
-                                    } else {
-                                        GlanceModifier
-                                    }
-                                ),
-                            text = changeFormatted,
+                            modifier = GlanceModifier.fillMaxWidth(),
+                            text = changeValueFormatted,
                             style = TextStyle(
                                 color = changeColor,
                                 fontSize = TextUnit(fontSize, TextUnitType.Sp),
@@ -322,21 +320,51 @@ private fun QuotesGrid(
                             ),
                             maxLines = 1,
                         )
-
-                        if (layoutType == SerializableLayoutType.Tabs) {
-                            Text(
-                                modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
-                                text = changePercentFormatted,
-                                style = TextStyle(
-                                    color = changeColor,
-                                    fontSize = TextUnit(fontSize, TextUnitType.Sp),
-                                    fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
-                                    textAlign = TextAlign.End,
-                                ),
-                                maxLines = 1,
-                            )
-                        }
+                        Text(
+                            modifier = GlanceModifier.fillMaxWidth(),
+                            text = changePercentFormatted,
+                            style = TextStyle(
+                                color = changeColor,
+                                fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                                fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+                                textAlign = TextAlign.End,
+                            ),
+                            maxLines = 1,
+                        )
                     }
+                }
+            } else {
+                Text(
+                    modifier = GlanceModifier.defaultWeight().padding(end = 2.dp)
+                        .then(
+                            if (layoutType == SerializableLayoutType.Fixed) {
+                                GlanceModifier.clickable(actionRunCallback<FlipTextCallback>())
+                            } else {
+                                GlanceModifier
+                            }
+                        ),
+                    text = changeFormatted,
+                    style = TextStyle(
+                        color = changeColor,
+                        fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                        fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+                        textAlign = TextAlign.End,
+                    ),
+                    maxLines = 1,
+                )
+
+                if (layoutType == SerializableLayoutType.Tabs) {
+                    Text(
+                        modifier = GlanceModifier.defaultWeight().padding(end = 2.dp),
+                        text = changePercentFormatted,
+                        style = TextStyle(
+                            color = changeColor,
+                            fontSize = TextUnit(fontSize, TextUnitType.Sp),
+                            fontWeight = if (isBold) FontWeight.Bold else FontWeight.Normal,
+                            textAlign = TextAlign.End,
+                        ),
+                        maxLines = 1,
+                    )
                 }
             }
         }
@@ -701,6 +729,7 @@ class RefreshCallback : ActionCallback, KoinComponent {
         }
 
         stocksProvider.fetch()
+        widgetDataProvider.refreshPortfolioSummaries(force = true)
 
         val widgetData = widgetDataProvider.dataForWidgetId(appWidgetId)
         val currentQuotes = widgetData.stocks.value
@@ -712,6 +741,8 @@ class RefreshCallback : ActionCallback, KoinComponent {
         ) { currentState ->
             currentState.copy(
                 quotes = currentQuotes,
+                portfolioSummary = widgetData.portfolioSummary.value,
+                stockPerformance = widgetData.stockPerformance.value,
                 widgetState = currentState.widgetState.copy(
                     fetchState = SerializableFetchState.from(currentFetchState),
                     isRefreshing = false,
@@ -750,6 +781,8 @@ class FlipTextCallback : ActionCallback, KoinComponent {
             widgetData.setChange(newChangeType == SerializableChangeType.Percent)
             currentState.copy(
                 quotes = currentQuotes,
+                portfolioSummary = widgetData.portfolioSummary.value,
+                stockPerformance = widgetData.stockPerformance.value,
                 widgetState = currentState.widgetState.copy(
                     changeType = newChangeType,
                     fetchState = SerializableFetchState.from(currentFetchState),

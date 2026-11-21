@@ -24,6 +24,7 @@ interface WidgetSettings {
     fun setHideHeader(value: Boolean)
     fun setCurrencyEnabled(value: Boolean)
     fun setShowRefreshButton(value: Boolean)
+    fun setShowPortfolioSummary(value: Boolean)
 }
 
 /**
@@ -44,6 +45,7 @@ data class WidgetPrefs(
     val hideWidgetHeader: Boolean,
     val showCurrency: Boolean,
     val showRefreshButton: Boolean,
+    val showPortfolioSummary: Boolean = false,
 )
 
 /**
@@ -75,4 +77,6 @@ class WidgetSettingsStrings(
     val showCurrencyDesc: String,
     val showRefresh: String,
     val showRefreshDesc: String,
+    val showPortfolioSummary: String = "Show portfolio summary",
+    val showPortfolioSummaryDesc: String = "Totals by currency for this widget's holdings. Month to date uses current share quantities.",
 )

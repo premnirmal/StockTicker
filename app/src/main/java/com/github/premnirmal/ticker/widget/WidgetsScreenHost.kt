@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -117,6 +119,8 @@ fun WidgetsScreen(
             showCurrencyDesc = stringResource(id = R.string.setting_currency_desc),
             showRefresh = stringResource(id = R.string.show_refresh),
             showRefreshDesc = stringResource(id = R.string.show_refresh_desc),
+            showPortfolioSummary = stringResource(R.string.show_portfolio_summary),
+            showPortfolioSummaryDesc = stringResource(R.string.show_portfolio_summary_desc),
         ),
         spinnerArrowIcon = painterResource(id = R.drawable.ic_arrow_down),
         doneIcon = painterResource(id = R.drawable.ic_done),
@@ -131,9 +135,23 @@ fun WidgetsScreen(
                 WidgetPreview(
                     fetchState = fetchState,
                     widgetData = it,
-                    state = it.toState(),
                     onRefreshClick = { viewModel.refresh() },
                 )
+            }
+        },
+        stockTableControl = {
+            widgetData?.let { data ->
+                val state by data.data.collectAsState()
+                Button(
+                    onClick = { data.setStockTableExpanded(!data.stockTableExpanded()) },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        stringResource(
+                            if (state.stockTableExpanded) R.string.stock_table_close else R.string.stock_table_open
+                        )
+                    )
+                }
             }
         },
         modifier = modifier,
@@ -167,7 +185,6 @@ fun WidgetsScreen(
 private fun WidgetPreview(
     fetchState: FetchState,
     widgetData: WidgetData,
-    state: WidgetData.Data,
     onRefreshClick: () -> Unit,
 ) {
     Box(
@@ -175,12 +192,17 @@ private fun WidgetPreview(
             .paint(painterResource(R.drawable.bg_header_light), contentScale = ContentScale.FillBounds)
             .padding(24.dp),
     ) {
+        val state by widgetData.data.collectAsState()
         val quotes by widgetData.stocks.collectAsState()
-        val data = remember(state) { SerializableWidgetState.from(state, fetchState, false) }
+        val summary by widgetData.portfolioSummary.collectAsState()
+        val performance by widgetData.stockPerformance.collectAsState()
+        val data = remember(state, fetchState) { SerializableWidgetState.from(state, fetchState, false) }
         GlanceWidgetPreview(
             modifier = Modifier.fillMaxWidth().height(220.dp),
             widgetData = data,
             quotes = quotes,
+            portfolioSummary = summary,
+            stockPerformance = performance,
             onRefreshClick = onRefreshClick,
         )
     }
@@ -211,6 +233,7 @@ private class WidgetDataSettings(
     override fun setHideHeader(value: Boolean) = widgetData.setHideHeader(value)
     override fun setCurrencyEnabled(value: Boolean) = widgetData.setCurrencyEnabled(value)
     override fun setShowRefreshButton(value: Boolean) = widgetData.setShowRefreshButton(value)
+    override fun setShowPortfolioSummary(value: Boolean) = widgetData.setShowPortfolioSummary(value)
 }
 
 @Suppress("DEPRECATION")
@@ -226,4 +249,5 @@ private fun WidgetData.Prefs.toWidgetPrefs() = WidgetPrefs(
     hideWidgetHeader = hideWidgetHeader,
     showCurrency = showCurrency,
     showRefreshButton = showRefreshButton,
+    showPortfolioSummary = showPortfolioSummary,
 )
