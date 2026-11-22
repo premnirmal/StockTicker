@@ -73,7 +73,6 @@ fun SettingsScreen(
     roundTwoDpSubtitle: String,
     notificationAlertsTitle: String,
     notificationAlertsSubtitle: String,
-    shareTitle: String,
     importTitle: String,
     importSubtitle: String,
     exportTitle: String,
@@ -102,7 +101,6 @@ fun SettingsScreen(
     onAutoSortChanged: (Boolean) -> Unit,
     onRoundToTwoDpChanged: (Boolean) -> Unit,
     onNotificationAlertsChanged: (Boolean) -> Unit,
-    onSharePortfolio: () -> Unit,
     onImportPortfolio: () -> Unit,
     onExportPortfolio: () -> Unit,
     onReportBug: () -> Unit,
@@ -168,7 +166,6 @@ fun SettingsScreen(
                 roundTwoDpSubtitle = roundTwoDpSubtitle,
                 notificationAlertsTitle = notificationAlertsTitle,
                 notificationAlertsSubtitle = notificationAlertsSubtitle,
-                shareTitle = shareTitle,
                 importTitle = importTitle,
                 importSubtitle = importSubtitle,
                 exportTitle = exportTitle,
@@ -195,7 +192,6 @@ fun SettingsScreen(
                 onAutoSortChanged = onAutoSortChanged,
                 onRoundToTwoDpChanged = onRoundToTwoDpChanged,
                 onNotificationAlertsChanged = onNotificationAlertsChanged,
-                onSharePortfolio = onSharePortfolio,
                 onImportPortfolio = onImportPortfolio,
                 onExportPortfolio = onExportPortfolio,
                 onReportBug = onReportBug,
@@ -229,7 +225,6 @@ private fun LazyListScope.settingsItems(
     roundTwoDpSubtitle: String,
     notificationAlertsTitle: String,
     notificationAlertsSubtitle: String,
-    shareTitle: String,
     importTitle: String,
     importSubtitle: String,
     exportTitle: String,
@@ -256,7 +251,6 @@ private fun LazyListScope.settingsItems(
     onAutoSortChanged: (Boolean) -> Unit,
     onRoundToTwoDpChanged: (Boolean) -> Unit,
     onNotificationAlertsChanged: (Boolean) -> Unit,
-    onSharePortfolio: () -> Unit,
     onImportPortfolio: () -> Unit,
     onExportPortfolio: () -> Unit,
     onReportBug: () -> Unit,
@@ -367,15 +361,6 @@ private fun LazyListScope.settingsItems(
             subtitle = notificationAlertsSubtitle,
             checked = settingsData.notificationAlerts,
             onCheckChanged = onNotificationAlertsChanged,
-        )
-        divider()
-    }
-    item {
-        SettingsText(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onSharePortfolio() },
-            title = shareTitle,
         )
         divider()
     }

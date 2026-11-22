@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.settings
 import android.content.Context
 import android.net.Uri
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.widget.WidgetData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -43,6 +44,35 @@ internal object PortfolioExporter : KoinComponent {
         withContext(Dispatchers.IO) {
             val quoteList: List<Quote> = quoteLists[0]
             val jsonString = portfolioSerializer.serializePortfolio(quoteList)
+            val contentResolver = context.applicationContext.contentResolver
+            try {
+                contentResolver.openFileDescriptor(uri, "rwt")
+                    ?.use {
+                        FileOutputStream(it.fileDescriptor).use { fileOutputStream ->
+                            fileOutputStream.write(jsonString.toByteArray())
+                        }
+                    }
+            } catch (e: IOException) {
+                Timber.e(e)
+                return@withContext null
+            }
+            return@withContext uri.path
+        }
+}
+
+internal object WidgetExporter : KoinComponent {
+
+    private val portfolioSerializer: PortfolioSerializer by inject()
+
+    suspend fun exportWidget(context: Context, uri: Uri, widgetData: WidgetData): String? =
+        withContext(Dispatchers.IO) {
+            val jsonString = portfolioSerializer.serializeWidget(
+                WidgetExport(
+                    name = widgetData.widgetName(),
+                    autoSort = widgetData.autoSortEnabled(),
+                    tickers = widgetData.getTickers(),
+                )
+            )
             val contentResolver = context.applicationContext.contentResolver
             try {
                 contentResolver.openFileDescriptor(uri, "rwt")

@@ -75,6 +75,9 @@ fun WidgetsScreen(
     doneIcon: Painter,
     showAddStocks: Boolean,
     onAddStocks: () -> Unit,
+    onShareWidget: () -> Unit,
+    onImportWidget: () -> Unit,
+    onExportWidget: () -> Unit,
     widgetPreview: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     twoPane: (@Composable (
@@ -131,7 +134,7 @@ fun WidgetsScreen(
                 item {
                     widgetPreview()
                 }
-                widgetSettings(settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, divider)
+                widgetSettings(settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, onShareWidget, onImportWidget, onExportWidget, divider)
             }
         } else {
             twoPane(
@@ -154,7 +157,7 @@ fun WidgetsScreen(
                                 )
                             }
                         }
-                        widgetSettings(settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, divider)
+                        widgetSettings(settings, prefs, strings, doneIcon, showAddStocks, onAddStocks, onShareWidget, onImportWidget, onExportWidget, divider)
                     }
                 },
                 {
@@ -174,6 +177,9 @@ private fun LazyListScope.widgetSettings(
     doneIcon: Painter,
     showAddStocks: Boolean,
     onAddStocks: () -> Unit,
+    onShareWidget: () -> Unit,
+    onImportWidget: () -> Unit,
+    onExportWidget: () -> Unit,
     divider: @Composable () -> Unit,
 ) {
     item {
@@ -279,6 +285,36 @@ private fun LazyListScope.widgetSettings(
             subtitle = strings.showRefreshDesc,
             checked = prefs.showRefreshButton,
             onCheckChanged = settings::setShowRefreshButton
+        )
+        divider()
+    }
+    item {
+        SettingsText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onShareWidget() },
+            title = strings.shareLabel,
+            subtitle = strings.shareWidgetDesc,
+        )
+        divider()
+    }
+    item {
+        SettingsText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onImportWidget() },
+            title = strings.importLabel,
+            subtitle = strings.importWidgetDesc,
+        )
+        divider()
+    }
+    item {
+        SettingsText(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onExportWidget() },
+            title = strings.exportLabel,
+            subtitle = strings.exportWidgetDesc,
         )
         divider()
     }
