@@ -28,7 +28,7 @@ data class Suggestion(
     companion object {
         fun fromSuggestionNet(suggestionNet: SuggestionNet): Suggestion {
             val suggestion = Suggestion(suggestionNet.symbol)
-            suggestion.name = suggestionNet.name
+            suggestion.name = suggestionNet.longName.ifEmpty { suggestionNet.name }
             suggestion.exch = suggestionNet.exch
             suggestion.type = suggestionNet.type
             suggestion.exchDisp = suggestionNet.exchDisp

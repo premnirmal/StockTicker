@@ -36,8 +36,5 @@ data class SuggestionsNet(
 
         @SerialName("score")
         var score: Float? = 0f
-
-        @SerialName("isYahooFinance")
-        var isYahooFinance: Boolean = false
     }
 }
