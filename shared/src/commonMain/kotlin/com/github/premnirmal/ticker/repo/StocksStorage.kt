@@ -1,12 +1,14 @@
 package com.github.premnirmal.ticker.repo
 
 import com.github.premnirmal.ticker.components.ioDispatcher
-import com.github.premnirmal.ticker.network.data.Holding
-import com.github.premnirmal.ticker.network.data.Position
+import com.github.premnirmal.ticker.network.data.Movement
+import com.github.premnirmal.ticker.network.data.MovementType
 import com.github.premnirmal.ticker.network.data.Properties
 import com.github.premnirmal.ticker.network.data.Quote
+import com.github.premnirmal.ticker.network.data.replayLedger
+import com.github.premnirmal.ticker.network.data.toPosition
 import com.github.premnirmal.ticker.repo.data.FetchLogRow
-import com.github.premnirmal.ticker.repo.data.HoldingRow
+import com.github.premnirmal.ticker.repo.data.MovementRow
 import com.github.premnirmal.ticker.repo.data.PropertiesRow
 import com.github.premnirmal.ticker.repo.data.QuoteRow
 import kotlinx.coroutines.withContext
@@ -41,15 +43,11 @@ class StocksStorage(
         return withContext(ioDispatcher) {
             quotesWithHoldings.map { quoteWithHoldings ->
                 val quote = quoteWithHoldings.quote.toQuote()
-                val holdings = quoteWithHoldings.holdings.map { holdingTable ->
-                    Holding(
-                        holdingTable.quoteSymbol,
-                        holdingTable.shares,
-                        holdingTable.price,
-                        holdingTable.id!!
-                    )
-                }
-                quote.position = Position(quote.symbol, holdings.toMutableList())
+                val movements = quoteWithHoldings.movements
+                    .sortedBy { it.id ?: 0L }
+                    .map { it.toMovement() }
+                quote.movements = movements
+                quote.position = movements.replayLedger().toPosition(quote.symbol)
                 quote.properties = quoteWithHoldings.properties?.toProperties()
                 quote
             }
@@ -61,15 +59,11 @@ class StocksStorage(
         return withContext(ioDispatcher) {
             quoteWithHolding?.let {
                 val quote = quoteWithHolding.quote.toQuote()
-                val holdings = quoteWithHolding.holdings.map { holdingTable ->
-                    Holding(
-                        holdingTable.quoteSymbol,
-                        holdingTable.shares,
-                        holdingTable.price,
-                        holdingTable.id!!
-                    )
-                }
-                quote.position = Position(quote.symbol, holdings.toMutableList())
+                val movements = quoteWithHolding.movements
+                    .sortedBy { it.id ?: 0L }
+                    .map { it.toMovement() }
+                quote.movements = movements
+                quote.position = movements.replayLedger().toPosition(quote.symbol)
                 quote.properties = quoteWithHolding.properties?.toProperties()
                 quote
             }
@@ -77,17 +71,14 @@ class StocksStorage(
     }
 
     override suspend fun saveQuote(quote: Quote) {
-        quoteDao.upsertQuoteAndHolding(quote.toQuoteRow(), quote.position?.toHoldingRows())
+        quoteDao.upsertQuoteAndProperties(quote.toQuoteRow())
     }
 
     override suspend fun saveQuotes(quotes: List<Quote>) {
         val quoteRows = quotes.map { it.toQuoteRow() }
-        val positions = quotes.mapNotNull { it.position }
         val properties = quotes.mapNotNull { it.properties }
-        val holdingsBySymbol = positions.associate { it.symbol to it.toHoldingRows() }
         quoteDao.upsertQuotesWithHoldingsAndProperties(
             quoteRows,
-            holdingsBySymbol,
             properties.map { it.toPropertiesRow() }
         )
     }
@@ -100,15 +91,20 @@ class StocksStorage(
         quoteDao.deleteQuotesAndHoldings(tickers)
     }
 
-    override suspend fun addHolding(holding: Holding): Long {
-        return quoteDao.insertHolding(holding.toHoldingRow())
+    override suspend fun addMovement(movement: Movement): Long {
+        return quoteDao.insertMovement(movement.toMovementRow())
     }
 
-    override suspend fun removeHolding(
-        ticker: String,
-        holding: Holding
-    ) {
-        quoteDao.deleteHolding(HoldingRow(holding.id, ticker, holding.shares, holding.price))
+    override suspend fun removeMovement(movement: Movement) {
+        quoteDao.deleteMovement(movement.toMovementRow())
+    }
+
+    override suspend fun readMovements(symbol: String): List<Movement> {
+        return quoteDao.getMovements(symbol).map { it.toMovement() }
+    }
+
+    override suspend fun saveMovements(symbol: String, movements: List<Movement>) {
+        quoteDao.replaceMovements(symbol, movements.map { it.toMovementRow() })
     }
 
     override suspend fun saveQuoteProperties(
@@ -157,15 +153,11 @@ class StocksStorage(
         )
     }
 
-    private fun Position.toHoldingRows(): List<HoldingRow> {
-        return this.holdings.map {
-            HoldingRow(it.id, this.symbol, it.shares, it.price)
-        }
-    }
+    private fun Movement.toMovementRow(): MovementRow =
+        MovementRow(this.id, this.symbol, this.type.name, this.shares, this.price)
 
-    private fun Holding.toHoldingRow(): HoldingRow {
-        return HoldingRow(this.id, this.symbol, this.shares, this.price)
-    }
+    private fun MovementRow.toMovement(): Movement =
+        Movement(this.quoteSymbol, MovementType.valueOf(this.type), this.shares, this.price, this.id)
 
     private fun QuoteRow.toQuote(): Quote {
         val quote = Quote(

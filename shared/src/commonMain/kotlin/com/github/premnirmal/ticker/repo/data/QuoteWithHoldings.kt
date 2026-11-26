@@ -10,7 +10,7 @@ data class QuoteWithHoldings(
         parentColumn = "symbol",
         entityColumn = "quote_symbol"
     )
-    val holdings: List<HoldingRow>,
+    val movements: List<MovementRow>,
     @Relation(
         parentColumn = "symbol",
         entityColumn = "properties_quote_symbol"

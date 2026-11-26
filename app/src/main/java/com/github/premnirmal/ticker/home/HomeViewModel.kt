@@ -65,7 +65,8 @@ class HomeViewModel constructor(
         get() = widgetDataProvider.hasWidget
 
     val hasHoldings: Boolean
-        get() = stocksProvider.hasPositions()
+        get() = stocksProvider.hasPositions() ||
+            stocksProvider.portfolio.value.any { it.hasSells() }
 
     val showAlarmPermissionRequest: Boolean
         get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmScheduler.canScheduleExactAlarm()
@@ -93,28 +94,29 @@ class HomeViewModel constructor(
 
     val totalGainLoss: Flow<TotalGainLoss>
         get() = stocksProvider.portfolio.map { portfolio ->
-            val totalHoldings = portfolio.filter { it.hasPositions() }.sumOf { quote ->
-                quote.holdings().toDouble()
-            }
-            val totalHoldingsStr = appPreferences.selectedDecimalFormat.format(totalHoldings)
-            var totalGain = 0.0f
-            var totalLoss = 0.0f
-            val quotesWithPositions = portfolio.filter { it.hasPositions() }
-            for (quote in quotesWithPositions) {
-                val gainLoss = quote.gainLoss()
-                if (gainLoss > 0.0f) {
-                    totalGain += gainLoss
-                } else {
-                    totalLoss += gainLoss
-                }
-            }
-            val totalGainStr = "+" + appPreferences.selectedDecimalFormat.format(totalGain)
-            val totalLossStr = if (totalLoss != 0.0f) {
-                appPreferences.selectedDecimalFormat.format(totalLoss)
+            val totals = portfolio.toGainLossTotals()
+            val totalHoldingsStr = appPreferences.selectedDecimalFormat.format(totals.totalHoldings)
+            val totalGainStr = "+" + appPreferences.selectedDecimalFormat.format(totals.totalGain)
+            val totalLossStr = if (totals.totalLoss != 0.0f) {
+                appPreferences.selectedDecimalFormat.format(totals.totalLoss)
             } else {
                 ""
             }
-            TotalGainLoss(totalHoldingsStr, totalGainStr, totalLossStr)
+            fun signed(value: Float): String {
+                val formatted = appPreferences.selectedDecimalFormat.format(value)
+                return if (value >= 0) "+$formatted" else formatted
+            }
+            TotalGainLoss(
+                holdings = totalHoldingsStr,
+                gain = totalGainStr,
+                loss = totalLossStr,
+                unrealized = signed(totals.unrealized),
+                unrealizedIsPositive = totals.unrealized >= 0f,
+                realized = signed(totals.realized),
+                realizedIsPositive = totals.realized >= 0f,
+                total = signed(totals.total),
+                totalIsPositive = totals.total >= 0f,
+            )
         }
 
     fun checkShowTutorial() {
