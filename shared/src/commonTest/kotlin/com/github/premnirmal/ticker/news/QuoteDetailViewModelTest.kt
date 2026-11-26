@@ -1,5 +1,6 @@
 package com.github.premnirmal.ticker.news
 
+import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.Range
 import com.github.premnirmal.ticker.network.data.Quote
 import com.github.premnirmal.ticker.test.FakeStocksProvider
@@ -10,6 +11,7 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -38,10 +40,10 @@ class QuoteDetailViewModelTest {
         userPreferences = prefs
     )
 
-    private fun chartJson(): String =
+    private fun chartJson(firstTradeDate: Long? = null): String =
         """
         {"chart":{"result":[{
-          "meta":{"currency":"USD","symbol":"AAPL","regularMarketPrice":12.0,"chartPreviousClose":10.0},
+          "meta":{"currency":"USD","symbol":"AAPL","regularMarketPrice":12.0,"chartPreviousClose":10.0,"firstTradeDate":$firstTradeDate},
           "timestamp":[100,200],
           "indicators":{"quote":[{
             "open":[1.0,2.0],"high":[1.5,2.5],"low":[0.5,1.5],"close":[1.2,2.2]
@@ -109,6 +111,93 @@ class QuoteDetailViewModelTest {
         assertEquals(10f, data.chartPreviousClose)
         assertEquals(12f, data.regularMarketPrice)
         assertEquals(Range.ONE_DAY, viewModel.range.value)
+    }
+
+    @Test
+    fun initialChart_usesMonthForInstrumentsOlderThanMonth() = runTest {
+        val firstTradeDate = AppClock.AppClockImpl.now().epochSeconds - 31 * 86_400L
+        val requests = mutableListOf<String>()
+        val engine = MockEngine {
+            requests += requireNotNull(it.url.parameters["range"])
+            respond(chartJson(firstTradeDate), HttpStatusCode.OK, TestProviders.jsonHeaders)
+        }
+        val viewModel = viewModel(FakeStocksProvider(), chartEngine = engine)
+
+        viewModel.fetchChartData("AAPL").join()
+
+        assertEquals(Range.ONE_MONTH, viewModel.range.value)
+        assertEquals(listOf("1d", "1mo"), requests)
+        assertEquals(firstTradeDate, viewModel.data.value?.firstTradeDate)
+    }
+
+    @Test
+    fun initialChart_keepsDayForRecentOrUnknownLaunchDates() = runTest {
+        val now = AppClock.AppClockImpl.now().epochSeconds
+        for (firstTradeDate in listOf(now - 7 * 86_400L, null, 0L, now + 86_400L)) {
+            val requests = mutableListOf<String>()
+            val engine = MockEngine {
+                requests += requireNotNull(it.url.parameters["range"])
+                respond(chartJson(firstTradeDate), HttpStatusCode.OK, TestProviders.jsonHeaders)
+            }
+            val viewModel = viewModel(FakeStocksProvider(), chartEngine = engine)
+
+            viewModel.fetchChartData("AAPL").join()
+
+            assertEquals(Range.ONE_DAY, viewModel.range.value)
+            assertEquals(listOf("1d"), requests)
+        }
+    }
+
+    @Test
+    fun refresh_preservesManuallySelectedDayForOlderInstrument() = runTest {
+        val quote = Quote("AAPL")
+        val firstTradeDate = AppClock.AppClockImpl.now().epochSeconds - 365 * 86_400L
+        val requests = mutableListOf<String>()
+        val engine = MockEngine {
+            requests += requireNotNull(it.url.parameters["range"])
+            respond(chartJson(firstTradeDate), HttpStatusCode.OK, TestProviders.jsonHeaders)
+        }
+        val viewModel = viewModel(
+            FakeStocksProvider(listOf(quote)),
+            chartEngine = engine,
+            newsEngine = MockEngine { respond(TestProviders.rssFeed("Apple"), HttpStatusCode.OK) }
+        )
+        viewModel.fetchAll(quote, chooseInitialRange = true)
+        viewModel.isRefreshing.first { !it }
+        assertEquals(Range.ONE_MONTH, viewModel.range.value)
+        viewModel.fetchChartData("AAPL", Range.ONE_DAY).join()
+
+        viewModel.fetchAll(quote)
+        viewModel.isRefreshing.first { !it }
+
+        assertEquals(Range.ONE_DAY, viewModel.range.value)
+        assertEquals(listOf("1d", "1mo", "1d", "1d"), requests)
+    }
+
+    @Test
+    fun manualSelection_cancelsPendingInitialRangeChoice() = runTest {
+        val initialRequestStarted = CompletableDeferred<Unit>()
+        val releaseInitialRequest = CompletableDeferred<Unit>()
+        val firstTradeDate = AppClock.AppClockImpl.now().epochSeconds - 365 * 86_400L
+        val engine = MockEngine {
+            if (it.url.parameters["range"] == "1d") {
+                initialRequestStarted.complete(Unit)
+                releaseInitialRequest.await()
+            }
+            respond(chartJson(firstTradeDate), HttpStatusCode.OK, TestProviders.jsonHeaders)
+        }
+        val viewModel = viewModel(FakeStocksProvider(), chartEngine = engine)
+        val initialJob = viewModel.fetchChartData("AAPL")
+        initialRequestStarted.await()
+
+        viewModel.fetchChartData("AAPL", Range.ONE_YEAR).join()
+        releaseInitialRequest.complete(Unit)
+        initialJob.join()
+
+        assertTrue(initialJob.isCancelled)
+        assertEquals(Range.ONE_YEAR, viewModel.range.value)
+        assertEquals(null, viewModel.dataFetchError.value)
+        assertTrue(viewModel.data.value != null)
     }
 
     @Test

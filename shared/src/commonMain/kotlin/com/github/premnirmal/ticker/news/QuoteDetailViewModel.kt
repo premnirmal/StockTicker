@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.news
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.premnirmal.ticker.UserPreferences
+import com.github.premnirmal.ticker.components.AppClock
 import com.github.premnirmal.ticker.model.ChartData
 import com.github.premnirmal.ticker.model.FetchResult
 import com.github.premnirmal.ticker.model.HistoryProvider
@@ -65,6 +66,7 @@ class QuoteDetailViewModel constructor(
         get() = userPreferences.showAddRemoveTooltip
 
     private var fetchQuoteJob: Job? = null
+    private var fetchChartJob: Job? = null
     private var quoteSummary: QuoteSummary? = null
     val range = MutableStateFlow<Range>(Range.ONE_DAY)
 
@@ -82,12 +84,16 @@ class QuoteDetailViewModel constructor(
         }
     }
 
-    fun fetchAll(quote: Quote) {
+    fun fetchAll(quote: Quote, chooseInitialRange: Boolean = false) {
         _isRefreshing.value = true
         viewModelScope.launch {
+            val chartFetch = fetchChartData(
+                symbol = quote.symbol,
+                range = if (chooseInitialRange) null else range.value
+            )
             fetchQuoteInternal(ticker = quote.symbol)
             fetchNewsInternal(quote = quote, truncate = false)
-            fetchChartDataInternal(symbol = quote.symbol, selectedRange = range.value)
+            chartFetch.join()
             _isRefreshing.value = false
         }
     }
@@ -142,15 +148,20 @@ class QuoteDetailViewModel constructor(
         }
     }
 
-    fun fetchChartData(symbol: String, range: Range) {
-        viewModelScope.launch {
-            fetchChartDataInternal(symbol, range)
+    /** Omitting [range] chooses the initial range from the instrument's first-trade metadata. */
+    fun fetchChartData(symbol: String, range: Range? = null): Job {
+        fetchChartJob?.cancel()
+        return viewModelScope.launch {
+            fetchChartDataInternal(symbol, range ?: Range.ONE_DAY, chooseInitialRange = range == null)
+        }.also {
+            fetchChartJob = it
         }
     }
 
     private suspend fun fetchChartDataInternal(
         symbol: String,
-        selectedRange: Range
+        selectedRange: Range,
+        chooseInitialRange: Boolean = false
     ) {
         range.value = selectedRange
         // Release the previous (potentially large) dataset immediately so it can be GC'd while the
@@ -160,6 +171,12 @@ class QuoteDetailViewModel constructor(
         _dataFetchError.value = null
         val result = historyProvider.fetchDataByRange(symbol, selectedRange)
         if (result.wasSuccessful) {
+            val firstTradeDate = result.data.firstTradeDate
+            val monthAgo = AppClock.AppClockImpl.now().epochSeconds - Range.ONE_MONTH.durationDays * 86_400L
+            if (chooseInitialRange && firstTradeDate != null && firstTradeDate > 0 && firstTradeDate < monthAgo) {
+                fetchChartDataInternal(symbol, Range.ONE_MONTH)
+                return
+            }
             _data.value = result.data
         } else {
             _dataFetchError.emit(result.error)
@@ -196,10 +213,12 @@ class QuoteDetailViewModel constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     fun reset() {
         fetchQuoteJob?.cancel()
+        fetchChartJob?.cancel()
         _newsData.value = emptyList()
         _data.value = null
         _quote.resetReplayCache()
         _dataFetchError.value = null
+        range.value = Range.ONE_DAY
     }
 
     data class QuoteWithSummary(

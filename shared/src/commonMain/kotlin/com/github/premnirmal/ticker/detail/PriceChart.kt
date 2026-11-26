@@ -18,6 +18,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianMeasuringContext
 import com.patrykandpatrick.vico.multiplatform.cartesian.Zoom
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoZoomState
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.Axis
@@ -116,6 +117,15 @@ internal fun xAxisLabelSpacing(xValues: List<Double>): Int {
     return (steps + X_AXIS_LABEL_COUNT - 1) / X_AXIS_LABEL_COUNT
 }
 
+internal class PriceXAxisItemPlacer(spacing: Int) : HorizontalAxis.ItemPlacer by
+    HorizontalAxis.ItemPlacer.aligned(spacing = { spacing }, addExtremeLabelPadding = true) {
+    // Keep Vico's measured-width label spacing, but don't reserve space inside the plot for
+    // endpoint labels. The aligned placer omits labels at the unpadded bounds to avoid clipping.
+    override fun getFirstLabelValue(context: CartesianMeasuringContext, maxLabelWidth: Float): Double? = null
+
+    override fun getLastLabelValue(context: CartesianMeasuringContext, maxLabelWidth: Float): Double? = null
+}
+
 /**
  * The greatest common divisor of the differences between consecutive [xValues], matching Vico's
  * `getXDeltaGcd`/`Double.gcdWith` so [xAxisLabelSpacing] derives the same axis step Vico uses.
@@ -203,6 +213,14 @@ fun PriceChartView(
             fontSize = 12.sp
         )
     )
+    val timeAxisLabel = rememberTextComponent(
+        style = TextStyle(
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 12.sp
+        ),
+        lineCount = 2,
+        padding = Insets(4.dp, 2.dp)
+    )
 
     CartesianChartHost(
         chart = rememberCartesianChart(
@@ -220,31 +238,16 @@ fun PriceChartView(
                 guideline = null
             ),
             bottomAxis = HorizontalAxis.rememberBottom(
-                label = axisLabel,
+                label = timeAxisLabel,
                 valueFormatter = remember(xAxisFormatter) {
                     CartesianValueFormatter { _, value, _ -> xAxisFormatter(value) }
                 },
-                // By default the horizontal axis reserves half a label's width of in-layer padding at
-                // each end so the first/last labels aren't clipped, which leaves an empty gap on the
-                // left and right of the line. Disabling addExtremeLabelPadding removes that gap so the
-                // line spans the full chart width; the axis still reserves outer layer margin for the
-                // extreme labels (getStartLayerMargin/getEndLayerMargin), so they stay fully visible.
-                //
-                // The aligned placer otherwise labels every axis step, and the axis step (the GCD of
-                // the timestamp gaps) is small because of weekend/holiday gaps and the limited
-                // precision of the Float timestamps — so a long range produces hundreds of labels
-                // that collapse into an unreadable smear. Spacing the labels by xAxisLabelSpacing
-                // caps the visible labels at roughly X_AXIS_LABEL_COUNT so they stay legible.
                 itemPlacer = remember(dataPoints) {
                     val xDoubles = ArrayList<Double>(dataPoints.size)
                     for (point in dataPoints) {
                         xDoubles.add(point.xVal.toDouble())
                     }
-                    val spacing = xAxisLabelSpacing(xDoubles)
-                    HorizontalAxis.ItemPlacer.aligned(
-                        spacing = { spacing },
-                        addExtremeLabelPadding = false
-                    )
+                    PriceXAxisItemPlacer(xAxisLabelSpacing(xDoubles))
                 },
                 guideline = null
             ),

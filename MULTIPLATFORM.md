@@ -61,6 +61,19 @@ work: Coil → Coil 3 (multiplatform), and Android-only Compose artifacts
 CMP equivalents or `expect`/`actual` shims. DI has already moved off Hilt to **Koin** in
 Phase 2 (see "Done — Phase 2"), so the shared modules are reused directly here.
 
+Shared search opens with the input focused and the software keyboard shown. The watchlist
+header sizes itself from the measured title, subtitle, and tabs, including system text scaling.
+One pull-to-refresh container wraps the entire watchlist, including the header and all widget
+pages. Header expansion consumes the downward drag first; only the remaining unconsumed
+movement reaches refresh, which also works from the header or an empty watchlist.
+Quote detail initially requests 1D history to read `firstTradeDate`, then selects 1M for
+instruments older than 30 days; recent instruments or unknown launch dates retain 1D.
+Refresh preserves manual range selections. Chart date labels put the year on a second line,
+and Vico's measured-width spacing reduces label density as needed for larger text or narrow charts.
+Endpoint labels are omitted rather than adding plot padding, so the price line meets the value axis.
+Quote detail uses pull-to-refresh below the title bar instead of a toolbar refresh button,
+including in the adaptive two-pane layout.
+
 ## Status
 
 The migration is **complete**: all phases below (the shared core, the shared Compose

@@ -33,7 +33,6 @@ import com.github.premnirmal.shared.resources.ic_arrow_back
 import com.github.premnirmal.shared.resources.ic_close
 import com.github.premnirmal.shared.resources.ic_done
 import com.github.premnirmal.shared.resources.ic_edit
-import com.github.premnirmal.shared.resources.ic_refresh
 import com.github.premnirmal.ticker.UserPreferences
 import com.github.premnirmal.ticker.components.AppNumberFormat
 import com.github.premnirmal.ticker.components.CompactNumberFormat
@@ -139,7 +138,7 @@ fun QuoteDetailScreen(
     LaunchedEffect(symbol) {
         viewModel.loadQuote(symbol)
         viewModel.fetchQuote(symbol)
-        viewModel.fetchChartData(symbol, viewModel.range.value)
+        viewModel.fetchChartData(symbol)
     }
 
     val quoteResult by viewModel.quote.collectAsState(initial = null)
@@ -316,7 +315,6 @@ private fun QuoteDetailContent(
         notes = quote.properties?.notes ?: "",
         displayname = quote.properties?.displayname ?: "",
         strings = iosQuoteDetailStrings,
-        refreshIcon = painterResource(Res.drawable.ic_refresh),
         addIcon = painterResource(Res.drawable.ic_add_to_list),
         editIcon = painterResource(Res.drawable.ic_edit),
         snackbarHostState = snackbarHostState,
@@ -658,7 +656,7 @@ private fun openUrl(url: String?) {
  */
 private fun formatAxisDate(epochSeconds: Double, range: Range): String {
     val formatter = NSDateFormatter().apply {
-        dateFormat = if (range == Range.ONE_DAY) "HH:mm" else "MMM d"
+        dateFormat = if (range == Range.ONE_DAY) "HH:mm" else "MMM d\nyyyy"
     }
     return formatter.stringFromDate(NSDate.dateWithTimeIntervalSince1970(epochSeconds))
 }

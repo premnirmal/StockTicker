@@ -4,6 +4,7 @@ import com.github.premnirmal.ticker.components.AppLogger
 import com.github.premnirmal.ticker.components.ioDispatcher
 import com.github.premnirmal.ticker.network.ChartApi
 import com.github.premnirmal.ticker.network.data.DataPoint
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
 /**
@@ -56,10 +57,12 @@ class HistoryProvider(
                 ChartData(
                     chartPreviousClose = chartPreviousClose,
                     regularMarketPrice = regularMarketPrice,
-                    dataPoints = dataPoints
+                    dataPoints = dataPoints,
+                    firstTradeDate = meta.firstTradeDate
                 )
             }
         } catch (ex: Exception) {
+            if (ex is CancellationException) throw ex
             AppLogger.w(ex)
             return@withContext FetchResult.failure(
                 FetchException("Error fetching datapoints", ex)

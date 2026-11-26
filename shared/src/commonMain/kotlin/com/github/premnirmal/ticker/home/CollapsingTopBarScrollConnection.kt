@@ -10,9 +10,12 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 
 class CollapsingTopBarScrollConnection(
-    val appBarMaxHeight: Int,
+    appBarMaxHeight: Int,
     initialOffset: Int = 0
 ) : NestedScrollConnection {
+
+    var appBarMaxHeight by mutableIntStateOf(appBarMaxHeight)
+        private set
 
     var appBarOffset by mutableIntStateOf(initialOffset)
         private set
@@ -27,6 +30,11 @@ class CollapsingTopBarScrollConnection(
 
     fun resetOffset() {
         appBarOffset = 0
+    }
+
+    fun updateMaxHeight(height: Int) {
+        appBarMaxHeight = height
+        appBarOffset = appBarOffset.coerceIn(-height, 0)
     }
 
     override fun onPreScroll(

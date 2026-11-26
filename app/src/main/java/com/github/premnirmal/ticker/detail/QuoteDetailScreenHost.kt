@@ -56,7 +56,7 @@ import org.koin.compose.koinInject
  * Android host for the shared [com.github.premnirmal.ticker.detail.QuoteDetailScreen]. Resolves the
  * Koin [QuoteDetailViewModel]/[AppPreferences], collects the ViewModel state, derives the localised
  * [QuoteDetailItem] rows (`buildQuoteDetails`), the change/up/down [ColourPalette] colours, the
- * localised [QuoteDetailStrings], the `ic_refresh`/`ic_add_to_list`/`ic_edit` icons, the
+ * localised [QuoteDetailStrings], the `ic_add_to_list`/`ic_edit` icons, the
  * `AppCard`/`NewsCard`/`AddSymbolDialog`/`LinkText` slots, the platform chart formatters, the
  * `RuntimeShader`-based [fadingEdges], the [AppMessaging] snackbar host, the per-section
  * `Holdings`/`Alerts`/`Notes`/`Displayname` activity-result launchers and the adaptive Accompanist
@@ -165,10 +165,6 @@ fun QuoteDetailScreen(
     LaunchedEffect(viewModel) {
         viewModel.messages.collect { appMessaging.sendSnackbar(it) }
     }
-    LaunchedEffect(currentQuote.symbol, range) {
-        viewModel.fetchChartData(currentQuote.symbol, range)
-    }
-
     QuoteDetailScreen(
         quote = currentQuote,
         chartData = chartData,
@@ -192,7 +188,6 @@ fun QuoteDetailScreen(
         notes = notes,
         displayname = displayname,
         strings = strings,
-        refreshIcon = painterResource(R.drawable.ic_refresh),
         addIcon = painterResource(R.drawable.ic_add_to_list),
         editIcon = painterResource(R.drawable.ic_edit),
         snackbarHostState = appMessaging.snackbarHostState,
@@ -201,7 +196,7 @@ fun QuoteDetailScreen(
                 viewModel.fetchAll(currentQuote)
             }
         },
-        onRangeSelected = { selected -> viewModel.range.value = selected },
+        onRangeSelected = { selected -> viewModel.fetchChartData(currentQuote.symbol, selected) },
         onAddRemoveTooltipShown = { viewModel.addRemoveTooltipShown() },
         onCardClick = { title, data -> appMessaging.sendBottomSheet(title, data) },
         onEditPositions = {
@@ -276,7 +271,7 @@ fun QuoteDetailScreen(
 
     DisposableEffect(currentQuote.symbol) {
         viewModel.loadQuote(currentQuote.symbol)
-        viewModel.fetchAll(currentQuote)
+        viewModel.fetchAll(currentQuote, chooseInitialRange = true)
         viewModel.fetchQuoteInRealTime(currentQuote.symbol)
         onDispose {
             viewModel.reset()

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.grid.GridCells.Adaptive
@@ -36,7 +34,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -47,6 +44,7 @@ import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -131,7 +129,7 @@ data class QuoteDetailStrings(
  *    `ColourPalette`/Compose theming stays in `:app`),
  *  - the localised labels as a [QuoteDetailStrings] holder and the pre-formatted alert values
  *    ([alertAboveText]/[alertBelowText]) as [String]s,
- *  - the refresh/add/edit icons as [Painter]s,
+ *  - the add/edit icons as [Painter]s,
  *  - the chart axis/marker label formatters as lambdas (date/number formatting is platform-specific),
  *  - the per-section edit navigation, refresh, range selection, tooltip-shown and bottom-sheet
  *    card-tap events as callback lambdas,
@@ -170,7 +168,6 @@ fun QuoteDetailScreen(
     notes: String,
     displayname: String,
     strings: QuoteDetailStrings,
-    refreshIcon: Painter,
     addIcon: Painter,
     editIcon: Painter,
     snackbarHostState: SnackbarHostState,
@@ -208,26 +205,6 @@ fun QuoteDetailScreen(
                 // Drop the horizontal safe-area inset so the back button sits at the leading edge
                 // (the inset otherwise pushes it inward in landscape / on devices with a cutout).
                 windowInsets = TopAppBarDefaults.windowInsets.only(WindowInsetsSides.Top),
-                actions = {
-                    IconButton(
-                        onClick = {
-                            if (!isRefreshing) {
-                                onRefresh()
-                            }
-                        }
-                    ) {
-                        if (isRefreshing) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp)
-                            )
-                        } else {
-                            Icon(
-                                painter = refreshIcon,
-                                contentDescription = null,
-                            )
-                        }
-                    }
-                }
             )
         },
         snackbarHost = {
@@ -275,13 +252,16 @@ fun QuoteDetailScreen(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { padding ->
-        Box(
-            modifier = Modifier.fillMaxSize()
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                if (!isRefreshing) onRefresh()
+            },
         ) {
             if (twoPane == null) {
                 QuoteDetailGrid(
                     state = state,
-                    padding = padding,
                     listFadingEdges = listFadingEdges,
                     columns = Adaptive(150.dp),
                 ) {
@@ -307,7 +287,6 @@ fun QuoteDetailScreen(
                     {
                         QuoteDetailGrid(
                             state = state,
-                            padding = padding,
                             listFadingEdges = listFadingEdges,
                             columns = Adaptive(150.dp),
                         ) {
@@ -325,7 +304,6 @@ fun QuoteDetailScreen(
                     {
                         QuoteDetailGrid(
                             state = state,
-                            padding = padding,
                             listFadingEdges = listFadingEdges,
                             columns = Fixed(1),
                         ) {
@@ -356,7 +334,6 @@ fun QuoteDetailScreen(
 @Composable
 private fun QuoteDetailGrid(
     state: LazyGridState,
-    padding: PaddingValues,
     listFadingEdges: (ScrollableState) -> Modifier,
     columns: androidx.compose.foundation.lazy.grid.GridCells,
     content: LazyGridScope.() -> Unit
@@ -367,7 +344,6 @@ private fun QuoteDetailGrid(
             .then(listFadingEdges(state)),
         columns = columns,
         state = state,
-        contentPadding = padding,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         content = content

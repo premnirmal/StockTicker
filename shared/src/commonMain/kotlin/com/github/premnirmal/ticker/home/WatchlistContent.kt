@@ -6,7 +6,10 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -43,6 +45,8 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -66,12 +70,14 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -128,21 +134,14 @@ fun WatchlistContent(
     registerWidgetScroll: @Composable (index: Int, scroll: suspend () -> Unit) -> Unit = { _, _ -> },
 ) {
     val density = LocalDensity.current
-    val headerHeightDp = remember(hasWidgets) { if (hasWidgets) 200.dp else 160.dp }
-    val headerHeight = remember(hasWidgets, headerHeightDp) {
-        with(density) {
-            headerHeightDp.roundToPx()
-        }
+    var topBarHeight by remember { mutableStateOf(0.dp) }
+    val connection = rememberSaveable(saver = CollapsingTopBarScrollConnection.saver(0)) {
+        CollapsingTopBarScrollConnection(appBarMaxHeight = 0)
     }
-    val connection = rememberSaveable(saver = CollapsingTopBarScrollConnection.saver(headerHeight)) {
-        CollapsingTopBarScrollConnection(
-            appBarMaxHeight = headerHeight,
-        )
-    }
-    val spaceHeight by remember(density, headerHeight) {
+    val spaceHeight by remember(density, connection) {
         derivedStateOf {
             with(density) {
-                (headerHeight + connection.appBarOffset).toDp()
+                (connection.appBarMaxHeight + connection.appBarOffset).toDp()
             }
         }
     }
@@ -152,81 +151,103 @@ fun WatchlistContent(
     registerResetScroll {
         connection.resetOffset()
     }
-    BoxWithConstraints(modifier = Modifier.nestedScroll(connection)) {
-        val constraints = this.constraints
-        val rowState = rememberLazyListState()
-        val coroutineScope = rememberCoroutineScope()
-        val hapticFeedback = LocalHapticFeedback.current
-        val windowInfo = LocalWindowInfo.current
-        val gridSize = remember(windowInfo.containerSize, constraints.maxWidth, constraints.maxHeight) {
-            // Cap the grid to the window when its size is known, but fall back to the available
-            // layout constraints when the window size is reported as zero. On iOS the window's
-            // containerSize is momentarily 0 after the app is backgrounded and reopened, and taking
-            // min(..., 0) would size the grid to 0 width and leave the watchlist entirely blank.
-            val containerWidth = windowInfo.containerSize.width
-            val containerHeight = windowInfo.containerSize.height
-            val effectiveWidth =
-                if (containerWidth > 0) min(constraints.maxWidth, containerWidth) else constraints.maxWidth
-            val effectiveHeight =
-                if (containerHeight > 0) containerHeight else constraints.maxHeight
-            val widthDp = with(density) { effectiveWidth.toDp() }
-            val heightDp = with(density) { effectiveHeight.toDp() }
-            DpSize(widthDp, heightDp)
-        }
-        val selectedItemIndex by remember {
-            derivedStateOf {
-                val layoutInfo = rowState.layoutInfo
-                val visibleItems = layoutInfo.visibleItemsInfo
-                val viewportCenter = (layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset) / 2
-                visibleItems.minByOrNull { abs((it.offset + it.size / 2) - viewportCenter) }?.index ?: 0
-            }
-        }
-        Header(
-            modifier = Modifier
-                .heightIn(max = headerHeightDp)
-                .offset { IntOffset(0, (connection.appBarOffset * 0.5).toInt()) },
-            hasWidgets = hasWidgets,
-            subtitle = subtitle,
-            widgets = widgets,
-            selectedItemIndex = selectedItemIndex,
-            coroutineScope = coroutineScope,
-            rowState = rowState,
-            headerBackground = headerBackground,
-        )
-        Column(
-            modifier = modifier.fillMaxSize()
-        ) {
-            Spacer(
-                Modifier.height(spaceHeight)
-            )
-            Content(
-                widgets = widgets,
-                gridSize = gridSize,
-                rowState = rowState,
-                hapticFeedback = hapticFeedback,
+    val refreshState = rememberPullToRefreshState()
+    PullToRefreshBox(
+        modifier = modifier.fillMaxSize(),
+        state = refreshState,
+        isRefreshing = isRefreshing,
+        onRefresh = { if (!isRefreshing) onRefresh() },
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = topBarHeight),
+                state = refreshState,
                 isRefreshing = isRefreshing,
-                onRefresh = onRefresh,
-                onQuoteClick = onQuoteClick,
-                quoteCard = quoteCard,
-                listFadingEdges = listFadingEdges,
-                registerWidgetScroll = registerWidgetScroll,
-                selectedItemIndex = selectedItemIndex,
-                onContentScrollableChanged = { connection.canCollapse = it },
             )
-        }
-        TopAppBar(
-            modifier = Modifier,
-            scrollState = connection,
-            appName = appName,
-            hasHoldings = hasHoldings,
-            totalHoldingsIcon = totalHoldingsIcon,
-            onTotalHoldingsClick = {
-                showTotalHoldingsPopup = true
+        },
+    ) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(connection)
+                // Dispatch drags on the header/empty watchlist without moving the fixed layout.
+                .scrollable(rememberScrollableState { 0f }, Orientation.Vertical),
+        ) {
+            val constraints = this.constraints
+            val rowState = rememberLazyListState()
+            val coroutineScope = rememberCoroutineScope()
+            val hapticFeedback = LocalHapticFeedback.current
+            val windowInfo = LocalWindowInfo.current
+            val gridSize = remember(windowInfo.containerSize, constraints.maxWidth, constraints.maxHeight) {
+                // Cap the grid to the window when its size is known, but fall back to the available
+                // layout constraints when the window size is reported as zero. On iOS the window's
+                // containerSize is momentarily 0 after the app is backgrounded and reopened, and taking
+                // min(..., 0) would size the grid to 0 width and leave the watchlist entirely blank.
+                val containerWidth = windowInfo.containerSize.width
+                val containerHeight = windowInfo.containerSize.height
+                val effectiveWidth =
+                    if (containerWidth > 0) min(constraints.maxWidth, containerWidth) else constraints.maxWidth
+                val effectiveHeight =
+                    if (containerHeight > 0) containerHeight else constraints.maxHeight
+                val widthDp = with(density) { effectiveWidth.toDp() }
+                val heightDp = with(density) { effectiveHeight.toDp() }
+                DpSize(widthDp, heightDp)
             }
-        )
-        if (showTotalHoldingsPopup && totalGainLoss != null) {
-            totalHoldingsPopup(totalGainLoss) {
-                showTotalHoldingsPopup = false
+            val selectedItemIndex by remember {
+                derivedStateOf {
+                    val layoutInfo = rowState.layoutInfo
+                    val visibleItems = layoutInfo.visibleItemsInfo
+                    val viewportCenter = (layoutInfo.viewportStartOffset + layoutInfo.viewportEndOffset) / 2
+                    visibleItems.minByOrNull { abs((it.offset + it.size / 2) - viewportCenter) }?.index ?: 0
+                }
+            }
+            Header(
+                modifier = Modifier
+                    .onSizeChanged { connection.updateMaxHeight(it.height) }
+                    .offset { IntOffset(0, (connection.appBarOffset * 0.5).toInt()) },
+                topBarHeight = topBarHeight,
+                hasWidgets = hasWidgets,
+                subtitle = subtitle,
+                widgets = widgets,
+                selectedItemIndex = selectedItemIndex,
+                coroutineScope = coroutineScope,
+                rowState = rowState,
+                headerBackground = headerBackground,
+            )
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Spacer(
+                    Modifier.height(spaceHeight)
+                )
+                Content(
+                    widgets = widgets,
+                    gridSize = gridSize,
+                    rowState = rowState,
+                    hapticFeedback = hapticFeedback,
+                    onQuoteClick = onQuoteClick,
+                    quoteCard = quoteCard,
+                    listFadingEdges = listFadingEdges,
+                    registerWidgetScroll = registerWidgetScroll,
+                    selectedItemIndex = selectedItemIndex,
+                    onContentScrollableChanged = { connection.canCollapse = it },
+                )
+            }
+            TopAppBar(
+                modifier = Modifier.onSizeChanged {
+                    topBarHeight = with(density) { it.height.toDp() }
+                },
+                scrollState = connection,
+                appName = appName,
+                hasHoldings = hasHoldings,
+                totalHoldingsIcon = totalHoldingsIcon,
+                onTotalHoldingsClick = {
+                    showTotalHoldingsPopup = true
+                }
+            )
+            if (showTotalHoldingsPopup && totalGainLoss != null) {
+                totalHoldingsPopup(totalGainLoss) {
+                    showTotalHoldingsPopup = false
+                }
             }
         }
     }
@@ -287,8 +308,6 @@ private fun Content(
     gridSize: DpSize,
     rowState: LazyListState,
     hapticFeedback: HapticFeedback,
-    isRefreshing: Boolean,
-    onRefresh: () -> Unit,
     onQuoteClick: (Quote) -> Unit,
     quoteCard: @Composable (
         quote: Quote,
@@ -343,53 +362,46 @@ private fun Content(
                 registerWidgetScroll(index) {
                     lazyStaggeredGridState.animateScrollToItem(0)
                 }
-                PullToRefreshBox(
+                LazyVerticalStaggeredGrid(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surface),
-                    onRefresh = onRefresh,
-                    isRefreshing = isRefreshing
+                        .width(width)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .then(listFadingEdges(lazyStaggeredGridState)),
+                    state = lazyStaggeredGridState,
+                    columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
+                    contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp + LocalContentBottomPadding.current),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalItemSpacing = 8.dp,
                 ) {
-                    LazyVerticalStaggeredGrid(
-                        modifier = Modifier
-                            .width(width)
-                            .fillMaxHeight()
-                            .then(listFadingEdges(lazyStaggeredGridState)),
-                        state = lazyStaggeredGridState,
-                        columns = StaggeredGridCells.Adaptive(minSize = 150.dp),
-                        contentPadding = PaddingValues(start = 8.dp, top = 8.dp, end = 8.dp, bottom = 8.dp + LocalContentBottomPadding.current),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalItemSpacing = 8.dp,
-                    ) {
-                        itemsIndexed(
-                            quotes,
-                            key = { _, quote -> quote.symbol }
-                        ) { _, quote ->
-                            ReorderableItem(reorderableLazyStaggeredGridState, key = quote.symbol) {
-                                val interactionSource = remember { MutableInteractionSource() }
-                                quoteCard(
-                                    quote,
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .longPressDraggableHandle(
-                                            onDragStarted = {
-                                                hapticFeedback.performHapticFeedback(
-                                                    HapticFeedbackType.GestureThresholdActivate
-                                                )
-                                            },
-                                            onDragStopped = {
-                                                val tickers = quotes.map { it.symbol }
-                                                widget.rearrange(tickers)
-                                                widget.setAutoSort(false)
-                                                hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
-                                            },
-                                            interactionSource = interactionSource,
-                                        ),
-                                    interactionSource,
-                                    { onQuoteClick(quote) },
-                                    { q -> widget.removeStock(q.symbol) },
-                                )
-                            }
+                    itemsIndexed(
+                        quotes,
+                        key = { _, quote -> quote.symbol }
+                    ) { _, quote ->
+                        ReorderableItem(reorderableLazyStaggeredGridState, key = quote.symbol) {
+                            val interactionSource = remember { MutableInteractionSource() }
+                            quoteCard(
+                                quote,
+                                Modifier
+                                    .fillMaxWidth()
+                                    .longPressDraggableHandle(
+                                        onDragStarted = {
+                                            hapticFeedback.performHapticFeedback(
+                                                HapticFeedbackType.GestureThresholdActivate
+                                            )
+                                        },
+                                        onDragStopped = {
+                                            val tickers = quotes.map { it.symbol }
+                                            widget.rearrange(tickers)
+                                            widget.setAutoSort(false)
+                                            hapticFeedback.performHapticFeedback(HapticFeedbackType.GestureEnd)
+                                        },
+                                        interactionSource = interactionSource,
+                                    ),
+                                interactionSource,
+                                { onQuoteClick(quote) },
+                                { q -> widget.removeStock(q.symbol) },
+                            )
                         }
                     }
                 }
@@ -402,6 +414,7 @@ private fun Content(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun Header(
     modifier: Modifier = Modifier,
+    topBarHeight: Dp,
     hasWidgets: Boolean,
     subtitle: String,
     widgets: List<WatchlistWidget>,
@@ -416,7 +429,7 @@ private fun Header(
         if (headerBackground != null) {
             val color = MaterialTheme.colorScheme.surface
             Image(
-                modifier = Modifier.fillMaxSize().graphicsLayer { alpha = 0.99f }
+                modifier = Modifier.matchParentSize().graphicsLayer { alpha = 0.99f }
                     .drawWithContent {
                         val colors = listOf(
                             color,
@@ -435,14 +448,14 @@ private fun Header(
         }
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .padding(top = topBarHeight)
                 .align(Alignment.BottomCenter)
         ) {
-            Spacer(Modifier.weight(1f))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 text = subtitle,
                 style = MaterialTheme.typography.labelMedium
             )

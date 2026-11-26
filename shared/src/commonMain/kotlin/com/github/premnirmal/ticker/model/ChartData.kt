@@ -15,6 +15,7 @@ data class ChartData(
     val chartPreviousClose: Float,
     val regularMarketPrice: Float,
     val dataPoints: List<DataPoint>,
+    val firstTradeDate: Long? = null,
 ) {
     val change: Float
         get() = regularMarketPrice - chartPreviousClose

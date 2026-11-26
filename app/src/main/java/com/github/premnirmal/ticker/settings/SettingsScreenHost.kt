@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.settings
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION
 import android.provider.Settings
@@ -226,7 +227,12 @@ private fun AlarmPermissionBanner() {
                     modifier = Modifier.align(Alignment.CenterVertically),
                     onClick = {
                         if (VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
+                            context.startActivity(
+                                Intent(
+                                    Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                                    Uri.fromParts("package", context.packageName, null)
+                                )
+                            )
                         }
                     },
                 ) {
