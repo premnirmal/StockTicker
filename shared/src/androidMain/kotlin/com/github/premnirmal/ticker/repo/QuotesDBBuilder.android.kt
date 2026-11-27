@@ -3,6 +3,7 @@ package com.github.premnirmal.ticker.repo
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.driver.AndroidSQLiteDriver
 
 /**
  * Android [QuotesDB] builder. Uses the same database file name (`quotes-db`) as the previous
@@ -13,5 +14,5 @@ fun getQuotesDBBuilder(context: Context): RoomDatabase.Builder<QuotesDB> {
     return Room.databaseBuilder<QuotesDB>(
         context = appContext,
         name = appContext.getDatabasePath(QUOTES_DB_NAME).absolutePath
-    )
+    ).setDriver(AndroidSQLiteDriver())
 }

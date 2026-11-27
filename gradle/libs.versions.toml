@@ -32,7 +32,7 @@ kotlinx-datetime = "0.6.2"
 detektCompose = "0.5.8"
 reorderable = "3.1.0"
 material3 = "1.4.0"
-glanceAppwidget = "1.1.1"
+glanceAppwidget = "1.2.0"
 vico = "2.5.1"
 coil = "3.4.0"
 
@@ -88,6 +88,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "androidx
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidx-room" }
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "androidx-room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version = "2.6.2" }
+androidx-sqlite-framework = { group = "androidx.sqlite", name = "sqlite-framework", version = "2.6.2" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }

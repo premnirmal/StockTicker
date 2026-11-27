@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.repo
 
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -23,4 +24,5 @@ fun getQuotesDBBuilder(): RoomDatabase.Builder<QuotesDB> {
     )!!
     val dbFilePath = requireNotNull(documentsUrl.URLByAppendingPathComponent(QUOTES_DB_NAME)?.path)
     return Room.databaseBuilder<QuotesDB>(name = dbFilePath)
+        .setDriver(BundledSQLiteDriver())
 }

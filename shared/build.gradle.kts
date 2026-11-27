@@ -114,7 +114,6 @@ kotlin {
       implementation(libs.ktor.serialization.kotlinx.json)
       implementation(libs.xmlutil.serialization)
       api(libs.room.runtime)
-      implementation(libs.androidx.sqlite.bundled)
       implementation(libs.koin.core)
       api(libs.androidx.lifecycle.viewmodel)
       implementation(libs.navigation.compose)
@@ -130,10 +129,12 @@ kotlin {
       api(libs.vico.multiplatform)
     }
     androidMain.dependencies {
+      implementation(libs.androidx.sqlite.framework)
       implementation(libs.ktor.client.okhttp)
       implementation(libs.timber)
     }
     iosMain.dependencies {
+      implementation(libs.androidx.sqlite.bundled)
       implementation(libs.ktor.client.darwin)
       implementation(libs.kotlinx.datetime)
       implementation(libs.coil.network.ktor3)

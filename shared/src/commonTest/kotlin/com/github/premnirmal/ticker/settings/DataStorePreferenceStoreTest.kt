@@ -1,6 +1,10 @@
 package com.github.premnirmal.ticker.settings
 
+import androidx.datastore.core.DataMigration
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import okio.FileSystem
+import okio.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -8,13 +12,44 @@ import kotlin.test.assertTrue
 
 class DataStorePreferenceStoreTest {
 
-    private fun newStore(): PreferenceStore {
+    private fun newPath(): Path {
         // Use an absolute path under the system temporary directory. A relative path is not
         // writable from the iOS simulator's working directory and makes DataStore throw.
         val dir = FileSystem.SYSTEM_TEMPORARY_DIRECTORY / "stockticker-test-datastore"
         FileSystem.SYSTEM.createDirectories(dir)
-        val path = (dir / "prefs-${kotlin.random.Random.nextInt()}.preferences_pb").toString()
-        return DataStorePreferenceStore(createPreferenceDataStore { path })
+        return dir / "prefs-${kotlin.random.Random.nextInt()}.preferences_pb"
+    }
+
+    private fun newStore(): PreferenceStore =
+        DataStorePreferenceStore(createPreferenceDataStore { newPath().toString() })
+
+    @Test
+    fun corruptPreferencesAreReplacedAndRemainWritable() {
+        val path = newPath()
+        FileSystem.SYSTEM.write(path) { writeByte(0) }
+        val store = DataStorePreferenceStore(createPreferenceDataStore { path.toString() })
+
+        assertEquals(7, store.getInt("missing", 7))
+        store.setString("s", "recovered")
+        assertEquals("recovered", store.getString("s", null))
+    }
+
+    @Test
+    fun migrationsRunAfterCorruptionRecovery() {
+        val path = newPath()
+        FileSystem.SYSTEM.write(path) { writeByte(0) }
+        val key = intPreferencesKey("legacy")
+        val migration = object : DataMigration<Preferences> {
+            override suspend fun shouldMigrate(currentData: Preferences) = !currentData.contains(key)
+            override suspend fun migrate(currentData: Preferences): Preferences =
+                currentData.toMutablePreferences().apply { this[key] = 42 }
+            override suspend fun cleanUp() = Unit
+        }
+        val store = DataStorePreferenceStore(
+            createPreferenceDataStore(migrations = listOf(migration)) { path.toString() }
+        )
+
+        assertEquals(42, store.getInt("legacy", 0))
     }
 
     @Test

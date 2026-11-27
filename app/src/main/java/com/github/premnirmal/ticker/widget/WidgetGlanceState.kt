@@ -6,6 +6,7 @@ import androidx.annotation.DrawableRes
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.glance.state.GlanceStateDefinition
 import com.github.premnirmal.ticker.createTimeString
 import com.github.premnirmal.ticker.model.FetchState
@@ -13,6 +14,7 @@ import com.github.premnirmal.ticker.network.data.Quote
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
@@ -216,6 +218,10 @@ object WidgetGlanceStateDefinition : GlanceStateDefinition<WidgetGlanceState> {
     ): DataStore<WidgetGlanceState> {
         return androidx.datastore.core.DataStoreFactory.create(
             serializer = WidgetGlanceStateSerializer,
+            corruptionHandler = ReplaceFileCorruptionHandler { exception ->
+                Timber.w(exception, "Resetting corrupt Glance widget state")
+                WidgetGlanceState.Default
+            },
             produceFile = {
                 File(context.filesDir, "${WIDGET_STATE_FILE}_$fileKey")
             }

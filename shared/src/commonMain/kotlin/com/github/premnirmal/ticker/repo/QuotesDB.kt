@@ -4,7 +4,6 @@ import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.github.premnirmal.ticker.components.ioDispatcher
 import com.github.premnirmal.ticker.repo.data.FetchLogRow
 import com.github.premnirmal.ticker.repo.data.HoldingRow
@@ -33,14 +32,12 @@ const val QUOTES_DB_NAME: String = "quotes-db"
 
 /**
  * Finishes building the [QuotesDB] from a platform-provided [builder] (Android supplies a
- * `Context`, iOS a file path). All shared configuration — the bundled SQLite driver, the IO
- * coroutine context and the full migration chain — lives here so every platform builds the database
- * identically and existing Android installs migrate transparently.
+ * `Context` and its system SQLite driver, iOS a file path and bundled SQLite). The IO coroutine
+ * context and full migration chain are shared so existing Android installs migrate transparently.
  */
 fun buildQuotesDB(builder: RoomDatabase.Builder<QuotesDB>): QuotesDB {
     return builder
         .addMigrations(*allMigrations)
-        .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(ioDispatcher)
         .build()
 }

@@ -487,7 +487,8 @@ plan and how each phase was delivered.
   `commonMain`** via **Room KMP** — `QuotesDB`/`QuoteDao`/`*Row`/`QuoteWithHoldings` and the 8
   schema migrations moved into `:shared` (exported schema v9 unchanged, so installed Android
   databases migrate transparently), behind a `getQuotesDBBuilder()` `expect`/`actual` (Android
-  `Context`, iOS `NSDocumentDirectory`) plus the bundled-SQLite driver. The `StocksStorage`
+  `Context`, iOS `NSDocumentDirectory`) plus platform-selected SQLite drivers (Android's system
+  SQLite, bundled SQLite on iOS). Android does not require an app-packaged SQLite JNI library. The `StocksStorage`
   implementation of `QuoteStorage` is also shared; iOS now gets a real Room-backed implementation
   rather than a stub. The settings layer likewise has a shared `UserPreferences` interface (the common
   contract for the platform-neutral user settings — update interval, the boolean toggles, the theme
@@ -502,7 +503,10 @@ plan and how each phase was delivered.
   (`DataStorePreferenceStore`, in `commonMain`) that **both platforms** now use as their preferences
   backend: iOS in place of the bespoke `NSUserDefaults` `SettingsStore`, and Android `AppPreferences`
   in place of `SharedPreferences` (a one-shot `AppPreferencesDataMigration` imports the legacy
-  `SharedPreferences` values on first run). The central data provider
+  `SharedPreferences` values on first run). Corrupt preference files are logged and replaced so the
+  app can start and rerun the legacy migration; corrupt Glance state is similarly reset and rebuilt
+  from widget preferences and quotes. Glance 1.2.0 hands widget broadcasts to WorkManager on affected
+  Vivo devices instead of using the OEM's broken asynchronous broadcast completion. The central data provider
   likewise has a shared `IStocksProvider` interface (the common contract for the observable
   watchlist/portfolio state and the add/remove/fetch/schedule operations, expressed in the
   already-shared `Quote`/`Position`/`Holding`/`FetchResult` models, in `commonMain`) implemented on

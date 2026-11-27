@@ -31,8 +31,8 @@ import org.robolectric.annotation.Config
  * validation. Starts Koin with the production modules and resolves a representative cross-section of
  * services and a ViewModel so any missing binding or wrong constructor wiring fails the build.
  *
- * Definitions whose construction touches the bundled-SQLite Room engine (the persistence graph) are
- * intentionally not resolved here; the persistence wiring is covered by the `:shared` Room tests.
+ * Database reads and migration paths using the production Android driver are covered by
+ * `QuotesDBTest`.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(application = TestApplication::class)

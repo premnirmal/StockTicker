@@ -2,13 +2,16 @@ package com.github.premnirmal.ticker.settings
 
 import androidx.datastore.core.DataMigration
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.github.premnirmal.ticker.components.AppLogger
 import kotlinx.coroutines.flow.first
 import okio.Path.Companion.toPath
 import kotlin.concurrent.Volatile
@@ -18,12 +21,17 @@ import kotlin.concurrent.Volatile
  * qualified file path ending in `*.preferences_pb`). The platform Koin modules supply the path
  * (`context.filesDir` on Android, `NSDocumentDirectory` on iOS). Optional [migrations] run once when
  * the store is first read — Android uses this to import the legacy `SharedPreferences` values.
+ * Corrupt files are logged and replaced with empty preferences, allowing migrations to run again.
  */
 fun createPreferenceDataStore(
     migrations: List<DataMigration<Preferences>> = emptyList(),
     producePath: () -> String
 ): DataStore<Preferences> =
     PreferenceDataStoreFactory.createWithPath(
+        corruptionHandler = ReplaceFileCorruptionHandler { exception ->
+            AppLogger.w(exception, "Resetting corrupt application preferences")
+            emptyPreferences()
+        },
         migrations = migrations,
         produceFile = { producePath().toPath() }
     )

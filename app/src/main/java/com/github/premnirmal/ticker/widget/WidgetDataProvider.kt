@@ -2,6 +2,7 @@ package com.github.premnirmal.ticker.widget
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
+import androidx.glance.GlanceId
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.flow.Flow
@@ -81,7 +82,8 @@ class WidgetDataProvider constructor(
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
             try {
                 dataForWidgetId(widgetId).emitWidgetChanges()
-                GlanceStocksWidget().update(context, glanceAppWidgetManager.getGlanceIdBy(widgetId))
+                val glanceId = glanceAppWidgetManager.getGlanceIdIfPresent(widgetId) ?: return
+                GlanceStocksWidget().update(context, glanceId)
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -117,5 +119,14 @@ class WidgetDataProvider constructor(
             dataForWidgetId(AppWidgetManager.INVALID_APPWIDGET_ID)
                 .addTickers(tickerList)
         }
+    }
+}
+
+internal fun GlanceAppWidgetManager.getGlanceIdIfPresent(widgetId: Int): GlanceId? {
+    return try {
+        getGlanceIdBy(widgetId)
+    } catch (e: IllegalArgumentException) {
+        Timber.w(e, "Skipping update for unavailable app widget %d", widgetId)
+        null
     }
 }

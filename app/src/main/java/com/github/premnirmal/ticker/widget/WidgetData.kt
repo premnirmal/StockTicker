@@ -527,7 +527,8 @@ class WidgetData : IWidgetData, KoinComponent {
     fun emitWidgetChanges() {
         if (widgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
             coroutineScope.launch {
-                val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(widgetId)
+                val glanceId = GlanceAppWidgetManager(context).getGlanceIdIfPresent(widgetId)
+                    ?: return@launch
                 updateAppWidgetState(
                     context = context,
                     definition = WidgetGlanceStateDefinition,
